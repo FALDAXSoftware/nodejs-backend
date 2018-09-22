@@ -9,37 +9,20 @@ module.exports = {
     index: function (req, res) {
       var email = req.param('email');
       var password = req.param('password');
-      console.log(req.body, email, password);
       
       if (!email || !password) {
-        console.log('wrong');
         return res.status(401).json({err: 'email and password required'});
       }
-  
+
       Users.findOne({email: email}, function (err, user) {
         if (!user) {
           return res.status(401).json({err: 'invalid email or password'});
         }
-        console.log('FOUND : ' + user);
-
-
-
-        // comparePassword : function (password, user, cb) {
-        //     bcrypt.compare(password, user.encryptedPassword, function (err, match) {
-        //       if(err) cb(err);
-        //       if(match) {
-        //         cb(null, true);
-        //       } else {
-        //         cb(err);
-        //       }
-        //     })
-        //   }
 
         Users.comparePassword(password, user, function (err, valid) {
           if (err) {
             return res.status(403).json({err: 'forbidden'});
           }
-          console.log(valid);
   
           if (!valid) {
             return res.status(401).json({err: 'invalid email or password'});
@@ -52,8 +35,6 @@ module.exports = {
       })
     },
     login : async function (req ,res){
-        console.log("InLogin");
-        // console.log(req.body);
 
         try{
             if(req.body.email && req.body.password){
@@ -98,7 +79,6 @@ module.exports = {
                 return;
             }
         }catch(error){
-            console.log(error);
             res.json({
                 "status": "500",
                 "message": "error",

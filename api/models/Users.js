@@ -7,7 +7,7 @@
 
 // We don't want to store password with out encryption
 var bcrypt = require('bcrypt');
-//  id, email, password, phone_number, full_name, firstname, lastname, 
+//  email, password, phone_number, full_name, firstname, lastname, 
 //        country, street_address, city_town, postal_code, profile_pic, 
 //        dob, updated_at, deleted_at, zip
 
@@ -20,12 +20,63 @@ module.exports = {
       unique: true,
       required: true
     },
-
     password: {
       type: 'string',
       columnName: 'password',
       required: true
     },
+    phone_number: {
+      type: 'number',
+      columnName: 'phone_number',
+    },
+    full_name: {
+      type: 'string',
+      columnName: 'full_name',
+    },
+    first_name: {
+      type: 'string',
+      columnName: 'first_name',
+    },
+    last_name: {
+      type: 'string',
+      columnName: 'last_name',
+    },
+    country: {
+      type: 'string',
+      columnName: 'country',
+    },
+    street_address: {
+      type: 'string',
+      columnName: 'street_address',
+    },
+    city_town: {
+      type: 'string',
+      columnName: 'city_town',
+    },
+    postal_code: {
+      type: 'number',
+      columnName: 'postal_code',
+    },
+    profile_pic: {
+      type: 'string',
+      columnName: 'profile_pic',
+    },
+    dob: {
+      type: 'string',
+      columnName: 'dob',
+    },
+    zip: {
+      type: 'number',
+      columnName: 'zip',
+    },
+    updated_at : {
+      type: 'string',
+      columnName: 'updated_at',
+    },
+    deleted_at: {
+      type: 'string',
+      columnName: 'deleted_at',
+    }
   },
   beforeCreate: (values, next) => {
     Users.findOne({'email': values.email})
