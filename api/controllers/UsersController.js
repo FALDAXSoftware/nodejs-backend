@@ -51,12 +51,20 @@ module.exports = {
     },
     update: async function(req, res){
         try {
+            const user_details = await Users.findOne({ email: req.body.email, id: req.body.id });
+            if (!user_details) {
+                return res.status(401).json({err: 'invalid email'});
+            }
+
+            var updatedUsers = await Users.update({ id : req.body.id, email: req.body.email }).set(req.body).fetch();
+            sails.log(updatedUsers);
+
             res.json({
                 "status": "200",
                 "message": "worked",
                 "data": req.body
             });
-            return;
+            return;          
         } catch(error) {
             res.json({
                 "status": "500",
