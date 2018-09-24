@@ -4,7 +4,7 @@
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-
+var bcrypt = require('bcrypt');
 module.exports = {
   tableName: 'admin',
   attributes: {
@@ -21,48 +21,58 @@ module.exports = {
     },
     name: {
       type: 'string',
-      columnName: 'name',
-    },
-    // role_id:{
-    //   type: 'number',
-    //   columnName: 'role_id',
-    // },
-    updated_at : {
-      type: 'string',
-      columnName: 'updated_at',
+      columnName: 'name'
     },
     created_at: {
-      type: 'string',
-      columnName: 'created_at',
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
+    },
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at'
+    },
+    deleted_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'deleted_at'
     }
   },
   beforeCreate: (values, next) => {
-    Admin.findOne({'email': values.email})
-    .exec(function (err, found){
-      if(!found){
-        bcrypt.genSalt(10, function (err, salt) {
-          if(err) return next(err);
-          bcrypt.hash(values.password, salt, function (err, hash) {
-            if(err) return next(err);
-            values.password = hash;
-            next();
-          })
-        });     
-      } else{
-        next({ error: 'Email address already exist' });
-      }
-    });
+    // console.log(values.email);
+    Admin
+      .findOne({'email': 'ankit2@gmail.com'})
+      .exec(function (err, found) {
+        if (!found) {
+          bcrypt
+            .genSalt(10, function (err, salt) {
+              if (err) 
+                return next(err);
+              bcrypt
+                .hash(values.password, salt, function (err, hash) {
+                  if (err) 
+                    return next(err);
+                  values.password = hash;
+                  next();
+                })
+            });
+        } else {
+          next({error: 'Email address already exist'});
+        }
+      });
   },
-  comparePassword : function (password, user, cb) {
-    bcrypt.compare(password, user.password, function (err, match) {
-      if(err) cb(err);
-      if(match) {
-        cb(null, true);
-      } else {
-        cb(err);
-      }
-    })
+  comparePassword: function (password, user, cb) {
+    bcrypt
+      .compare(password, user.password, function (err, match) {
+        if (err) 
+          cb(err);
+        if (match) {
+          cb(null, true);
+        } else {
+          cb(err);
+        }
+      })
   }
 
 };
-

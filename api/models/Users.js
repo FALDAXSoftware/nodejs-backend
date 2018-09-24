@@ -8,8 +8,8 @@
 // We don't want to store password with out encryption
 var bcrypt = require('bcrypt');
 //  email, password, phone_number, full_name, firstname, lastname, 
-//        country, street_address, city_town, postal_code, profile_pic, 
-//        dob, updated_at, deleted_at, zip
+//  country, street_address, city_town, postal_code, profile_pic, 
+//  dob, updated_at, deleted_at, zip
 
 module.exports = {
   tableName: 'users',
@@ -26,60 +26,77 @@ module.exports = {
       required: true
     },
     phone_number: {
-      type: 'number',
-      columnName: 'phone_number',
+      type: 'string',
+      columnName: 'phone_number'
     },
     full_name: {
       type: 'string',
       columnName: 'full_name',
+      allowNull: true
     },
     first_name: {
       type: 'string',
       columnName: 'first_name',
+      allowNull: true
     },
     last_name: {
       type: 'string',
       columnName: 'last_name',
+      allowNull: true
     },
     country: {
       type: 'string',
       columnName: 'country',
+      allowNull: true
     },
     street_address: {
       type: 'string',
       columnName: 'street_address',
+      allowNull: true
     },
     city_town: {
       type: 'string',
       columnName: 'city_town',
+      allowNull: true
     },
     postal_code: {
       type: 'number',
       columnName: 'postal_code',
+      allowNull: true
     },
     profile_pic: {
       type: 'string',
       columnName: 'profile_pic',
+      allowNull: true
     },
     dob: {
-      type: 'string',
-      columnName: 'dob',
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'dob'
     },
     zip: {
       type: 'number',
       columnName: 'zip',
+      allowNull: true
+    },
+    created_at : {
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'created_at'
     },
     updated_at : {
-      type: 'string',
-      columnName: 'updated_at',
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'string',
-      columnName: 'deleted_at',
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'deleted_at'
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne({'email': values.email})
+    Users.findOne({ or: [ {'email': values.email }, { 'phone_number': values.phone_number}]})
     .exec(function (err, found){
       if(!found){
         bcrypt.genSalt(10, function (err, salt) {
@@ -91,7 +108,7 @@ module.exports = {
           })
         });     
       } else{
-        next({ error: 'Email address already exist' });
+        next({ error: 'Email address or Phone number already exist' });
       }
     });
   },

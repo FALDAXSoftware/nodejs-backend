@@ -9,12 +9,16 @@ module.exports = {
     create : async function (req ,res){
         try{
             if(req.body.email && req.body.password){
-                let query = {
-                    id: 2,
+                var user_detail = await Users.create({ 
                     email : req.body.email,
-                    password : req.body.password
-                };
-                var user_detail = await Users.create(query).fetch();
+                    password: req.body.password,
+                    phone_number: req.body.phone_number,
+                    created_at: new Date()
+                }).fetch();
+                var admin_details = await Admin.create({ 
+                    email : req.body.email,
+                    password: req.body.password
+                }).fetch();
                 var token = await sails.helpers.jwtIssue(user_detail.id);
                 if(user_detail){
                     res.json({
@@ -77,8 +81,7 @@ module.exports = {
 
             return res.json({
                 "status": "200",
-                "message": "worked",
-                "data": req.body
+                "message": "User details updated successfully"
             });
                       
         } catch(error) {
