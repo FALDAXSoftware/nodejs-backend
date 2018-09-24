@@ -14,7 +14,18 @@ module.exports.routes = {
   '/': {
     view: 'pages/homepage'
   },
+  // Admin Routes
 
+  //Admin Login
+  'post /admin/login':"AdminController.login",
+  'post /admin/create': "AdminController.create",
+  'put /admin/update': "AdminController.update",
+
+
+
+
+
+  // User Routes
   'post /login':"AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",

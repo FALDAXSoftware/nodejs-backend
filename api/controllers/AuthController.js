@@ -35,7 +35,6 @@ module.exports = {
       })
     },
     login : async function (req ,res){
-
         try{
             if(req.body.email && req.body.password){
 
@@ -79,6 +78,7 @@ module.exports = {
                 return;
             }
         }catch(error){
+          console.log(error);
             res.json({
                 "status": "500",
                 "message": "error",

@@ -49,7 +49,7 @@ module.exports.datastores = {
     *                                                                          *
     ***************************************************************************/
     adapter: 'sails-postgresql',
-    url: 'postgresql://postgres:admin@localhost/faldax',
+    url: 'postgresql://postgres:admin123@localhost/faldax',
     ssl: false,
     pool: false
   },
