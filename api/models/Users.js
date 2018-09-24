@@ -17,6 +17,7 @@ module.exports = {
     email: {
       type: 'string',
       columnName: 'email',
+      isEmail: true,
       unique: true,
       required: true
     },
@@ -77,6 +78,16 @@ module.exports = {
     zip: {
       type: 'number',
       columnName: 'zip',
+      allowNull: true
+    },
+    reffered_id: {
+      type: 'string',
+      columnName: 'reffered_id',
+      allowNull: true
+    },
+    refferal_code: {
+      type: 'string',
+      columnName: 'refferal_code',
       allowNull: true
     },
     created_at : {
