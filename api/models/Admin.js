@@ -42,7 +42,7 @@ module.exports = {
   beforeCreate: (values, next) => {
     // console.log(values.email);
     Admin
-      .findOne({'email': 'ankit2@gmail.com'})
+      .findOne({'email': values.email})
       .exec(function (err, found) {
         if (!found) {
           bcrypt
