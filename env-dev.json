@@ -1,0 +1,14 @@
+{
+    "name": "faldax-api-8084",
+    "args": [
+      "--env=prod",
+      "--port=8084"
+    ],
+    "script": "app.js",
+    "max_restarts": 50,
+    "max_memory": "1000M",
+    "exec_mode": "fork",
+    "autorestart": true,
+    "env": {
+    }
+  }
