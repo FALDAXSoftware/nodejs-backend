@@ -5,15 +5,32 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var UploadFiles = require('../services/UploadFiles')
+var uuidv1 = require('uuid/v1');
 module.exports = {
     create : async function (req ,res){
         try{
-            if(req.body.email && req.body.password){
+            var user = req.body;
+            var referred_id="";
+            if(req.body.referral_code){
+               var referredUser = await  User.findOne({referral_id:req.body.referral_code});
+               if(!referredUser) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Invalid refferal code'
+                });
+               } else {
+                referred_id= referredUser.id;
+               }
+            }
+            
+            if(req.body.email && req.body.password && req.body.phone_number){
                 var user_detail = await Users.create({ 
                     email : req.body.email,
                     password: req.body.password,
                     phone_number: req.body.phone_number,
-                    created_at: new Date()
+                    referral_code:uuidv1(),
+                    created_at: new Date(),
+                    referred_id:referred_id
                 }).fetch();
                 var admin_details = await Admin.create({ 
                     email : req.body.email,
@@ -40,7 +57,7 @@ module.exports = {
                 res.json({
                     "status": "400",
                     "message": "not listed",
-                    "error" : "email or password is not sent",
+                    "error" : "email or password or phone_number is not sent",
                 });
                 return;
             }
