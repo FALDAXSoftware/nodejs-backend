@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var uuidv1 = require('uuid/v1');
+var UploadFiles = require('../services/UploadFiles')
 module.exports = {
     create : async function (req ,res){
         try{
@@ -57,7 +58,8 @@ module.exports = {
                 return;
             }
         }catch(error){
-            res.json({
+           
+            res.status(500).json({
                 "status": "500",
                 "message": "error",
                 "errors": error
@@ -71,13 +73,29 @@ module.exports = {
             if (!user_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
-
-            var updatedUsers = await Users.update({ id : req.body.id, email: req.body.email }).set(req.body).fetch();
-            res.json({
+            var user =req.body;
+            delete user.profile;
+            req.file('profile').upload(async function(err, uploadedFiles) {
+                let filename = uploadedFiles[0].filename;
+                var name = filename.substring(filename.indexOf("."));
+                let timestamp = new Date()
+                    .getTime()
+                    .toString();
+                let resourceImageName = timestamp;
+                var uploadFileName = timestamp+name;
+                var uploadProfile =await  UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);                
+                user.profile_pic = 'faldax/profile/' + uploadFileName
+                var updatedUsers = await Users.update({ id : req.body.id, email: req.body.email }).set(user).fetch();
+                delete updatedUsers.password
+                sails.log(updatedUsers);
+            
+            });
+            
+            return res.json({
                 "status": "200",
                 "message": "User details updated successfully"
             });
-            return;          
+                      
         } catch(error) {
             res.json({
                 "status": "500",
