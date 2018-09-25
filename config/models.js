@@ -70,6 +70,25 @@ module.exports.models = {
 
   attributes: {
     id: { type: 'number', autoIncrement: true },
+    created_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at',
+      defaultsTo: new Date()
+    },
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at',
+      defaultsTo: new Date()
+    },
+    deleted_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'deleted_at',
+      defaultsTo: new Date()
+    }
+    
     //--------------------------------------------------------------------------
     //  /\   Using MongoDB?
     //  ||   Replace `id` above with this instead:

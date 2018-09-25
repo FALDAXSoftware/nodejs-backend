@@ -22,21 +22,6 @@ module.exports = {
     name: {
       type: 'string',
       columnName: 'name'
-    },
-    created_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'created_at'
-    },
-    updated_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'updated_at'
-    },
-    deleted_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'deleted_at'
     }
   },
   beforeCreate: (values, next) => {

@@ -10,7 +10,7 @@ module.exports = {
     create : async function (req ,res){
         try{
             var user = req.body;
-            var referred_id="";
+            var referred_id=null;
             if(req.body.referral_code){
                var referredUser = await  User.findOne({referral_id:req.body.referral_code});
                if(!referredUser) {
@@ -62,7 +62,7 @@ module.exports = {
                 return;
             }
         }catch(error){
-           
+           console.log(error)
             res.status(500).json({
                 "status": "500",
                 "message": "error",

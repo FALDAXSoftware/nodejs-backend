@@ -80,30 +80,15 @@ module.exports = {
       columnName: 'zip',
       allowNull: true
     },
-    reffered_id: {
+    referred_id: {
       type: 'string',
-      columnName: 'reffered_id',
+      columnName: 'referred_id',
       allowNull: true
     },
-    refferal_code: {
+    referral_code: {
       type: 'string',
-      columnName: 'refferal_code',
+      columnName: 'referral_code',
       allowNull: true
-    },
-    created_at : {
-      type: 'ref', 
-      columnType: 'datetime',
-      columnName: 'created_at'
-    },
-    updated_at : {
-      type: 'ref', 
-      columnType: 'datetime',
-      columnName: 'updated_at'
-    },
-    deleted_at: {
-      type: 'ref', 
-      columnType: 'datetime',
-      columnName: 'deleted_at'
     }
   },
   beforeCreate: (values, next) => {
