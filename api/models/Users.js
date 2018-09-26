@@ -90,6 +90,23 @@ module.exports = {
       columnName: 'referral_code',
       allowNull: true
     },
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: false,
+      allowNull: true,
+    },
+    is_verified: {
+      type: 'boolean',
+      columnName: 'is_verified',
+      defaultsTo: false,
+      allowNull: true,
+    },
+    email_verify_token: {
+      type: 'string',
+      columnName: 'email_verify_token',
+      defaultsTo: ''
+    },
     created_at : {
       type: 'ref', 
       columnType: 'datetime',
@@ -137,6 +154,7 @@ module.exports = {
             })
           }); 
         }else{
+          delete values.email;
           next();
         }
           
