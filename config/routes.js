@@ -27,6 +27,10 @@ module.exports.routes = {
   'post /admin/coins/create': 'CoinsController.create',
   'put /admin/coins/update': 'CoinsController.update',
   'delete /admin/coins/delete': 'CoinsController.delete',
+  'get /admin/static/getStaticPage': 'StaticsController.getStatic',
+  'post /admin/static/create': 'StaticsController.create',
+  'put /admin/static/update': 'StaticsController.update',
+  'delete /admin/static/delete': 'StaticsController.delete',
   
   // 'put /admin/changePassword': "AdminController.changePassword",
 
