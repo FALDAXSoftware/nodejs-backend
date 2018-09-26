@@ -40,6 +40,7 @@ module.exports.routes = {
   'post /users/changePassword': "UsersController.changePassword",
   'get /users/getUserDetails' : "Users.getUserReferral",
   'get /users/referredUsers':'Users.getReferred',
+  'get /user/countries': 'Users.getCountriesData'
 
 
 };

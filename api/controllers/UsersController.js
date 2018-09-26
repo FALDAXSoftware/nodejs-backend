@@ -199,7 +199,18 @@ module.exports = {
                 "message": "User Status Updated"
             });
         }
-    }
+    },
+     getCountriesData : async function(req, res) {
+        fetch(' https://restcountries.eu/rest/v2/all', {method: "GET"})
+          .then(resData => resData.json())
+          .then(resData => {
+            res.json({status: 200, data: resData})
+          })
+          .catch(err => {
+            res.status(500).json({ message: err})
+          })
+      }
+    
 
 
 };
