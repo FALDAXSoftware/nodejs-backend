@@ -22,7 +22,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     // All done.
     // Verifies token on a request
-    const validToken = await  jwt.verify(
+    const validToken = await jwt.verify(
       inputs.token, // The token to be verified
       tokenSecret // Same token we used to sign
     );

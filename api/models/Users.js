@@ -89,6 +89,38 @@ module.exports = {
       type: 'string',
       columnName: 'referral_code',
       allowNull: true
+    },
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: false,
+      allowNull: true,
+    },
+    is_verified: {
+      type: 'boolean',
+      columnName: 'is_verified',
+      defaultsTo: false,
+      allowNull: true,
+    },
+    email_verify_token: {
+      type: 'string',
+      columnName: 'email_verify_token',
+      defaultsTo: ''
+    },
+    created_at : {
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'created_at'
+    },
+    updated_at : {
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'updated_at'
+    },
+    deleted_at: {
+      type: 'ref', 
+      columnType: 'datetime',
+      columnName: 'deleted_at'
     }
   },
   beforeCreate: (values, next) => {
@@ -122,6 +154,7 @@ module.exports = {
             })
           }); 
         }else{
+          delete values.email;
           next();
         }
           

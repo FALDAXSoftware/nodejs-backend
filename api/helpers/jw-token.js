@@ -2,6 +2,7 @@
 var jwt = require('jsonwebtoken'),
 tokenSecret = "secretissecet";
 
+//currently not in use
 module.exports = {
 
   friendlyName: 'Jw token',

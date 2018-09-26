@@ -72,11 +72,11 @@ module.exports = {
     },
     update: async function(req, res){
         try {
-            const user_details = await Users.findOne({ email: req.body.email, id: req.body.id });
+            const user_details = await Users.findOne({ email: req.body.email, id: req.user.id });
             if (!user_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
-            var user =req.body;
+            var user = req.body;
             delete user.profile;
             req.file('profile').upload(async function(err, uploadedFiles) {
                 let filename = uploadedFiles[0].filename;
@@ -190,13 +190,18 @@ module.exports = {
         }
     },
     userActivate: async function(req,res){
-        let {user_id,activate}= req.body;
-        let usersData = await Users.update({id:user_id}).set({is_active:activate});
+        let {user_id, email, activate}= req.body;
+        let usersData = await Users.update({id:user_id}).set({email: email, is_active:activate}).fetch();
 
-        if(usersData){
+        if(usersData && typeof usersData==='object' && usersData.length>0){
             return res.json({
                 "status": "200",
                 "message": "User Status Updated"
+            });
+        } else {
+            return res.json({
+                "status": "200",
+                "message": "User(id) not found"
             });
         }
     },
