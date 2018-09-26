@@ -14,21 +14,32 @@ module.exports.routes = {
   '/': {
     view: 'pages/homepage'
   },
-  // Admin Routes
+  // CMS Routes
 
   //Admin Login
   'post /admin/login':"AdminController.login",
   'post /admin/create': "AdminController.create",
   'put /admin/update': "AdminController.update",
+  'post /admin/changePassword': "AdminController.changePassword",
+  'get /admin/getUsers': 'Users.getUserPaginate',
+  'post /admin/userActivate': 'Users.userActivate',
+  'get /admin/getCoins': 'CoinsController.getCoins',
+  'post /admin/coins/create': 'CoinsController.create',
+  'put /admin/coins/update': 'CoinsController.update',
+  'delete /admin/coins/delete': 'CoinsController.delete',
+  
+  // 'put /admin/changePassword': "AdminController.changePassword",
 
 
 
-
-
-  // User Routes
+  // Web Routes
   'post /login':"AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
-  'post /dashboard':"DashboardController.get"
+  'post /dashboard':"DashboardController.get",
+  'post /users/changePassword': "UsersController.changePassword",
+  'get /users/getUserDetails' : "Users.getUserReferral",
+  'get /users/referredUsers':'Users.getReferred',
+
 
 };

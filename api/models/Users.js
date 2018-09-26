@@ -80,14 +80,14 @@ module.exports = {
       columnName: 'zip',
       allowNull: true
     },
-    reffered_id: {
+    referred_id: {
       type: 'string',
-      columnName: 'reffered_id',
+      columnName: 'referred_id',
       allowNull: true
     },
-    refferal_code: {
+    referral_code: {
       type: 'string',
-      columnName: 'refferal_code',
+      columnName: 'referral_code',
       allowNull: true
     },
     created_at : {
@@ -120,6 +120,28 @@ module.exports = {
         });     
       } else{
         next({ error: 'Email address or Phone number already exist' });
+      }
+    });
+  },
+  beforeUpdate: (values, next) => {
+    Users.findOne({ 'email': values.email })
+    .exec(async function (err, found){
+      if(found){
+        if(values.password){
+          bcrypt.genSalt(10, function (err, salt) {
+            if(err) return next(err);
+            bcrypt.hash(values.password, salt, function (err, hash) {
+              if(err) return next(err);
+              values.password = hash;   
+              next();
+            })
+          }); 
+        }else{
+          next();
+        }
+          
+      } else{
+        next({ error: "Email address doesn't exist" });
       }
     });
   },

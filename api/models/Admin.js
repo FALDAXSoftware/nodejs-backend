@@ -4,6 +4,7 @@
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
+var bcrypt = require('bcrypt'); 
 
 module.exports = {
   tableName: 'admin',
@@ -22,18 +23,17 @@ module.exports = {
     name: {
       type: 'string',
       columnName: 'name',
+      allowNull: true
     },
-    // role_id:{
-    //   type: 'number',
-    //   columnName: 'role_id',
-    // },
     updated_at : {
       type: 'string',
       columnName: 'updated_at',
+      allowNull: true
     },
     created_at: {
       type: 'string',
       columnName: 'created_at',
+      allowNull: true
     }
   },
   beforeCreate: (values, next) => {
@@ -50,6 +50,27 @@ module.exports = {
         });     
       } else{
         next({ error: 'Email address already exist' });
+      }
+    });
+  },
+  beforeUpdate: (values, next) => {
+    Admin.findOne({ 'email': values.email })
+    .exec(async function (err, found){
+      if(found){
+        if(values.password){
+          bcrypt.genSalt(10, function (err, salt) {
+            if(err) return next(err);
+            bcrypt.hash(values.password, salt, function (err, hash) {
+              if(err) return next(err);
+              values.password = hash;   
+              next();
+            })
+          }); 
+        }else{
+          next();
+        }
+      } else{
+        next({ error: "Email address doesn't exist" });
       }
     });
   },
