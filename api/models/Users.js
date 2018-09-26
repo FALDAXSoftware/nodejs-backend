@@ -108,6 +108,28 @@ module.exports = {
       }
     });
   },
+  beforeUpdate: (values, next) => {
+    Users.findOne({ 'email': values.email })
+    .exec(async function (err, found){
+      if(found){
+        if(values.password){
+          bcrypt.genSalt(10, function (err, salt) {
+            if(err) return next(err);
+            bcrypt.hash(values.password, salt, function (err, hash) {
+              if(err) return next(err);
+              values.password = hash;   
+              next();
+            })
+          }); 
+        }else{
+          next();
+        }
+          
+      } else{
+        next({ error: "Email address doesn't exist" });
+      }
+    });
+  },
   comparePassword : function (password, user, cb) {
     bcrypt.compare(password, user.password, function (err, match) {
       if(err) cb(err);

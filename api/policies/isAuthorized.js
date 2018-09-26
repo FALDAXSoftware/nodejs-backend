@@ -30,6 +30,7 @@ module.exports = async  function (req, res, next) {
    
     var verifyData = await sails.helpers.jwtVerify(token);
     if(verifyData){
+        req.user=verifyData;
         next();
     }
 };

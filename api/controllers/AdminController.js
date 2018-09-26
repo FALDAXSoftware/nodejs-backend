@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var bcrypt = require('bcrypt');
 module.exports = {
     login : async function (req ,res) {
         try{
@@ -90,8 +90,52 @@ module.exports = {
                 return;
             }
         }catch(error){
-           
-            res.status(500).json({
+            res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
+            });
+            return;
+        }
+    },
+    changePassword: async function(req, res) {
+        try {
+            if(!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password){
+                return res.status(401).json({err: 'Please provide email, current password, new password, confirm password'});
+            }
+
+            if(req.body.new_password !== req.body.confirm_password) {
+                return res.status(401).json({err: 'New and confirm password should match'});
+            }
+
+            if(req.body.current_password === req.body.new_password) {
+                return res.status(401).json({err: 'Current and new password should not be match'});
+            }
+            
+            const user_details = await Admin.findOne({ email: req.body.email });
+            if (!user_details) {
+                return res.status(401).json({err: 'Email address not found'});
+            }
+
+            let compareCurrent = await bcrypt.compare( req.body.current_password,user_details.password);
+            if(!compareCurrent){
+                return res.status(401).json({err: "Current password mismatch"});
+            }
+            
+            var adminUpdates = await Admin.update({ email: req.body.email }).set({ email: req.body.email, password: req.body.new_password }).fetch();
+    
+            if(adminUpdates) {
+                return res.json({
+                    "status": "200",
+                    "message": "Password changed successfully",
+                    "data": adminUpdates
+                });
+            } else {
+                return res.status(401).json({err: 'Something went wrong! Could not able to update the password'});
+            }
+        } catch(error) {
+            console.log(error);
+            res.json({
                 "status": "500",
                 "message": "error",
                 "errors": error
@@ -105,11 +149,9 @@ module.exports = {
             if (!user_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
-            var user =req.body;
-            delete user.profile;
-            var updatedUsers = await Admin.update({ email: req.body.email }).set(user).fetch();
-            delete updatedUsers.password
-            sails.log(updatedUsers);
+            var updatedAdmin = await Admin.update({email: req.body.email }).set(user).fetch();
+            delete updatedAdmin.password
+            sails.log(updatedAdmin);
 
             return res.json({
                 "status": "200",
