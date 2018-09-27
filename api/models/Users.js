@@ -71,9 +71,9 @@ module.exports = {
       allowNull: true
     },
     dob: {
-      type: 'ref', 
-      columnType: 'datetime',
-      columnName: 'dob'
+      type: 'string', 
+      columnName: 'dob',
+      allowNull: true
     },
     zip: {
       type: 'number',
@@ -90,6 +90,16 @@ module.exports = {
       columnName: 'referral_code',
       allowNull: true
     },
+    email_verify_token:{
+      type: 'string',
+      columnName: 'email_verify_token',
+      allowNull: true
+    },
+    forgot_verify_token:{
+      type: 'string',
+      columnName: 'forgot_verify_token',
+      allowNull: true
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
@@ -101,11 +111,6 @@ module.exports = {
       columnName: 'is_verified',
       defaultsTo: false,
       allowNull: true,
-    },
-    email_verify_token: {
-      type: 'string',
-      columnName: 'email_verify_token',
-      defaultsTo: ''
     },
     created_at : {
       type: 'ref', 
@@ -144,6 +149,7 @@ module.exports = {
     Users.findOne({ 'email': values.email })
     .exec(async function (err, found){
       if(found){
+        // console.log(found);
         if(values.password){
           bcrypt.genSalt(10, function (err, salt) {
             if(err) return next(err);
@@ -154,7 +160,7 @@ module.exports = {
             })
           }); 
         }else{
-          delete values.email;
+          // delete values.email;
           next();
         }
           

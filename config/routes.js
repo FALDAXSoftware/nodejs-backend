@@ -18,10 +18,12 @@ module.exports.routes = {
 
   //Admin Login
   'post /admin/login':"AdminController.login",
+  'post /admin/forgotPassword':"AdminController.forgotPassword",
   'post /admin/create': "AdminController.create",
   'put /admin/update': "AdminController.update",
   'post /admin/changePassword': "AdminController.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
+  'get/admin/referredUsers':'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
   'get /admin/getCoins': 'CoinsController.getCoins',
   'post /admin/coins/create': 'CoinsController.create',

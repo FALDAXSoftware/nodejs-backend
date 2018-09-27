@@ -7,6 +7,7 @@
 var uuidv1 = require('uuid/v1');
 var UploadFiles = require('../services/UploadFiles');
 var bcrypt = require('bcrypt');
+var fetch = require('node-fetch');
 
 module.exports = {
 
@@ -72,32 +73,51 @@ module.exports = {
     },
     update: async function(req, res){
         try {
-            const user_details = await Users.findOne({ email: req.body.email, id: req.user.id });
+            const user_details = await Users.findOne({  id: req.user.id });
             if (!user_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
             var user = req.body;
             delete user.profile;
             req.file('profile').upload(async function(err, uploadedFiles) {
-                let filename = uploadedFiles[0].filename;
-                var name = filename.substring(filename.indexOf("."));
-                let timestamp = new Date()
-                    .getTime()
-                    .toString();
-                let resourceImageName = timestamp;
-                var uploadFileName = timestamp+name;
-                var uploadProfile =await  UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);                
-                user.profile_pic = 'faldax/profile/' + uploadFileName
-                var updatedUsers = await Users.update({ id : req.body.id, email: req.body.email }).set(user).fetch();
-                delete updatedUsers.password
-                sails.log(updatedUsers);
+                try{
+                if(uploadedFiles.length>0){                
+                    let filename = uploadedFiles[0].filename;
+                    var name = filename.substring(filename.indexOf("."));
+                    let timestamp = new Date()
+                        .getTime()
+                        .toString();
+                    let resourceImageName = timestamp;
+                    var uploadFileName = timestamp+name;
+                    var uploadProfile =await  UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);                
+                    if(uploadProfile){
+                        user.profile_pic = 'faldax/profile/' + uploadFileName;
+                        var updatedUsers = await Users.update({ email :req.body.email }).set(user).fetch();
+                        delete updatedUsers.password
+                        // sails.log(updatedUsers);
+                        return res.json({
+                            "status": "200",
+                            "message": "User details updated successfully"
+                        });
+                    }
+                    
+                    
+                }else{
+                    console.log(req.body)
+                    var updatedUsers = await Users.update({ email :req.body.email}).set(user);                                        
+                        return res.json({
+                            "status": "200",
+                            "message": "User details updated successfully"
+                        });
+                    
+                }
+            }catch(e){
+                throw e;
+            }
             
             });
             
-            return res.json({
-                "status": "200",
-                "message": "User details updated successfully"
-            });
+            
                       
         } catch(error) {
             res.json({
@@ -178,14 +198,16 @@ module.exports = {
 
 
     getUserPaginate: async function(req,res){
-        let {page,limit}= req.allParams();
-        let usersData = await Users.find().paginate({page, limit});
-
+        let {page,limit,data}= req.allParams();
+        let usersData = await Users.find().where({or:[{
+            name: { startsWith: data }
+          }]}).paginate({page, limit});
+        let userCount = await Users.count();
         if(usersData){
             return res.json({
                 "status": "200",
                 "message": "Users list",
-                "data": usersData
+                "data": usersData,userCount
             });
         }
     },
@@ -214,7 +236,19 @@ module.exports = {
           .catch(err => {
             res.status(500).json({ message: err})
           })
-      }
+      },
+      getUserReferredAdmin: async function(req,res){
+        let {id} = req.allParams();
+        let usersData = await Users.find({referred_id:id});
+
+        if(usersData){
+            return res.json({
+                "status": "200",
+                "message": "Users Data",
+                "data": usersData
+            });
+        }
+    },
     
 
 

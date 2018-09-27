@@ -6,6 +6,18 @@
  */
 
 module.exports = {
+
+//---------------------------Web Api------------------------------
+
+
+
+
+
+
+
+
+
+    //-------------------------------CMS Api--------------------------
     getStatic: async function(req, res) {
       let {page,limit}= req.allParams();
       let staticData = await Statics.find().paginate({page, limit});
@@ -103,6 +115,7 @@ module.exports = {
               "message": "Coin deleted successfully"
           });
       }
-    },
+    } 
+    
   
   };

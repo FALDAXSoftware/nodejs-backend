@@ -6,15 +6,27 @@
  */
 
 module.exports = {
+    //---------------------------Web Api------------------------------
+
+
+
+
+
+
+
+
+
+    //-------------------------------CMS Api--------------------------
   getCoins: async function(req, res) {
     let {page,limit}= req.allParams();
     let coinsData = await Coins.find().paginate({page, limit});
+    let CoinsCount = await Coins.count();
 
     if(coinsData){
         return res.json({
             "status": "200",
             "message": "Coin list",
-            "data": coinsData
+            "data": coinsData,CoinsCount
         });
     }
   },

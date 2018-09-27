@@ -145,12 +145,48 @@ module.exports = {
     },
     update: async function(req, res){
         try {
-            const user_details = await Admin.findOne({ email: req.body.email, id: req.body.id });
-            if (!user_details) {
+            const admin_details = await Admin.findOne({ email: req.body.email, id: req.body.id });
+            if (!admin_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
             var updatedAdmin = await Admin.update({email: req.body.email }).set(user).fetch();
             delete updatedAdmin.password
+            sails.log(updatedAdmin);
+
+            return res.json({
+                "status": "200",
+                "message": "User details updated successfully"
+            });
+                      
+        } catch(error) {
+            res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
+            });
+            return;
+        }
+    },
+    forgotPassword: async function(req, res){
+        try {
+            const admin_details = await Admin.findOne({ email: req.body.email });
+            if (!admin_details) {
+                return res.status(401).json({err: 'invalid email'});
+            }
+            sails.hooks.email.send(
+                "forgotPassword",
+                {
+                  recipientName: admin_details.name,
+                  senderName: "Faldax"
+                },
+                {
+                  to: admin_details.email,
+                  subject: "Forgot Password"
+                },
+                function(err) {console.log(err || "It worked!");}
+              )
+            // var updatedAdmin = await Admin.update({email: req.body.email }).set(user).fetch();
+            // delete updatedAdmin.password
             sails.log(updatedAdmin);
 
             return res.json({

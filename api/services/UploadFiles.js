@@ -29,7 +29,7 @@ function UploadFiles() {
         });
        
         stdout.on('end', function (data) {
-          // console.log("buf",buf);
+           console.log("buf",buf);
           var profile = {
             Bucket: 'varshalteamprivatebucket',
             Key: name + '/profile/' + uploadFileName,
