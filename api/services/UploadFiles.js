@@ -1,5 +1,5 @@
-// var gm = require('gm').subClass({imageMagick: true}); //Server
-var gm = require('gm'); //Local
+var gm = require('gm').subClass({imageMagick: true}); //Server
+// var gm = require('gm'); //Local
 var request = require('request');
 var fs = require('fs');
 var async = require('async');

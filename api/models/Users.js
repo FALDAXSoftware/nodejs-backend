@@ -149,7 +149,7 @@ module.exports = {
     Users.findOne({ 'email': values.email })
     .exec(async function (err, found){
       if(found){
-        // console.log(found);
+         console.log(found);
         if(values.password){
           bcrypt.genSalt(10, function (err, salt) {
             if(err) return next(err);

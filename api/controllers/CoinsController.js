@@ -19,7 +19,10 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
   getCoins: async function(req, res) {
     let {page,limit}= req.allParams();
-    let coinsData = await Coins.find().paginate({page, limit});
+    let coinsData = await Coins.find().where({or:[{
+        coin_name: { startsWith: data },
+        coin_code: { startsWith: data }
+      }]}).paginate({page, limit});
     let CoinsCount = await Coins.count();
 
     if(coinsData){

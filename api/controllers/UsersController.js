@@ -92,6 +92,8 @@ module.exports = {
                     var uploadProfile =await  UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);                
                     if(uploadProfile){
                         user.profile_pic = 'faldax/profile/' + uploadFileName;
+                    console.log(req.body)
+
                         var updatedUsers = await Users.update({ email :req.body.email }).set(user).fetch();
                         delete updatedUsers.password
                         // sails.log(updatedUsers);
@@ -103,7 +105,6 @@ module.exports = {
                     
                     
                 }else{
-                    console.log(req.body)
                     var updatedUsers = await Users.update({ email :req.body.email}).set(user);                                        
                         return res.json({
                             "status": "200",
@@ -199,9 +200,11 @@ module.exports = {
 
     getUserPaginate: async function(req,res){
         let {page,limit,data}= req.allParams();
+        console.log("sds",data)
         let usersData = await Users.find().where({or:[{
-            name: { startsWith: data }
-          }]}).paginate({page, limit});
+            first_name: { startsWith: data },
+            last_name: { startsWith: data }
+          },{email:{ startsWith: data }}]}).paginate({page, limit});
         let userCount = await Users.count();
         if(usersData){
             return res.json({
