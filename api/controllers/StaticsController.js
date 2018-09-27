@@ -20,7 +20,7 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getStatic: async function(req, res) {
       let {page,limit}= req.allParams();
-      let staticData = await Statics.find().paginate({page, limit});
+      let staticData = await Statics.find({is_active:true}).paginate({page, limit});
   
       if(staticData){
           return res.json({
@@ -35,6 +35,7 @@ module.exports = {
           if(req.body.title && req.body.name && req.body.content){
               var static_details = await Statics.create({ 
                   name : req.body.name,
+                  slug:req.body.name.split(' ').join('_'),
                   content: req.body.content,
                   title: req.body.title,
                   created_at: new Date()
@@ -63,6 +64,7 @@ module.exports = {
               return;
           }
       }catch(error){
+          console.log("err",error)
           res.status(500).json({
               "status": "500",
               "message": "error",
@@ -73,11 +75,13 @@ module.exports = {
     },
       update: async function(req, res){
           try {
-              const static_details = await Statics.findOne({ id: req.body.static_id });
+              const static_details = await Statics.findOne({ id: req.body.id });
               if (!static_details) {
                   return res.status(401).json({err: 'invalid Static Id'});
               }
-              var updateStatic = await Statics.update({ id : req.body.static_id }).set(req.body).fetch();
+              var staticData={...req.body};
+              delete staticData.id
+              var updateStatic = await Statics.update({ id : req.body.id }).set(staticData).fetch();
               if(!updateStatic) {
                   return res.json({
                       "status": "200",
@@ -87,7 +91,7 @@ module.exports = {
               
               return res.json({
                   "status": "200",
-                  "message": "Coin details updated successfully"
+                  "message": "Static page  details updated successfully"
               });
                       
           } catch(error) {
@@ -104,7 +108,7 @@ module.exports = {
       if(!id) {
           res.json({
               "status": 500,
-              "message": "Coin id is not sent"
+              "message": "Static page id is not sent"
           });
           return;
       }
@@ -112,7 +116,7 @@ module.exports = {
       if(staticData){
           return res.status(200).json({
               "status": 200,
-              "message": "Coin deleted successfully"
+              "message": "Static page  deleted successfully"
           });
       }
     } 

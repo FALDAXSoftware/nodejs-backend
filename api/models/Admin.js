@@ -25,6 +25,11 @@ module.exports = {
       columnName: 'name',
       allowNull: true
     },
+    reset_token: {
+      type: 'string',
+      columnName: 'reset_token',
+      allowNull: true
+    },
     updated_at : {
       type: 'string',
       columnName: 'updated_at',
@@ -60,8 +65,13 @@ module.exports = {
       });
   },
   beforeUpdate: (values, next) => {
+    
     Admin.findOne({ 'email': values.email })
     .exec(async function (err, found){
+      if(err){
+        console.log("SDf",err)
+        next(err);
+      }
       if(found){
         if(values.password){
           bcrypt.genSalt(10, function (err, salt) {

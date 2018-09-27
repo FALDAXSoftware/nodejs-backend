@@ -25,7 +25,8 @@ module.exports.policies = {
   'AdminController': {
     'create': true,
     "login":true,
-    "forgotPassword":true // We dont need authorization here, allowing public access,
+    "forgotPassword":true,
+    "resetPassword":true // We dont need authorization here, allowing public access,
   },
 
   'AuthController': {

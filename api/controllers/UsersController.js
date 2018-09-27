@@ -8,6 +8,7 @@ var uuidv1 = require('uuid/v1');
 var UploadFiles = require('../services/UploadFiles');
 var bcrypt = require('bcrypt');
 var fetch = require('node-fetch');
+var randomize = require('randomatic');
 
 module.exports = {
 
@@ -28,7 +29,7 @@ module.exports = {
                 referred_id= referredUser.id;
                }
             }
-            
+            let email_verify_token = randomize('Aa0', 10);
             if(req.body.email && req.body.password && req.body.phone_number){
                 var user_detail = await Users.create({ 
                     email : req.body.email,
@@ -36,15 +37,36 @@ module.exports = {
                     phone_number: req.body.phone_number,
                     referral_code: uuidv1(),
                     created_at: new Date(),
-                    referred_id: referred_id
+                    referred_id: referred_id,
+                    email_verify_token:email_verify_token
                 }).fetch();
                 if(user_detail){
+                    sails.hooks.email.send(
+                        "signup",
+                        {
+                          recipientName: user_detail.email,
+                          token:'http://localhost:1337/login?token='+email_verify_token,
+                          senderName: "Faldax"
+                        },
+                        {
+                          to: user_detail.email,
+                          subject: "Signup Verification"
+                        },
+                        function(err) {console.log(err || "It worked!");
+                            if(!err){
+                                return res.json({
+                                    "status": "200",
+                                    "message": "Verification link sent to email successfully"
+                                });
+                            }
+                        }
+                      )
                     //Send verification email in before create
-                    res.json({
-                        "status": 200,
-                        "message": "Sign up successfully."
-                    });
-                    return;
+                    // res.json({
+                    //     "status": 200,
+                    //     "message": "Sign up successfully."
+                    // });
+                    // return;
                 }else{
                     res.json({
                         "status": 400,
@@ -73,13 +95,14 @@ module.exports = {
     },
     update: async function(req, res){
         try {
+
             const user_details = await Users.findOne({  id: req.user.id });
             if (!user_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
             var user = req.body;
             delete user.profile;
-            req.file('profile').upload(async function(err, uploadedFiles) {
+            req.file('profile_pic').upload(async function(err, uploadedFiles) {
                 try{
                 if(uploadedFiles.length>0){                
                     let filename = uploadedFiles[0].filename;
@@ -92,7 +115,6 @@ module.exports = {
                     var uploadProfile =await  UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);                
                     if(uploadProfile){
                         user.profile_pic = 'faldax/profile/' + uploadFileName;
-                    console.log(req.body)
 
                         var updatedUsers = await Users.update({ email :req.body.email }).set(user).fetch();
                         delete updatedUsers.password
@@ -200,19 +222,37 @@ module.exports = {
 
     getUserPaginate: async function(req,res){
         let {page,limit,data}= req.allParams();
-        console.log("sds",data)
-        let usersData = await Users.find().where({or:[{
-            first_name: { startsWith: data },
-            last_name: { startsWith: data }
-          },{email:{ startsWith: data }}]}).paginate({page, limit});
-        let userCount = await Users.count();
-        if(usersData){
-            return res.json({
-                "status": "200",
-                "message": "Users list",
-                "data": usersData,userCount
-            });
+        if(data){
+            console.log("sdfs",data)
+            let usersData = await Users.find().where({or:[{
+                first_name: { startsWith: data },
+                last_name: { startsWith: data }
+              }]}).paginate({page, limit});
+            let userCount = await Users.count().where({or:[{
+                first_name: { startsWith: data },
+                last_name: { startsWith: data }
+              }]});
+            if(usersData){
+                return res.json({
+                    "status": "200",
+                    "message": "Users list",
+                    "data": usersData,userCount
+                });
+            }
+            
+        }else{
+            let usersData = await Users.find().paginate({page, limit});
+            let userCount = await Users.count();
+            if(usersData){
+                return res.json({
+                    "status": "200",
+                    "message": "Users list",
+                    "data": usersData,userCount
+                });
+            }
         }
+        
+       
     },
     userActivate: async function(req,res){
         let {user_id, email, activate}= req.body;

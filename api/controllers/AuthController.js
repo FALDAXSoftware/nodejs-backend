@@ -15,6 +15,8 @@ module.exports = {
           phone_number : req.body.phone_number
         }
         var user_detail = await Users.findOne({ email: query.email, phone_number: query.phone_number });
+        
+        
         if(user_detail){
             Users.comparePassword(query.password, user_detail, async function (err, valid) {
                 if (err) {
@@ -24,6 +26,9 @@ module.exports = {
                 if (!valid) {
                   return res.json(401, {err: 'invalid email or password'});
                 } else {
+                  if(req.body.email_verify_token && req.body.email_verify_token === user_detailemail_verify_token){
+                    Users.update({ email: query.email, phone_number: query.phone_number }).set({is_verified:true});
+                  }
                   delete user_detail.password;
                   var token = await sails.helpers.jwtIssue(user_detail.id);
                   res.json({

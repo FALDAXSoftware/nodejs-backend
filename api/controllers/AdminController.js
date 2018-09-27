@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var randomize = require('randomatic');
 var bcrypt = require('bcrypt');
 module.exports = {
     login : async function (req ,res) {
@@ -63,6 +64,7 @@ module.exports = {
                 var user_detail = await Admin.create({ 
                     email : req.body.email,
                     password: req.body.password
+
                 }).fetch();
                 var token = await sails.helpers.jwtIssue(user_detail.id);
                 if(user_detail){
@@ -149,7 +151,7 @@ module.exports = {
             if (!admin_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
-            var updatedAdmin = await Admin.update({email: req.body.email }).set(user).fetch();
+            var updatedAdmin = await Admin.update({email: req.body.email }).set({...req.body}).fetch();
             delete updatedAdmin.password
             sails.log(updatedAdmin);
 
@@ -167,34 +169,71 @@ module.exports = {
             return;
         }
     },
+
+
+    resetPassword : async function(req,res){
+        try{
+            var reset_token = req.body.reset_token;
+
+            let admin_details = await Admin.findOne({reset_token});
+            if(!admin_details){
+                throw "Email address doesnot exist."
+            }
+            let updateAdmin =await Admin.update({email:admin_details.email}).set({email:admin_details.email,password:req.body.password,reset_token:null}).fetch();
+            if(updateAdmin){
+                return res.json({
+                    "status": "200",
+                    "message": "Password updated Successfully"
+                });
+            }else{
+                throw "Update password Error"
+            }
+        }catch(e){
+            return  res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
+            });
+            return;
+        }
+    },
     forgotPassword: async function(req, res){
         try {
             const admin_details = await Admin.findOne({ email: req.body.email });
             if (!admin_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
+            let reset_token = randomize('Aa0', 10);
+            let new_admin={
+                email: req.body.email,
+                reset_token:reset_token
+            }
+            var updatedAdmin = await Admin.update({ email: req.body.email }).set(new_admin).fetch();
+           
             sails.hooks.email.send(
                 "forgotPassword",
                 {
                   recipientName: admin_details.name,
+                  token:'http://localhost:1337/resetPassword?token='+reset_token,
                   senderName: "Faldax"
                 },
                 {
                   to: admin_details.email,
                   subject: "Forgot Password"
                 },
-                function(err) {console.log(err || "It worked!");}
+                function(err) {console.log(err || "It worked!");
+                    if(!err){
+                        return res.json({
+                            "status": "200",
+                            "message": "Reset link sent to email successfully"
+                        });
+                    }
+                }
               )
-            // var updatedAdmin = await Admin.update({email: req.body.email }).set(user).fetch();
-            // delete updatedAdmin.password
             sails.log(updatedAdmin);
-
-            return res.json({
-                "status": "200",
-                "message": "User details updated successfully"
-            });
                       
         } catch(error) {
+            //  console.log(error)
             res.json({
                 "status": "500",
                 "message": "error",

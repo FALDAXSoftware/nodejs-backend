@@ -18,20 +18,37 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
   getCoins: async function(req, res) {
-    let {page,limit}= req.allParams();
-    let coinsData = await Coins.find().where({or:[{
-        coin_name: { startsWith: data },
-        coin_code: { startsWith: data }
-      }]}).paginate({page, limit});
-    let CoinsCount = await Coins.count();
-
-    if(coinsData){
-        return res.json({
-            "status": "200",
-            "message": "Coin list",
-            "data": coinsData,CoinsCount
-        });
+    let {page,limit,data}= req.allParams();
+    if(data){
+        let coinsData = await Coins.find({is_active:true}).where({or:[{
+            coin_name: { startsWith: data },
+            coin_code: { startsWith: data }
+          }]}).paginate({page, limit});
+        let CoinsCount = await Coins.count({is_active:true}).where({or:[{
+            coin_name: { startsWith: data },
+            coin_code: { startsWith: data }
+          }]});
+          if(coinsData){
+            return res.json({
+                "status": "200",
+                "message": "Coin list",
+                "data": coinsData,CoinsCount
+            });
+        }
+    }else{
+        
+            let coinsData = await Coins.find({is_active:true}).paginate({page, limit});
+            let CoinsCount = await Coins.count({is_active:true});
+            if(coinsData){
+            return res.json({
+                "status": "200",
+                "message": "Coin list",
+                "data": coinsData,CoinsCount
+            });
+        }
     }
+    
+    
   },
   create: async function(req, res) {
     try{        

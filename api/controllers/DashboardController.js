@@ -6,8 +6,22 @@
  */
 
 module.exports = {
-    get: function (req, res) {
-      return res.status(200).json({status: 200});
+    get: async function (req, res) {
+      try{
+        let userCount =await  Users.count({is_active:true});
+        let coinCount = await Coins.count({is_active:true});
+        return res.json({
+            "status": "200",
+            "message": "Dashboard Data",
+             coinCount,userCount
+        });
+      }catch(e){
+        console.log(e);
+        return res.status(500).json({
+          "message": "Error",
+          "error":e
+      });
+      }
     }
   };
 

@@ -1,5 +1,5 @@
 /**
- * Statics.js
+ * EmailTemplates.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -52,7 +52,7 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
 
-    Statics.findOne({'slug': values.slug})
+    EmailTemplates.findOne({'slug': values.slug})
     .exec(function (err, found){
       console.log(found);
         if(!found){

@@ -16,25 +16,35 @@ module.exports.routes = {
   },
   // CMS Routes
 
-  //Admin Login
-  'post /admin/login':"AdminController.login",
-  'post /admin/forgotPassword':"AdminController.forgotPassword",
-  'post /admin/create': "AdminController.create",
-  'put /admin/update': "AdminController.update",
-  'post /admin/changePassword': "AdminController.changePassword",
+  //Admin 
+  'post /admin/login':"Admin.login",
+  'post /admin/forgotPassword':"Admin.forgotPassword",
+  'post /admin/create': "Admin.create",
+  'put /admin/update': "Admin.update",
+  'put /admin/resetPassword':"Admin.resetPassword",
+  //users 
+  'post /admin/changePassword': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
   'get/admin/referredUsers':'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
-  'get /admin/getCoins': 'CoinsController.getCoins',
-  'post /admin/coins/create': 'CoinsController.create',
-  'put /admin/coins/update': 'CoinsController.update',
-  'delete /admin/coins/delete': 'CoinsController.delete',
-  'get /admin/static/getStaticPage': 'StaticsController.getStatic',
-  'post /admin/static/create': 'StaticsController.create',
-  'put /admin/static/update': 'StaticsController.update',
-  'delete /admin/static/delete': 'StaticsController.delete',
+
+  //coins 
+  'get /admin/getCoins': 'Coins.getCoins',
+  'post /admin/coins/create': 'Coins.create',
+  'put /admin/coins/update': 'Coins.update',
+  'delete /admin/coins/delete': 'Coins.delete',
+
+
+  //static pages
+  'get /admin/static/getStaticPage': 'Statics.getStatic',
+  'post /admin/static/create': 'Statics.create',
+  'put /admin/static/update': 'Statics.update',
+  'delete /admin/static/delete': 'Statics.delete',
   
-  // 'put /admin/changePassword': "AdminController.changePassword",
+
+  //DashBoard
+  'get /admin/dashboard/getData': 'Dashboard.get',
+  // 'put /admin/changePassword': "Admin.changePassword",
 
 
 
