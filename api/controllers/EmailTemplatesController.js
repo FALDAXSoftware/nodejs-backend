@@ -21,7 +21,7 @@ module.exports = {
         getEmailTemplate: async function(req, res) {
           let {page,limit}= req.allParams();
           let emailTemplateData = await EmailTemplates.find({is_active:true}).paginate({page, limit});
-      
+            // console.log(emailTemplateData)
           if(emailTemplateData){
               return res.json({
                   "status": "200",
@@ -75,12 +75,12 @@ module.exports = {
         },
           update: async function(req, res){
               try {
-                  const email_template_details = await EmailTemplates.findOne({ id: req.body.static_id });
+                  const email_template_details = await EmailTemplates.findOne({ id: req.body.id });
                   if (!email_template_details) {
                       return res.status(401).json({err: 'invalid Static Id'});
                   }
-                  var updateStatic = await EmailTemplates.update({ id : req.body.static_id }).set(req.body).fetch();
-                  if(!updateStatic) {
+                  var updateEmailTemplate = await EmailTemplates.update({ id : req.body.id }).set(req.body).fetch();
+                  if(!updateEmailTemplate) {
                       return res.json({
                           "status": "200",
                           "message": "Something went wrong! could not able to update static page details"
@@ -117,7 +117,36 @@ module.exports = {
                   "message": "Email template deleted successfully"
               });
           }
-        } 
+        },
+
+        sendemail: async function(req, res) {
+            let {id}= req.allParams();
+            let email = await  EmailTemplates.findOne({id:id});
+            let users = await Users.find({where:{is_active:true}, select: ['email']});
+            let newUser=[];
+            users.map(data =>{
+                newUser.push(data.email);
+            })
+            sails.hooks.email.send(
+                "general-email",
+                {
+                  homelink:"http://192.168.0.85:3000",
+                  content:email.content,
+                },
+                {
+                  to: newUser,
+                  subject: email.title
+                },
+                function(err) {console.log(err || "It worked!");
+                    if(!err){
+                        return res.json({
+                            "status": "200",
+                            "message": "Verification link sent to email successfully"
+                        });
+                    }
+                }
+              )
+          } 
         
       
       };

@@ -25,7 +25,7 @@ module.exports.routes = {
   //users 
   'post /admin/changePassword': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
-  'get/admin/referredUsers':'Users.getUserReferredAdmin',
+  'get /admin/referredUsers':'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
 
   //coins 
@@ -40,11 +40,23 @@ module.exports.routes = {
   'post /admin/static/create': 'Statics.create',
   'put /admin/static/update': 'Statics.update',
   'delete /admin/static/delete': 'Statics.delete',
+  //email template
+
+  
+  'get /admin/email-template/getEmailTemplate': 'EmailTemplatesController.getEmailTemplate',
+  'post /admin/email-template/create': 'EmailTemplatesController.create',
+  'put /admin/email-template/update': 'EmailTemplatesController.update',
+  'delete /admin/email-template/delete': 'EmailTemplatesController.delete',
+  'post /admin/email-send':'EmailTemplatesController.sendemail',
   
 
   //DashBoard
   'get /admin/dashboard/getData': 'Dashboard.get',
   // 'put /admin/changePassword': "Admin.changePassword",
+
+  //countries
+  'get /admin/getCountriesData':'Countries.getCountries',
+  'put /admin/countryActivate': 'Countries.countryActivate',
 
 
 
@@ -52,11 +64,15 @@ module.exports.routes = {
   'post /login':"AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
-  'post /dashboard':"DashboardController.get",
+  'post /users/forgotPassword':"AuthController.forgotPassword",
+  'put /users/resetPassword':"AuthController.resetPassword",
   'post /users/changePassword': "UsersController.changePassword",
   'get /users/getUserDetails' : "Users.getUserReferral",
   'get /users/referredUsers':'Users.getReferred',
-  'get /user/countries': 'Users.getCountriesData'
+  'get /user/countries': 'Users.getCountriesData',
+  //dashboard
+  'post /dashboard':"DashboardController.get"
+  
 
 
 };

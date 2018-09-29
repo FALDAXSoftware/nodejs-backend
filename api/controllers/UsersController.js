@@ -44,8 +44,9 @@ module.exports = {
                     sails.hooks.email.send(
                         "signup",
                         {
-                          recipientName: user_detail.email,
-                          token:'http://localhost:1337/login?token='+email_verify_token,
+                          homelink:"http://192.168.0.85:3000",
+                          recipientName: user_detail.first_name,
+                          token:'http://192.168.0.85:3000/login?token='+email_verify_token,
                           senderName: "Faldax"
                         },
                         {
@@ -224,14 +225,16 @@ module.exports = {
         let {page,limit,data}= req.allParams();
         if(data){
             console.log("sdfs",data)
-            let usersData = await Users.find().where({or:[{
-                first_name: { startsWith: data },
-                last_name: { startsWith: data }
-              }]}).paginate({page, limit});
-            let userCount = await Users.count().where({or:[{
-                first_name: { startsWith: data },
-                last_name: { startsWith: data }
-              }]});
+            let usersData = await Users.find({or:[{
+                email: { contains: data }},
+                {first_name: { contains: data } },
+                {last_name: { contains: data } }
+              ]}).paginate(page,limit);
+            let userCount = await Users.count({or:[{
+                email: { contains: data }},
+                {first_name: { contains: data } },
+                {last_name: { contains: data } }
+              ]});
             if(usersData){
                 return res.json({
                     "status": "200",
@@ -255,8 +258,8 @@ module.exports = {
        
     },
     userActivate: async function(req,res){
-        let {user_id, email, activate}= req.body;
-        let usersData = await Users.update({id:user_id}).set({email: email, is_active:activate}).fetch();
+        let {user_id, email, is_active}= req.body;
+        let usersData = await Users.update({id:user_id}).set({email: email, is_active:is_active}).fetch();
 
         if(usersData && typeof usersData==='object' && usersData.length>0){
             return res.json({
@@ -282,13 +285,13 @@ module.exports = {
       },
       getUserReferredAdmin: async function(req,res){
         let {id} = req.allParams();
-        let usersData = await Users.find({referred_id:id});
-
+        let usersData = await Users.find({referred_id:id}).limit(10);
+        let usersDataCount = await Users.count({referred_id:id});
         if(usersData){
             return res.json({
                 "status": "200",
                 "message": "Users Data",
-                "data": usersData
+                "data": usersData,usersDataCount
             });
         }
     },

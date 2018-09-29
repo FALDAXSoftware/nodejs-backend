@@ -147,7 +147,7 @@ module.exports = {
     },
     update: async function(req, res){
         try {
-            const admin_details = await Admin.findOne({ email: req.body.email, id: req.body.id });
+            const admin_details = await Admin.findOne({ email: req.body.email });
             if (!admin_details) {
                 return res.status(401).json({err: 'invalid email'});
             }
@@ -157,7 +157,8 @@ module.exports = {
 
             return res.json({
                 "status": "200",
-                "message": "User details updated successfully"
+                "message": "User details updated successfully",
+                data:updatedAdmin
             });
                       
         } catch(error) {
@@ -177,7 +178,7 @@ module.exports = {
 
             let admin_details = await Admin.findOne({reset_token});
             if(!admin_details){
-                throw "Email address doesnot exist."
+                throw "Wrong Reset token doesnot exist."
             }
             let updateAdmin =await Admin.update({email:admin_details.email}).set({email:admin_details.email,password:req.body.password,reset_token:null}).fetch();
             if(updateAdmin){
@@ -192,9 +193,9 @@ module.exports = {
             return  res.json({
                 "status": "500",
                 "message": "error",
-                "errors": error
+                "errors": e
             });
-            return;
+            
         }
     },
     forgotPassword: async function(req, res){
@@ -214,7 +215,7 @@ module.exports = {
                 "forgotPassword",
                 {
                   recipientName: admin_details.name,
-                  token:'http://localhost:1337/resetPassword?token='+reset_token,
+                  token:'http://192.168.2.32:3000/reset-password/'+reset_token,
                   senderName: "Faldax"
                 },
                 {

@@ -20,13 +20,17 @@ module.exports.policies = {
   // '*': true,
   '*': ['isAuthorized'], // Everything resctricted here
   'UsersController': {
-    'create': true, // We dont need authorization here, allowing public access,
+    'create': true,
+   // We dont need authorization here, allowing public access,
   },
   'AdminController': {
     'create': true,
     "login":true,
     "forgotPassword":true,
     "resetPassword":true // We dont need authorization here, allowing public access,
+  },
+  'CountriesController':{
+    '*':true
   },
 
   'AuthController': {

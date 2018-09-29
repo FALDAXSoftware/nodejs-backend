@@ -20,14 +20,14 @@ module.exports = {
   getCoins: async function(req, res) {
     let {page,limit,data}= req.allParams();
     if(data){
-        let coinsData = await Coins.find({is_active:true}).where({or:[{
-            coin_name: { startsWith: data },
-            coin_code: { startsWith: data }
-          }]}).paginate({page, limit});
-        let CoinsCount = await Coins.count({is_active:true}).where({or:[{
-            coin_name: { startsWith: data },
-            coin_code: { startsWith: data }
-          }]});
+        let coinsData = await Coins.find({or:[{
+            coin_name: { contains: data }},
+            {coin_code: { contains: data } }
+          ]}).paginate(page,limit);
+        let CoinsCount = await Coins.count({or:[{
+            coin_name: { contains: data }},
+            {coin_code: { contains: data } }
+          ]});
           if(coinsData){
             return res.json({
                 "status": "200",
@@ -37,8 +37,8 @@ module.exports = {
         }
     }else{
         
-            let coinsData = await Coins.find({is_active:true}).paginate({page, limit});
-            let CoinsCount = await Coins.count({is_active:true});
+            let coinsData = await Coins.find().paginate({page, limit});
+            let CoinsCount = await Coins.count();
             if(coinsData){
             return res.json({
                 "status": "200",
@@ -97,6 +97,9 @@ module.exports = {
             const coin_details = await Coins.findOne({ id: req.body.coin_id });
             if (!coin_details) {
                 return res.status(401).json({err: 'invalid coin'});
+            }
+            var coinData={
+                id:req.body.coin_id,...req.body
             }
             var updatedCoin = await Coins.update({ id : req.body.coin_id }).set(req.body).fetch();
             if(!updatedCoin) {

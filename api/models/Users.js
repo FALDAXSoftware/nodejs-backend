@@ -81,7 +81,7 @@ module.exports = {
       allowNull: true
     },
     referred_id: {
-      type: 'string',
+      type: 'number',
       columnName: 'referred_id',
       allowNull: true
     },
@@ -95,9 +95,9 @@ module.exports = {
       columnName: 'email_verify_token',
       allowNull: true
     },
-    forgot_verify_token:{
+    reset_token:{
       type: 'string',
-      columnName: 'forgot_verify_token',
+      columnName: 'reset_token',
       allowNull: true
     },
     is_active: {
@@ -129,7 +129,7 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne({ or: [ {'email': values.email }, { 'phone_number': values.phone_number}]})
+    Users.findOne( {'email': values.email })
     .exec(function (err, found){
       if(!found){
         bcrypt.genSalt(10, function (err, salt) {
