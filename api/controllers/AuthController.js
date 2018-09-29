@@ -14,11 +14,12 @@ module.exports = {
           email : req.body.email,
           password : req.body.password
         }
-        if(req.body.email_verify_token && req.body.email_verify_token === user_detailemail_verify_token){
-           await  Users.update({ email: query.email}).set({is_verified:true});
+        if(req.body.email_verify_token && req.body.email_verify_token === req.body.email_verify_token){
+           await  Users.update({ email: query.email}).set({email: query.email,is_verified:true});
           }
         var user_detail = await Users.findOne({ email: query.email });
-          if(!user_detail.is_active){
+        console.log(user_detail);
+          if(!user_detail.is_verified){
             return res.json({
                 "status": "400",
                 "message": "not listed",
@@ -61,6 +62,8 @@ module.exports = {
         return;
       }
     }catch(error){
+        console.log("dsfsfsd",error)
+
       res.json({
           "status": "500",
           "message": "error",
