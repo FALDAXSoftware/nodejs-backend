@@ -44,9 +44,9 @@ module.exports = {
                     sails.hooks.email.send(
                         "signup",
                         {
-                          homelink:"http://192.168.0.85:3000",
+                          homelink:"http://18.191.87.133:8085",
                           recipientName: user_detail.first_name,
-                          token:'http://192.168.0.85:3000/login?token='+email_verify_token,
+                          token:'http://18.191.87.133:8085/login?token='+email_verify_token,
                           senderName: "Faldax"
                         },
                         {
