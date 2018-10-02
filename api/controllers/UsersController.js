@@ -34,9 +34,9 @@ module.exports = {
                 var user_detail = await Users.create({ 
                     email : req.body.email,
                     password: req.body.password,
-                    full_name:req.body.fullname,
-                    first_name:req.body.fullname.split(' ')[0],
-                    last_name:req.body.fullname.split(' ')[1],
+                    full_name:req.body.firstname +' '+req.body.lastname,
+                    first_name:req.body.firstname,
+                    last_name:req.body.firstname,
                     phone_number: req.body.phone_number,
                     referral_code: uuidv1(),
                     created_at: new Date(),
