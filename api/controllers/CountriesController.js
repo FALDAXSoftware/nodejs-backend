@@ -8,6 +8,8 @@ var fetch = require('node-fetch')
 module.exports = {
     getCountries: async function(req, res) {
         let {page,limit,data}= req.allParams();
+        console.log(page,limit);
+        
         console.log(data)
         if(data){
             let countryData = await Countries.find({or:[{
@@ -21,7 +23,7 @@ module.exports = {
             if(countryData){
                 return res.json({
                     "status": "200",
-                    "message": "Coin list",
+                    "message": "Country list",
                     "data": countryData,CountryCount:CountriesCount
             });
             }
@@ -32,7 +34,7 @@ module.exports = {
             if(countryData){
                 return res.json({
                     "status": "200",
-                    "message": "Coin list",
+                    "message": "Country list",
                     "data": countryData,CountryCount:CountriesCount
                 });
             }

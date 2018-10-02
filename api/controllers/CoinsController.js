@@ -37,7 +37,7 @@ module.exports = {
         }
     }else{
         
-            let coinsData = await Coins.find().paginate({page, limit});
+            let coinsData = await Coins.find().paginate(page, limit);
             let CoinsCount = await Coins.count();
             if(coinsData){
             return res.json({
