@@ -30,14 +30,13 @@ module.exports = {
                }
             }
             let email_verify_token = randomize('Aa0', 10);
-            if(req.body.email && req.body.password && req.body.phone_number){
+            if(req.body.email && req.body.password){
                 var user_detail = await Users.create({ 
                     email : req.body.email,
                     password: req.body.password,
                     full_name:req.body.firstname +' '+req.body.lastname,
                     first_name:req.body.firstname,
                     last_name:req.body.firstname,
-                    phone_number: req.body.phone_number,
                     referral_code: uuidv1(),
                     created_at: new Date(),
                     referred_id: referred_id,
