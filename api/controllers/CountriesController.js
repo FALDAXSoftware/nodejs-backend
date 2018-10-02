@@ -8,14 +8,15 @@ var fetch = require('node-fetch')
 module.exports = {
     getCountries: async function(req, res) {
         let {page,limit,data}= req.allParams();
-        console.log(page,limit);
-        
-        console.log(data)
+        // console.log(page,limit);
+        // console.log(data)
         if(data){
+            // console.log(page,limit);
+
             let countryData = await Countries.find({or:[{
                 name: { contains: data }},
                 {country_code: { contains: data } }
-              ]}).sort('id ASC').paginate(page,limit);
+              ]}).sort('id ASC').paginate(page,parseInt(limit));
             let CountriesCount = await Countries.count({or:[{
                 name: { contains: data }},
                 {country_code: { contains: data } }
@@ -29,7 +30,7 @@ module.exports = {
             }
         }else{
             let countryData = await Countries.find().sort('id ASC')
-            .paginate({page, limit});
+            .paginate(page, parseInt(limit));
             let CountriesCount = await Countries.count();
             if(countryData){
                 return res.json({

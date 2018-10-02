@@ -232,7 +232,7 @@ module.exports = {
                 email: { contains: data }},
                 {first_name: { contains: data } },
                 {last_name: { contains: data } }
-              ]}).paginate(page,limit);
+              ]}).paginate(page,parseInt(limit));
             let userCount = await Users.count({or:[{
                 email: { contains: data }},
                 {first_name: { contains: data } },
@@ -247,7 +247,7 @@ module.exports = {
             }
             
         }else{
-            let usersData = await Users.find().paginate({page, limit});
+            let usersData = await Users.find().paginate(page, parseInt(limit));
             let userCount = await Users.count();
             if(usersData){
                 return res.json({
@@ -287,8 +287,8 @@ module.exports = {
           })
       },
       getUserReferredAdmin: async function(req,res){
-        let {id} = req.allParams();
-        let usersData = await Users.find({referred_id:id}).limit(10);
+        let {page,limit,id} = req.allParams();
+        let usersData = await Users.find({referred_id:id}).paginate(page,parseInt(limit));
         let usersDataCount = await Users.count({referred_id:id});
         if(usersData){
             return res.json({

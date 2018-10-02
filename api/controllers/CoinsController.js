@@ -23,7 +23,7 @@ module.exports = {
         let coinsData = await Coins.find({or:[{
             coin_name: { contains: data }},
             {coin_code: { contains: data } }
-          ]}).paginate(page,limit);
+          ]}).paginate(page,parseInt(limit));
         let CoinsCount = await Coins.count({or:[{
             coin_name: { contains: data }},
             {coin_code: { contains: data } }
@@ -37,7 +37,7 @@ module.exports = {
         }
     }else{
         
-            let coinsData = await Coins.find().paginate(page, limit);
+            let coinsData = await Coins.find().paginate(page, parseInt(limit));
             let CoinsCount = await Coins.count();
             if(coinsData){
             return res.json({
