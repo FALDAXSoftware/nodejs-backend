@@ -14,7 +14,7 @@ module.exports.routes = {
   '/': {
     view: 'pages/homepage'
   },
-  // CMS Routes
+  // CMS Routes///////////////////////////////////////////
 
   //Admin 
   'post /admin/login':"Admin.login",
@@ -27,6 +27,7 @@ module.exports.routes = {
   'get /admin/getUsers': 'Users.getUserPaginate',
   'get /admin/referredUsers':'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
+  'post /admin/getUserloginHistory':'Users.getUserloginHistoryAdmin',
 
   //coins 
   'get /admin/getCoins': 'Coins.getCoins',
@@ -60,7 +61,7 @@ module.exports.routes = {
 
 
 
-  // Web Routes
+  // Web Routes///////////////////////////////////////////
   'post /login':"AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
@@ -70,6 +71,9 @@ module.exports.routes = {
   'get /users/getUserDetails' : "Users.getUserReferral",
   'get /users/referredUsers':'Users.getReferred',
   'get /user/countries': 'Users.getCountriesData',
+  'get /users/login-history':'Users.getLoginHistory',
+
+
   //dashboard
   'post /dashboard':"DashboardController.get"
   

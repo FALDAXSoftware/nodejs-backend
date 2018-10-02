@@ -20,7 +20,7 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getStatic: async function(req, res) {
       let {page,limit}= req.allParams();
-      let staticData = await Statics.find().paginate({page, limit});
+      let staticData = await Statics.find({is_active:true}).paginate({page, limit});
       let staticCount = await Statics.count();
       if(staticData){
           return res.json({

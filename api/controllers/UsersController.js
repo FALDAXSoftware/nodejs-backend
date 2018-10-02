@@ -36,7 +36,7 @@ module.exports = {
                     password: req.body.password,
                     full_name:req.body.firstname +' '+req.body.lastname,
                     first_name:req.body.firstname,
-                    last_name:req.body.firstname,
+                    last_name:req.body.lastname,
                     referral_code: uuidv1(),
                     created_at: new Date(),
                     referred_id: referred_id,
@@ -135,7 +135,6 @@ module.exports = {
                             "status": "200",
                             "message": "User details updated successfully"
                         });
-                    
                 }
             }catch(e){
                 throw e;
@@ -156,8 +155,8 @@ module.exports = {
     },
     changePassword: async function(req, res) {
         try {
-            if(!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password){
-                return res.status(401).json({err: 'Please provide email, current password, new password, confirm password'});
+            if(!req.body.current_password || !req.body.new_password || !req.body.confirm_password){
+                return res.status(401).json({err: 'Please provide current password, new password, confirm password'});
             }
             if(req.body.new_password !== req.body.confirm_password) {
                 return res.status(401).json({err: 'New and confirm password should match'});
@@ -166,22 +165,21 @@ module.exports = {
                 return res.status(401).json({err: 'Current and new password should not be match'});
             }
             
-            const user_details = await Users.findOne({ email: req.body.email });
+            const user_details = await Users.findOne({ id:req.user.id });
             if (!user_details) {
-                return res.status(401).json({err: 'Email address not found'});
+                return res.status(401).json({err: 'User not found'});
             }
             let compareCurrent = await bcrypt.compare( req.body.current_password,user_details.password);
             if(!compareCurrent){
                 return res.status(401).json({err: "Current password mismatch"});
             }
             
-            var updatedUsers = await Users.update({ email: req.body.email }).set({ email: req.body.email, password: req.body.new_password }).fetch();
+            var updatedUsers = await Users.update({ id:req.user.id}).set({ email:user_details.email, password: req.body.new_password }).fetch();
 
             if(updatedUsers) {
                 return res.json({
                     "status": "200",
                     "message": "Password changed successfully",
-                    "data": updatedUsers
                 });
             } else {
                 return res.status(401).json({err: 'Something went wrong! Could not able to update the password'});
@@ -231,7 +229,9 @@ module.exports = {
                 email: { contains: data }},
                 {first_name: { contains: data } },
                 {last_name: { contains: data } }
-              ]}).paginate(page,parseInt(limit));
+              ],where:{
+                  is_verified:true,
+              }}).sort("id ASC").paginate(page,parseInt(limit));
             let userCount = await Users.count({or:[{
                 email: { contains: data }},
                 {first_name: { contains: data } },
@@ -246,7 +246,9 @@ module.exports = {
             }
             
         }else{
-            let usersData = await Users.find().paginate(page, parseInt(limit));
+            let usersData = await Users.find({where:{
+                is_verified:true,
+            }}).sort("id ASC").paginate(page, parseInt(limit));
             let userCount = await Users.count();
             if(usersData){
                 return res.json({
@@ -261,6 +263,8 @@ module.exports = {
     },
     userActivate: async function(req,res){
         let {user_id, email, is_active}= req.body;
+        console.log(req.body);
+        
         let usersData = await Users.update({id:user_id}).set({email: email, is_active:is_active}).fetch();
 
         if(usersData && typeof usersData==='object' && usersData.length>0){
@@ -287,7 +291,8 @@ module.exports = {
       },
       getUserReferredAdmin: async function(req,res){
         let {page,limit,id} = req.allParams();
-        let usersData = await Users.find({referred_id:id}).paginate(page,parseInt(limit));
+
+        let usersData = await Users.find({referred_id:id});
         let usersDataCount = await Users.count({referred_id:id});
         if(usersData){
             return res.json({
@@ -298,7 +303,29 @@ module.exports = {
         }
     },
     
+    getLoginHistory:async function (req,res) {
+        let history = await LoginHistory.find({
+            user:req.user.id
+        }).populate('user');
+        return res.json({
+            "status": "200",
+            "message": "Users Login History",
+            "data": history,
+        });  
+    },
 
+
+    getUserloginHistoryAdmin:async function (req,res) {
+        let {user_id} = req.allParams();
+        let history = await LoginHistory.find({
+            user:user_id
+        }).sort("created_at DESC").limit(10);
+        return res.json({
+            "status": "200",
+            "message": "Users Login Data",
+            "data": history
+        });
+    }
 
 };
   

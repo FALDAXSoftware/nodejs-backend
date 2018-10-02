@@ -126,11 +126,16 @@ module.exports = {
       type: 'ref', 
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    history:{
+      collection:'loginhistory',
+      via:'user'
     }
   },
   beforeCreate: (values, next) => {
     Users.findOne( {'email': values.email })
     .exec(function (err, found){
+      values.created_at = new Date()
       if(!found){
         bcrypt.genSalt(10, function (err, salt) {
           if(err) return next(err);
@@ -148,6 +153,7 @@ module.exports = {
   beforeUpdate: (values, next) => {
     Users.findOne({ 'email': values.email })
     .exec(async function (err, found){
+      values.updated_at = new Date()
       if(found){
          console.log(found);
         if(values.password){

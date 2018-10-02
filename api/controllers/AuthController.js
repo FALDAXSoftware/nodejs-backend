@@ -38,6 +38,14 @@ module.exports = {
                 } else {
                   
                   delete user_detail.password;
+
+                //   console.log(req.ip);
+                    // Login History Save
+                  await LoginHistory.create({
+                      user:user_detail.id,
+                      ip:req.ip,
+                      created_at: new Date()
+                  });  
                   var token = await sails.helpers.jwtIssue(user_detail.id);
                   res.json({
                     user: user_detail,
