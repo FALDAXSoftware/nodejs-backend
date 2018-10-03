@@ -9,6 +9,7 @@ var UploadFiles = require('../services/UploadFiles');
 var bcrypt = require('bcrypt');
 var fetch = require('node-fetch');
 var randomize = require('randomatic');
+var speakeasy = require('speakeasy');
 
 module.exports = {
 
@@ -218,6 +219,33 @@ module.exports = {
         }
     },
 
+    // For Get Login History
+    getLoginHistory:async function (req,res) {
+        let history = await LoginHistory.find({
+            user:req.user.id
+        }).populate('user');
+        return res.json({
+            "status": "200",
+            "message": "Users Login History",
+            "data": history,
+        });  
+    },
+
+
+    setupTwoFactor:async function (req,res) {
+        let user_id = req.user.id;
+        let user = await User.findOne({
+                    id:user_id,
+                    is_active:true,
+                    is_verified:true,
+                }); 
+        if (!user) {
+            return res.status(401).json({
+                err:"User not found or it's not active"
+            });
+        }
+
+    },
     //------------------CMS APi------------------------------------------------//
 
 
@@ -303,17 +331,6 @@ module.exports = {
         }
     },
     
-    getLoginHistory:async function (req,res) {
-        let history = await LoginHistory.find({
-            user:req.user.id
-        }).populate('user');
-        return res.json({
-            "status": "200",
-            "message": "Users Login History",
-            "data": history,
-        });  
-    },
-
 
     getUserloginHistoryAdmin:async function (req,res) {
         let {user_id} = req.allParams();

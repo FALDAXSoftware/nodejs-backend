@@ -214,9 +214,10 @@ module.exports = {
             sails.hooks.email.send(
                 "forgotPassword",
                 {
-                  recipientName: admin_details.name,
-                  token:'http://192.168.2.32:3000/reset-password/'+reset_token,
-                  senderName: "Faldax"
+                    homelink:"http://18.191.87.133:8085",  
+                    recipientName: admin_details.name,
+                    token:'http://192.168.2.32:3000/reset-password/'+reset_token,
+                    senderName: "Faldax"
                 },
                 {
                   to: admin_details.email,
