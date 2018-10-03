@@ -112,6 +112,16 @@ module.exports = {
       defaultsTo: false,
       allowNull: true,
     },
+    is_twofactor:{
+      type:'boolean',
+      columnName:"is_twofactor",
+      defaultsTo: false,
+    },
+    twofactor_secret:{
+      type:"string",
+      columnName:"twofactor_secret",
+      allowNull: true,
+    },
     created_at : {
       type: 'ref', 
       columnType: 'datetime',
@@ -184,6 +194,13 @@ module.exports = {
         cb(err);
       }
     })
+  },
+
+  customToJSON: function() {
+    if (!this.profile_pic || this.profile_pic == "" || this.profile_pic==null) {
+      this.profile_pic = "faldax/profile/def_profile.jpg"
+    }
+    return this;
   }
 
 };

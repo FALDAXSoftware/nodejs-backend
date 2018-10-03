@@ -10,7 +10,7 @@ var bcrypt = require('bcrypt');
 var fetch = require('node-fetch');
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
-
+var QRCode = require('qrcode');
 module.exports = {
 
 
@@ -47,9 +47,9 @@ module.exports = {
                     sails.hooks.email.send(
                         "signup",
                         {
-                          homelink:"http://18.191.87.133:8085",
+                          homelink:"http://18.191.87.133:8089",
                           recipientName: user_detail.first_name,
-                          token:'http://18.191.87.133:8085/login?token='+email_verify_token,
+                          token:'http://18.191.87.133:8089/login?token='+email_verify_token,
                           senderName: "Faldax"
                         },
                         {
@@ -233,18 +233,124 @@ module.exports = {
 
 
     setupTwoFactor:async function (req,res) {
-        let user_id = req.user.id;
-        let user = await User.findOne({
-                    id:user_id,
-                    is_active:true,
-                    is_verified:true,
-                }); 
-        if (!user) {
-            return res.status(401).json({
-                err:"User not found or it's not active"
+        try {
+            let user_id = req.user.id;
+            let user = await Users.findOne({
+                        id:user_id,
+                        is_active:true,
+                        is_verified:true,
+                    }); 
+            if (!user) {
+                return res.status(401).json({
+                    err:"User not found or it's not active"
+                });
+            }
+            const secret = speakeasy.generateSecret({length:10});
+            await Users.update({
+                id:user.id
+            }).set({
+                "email":user.email,
+                "twofactor_secret":secret.base32
+            });
+            let url = speakeasy.otpauthURL({secret:secret.ascii, label:user.email});
+            QRCode.toDataURL(url,function (err, data_url) {
+                return res.json({
+                    status:200,
+                    message:"Qr code sent",
+                    tempSecret:secret.base32,
+                    dataURL:data_url,
+                    otpauthURL:secret.otpauth_url
+                })
+            });
+        } catch (error) {
+            return res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
             });
         }
+    },
 
+
+    verifyTwoFactor:async function (req,res) {
+        try {
+            let user_id = req.user.id;
+            let {otp}=req.allParams();
+            let user = await Users.findOne({
+                id:user_id,
+                is_active:true,
+                is_verified:true,
+            }); 
+            if (!user) {
+                return res.status(401).json({
+                    err:"User not found or it's not active"
+                });
+            }
+            if (user.is_twofactor == true) {
+                return res.status(401).json({
+                    err:"Two factor authentication is already enabled"
+                });
+            }
+            let verified = speakeasy.totp.verify({
+                secret:user.twofactor_secret,
+                encoding:"base32",
+                token:otp
+            });
+            if (verified) {
+                await Users.update({id:user.id}).set({
+                    email:user.email,
+                    is_twofactor:true,
+                });
+                return res.json({
+                    status:"200",
+                    message:"Two factor verification authentication has been enabled"
+                });
+            }
+            return res.status(401).json({err:"Invalid OTP"});
+        } catch (error) {
+            return res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
+            });
+        }
+    },
+
+
+    disableTwoFactor:async function (req,res) {
+        try {
+            let user_id = req.user.id;
+            let user = await Users.findOne({
+                id:user_id,
+                is_active:true,
+                is_verified:true,
+            }); 
+            if (!user) {
+                return res.status(401).json({
+                    err:"User not found or it's not active"
+                });
+            }
+            if (user.is_twofactor == false) {
+                return res.status(401).json({
+                    err:"Two factor authentication is already disabled"
+                });
+            }
+            await Users.update({id:user.id}).set({
+                email:user.email,
+                is_twofactor:false,
+                twofactor_secret:null,
+            });
+            return res.json({
+                status:"200",
+                message:"Two factor verification authentication has been disabled"
+            });
+        } catch (error) {
+            return res.json({
+                "status": "500",
+                "message": "error",
+                "errors": error
+            });
+        }
     },
     //------------------CMS APi------------------------------------------------//
 
