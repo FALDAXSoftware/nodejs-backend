@@ -24,24 +24,22 @@ module.exports = {
 
         
         if(user_detail){
-            console.log(user_detail);
-            if(!user_detail.is_verified){
-                return res.json({
-                    "status": "400",
-                    "message": "not listed",
-                    "error" : "Activatie your account for logging in.",
+            // console.log(user_detail);
+            if(user_detail.is_verified == false){
+                return res.json(403,{
+                    "status": "403",
+                    "err" : "Activatie your account for logging in.",
                 });
             }
-            if (!user_detail.is_active) {
-                return res.json({
-                    "status": "400",
-                    "message": "not listed",
-                    "error" : "Contact the admin to activate your account.",
+            if (user_detail.is_active == false) {
+                return res.json(403,{
+                    "status": "403",
+                    "err" : "Contact the admin to activate your account.",
                 });
             }
             Users.comparePassword(query.password, user_detail, async function (err, valid) {
                 if (err) {
-                  return res.json(403, {err: 'forbidden'});
+                  return res.json(403, {err: 'Forbidden'});
                 }
 
                 if (!valid) {
@@ -66,8 +64,6 @@ module.exports = {
 
 
                   delete user_detail.password;
-
-                //   console.log(req.ip);
                     // Login History Save
                   await LoginHistory.create({
                       user:user_detail.id,
@@ -76,6 +72,7 @@ module.exports = {
                   });  
                   var token = await sails.helpers.jwtIssue(user_detail.id);
                   return res.json({
+                    status:"200",
                     user: user_detail,
                     token,
                     message:"Login successfull."
@@ -83,18 +80,16 @@ module.exports = {
                 }
             });
         }else{
-            res.json({
-                "status": "400",
-                "message": "not listed",
-                "error" : "invalid email or password",
+            res.json(401,{
+                "status": "401",
+                "err" : "invalid email or password",
             });
             return;
         }
       }else{
-        res.json({
-            "status": "400",
-            "message": "not listed",
-            "error" : "email or password is not sent",
+        res.json(401,{
+            "status": "401",
+            "err" : "email or password is not sent",
         });
         return;
       }
@@ -103,17 +98,61 @@ module.exports = {
 
       res.json({
           "status": "500",
-          "message": "error",
-          "errors": error
+          "err": error
       });
       return;
     }
   },    
   
+//   Send auth code in email
   sendOtpEmail:async function (req,res) {
     let {email} = req.allParams();
-    $user = Users.find({email:email});
-
+    let user =await Users.findOne({email:email});
+    if (!user) {
+       return res.json(401,{
+           err:"Invalid Email Address"
+       }); 
+    }
+    if(!user.is_verified){
+        return res.json(403,{
+            "err" : "Activatie your account for logging in.",
+        });
+    }
+    if (!user.is_active) {
+        return res.json(403,{
+            "err" : "Contact the admin to activate your account.",
+        });
+    }
+    user = await Users.update({id:user.id}).set({
+        email:user.email,
+        authCode:randomize('Aa0', 6)
+    }).meta({fetch:true});
+    // send code in email
+    sails.hooks.email.send(
+        "verificationCode",
+        {
+          homelink:"http://18.191.87.133:8089",
+          recipientName: user.first_name,
+          code:user.authCode,
+          senderName: "Faldax"
+        },
+        {
+          to: user.email,
+          subject: "Authentication Code"
+        },
+        function(err) {
+            if(!err){
+                return res.json({
+                    "status": "200",
+                    "message": "Authentication code sent to email successfully"
+                });
+            }else{
+                return res.status(500).json({
+                    "err": err
+                });
+            }
+        }
+      )
   },
 
   resetPassword : async function(req,res){

@@ -20,9 +20,9 @@ module.exports = {
             var user = req.body;
             var referred_id=null;
             if(req.body.referral_code){
-               var referredUser = await  Users.findOne({referral_code:req.body.referral_code});
+               var referredUser = await Users.findOne({referral_code:req.body.referral_code});
                if(!referredUser) {
-                return res.status(500).json({
+                return res.status(401).json({
                     success: false,
                     message: 'Invalid refferal code'
                 });
@@ -38,7 +38,7 @@ module.exports = {
                     full_name:req.body.firstname +' '+req.body.lastname,
                     first_name:req.body.firstname,
                     last_name:req.body.lastname,
-                    referral_code: uuidv1(),
+                    referral_code: randomize('Aa0', 10),
                     created_at: new Date(),
                     referred_id: referred_id,
                     email_verify_token:email_verify_token

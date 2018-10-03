@@ -103,7 +103,7 @@ module.exports = {
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      defaultsTo: false,
+      defaultsTo: true,
       allowNull: true,
     },
     is_verified: {
@@ -121,6 +121,11 @@ module.exports = {
       type:"string",
       columnName:"twofactor_secret",
       allowNull: true,
+    },
+    authCode:{
+      type:"string",
+      columnName:"authCode",
+      allowNull:true
     },
     created_at : {
       type: 'ref', 
