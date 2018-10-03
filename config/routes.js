@@ -73,6 +73,8 @@ module.exports.routes = {
   'get /user/countries': 'Users.getCountriesData',
   'get /users/login-history':'Users.getLoginHistory',
   'post /users/setup-two-factor':'Users.setupTwoFactor',
+  'post /users/verify-two-factor':'Users.verifyTwoFactor',
+  'post /users/disable-two-factor':'Users.disableTwoFactor',
 
 
   //dashboard

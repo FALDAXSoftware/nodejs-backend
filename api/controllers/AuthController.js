@@ -5,8 +5,11 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var randomize = require('randomatic');
+var speakeasy = require('speakeasy');
 
 module.exports = {
+
+// Login User
   login : async function (req ,res) {
     try{
       if(req.body.email && req.body.password){
@@ -26,6 +29,13 @@ module.exports = {
                 "error" : "Activatie your account for logging in.",
             });
           }
+          if (!user_detail.is_active) {
+            return res.json({
+                "status": "400",
+                "message": "not listed",
+                "error" : "Contact the admin to activate your account.",
+            });
+          }
         
         if(user_detail){
             Users.comparePassword(query.password, user_detail, async function (err, valid) {
@@ -36,7 +46,24 @@ module.exports = {
                 if (!valid) {
                   return res.json(401, {err: 'invalid email or password'});
                 } else {
-                  
+                  if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                    if (!req.body.otp) {
+                    return res.json(201,{
+                        err:'Please enter otp to continue'
+                    });
+                    }
+                    let verified = speakeasy.totp.verify({
+                        secret: user_detail.twofactor_secret, 
+                        encoding: 'base32',
+                        token: req.body.otp
+                    });
+                    if(!verified){
+                        return res.json(401, {err: 'invalid otp'});
+                    }
+                    
+                  }
+
+
                   delete user_detail.password;
 
                 //   console.log(req.ip);
@@ -47,9 +74,10 @@ module.exports = {
                       created_at: new Date()
                   });  
                   var token = await sails.helpers.jwtIssue(user_detail.id);
-                  res.json({
+                  return res.json({
                     user: user_detail,
-                    token
+                    token,
+                    message:"Login successfull."
                   });
                 }
             });
@@ -81,6 +109,10 @@ module.exports = {
     }
   },    
   
+  sendOtpEmail:async function (req,res) {
+    let {email} = req.allParams();  
+  },
+
   resetPassword : async function(req,res){
     try{
         var reset_token = req.body.reset_token;
