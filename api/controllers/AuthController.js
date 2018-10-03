@@ -127,6 +127,8 @@ module.exports = {
         email:user.email,
         authCode:randomize('Aa0', 6)
     }).meta({fetch:true});
+    console.log("=>",user.email);
+    
     // send code in email
     sails.hooks.email.send(
         "verificationCode",
@@ -147,6 +149,8 @@ module.exports = {
                     "message": "Authentication code sent to email successfully"
                 });
             }else{
+                console.log(err);
+                
                 return res.status(500).json({
                     "err": err
                 });
