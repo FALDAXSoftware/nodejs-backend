@@ -72,6 +72,7 @@ module.exports.routes = {
   'get /users/referredUsers':'Users.getReferred',
   'get /user/countries': 'Users.getCountriesData',
   'get /users/login-history':'Users.getLoginHistory',
+  'post /users/setup-two-factor':'Users.setupTwoFactor',
 
 
   //dashboard
