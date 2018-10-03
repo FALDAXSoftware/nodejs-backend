@@ -32,6 +32,9 @@ module.exports.policies = {
   'CountriesController':{
     '*':true
   },
+  'SubscribeController':{
+    "*":true
+  },
 
   'AuthController': {
     '*': true // We dont need authorization here, allowing public access

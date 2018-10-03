@@ -76,6 +76,7 @@ module.exports.routes = {
   'post /users/verify-two-factor':'Users.verifyTwoFactor',
   'post /users/disable-two-factor':'Users.disableTwoFactor',
   'post /users/send-otp-email':'Auth.sendOtpEmail',
+  'post /users/email-subscription':'Subscribe.senEmailSubscribtion',
 
 
   //dashboard
