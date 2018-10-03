@@ -21,23 +21,24 @@ module.exports = {
            await  Users.update({ email: query.email}).set({email: query.email,is_verified:true});
           }
         var user_detail = await Users.findOne({ email: query.email });
-        console.log(user_detail);
-          if(!user_detail.is_verified){
-            return res.json({
-                "status": "400",
-                "message": "not listed",
-                "error" : "Activatie your account for logging in.",
-            });
-          }
-          if (!user_detail.is_active) {
-            return res.json({
-                "status": "400",
-                "message": "not listed",
-                "error" : "Contact the admin to activate your account.",
-            });
-          }
+
         
         if(user_detail){
+            console.log(user_detail);
+            if(!user_detail.is_verified){
+                return res.json({
+                    "status": "400",
+                    "message": "not listed",
+                    "error" : "Activatie your account for logging in.",
+                });
+            }
+            if (!user_detail.is_active) {
+                return res.json({
+                    "status": "400",
+                    "message": "not listed",
+                    "error" : "Contact the admin to activate your account.",
+                });
+            }
             Users.comparePassword(query.password, user_detail, async function (err, valid) {
                 if (err) {
                   return res.json(403, {err: 'forbidden'});
@@ -85,7 +86,7 @@ module.exports = {
             res.json({
                 "status": "400",
                 "message": "not listed",
-                "error" : "invalid email or phone number or password",
+                "error" : "invalid email or password",
             });
             return;
         }
@@ -110,7 +111,9 @@ module.exports = {
   },    
   
   sendOtpEmail:async function (req,res) {
-    let {email} = req.allParams();  
+    let {email} = req.allParams();
+    $user = Users.find({email:email});
+
   },
 
   resetPassword : async function(req,res){
