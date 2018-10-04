@@ -31,7 +31,7 @@ module.exports = {
       { id: inputs.id },
       tokenSecret, // Token Secret that we sign it with
       {
-        expiresIn : '1d' // Token Expire time
+        // expiresIn : '1d' // Token Expire time
       }
     );
     return exits.success(result);

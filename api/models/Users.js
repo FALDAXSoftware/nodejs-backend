@@ -71,7 +71,7 @@ module.exports = {
       allowNull: true
     },
     dob: {
-      type: 'string', 
+      type: 'string',
       columnName: 'dob',
       allowNull: true
     },
@@ -90,12 +90,12 @@ module.exports = {
       columnName: 'referral_code',
       allowNull: true
     },
-    email_verify_token:{
+    email_verify_token: {
       type: 'string',
       columnName: 'email_verify_token',
       allowNull: true
     },
-    reset_token:{
+    reset_token: {
       type: 'string',
       columnName: 'reset_token',
       allowNull: true
@@ -112,88 +112,88 @@ module.exports = {
       defaultsTo: false,
       allowNull: true,
     },
-    is_twofactor:{
-      type:'boolean',
-      columnName:"is_twofactor",
+    is_twofactor: {
+      type: 'boolean',
+      columnName: "is_twofactor",
       defaultsTo: false,
     },
-    twofactor_secret:{
-      type:"string",
-      columnName:"twofactor_secret",
+    twofactor_secret: {
+      type: "string",
+      columnName: "twofactor_secret",
       allowNull: true,
     },
-    authCode:{
-      type:"string",
-      columnName:"authCode",
-      allowNull:true
+    authCode: {
+      type: "string",
+      columnName: "authCode",
+      allowNull: true
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    history:{
-      collection:'loginhistory',
-      via:'user'
+    history: {
+      collection: 'loginhistory',
+      via: 'user'
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne( {'email': values.email })
-    .exec(function (err, found){
-      values.created_at = new Date()
-      if(!found){
-        bcrypt.genSalt(10, function (err, salt) {
-          if(err) return next(err);
-          bcrypt.hash(values.password, salt, function (err, hash) {
-            if(err) return next(err);
-            values.password = hash;
-            next();
-          })
-        });     
-      } else{
-        next({ error: 'Email address or Phone number already exist' });
-      }
-    });
+    Users.findOne({ 'email': values.email })
+      .exec(function (err, found) {
+        values.created_at = new Date()
+        if (!found) {
+          bcrypt.genSalt(10, function (err, salt) {
+            if (err) return next(err);
+            bcrypt.hash(values.password, salt, function (err, hash) {
+              if (err) return next(err);
+              values.password = hash;
+              next();
+            })
+          });
+        } else {
+          next({ error: 'Email address already exist' });
+        }
+      });
   },
   beforeUpdate: (values, next) => {
     Users.findOne({ 'email': values.email })
-    .exec(async function (err, found){
-      values.updated_at = new Date()
-      if(found){
-         console.log(found);
-        if(values.password){
-          bcrypt.genSalt(10, function (err, salt) {
-            if(err) return next(err);
-            bcrypt.hash(values.password, salt, function (err, hash) {
-              if(err) return next(err);
-              values.password = hash;   
-              next();
-            })
-          }); 
-        }else{
-          // delete values.email;
-          next();
+      .exec(async function (err, found) {
+        values.updated_at = new Date()
+        if (found) {
+          console.log(found);
+          if (values.password) {
+            bcrypt.genSalt(10, function (err, salt) {
+              if (err) return next(err);
+              bcrypt.hash(values.password, salt, function (err, hash) {
+                if (err) return next(err);
+                values.password = hash;
+                next();
+              })
+            });
+          } else {
+            // delete values.email;
+            next();
+          }
+
+        } else {
+          next({ error: "Email address doesn't exist" });
         }
-          
-      } else{
-        next({ error: "Email address doesn't exist" });
-      }
-    });
+      });
   },
-  comparePassword : function (password, user, cb) {
+  comparePassword: function (password, user, cb) {
     bcrypt.compare(password, user.password, function (err, match) {
-      if(err) cb(err);
-      if(match) {
+      if (err) cb(err);
+      if (match) {
         cb(null, true);
       } else {
         cb(err);
@@ -201,8 +201,8 @@ module.exports = {
     })
   },
 
-  customToJSON: function() {
-    if (!this.profile_pic || this.profile_pic == "" || this.profile_pic==null) {
+  customToJSON: function () {
+    if (!this.profile_pic || this.profile_pic == "" || this.profile_pic == null) {
       this.profile_pic = "faldax/profile/def_profile.jpg"
     }
     return this;

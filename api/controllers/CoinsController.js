@@ -18,6 +18,7 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
   getCoins: async function(req, res) {
+    // req.setLocale('en')
     let {page,limit,data}= req.allParams();
     if(data){
         let coinsData = await Coins.find({or:[{
@@ -31,7 +32,7 @@ module.exports = {
           if(coinsData){
             return res.json({
                 "status": "200",
-                "message": "Coin list",
+                "message": sails.__("Coin list"),
                 "data": coinsData,CoinsCount
             });
         }
@@ -42,7 +43,7 @@ module.exports = {
             if(coinsData){
             return res.json({
                 "status": "200",
-                "message": "Coin list",
+                "message": sails.__("Coin list"),
                 "data": coinsData,CoinsCount
             });
         }
