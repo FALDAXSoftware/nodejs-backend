@@ -19,7 +19,7 @@ module.exports = {
         try {
             var user = req.body;
             var referred_id = null;
-            existedUser = await User.findOne({ email: re.body.email });
+            existedUser = await Users.findOne({ email: re.body.email });
             if (existedUser) {
                 return res.status(401).json({
                     err: 'Email address already exist'
