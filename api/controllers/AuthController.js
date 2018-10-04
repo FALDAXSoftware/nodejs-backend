@@ -182,7 +182,14 @@ module.exports = {
                 err: "Invalid OTP"
             });
         }
-        await User.update({ id: user.id }).set({});
+        await User.update({ id: user.id }).set({ is_twofactor: false, twofactor_secret: null, email: user.email, authCode: null });
+        var token = await sails.helpers.jwtIssue(user_detail.id);
+        return res.json({
+            status: "200",
+            user: user,
+            token,
+            message: "Login successfull."
+        });
 
     },
 

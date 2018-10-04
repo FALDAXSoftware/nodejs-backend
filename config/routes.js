@@ -17,25 +17,25 @@ module.exports.routes = {
   // CMS Routes///////////////////////////////////////////
 
   //Admin 
-  'post /admin/login':"Admin.login",
-  'post /admin/forgotPassword':"Admin.forgotPassword",
+  'post /admin/login': "Admin.login",
+  'post /admin/forgotPassword': "Admin.forgotPassword",
   'post /admin/create': "Admin.create",
   'put /admin/update': "Admin.update",
-  'put /admin/resetPassword':"Admin.resetPassword",
+  'put /admin/resetPassword': "Admin.resetPassword",
 
   // Role
 
-  'post /admin/role/create':'RoleController.create',
-  'get /admin/role/get':'RoleController.get',
-  'put /admin/role/update':'RoleController.update',
-  'delete /admin/role/delete':'RoleController.delete',
+  'post /admin/role/create': 'RoleController.create',
+  'get /admin/role/get': 'RoleController.get',
+  'put /admin/role/update': 'RoleController.update',
+  'delete /admin/role/delete': 'RoleController.delete',
 
   //users 
   'post /admin/changePassword': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
-  'get /admin/referredUsers':'Users.getUserReferredAdmin',
+  'get /admin/referredUsers': 'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
-  'post /admin/getUserloginHistory':'Users.getUserloginHistoryAdmin',
+  'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
 
   //coins 
   'get /admin/getCoins': 'Coins.getCoins',
@@ -49,47 +49,47 @@ module.exports.routes = {
   'post /admin/static/create': 'Statics.create',
   'put /admin/static/update': 'Statics.update',
   'delete /admin/static/delete': 'Statics.delete',
-  //email template
 
-  
-  'get /admin/email-template/getEmailTemplate': 'EmailTemplatesController.getEmailTemplate',
-  'post /admin/email-template/create': 'EmailTemplatesController.create',
-  'put /admin/email-template/update': 'EmailTemplatesController.update',
-  'delete /admin/email-template/delete': 'EmailTemplatesController.delete',
-  'post /admin/email-send':'EmailTemplatesController.sendemail',
-  
+
+  //Announcement
+  'get /admin/announcement/getEmailTemplate': 'AnnouncementController.getAnnouncementTemplate',
+  'post /admin/announcement/create': 'AnnouncementController.create',
+  'put /admin/announcement/update': 'AnnouncementController.update',
+  'delete /admin/announcement/delete': 'AnnouncementController.delete',
+  'post /admin/email-send': 'AnnouncementController.sendemail',
+
 
   //DashBoard
   'get /admin/dashboard/getData': 'Dashboard.get',
   // 'put /admin/changePassword': "Admin.changePassword",
 
   //countries
-  'get /admin/getCountriesData':'Countries.getCountries',
+  'get /admin/getCountriesData': 'Countries.getCountries',
   'put /admin/countryActivate': 'Countries.countryActivate',
 
 
 
   // Web Routes///////////////////////////////////////////
-  'post /login':"AuthController.login",
+  'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
-  'post /users/forgotPassword':"AuthController.forgotPassword",
-  'put /users/resetPassword':"AuthController.resetPassword",
+  'post /users/forgotPassword': "AuthController.forgotPassword",
+  'put /users/resetPassword': "AuthController.resetPassword",
   'post /users/changePassword': "UsersController.changePassword",
-  'get /users/getUserDetails' : "Users.getUserReferral",
-  'get /users/referredUsers':'Users.getReferred',
+  'get /users/getUserDetails': "Users.getUserReferral",
+  'get /users/referredUsers': 'Users.getReferred',
   'get /user/countries': 'Users.getCountriesData',
-  'get /users/login-history':'Users.getLoginHistory',
-  'post /users/setup-two-factor':'Users.setupTwoFactor',
-  'post /users/verify-two-factor':'Users.verifyTwoFactor',
-  'post /users/disable-two-factor':'Users.disableTwoFactor',
-  'post /users/send-otp-email':'Auth.sendOtpEmail',
-  'post /users/email-subscription':'Subscribe.senEmailSubscribtion',
+  'get /users/login-history': 'Users.getLoginHistory',
+  'post /users/setup-two-factor': 'Users.setupTwoFactor',
+  'post /users/verify-two-factor': 'Users.verifyTwoFactor',
+  'post /users/disable-two-factor': 'Users.disableTwoFactor',
+  'post /users/send-otp-email': 'Auth.sendOtpEmail',
+  'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
 
 
   //dashboard
-  'post /dashboard':"DashboardController.get"
-  
+  'post /dashboard': "DashboardController.get"
+
 
 
 };

@@ -157,22 +157,37 @@ module.exports = {
     changePassword: async function (req, res) {
         try {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
-                return res.status(401).json({ err: 'Please provide current password, new password, confirm password' });
+                return res.status(401).json({
+                    status: 401,
+                    err: 'Please provide current password, new password, confirm password'
+                });
             }
             if (req.body.new_password !== req.body.confirm_password) {
-                return res.status(401).json({ err: 'New and confirm password should match' });
+                return res.status(401).json({
+                    status: 401,
+                    err: 'New and confirm password should match'
+                });
             }
             if (req.body.current_password === req.body.new_password) {
-                return res.status(401).json({ err: 'Current and new password should not be match' });
+                return res.status(401).json({
+                    status: 401,
+                    err: 'Current and new password should not be match'
+                });
             }
 
             const user_details = await Users.findOne({ id: req.user.id });
             if (!user_details) {
-                return res.status(401).json({ err: 'User not found' });
+                return res.status(401).json({
+                    status: 401,
+                    err: 'User not found'
+                });
             }
             let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
             if (!compareCurrent) {
-                return res.status(401).json({ err: "Current password mismatch" });
+                return res.status(401).json({
+                    status: 401,
+                    err: "Current password mismatch"
+                });
             }
 
             var updatedUsers = await Users.update({ id: req.user.id }).set({ email: user_details.email, password: req.body.new_password }).fetch();
@@ -189,7 +204,7 @@ module.exports = {
             res.json({
                 "status": "500",
                 "message": "error",
-                "errors": error
+                "err": error
             });
             return;
         }
