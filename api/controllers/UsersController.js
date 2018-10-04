@@ -22,6 +22,7 @@ module.exports = {
             existedUser = await Users.findOne({ email: req.body.email });
             if (existedUser) {
                 return res.status(401).json({
+                    status: 401,
                     err: 'Email address already exist'
                 });
             }
@@ -29,6 +30,7 @@ module.exports = {
                 var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
                 if (!referredUser) {
                     return res.status(401).json({
+                        status: 401,
                         err: 'Invalid refferal code'
                     });
                 } else {
@@ -79,12 +81,14 @@ module.exports = {
                     // return;
                 } else {
                     res.status(401).json({
+                        status: 401,
                         err: "Something went wrong",
                     });
                     return;
                 }
             } else {
                 res.status(401).json({
+                    status: 401,
                     err: "email or password or phone_number is not sent",
                 });
                 return;
@@ -92,6 +96,7 @@ module.exports = {
         } catch (error) {
             console.log(error)
             res.status(500).json({
+                status: 500,
                 err: error
             });
             return;

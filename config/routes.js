@@ -52,7 +52,7 @@ module.exports.routes = {
 
 
   //Announcement
-  'get /admin/announcement/getEmailTemplate': 'AnnouncementController.getAnnouncementTemplate',
+  'get /admin/announcement/getAnnouncementTemplate': 'AnnouncementController.getAnnouncementTemplate',
   'post /admin/announcement/create': 'AnnouncementController.create',
   'put /admin/announcement/update': 'AnnouncementController.update',
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
