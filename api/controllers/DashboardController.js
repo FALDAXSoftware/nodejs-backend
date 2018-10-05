@@ -8,8 +8,8 @@
 module.exports = {
   get: async function (req, res) {
     try {
-      let userCount = await Users.count({ is_active: true, is_verified: true });
-      let coinCount = await Coins.count({ is_active: true });
+      let userCount = await Users.count({ is_verified: true });
+      let coinCount = await Coins.count({ deleted_at: null });
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
