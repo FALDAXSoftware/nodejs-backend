@@ -11,8 +11,8 @@ var fetch = require('node-fetch');
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
-module.exports = {
 
+module.exports = {
 
     //------------------Web APi------------------------------------------------//
     create: async function (req, res) {
@@ -102,9 +102,10 @@ module.exports = {
             return;
         }
     },
+
+
     update: async function (req, res) {
         try {
-
             const user_details = await Users.findOne({ id: req.user.id });
             if (!user_details) {
                 return res.status(401).json({ err: 'invalid email' });
@@ -133,8 +134,6 @@ module.exports = {
                                 "message": "User details updated successfully"
                             });
                         }
-
-
                     } else {
                         var updatedUsers = await Users.update({ email: req.body.email }).set(user);
                         return res.json({
@@ -145,11 +144,7 @@ module.exports = {
                 } catch (e) {
                     throw e;
                 }
-
             });
-
-
-
         } catch (error) {
             res.json({
                 "status": "500",
@@ -159,6 +154,8 @@ module.exports = {
             return;
         }
     },
+
+
     changePassword: async function (req, res) {
         try {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
@@ -214,6 +211,8 @@ module.exports = {
             return;
         }
     },
+
+
     getUserReferral: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
@@ -226,6 +225,8 @@ module.exports = {
             });
         }
     },
+
+
     getReferred: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ select: ['email'], where: { referred_id: id } });
@@ -378,7 +379,6 @@ module.exports = {
     getUserPaginate: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
-            console.log("sdfs", data)
             let usersData = await Users.find({
                 or: [{
                     email: { contains: data }
@@ -406,7 +406,6 @@ module.exports = {
                     "data": usersData, userCount
                 });
             }
-
         } else {
             let usersData = await Users.find({
                 where: {
@@ -424,12 +423,11 @@ module.exports = {
                 });
             }
         }
-
-
     },
+
+
     userActivate: async function (req, res) {
         let { user_id, email, is_active } = req.body;
-        console.log(req.body);
 
         let usersData = await Users.update({ id: user_id }).set({ email: email, is_active: is_active }).fetch();
 
@@ -445,6 +443,8 @@ module.exports = {
             });
         }
     },
+
+
     getCountriesData: async function (req, res) {
         fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
             .then(resData => resData.json())
@@ -455,10 +455,13 @@ module.exports = {
                 res.status(500).json({ message: err })
             })
     },
+
+
     getUserReferredAdmin: async function (req, res) {
         let { page, limit, id } = req.allParams();
 
-        let usersData = await Users.find({ referred_id: id });
+        let usersData = await Users.find({ referred_id: id })
+            .sort("id ASC").paginate(page, parseInt(limit));
         let usersDataCount = await Users.count({ referred_id: id });
         if (usersData) {
             return res.json({
@@ -468,7 +471,6 @@ module.exports = {
             });
         }
     },
-
 
     getUserloginHistoryAdmin: async function (req, res) {
         let { user_id } = req.allParams();

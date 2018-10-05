@@ -9,18 +9,16 @@ module.exports = {
 
     //---------------------------Web Api------------------------------
 
-
-
-
-
-
-
-
-
     //-------------------------------CMS Api--------------------------
     getAnnouncementTemplate: async function (req, res) {
         let { page, limit } = req.allParams();
-        let announcementTemplateData = await Announcement.find().paginate({ page, limit });
+        let announcementTemplateData = await Announcement.find(
+            {
+                where: {
+                    deleted_at: null
+                }
+            }
+        ).paginate({ page, limit });
         // console.log(announcementTemplateData)
         if (announcementTemplateData) {
             return res.json({
@@ -30,6 +28,8 @@ module.exports = {
             });
         }
     },
+
+
     create: async function (req, res) {
         try {
             if (req.body.title && req.body.name && req.body.content) {
@@ -63,7 +63,6 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log("err", error)
             res.status(500).json({
                 "status": "500",
                 "message": "error",
@@ -72,6 +71,8 @@ module.exports = {
             return;
         }
     },
+
+
     update: async function (req, res) {
         try {
             const announcementTemplate = await Announcement.findOne({ id: req.body.id });
@@ -100,6 +101,8 @@ module.exports = {
             return;
         }
     },
+
+
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
@@ -109,7 +112,9 @@ module.exports = {
             });
             return;
         }
-        let announcementTemplateData = await Announcement.update({ id: id }).set({ is_active: false }).fetch();
+        let announcementTemplateData = await Announcement.update({ id: id }).set(
+            { deleted_at: new Date() }
+        ).fetch();
         if (announcementTemplateData) {
             return res.status(200).json({
                 "status": 200,
@@ -137,7 +142,6 @@ module.exports = {
                 subject: announcement.title
             },
             function (err) {
-                console.log(err || "It worked!");
                 if (!err) {
                     return res.json({
                         "status": "200",
@@ -148,6 +152,4 @@ module.exports = {
         )
     }
 
-
 };
-

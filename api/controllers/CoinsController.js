@@ -26,14 +26,20 @@ module.exports = {
                     coin_name: { contains: data }
                 },
                 { coin_code: { contains: data } }
-                ]
+                ],
+                where: {
+                    deleted_at: null,
+                }
             }).sort("id ASC").paginate(page, parseInt(limit));
             let CoinsCount = await Coins.count({
                 or: [{
                     coin_name: { contains: data }
                 },
                 { coin_code: { contains: data } }
-                ]
+                ],
+                where: {
+                    deleted_at: null,
+                }
             });
             if (coinsData) {
                 return res.json({
@@ -43,9 +49,16 @@ module.exports = {
                 });
             }
         } else {
-
-            let coinsData = await Coins.find().sort("id ASC").paginate(page, parseInt(limit));
-            let CoinsCount = await Coins.count();
+            let coinsData = await Coins.find({
+                where: {
+                    deleted_at: null,
+                }
+            }).sort("id ASC").paginate(page, parseInt(limit));
+            let CoinsCount = await Coins.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
             if (coinsData) {
                 return res.json({
                     "status": "200",
@@ -54,9 +67,8 @@ module.exports = {
                 });
             }
         }
-
-
     },
+
     create: async function (req, res) {
         try {
             if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address && req.body.description) {
@@ -100,6 +112,8 @@ module.exports = {
             return;
         }
     },
+
+
     update: async function (req, res) {
         try {
             const coin_details = await Coins.findOne({ id: req.body.coin_id });
@@ -116,12 +130,10 @@ module.exports = {
                     "message": "Something went wrong! could not able to update coin details"
                 });
             }
-
             return res.json({
                 "status": "200",
                 "message": "Coin details updated successfully"
             });
-
         } catch (error) {
             res.json({
                 "status": "500",
@@ -131,6 +143,8 @@ module.exports = {
             return;
         }
     },
+
+
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
@@ -140,7 +154,7 @@ module.exports = {
             });
             return;
         }
-        let coinData = await Coins.update({ id: id }).set({ is_active: false }).fetch();
+        let coinData = await Coins.update({ id: id }).set({ deleted_at: new Date() }).fetch();
         if (coinData) {
             return res.status(200).json({
                 "status": 200,
