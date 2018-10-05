@@ -22,23 +22,23 @@ module.exports = {
         let { page, limit, data } = req.allParams();
         if (data) {
             let coinsData = await Coins.find({
-                or: [{
-                    coin_name: { contains: data }
-                },
-                { coin_code: { contains: data } }
-                ],
                 where: {
                     deleted_at: null,
+                    or: [{
+                        coin_name: { contains: data }
+                    },
+                    { coin_code: { contains: data } }
+                    ]
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
             let CoinsCount = await Coins.count({
-                or: [{
-                    coin_name: { contains: data }
-                },
-                { coin_code: { contains: data } }
-                ],
                 where: {
                     deleted_at: null,
+                    or: [{
+                        coin_name: { contains: data }
+                    },
+                    { coin_code: { contains: data } }
+                    ]
                 }
             });
             if (coinsData) {

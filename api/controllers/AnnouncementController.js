@@ -126,7 +126,7 @@ module.exports = {
     sendemail: async function (req, res) {
         let { id } = req.allParams();
         let announcement = await Announcement.findOne({ id: id });
-        let users = await Users.find({ where: { is_active: true }, select: ['email'] });
+        let users = await Users.find({ where: { is_active: true, is_verified: true }, select: ['email'] });
         let newUser = [];
         users.map(data => {
             newUser.push(data.email);

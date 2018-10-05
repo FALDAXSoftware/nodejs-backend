@@ -460,9 +460,9 @@ module.exports = {
     getUserReferredAdmin: async function (req, res) {
         let { page, limit, id } = req.allParams();
 
-        let usersData = await Users.find({ referred_id: id })
+        let usersData = await Users.find({ referred_id: id, is_verified: true })
             .sort("id ASC").paginate(page, parseInt(limit));
-        let usersDataCount = await Users.count({ referred_id: id });
+        let usersDataCount = await Users.count({ referred_id: id, is_verified: true });
         if (usersData) {
             return res.json({
                 "status": "200",
