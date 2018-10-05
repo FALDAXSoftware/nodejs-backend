@@ -51,7 +51,7 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-
+    values.created_at = new Date();
     Announcement.findOne({ 'slug': values.slug })
       .exec(function (err, found) {
         console.log(found);
@@ -62,10 +62,6 @@ module.exports = {
         }
       });
   },
-  beforeFind: (values, next) => {
-    values.deleted_at = null;
-    next();
-  }
 
 };
 

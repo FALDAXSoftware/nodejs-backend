@@ -48,6 +48,7 @@ module.exports = {
                             if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                                 if (!req.body.otp) {
                                     return res.json(201, {
+                                        status: 201,
                                         err: 'Please enter otp to continue'
                                     });
                                 }

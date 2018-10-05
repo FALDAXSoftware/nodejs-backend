@@ -20,12 +20,12 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getAnnouncementTemplate: async function (req, res) {
         let { page, limit } = req.allParams();
-        let announcementTemplateData = await Announcement.find().paginate({ page, limit });
+        let announcementTemplateData = await Announcement.find({ deleted_at: null }).paginate({ page, limit });
         // console.log(announcementTemplateData)
         if (announcementTemplateData) {
             return res.json({
                 "status": "200",
-                "message": "Coin list",
+                "message": "Announcement list",
                 "data": announcementTemplateData
             });
         }
@@ -109,7 +109,7 @@ module.exports = {
             });
             return;
         }
-        let announcementTemplateData = await Announcement.update({ id: id }).set({ is_active: false }).fetch();
+        let announcementTemplateData = await Announcement.update({ id: id }).set({ deleted_at: new Date() }).fetch();
         if (announcementTemplateData) {
             return res.status(200).json({
                 "status": 200,

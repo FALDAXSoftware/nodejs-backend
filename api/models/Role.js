@@ -9,31 +9,31 @@ module.exports = {
 
   tableName: 'roles',
   attributes: {
-    name:{
-      type:"string"
+    name: {
+      type: "string"
     },
-    user:{
-      type:"boolean",
+    user: {
+      type: "boolean",
       defaultsTo: false,
       columnName: 'user',
     },
-    coin:{
-      type:"boolean",
+    coin: {
+      type: "boolean",
       defaultsTo: false,
       columnName: 'coin',
     },
-    emailTemplate:{
-      type:"boolean",
+    emailTemplate: {
+      type: "boolean",
       defaultsTo: false,
       columnName: 'emailTemplate',
     },
-    staticPage:{
-      type:"boolean",
+    staticPage: {
+      type: "boolean",
       defaultsTo: false,
       columnName: 'staticPage',
     },
-    role:{
-      type:"boolean",
+    role: {
+      type: "boolean",
       defaultsTo: false,
       columnName: 'role',
     },
@@ -43,18 +43,18 @@ module.exports = {
       defaultsTo: true,
       allowNull: true,
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     }
@@ -68,9 +68,5 @@ module.exports = {
     values.updated_at = new Date();
     next();
   },
-  beforeFind:(values, next)=>{
-    values.deleted_at = null;
-    next();
-  }
 };
 
