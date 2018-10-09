@@ -4,7 +4,7 @@
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-var bcrypt = require('bcrypt'); 
+var bcrypt = require('bcrypt');
 
 module.exports = {
   tableName: 'admin',
@@ -30,7 +30,7 @@ module.exports = {
       columnName: 'reset_token',
       allowNull: true
     },
-    updated_at : {
+    updated_at: {
       type: 'string',
       columnName: 'updated_at',
       allowNull: true
@@ -39,61 +39,66 @@ module.exports = {
       type: 'string',
       columnName: 'created_at',
       allowNull: true
+    },
+    role_id: {
+      type: 'number',
+      columnName: 'role_id',
+      required: true
     }
   },
   beforeCreate: (values, next) => {
     // console.log(values.email);
     Admin
-      .findOne({'email': values.email})
+      .findOne({ 'email': values.email })
       .exec(function (err, found) {
         if (!found) {
           bcrypt
             .genSalt(10, function (err, salt) {
-              if (err) 
+              if (err)
                 return next(err);
               bcrypt
                 .hash(values.password, salt, function (err, hash) {
-                  if (err) 
+                  if (err)
                     return next(err);
                   values.password = hash;
                   next();
                 })
             });
         } else {
-          next({error: 'Email address already exist'});
+          next({ error: 'Email address already exist' });
         }
       });
   },
   beforeUpdate: (values, next) => {
-    
+
     Admin.findOne({ 'email': values.email })
-    .exec(async function (err, found){
-      if(err){
-        console.log("SDf",err)
-        next(err);
-      }
-      if(found){
-        if(values.password){
-          bcrypt.genSalt(10, function (err, salt) {
-            if(err) return next(err);
-            bcrypt.hash(values.password, salt, function (err, hash) {
-              if(err) return next(err);
-              values.password = hash;   
-              next();
-            })
-          }); 
-        }else{
-          next();
+      .exec(async function (err, found) {
+        if (err) {
+          console.log("SDf", err)
+          next(err);
         }
-      } else{
-        next({ error: "Email address doesn't exist" });
-      }
-    });
+        if (found) {
+          if (values.password) {
+            bcrypt.genSalt(10, function (err, salt) {
+              if (err) return next(err);
+              bcrypt.hash(values.password, salt, function (err, hash) {
+                if (err) return next(err);
+                values.password = hash;
+                next();
+              })
+            });
+          } else {
+            next();
+          }
+        } else {
+          next({ error: "Email address doesn't exist" });
+        }
+      });
   },
-  comparePassword : function (password, user, cb) {
+  comparePassword: function (password, user, cb) {
     bcrypt.compare(password, user.password, function (err, match) {
-      if(err) cb(err);
-      if(match) {
+      if (err) cb(err);
+      if (match) {
         cb(null, true);
       } else {
         cb(err);

@@ -22,6 +22,10 @@ module.exports.routes = {
   'post /admin/create': "Admin.create",
   'put /admin/update': "Admin.update",
   'put /admin/resetPassword': "Admin.resetPassword",
+  'post /admin/add-employee': "Admin.addEmployee",
+  'get /admin/get-employees': "Admin.getAllEmployee",
+  'delete /admin/delete-employee': "Admin.deleteEmployee",
+  'put /admin/update-employee': "Admin.updateEmployee",
 
   // Role
   'post /admin/role/create': 'RoleController.create',
