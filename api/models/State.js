@@ -1,5 +1,5 @@
 /**
- * Countries.js
+ * State.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,11 +7,15 @@
 
 module.exports = {
 
+  tableName: 'states',
   attributes: {
     name: {
       type: 'string',
       columnName: 'name',
-      required: true
+    },
+    country: {
+      model: 'countries',
+      columnName: 'country_id'
     },
     legality: {
       type: 'number',
@@ -25,7 +29,7 @@ module.exports = {
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      defaultsTo: true
+      defaultsTo: true,
     },
     created_at: {
       type: 'ref',
@@ -41,13 +45,23 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
-    },
-    state: {
-      collection: 'state',
-      via: 'country'
     }
+    //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
+    //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
+    //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
+
+
+    //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
+    //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
+    //  ╚═╝╩ ╩╚═╝╚═╝═╩╝╚═╝
+
+
+    //  ╔═╗╔═╗╔═╗╔═╗╔═╗╦╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
+    //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
+    //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
 
   },
+
   beforeCreate: function (values, next) {
     values.created_at = new Date();
     next();

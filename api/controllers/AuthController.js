@@ -43,11 +43,14 @@ module.exports = {
                         }
 
                         if (!valid) {
-                            return res.json(401, { err: 'invalid email or password' });
+                            return res.status(401).json({
+                                status: 401,
+                                err: 'invalid email or password'
+                            });
                         } else {
                             if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                                 if (!req.body.otp) {
-                                    return res.json(201, {
+                                    return res.status(201).json({
                                         status: 201,
                                         err: 'Please enter otp to continue'
                                     });
@@ -58,7 +61,7 @@ module.exports = {
                                     token: req.body.otp
                                 });
                                 if (!verified) {
-                                    return res.json(401, { err: 'invalid otp' });
+                                    return res.status(401).json({ err: 'invalid otp' });
                                 }
 
                             }

@@ -66,6 +66,13 @@ module.exports.routes = {
   //countries
   'get /admin/getCountriesData': 'Countries.getCountries',
   'put /admin/countryActivate': 'Countries.countryActivate',
+  'put /admin/countryUpdate': 'Countries.countryUpdate',
+  'get /admin/getStateData': 'Countries.getStates',
+  'put /admin/stateActivate': 'Countries.stateActivate',
+  'put /admin/stateUpdate': 'Countries.stateUpdate',
+
+  // 'post /admin/insertCountries': 'Countries.insertCountries',
+  'post /admin/insertState': 'Countries.insertState',
 
 
 
@@ -75,10 +82,11 @@ module.exports.routes = {
   'put /users/update': "UsersController.update",
   'post /users/forgotPassword': "AuthController.forgotPassword",
   'put /users/resetPassword': "AuthController.resetPassword",
-  'post /users/changePassword': "UsersController.changePassword",
+  'post /users/changePassword': "Users.changePassword",
   'get /users/getUserDetails': "Users.getUserReferral",
   'get /users/referredUsers': 'Users.getReferred',
   'get /user/countries': 'Users.getCountriesData',
+  'get /user/getMapCountries': 'Users.getCountries',
   'get /users/login-history': 'Users.getLoginHistory',
   'post /users/setup-two-factor': 'Users.setupTwoFactor',
   'post /users/verify-two-factor': 'Users.verifyTwoFactor',

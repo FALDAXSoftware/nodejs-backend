@@ -157,6 +157,8 @@ module.exports = {
 
 
     changePassword: async function (req, res) {
+        console.log(req.body);
+
         try {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
                 return res.status(401).json({
@@ -164,13 +166,13 @@ module.exports = {
                     err: 'Please provide current password, new password, confirm password'
                 });
             }
-            if (req.body.new_password !== req.body.confirm_password) {
+            if (req.body.new_password != req.body.confirm_password) {
                 return res.status(401).json({
                     status: 401,
                     err: 'New and confirm password should match'
                 });
             }
-            if (req.body.current_password === req.body.new_password) {
+            if (req.body.current_password == req.body.new_password) {
                 return res.status(401).json({
                     status: 401,
                     err: 'Current and new password should not be match'
@@ -203,13 +205,13 @@ module.exports = {
                 return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
             }
         } catch (error) {
-            res.json({
+            return res.status(500).json({
                 "status": "500",
                 "message": "error",
                 "err": error
             });
-            return;
         }
+        return;
     },
 
 
@@ -244,7 +246,7 @@ module.exports = {
     getLoginHistory: async function (req, res) {
         let history = await LoginHistory.find({
             user: req.user.id
-        }).populate('user');
+        }).sort('created_at DESC').limit(10);
         return res.json({
             "status": "200",
             "message": "Users Login History",
@@ -454,6 +456,36 @@ module.exports = {
             .catch(err => {
                 res.status(500).json({ message: err })
             })
+    },
+
+    getCountries: async function (req, res) {
+        let countriesResponse = [];
+        let countries = await Countries.find({ is_active: true }).populate('state');
+        countries.forEach(country => {
+            let temp = {
+                name: country.name,
+                legality: country.legality,
+                color: country.color
+            };
+            countriesResponse.push(temp);
+            country.state.forEach(state => {
+                if (state.is_active) {
+                    let stateTemp = {
+                        name: state.name,
+                        region: country.name,
+                        legality: state.legality,
+                        color: state.color
+                    }
+                    countriesResponse.push(stateTemp);
+                }
+            });
+        });
+        res.json({
+            state: 200,
+            message: "Countries retirved successfully",
+            countries: countriesResponse
+        });
+
     },
 
 

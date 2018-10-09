@@ -18,7 +18,7 @@ module.exports = {
                     deleted_at: null
                 }
             }
-        ).paginate({ page, limit });
+        );
         // console.log(announcementTemplateData)
         if (announcementTemplateData) {
             return res.json({
