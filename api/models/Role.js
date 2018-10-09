@@ -10,7 +10,8 @@ module.exports = {
   tableName: 'roles',
   attributes: {
     name: {
-      type: "string"
+      type: "string",
+      columnName: "name"
     },
     user: {
       type: "boolean",
@@ -22,10 +23,10 @@ module.exports = {
       defaultsTo: false,
       columnName: 'coin',
     },
-    emailTemplate: {
+    announcement: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'emailTemplate',
+      columnName: 'announcement',
     },
     staticPage: {
       type: "boolean",
@@ -34,8 +35,18 @@ module.exports = {
     },
     role: {
       type: "boolean",
-      defaultsTo: false,
       columnName: 'role',
+      defaultsTo: false,
+    },
+    country: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'country',
+    },
+    employee: {
+      type: "boolean",
+      columnName: 'employee',
+      defaultsTo: false,
     },
     is_active: {
       type: 'boolean',

@@ -308,6 +308,8 @@ module.exports = {
             }
         }
         catch (error) {
+            // console.log(error);
+
             res.json({
                 'message': 'error',
                 'status': '500',
