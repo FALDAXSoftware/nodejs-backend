@@ -1,5 +1,9 @@
 {
   "Welcome": "Welcome",
   "A brand new app.": "A brand new app.",
-  "Coin list": "Coin Retrived Success"
+  "Coin list": "Coin Retrived Success",
+  "Employee list": "Employees Retrieved Successfully",
+  "Add Employee": "Employees Added Successfully",
+  "Delete Employee": "Employees Removed Successfully",
+  "Update Employee": "Employees updated Successfully"
 }
