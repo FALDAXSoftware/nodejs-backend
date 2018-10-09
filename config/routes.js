@@ -24,7 +24,6 @@ module.exports.routes = {
   'put /admin/resetPassword': "Admin.resetPassword",
 
   // Role
-
   'post /admin/role/create': 'RoleController.create',
   'get /admin/role/get': 'RoleController.get',
   'put /admin/role/update': 'RoleController.update',
@@ -72,7 +71,7 @@ module.exports.routes = {
   'put /admin/stateUpdate': 'Countries.stateUpdate',
 
   // 'post /admin/insertCountries': 'Countries.insertCountries',
-  'post /admin/insertState': 'Countries.insertState',
+  // 'post /admin/insertState': 'Countries.insertState',
 
 
 
@@ -93,6 +92,7 @@ module.exports.routes = {
   'post /users/disable-two-factor': 'Users.disableTwoFactor',
   'post /users/send-otp-email': 'Auth.sendOtpEmail',
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
+  'delete /users/deleteAccount': 'Users.deleteUser',
 
 
   //dashboard

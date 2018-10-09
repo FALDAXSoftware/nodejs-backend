@@ -18,7 +18,6 @@ module.exports = {
       type: 'string',
       columnName: 'email',
       isEmail: true,
-      unique: true,
       required: true
     },
     password: {
@@ -148,7 +147,7 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne({ 'email': values.email })
+    Users.findOne({ 'email': values.email, 'deleted_at': null })
       .exec(function (err, found) {
         values.created_at = new Date()
         if (!found) {
@@ -166,7 +165,7 @@ module.exports = {
       });
   },
   beforeUpdate: (values, next) => {
-    Users.findOne({ 'email': values.email })
+    Users.findOne({ 'email': values.email, 'deleted_at': null })
       .exec(async function (err, found) {
         values.updated_at = new Date()
         if (found) {

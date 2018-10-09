@@ -19,7 +19,7 @@ module.exports = {
         try {
             var user = req.body;
             var referred_id = null;
-            existedUser = await Users.findOne({ email: req.body.email });
+            existedUser = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (existedUser) {
                 return res.status(401).json({
                     status: 401,
@@ -126,7 +126,7 @@ module.exports = {
                         if (uploadProfile) {
                             user.profile_pic = 'faldax/profile/' + uploadFileName;
 
-                            var updatedUsers = await Users.update({ email: req.body.email }).set(user).fetch();
+                            var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user).fetch();
                             delete updatedUsers.password
                             // sails.log(updatedUsers);
                             return res.json({
@@ -135,7 +135,7 @@ module.exports = {
                             });
                         }
                     } else {
-                        var updatedUsers = await Users.update({ email: req.body.email }).set(user);
+                        var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user);
                         return res.json({
                             "status": "200",
                             "message": "User details updated successfully"
@@ -262,6 +262,7 @@ module.exports = {
                 id: user_id,
                 is_active: true,
                 is_verified: true,
+                deleted_at: null
             });
             if (!user) {
                 return res.status(401).json({
@@ -303,6 +304,7 @@ module.exports = {
                 id: user_id,
                 is_active: true,
                 is_verified: true,
+                deleted_at: null
             });
             if (!user) {
                 return res.status(401).json({
@@ -347,6 +349,7 @@ module.exports = {
                 id: user_id,
                 is_active: true,
                 is_verified: true,
+                deleted_at: null
             });
             if (!user) {
                 return res.status(401).json({
@@ -358,7 +361,7 @@ module.exports = {
                     err: "Two factor authentication is already disabled"
                 });
             }
-            await Users.update({ id: user.id }).set({
+            await Users.update({ id: user.id, deleted_at: null }).set({
                 email: user.email,
                 is_twofactor: false,
                 twofactor_secret: null,
@@ -374,6 +377,30 @@ module.exports = {
                 "errors": error
             });
         }
+    },
+    deleteUser: async function (req, res) {
+        let user_id = req.user.id;
+        let userEmail = req.email;
+
+        let user = await Users.findOne({
+            id: user_id,
+            email: userEmail,
+            deleted_at: null
+        });
+
+        if (!user) {
+            res.status(401).json({
+                status: 401,
+                err: sails.__("User not found")
+            });
+        }
+
+        await Users.update({ id: user.id }).set({email:user.email, deleted_at: new Date() });
+
+        res.json({
+            status: 200,
+            message: sails.__("user_delete_success")
+        });
     },
     //------------------CMS APi------------------------------------------------//
 

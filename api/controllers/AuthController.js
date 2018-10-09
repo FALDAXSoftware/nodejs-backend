@@ -18,9 +18,9 @@ module.exports = {
                     password: req.body.password
                 }
                 if (req.body.email_verify_token && req.body.email_verify_token === req.body.email_verify_token) {
-                    await Users.update({ email: query.email }).set({ email: query.email, is_verified: true });
+                    await Users.update({ email: query.email, deleted_at: null }).set({ email: query.email, is_verified: true });
                 }
-                var user_detail = await Users.findOne({ email: query.email });
+                var user_detail = await Users.findOne({ email: query.email, deleted_at: null });
 
 
                 if (user_detail) {
@@ -111,7 +111,7 @@ module.exports = {
     //   Send auth code in email
     sendOtpEmail: async function (req, res) {
         let { email } = req.allParams();
-        let user = await Users.findOne({ email: email });
+        let user = await Users.findOne({ email: email, deleted_at: null });
         if (!user) {
             return res.json(401, {
                 err: "Invalid Email Address"
@@ -165,7 +165,7 @@ module.exports = {
 
     verifyEmailOtp: async function (req, res) {
         let { email, otp } = req.allParams();
-        let user = await Users.findOne({ email: email });
+        let user = await Users.findOne({ email: email, deleted_at: null });
         if (!user) {
             return res.json(401, {
                 err: "Invalid Email Address"
@@ -205,7 +205,7 @@ module.exports = {
             if (!user_details) {
                 throw "Wrong Reset token doesnot exist."
             }
-            let updateUsers = await Users.update({ email: user_details.email }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
+            let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
             if (updateUsers) {
                 return res.json({
                     "status": "200",
@@ -225,7 +225,7 @@ module.exports = {
     },
     forgotPassword: async function (req, res) {
         try {
-            const user_details = await Users.findOne({ email: req.body.email });
+            const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
                 return res.status(401).json({ err: 'invalid email' });
             }
@@ -234,7 +234,7 @@ module.exports = {
                 email: req.body.email,
                 reset_token: reset_token
             }
-            var updatedUser = await Users.update({ email: req.body.email }).set(new_user).fetch();
+            var updatedUser = await Users.update({ email: req.body.email, deleted_at: null }).set(new_user).fetch();
 
             sails.hooks.email.send(
                 "forgotPassword",
