@@ -8,6 +8,7 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
   tableName: 'admin',
+  primaryKey: 'id',
   attributes: {
     email: {
       type: 'string',
@@ -41,8 +42,8 @@ module.exports = {
       allowNull: true
     },
     role_id: {
-      //columnName: 'role_id',
-      model: 'Role',
+      columnName: 'role_id',
+      model: 'role',
     }
   },
   beforeCreate: (values, next) => {

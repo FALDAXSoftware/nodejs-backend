@@ -258,8 +258,13 @@ module.exports = {
                 where: {
                     deleted_at: null,
                 }
-            }).sort('id ASC').populate('role_id');
-
+            }).sort('id ASC');
+            for (let index = 0; index < employees.length; index++) {
+                if (employees[index].role_id) {
+                    let role = await Role.findOne({ id: employees[index].role_id })
+                    employees[index].role = role.name
+                }
+            }
             let employeeCount = await Admin.count({
                 where: {
                     deleted_at: null
