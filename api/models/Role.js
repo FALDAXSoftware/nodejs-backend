@@ -8,6 +8,7 @@
 module.exports = {
 
   tableName: 'roles',
+  primaryKey: 'id',
   attributes: {
     name: {
       type: "string",
@@ -68,8 +69,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    role_id: {
+      collection: 'admin',
+      via: 'role_id'
     }
-
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();

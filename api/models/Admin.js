@@ -41,9 +41,8 @@ module.exports = {
       allowNull: true
     },
     role_id: {
-      type: 'number',
-      columnName: 'role_id',
-      required: true
+      //columnName: 'role_id',
+      model: 'Role',
     }
   },
   beforeCreate: (values, next) => {

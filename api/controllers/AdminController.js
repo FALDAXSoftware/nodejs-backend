@@ -258,7 +258,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                 }
-            }).sort('id ASC');
+            }).sort('id ASC').populate('role_id');
 
             let employeeCount = await Admin.count({
                 where: {
@@ -287,7 +287,7 @@ module.exports = {
                 var employee_detail = await Admin.create({
                     name: req.body.name,
                     email: req.body.email,
-                    role_id: req.body.role_id,
+                    role_id: req.body.roles,
                     password: req.body.password ? req.body.password : 'faldax123',
                     created_at: new Date(),
                     deleted_at: null
