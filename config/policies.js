@@ -21,22 +21,23 @@ module.exports.policies = {
   '*': ['isAuthorized'], // Everything resctricted here
   'UsersController': {
     'create': true,
-   // We dont need authorization here, allowing public access,
+    'getMapCountries': true
+    // We dont need authorization here, allowing public access,
   },
   'AdminController': {
     'create': true,
-    "login":true,
-    "forgotPassword":true,
-    "resetPassword":true // We dont need authorization here, allowing public access,
+    "login": true,
+    "forgotPassword": true,
+    "resetPassword": true // We dont need authorization here, allowing public access,
   },
-  'CountriesController':{
-    '*':true
+  'CountriesController': {
+    '*': true
   },
-  'SubscribeController':{
-    "*":true
+  'SubscribeController': {
+    "*": true
   },
 
   'AuthController': {
     '*': true // We dont need authorization here, allowing public access
-  }
+  },
 };

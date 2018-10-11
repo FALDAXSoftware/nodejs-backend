@@ -41,6 +41,11 @@ module.exports = {
       columnName: 'created_at',
       allowNull: true
     },
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: true,
+    },
     role_id: {
       columnName: 'role_id',
       model: 'role',

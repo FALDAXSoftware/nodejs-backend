@@ -88,8 +88,8 @@ module.exports.routes = {
   'post /users/changePassword': "Users.changePassword",
   'get /users/getUserDetails': "Users.getUserReferral",
   'get /users/referredUsers': 'Users.getReferred',
-  'get /user/countries': 'Users.getCountriesData',
-  'get /user/getMapCountries': 'Users.getCountries',
+  'get /users/countries': 'Users.getCountriesData',
+  'get /users/getMapCountries': 'Users.getCountries',
   'get /users/login-history': 'Users.getLoginHistory',
   'post /users/setup-two-factor': 'Users.setupTwoFactor',
   'post /users/verify-two-factor': 'Users.verifyTwoFactor',
@@ -100,8 +100,10 @@ module.exports.routes = {
 
 
   //dashboard
-  'post /dashboard': "DashboardController.get"
+  'post /dashboard': "DashboardController.get",
 
-
+  //KYC routes
+  'post /users/add-kyc-details': "KYCController.updateKYCInfo",
+  'post /users/add-kyc-docs': "KYCController.uploadKYCDoc"
 
 };
