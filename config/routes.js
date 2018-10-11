@@ -104,6 +104,11 @@ module.exports.routes = {
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
-  'post /users/add-kyc-docs': "KYCController.uploadKYCDoc"
+  'post /users/add-kyc-docs': "KYCController.uploadKYCDoc",
 
+  //Blogs routes
+  'get /admin/all-blogs': 'BlogsController.getAllBlogs',
+  'post /admin/create-blog': 'BlogsController.createBlog',
+  'put /admin/edit-blog': 'BlogsController.updateBlog',
+  'delete /admin/delete-blog': 'BlogsController.deleteBlog'
 };
