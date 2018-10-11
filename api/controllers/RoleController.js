@@ -46,13 +46,12 @@ module.exports = {
 
     update: async function (req, res) {
         try {
-            let role = Role.findOne({ id: req.body.id });
+            let role = await Role.findOne({ id: req.body.id });
             if (!role) {
                 return res.status(500).json({
                     err: "Invalid Role Id."
                 });
             }
-            delete req.body.id;
             await Role.update({ id: role.id }).set(req.body);
             return res.json({
                 status: "200",

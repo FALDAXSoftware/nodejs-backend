@@ -122,7 +122,7 @@ module.exports = {
                             .toString();
                         let resourceImageName = timestamp;
                         var uploadFileName = timestamp + name;
-                        var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', uploadFileName);
+                        var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/profile/' + uploadFileName);
                         if (uploadProfile) {
                             user.profile_pic = 'faldax/profile/' + uploadFileName;
 
@@ -395,7 +395,7 @@ module.exports = {
             });
         }
 
-        await Users.update({ id: user.id }).set({email:user.email, deleted_at: new Date() });
+        await Users.update({ id: user.id }).set({ email: user.email, deleted_at: new Date() });
 
         res.json({
             status: 200,

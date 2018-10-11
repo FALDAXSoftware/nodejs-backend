@@ -7,5 +7,9 @@
   "Employee list": "Employees Retrieved Successfully",
   "Add Employee": "Employees Added Successfully",
   "Delete Employee": "Employees Removed Successfully",
-  "Update Employee": "Employees updated Successfully"
+  "Update Employee": "Employees updated Successfully",
+  "Create KYC": "KYC added Successfully",
+  "Update KYC": "KYC updated Successfully",
+  "KYC Updated": "KYC details already updated",
+  "KYC Doc Upload": "KYC doc uploaded Successfully"
 }

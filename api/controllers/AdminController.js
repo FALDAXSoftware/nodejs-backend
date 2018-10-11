@@ -353,7 +353,8 @@ module.exports = {
                     }).set({
                         name: req.body.name,
                         email: employee.email,
-                        role_id: req.body.role_id
+                        role_id: req.body.role_id,
+                        is_active: req.body.is_active
                     }).fetch();
                     if (updatedEmp) {
                         res.status(200).json({ status: '200', 'message': sails.__('Update Employee') })
