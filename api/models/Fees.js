@@ -1,32 +1,43 @@
 /**
- * Blogs.js
+ * Fees.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-    tableName: 'blogs',
+    tableName: 'fees',
     attributes: {
-        title: {
+        name: {
             type: 'string',
-            columnName: 'title',
+            columnName: 'name',
             required: true
         },
-        description: {
-            type: 'string',
-            columnName: 'description',
+        coin_id1: {
+            type: 'number',
+            columnName: 'coin_id1',
             required: true
         },
-        cover_image: {
+        coin_id2: {
+            type: 'number',
+            columnName: 'coin_id2',
+            required: true
+        },
+        maker_fee: {
             type: 'string',
-            columnName: 'cover_image',
+            columnName: 'maker_fee',
+            required: true
+        },
+        taker_fee: {
+            type: 'string',
+            columnName: 'taker_fee',
+            required: true
+        },
+        is_active: {
+            type: 'boolean',
+            columnName: 'is_active',
+            defaultsTo: true,
             allowNull: true,
-        },
-        tags: {
-            type: 'string',
-            columnName: 'tags',
-            allowNull: true
         },
         created_at: {
             type: 'ref',
@@ -42,10 +53,6 @@ module.exports = {
             type: 'ref',
             columnType: 'datetime',
             columnName: 'deleted_at'
-        },
-        admin_id: {
-            model: 'Admin',
-            columnName: 'admin_id'
         }
     }
 };

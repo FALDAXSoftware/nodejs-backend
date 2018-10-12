@@ -23,6 +23,7 @@ module.exports = {
                     ]
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
+
             let BlogCount = await Blogs.count({
                 where: {
                     deleted_at: null,
@@ -41,11 +42,24 @@ module.exports = {
                 });
             }
         } else {
+            let allAdmins = await Admin.find({
+                is_active: true,
+                deleted_at: null
+            });
+
             let blogData = await Blogs.find({
                 where: {
                     deleted_at: null,
                 }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < blogData.length; index++) {
+                if (blogData[index].admin_id) {
+                    let admin = await Admin.findOne({ id: blogData[index].admin_id })
+                    blogData[index].admin_name = admin.name
+                }
+            }
+
             let BlogCount = await Blogs.count({
                 where: {
                     deleted_at: null,
@@ -55,7 +69,7 @@ module.exports = {
                 return res.json({
                     "status": "200",
                     "message": sails.__("Blog list"),
-                    "data": blogData, BlogCount
+                    "data": blogData, BlogCount, allAdmins
                 });
             }
         }
@@ -66,6 +80,7 @@ module.exports = {
             if (req.body.title && req.body.description) {
                 var blog_detail = await Blogs.create({
                     title: req.body.title,
+                    admin_id: req.body.author,
                     tags: req.body.tags,
                     description: req.body.description,
                     created_at: new Date()
