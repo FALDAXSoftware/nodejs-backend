@@ -15,5 +15,8 @@
 	"Blog list": "Blogs Retrieved Successfully",
 	"Create Blog": "Blog Created Successfully",
 	"Update Blog": "Blog Updated Successfully",
-	"Delete Blog": "Blog Removed Successfully"
+	"Delete Blog": "Blog Removed Successfully",
+	"Pair list": "Pair Retrieved Successfully",
+	"Create Pair": "Pair Created Successfully",
+	"Update Pair": "Pair Updated Successfully"
 }

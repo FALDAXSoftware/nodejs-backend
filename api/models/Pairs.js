@@ -6,21 +6,21 @@
  */
 
 module.exports = {
-    tableName: 'fees',
+    tableName: 'pairs',
     attributes: {
         name: {
             type: 'string',
             columnName: 'name',
             required: true
         },
-        coin_id1: {
-            type: 'number',
-            columnName: 'coin_id1',
+        coin_code1: {
+            type: 'string',
+            columnName: 'coin_code1',
             required: true
         },
-        coin_id2: {
-            type: 'number',
-            columnName: 'coin_id2',
+        coin_code2: {
+            type: 'string',
+            columnName: 'coin_code2',
             required: true
         },
         maker_fee: {

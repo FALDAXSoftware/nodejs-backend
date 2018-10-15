@@ -84,8 +84,9 @@ module.exports.routes = {
   'delete /admin/delete-blog': 'BlogsController.deleteBlog',
 
   //Fees routes
-  'get /admin/all-fees': 'FeesController.getAllFees',
-
+  'get /admin/all-pairs': 'PairsController.getAllPairs',
+  'post /admin/add-pair': 'PairsController.createPair',
+  'put /admin/edit-pair': 'PairsController.updatePair',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
