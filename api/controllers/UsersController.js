@@ -218,7 +218,7 @@ module.exports = {
     getUserReferral: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
-        let userKyc = await userKyc.findOne({ user_id: id });
+        let userKyc = await KYC.findOne({ user_id: id });
         usersData[0].is_kyc_done = false;
         if (userKyc) {
             if (userKyc.steps == 3) {
