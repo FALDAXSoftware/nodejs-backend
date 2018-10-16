@@ -21,7 +21,7 @@ module.exports.policies = {
   '*': ['isAuthorized'], // Everything resctricted here
   'UsersController': {
     'create': true,
-    'getMapCountries': true
+    'getCountries': true
     // We dont need authorization here, allowing public access,
   },
   'AdminController': {
