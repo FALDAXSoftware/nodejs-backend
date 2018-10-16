@@ -55,6 +55,8 @@ module.exports = {
                                         err: 'Please enter otp to continue'
                                     });
                                 }
+                                console.log(user_detail.twofactor_secret);
+
                                 let verified = speakeasy.totp.verify({
                                     secret: user_detail.twofactor_secret,
                                     encoding: 'base32',
