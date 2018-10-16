@@ -18,5 +18,8 @@
 	"Delete Blog": "Blog Removed Successfully",
 	"Pair list": "Pair Retrieved Successfully",
 	"Create Pair": "Pair Created Successfully",
-	"Update Pair": "Pair Updated Successfully"
+	"Update Pair": "Pair Updated Successfully",
+	"Limit list": "Limit Retrieved Successfully",
+	"Update Limit": "Limit Updated Successfully",
+	"Transaction list": "Transaction list"
 }

@@ -88,6 +88,13 @@ module.exports.routes = {
   'post /admin/add-pair': 'PairsController.createPair',
   'put /admin/edit-pair': 'PairsController.updatePair',
 
+  //Limit routes
+  'get /admin/all-limits': 'LimitController.getAllLimit',
+  'put /admin/edit-limit': 'LimitController.updateLimit',
+
+  //Transaction routes
+  'get /admin/all-transactions': 'TransactionController.getAllTransactions',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",

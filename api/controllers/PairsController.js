@@ -72,7 +72,6 @@ module.exports = {
 
                 let coinID_1 = await Coins.findOne({ coin_code: req.body.coin_code1 });
                 let coinID_2 = await Coins.findOne({ coin_code: req.body.coin_code1 });
-                console.log('>>>>', coinID_1, coinID_2)
 
                 var pair_details = await Pairs.create({
                     name: req.body.name,
