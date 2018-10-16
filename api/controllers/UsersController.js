@@ -322,7 +322,7 @@ module.exports = {
                     err: "Two factor authentication is already enabled"
                 });
             }
-            console.log(user.twofactor_secret);
+            console.log(user.twofactor_secret, otp);
 
             let verified = speakeasy.totp.verify({
                 secret: user.twofactor_secret,
