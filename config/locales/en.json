@@ -21,5 +21,7 @@
 	"Update Pair": "Pair Updated Successfully",
 	"Limit list": "Limit Retrieved Successfully",
 	"Update Limit": "Limit Updated Successfully",
-	"Transaction list": "Transaction list"
+	"Transaction list": "Transaction list",
+	"Trade list": "Trade list",
+	"Withdraw Request list": "Withdraw Request list"
 }

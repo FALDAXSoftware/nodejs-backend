@@ -95,6 +95,12 @@ module.exports.routes = {
   //Transaction routes
   'get /admin/all-transactions': 'TransactionController.getAllTransactions',
 
+  //Trade routes
+  'get /admin/all-trades': 'TradeController.getAllTrades',
+
+  //Withdrawal Requests routes
+  'get /admin/all-withdraw-requests': 'WithdrawReqController.getAllWithdrawReq',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
