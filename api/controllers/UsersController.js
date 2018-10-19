@@ -19,7 +19,8 @@ module.exports = {
         try {
             var user = req.body;
             var referred_id = null;
-            existedUser = await Users.findOne({ email: req.body.email, deleted_at: null });
+            let email = req.body.email.toLowerCase();
+            existedUser = await Users.findOne({ email, deleted_at: null });
             if (existedUser) {
                 return res.status(401).json({
                     status: 401,
@@ -40,7 +41,7 @@ module.exports = {
             let email_verify_token = randomize('Aa0', 10);
             if (req.body.email && req.body.password) {
                 var user_detail = await Users.create({
-                    email: req.body.email,
+                    email: email,
                     password: req.body.password,
                     full_name: req.body.firstname + ' ' + req.body.lastname,
                     first_name: req.body.firstname,
@@ -64,7 +65,6 @@ module.exports = {
                             subject: "Signup Verification"
                         },
                         function (err) {
-                            console.log(err || "It worked!");
                             if (!err) {
                                 return res.json({
                                     "status": "200",

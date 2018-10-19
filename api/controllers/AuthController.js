@@ -22,9 +22,7 @@ module.exports = {
                 }
                 var user_detail = await Users.findOne({ email: query.email, deleted_at: null });
 
-
                 if (user_detail) {
-                    // console.log(user_detail);
                     if (user_detail.is_verified == false) {
                         return res.json(403, {
                             "status": "403",
@@ -55,8 +53,6 @@ module.exports = {
                                         err: 'Please enter otp to continue'
                                     });
                                 }
-                                console.log(user_detail.twofactor_secret);
-
                                 let verified = speakeasy.totp.verify({
                                     secret: user_detail.twofactor_secret,
                                     encoding: 'base32',
@@ -65,9 +61,7 @@ module.exports = {
                                 if (!verified) {
                                     return res.status(401).json({ err: 'invalid otp' });
                                 }
-
                             }
-
 
                             delete user_detail.password;
                             // Login History Save
@@ -81,7 +75,7 @@ module.exports = {
                                 status: "200",
                                 user: user_detail,
                                 token,
-                                message: "Login successfull."
+                                message: "Welcome back," + user_detail.first_name + "!"
                             });
                         }
                     });
@@ -100,8 +94,6 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log("dsfsfsd", error)
-
             res.json({
                 "status": "500",
                 "err": error
@@ -133,7 +125,6 @@ module.exports = {
             email: user.email,
             authCode: randomize('Aa0', 6)
         });
-        console.log("=>", user.email);
 
         // send code in email
         sails.hooks.email.send(
@@ -155,8 +146,6 @@ module.exports = {
                         "message": "Authentication code sent to email successfully"
                     });
                 } else {
-                    console.log(err);
-
                     return res.status(500).json({
                         "err": err
                     });
@@ -196,25 +185,30 @@ module.exports = {
             token,
             message: "Login successfull."
         });
-
     },
 
     resetPassword: async function (req, res) {
         try {
-            var reset_token = req.body.reset_token;
+            if (req.body.reset_token) {
+                var reset_token = req.body.reset_token;
 
-            let user_details = await Users.findOne({ reset_token });
-            if (!user_details) {
-                throw "Wrong Reset token doesnot exist."
-            }
-            let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
-            if (updateUsers) {
-                return res.json({
-                    "status": "200",
-                    "message": "Password updated Successfully"
-                });
+                let user_details = await Users.findOne({ reset_token });
+                if (!user_details) {
+                    throw "Wrong Reset token doesnot exist."
+                }
+                let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
+                if (updateUsers) {
+                    return res.json({
+                        "status": "200",
+                        "message": "Password updated Successfully"
+                    });
+                } else {
+                    throw "Update password Error"
+                }
             } else {
-                throw "Update password Error"
+                return res.json({
+                    "status": "500", "message": "error", "errors": "Reset Token is not present."
+                });
             }
         } catch (e) {
             return res.json({
@@ -222,9 +216,9 @@ module.exports = {
                 "message": "error",
                 "errors": e
             });
-
         }
     },
+
     forgotPassword: async function (req, res) {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
@@ -251,7 +245,6 @@ module.exports = {
                     subject: "Forgot Password"
                 },
                 function (err) {
-                    console.log(err || "It worked!");
                     if (!err) {
                         return res.json({
                             "status": "200",
@@ -261,9 +254,7 @@ module.exports = {
                 }
             )
             sails.log(updatedUser);
-
         } catch (error) {
-            console.log(error)
             res.json({
                 "status": "500",
                 "message": "error",
@@ -273,4 +264,3 @@ module.exports = {
         }
     }
 };
-
