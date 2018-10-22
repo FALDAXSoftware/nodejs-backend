@@ -56,7 +56,8 @@ module.exports = {
                                 let verified = speakeasy.totp.verify({
                                     secret: user_detail.twofactor_secret,
                                     encoding: 'base32',
-                                    token: req.body.otp
+                                    token: req.body.otp,
+                                    window: 2
                                 });
                                 if (!verified) {
                                     return res.status(401).json({ err: 'invalid otp' });
