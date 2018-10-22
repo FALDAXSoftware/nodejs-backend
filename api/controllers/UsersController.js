@@ -327,7 +327,8 @@ module.exports = {
             let verified = speakeasy.totp.verify({
                 secret: user.twofactor_secret,
                 encoding: "base32",
-                token: otp
+                token: otp,
+                window: 2
             });
             if (verified) {
                 await Users.update({ id: user.id }).set({
