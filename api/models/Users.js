@@ -54,6 +54,11 @@ module.exports = {
       columnName: 'street_address',
       allowNull: true
     },
+    street_address_2: {
+      type: 'string',
+      columnName: 'street_address_2',
+      allowNull: true
+    },
     city_town: {
       type: 'string',
       columnName: 'city_town',

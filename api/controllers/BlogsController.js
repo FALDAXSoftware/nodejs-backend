@@ -48,10 +48,8 @@ module.exports = {
             });
 
             let blogData = await Blogs.find({
-                where: {
-                    deleted_at: null,
-                }
-            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+                deleted_at: null
+            }).sort("id ASC").paginate(page, parseInt(limit));
 
             for (let index = 0; index < blogData.length; index++) {
                 if (blogData[index].admin_id) {

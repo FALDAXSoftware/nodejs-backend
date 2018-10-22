@@ -23,5 +23,7 @@
 	"Update Limit": "Limit Updated Successfully",
 	"Transaction list": "Transaction list",
 	"Trade list": "Trade list",
-	"Withdraw Request list": "Withdraw Request list"
+	"Withdraw Request list": "Withdraw Request list",
+	"Sell Order list": "Sell Order list",
+	"Buy Order list": "Buy Order list"
 }

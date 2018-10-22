@@ -49,6 +49,36 @@ module.exports = {
       columnName: 'employee',
       defaultsTo: false,
     },
+    pairs: {
+      type: "boolean",
+      columnName: 'pairs',
+      defaultsTo: false,
+    },
+    blogs: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'blogs',
+    },
+    limit_management: {
+      type: "boolean",
+      columnName: 'limit_management',
+      defaultsTo: false,
+    },
+    transaction_history: {
+      type: "boolean",
+      columnName: 'transaction_history',
+      defaultsTo: false,
+    },
+    trade_history: {
+      type: "boolean",
+      columnName: 'trade_history',
+      defaultsTo: false,
+    },
+    withdraw_requests: {
+      type: "boolean",
+      columnName: 'withdraw_requests',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

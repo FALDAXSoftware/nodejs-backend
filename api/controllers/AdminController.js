@@ -14,9 +14,12 @@ module.exports = {
                 let query = {
                     email: req.body.email,
                     password: req.body.password
-
                 }
                 var admin_details = await Admin.findOne({ email: query.email });
+
+                let role = await Role.findOne({ id: admin_details.role_id })
+                admin_details.roles = role;
+
                 if (admin_details) {
                     Admin.comparePassword(query.password, admin_details, async function (err, valid) {
                         if (err) {
@@ -140,7 +143,6 @@ module.exports = {
                 return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
             }
         } catch (error) {
-            console.log(error);
             res.json({
                 "status": "500",
                 "message": "error",
@@ -229,7 +231,6 @@ module.exports = {
                     subject: "Forgot Password"
                 },
                 function (err) {
-                    console.log(err || "It worked!");
                     if (!err) {
                         return res.json({
                             "status": "200",
@@ -241,7 +242,6 @@ module.exports = {
             sails.log(updatedAdmin);
 
         } catch (error) {
-            //  console.log(error)
             res.json({
                 "status": "500",
                 "message": "error",
@@ -313,8 +313,6 @@ module.exports = {
             }
         }
         catch (error) {
-            // console.log(error);
-
             res.json({
                 'message': 'error',
                 'status': '500',
@@ -369,5 +367,4 @@ module.exports = {
             res.status(500).json({ 'status': '500', 'error': error });
         }
     }
-
 };

@@ -33,6 +33,11 @@ module.exports = {
             columnName: 'address',
             allowNull: true
         },
+        address_2: {
+            type: 'string',
+            columnName: 'address_2',
+            allowNull: true
+        },
         city: {
             type: 'string',
             columnName: 'city',

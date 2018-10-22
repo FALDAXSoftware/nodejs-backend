@@ -101,6 +101,10 @@ module.exports.routes = {
   //Withdrawal Requests routes
   'get /admin/all-withdraw-requests': 'WithdrawReqController.getAllWithdrawReq',
 
+  //Order routes
+  'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
+  'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
