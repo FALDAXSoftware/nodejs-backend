@@ -27,7 +27,7 @@ module.exports = {
                         }
 
                         if (!valid) {
-                            return res.json(401, { err: 'invalid email or password' });
+                            return res.json(401, { err: 'Invalid email or password' });
                         } else {
                             delete admin_details.password;
                             var token = await sails.helpers.jwtIssue(admin_details.id);

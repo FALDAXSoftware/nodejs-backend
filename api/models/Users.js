@@ -65,7 +65,7 @@ module.exports = {
       allowNull: true
     },
     postal_code: {
-      type: 'number',
+      type: 'string',
       columnName: 'postal_code',
       allowNull: true
     },
@@ -102,6 +102,11 @@ module.exports = {
     reset_token: {
       type: 'string',
       columnName: 'reset_token',
+      allowNull: true
+    },
+    reset_token_expire: {
+      type: 'number',
+      columnName: 'reset_token_expire',
       allowNull: true
     },
     is_active: {

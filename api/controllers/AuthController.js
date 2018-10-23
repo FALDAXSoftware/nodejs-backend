@@ -190,14 +190,38 @@ module.exports = {
 
     resetPassword: async function (req, res) {
         try {
-            if (req.body.reset_token) {
+            if (req.body.reset_token && req.body.password) {
+
                 var reset_token = req.body.reset_token;
 
                 let user_details = await Users.findOne({ reset_token });
                 if (!user_details) {
-                    throw "Wrong Reset token doesnot exist."
+                    return res.status(500).json({
+                        "status": "500",
+                        "message": "error",
+                        "errors": "Something went wrong."
+                    });
+                } else {
+                    if (user_details.reset_token_expire < new Date().getTime()) {
+                        let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({
+                            email: user_details.email,
+                            reset_token: null,
+                            reset_token_expire: null
+                        }).fetch();
+                        if (updateUsers) {
+                            return res.status(400).json({
+                                "status": "400",
+                                "message": "Reset Token expired."
+                            });
+                        }
+                    }
                 }
-                let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
+                let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({
+                    email: user_details.email,
+                    password: req.body.password,
+                    reset_token: null,
+                    reset_token_expire: null
+                }).fetch();
                 if (updateUsers) {
                     return res.json({
                         "status": "200",
@@ -208,7 +232,9 @@ module.exports = {
                 }
             } else {
                 return res.json({
-                    "status": "500", "message": "error", "errors": "Reset Token is not present."
+                    "status": "500",
+                    "message": "error",
+                    "errors": "Reset Token or Password is not present."
                 });
             }
         } catch (e) {
@@ -227,9 +253,12 @@ module.exports = {
                 return res.status(401).json({ err: 'Email not Registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
+            let reset_token_expire = new Date().getTime() + 300000;
+
             let new_user = {
                 email: req.body.email,
-                reset_token: reset_token
+                reset_token,
+                reset_token_expire
             }
             var updatedUser = await Users.update({ email: req.body.email, deleted_at: null }).set(new_user).fetch();
 
