@@ -175,7 +175,7 @@ module.exports = {
             if (req.body.current_password == req.body.new_password) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'Current and new password should not be match'
+                    err: 'Current and new password should not be same.'
                 });
             }
 
@@ -337,7 +337,7 @@ module.exports = {
                 });
                 return res.json({
                     status: "200",
-                    message: "Two factor verification authentication has been enabled"
+                    message: "Two factor authentication has been enabled"
                 });
             }
             return res.status(401).json({ err: "Invalid OTP" });
@@ -377,7 +377,7 @@ module.exports = {
             });
             return res.json({
                 status: "200",
-                message: "Two factor verification authentication has been disabled"
+                message: "Two factor authentication has been disabled"
             });
         } catch (error) {
             return res.json({

@@ -26,7 +26,7 @@ module.exports = {
                     if (user_detail.is_verified == false) {
                         return res.json(403, {
                             "status": "403",
-                            "err": "Activatie your account for logging in.",
+                            "err": "To login please activate your account.",
                         });
                     }
                     if (user_detail.is_active == false) {
@@ -43,7 +43,7 @@ module.exports = {
                         if (!valid) {
                             return res.status(401).json({
                                 status: 401,
-                                err: 'invalid email or password'
+                                err: 'Invalid email or password'
                             });
                         } else {
                             if (user_detail.is_twofactor && user_detail.twofactor_secret) {
@@ -76,21 +76,21 @@ module.exports = {
                                 status: "200",
                                 user: user_detail,
                                 token,
-                                message: "Welcome back," + user_detail.first_name + "!"
+                                message: "Welcome back, " + user_detail.first_name + "!"
                             });
                         }
                     });
                 } else {
                     res.json(401, {
                         "status": "401",
-                        "err": "invalid email or password",
+                        "err": "Invalid email or password",
                     });
                     return;
                 }
             } else {
                 res.json(401, {
                     "status": "401",
-                    "err": "email or password is not sent",
+                    "err": "Email or password is not sent",
                 });
                 return;
             }
@@ -224,7 +224,7 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
-                return res.status(401).json({ err: 'invalid email' });
+                return res.status(401).json({ err: 'Email not Registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
             let new_user = {
