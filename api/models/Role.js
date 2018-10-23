@@ -14,35 +14,40 @@ module.exports = {
       type: "string",
       columnName: "name"
     },
-    user: {
+    dashboard: {
       type: "boolean",
-      defaultsTo: false,
-      columnName: 'user',
+      defaultsTo: true,
+      columnName: 'dashboard',
     },
-    coin: {
+    users: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'coin',
+      columnName: 'users',
+    },
+    coins: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'coins',
     },
     announcement: {
       type: "boolean",
       defaultsTo: false,
       columnName: 'announcement',
     },
-    staticPage: {
+    static_pages: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'staticPage',
+      columnName: 'static_pages',
     },
-    role: {
+    roles: {
       type: "boolean",
-      columnName: 'role',
+      columnName: 'roles',
       defaultsTo: false,
     },
-    country: {
+    countries: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'country',
+      columnName: 'countries',
     },
     employee: {
       type: "boolean",

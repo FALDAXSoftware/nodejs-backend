@@ -43,7 +43,7 @@ module.exports = {
                         if (!valid) {
                             return res.status(401).json({
                                 status: 401,
-                                err: 'invalid email or password'
+                                err: 'Invalid email or password'
                             });
                         } else {
                             if (user_detail.is_twofactor && user_detail.twofactor_secret) {
@@ -83,14 +83,14 @@ module.exports = {
                 } else {
                     res.json(401, {
                         "status": "401",
-                        "err": "invalid email or password",
+                        "err": "Invalid email or password",
                     });
                     return;
                 }
             } else {
                 res.json(401, {
                     "status": "401",
-                    "err": "email or password is not sent",
+                    "err": "Email or Password is not sent",
                 });
                 return;
             }
@@ -190,14 +190,38 @@ module.exports = {
 
     resetPassword: async function (req, res) {
         try {
-            if (req.body.reset_token) {
+            if (req.body.reset_token && req.body.password) {
+
                 var reset_token = req.body.reset_token;
 
                 let user_details = await Users.findOne({ reset_token });
                 if (!user_details) {
-                    throw "Wrong Reset token doesnot exist."
+                    return res.status(500).json({
+                        "status": "500",
+                        "message": "error",
+                        "errors": "Something went wrong."
+                    });
+                } else {
+                    if (user_details.reset_token_expire < new Date().getTime()) {
+                        let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({
+                            email: user_details.email,
+                            reset_token: null,
+                            reset_token_expire: null
+                        }).fetch();
+                        if (updateUsers) {
+                            return res.status(400).json({
+                                "status": "400",
+                                "message": "Reset Token expired."
+                            });
+                        }
+                    }
                 }
-                let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({ email: user_details.email, password: req.body.password, reset_token: null }).fetch();
+                let updateUsers = await Users.update({ email: user_details.email, deleted_at: null }).set({
+                    email: user_details.email,
+                    password: req.body.password,
+                    reset_token: null,
+                    reset_token_expire: null
+                }).fetch();
                 if (updateUsers) {
                     return res.json({
                         "status": "200",
@@ -208,7 +232,9 @@ module.exports = {
                 }
             } else {
                 return res.json({
-                    "status": "500", "message": "error", "errors": "Reset Token is not present."
+                    "status": "500",
+                    "message": "error",
+                    "errors": "Reset Token or Password is not present."
                 });
             }
         } catch (e) {
@@ -224,12 +250,15 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
-                return res.status(401).json({ err: 'invalid email' });
+                return res.status(401).json({ err: 'Invalid email' });
             }
             let reset_token = randomize('Aa0', 10);
+            let reset_token_expire = new Date().getTime() + 300000;
+
             let new_user = {
                 email: req.body.email,
-                reset_token: reset_token
+                reset_token,
+                reset_token_expire
             }
             var updatedUser = await Users.update({ email: req.body.email, deleted_at: null }).set(new_user).fetch();
 

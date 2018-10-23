@@ -94,7 +94,6 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log(error)
             res.status(500).json({
                 status: 500,
                 err: error
@@ -103,12 +102,11 @@ module.exports = {
         }
     },
 
-
     update: async function (req, res) {
         try {
             const user_details = await Users.findOne({ id: req.user.id });
             if (!user_details) {
-                return res.status(401).json({ err: 'invalid email' });
+                return res.status(401).json({ err: 'Invalid email' });
             }
             var user = req.body;
             delete user.profile;
@@ -120,7 +118,6 @@ module.exports = {
                         let timestamp = new Date()
                             .getTime()
                             .toString();
-                        let resourceImageName = timestamp;
                         var uploadFileName = timestamp + name;
                         var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/profile/' + uploadFileName);
                         if (uploadProfile) {
@@ -155,10 +152,7 @@ module.exports = {
         }
     },
 
-
     changePassword: async function (req, res) {
-        console.log(req.body);
-
         try {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
                 return res.status(401).json({
@@ -214,7 +208,6 @@ module.exports = {
         return;
     },
 
-
     getUserReferral: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
@@ -233,7 +226,6 @@ module.exports = {
             });
         }
     },
-
 
     getReferred: async function (req, res) {
         let id = req.user.id;
@@ -259,7 +251,6 @@ module.exports = {
             "data": history,
         });
     },
-
 
     setupTwoFactor: async function (req, res) {
         try {
@@ -322,7 +313,6 @@ module.exports = {
                     err: "Two factor authentication is already enabled"
                 });
             }
-            console.log(user.twofactor_secret, otp);
 
             let verified = speakeasy.totp.verify({
                 secret: user.twofactor_secret,
@@ -349,7 +339,6 @@ module.exports = {
             });
         }
     },
-
 
     disableTwoFactor: async function (req, res) {
         try {
@@ -463,7 +452,6 @@ module.exports = {
         }
     },
 
-
     userActivate: async function (req, res) {
         let { user_id, email, is_active } = req.body;
 
@@ -481,7 +469,6 @@ module.exports = {
             });
         }
     },
-
 
     getCountriesData: async function (req, res) {
         fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
@@ -521,9 +508,7 @@ module.exports = {
             message: "Countries retirved successfully",
             countries: countriesResponse
         });
-
     },
-
 
     getUserReferredAdmin: async function (req, res) {
         let { page, limit, id } = req.allParams();
