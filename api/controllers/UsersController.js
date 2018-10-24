@@ -55,9 +55,9 @@ module.exports = {
                     sails.hooks.email.send(
                         "signup",
                         {
-                            homelink: "http://18.191.87.133:8089",
+                            homelink: "http://18.191.87.133:8085",
                             recipientName: user_detail.first_name,
-                            token: 'http://18.191.87.133:8089/login?token=' + email_verify_token,
+                            token: 'http://18.191.87.133:8085/login?token=' + email_verify_token,
                             senderName: "Faldax"
                         },
                         {
@@ -169,7 +169,7 @@ module.exports = {
             if (req.body.current_password == req.body.new_password) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'Current and new password should not be match'
+                    err: 'Current and new password should not be same.'
                 });
             }
 
@@ -326,7 +326,7 @@ module.exports = {
                 });
                 return res.json({
                     status: "200",
-                    message: "Two factor verification authentication has been enabled"
+                    message: "Two factor authentication has been enabled"
                 });
             }
             return res.status(401).json({ err: "Invalid OTP" });
@@ -365,7 +365,7 @@ module.exports = {
             });
             return res.json({
                 status: "200",
-                message: "Two factor verification authentication has been disabled"
+                message: "Two factor authentication has been disabled"
             });
         } catch (error) {
             return res.json({

@@ -26,7 +26,7 @@ module.exports = {
                     if (user_detail.is_verified == false) {
                         return res.json(403, {
                             "status": "403",
-                            "err": "Activatie your account for logging in.",
+                            "err": "To login please activate your account.",
                         });
                     }
                     if (user_detail.is_active == false) {
@@ -76,7 +76,7 @@ module.exports = {
                                 status: "200",
                                 user: user_detail,
                                 token,
-                                message: "Welcome back," + user_detail.first_name + "!"
+                                message: "Welcome back, " + user_detail.first_name + "!"
                             });
                         }
                     });
@@ -90,7 +90,7 @@ module.exports = {
             } else {
                 res.json(401, {
                     "status": "401",
-                    "err": "Email or Password is not sent",
+                    "err": "Email or password is not sent",
                 });
                 return;
             }
@@ -250,7 +250,7 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
-                return res.status(401).json({ err: 'This email id is not registered with us.' });
+                return res.status(401).json({ err: 'Email not Registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
             let reset_token_expire = new Date().getTime() + 300000;
