@@ -292,7 +292,6 @@ module.exports = {
         }
     },
 
-
     verifyTwoFactor: async function (req, res) {
         try {
             let user_id = req.user.id;
@@ -376,6 +375,7 @@ module.exports = {
             });
         }
     },
+
     deleteUser: async function (req, res) {
         let user_id = req.user.id;
         let userEmail = req.email;
@@ -407,23 +407,25 @@ module.exports = {
         let { page, limit, data } = req.allParams();
         if (data) {
             let usersData = await Users.find({
-                or: [{
-                    email: { contains: data }
-                },
-                { first_name: { contains: data } },
-                { last_name: { contains: data } }
-                ], where: {
+                where: {
                     is_verified: true,
+                    or: [{
+                        email: { contains: data }
+                    },
+                    { first_name: { contains: data } },
+                    { last_name: { contains: data } }
+                    ]
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id DESC").paginate(page, parseInt(limit));
             let userCount = await Users.count({
-                or: [{
-                    email: { contains: data }
-                },
-                { first_name: { contains: data } },
-                { last_name: { contains: data } }
-                ], where: {
+                where: {
                     is_verified: true,
+                    or: [{
+                        email: { contains: data }
+                    },
+                    { first_name: { contains: data } },
+                    { last_name: { contains: data } }
+                    ]
                 }
             });
             if (usersData) {
@@ -438,7 +440,7 @@ module.exports = {
                 where: {
                     is_verified: true,
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id DESC").paginate(page, parseInt(limit));
             let userCount = await Users.count({
                 is_verified: true,
             });

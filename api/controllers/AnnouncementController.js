@@ -6,20 +6,15 @@
  */
 
 module.exports = {
-
     //---------------------------Web Api------------------------------
 
     //-------------------------------CMS Api--------------------------
     getAnnouncementTemplate: async function (req, res) {
-        let { page, limit } = req.allParams();
-        let announcementTemplateData = await Announcement.find(
-            {
-                where: {
-                    deleted_at: null
-                }
+        let announcementTemplateData = await Announcement.find({
+            where: {
+                deleted_at: null
             }
-        );
-        // console.log(announcementTemplateData)
+        });
         if (announcementTemplateData) {
             return res.json({
                 "status": "200",
@@ -28,7 +23,6 @@ module.exports = {
             });
         }
     },
-
 
     create: async function (req, res) {
         try {
@@ -72,7 +66,6 @@ module.exports = {
         }
     },
 
-
     update: async function (req, res) {
         try {
             const announcementTemplate = await Announcement.findOne({ id: req.body.id });
@@ -91,7 +84,6 @@ module.exports = {
                 "status": "200",
                 "message": "Announcement details updated successfully"
             });
-
         } catch (error) {
             res.json({
                 "status": "500",
@@ -101,7 +93,6 @@ module.exports = {
             return;
         }
     },
-
 
     delete: async function (req, res) {
         let { id } = req.allParams();
@@ -145,11 +136,10 @@ module.exports = {
                 if (!err) {
                     return res.json({
                         "status": "200",
-                        "message": "Anouncement sent to email successfully"
+                        "message": "Success  Announcement sent to email successfully."
                     });
                 }
             }
         )
     }
-
 };

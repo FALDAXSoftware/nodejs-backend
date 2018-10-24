@@ -201,7 +201,6 @@ module.exports = {
                 "message": "error",
                 "errors": e
             });
-
         }
     },
 
@@ -209,7 +208,7 @@ module.exports = {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email });
             if (!admin_details) {
-                return res.status(401).json({ err: 'invalid email' });
+                return res.status(401).json({ err: 'This email id is not registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
             let new_admin = {
@@ -234,7 +233,7 @@ module.exports = {
                     if (!err) {
                         return res.json({
                             "status": "200",
-                            "message": "Reset link sent to email successfully"
+                            "message": "Reset password link sent to your email successfully."
                         });
                     }
                 }

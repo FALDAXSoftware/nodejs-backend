@@ -8,11 +8,7 @@ var fetch = require('node-fetch')
 module.exports = {
     getCountries: async function (req, res) {
         let { page, limit, data } = req.allParams();
-        // console.log(page,limit);
-        // console.log(data)
         if (data) {
-            // console.log(page,limit);
-
             let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').populate('state').paginate(page, parseInt(limit));
             let CountriesCount = await Countries.count({ name: { contains: data } });
             if (countryData) {
@@ -54,8 +50,6 @@ module.exports = {
         });
     },
 
-
-
     countryActivate: async function (req, res) {
         try {
             let { id, is_active } = req.body;
@@ -65,7 +59,7 @@ module.exports = {
             if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
                 return res.json({
                     "status": "200",
-                    "message": "User Status Updated"
+                    "message": "Country Status Updated"
                 });
             } else {
                 throw "Country(id) not found."
@@ -82,7 +76,6 @@ module.exports = {
     stateActivate: async function (req, res) {
         try {
             let { id, is_active } = req.body;
-
             let stateData = await State.update({ id: id }).set({ is_active: is_active }).fetch();
 
             if (stateData && typeof stateData === 'object' && stateData.length > 0) {
@@ -104,7 +97,6 @@ module.exports = {
 
     countryUpdate: async function (req, res) {
         try {
-
             let countriesData = await Countries.update({ id: req.body.id }).set(req.body).fetch();
 
             if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
@@ -126,7 +118,6 @@ module.exports = {
 
     stateUpdate: async function (req, res) {
         try {
-
             let stateData = await State.update({ id: req.body.id }).set(req.body).fetch();
 
             if (stateData && typeof stateData === 'object' && stateData.length > 0) {
@@ -145,7 +136,6 @@ module.exports = {
             });
         }
     },
-
 
     insertCountries: async function (req, res) {
         let countries = [

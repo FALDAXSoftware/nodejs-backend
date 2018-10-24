@@ -114,7 +114,7 @@ module.exports = {
         }
         if (!user.is_verified) {
             return res.json(403, {
-                "err": "Activatie your account for logging in.",
+                "err": "Activate your account for logging in.",
             });
         }
         if (!user.is_active) {
@@ -250,7 +250,7 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
-                return res.status(401).json({ err: 'Invalid email' });
+                return res.status(401).json({ err: 'This email id is not registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
             let reset_token_expire = new Date().getTime() + 300000;
@@ -278,7 +278,7 @@ module.exports = {
                     if (!err) {
                         return res.json({
                             "status": "200",
-                            "message": "Reset link sent to email successfully"
+                            "message": "Reset password link sent to your email successfully."
                         });
                     }
                 }

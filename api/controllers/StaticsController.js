@@ -6,16 +6,7 @@
  */
 
 module.exports = {
-
     //---------------------------Web Api------------------------------
-
-
-
-
-
-
-
-
 
     //-------------------------------CMS Api--------------------------
     getStatic: async function (req, res) {
@@ -30,6 +21,7 @@ module.exports = {
             });
         }
     },
+
     create: async function (req, res) {
         try {
             if (req.body.title && req.body.name && req.body.content) {
@@ -44,7 +36,7 @@ module.exports = {
                     //Send verification email in before create
                     res.json({
                         "status": 200,
-                        "message": "Static created successfully."
+                        "message": "Static page created successfully."
                     });
                     return;
                 } else {
@@ -64,7 +56,6 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log("err", error)
             res.status(500).json({
                 "status": "500",
                 "message": "error",
@@ -73,6 +64,7 @@ module.exports = {
             return;
         }
     },
+
     update: async function (req, res) {
         try {
             const static_details = await Statics.findOne({ id: req.body.id });
@@ -91,7 +83,7 @@ module.exports = {
 
             return res.json({
                 "status": "200",
-                "message": "Static page  details updated successfully"
+                "message": "Static page  details updated successfully."
             });
 
         } catch (error) {
@@ -103,6 +95,7 @@ module.exports = {
             return;
         }
     },
+
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
@@ -116,10 +109,8 @@ module.exports = {
         if (staticData) {
             return res.status(200).json({
                 "status": 200,
-                "message": "Static page  deleted successfully"
+                "message": "Page deleted successfully."
             });
         }
     }
-
-
 };
