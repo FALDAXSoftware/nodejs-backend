@@ -6,34 +6,48 @@
  */
 
 module.exports = {
-  tableName:"loginhistory",
+  tableName: "loginhistory",
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
-    ip:{
-      type:"string",
-      columnName:"ip"
+    ip: {
+      type: "string",
+      columnName: "ip"
     },
-    created_at : {
-      type: 'ref', 
+    isLoggedIn: {
+      type: "boolean",
+      columnName: "isLoggedIn",
+      defaultsTo: true
+    },
+    device_type: {
+      type: "number",
+      columnName: "device_type",
+      allowNull: true,
+    },
+    device_token: {
+      type: "string",
+      columnName: "device_token",
+      allowNull: true
+    },
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-
-    user:{
-      model:'users',
+    user: {
+      model: 'users',
       columnName: 'user_id',
     },
 
@@ -45,8 +59,5 @@ module.exports = {
     //  ╔═╗╔═╗╔═╗╔═╗╔═╗╦╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
     //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
     //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
-
   },
-
 };
-

@@ -17,7 +17,6 @@ module.exports = {
     //------------------Web APi------------------------------------------------//
     create: async function (req, res) {
         try {
-            var user = req.body;
             var referred_id = null;
             let email = req.body.email.toLowerCase();
             existedUser = await Users.findOne({ email, deleted_at: null });
@@ -49,15 +48,17 @@ module.exports = {
                     referral_code: randomize('Aa0', 10),
                     created_at: new Date(),
                     referred_id: referred_id,
-                    email_verify_token: email_verify_token
+                    email_verify_token: email_verify_token,
                 }).fetch();
+
                 if (user_detail) {
                     sails.hooks.email.send(
-                        "signup",
+                        (req.body.device_type == 1 || req.body.device_type == 2) ? "signupCode" : "signup",
                         {
-                            homelink: "http://18.191.87.133:8085",
+                            homelink: sails.config.urlConf.APP_URL,
                             recipientName: user_detail.first_name,
-                            token: 'http://18.191.87.133:8085/login?token=' + email_verify_token,
+                            token: sails.config.urlConf.APP_URL + '/login?token=' + email_verify_token,
+                            tokenCode: email_verify_token,
                             senderName: "Faldax"
                         },
                         {
@@ -68,17 +69,14 @@ module.exports = {
                             if (!err) {
                                 return res.json({
                                     "status": "200",
-                                    "message": "Verification link sent to email successfully"
+                                    "message":
+                                        (req.body.device_type == 1 || req.body.device_type == 2) ?
+                                            "Verification code sent to email successfully" :
+                                            "Verification link sent to email successfully"
                                 });
                             }
                         }
                     )
-                    //Send verification email in before create
-                    // res.json({
-                    //     "status": 200,
-                    //     "message": "Sign up successfully."
-                    // });
-                    // return;
                 } else {
                     res.status(401).json({
                         status: 401,
@@ -125,7 +123,6 @@ module.exports = {
 
                             var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user).fetch();
                             delete updatedUsers.password
-                            // sails.log(updatedUsers);
                             return res.json({
                                 "status": "200",
                                 "message": "User details updated successfully"

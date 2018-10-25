@@ -109,6 +109,7 @@ module.exports.routes = {
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
+  'post /users/verify-user': "AuthController.verifyUser",
   'post /users/forgotPassword': "AuthController.forgotPassword",
   'put /users/resetPassword': "AuthController.resetPassword",
   'post /users/changePassword': "Users.changePassword",

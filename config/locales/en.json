@@ -15,7 +15,7 @@
 	"Blog list": "Blogs Retrieved Successfully",
 	"Create Blog": "Blog Created Successfully",
 	"Update Blog": "Blog Updated Successfully",
-	"Delete Blog": "Blog Removed Successfully",
+	"Delete Blog": "Blog deleted successfully.",
 	"Pair list": "Pair Retrieved Successfully",
 	"Create Pair": "Pair Created Successfully",
 	"Update Pair": "Pair Updated Successfully",
@@ -25,5 +25,7 @@
 	"Trade list": "Trade list",
 	"Withdraw Request list": "Withdraw Request list",
 	"Sell Order list": "Sell Order list",
-	"Buy Order list": "Buy Order list"
+	"Buy Order list": "Buy Order list",
+	"Invalid Token": "Invalid verification token",
+	"Verify User": "Verification Success. Please Login."
 }

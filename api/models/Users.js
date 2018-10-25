@@ -179,7 +179,6 @@ module.exports = {
       .exec(async function (err, found) {
         values.updated_at = new Date()
         if (found) {
-          console.log(found);
           if (values.password) {
             bcrypt.genSalt(10, function (err, salt) {
               if (err) return next(err);
@@ -193,7 +192,6 @@ module.exports = {
             // delete values.email;
             next();
           }
-
         } else {
           next({ error: "Email address doesn't exist" });
         }

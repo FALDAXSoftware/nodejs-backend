@@ -8,25 +8,40 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 
 module.exports = {
+    // Verify User Api
+    verifyUser: async function (req, res) {
+        try {
+            if (req.body.email_verify_token) {
+                let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
+                if (user) {
+                    await Users.update({ id: user.id, deleted_at: null }).set({ email: user.email, is_verified: true, email_verify_token: null });
+                    return res.json({ "status": "200", "message": sails.__('Verify User') });
+                } else {
+                    return res.status(400).json({ "status": "400", "err": sails.__('Invalid Token') });
+                }
+            }
+        } catch (error) {
+            return res.status(500).json({ "status": "500", "err": error });
+        }
+    },
 
     // Login User
     login: async function (req, res) {
+        console.log(sails.config.urlconf.APP_URL)
         try {
             if (req.body.email && req.body.password) {
                 let query = {
                     email: req.body.email,
-                    password: req.body.password
+                    password: req.body.password,
                 }
-                if (req.body.email_verify_token && req.body.email_verify_token === req.body.email_verify_token) {
-                    await Users.update({ email: query.email, deleted_at: null }).set({ email: query.email, is_verified: true });
-                }
+
                 var user_detail = await Users.findOne({ email: query.email, deleted_at: null });
 
                 if (user_detail) {
                     if (user_detail.is_verified == false) {
-                        return res.json(403, {
-                            "status": "403",
-                            "err": "To login please activate your account.",
+                        return res.json(402, {
+                            "status": "402",
+                            "err": "Activate your account for logging in.",
                         });
                     }
                     if (user_detail.is_active == false) {
@@ -69,7 +84,9 @@ module.exports = {
                             await LoginHistory.create({
                                 user: user_detail.id,
                                 ip: req.ip,
-                                created_at: new Date()
+                                created_at: new Date(),
+                                device_type: req.body.device_type ? req.body.device_type : null,
+                                device_token: req.body.device_token ? req.body.device_token : null
                             });
                             var token = await sails.helpers.jwtIssue(user_detail.id);
                             return res.json({
@@ -131,7 +148,7 @@ module.exports = {
         sails.hooks.email.send(
             "verificationCode",
             {
-                homelink: "http://18.191.87.133:8089",
+                homelink: sails.config.urlconf.APP_URL,
                 recipientName: user.first_name,
                 code: user.authCode,
                 senderName: "Faldax"
@@ -265,9 +282,9 @@ module.exports = {
             sails.hooks.email.send(
                 "forgotPassword",
                 {
-                    homelink: "http://18.191.87.133:8085",
-                    recipientName: user_details.name,
-                    token: 'http://18.191.87.133:8085/reset-password?reset_token=' + reset_token,
+                    homelink: sails.config.urlconf.APP_URL,
+                    recipientName: user_details.first_name,
+                    token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token,
                     senderName: "Faldax"
                 },
                 {
