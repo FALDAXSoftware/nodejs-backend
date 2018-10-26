@@ -22,7 +22,7 @@ module.exports = {
             sails.hooks.email.send(
                 "subscribe",
                 {
-                    homelink: sails.config.urlConf.APP_URL,
+                    homelink: sails.config.urlconf.APP_URL,
                     recipientName: req.body.email,
                     senderName: "Faldax"
                 },

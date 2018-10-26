@@ -125,7 +125,7 @@ module.exports = {
         sails.hooks.email.send(
             "general-email",
             {
-                homelink: sails.config.urlConf.APP_URL,
+                homelink: sails.config.urlconf.APP_URL,
                 content: announcement.content,
             },
             {

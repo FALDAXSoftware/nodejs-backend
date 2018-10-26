@@ -55,9 +55,9 @@ module.exports = {
                     sails.hooks.email.send(
                         (req.body.device_type == 1 || req.body.device_type == 2) ? "signupCode" : "signup",
                         {
-                            homelink: sails.config.urlConf.APP_URL,
+                            homelink: sails.config.urlconf.APP_URL,
                             recipientName: user_detail.first_name,
-                            token: sails.config.urlConf.APP_URL + '/login?token=' + email_verify_token,
+                            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
                             tokenCode: email_verify_token,
                             senderName: "Faldax"
                         },

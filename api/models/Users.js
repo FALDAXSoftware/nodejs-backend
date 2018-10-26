@@ -72,7 +72,8 @@ module.exports = {
     profile_pic: {
       type: 'string',
       columnName: 'profile_pic',
-      allowNull: true
+      allowNull: true,
+      defaultsTo: ''
     },
     dob: {
       type: 'string',

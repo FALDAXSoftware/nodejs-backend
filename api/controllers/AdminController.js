@@ -183,19 +183,26 @@ module.exports = {
             var reset_token = req.body.reset_token;
 
             let admin_details = await Admin.findOne({ reset_token });
-            if (!admin_details) {
-                throw "Wrong Reset token doesnot exist."
-            }
-            let updateAdmin = await Admin.update({ email: admin_details.email }).set({ email: admin_details.email, password: req.body.password, reset_token: null }).fetch();
-            if (updateAdmin) {
-                return res.json({
-                    "status": "200",
-                    "message": "Password updated Successfully"
-                });
+            if (admin_details) {
+                let updateAdmin = await Admin.update({ email: admin_details.email }).set({ email: admin_details.email, password: req.body.password, reset_token: null }).fetch();
+                if (updateAdmin) {
+                    return res.json({
+                        "status": "200",
+                        "message": "Password updated Successfully"
+                    });
+                } else {
+                    throw "Update password Error"
+                }
             } else {
-                throw "Update password Error"
+                console.log('elseee')
+                return res.status(500).json({
+                    "status": "500",
+                    "message": "error",
+                    "errors": "Elseeee"
+                });
             }
         } catch (e) {
+            console.log('catchhh', e)
             return res.json({
                 "status": "500",
                 "message": "error",
@@ -220,9 +227,9 @@ module.exports = {
             sails.hooks.email.send(
                 "forgotPassword",
                 {
-                    homelink: sails.config.urlConf.CMS_URL,
+                    homelink: sails.config.urlconf.CMS_URL,
                     recipientName: admin_details.name,
-                    token: sails.config.urlConf.CMS_URL + '/reset-password/' + reset_token,
+                    token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
                     senderName: "Faldax"
                 },
                 {
@@ -239,8 +246,8 @@ module.exports = {
                 }
             )
             sails.log(updatedAdmin);
-
         } catch (error) {
+            console.log('error', error)
             res.json({
                 "status": "500",
                 "message": "error",
