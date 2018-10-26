@@ -129,6 +129,10 @@ module.exports = {
                             });
                         }
                     } else {
+                        if (user.remove_pic == 'true') {
+                            delete user.remove_pic;
+                            await Users.update({ email: user.email }).set({ email: user.email, profile_pic: null });
+                        }
                         var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user);
                         return res.json({
                             "status": "200",

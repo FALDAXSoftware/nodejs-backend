@@ -1,6 +1,6 @@
 
 var jwt = require('jsonwebtoken'),
-tokenSecret = "secretissecet";
+  tokenSecret = "secretissecet";
 
 //currently not in use
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
       { id: inputs.id },
       tokenSecret, // Token Secret that we sign it with
       {
-        expiresIn : '3m' // Token Expire time
+        expiresIn: '3m' // Token Expire time
       }
     );
     return exits.success(result);

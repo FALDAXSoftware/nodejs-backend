@@ -124,7 +124,7 @@ module.exports.routes = {
   'post /users/send-otp-email': 'Auth.sendOtpEmail',
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
-
+  'post /logout': "AuthController.logOut",
 
   //dashboard
   'post /dashboard': "DashboardController.get",

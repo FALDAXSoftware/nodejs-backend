@@ -309,5 +309,19 @@ module.exports = {
             });
             return;
         }
+    },
+
+    logOut: async function (req, res) {
+        let user = await LoginHistory.find({ device_token: req.body.device_token });
+
+        let logged_user = await LoginHistory.update({
+            device_token: req.body.device_token
+        }).set({ isLoggedIn: false, device_token: null }).fetch();
+
+        if (logged_user) {
+            return res.json({ status: "200", message: "User Log out successfully." });
+        } else {
+            return res.status(400).json({ status: "400", message: "Invalid Token" });
+        }
     }
 };

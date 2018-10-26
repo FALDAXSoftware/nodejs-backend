@@ -51,7 +51,7 @@ module.exports = {
                 res.json({
                     "status": 400,
                     "message": "not listed",
-                    "error": "Static id is not sent",
+                    "error": "Something went wrong",
                 });
                 return;
             }
@@ -69,7 +69,7 @@ module.exports = {
         try {
             const static_details = await Statics.findOne({ id: req.body.id });
             if (!static_details) {
-                return res.status(401).json({ err: 'invalid Static Id' });
+                return res.status(401).json({ err: 'Invalid Static page Id' });
             }
             var staticData = { ...req.body };
             delete staticData.id
@@ -83,7 +83,7 @@ module.exports = {
 
             return res.json({
                 "status": "200",
-                "message": "Static page  details updated successfully."
+                "message": "Static page details updated successfully."
             });
 
         } catch (error) {
@@ -109,7 +109,7 @@ module.exports = {
         if (staticData) {
             return res.status(200).json({
                 "status": 200,
-                "message": "Page deleted successfully."
+                "message": "Static Page deleted successfully."
             });
         }
     }
