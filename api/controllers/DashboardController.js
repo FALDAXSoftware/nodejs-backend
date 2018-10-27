@@ -20,16 +20,15 @@ module.exports = {
         created_at: { '<=': AccHrDate }
       })
       return res.json({
-        "status": "200",
+        "status": 200,
         "message": "Dashboard Data",
         coinCount, userCount, AccountCreated24Hr
       });
     } catch (e) {
-      return res.status(500).json({
-        "message": "Error",
-        "error": e
+      res.status(500).json({
+        status: 500,
+        "err": sails.__("Something Wrong")
       });
     }
   }
 };
-

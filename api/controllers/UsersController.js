@@ -92,8 +92,10 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log('error', error)
-            c
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
             return;
         }
     },

@@ -8,14 +8,6 @@
 module.exports = {
     //---------------------------Web Api------------------------------
 
-
-
-
-
-
-
-
-
     //-------------------------------CMS Api--------------------------
     getCoins: async function (req, res) {
         // req.setLocale('en')
@@ -43,7 +35,7 @@ module.exports = {
             });
             if (coinsData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Coin list"),
                     "data": coinsData, CoinsCount
                 });
@@ -61,7 +53,7 @@ module.exports = {
             });
             if (coinsData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Coin list"),
                     "data": coinsData, CoinsCount
                 });
@@ -88,37 +80,33 @@ module.exports = {
                     });
                     return;
                 } else {
-                    res.json({
+                    res.status(400).json({
                         "status": 400,
-                        "message": "not listed",
-                        "error": "Something went wrong",
+                        "err": "Something went wrong",
                     });
                     return;
                 }
             } else {
-                res.json({
+                res.status(400).json({
                     "status": 400,
-                    "message": "not listed",
-                    "error": "coin id is not sent",
+                    "err": "coin id is not sent",
                 });
                 return;
             }
         } catch (error) {
             res.status(500).json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
     },
 
-
     update: async function (req, res) {
         try {
             const coin_details = await Coins.findOne({ id: req.body.coin_id });
             if (!coin_details) {
-                return res.status(401).json({ err: 'invalid coin' });
+                return res.status(401).json({ status: 401, err: 'Invalid coin' });
             }
             var coinData = {
                 id: req.body.coin_id, ...req.body
@@ -126,31 +114,29 @@ module.exports = {
             var updatedCoin = await Coins.update({ id: req.body.coin_id }).set(req.body).fetch();
             if (!updatedCoin) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Something went wrong! could not able to update coin details"
                 });
             }
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Coin details updated successfully"
             });
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
     },
 
-
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
-            res.json({
+            res.status(500).json({
                 "status": 500,
-                "message": "Coin id is not sent"
+                "err": "Coin id is not sent"
             });
             return;
         }
@@ -162,6 +148,4 @@ module.exports = {
             });
         }
     },
-
 };
-

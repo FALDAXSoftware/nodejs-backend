@@ -46,7 +46,7 @@ module.exports = {
             });
             if (withdrawReqData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Withdraw Request list"),
                     "data": withdrawReqData, withdrawReqCount
                 });
@@ -69,7 +69,7 @@ module.exports = {
 
             if (withdrawReqData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Withdraw Request list"),
                     "data": withdrawReqData, withdrawReqCount
                 });

@@ -13,7 +13,7 @@ module.exports = {
             let CountriesCount = await Countries.count({ name: { contains: data } });
             if (countryData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Country list",
                     "data": countryData, CountryCount: CountriesCount
                 });
@@ -24,7 +24,7 @@ module.exports = {
             let CountriesCount = await Countries.count();
             if (countryData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Country list",
                     "data": countryData, CountryCount: CountriesCount
                 });
@@ -44,7 +44,7 @@ module.exports = {
 
         let state = await State.find(param).sort('id ASC');
         return res.json({
-            "status": "200",
+            "status": 200,
             "message": "State list",
             "data": state
         });
@@ -58,17 +58,16 @@ module.exports = {
 
             if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Country Status Updated"
                 });
             } else {
                 throw "Country(id) not found."
             }
         } catch (e) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": e
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -80,17 +79,16 @@ module.exports = {
 
             if (stateData && typeof stateData === 'object' && stateData.length > 0) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "State Status Updated"
                 });
             } else {
                 throw "State(id) not found."
             }
         } catch (e) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": e
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -101,17 +99,16 @@ module.exports = {
 
             if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Country Updated"
                 });
             } else {
                 throw "Country(id) not found."
             }
         } catch (e) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": e
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -122,17 +119,16 @@ module.exports = {
 
             if (stateData && typeof stateData === 'object' && stateData.length > 0) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "State Updated"
                 });
             } else {
                 throw "State(id) not found."
             }
         } catch (e) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": e
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },

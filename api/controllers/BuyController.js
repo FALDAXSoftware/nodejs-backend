@@ -31,7 +31,7 @@ module.exports = {
             });
             if (buyBookData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Buy Order list"),
                     "data": buyBookData, buyBookCount
                 });
@@ -48,7 +48,7 @@ module.exports = {
 
             if (buyBookData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Buy Order list"),
                     "data": buyBookData, buyBookCount
                 });

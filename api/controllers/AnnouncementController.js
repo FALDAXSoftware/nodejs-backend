@@ -17,7 +17,7 @@ module.exports = {
         });
         if (announcementTemplateData) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Announcement list",
                 "data": announcementTemplateData
             });
@@ -78,7 +78,7 @@ module.exports = {
             }
 
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Announcement details updated successfully"
             });
         } catch (error) {
@@ -131,7 +131,7 @@ module.exports = {
             function (err) {
                 if (!err) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": "Success  Announcement sent to email successfully."
                     });
                 }

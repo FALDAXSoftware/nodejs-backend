@@ -36,7 +36,7 @@ module.exports = {
             });
             if (blogData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Blog list"),
                     "data": blogData, BlogCount
                 });
@@ -65,7 +65,7 @@ module.exports = {
             });
             if (blogData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Blog list"),
                     "data": blogData, BlogCount, allAdmins
                 });
@@ -90,26 +90,23 @@ module.exports = {
                     });
                     return;
                 } else {
-                    res.json({
+                    res.status(400).json({
                         "status": 400,
-                        "message": "not listed",
                         "error": "Something went wrong",
                     });
                     return;
                 }
             } else {
-                res.json({
+                res.status(400).json({
                     "status": 400,
-                    "message": "not listed",
-                    "error": "blog title & description is not sent",
+                    "err": "blog title & description is not sent",
                 });
                 return;
             }
         } catch (error) {
             res.status(500).json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -125,22 +122,21 @@ module.exports = {
                 var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
                 if (!updatedBlog) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": "Something went wrong!"
                     });
                 }
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__('Update Blog')
                 });
             } else {
-                return res.status(400).json({ 'status': '400', 'message': 'blog id is not sent.' })
+                return res.status(400).json({ 'status': 400, 'message': 'blog id is not sent.' })
             }
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -149,9 +145,9 @@ module.exports = {
     deleteBlog: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
-            res.json({
+            res.status(500).json({
                 "status": 500,
-                "message": "Blog id is not sent"
+                "err": "Blog id is not sent"
             });
             return;
         }
