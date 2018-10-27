@@ -23,7 +23,7 @@ module.exports = {
                     { coin_code2: { contains: data } }
                     ]
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
             let pairsCount = await Pairs.count({
                 where: {
                     deleted_at: null,
@@ -47,9 +47,9 @@ module.exports = {
                 where: {
                     deleted_at: null,
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
-            let allCoins = await Coins.find({ where: { is_active: true }, select: ['id', 'coin_name', 'coin_code'] });
+            let allCoins = await Coins.find({ where: { is_active: true, deleted_at: null }, select: ['id', 'coin_name', 'coin_code'] });
             let pairsCount = await Pairs.count({
                 where: {
                     deleted_at: null,

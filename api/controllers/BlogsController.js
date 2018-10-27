@@ -22,7 +22,7 @@ module.exports = {
                     { description: { contains: data } }
                     ]
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
             let BlogCount = await Blogs.count({
                 where: {
@@ -49,7 +49,7 @@ module.exports = {
 
             let blogData = await Blogs.find({
                 deleted_at: null
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
             for (let index = 0; index < blogData.length; index++) {
                 if (blogData[index].admin_id) {

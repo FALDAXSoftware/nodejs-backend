@@ -22,7 +22,7 @@ module.exports = {
                     { coin_code: { contains: data } }
                     ]
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
             let CoinsCount = await Coins.count({
                 where: {
                     deleted_at: null,
@@ -45,7 +45,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                 }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
             let CoinsCount = await Coins.count({
                 where: {
                     deleted_at: null,

@@ -417,7 +417,7 @@ module.exports = {
                     { last_name: { contains: data } }
                     ]
                 }
-            }).sort("id DESC").paginate(page, parseInt(limit));
+            }).sort("id DESC").paginate(page - 1, parseInt(limit));
             let userCount = await Users.count({
                 where: {
                     is_verified: true,
@@ -441,7 +441,7 @@ module.exports = {
                 where: {
                     is_verified: true,
                 }
-            }).sort("id DESC").paginate(page, parseInt(limit));
+            }).sort("id DESC").paginate(page - 1, parseInt(limit));
             let userCount = await Users.count({
                 is_verified: true,
             });

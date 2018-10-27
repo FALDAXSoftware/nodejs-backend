@@ -9,7 +9,7 @@ module.exports = {
     getCountries: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
-            let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').populate('state').paginate(page, parseInt(limit));
+            let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').populate('state').paginate(page - 1, parseInt(limit));
             let CountriesCount = await Countries.count({ name: { contains: data } });
             if (countryData) {
                 return res.json({
@@ -20,7 +20,7 @@ module.exports = {
             }
         } else {
             let countryData = await Countries.find().sort('id ASC').populate('state')
-                .paginate(page, parseInt(limit));
+                .paginate(page - 1, parseInt(limit));
             let CountriesCount = await Countries.count();
             if (countryData) {
                 return res.json({
