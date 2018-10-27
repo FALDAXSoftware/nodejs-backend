@@ -41,26 +41,23 @@ module.exports = {
                     });
                     return;
                 } else {
-                    res.json({
+                    res.status(400).json({
                         "status": 400,
-                        "message": "not listed",
-                        "error": "Something went wrong",
+                        "err": "not listed",
                     });
                     return;
                 }
             } else {
-                res.json({
+                res.status(400).json({
                     "status": 400,
-                    "message": "not listed",
-                    "error": "Missing Parameters",
+                    "err": "Missing Parameters",
                 });
                 return;
             }
         } catch (error) {
             res.status(500).json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -70,12 +67,12 @@ module.exports = {
         try {
             const announcementTemplate = await Announcement.findOne({ id: req.body.id });
             if (!announcementTemplate) {
-                return res.status(401).json({ err: 'invalid Static Id' });
+                return res.status(401).json({ status: 401, "err": 'Invalid Static Id' });
             }
             var updatedAnnouncement = await Announcement.update({ id: req.body.id }).set(req.body).fetch();
             if (!updatedAnnouncement) {
-                return res.json({
-                    "status": "200",
+                return res.status(400).json({
+                    "status": 400,
                     "message": "Something went wrong! could not able to update announcement details"
                 });
             }
@@ -85,10 +82,9 @@ module.exports = {
                 "message": "Announcement details updated successfully"
             });
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -97,9 +93,9 @@ module.exports = {
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
-            res.json({
+            res.status(500).json({
                 "status": 500,
-                "message": "Announcement id is not sent"
+                "err": "Announcement id is not sent"
             });
             return;
         }

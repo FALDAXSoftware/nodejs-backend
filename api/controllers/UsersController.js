@@ -23,7 +23,7 @@ module.exports = {
             if (existedUser) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'Email address already exist'
+                    "err": 'Email address already exist'
                 });
             }
             if (req.body.referral_code) {
@@ -31,7 +31,7 @@ module.exports = {
                 if (!referredUser) {
                     return res.status(401).json({
                         status: 401,
-                        err: 'Invalid refferal code'
+                        "err": 'Invalid refferal code'
                     });
                 } else {
                     referred_id = referredUser.id;
@@ -68,7 +68,7 @@ module.exports = {
                         function (err) {
                             if (!err) {
                                 return res.json({
-                                    "status": "200",
+                                    "status": 200,
                                     "message":
                                         (req.body.device_type == 1 || req.body.device_type == 2) ?
                                             "Verification code sent to email successfully" :
@@ -80,22 +80,20 @@ module.exports = {
                 } else {
                     res.status(401).json({
                         status: 401,
-                        err: "Something went wrong",
+                        "err": "Something went wrong",
                     });
                     return;
                 }
             } else {
                 res.status(401).json({
                     status: 401,
-                    err: "email or password or phone_number is not sent",
+                    "err": "email or password or phone_number is not sent",
                 });
                 return;
             }
         } catch (error) {
-            res.status(500).json({
-                status: 500,
-                err: error
-            });
+            console.log('error', error)
+            c
             return;
         }
     },
@@ -104,7 +102,7 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ id: req.user.id });
             if (!user_details) {
-                return res.status(401).json({ err: 'Invalid email' });
+                return res.status(401).json({ "status": 401, "err": 'Invalid email' });
             }
             var user = req.body;
             delete user.profile;
@@ -124,8 +122,8 @@ module.exports = {
                             var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user).fetch();
                             delete updatedUsers.password
                             return res.json({
-                                "status": "200",
-                                "message": "User details updated successfully"
+                                "status": 200,
+                                "message": sails.__("User Update")
                             });
                         }
                     } else {
@@ -135,8 +133,8 @@ module.exports = {
                         }
                         var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user);
                         return res.json({
-                            "status": "200",
-                            "message": "User details updated successfully"
+                            "status": 200,
+                            "message": sails.__("User Update")
                         });
                     }
                 } catch (e) {
@@ -144,10 +142,9 @@ module.exports = {
                 }
             });
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -158,19 +155,19 @@ module.exports = {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'Please provide current password, new password, confirm password'
+                    "err": 'Please provide current password, new password, confirm password'
                 });
             }
             if (req.body.new_password != req.body.confirm_password) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'New and confirm password should match'
+                    "err": 'New and confirm password should match'
                 });
             }
             if (req.body.current_password == req.body.new_password) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'Current and new password should not be same.'
+                    "err": 'Current and new password should not be same.'
                 });
             }
 
@@ -178,14 +175,14 @@ module.exports = {
             if (!user_details) {
                 return res.status(401).json({
                     status: 401,
-                    err: 'User not found'
+                    "err": 'User not found'
                 });
             }
             let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
             if (!compareCurrent) {
                 return res.status(401).json({
                     status: 401,
-                    err: "Current password mismatch"
+                    "err": "Current password mismatch"
                 });
             }
 
@@ -193,17 +190,16 @@ module.exports = {
 
             if (updatedUsers) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Password changed successfully",
                 });
             } else {
-                return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
+                return res.status(401).json({ "status": 401, err: 'Something went wrong! Could not able to update the password' });
             }
         } catch (error) {
             return res.status(500).json({
-                "status": "500",
-                "message": "error",
-                "err": error
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
         return;
@@ -221,7 +217,7 @@ module.exports = {
         }
         if (usersData) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Users Data",
                 "data": usersData
             });
@@ -234,7 +230,7 @@ module.exports = {
 
         if (usersData) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "User referred Data",
                 "data": usersData
             });
@@ -247,7 +243,7 @@ module.exports = {
             user: req.user.id
         }).sort('created_at DESC').limit(10);
         return res.json({
-            "status": "200",
+            "status": 200,
             "message": "Users Login History",
             "data": history,
         });
@@ -264,7 +260,8 @@ module.exports = {
             });
             if (!user) {
                 return res.status(401).json({
-                    err: "User not found or it's not active"
+                    "status": 401,
+                    "err": "User not found or it's not active"
                 });
             }
             const secret = speakeasy.generateSecret({ length: 10 });
@@ -285,10 +282,9 @@ module.exports = {
                 })
             });
         } catch (error) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            return res.status(500).json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -305,12 +301,14 @@ module.exports = {
             });
             if (!user) {
                 return res.status(401).json({
-                    err: "User not found or it's not active"
+                    "status": 401,
+                    "err": "User not found or it's not active"
                 });
             }
             if (user.is_twofactor == true) {
                 return res.status(401).json({
-                    err: "Two factor authentication is already enabled"
+                    "status": 401,
+                    "err": "Two factor authentication is already enabled"
                 });
             }
 
@@ -326,16 +324,15 @@ module.exports = {
                     is_twofactor: true,
                 });
                 return res.json({
-                    status: "200",
+                    status: 200,
                     message: "Two factor authentication has been enabled"
                 });
             }
             return res.status(401).json({ err: "Invalid OTP" });
         } catch (error) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -351,12 +348,14 @@ module.exports = {
             });
             if (!user) {
                 return res.status(401).json({
-                    err: "User not found or it's not active"
+                    "status": 401,
+                    "err": "User not found or it's not active"
                 });
             }
             if (user.is_twofactor == false) {
                 return res.status(401).json({
-                    err: "Two factor authentication is already disabled"
+                    "status": 401,
+                    "err": "Two factor authentication is already disabled"
                 });
             }
             await Users.update({ id: user.id, deleted_at: null }).set({
@@ -365,14 +364,13 @@ module.exports = {
                 twofactor_secret: null,
             });
             return res.json({
-                status: "200",
+                status: 200,
                 message: "Two factor authentication has been disabled"
             });
         } catch (error) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -389,8 +387,8 @@ module.exports = {
 
         if (!user) {
             res.status(401).json({
-                status: 401,
-                err: sails.__("User not found")
+                "status": 401,
+                "err": sails.__("User not found")
             });
         }
 
@@ -431,7 +429,7 @@ module.exports = {
             });
             if (usersData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Users list",
                     "data": usersData, userCount
                 });
@@ -447,7 +445,7 @@ module.exports = {
             });
             if (usersData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Users list",
                     "data": usersData, userCount
                 });
@@ -462,12 +460,12 @@ module.exports = {
 
         if (usersData && typeof usersData === 'object' && usersData.length > 0) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "User Status Updated"
             });
         } else {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "User(id) not found"
             });
         }
@@ -480,7 +478,10 @@ module.exports = {
                 res.json({ status: 200, data: resData })
             })
             .catch(err => {
-                res.status(500).json({ message: err })
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
             })
     },
 
@@ -521,7 +522,7 @@ module.exports = {
         let usersDataCount = await Users.count({ referred_id: id, is_verified: true });
         if (usersData) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Users Data",
                 "data": usersData, usersDataCount
             });
@@ -534,7 +535,7 @@ module.exports = {
             user: user_id
         }).sort("created_at DESC").limit(10);
         return res.json({
-            "status": "200",
+            "status": 200,
             "message": "Users Login Data",
             "data": history
         });

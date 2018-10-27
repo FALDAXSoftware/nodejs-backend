@@ -33,7 +33,7 @@ module.exports = {
                 function (err) {
                     if (!err) {
                         return res.json({
-                            "status": "200",
+                            "status": 200,
                             "message": "Verification link sent to email successfully"
                         });
                     }
@@ -42,9 +42,8 @@ module.exports = {
             )
         } catch (e) {
             return res.status(500).json({
-                "status": "500",
-                "message": "Error in adding subscription",
-                "error": e
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     }

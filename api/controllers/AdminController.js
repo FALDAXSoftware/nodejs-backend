@@ -23,11 +23,11 @@ module.exports = {
                 if (admin_details) {
                     Admin.comparePassword(query.password, admin_details, async function (err, valid) {
                         if (err) {
-                            return res.json(403, { err: 'forbidden' });
+                            return res.status(403).json({ "status": 403, "err": 'Forbidden' });
                         }
 
                         if (!valid) {
-                            return res.json(401, { err: 'Invalid email or password' });
+                            return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
                         } else {
                             delete admin_details.password;
                             var token = await sails.helpers.jwtIssue(admin_details.id);
@@ -39,10 +39,10 @@ module.exports = {
                     });
                 } else {
                     updated_at
-                    res.json({
-                        "status": "400",
+                    res.tstaus(400).json({
+                        "status": 400,
                         "message": "not listed",
-                        "error": "invalid email or phone number or password",
+                        "err": "Invalid email or password",
                     });
                     return;
                 }
@@ -75,7 +75,7 @@ module.exports = {
                 var token = await sails.helpers.jwtIssue(user_detail.id);
                 if (user_detail) {
                     res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": "listed",
                         "data": user_detail,
                         token
@@ -135,7 +135,7 @@ module.exports = {
 
             if (adminUpdates) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Password changed successfully",
                     "data": adminUpdates
                 });

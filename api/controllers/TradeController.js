@@ -47,7 +47,7 @@ module.exports = {
             });
             if (tradeData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Trade list"),
                     "data": tradeData, tradeCount
                 });
@@ -87,7 +87,7 @@ module.exports = {
                 });
                 if (tradeData) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": sails.__("Trade list"),
                         "data": tradeData, tradeCount
                     });
@@ -114,7 +114,7 @@ module.exports = {
 
                 if (tradeData) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": sails.__("Trade list"),
                         "data": tradeData, tradeCount
                     });
@@ -141,7 +141,7 @@ module.exports = {
 
             if (tradeData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Trade list"),
                     "data": tradeData, tradeCount
                 });

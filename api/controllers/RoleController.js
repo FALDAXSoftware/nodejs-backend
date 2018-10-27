@@ -13,18 +13,18 @@ module.exports = {
             let role = await Role.create(params).fetch();
             if (!role) {
                 return res.status(500).json({
-                    err: "Something went wrong."
+                    status: 500,
+                    err: sails.__("Something Wrong")
                 });
             }
             return res.json({
-                status: "200",
+                status: 200,
                 message: "Role added successfully"
             })
         } catch (error) {
-            console.log(error);
-
             return res.status(500).json({
-                err: "Something went wrong."
+                status: 500,
+                err: sails.__("Something Wrong")
             })
         }
     },
@@ -33,13 +33,14 @@ module.exports = {
         try {
             let roles = await Role.find({ deleted_at: null }).sort("created_at DESC");
             return res.json({
-                status: "200",
-                message: "Role retrivedsuccessfully",
+                status: 200,
+                message: "Role retrived successfully",
                 roles: roles
             })
         } catch (error) {
             return res.status(500).json({
-                err: "Something went wrong."
+                status: 500,
+                err: sails.__("Something Wrong")
             })
         }
     },
@@ -49,17 +50,19 @@ module.exports = {
             let role = await Role.findOne({ id: req.body.id });
             if (!role) {
                 return res.status(500).json({
+                    status: 500,
                     err: "Invalid Role Id."
                 });
             }
             await Role.update({ id: role.id }).set(req.body);
             return res.json({
-                status: "200",
+                status: 200,
                 message: "Role Updated successfully"
             })
         } catch (error) {
             return res.status(500).json({
-                err: "Something went wrong."
+                status: 500,
+                err: sails.__("Something Wrong")
             })
         }
     },
@@ -69,22 +72,21 @@ module.exports = {
             let role = await Role.findOne({ id: req.body.id });
             if (!role) {
                 return res.status(500).json({
+                    status: 500,
                     err: "Invalid Role Id."
                 });
             } else {
                 await Role.update({ id: role.id }).set({ deleted_at: new Date() });
                 return res.json({
-                    status: "200",
+                    status: 200,
                     message: "Role Deleted successfully"
                 })
             }
         } catch (error) {
             return res.status(500).json({
-                err: "Something went wrong."
+                status: 500,
+                err: sails.__("Something Wrong")
             })
         }
     }
-
-
 };
-

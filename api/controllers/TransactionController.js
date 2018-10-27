@@ -44,7 +44,7 @@ module.exports = {
             });
             if (transactionData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Transaction list"),
                     "data": transactionData, transactionCount
                 });
@@ -74,7 +74,7 @@ module.exports = {
 
             if (transactionData) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": sails.__("Transaction list"),
                     "data": transactionData, transactionCount
                 });

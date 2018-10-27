@@ -27,5 +27,10 @@
 	"Sell Order list": "Sell Order list",
 	"Buy Order list": "Buy Order list",
 	"Invalid Token": "Invalid verification token",
-	"Verify User": "Verification Success. Please Login."
+	"Verify User": "Verification Success. Please Login.",
+	"Contact Admin": "Contact the admin to activate your account.",
+	"Activate Account": "Activate your account for logging in.",
+	"Invalid Email": "Invalid Email Address",
+	"Something Wrong": "Something went wrong!!",
+	"User Update": "User details updated successfully"
 }

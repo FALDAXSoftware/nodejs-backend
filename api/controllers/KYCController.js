@@ -15,7 +15,7 @@ module.exports = {
 
             if (kyc_details) {
                 if (kyc_details.steps == 3) {
-                    return res.json({ 'status': '200', 'message': sails.__('KYC Updated') })
+                    return res.json({ 'status': 200, 'message': sails.__('KYC Updated') })
                 }
 
                 if (req.body.front_doc) {
@@ -37,23 +37,22 @@ module.exports = {
                 let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
 
                 if (updated_kyc) {
-                    return res.json({ 'status': '200', 'message': sails.__('Update KYC') })
+                    return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
                 } else {
-                    return res.status(400).json({ 'status': '400', 'message': sails.__('Update KYC') })
+                    return res.status(400).json({ 'status': 400, 'message': sails.__('Update KYC') })
                 }
-
             } else {
                 let kyc_created = await KYC.create(req.body).fetch();
                 if (kyc_created) {
-                    return res.json({ 'status': '200', 'message': sails.__('Create KYC') })
+                    return res.json({ 'status': 200, 'message': sails.__('Create KYC') })
                 } else {
-                    return res.status(400).json({ 'status': '400', 'message': sails.__('Create KYC') })
+                    return res.status(400).json({ 'status': 400, 'message': sails.__('Create KYC') })
                 }
             }
         } catch (e) {
             return res.status(500).json({
-                "message": "Error",
-                "error": e
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -61,13 +60,13 @@ module.exports = {
     uploadKYCDoc: async function (req, res) {
         req.file('image').upload(function (err, file) {
             if (err) {
-                return res.status(500).json({ 'status': '500', 'message': 'Something went wrong!!' })
+                return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") })
             } else {
                 if (file.length <= 0) {
-                    return res.status(500).json({ 'status': '500', 'message': 'Something went wrong!!' })
+                    return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") })
                 }
                 return res.json({
-                    'status': '200',
+                    'status': 200,
                     'message': sails.__('KYC Doc Upload'),
                     data: file[0].fd
                 })

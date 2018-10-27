@@ -15,7 +15,7 @@ module.exports = {
         let staticCount = await Statics.count({ is_active: true });
         if (staticData) {
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Static Pages retrived successfully",
                 "data": staticData, staticCount
             });
@@ -40,26 +40,23 @@ module.exports = {
                     });
                     return;
                 } else {
-                    res.json({
+                    res.status(400).json({
                         "status": 400,
-                        "message": "not listed",
-                        "error": "Something went wrong",
+                        "err": "not listed",
                     });
                     return;
                 }
             } else {
-                res.json({
+                res.status(400).json({
                     "status": 400,
-                    "message": "not listed",
-                    "error": "Something went wrong",
+                    "err": "not listed",
                 });
                 return;
             }
         } catch (error) {
             res.status(500).json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -76,21 +73,20 @@ module.exports = {
             var updateStatic = await Statics.update({ id: req.body.id }).set(staticData).fetch();
             if (!updateStatic) {
                 return res.json({
-                    "status": "200",
+                    "status": 200,
                     "message": "Something went wrong! could not able to update static page details"
                 });
             }
 
             return res.json({
-                "status": "200",
+                "status": 200,
                 "message": "Static page details updated successfully."
             });
 
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -99,9 +95,9 @@ module.exports = {
     delete: async function (req, res) {
         let { id } = req.allParams();
         if (!id) {
-            res.json({
-                "status": 500,
-                "message": "Static page id is not sent"
+            res.status(500).json({
+                status: 500,
+                "err": "Static page id is not sent"
             });
             return;
         }

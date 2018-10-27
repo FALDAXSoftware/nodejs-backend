@@ -15,19 +15,18 @@ module.exports = {
                 let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
                 if (user) {
                     await Users.update({ id: user.id, deleted_at: null }).set({ email: user.email, is_verified: true, email_verify_token: null });
-                    return res.json({ "status": "200", "message": sails.__('Verify User') });
+                    return res.json({ "status": 200, "message": sails.__('Verify User') });
                 } else {
-                    return res.status(400).json({ "status": "400", "err": sails.__('Invalid Token') });
+                    return res.status(400).json({ "status": 400, "err": sails.__('Invalid Token') });
                 }
             }
         } catch (error) {
-            return res.status(500).json({ "status": "500", "err": error });
+            return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
         }
     },
 
     // Login User
     login: async function (req, res) {
-        console.log(sails.config.urlconf.APP_URL)
         try {
             if (req.body.email && req.body.password) {
                 let query = {
@@ -39,15 +38,15 @@ module.exports = {
 
                 if (user_detail) {
                     if (user_detail.is_verified == false) {
-                        return res.json(402, {
-                            "status": "402",
-                            "err": "Activate your account for logging in.",
+                        return res.status(402).json({
+                            "status": 402,
+                            "err": sails.__("Activate Account")
                         });
                     }
                     if (user_detail.is_active == false) {
-                        return res.json(403, {
-                            "status": "403",
-                            "err": "Contact the admin to activate your account.",
+                        return res.status(403).json({
+                            "status": 403,
+                            "err": sails.__("Contact Admin")
                         });
                     }
                     Users.comparePassword(query.password, user_detail, async function (err, valid) {
@@ -57,15 +56,15 @@ module.exports = {
 
                         if (!valid) {
                             return res.status(401).json({
-                                status: 401,
-                                err: 'Invalid email or password'
+                                "status": 401,
+                                "err": 'Invalid email or password'
                             });
                         } else {
                             if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                                 if (!req.body.otp) {
                                     return res.status(201).json({
-                                        status: 201,
-                                        err: 'Please enter otp to continue'
+                                        "status": 201,
+                                        "err": 'Please enter OTP to continue'
                                     });
                                 }
                                 let verified = speakeasy.totp.verify({
@@ -75,7 +74,7 @@ module.exports = {
                                     window: 2
                                 });
                                 if (!verified) {
-                                    return res.status(401).json({ err: 'invalid otp' });
+                                    return res.status(401).json({ "status": 402, "err": 'Invalid OTP' });
                                 }
                             }
 
@@ -90,7 +89,7 @@ module.exports = {
                             });
                             var token = await sails.helpers.jwtIssue(user_detail.id);
                             return res.json({
-                                status: "200",
+                                status: 200,
                                 user: user_detail,
                                 token,
                                 message: "Welcome back, " + user_detail.first_name + "!"
@@ -98,22 +97,22 @@ module.exports = {
                         }
                     });
                 } else {
-                    res.json(401, {
-                        "status": "401",
+                    res.status(402).json({
+                        "status": 401,
                         "err": "Invalid email or password",
                     });
                     return;
                 }
             } else {
-                res.json(401, {
-                    "status": "401",
+                res.status(401).json({
+                    "status": 401,
                     "err": "Email or password is not sent",
                 });
                 return;
             }
         } catch (error) {
-            res.json({
-                "status": "500",
+            res.status(500).json({
+                "status": 500,
                 "err": error
             });
             return;
@@ -125,18 +124,21 @@ module.exports = {
         let { email } = req.allParams();
         let user = await Users.findOne({ email: email, deleted_at: null });
         if (!user) {
-            return res.json(401, {
-                err: "Invalid Email Address"
+            return res.status(401).json({
+                "status": 401,
+                "err": sails.__("Invalid Email")
             });
         }
         if (!user.is_verified) {
-            return res.json(403, {
-                "err": "Activate your account for logging in.",
+            return res.status(403).json({
+                "status": 403,
+                "err": sails.__("Activate Account")
             });
         }
         if (!user.is_active) {
-            return res.json(403, {
-                "err": "Contact the admin to activate your account.",
+            return res.status(403).json({
+                "status": 403,
+                "err": sails.__("Contact Admin")
             });
         }
         await Users.update({ id: user.id }).set({
@@ -160,11 +162,12 @@ module.exports = {
             function (err) {
                 if (!err) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": "Authentication code sent to email successfully"
                     });
                 } else {
                     return res.status(500).json({
+                        "status": 500,
                         "err": err
                     });
                 }
@@ -176,29 +179,33 @@ module.exports = {
         let { email, otp } = req.allParams();
         let user = await Users.findOne({ email: email, deleted_at: null });
         if (!user) {
-            return res.json(401, {
-                err: "Invalid Email Address"
+            return res.status(401).json({
+                "status": 401,
+                "err": sails.__("Invalid Email")
             });
         }
         if (!user.is_verified) {
-            return res.json(403, {
-                "err": "Activatie your account for logging in.",
+            return res.status(403).json({
+                "status": 403,
+                "err": sails.__("Activate Account")
             });
         }
         if (!user.is_active) {
-            return res.json(403, {
-                "err": "Contact the admin to activate your account.",
+            return res.status(403).json({
+                "status": 403,
+                "err": sails.__("Contact Admin")
             });
         }
         if (user.twofactor_secret != otp) {
-            return res.json(401, {
-                err: "Invalid OTP"
+            return res.status(401).json({
+                "status": 401,
+                "err": "Invalid OTP"
             });
         }
         await User.update({ id: user.id }).set({ is_twofactor: false, twofactor_secret: null, email: user.email, authCode: null });
         var token = await sails.helpers.jwtIssue(user_detail.id);
         return res.json({
-            status: "200",
+            status: 200,
             user: user,
             token,
             message: "Login successfull."
@@ -214,9 +221,8 @@ module.exports = {
                 let user_details = await Users.findOne({ reset_token });
                 if (!user_details) {
                     return res.status(500).json({
-                        "status": "500",
-                        "message": "error",
-                        "errors": "Something went wrong."
+                        "status": 500,
+                        "err": "Something went wrong.",
                     });
                 } else {
                     if (user_details.reset_token_expire < new Date().getTime()) {
@@ -227,8 +233,8 @@ module.exports = {
                         }).fetch();
                         if (updateUsers) {
                             return res.status(400).json({
-                                "status": "400",
-                                "message": "Reset Token expired."
+                                "status": 400,
+                                "err": "Reset Token expired."
                             });
                         }
                     }
@@ -241,24 +247,22 @@ module.exports = {
                 }).fetch();
                 if (updateUsers) {
                     return res.json({
-                        "status": "200",
+                        "status": 200,
                         "message": "Password updated Successfully"
                     });
                 } else {
                     throw "Update password Error"
                 }
             } else {
-                return res.json({
-                    "status": "500",
-                    "message": "error",
-                    "errors": "Reset Token or Password is not present."
+                return res.status(500).json({
+                    "status": 500,
+                    "err": "Reset Token or Password is not present.",
                 });
             }
         } catch (e) {
-            return res.json({
-                "status": "500",
-                "message": "error",
-                "errors": e
+            return res.status(500).json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
@@ -267,7 +271,7 @@ module.exports = {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
             if (!user_details) {
-                return res.status(401).json({ err: 'Email not Registered with us.' });
+                return res.status(401).json({ "status": 401, err: 'Email not Registered with us.' });
             }
             let reset_token = randomize('Aa0', 10);
             let reset_token_expire = new Date().getTime() + 300000;
@@ -294,18 +298,16 @@ module.exports = {
                 function (err) {
                     if (!err) {
                         return res.json({
-                            "status": "200",
+                            "status": 200,
                             "message": "Reset password link sent to your email successfully."
                         });
                     }
                 }
             )
-            sails.log(updatedUser);
         } catch (error) {
-            res.json({
-                "status": "500",
-                "message": "error",
-                "errors": error
+            return res.status(500).json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
             });
             return;
         }
@@ -319,9 +321,9 @@ module.exports = {
         }).set({ isLoggedIn: false, device_token: null }).fetch();
 
         if (logged_user) {
-            return res.json({ status: "200", message: "User Log out successfully." });
+            return res.json({ status: 200, message: "User Log out successfully." });
         } else {
-            return res.status(400).json({ status: "400", message: "Invalid Token" });
+            return res.status(400).json({ status: 400, message: "Invalid Token" });
         }
     }
 };
