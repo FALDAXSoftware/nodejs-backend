@@ -7,20 +7,17 @@
 
 module.exports = {
     //---------------------------Web Api------------------------------
-
-    //-------------------------------CMS Api--------------------------
-    getAllBlogs: async function (req, res) {
+    getAllBlogList: async function (req, res) {
         // req.setLocale('en')
         let { page, limit, data } = req.allParams();
         if (data) {
+            data = data.toLowerCase();
             let blogData = await Blogs.find({
                 where: {
                     deleted_at: null,
                     or: [{
-                        title: { contains: data }
-                    },
-                    { description: { contains: data } }
-                    ]
+                        searchKeywords: { contains: data }
+                    }]
                 }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
@@ -28,10 +25,77 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [{
-                        title: { contains: data }
-                    },
-                    { description: { contains: data } }
-                    ]
+                        searchKeywords: { contains: data }
+                    }]
+                }
+            });
+            if (blogData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Blog list"),
+                    "data": blogData, BlogCount
+                });
+            }
+        } else {
+            let blogData = await Blogs.find({
+                deleted_at: null
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < blogData.length; index++) {
+                if (blogData[index].admin_id) {
+                    let admin = await Admin.findOne({ id: blogData[index].admin_id })
+                    blogData[index].admin_name = admin.name
+                }
+            }
+
+            let BlogCount = await Blogs.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
+            if (blogData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Blog list"),
+                    "data": blogData, BlogCount
+                });
+            }
+        }
+    },
+
+    getBlogDetails: async function (req, res) {
+        let blog = await Blogs.findOne({ id: req.body.id, deleted_at: null });
+        if (blog) {
+            return res.json({ "status": 200, "message": sails.__('Blog Details'), data: blog })
+        } else {
+            return res.status(400).json({
+                "status": 400,
+                "err": "Blog not found",
+            });
+        }
+    },
+
+    //-------------------------------CMS Api--------------------------
+    getAllBlogs: async function (req, res) {
+        // req.setLocale('en')
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            data = data.toLowerCase();
+            let blogData = await Blogs.find({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        searchKeywords: { contains: data }
+                    }]
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            let BlogCount = await Blogs.count({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        searchKeywords: { contains: data }
+                    }]
                 }
             });
             if (blogData) {
@@ -81,7 +145,8 @@ module.exports = {
                     admin_id: req.body.author,
                     tags: req.body.tags,
                     description: req.body.description,
-                    created_at: new Date()
+                    created_at: new Date(),
+                    searchKeywords: req.body.title.toLowerCase()
                 }).fetch();
                 if (blog_detail) {
                     res.json({

@@ -13,6 +13,11 @@ module.exports = {
             columnName: 'title',
             required: true
         },
+        searchKeywords: {
+            type: 'string',
+            columnName: 'searchKeywords',
+            required: true
+        },
         description: {
             type: 'string',
             columnName: 'description',
