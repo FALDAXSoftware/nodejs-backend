@@ -132,7 +132,7 @@ module.exports = {
                 if (!err) {
                     return res.json({
                         "status": 200,
-                        "message": "Success  Announcement sent to email successfully."
+                        "message": "Announcement sent to email successfully."
                     });
                 }
             }

@@ -107,6 +107,7 @@ module.exports = {
                 return res.status(401).json({ "status": 401, "err": 'Invalid email' });
             }
             var user = req.body;
+            user['email'] = user_details['email'];
             delete user.profile;
             req.file('profile_pic').upload(async function (err, uploadedFiles) {
                 try {
@@ -121,7 +122,7 @@ module.exports = {
                         if (uploadProfile) {
                             user.profile_pic = 'faldax/profile/' + uploadFileName;
 
-                            var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user).fetch();
+                            var updatedUsers = await Users.update({ email: user.email, deleted_at: null }).set(user).fetch();
                             delete updatedUsers.password
                             return res.json({
                                 "status": 200,
@@ -133,7 +134,8 @@ module.exports = {
                             delete user.remove_pic;
                             await Users.update({ email: user.email }).set({ email: user.email, profile_pic: null });
                         }
-                        var updatedUsers = await Users.update({ email: req.body.email, deleted_at: null }).set(user);
+                        var updatedUsers = await Users.update({ email: user.email, deleted_at: null }).set(user);
+
                         return res.json({
                             "status": 200,
                             "message": sails.__("User Update")

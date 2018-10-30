@@ -15,28 +15,37 @@ module.exports = {
                     email: req.body.email,
                     password: req.body.password
                 }
-                var admin_details = await Admin.findOne({ email: query.email });
-
-                let role = await Role.findOne({ id: admin_details.role_id })
-                admin_details.roles = role;
+                var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
 
                 if (admin_details) {
-                    Admin.comparePassword(query.password, admin_details, async function (err, valid) {
-                        if (err) {
-                            return res.status(403).json({ "status": 403, "err": 'Forbidden' });
-                        }
+                    if (admin_details.is_active) {
+                        let role = await Role.findOne({ id: admin_details.role_id })
+                        admin_details.roles = role;
 
-                        if (!valid) {
-                            return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
-                        } else {
-                            delete admin_details.password;
-                            var token = await sails.helpers.jwtIssue(admin_details.id);
-                            res.json({
-                                user: admin_details,
-                                token
-                            });
-                        }
-                    });
+                        Admin.comparePassword(query.password, admin_details, async function (err, valid) {
+                            if (err) {
+                                return res.status(403).json({ "status": 403, "err": 'Forbidden' });
+                            }
+
+                            if (!valid) {
+                                return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
+                            } else {
+                                delete admin_details.password;
+                                var token = await sails.helpers.jwtIssue(admin_details.id);
+                                res.json({
+                                    user: admin_details,
+                                    token
+                                });
+                            }
+                        });
+                    } else {
+                        res.status(400).json({
+                            "status": 400,
+                            "err": sails.__("Contact Admin")
+                        });
+                        return;
+                    }
+
                 } else {
                     res.status(400).json({
                         "status": 400,

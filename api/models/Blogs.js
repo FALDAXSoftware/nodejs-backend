@@ -13,6 +13,11 @@ module.exports = {
             columnName: 'title',
             required: true
         },
+        searchKeywords: {
+            type: 'string',
+            columnName: 'searchKeywords',
+            required: true
+        },
         description: {
             type: 'string',
             columnName: 'description',
@@ -47,5 +52,12 @@ module.exports = {
             model: 'Admin',
             columnName: 'admin_id'
         }
+    },
+
+    customToJSON: function () {
+        if (!this.cover_image || this.cover_image == "" || this.cover_image == null) {
+            this.cover_image = "faldax/blog/default_blog.png"
+        }
+        return this;
     }
 };
