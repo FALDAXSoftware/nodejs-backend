@@ -111,7 +111,7 @@ module.exports.routes = {
   'post /users/forgotPassword': "AuthController.forgotPassword",
   'put /users/resetPassword': "AuthController.resetPassword",
   'post /users/changePassword': "Users.changePassword",
-  'get /users/getUserDetails': "Users.getUserReferral",
+  'get /users/getUserDetails': "Users.getUserDetails",
   'get /users/referredUsers': 'Users.getReferred',
   'get /users/countries': 'Users.getCountriesData',
   'get /users/getMapCountries': 'Users.getCountries',
@@ -132,4 +132,5 @@ module.exports.routes = {
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
   'post /users/add-kyc-docs': "KYCController.uploadKYCDoc",
+  'get /users/get-kyc-detail': 'KYCController.getKYCDetails',
 };

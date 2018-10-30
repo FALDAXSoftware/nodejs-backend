@@ -182,6 +182,7 @@ module.exports = {
             var reset_token = req.body.reset_token;
 
             let admin_details = await Admin.findOne({ reset_token });
+            console.log('admin_details', admin_details)
             if (admin_details) {
                 let updateAdmin = await Admin.update({ email: admin_details.email }).set({ email: admin_details.email, password: req.body.password, reset_token: null }).fetch();
                 if (updateAdmin) {
@@ -192,11 +193,6 @@ module.exports = {
                 } else {
                     throw "Update password Error"
                 }
-            } else {
-                res.status(500).json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
             }
         } catch (e) {
             res.status(500).json({
@@ -208,39 +204,40 @@ module.exports = {
 
     forgotPassword: async function (req, res) {
         try {
-            const admin_details = await Admin.findOne({ email: req.body.email });
-            if (!admin_details) {
+            const admin_details = await Admin.findOne({ email: req.body.email, deleted_at: null });
+
+            if (admin_details) {
+                let reset_token = randomize('Aa0', 10);
+                let new_admin = {
+                    email: req.body.email,
+                    reset_token: reset_token
+                }
+                var updatedAdmin = await Admin.update({ email: req.body.email }).set(new_admin).fetch();
+
+                sails.hooks.email.send(
+                    "forgotPassword",
+                    {
+                        homelink: sails.config.urlconf.CMS_URL,
+                        recipientName: admin_details.name,
+                        token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
+                        senderName: "Faldax"
+                    },
+                    {
+                        to: admin_details.email,
+                        subject: "Forgot Password"
+                    },
+                    function (err) {
+                        if (!err) {
+                            return res.json({
+                                "status": 200,
+                                "message": "Reset password link sent to your email successfully."
+                            });
+                        }
+                    }
+                )
+            } else {
                 return res.status(401).json({ err: 'This email id is not registered with us.' });
             }
-            let reset_token = randomize('Aa0', 10);
-            let new_admin = {
-                email: req.body.email,
-                reset_token: reset_token
-            }
-            var updatedAdmin = await Admin.update({ email: req.body.email }).set(new_admin).fetch();
-
-            sails.hooks.email.send(
-                "forgotPassword",
-                {
-                    homelink: sails.config.urlconf.CMS_URL,
-                    recipientName: admin_details.name,
-                    token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
-                    senderName: "Faldax"
-                },
-                {
-                    to: admin_details.email,
-                    subject: "Forgot Password"
-                },
-                function (err) {
-                    if (!err) {
-                        return res.json({
-                            "status": 200,
-                            "message": "Reset password link sent to your email successfully."
-                        });
-                    }
-                }
-            )
-            sails.log(updatedAdmin);
         } catch (error) {
             res.status(500).json({
                 status: 500,

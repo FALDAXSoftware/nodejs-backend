@@ -72,5 +72,29 @@ module.exports = {
                 })
             }
         });
+    },
+
+    getKYCDetails: async function (req, res) {
+        try {
+            let user_id = req.user.id;
+            let KYCData = await KYC.findOne({ user_id });
+            if (KYCData) {
+                return res.json({
+                    "status": 200,
+                    "message": "KYC Data",
+                    "data": KYCData
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("No KYC")
+                });
+            }
+        } catch (e) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
     }
 };

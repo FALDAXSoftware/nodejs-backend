@@ -138,7 +138,7 @@ module.exports = {
 
                         return res.json({
                             "status": 200,
-                            "message": sails.__("User Update")
+                            "message": sails.__("User Update"),
                         });
                     }
                 } catch (e) {
@@ -209,7 +209,7 @@ module.exports = {
         return;
     },
 
-    getUserReferral: async function (req, res) {
+    getUserDetails: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
         let userKyc = await KYC.findOne({ user_id: id });
