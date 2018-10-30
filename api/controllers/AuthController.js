@@ -74,7 +74,7 @@ module.exports = {
                                     window: 2
                                 });
                                 if (!verified) {
-                                    return res.status(401).json({ "status": 402, "err": 'Invalid OTP' });
+                                    return res.status(402).json({ "status": 402, "err": 'Invalid OTP' });
                                 }
                             }
 
@@ -97,7 +97,7 @@ module.exports = {
                         }
                     });
                 } else {
-                    res.status(402).json({
+                    res.status(401).json({
                         "status": 401,
                         "err": "Invalid email or password",
                     });

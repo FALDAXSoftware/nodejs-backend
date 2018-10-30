@@ -182,7 +182,6 @@ module.exports = {
             var reset_token = req.body.reset_token;
 
             let admin_details = await Admin.findOne({ reset_token });
-            console.log('admin_details', admin_details)
             if (admin_details) {
                 let updateAdmin = await Admin.update({ email: admin_details.email }).set({ email: admin_details.email, password: req.body.password, reset_token: null }).fetch();
                 if (updateAdmin) {
@@ -193,12 +192,18 @@ module.exports = {
                 } else {
                     throw "Update password Error"
                 }
+            } else {
+                return res.status(400).json({
+                    status: 400,
+                    "message": "You have already reset the password for the account."
+                });
             }
         } catch (e) {
             res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
             });
+            return;
         }
     },
 

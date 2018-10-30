@@ -66,7 +66,11 @@ module.exports = {
     getBlogDetails: async function (req, res) {
         let blog = await Blogs.findOne({ id: req.body.id, deleted_at: null });
         if (blog) {
-            return res.json({ "status": 200, "message": sails.__('Blog Details'), data: blog })
+            let adminData = await Admin.findOne({ id: blog.admin_id });
+            blog.admin_name = adminData.name;
+            return res.json({
+                "status": 200, "message": sails.__('Blog Details'), data: blog
+            })
         } else {
             return res.status(400).json({
                 "status": 400,
