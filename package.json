@@ -30,6 +30,7 @@
     "sails-hook-sockets": "^1.4.0",
     "sails-mysql": "^1.0.0",
     "sails-postgresql": "^1.0.1",
+    "skipper": "^0.8.7",
     "speakeasy": "^2.0.0",
     "uuid": "^3.3.2"
   },
