@@ -38,6 +38,7 @@ module.exports = {
                 }
             }
             let email_verify_token = randomize('Aa0', 10);
+            let email_verify_code = randomize('0', 6);
             if (req.body.email && req.body.password) {
                 var user_detail = await Users.create({
                     email: email,
@@ -48,7 +49,9 @@ module.exports = {
                     referral_code: randomize('Aa0', 10),
                     created_at: new Date(),
                     referred_id: referred_id,
-                    email_verify_token: email_verify_token,
+                    email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                        email_verify_code
+                        : email_verify_token,
                 }).fetch();
 
                 if (user_detail) {
@@ -58,7 +61,9 @@ module.exports = {
                             homelink: sails.config.urlconf.APP_URL,
                             recipientName: user_detail.first_name,
                             token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-                            tokenCode: email_verify_token,
+                            tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                                email_verify_code
+                                : email_verify_token,
                             senderName: "Faldax"
                         },
                         {

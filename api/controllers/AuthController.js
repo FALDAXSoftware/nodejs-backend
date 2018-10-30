@@ -51,7 +51,7 @@ module.exports = {
                     }
                     Users.comparePassword(query.password, user_detail, async function (err, valid) {
                         if (err) {
-                            return res.json(403, { err: 'Forbidden' });
+                            return res.json(403, { "status": 403, err: 'Forbidden' });
                         }
 
                         if (!valid) {
