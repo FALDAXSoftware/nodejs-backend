@@ -270,10 +270,11 @@ module.exports = {
     forgotPassword: async function (req, res) {
         try {
             const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
-            if (user_details && !user_details.is_active) {
-                return res.status(401).json({ "status": 401, err: sails.__("Contact Admin") });
-            } else {
+            if (!user_details) {
                 return res.status(401).json({ "status": 401, err: 'Email not Registered with us.' });
+            }
+            if (user_details.is_active == false) {
+                return res.status(401).json({ "status": 401, err: sails.__("Contact Admin") });
             }
             let reset_token = randomize('Aa0', 10);
             let reset_token_expire = new Date().getTime() + 300000;
