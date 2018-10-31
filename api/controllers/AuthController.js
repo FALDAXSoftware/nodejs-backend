@@ -40,7 +40,7 @@ module.exports = {
                     if (user_detail.is_verified == false) {
                         return res.status(402).json({
                             "status": 402,
-                            "err": sails.__("Activate Account")
+                            "err": "To login please activate your account"
                         });
                     }
                     if (user_detail.is_active == false) {
@@ -129,12 +129,6 @@ module.exports = {
                 "err": sails.__("Invalid Email")
             });
         }
-        if (!user.is_verified) {
-            return res.status(403).json({
-                "status": 403,
-                "err": sails.__("Activate Account")
-            });
-        }
         if (!user.is_active) {
             return res.status(403).json({
                 "status": 403,
@@ -143,7 +137,7 @@ module.exports = {
         }
         await Users.update({ id: user.id }).set({
             email: user.email,
-            authCode: randomize('Aa0', 6)
+            authCode: randomize('0', 6)
         });
 
         // send code in email

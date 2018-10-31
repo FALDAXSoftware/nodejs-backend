@@ -48,6 +48,7 @@ module.exports = {
     update: async function (req, res) {
         try {
             let role = await Role.findOne({ id: req.body.id });
+            console.log('role', role)
             if (!role) {
                 return res.status(500).json({
                     status: 500,
@@ -60,6 +61,7 @@ module.exports = {
                 message: "Role Updated successfully"
             })
         } catch (error) {
+            console.log('error', error)
             return res.status(500).json({
                 status: 500,
                 err: sails.__("Something Wrong")

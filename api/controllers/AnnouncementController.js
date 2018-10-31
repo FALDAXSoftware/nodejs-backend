@@ -34,7 +34,6 @@ module.exports = {
                     title: req.body.title,
                 }).fetch();
                 if (announcementTemplate) {
-                    //Send verification email in before create
                     res.json({
                         "status": 200,
                         "message": "Announcement created successfully."
