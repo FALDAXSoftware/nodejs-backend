@@ -43,9 +43,9 @@ module.exports = {
                 var user_detail = await Users.create({
                     email: email,
                     password: req.body.password,
-                    full_name: req.body.firstname + ' ' + req.body.lastname,
-                    first_name: req.body.firstname,
-                    last_name: req.body.lastname,
+                    full_name: req.body.first_name + ' ' + req.body.last_name,
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
                     referral_code: randomize('Aa0', 10),
                     created_at: new Date(),
                     referred_id: referred_id,

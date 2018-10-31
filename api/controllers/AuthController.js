@@ -135,6 +135,7 @@ module.exports = {
                 "err": sails.__("Contact Admin")
             });
         }
+        
         await Users.update({ id: user.id }).set({
             email: user.email,
             authCode: randomize('0', 6)
