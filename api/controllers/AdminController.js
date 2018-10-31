@@ -16,6 +16,7 @@ module.exports = {
                     password: req.body.password
                 }
                 var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
+                console.log('admin_details', admin_details)
 
                 if (admin_details) {
                     if (admin_details.is_active) {
@@ -61,6 +62,7 @@ module.exports = {
                 return;
             }
         } catch (error) {
+            console.log('error', error)
             res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
@@ -190,12 +192,15 @@ module.exports = {
                         "message": "Password updated Successfully"
                     });
                 } else {
-                    throw "Update password Error"
+                    return res.json({
+                        "status": 400,
+                        "message": "Update password Error"
+                    });
                 }
             } else {
                 return res.status(400).json({
                     status: 400,
-                    "message": "You have already reset the password for the account."
+                    "message": "Reset Password link has been expired."
                 });
             }
         } catch (e) {

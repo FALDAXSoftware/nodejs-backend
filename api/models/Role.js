@@ -34,10 +34,10 @@ module.exports = {
       defaultsTo: false,
       columnName: 'announcement',
     },
-    static_pages: {
+    staticPage: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'static_pages',
+      columnName: 'staticPage',
     },
     roles: {
       type: "boolean",
