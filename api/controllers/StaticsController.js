@@ -27,7 +27,7 @@ module.exports = {
             if (req.body.title && req.body.name && req.body.content) {
                 var static_details = await Statics.create({
                     name: req.body.name,
-                    slug: req.body.name.split(' ').join('_'),
+                    slug: req.body.name.indexOf(' ') >= 0 ? req.body.name.split(' ').join('_') : req.body.name,
                     content: req.body.content,
                     title: req.body.title,
                     created_at: new Date()

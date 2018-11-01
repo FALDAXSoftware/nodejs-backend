@@ -29,7 +29,7 @@ module.exports = {
             if (req.body.title && req.body.name && req.body.content) {
                 var announcementTemplate = await Announcement.create({
                     name: req.body.name,
-                    slug: req.body.name.split(' ').join('_'),
+                    slug: req.body.name.indexOf(' ') >= 0 ? req.body.name.split(' ').join('_') : req.body.name,
                     content: req.body.content,
                     title: req.body.title,
                 }).fetch();
