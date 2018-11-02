@@ -108,6 +108,7 @@ module.exports.routes = {
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
   'post /users/verify-user': "AuthController.verifyUser",
+  'post /users/send-verification-email': "AuthController.sendVerificationCodeEmail",
   'post /users/forgotPassword': "AuthController.forgotPassword",
   'put /users/resetPassword': "AuthController.resetPassword",
   'post /users/changePassword': "Users.changePassword",

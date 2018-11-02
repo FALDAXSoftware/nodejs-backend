@@ -135,7 +135,7 @@ module.exports = {
                 "err": sails.__("Contact Admin")
             });
         }
-        
+
         await Users.update({ id: user.id }).set({
             email: user.email,
             authCode: randomize('0', 6)
@@ -205,6 +205,48 @@ module.exports = {
             token,
             message: "Login successfull."
         });
+    },
+
+    sendVerificationCodeEmail: async function (req, res) {
+        if (req.body.email) {
+            let user = await Users.findOne({ email: req.body.email, is_active: true });
+            if (user) {
+                delete user.email_verify_token;
+                let email_verify_code = randomize('0', 6);
+                await Users.update({ email: user.email }).set({ email: user.email, email_verify_token: email_verify_code });
+                sails.hooks.email.send(
+                    "signupCode",
+                    {
+                        homelink: sails.config.urlconf.APP_URL,
+                        recipientName: user.first_name,
+                        tokenCode: email_verify_code,
+                        senderName: "Faldax"
+                    },
+                    {
+                        to: req.body.email,
+                        subject: "Signup Verification"
+                    },
+                    function (err) {
+                        if (!err) {
+                            return res.json({
+                                "status": 200,
+                                "message": "Verification code sent to email successfully"
+                            });
+                        }
+                    }
+                )
+            } else {
+                return res.status(401).json({
+                    "status": 401,
+                    "err": "This email id is not registered with us.",
+                });
+            }
+        } else {
+            return res.status(500).json({
+                "status": 500,
+                "err": "Email is required.",
+            });
+        }
     },
 
     resetPassword: async function (req, res) {
