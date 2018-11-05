@@ -42,5 +42,8 @@ module.exports.policies = {
   },
   'BlogsController': {
     '*': true
+  },
+  'RootController': {
+    getContactInfo: true
   }
 };
