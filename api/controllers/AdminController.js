@@ -303,7 +303,8 @@ module.exports = {
         try {
             if (req.body.email && req.body.roles) {
 
-                let existedEmployee = await Admin.find({ email: req.body.email, deleted_at: null });
+                let existedEmployee = await Admin.findOne({ email: req.body.email, deleted_at: null });
+
                 if (existedEmployee) {
                     return res.status(401).json({
                         status: 401,

@@ -24,11 +24,6 @@ module.exports = {
       defaultsTo: false,
       columnName: 'users',
     },
-    coins: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'coins',
-    },
     announcement: {
       type: "boolean",
       defaultsTo: false,
@@ -39,31 +34,37 @@ module.exports = {
       defaultsTo: false,
       columnName: 'staticPage',
     },
-    roles: {
+    blogs: {
       type: "boolean",
-      columnName: 'roles',
       defaultsTo: false,
+      columnName: 'blogs',
     },
     countries: {
       type: "boolean",
       defaultsTo: false,
       columnName: 'countries',
     },
-    employee: {
+    coins: {
       type: "boolean",
-      columnName: 'employee',
       defaultsTo: false,
+      columnName: 'coins',
     },
     pairs: {
       type: "boolean",
       columnName: 'pairs',
       defaultsTo: false,
     },
-    blogs: {
+    roles: {
       type: "boolean",
+      columnName: 'roles',
       defaultsTo: false,
-      columnName: 'blogs',
     },
+    employee: {
+      type: "boolean",
+      columnName: 'employee',
+      defaultsTo: false,
+    },
+
     limit_management: {
       type: "boolean",
       columnName: 'limit_management',
