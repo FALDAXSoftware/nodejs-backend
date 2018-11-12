@@ -137,6 +137,7 @@ module.exports.routes = {
 
   //Static Page routes
   'get /users/static-page/:page': 'Statics.getStaticPage',
+  'get /users/static-page-json/:page': 'Statics.getStaticPageJson',
 
   // Contact Routes
   'get /get-contact-details': 'RootController.getContactInfo',

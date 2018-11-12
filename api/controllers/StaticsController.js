@@ -17,6 +17,18 @@ module.exports = {
             return res.notFound();
         }
     },
+    getStaticPageJson: async function (req, res) {
+        let staticData = await Statics.findOne({ slug: req.params.page, is_active: true });
+        if (staticData) {
+            return res.json({
+                "status": 200,
+                "message": "Static Page retrived successfully",
+                "data": staticData
+            })
+        } else {
+            return res.notFound();
+        }
+    },
 
     //-------------------------------CMS Api--------------------------
     getStatic: async function (req, res) {

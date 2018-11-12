@@ -44,7 +44,8 @@ module.exports.policies = {
     '*': true
   },
   'StaticsController': {
-    "getStaticPage": true
+    "getStaticPage": true,
+    "getStaticPageJson": true
   },
   'RootController': {
     getContactInfo: true
