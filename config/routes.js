@@ -145,5 +145,8 @@ module.exports.routes = {
   'get /get-contact-details': 'RootController.getContactInfo',
 
   //Coin Request routes
-  'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest'
+  'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest',
+
+  //Send Inquiry routes
+  'post /send-inquiry': 'RootController.sendInquiry'
 };

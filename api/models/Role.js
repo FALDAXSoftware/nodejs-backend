@@ -85,6 +85,11 @@ module.exports = {
       columnName: 'withdraw_requests',
       defaultsTo: false,
     },
+    coin_requests: {
+      type: "boolean",
+      columnName: 'coin_requests',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

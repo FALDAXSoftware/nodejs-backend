@@ -48,6 +48,10 @@ module.exports.policies = {
     "getStaticPageJson": true
   },
   'RootController': {
-    getContactInfo: true
+    'getContactInfo': true,
+    'sendInquiry': true
+  },
+  'AddCoinReqController': {
+    "addCoinRequest": true
   }
 };
