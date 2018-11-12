@@ -28,14 +28,14 @@ module.exports = {
             columnName: 'amount',
             required: true
         },
-        transactionType: {
+        transaction_type: {
             type: 'string',
-            columnName: 'transactionType',
+            columnName: 'transaction_type',
             required: true
         },
-        transactionId: {
+        transaction_id: {
             type: 'string',
-            columnName: 'transactionId',
+            columnName: 'transaction_id',
             required: true
         },
         coin_id: {

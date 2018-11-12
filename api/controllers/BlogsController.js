@@ -16,7 +16,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [{
-                        searchKeywords: { contains: data }
+                        search_keywords: { contains: data }
                     }]
                 }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
@@ -25,7 +25,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [{
-                        searchKeywords: { contains: data }
+                        search_keywords: { contains: data }
                     }]
                 }
             });
@@ -89,7 +89,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [{
-                        searchKeywords: { contains: data }
+                        search_keywords: { contains: data }
                     }]
                 }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
@@ -98,7 +98,7 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [{
-                        searchKeywords: { contains: data }
+                        search_keywords: { contains: data }
                     }]
                 }
             });
@@ -150,7 +150,7 @@ module.exports = {
                     tags: req.body.tags,
                     description: req.body.description,
                     created_at: new Date(),
-                    searchKeywords: req.body.title.toLowerCase()
+                    search_keywords: req.body.title.toLowerCase()
                 }).fetch();
                 if (blog_detail) {
                     res.json({

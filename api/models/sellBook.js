@@ -38,9 +38,9 @@ module.exports = {
             columnName: 'user_id',
             required: true,
         },
-        avgPrice: {
+        avg_price: {
             type: 'number',
-            columnName: 'avgPrice',
+            columnName: 'avg_price',
         },
         currency: {
             type: 'string',
@@ -72,14 +72,14 @@ module.exports = {
             type: 'string',
             columnName: 'side'
         },
-        isPartiallyFulfilled: {
+        is_partially_fulfilled: {
             type: 'boolean',
-            columnName: 'isPartiallyFulfilled',
+            columnName: 'is_partially_fulfilled',
             defaultsTo: false
         },
-        fixQuantity: {
+        fix_quantity: {
             type: 'string',
-            columnName: 'fixQuantity'
+            columnName: 'fix_quantity'
         },
         symbol: {
             type: 'string',

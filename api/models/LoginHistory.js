@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  tableName: "loginhistory",
+  tableName: "login_history",
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
@@ -16,9 +16,9 @@ module.exports = {
       type: "string",
       columnName: "ip"
     },
-    isLoggedIn: {
+    is_logged_in: {
       type: "boolean",
-      columnName: "isLoggedIn",
+      columnName: "is_logged_in",
       defaultsTo: true
     },
     device_type: {

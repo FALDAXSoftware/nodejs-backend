@@ -29,10 +29,10 @@ module.exports = {
       defaultsTo: false,
       columnName: 'announcement',
     },
-    staticPage: {
+    static_page: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'staticPage',
+      columnName: 'static_page',
     },
     blogs: {
       type: "boolean",

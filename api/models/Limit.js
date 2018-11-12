@@ -12,45 +12,45 @@ module.exports = {
             type: 'string',
             columnName: 'user',
         },
-        monthlyDepositCrypto: {
+        monthly_deposit_crypto: {
             type: 'number',
-            columnName: 'monthlyDepositCrypto',
+            columnName: 'monthly_deposit_crypto',
         },
-        monthlyDepositFiat: {
+        monthly_deposit_fiat: {
             type: 'number',
-            columnName: 'monthlyDepositFiat',
+            columnName: 'monthly_deposit_fiat',
         },
-        monthlyWithdrawCrypto: {
+        monthly_withdraw_crypto: {
             type: 'number',
-            columnName: 'monthlyWithdrawCrypto',
+            columnName: 'monthly_withdraw_crypto',
         },
-        monthlyWithdrawFiat: {
+        monthly_withdraw_fiat: {
             type: 'number',
-            columnName: 'monthlyWithdrawFiat',
+            columnName: 'monthly_withdraw_fiat',
         },
-        dailyDepositCrypto: {
+        daily_deposit_crypto: {
             type: 'number',
-            columnName: 'dailyDepositCrypto',
+            columnName: 'daily_deposit_crypto',
         },
-        dailyDepositFiat: {
+        daily_deposit_fiat: {
             type: 'number',
-            columnName: 'dailyDepositFiat',
+            columnName: 'daily_deposit_fiat',
         },
-        dailyWithdrawCrypto: {
+        daily_withdraw_crypto: {
             type: 'number',
-            columnName: 'dailyWithdrawCrypto',
+            columnName: 'daily_withdraw_crypto',
         },
-        dailyWithdrawFiat: {
+        daily_withdraw_fiat: {
             type: 'number',
-            columnName: 'dailyWithdrawFiat',
+            columnName: 'daily_withdraw_fiat',
         },
-        minWithdrawlCrypto: {
+        min_withdrawl_crypto: {
             type: 'number',
-            columnName: 'minWithdrawlCrypto',
+            columnName: 'min_withdrawl_crypto',
         },
-        minWithdrawlFiat: {
+        min_withdrawl_fiat: {
             type: 'number',
-            columnName: 'minWithdrawlFiat',
+            columnName: 'min_withdrawl_fiat',
         },
         created_at: {
             type: 'ref',

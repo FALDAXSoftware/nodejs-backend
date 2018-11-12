@@ -138,7 +138,7 @@ module.exports = {
 
         await Users.update({ id: user.id }).set({
             email: user.email,
-            authCode: randomize('0', 6)
+            auth_code: randomize('0', 6)
         });
 
         // send code in email
@@ -147,7 +147,7 @@ module.exports = {
             {
                 homelink: sails.config.urlconf.APP_URL,
                 recipientName: user.first_name,
-                code: user.authCode,
+                code: user.auth_code,
                 senderName: "Faldax"
             },
             {
@@ -197,7 +197,7 @@ module.exports = {
                 "err": "Invalid OTP"
             });
         }
-        await User.update({ id: user.id }).set({ is_twofactor: false, twofactor_secret: null, email: user.email, authCode: null });
+        await User.update({ id: user.id }).set({ is_twofactor: false, twofactor_secret: null, email: user.email, auth_code: null });
         var token = await sails.helpers.jwtIssue(user_detail.id);
         return res.json({
             status: 200,
@@ -358,7 +358,7 @@ module.exports = {
 
         let logged_user = await LoginHistory.update({
             device_token: req.body.device_token
-        }).set({ isLoggedIn: false, device_token: null }).fetch();
+        }).set({ is_logged_in: false, device_token: null }).fetch();
 
         if (logged_user) {
             return res.json({ status: 200, message: "User Log out successfully." });

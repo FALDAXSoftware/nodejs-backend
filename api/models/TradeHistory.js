@@ -62,18 +62,18 @@ module.exports = {
             columnName: 'deleted',
             defaultsTo: false
         },
-        requestedUser_id: {
+        requested_user_id: {
             type: 'number',
-            columnName: 'requestedUser_id',
+            columnName: 'requested_user_id',
         },
-        isPartiallyFilled: {
+        is_partially_filled: {
             type: 'boolean',
-            columnName: 'isPartiallyFilled',
+            columnName: 'is_partially_filled',
             defaultsTo: false
         },
-        fixQuantity: {
+        fix_quantity: {
             type: 'boolean',
-            columnName: 'fixQuantity',
+            columnName: 'fix_quantity',
             defaultsTo: false
         },
         symbol: {

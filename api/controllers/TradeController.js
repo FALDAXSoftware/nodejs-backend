@@ -35,7 +35,7 @@ module.exports = {
             for (let index = 0; index < tradeData.length; index++) {
                 if (tradeData[index].user_id) {
                     let user = await Users.findOne({ id: tradeData[index].user_id })
-                    let user2 = await Users.findOne({ id: tradeData[index].requestedUser_id })
+                    let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
                     tradeData[index].maker_email = user.email;
                     tradeData[index].taker_email = user2.email;
                     tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
@@ -75,7 +75,7 @@ module.exports = {
                 for (let index = 0; index < tradeData.length; index++) {
                     if (tradeData[index].user_id) {
                         let user = await Users.findOne({ id: tradeData[index].user_id })
-                        let user2 = await Users.findOne({ id: tradeData[index].requestedUser_id })
+                        let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
                         tradeData[index].maker_email = user.email;
                         tradeData[index].taker_email = user2.email;
                         tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
@@ -103,7 +103,7 @@ module.exports = {
                 for (let index = 0; index < tradeData.length; index++) {
                     if (tradeData[index].user_id) {
                         let user = await Users.findOne({ id: tradeData[index].user_id })
-                        let user2 = await Users.findOne({ id: tradeData[index].requestedUser_id })
+                        let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
                         tradeData[index].maker_email = user.email;
                         tradeData[index].taker_email = user2.email;
                         tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
@@ -130,7 +130,7 @@ module.exports = {
             for (let index = 0; index < tradeData.length; index++) {
                 if (tradeData[index].user_id) {
                     let user = await Users.findOne({ id: tradeData[index].user_id })
-                    let user2 = await Users.findOne({ id: tradeData[index].requestedUser_id })
+                    let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
                     tradeData[index].maker_email = user.email;
                     tradeData[index].taker_email = user2.email;
                     tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);

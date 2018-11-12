@@ -132,9 +132,9 @@ module.exports = {
       columnName: "twofactor_secret",
       allowNull: true,
     },
-    authCode: {
+    auth_code: {
       type: "string",
-      columnName: "authCode",
+      columnName: "auth_code",
       allowNull: true
     },
     created_at: {
@@ -153,7 +153,7 @@ module.exports = {
       columnName: 'deleted_at'
     },
     history: {
-      collection: 'loginhistory',
+      collection: 'loginHistory',
       via: 'user'
     }
   },
