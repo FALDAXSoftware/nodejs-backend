@@ -32,20 +32,32 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getCoinRequests: async function (req, res) {
-        let { page, limit } = req.allParams();
-        let coinReqData = await AddCoinRequest.find().paginate(page - 1, parseInt(limit));
-        let coinReqCount = await AddCoinRequest.count();
-        if (coinReqData) {
-            return res.json({
-                "status": 200,
-                "message": "Coin requests retrived successfully",
-                "data": coinReqData, coinReqCount
-            });
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            let coinReqData = await AddCoinRequest.find({ coin_name: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            let coinReqCount = await AddCoinRequest.count({ coin_name: { contains: data } });
+            if (coinReqData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Coin requests retrived successfully",
+                    "data": coinReqData, coinReqCount
+                });
+            }
         } else {
-            return res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
+            let coinReqData = await AddCoinRequest.find().paginate(page - 1, parseInt(limit));
+            let coinReqCount = await AddCoinRequest.count();
+            if (coinReqData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Coin requests retrived successfully",
+                    "data": coinReqData, coinReqCount
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
         }
     },
 };
