@@ -59,6 +59,8 @@ module.exports.routes = {
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
   'post /admin/email-send': 'AnnouncementController.sendemail',
 
+  //Coin Requests
+  'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
   'get /admin/dashboard/getData': 'Dashboard.get',
@@ -141,4 +143,7 @@ module.exports.routes = {
 
   // Contact Routes
   'get /get-contact-details': 'RootController.getContactInfo',
+
+  //Coin Request routes
+  'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest'
 };
