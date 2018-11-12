@@ -134,4 +134,7 @@ module.exports.routes = {
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
   'post /users/add-kyc-docs': "KYCController.uploadKYCDoc",
   'get /users/get-kyc-detail': 'KYCController.getKYCDetails',
+
+  //Static Page routes
+  'get /users/static-page/:page': 'Statics.getStaticPage',
 };

@@ -42,5 +42,8 @@ module.exports.policies = {
   },
   'BlogsController': {
     '*': true
+  },
+  'StaticsController': {
+    "getStaticPage": true
   }
 };

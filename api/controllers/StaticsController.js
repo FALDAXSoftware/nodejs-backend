@@ -7,6 +7,16 @@
 
 module.exports = {
     //---------------------------Web Api------------------------------
+    getStaticPage: async function (req, res) {
+        let staticData = await Statics.findOne({ slug: req.params.page, is_active: true });
+        if (staticData) {
+            return res.view('pages/staticPage', {
+                page: staticData
+            });
+        } else {
+            return res.notFound();
+        }
+    },
 
     //-------------------------------CMS Api--------------------------
     getStatic: async function (req, res) {
