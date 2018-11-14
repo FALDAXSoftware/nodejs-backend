@@ -53,5 +53,8 @@ module.exports.policies = {
   },
   'AddCoinReqController': {
     "addCoinRequest": true
+  },
+  'CareerController': {
+    "*": true
   }
 };

@@ -42,5 +42,35 @@ module.exports = {
             });
         }
     },
+
+    getAllInquiries: async function (req, res) {
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            let inquiryData = await Inquiry.find({ message: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count({ message: { contains: data } });
+            if (inquiryData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Inquiries retrived successfully",
+                    "data": inquiryData, inquiryCount
+                });
+            }
+        } else {
+            let inquiryData = await Inquiry.find().paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count();
+            if (inquiryData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Inquiries retrived successfully",
+                    "data": inquiryData, inquiryCount
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
+        }
+    },
 };
 

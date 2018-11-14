@@ -44,13 +44,11 @@ module.exports.routes = {
   'put /admin/coins/update': 'Coins.update',
   'delete /admin/coins/delete': 'Coins.delete',
 
-
   //static pages
   'get /admin/static/getStaticPage': 'Statics.getStatic',
   'post /admin/static/create': 'Statics.create',
   'put /admin/static/update': 'Statics.update',
   'delete /admin/static/delete': 'Statics.delete',
-
 
   //Announcement
   'get /admin/announcement/getAnnouncementTemplate': 'AnnouncementController.getAnnouncementTemplate',
@@ -105,6 +103,12 @@ module.exports.routes = {
   'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
   'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
 
+  //Send Inquiry routes
+  'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
+
+  //Add Job route
+  'post /admin/add-job': 'CareerController.addJob',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
@@ -148,5 +152,9 @@ module.exports.routes = {
   'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest',
 
   //Send Inquiry routes
-  'post /send-inquiry': 'RootController.sendInquiry'
+  'post /send-inquiry': 'RootController.sendInquiry',
+
+  //career routes
+  'get /all-jobs': 'CareerController.getAllJobs',
+  'post /apply-job': 'CareerController.applyJob',
 };

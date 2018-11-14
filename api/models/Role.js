@@ -64,7 +64,16 @@ module.exports = {
       columnName: 'employee',
       defaultsTo: false,
     },
-
+    inquiries: {
+      type: "boolean",
+      columnName: 'inquiries',
+      defaultsTo: false,
+    },
+    jobs: {
+      type: "boolean",
+      columnName: 'jobs',
+      defaultsTo: false,
+    },
     limit_management: {
       type: "boolean",
       columnName: 'limit_management',
