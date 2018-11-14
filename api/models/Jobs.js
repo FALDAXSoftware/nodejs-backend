@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-    tableName: 'Jobs',
+    tableName: 'jobs',
     attributes: {
         position: {
             type: 'string',

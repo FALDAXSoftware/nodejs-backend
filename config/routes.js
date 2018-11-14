@@ -163,5 +163,6 @@ module.exports.routes = {
 
   //career routes
   'get /all-jobs': 'CareerController.getAllJobs',
+  'get /jobs/get-job-detail': 'CareerController.getJobDetail',
   'post /apply-job': 'CareerController.applyJob',
 };
