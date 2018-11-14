@@ -1,13 +1,15 @@
 /**
  * AddCoinReqController
  *
- * @description :: Server-side actions for handling incoming requests.
+ * @description :: Manage All Add Coin requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var moment = require('moment');
 
 module.exports = {
     //---------------------------Web Api------------------------------
+
+    // Add Coin Request 
     addCoinRequest: async function (req, res) {
         let addReqData = await AddCoinRequest.create({
             message: req.body.message,
@@ -31,6 +33,8 @@ module.exports = {
     },
 
     //-------------------------------CMS Api--------------------------
+
+    // Get Coin Request
     getCoinRequests: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {

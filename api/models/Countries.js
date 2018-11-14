@@ -1,12 +1,12 @@
 /**
  * Countries.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table countries.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-
+  tableName: 'countries',
   attributes: {
     name: {
       type: 'string',

@@ -1,38 +1,46 @@
 /**
  * Subscribe.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table subscribe.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-
+  tableName: 'subscribe',
   attributes: {
-    email : {
-      type: 'string', 
+    email: {
+      type: 'string',
       columnName: 'email'
     },
-    is_news_feed : {
-      type: 'string', 
+    is_news_feed: {
+      type: 'string',
       columnName: 'is_news_feed',
       required: true
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
   },
+  beforeCreate: function (values, next) {
+    values.created_at = new Date();
+    next();
+  },
 
+  beforeUpdate: function (values, next) {
+    values.updated_at = new Date();
+    next();
+  }
 };
 

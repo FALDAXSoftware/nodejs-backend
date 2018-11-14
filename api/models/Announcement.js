@@ -1,7 +1,7 @@
 /**
  * Announcement.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table announcments.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -61,6 +61,10 @@ module.exports = {
           next({ error: 'Page already exist' });
         }
       });
+  },
+  beforeUpadte: (values, next) => {
+    values.updated_at = new Date();
+    next();
   },
 
 };

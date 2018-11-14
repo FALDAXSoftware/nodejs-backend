@@ -12,6 +12,13 @@ module.exports.routes = {
   '/': {
     view: 'pages/homepage'
   },
+
+
+
+
+
+
+
   // CMS Routes///////////////////////////////////////////
 
   //Admin 

@@ -1,26 +1,34 @@
 /**
  * AdminController
  *
- * @description :: Server-side actions for handling incoming requests.
+ * @description :: Admin controller for CMS user actions.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var randomize = require('randomatic');
 var bcrypt = require('bcrypt');
 
 module.exports = {
+
+    // CMS Login
     login: async function (req, res) {
         try {
+            // Parameter Existence
             if (req.body.email && req.body.password) {
                 let query = {
                     email: req.body.email,
                     password: req.body.password
                 }
                 var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
+
+                // Admin Existence
                 if (admin_details) {
+
+                    // Admin Active
                     if (admin_details.is_active) {
                         let role = await Role.findOne({ id: admin_details.role_id })
                         admin_details.roles = role;
 
+                        // Role Not Active
                         if (!role.is_active) {
                             res.status(400).json({
                                 "status": 400,
@@ -29,6 +37,7 @@ module.exports = {
                             return;
                         }
 
+                        // Credentials Check (Password Compare)
                         Admin.comparePassword(query.password, admin_details, async function (err, valid) {
                             if (err) {
                                 return res.status(403).json({ "status": 403, "err": 'Forbidden' });
@@ -38,6 +47,7 @@ module.exports = {
                                 return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
                             } else {
                                 delete admin_details.password;
+                                // Token Issue
                                 var token = await sails.helpers.jwtIssue(admin_details.id);
                                 res.json({
                                     user: admin_details,
@@ -76,14 +86,19 @@ module.exports = {
         }
     },
 
+    // Create Admin
     create: async function (req, res) {
         try {
+            // Parameter Existence
             if (req.body.email && req.body.password) {
+                // Create Admin
                 var user_detail = await Admin.create({
                     email: req.body.email,
                     password: req.body.password
 
                 }).fetch();
+
+                // Token Issue
                 var token = await sails.helpers.jwtIssue(user_detail.id);
                 if (user_detail) {
                     res.json({
@@ -116,6 +131,7 @@ module.exports = {
         }
     },
 
+    // Change Password Admin
     changePassword: async function (req, res) {
         try {
             if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
@@ -139,7 +155,7 @@ module.exports = {
             if (!compareCurrent) {
                 return res.status(401).json({ "status": 401, err: "Current password mismatch" });
             }
-
+            // Update New Password
             var adminUpdates = await Admin.update({ email: req.body.email }).set({ email: req.body.email, password: req.body.new_password }).fetch();
 
             if (adminUpdates) {
@@ -160,6 +176,7 @@ module.exports = {
         }
     },
 
+    // Update Profile Details Admin
     update: async function (req, res) {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email });
@@ -184,6 +201,7 @@ module.exports = {
         }
     },
 
+    // Reset Passsword 
     resetPassword: async function (req, res) {
         try {
             var reset_token = req.body.reset_token;
@@ -217,6 +235,7 @@ module.exports = {
         }
     },
 
+    // Forgot Password request Admin
     forgotPassword: async function (req, res) {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email, deleted_at: null });
@@ -343,6 +362,7 @@ module.exports = {
         }
     },
 
+    // Delete Employee
     deleteEmployee: async function (req, res) {
         try {
             if (req.body.id) {
@@ -366,6 +386,7 @@ module.exports = {
         }
     },
 
+    // Update Employee Details
     updateEmployee: async function (req, res) {
         try {
             if (req.body.id) {

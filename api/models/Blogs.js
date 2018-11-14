@@ -1,7 +1,7 @@
 /**
  * Blogs.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table blogs.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -59,5 +59,13 @@ module.exports = {
             this.cover_image = "faldax/blog/default_blog.png"
         }
         return this;
-    }
+    },
+    beforeCreate: (values, next) => {
+        values.created_at = new Date();
+        next();
+    },
+    beforeUpadte: (values, next) => {
+        values.updated_at = new Date();
+        next();
+    },
 };
