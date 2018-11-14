@@ -1,7 +1,7 @@
 /**
  * LoginHistory.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table login_history.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -9,9 +9,6 @@ module.exports = {
   tableName: "login_history",
 
   attributes: {
-    //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
-    //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
-    //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
     ip: {
       type: "string",
       columnName: "ip"
@@ -50,14 +47,13 @@ module.exports = {
       model: 'users',
       columnName: 'user_id',
     },
-
-    //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
-    //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
-    //  ╚═╝╩ ╩╚═╝╚═╝═╩╝╚═╝
-
-
-    //  ╔═╗╔═╗╔═╗╔═╗╔═╗╦╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
-    //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
-    //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
+  },
+  beforeCreate: (values, next) => {
+    values.created_at = new Date();
+    next();
+  },
+  beforeUpadte: (values, next) => {
+    values.updated_at = new Date();
+    next();
   },
 };

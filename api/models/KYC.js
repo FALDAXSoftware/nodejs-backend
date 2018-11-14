@@ -1,7 +1,7 @@
 /**
  * Admin.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table kyc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -97,5 +97,13 @@ module.exports = {
             defaultsTo: 1,
             type: 'number'
         }
+    },
+    beforeCreate: (values, next) => {
+        values.created_at = new Date();
+        next();
+    },
+    beforeUpadte: (values, next) => {
+        values.updated_at = new Date();
+        next();
     },
 };

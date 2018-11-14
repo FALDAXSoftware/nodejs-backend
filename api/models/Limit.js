@@ -1,7 +1,7 @@
 /**
  * Limit.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table limit.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -67,5 +67,13 @@ module.exports = {
             columnType: 'datetime',
             columnName: 'deleted_at'
         }
-    }
+    },
+    beforeCreate: (values, next) => {
+        values.created_at = new Date();
+        next();
+    },
+    beforeUpadte: (values, next) => {
+        values.updated_at = new Date();
+        next();
+    },
 };

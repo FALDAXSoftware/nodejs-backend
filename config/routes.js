@@ -12,6 +12,13 @@ module.exports.routes = {
   '/': {
     view: 'pages/homepage'
   },
+
+
+
+
+
+
+
   // CMS Routes///////////////////////////////////////////
 
   //Admin 
@@ -104,6 +111,14 @@ module.exports.routes = {
   //Order routes
   'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
   'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
+
+
+
+
+
+
+
+
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",

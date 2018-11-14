@@ -1,7 +1,7 @@
 /**
  * AdminSetting.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table admin_settings.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
