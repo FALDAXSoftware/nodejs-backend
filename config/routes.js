@@ -141,9 +141,9 @@ module.exports.routes = {
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
   'post /users/get-blog-detail': 'BlogsController.getBlogDetails',
-  'get /get-comments': 'BlogsController.getComment',
+  'post /get-comments': 'BlogsController.getComment',
   'post /add-comments': 'BlogsController.addComment',
-  'get /get-related-blog': 'BlogsController.getRelatedPost',
+  'post /get-related-blog': 'BlogsController.getRelatedPost',
 
   //dashboard
   'post /dashboard': "DashboardController.get",

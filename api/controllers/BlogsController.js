@@ -78,6 +78,7 @@ module.exports = {
             });
         }
     },
+
     addComment: async function (req, res) {
         try {
             let user_id = req.user.id;
@@ -96,13 +97,13 @@ module.exports = {
                 status: 500,
                 "err": sails.__("Something Wrong")
             });
-
         }
     },
 
     getComment: async function (req, res) {
         try {
-            let { blog_id, page, limit } = req.body;
+            let { blog_id } = req.body;
+            let { page, limit } = req.allParams();
             let comments = await BlogComment.find({ blog: blog_id, deleted_at: null }).paginate(page - 1, parseInt(limit));
             let BlogCommentCount = await BlogComment.count({
                 where: {
@@ -110,7 +111,7 @@ module.exports = {
                     blog: blog_id
                 }
             });
-            if (blogData) {
+            if (comments) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Comment list"),
@@ -127,6 +128,7 @@ module.exports = {
             });
         }
     },
+
     getRelatedPost: async function (req, res) {
         try {
             let { blog_id } = req.body;
@@ -137,7 +139,7 @@ module.exports = {
                     "err": "Blog not found",
                 });
             }
-            let tags = Blogs.tags.split(",");
+            let tags = blog.tags != undefined ? blog.tags.split(",") : '';
             let conditionArray = [];
             for (let index = 0; index < tags.length; index++) {
                 let temp = {};
@@ -147,23 +149,22 @@ module.exports = {
                 conditionArray.push(temp)
             }
 
-            let relatetPosts = await Blogs.find().where({ id: { '!=': blog_id } }).where({ or: conditionArray }).sort('created_at DESC');
-            for (let index = 0; index < relatetPosts.length; index++) {
-                if (relatetPosts[index].admin_id) {
-                    let admin = await Admin.findOne({ id: relatetPosts[index].admin_id })
-                    relatetPosts[index].admin_name = admin.name
+            let relatedPosts = await Blogs.find().where({ id: { '!=': blog_id } }).where({ or: conditionArray }).sort('created_at DESC');
+            for (let index = 0; index < relatedPosts.length; index++) {
+                if (relatedPosts[index].admin_id) {
+                    let admin = await Admin.findOne({ id: relatedPosts[index].admin_id })
+                    relatedPosts[index].admin_name = admin.name
                 }
             }
-            if (blogData) {
+            if (relatedPosts) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Blog list"),
                     "data": {
-                        blogs: relatetPosts
+                        blogs: relatedPosts
                     }
                 });
             }
-
         } catch (error) {
             return res.status(500).json({
                 status: 500,
