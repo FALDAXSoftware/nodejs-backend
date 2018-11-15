@@ -123,7 +123,7 @@ module.exports = {
             });
             return;
         }
-        let staticData = await Statics.update({ id: id }).set({ is_active: false }).fetch();
+        let staticData = await Statics.update({ id: id }).set({ deleted_at: new Date() }).fetch();
         if (staticData) {
             return res.status(200).json({
                 "status": 200,

@@ -22,6 +22,29 @@ module.exports = {
         })
     },
 
+    updateContactInfo: async function (req, res) {
+        try {
+            let contactDetails = [];
+            Object.keys(req.body)
+                .forEach(async function eachKey(key) {
+                    contactDetails = await AdminSetting.update({ slug: key }).set({ value: req.body[key] }).fetch();
+                });
+            if (contactDetails) {
+                return res.json({
+                    status: 200,
+                    message: "Contact details updated successfully.",
+                })
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
+        } catch (error) {
+            console.log('index', error)
+        }
+    },
+
     sendInquiry: async function (req, res) {
         let inquiryDetails = await Inquiry.create({
             first_name: req.body.first_name,
@@ -73,4 +96,3 @@ module.exports = {
         }
     },
 };
-

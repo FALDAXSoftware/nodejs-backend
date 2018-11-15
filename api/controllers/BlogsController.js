@@ -105,6 +105,14 @@ module.exports = {
             let { blog_id } = req.body;
             let { page, limit } = req.allParams();
             let comments = await BlogComment.find({ blog: blog_id, deleted_at: null }).paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < comments.length; index++) {
+                let element = comments[index];
+                let blahuser = await Users.findOne({ select: ['first_name', 'last_name', 'profile_pic'], where: { id: element.user } });
+                element["userDetails"] = blahuser;
+                comments[index] = element;
+            }
+
             let BlogCommentCount = await BlogComment.count({
                 where: {
                     deleted_at: null,

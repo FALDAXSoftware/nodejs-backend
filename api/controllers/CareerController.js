@@ -85,13 +85,14 @@ module.exports = {
 
     getAllJobs: async function (req, res) {
         let { page, limit } = req.allParams();
-        let allJobs = await Jobs.find().paginate(page - 1, parseInt(limit));
+        let allJobs = await Jobs.find({ deleted_at: null }).paginate(page - 1, parseInt(limit));
+        let allJobsCount = await Jobs.count({ deleted_at: null });
         let careerDesc = await Statics.findOne({ slug: 'career' });
         if (allJobs) {
             return res.json({
                 "status": 200,
                 "message": "All jobs retrived successfully",
-                "data": allJobs, careerDesc
+                "data": allJobs, careerDesc, allJobsCount
             });
         } else {
             return res.status(500).json({
@@ -144,5 +145,57 @@ module.exports = {
             });
         }
     },
-};
 
+    editJob: async function (req, res) {
+        let job = await Jobs.findOne({ id: req.body.job_id })
+        if (job) {
+            let updatedJob = await Jobs.update({ id: req.body.job_id }).set(req.body).fetch();
+            if (updatedJob) {
+                return res.json({
+                    "status": 200,
+                    "message": "Job updated successfully",
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
+        } else {
+            return res.status(400).json({
+                status: 400,
+                "err": "Job not found"
+            });
+        }
+    },
+
+    deleteJob: async function (req, res) {
+        try {
+            let { job_id } = req.allParams();
+            if (!job_id) {
+                res.status(500).json({
+                    "status": 500,
+                    "err": "Job id is not sent"
+                });
+                return;
+            }
+            let deletedJob = await Jobs.update({ id: job_id }).set({ deleted_at: new Date() }).fetch();
+            if (deletedJob) {
+                return res.json({
+                    "status": 200,
+                    "message": "Job removed successfully",
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
+        } catch (err) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+};

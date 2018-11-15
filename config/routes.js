@@ -115,6 +115,11 @@ module.exports.routes = {
 
   //Add Job route
   'post /admin/add-job': 'CareerController.addJob',
+  'put /admin/edit-job': 'CareerController.editJob',
+  'delete /admin/delete-job': 'CareerController.deleteJob',
+
+  // Contact Routes
+  'post /edit-contact-details': 'RootController.updateContactInfo',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
