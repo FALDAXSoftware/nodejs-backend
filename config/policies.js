@@ -41,7 +41,10 @@ module.exports.policies = {
     '*': true // We dont need authorization here, allowing public access
   },
   'BlogsController': {
-    '*': true
+    'getAllBlogList': true,
+    'getBlogDetails': true,
+    'getComment': true,
+    'getRelatedPost': true,
   },
   'StaticsController': {
     "getStaticPage": true,

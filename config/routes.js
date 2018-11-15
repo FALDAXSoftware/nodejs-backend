@@ -137,8 +137,13 @@ module.exports.routes = {
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
   'post /logout': "AuthController.logOut",
+
+  // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
   'post /users/get-blog-detail': 'BlogsController.getBlogDetails',
+  'get /get-comments': 'BlogsController.getComment',
+  'post /add-comments': 'BlogsController.addComment',
+  'get /get-related-blog': 'BlogsController.getRelatedPost',
 
   //dashboard
   'post /dashboard': "DashboardController.get",

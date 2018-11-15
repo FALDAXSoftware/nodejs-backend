@@ -78,7 +78,99 @@ module.exports = {
             });
         }
     },
+    addComment: async function (req, res) {
+        try {
+            let user_id = req.user.id;
+            let { blog_id, comment } = req.body;
+            let addedComment = await BlogComment.create({
+                user: user_id,
+                blog: blog_id,
+                comment: comment
+            }).fetch();
+            res.json({
+                "status": 200,
+                "message": sails.__('Create Comment')
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
 
+        }
+    },
+
+    getComment: async function (req, res) {
+        try {
+            let { blog_id, page, limit } = req.body;
+            let comments = await BlogComment.find({ blog: blog_id, deleted_at: null }).paginate(page - 1, parseInt(limit));
+            let BlogCommentCount = await BlogComment.count({
+                where: {
+                    deleted_at: null,
+                    blog: blog_id
+                }
+            });
+            if (blogData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Comment list"),
+                    "data": {
+                        comments: comments,
+                        commentCount: BlogCommentCount
+                    }
+                });
+            }
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+    getRelatedPost: async function (req, res) {
+        try {
+            let { blog_id } = req.body;
+            let blog = await Blogs.findOne({ id: blog_id });
+            if (!blog) {
+                return res.status(400).json({
+                    "status": 400,
+                    "err": "Blog not found",
+                });
+            }
+            let tags = Blogs.tags.split(",");
+            let conditionArray = [];
+            for (let index = 0; index < tags.length; index++) {
+                let temp = {};
+                temp = {
+                    tags: { contains: tags[index] }
+                }
+                conditionArray.push(temp)
+            }
+
+            let relatetPosts = await Blogs.find().where({ id: { '!=': blog_id } }).where({ or: conditionArray }).sort('created_at DESC');
+            for (let index = 0; index < relatetPosts.length; index++) {
+                if (relatetPosts[index].admin_id) {
+                    let admin = await Admin.findOne({ id: relatetPosts[index].admin_id })
+                    relatetPosts[index].admin_name = admin.name
+                }
+            }
+            if (blogData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Blog list"),
+                    "data": {
+                        blogs: relatetPosts
+                    }
+                });
+            }
+
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
     //-------------------------------CMS Api--------------------------
     getAllBlogs: async function (req, res) {
         // req.setLocale('en')
@@ -147,7 +239,7 @@ module.exports = {
                 var blog_detail = await Blogs.create({
                     title: req.body.title,
                     admin_id: req.body.author,
-                    tags: req.body.tags,
+                    tags: req.body.tags.toLowerCase(),
                     description: req.body.description,
                     created_at: new Date(),
                     search_keywords: req.body.title.toLowerCase()
@@ -228,4 +320,6 @@ module.exports = {
             });
         }
     },
+
+
 };

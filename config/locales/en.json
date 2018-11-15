@@ -34,5 +34,7 @@
 	"Something Wrong": "Something went wrong!!",
 	"User Update": "User details updated successfully",
 	"Blog Details": "Blog Details",
-	"No KYC": "No KYC details updated."
+	"No KYC": "No KYC details updated.",
+	"Create Comment": "Comment added successfully.",
+	"Comment list": "Comments Retrieved Successfully",
 }
