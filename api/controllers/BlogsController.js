@@ -157,7 +157,7 @@ module.exports = {
                 conditionArray.push(temp)
             }
 
-            let relatedPosts = await Blogs.find().where({ id: { '!=': blog_id } }).where({ or: conditionArray }).sort('created_at DESC');
+            let relatedPosts = await Blogs.find({ id: { '!=': blog_id }, or: conditionArray }).sort('created_at DESC').limit(3);
             for (let index = 0; index < relatedPosts.length; index++) {
                 if (relatedPosts[index].admin_id) {
                     let admin = await Admin.findOne({ id: relatedPosts[index].admin_id })
