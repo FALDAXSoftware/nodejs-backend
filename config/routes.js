@@ -115,6 +115,11 @@ module.exports.routes = {
 
   //Add Job route
   'post /admin/add-job': 'CareerController.addJob',
+  'put /admin/edit-job': 'CareerController.editJob',
+  'delete /admin/delete-job': 'CareerController.deleteJob',
+
+  // Contact Routes
+  'post /edit-contact-details': 'RootController.updateContactInfo',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
@@ -141,9 +146,9 @@ module.exports.routes = {
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
   'post /users/get-blog-detail': 'BlogsController.getBlogDetails',
-  'get /get-comments': 'BlogsController.getComment',
+  'post /get-comments': 'BlogsController.getComment',
   'post /add-comments': 'BlogsController.addComment',
-  'get /get-related-blog': 'BlogsController.getRelatedPost',
+  'post /get-related-blog': 'BlogsController.getRelatedPost',
 
   //dashboard
   'post /dashboard': "DashboardController.get",

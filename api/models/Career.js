@@ -47,7 +47,7 @@ module.exports = {
         },
         job_id: {
             columnName: 'job_id',
-            type: 'integer',
+            type: 'number',
         },
         created_at: {
             type: 'ref',

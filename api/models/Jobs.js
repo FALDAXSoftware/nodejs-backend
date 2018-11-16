@@ -25,6 +25,11 @@ module.exports = {
             type: 'string',
             columnName: 'location'
         },
+        is_active: {
+            type: 'boolean',
+            columnName: 'is_active',
+            defaultsTo: true
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',
@@ -41,4 +46,12 @@ module.exports = {
             columnName: 'deleted_at'
         }
     },
+    beforeCreate: function (val, next) {
+        val.created_at = new Date();
+        next();
+    },
+    beforeUpdate: function (val, next) {
+        val.updated_at = new Date();
+        next();
+    }
 };
