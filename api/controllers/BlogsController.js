@@ -46,6 +46,13 @@ module.exports = {
                     let admin = await Admin.findOne({ id: blogData[index].admin_id })
                     blogData[index].admin_name = admin.name
                 }
+                let BlogCommentCount = await BlogComment.count({
+                    where: {
+                        deleted_at: null,
+                        blog: blogData[index].id
+                    }
+                });
+                blogData[index].comment_count = BlogCommentCount;
             }
 
             let BlogCount = await Blogs.count({
@@ -68,6 +75,13 @@ module.exports = {
         if (blog) {
             let adminData = await Admin.findOne({ id: blog.admin_id });
             blog.admin_name = adminData.name;
+            let BlogCommentCount = await BlogComment.count({
+                where: {
+                    deleted_at: null,
+                    blog: blog.id
+                }
+            });
+            blog.comment_count = BlogCommentCount;
             return res.json({
                 "status": 200, "message": sails.__('Blog Details'), data: blog
             })
