@@ -45,6 +45,7 @@ module.exports.policies = {
     'getBlogDetails': true,
     'getComment': true,
     'getRelatedPost': true,
+    'getAllNews': true
   },
   'StaticsController': {
     "getStaticPage": true,

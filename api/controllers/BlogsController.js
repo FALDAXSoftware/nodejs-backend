@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var UploadFiles = require('../services/UploadFiles');
 
 module.exports = {
     //---------------------------Web Api------------------------------
@@ -118,7 +119,7 @@ module.exports = {
         try {
             let { blog_id } = req.body;
             let { page, limit } = req.allParams();
-            let comments = await BlogComment.find({ blog: blog_id, deleted_at: null }).paginate(page - 1, parseInt(limit));
+            let comments = await BlogComment.find({ blog: blog_id, deleted_at: null }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
 
             for (let index = 0; index < comments.length; index++) {
                 let element = comments[index];
@@ -257,43 +258,64 @@ module.exports = {
     },
 
     createBlog: async function (req, res) {
-        try {
-            if (req.body.title && req.body.description) {
-                var blog_detail = await Blogs.create({
-                    title: req.body.title,
-                    admin_id: req.body.author,
-                    tags: req.body.tags.toLowerCase(),
-                    description: req.body.description,
-                    created_at: new Date(),
-                    search_keywords: req.body.title.toLowerCase()
-                }).fetch();
-                if (blog_detail) {
-                    res.json({
-                        "status": 200,
-                        "message": sails.__('Create Blog')
-                    });
-                    return;
+        req.file('cover_image').upload(async function (err, uploadedFiles) {
+            try {
+                if (uploadedFiles.length > 0) {
+                    let filename = uploadedFiles[0].filename;
+                    var name = filename.substring(filename.indexOf("."));
+                    let timestamp = new Date()
+                        .getTime()
+                        .toString();
+                    var uploadFileName = timestamp + name;
+                    var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
+                    console.log('blog>>>>>>>>>_detail', uploadCover)
+                    if (req.body.title && req.body.description && uploadCover) {
+                        var blog_detail = await Blogs.create({
+                            title: req.body.title,
+                            admin_id: req.body.author,
+                            tags: req.body.tags.toLowerCase(),
+                            description: req.body.description,
+                            created_at: new Date(),
+                            search_keywords: req.body.title.toLowerCase(),
+                            cover_image: 'faldax/blog/' + uploadFileName,
+                        }).fetch();
+                        console.log('blog_detail', blog_detail)
+                        if (blog_detail) {
+                            res.json({
+                                "status": 200,
+                                "message": sails.__('Create Blog')
+                            });
+                            return;
+                        } else {
+                            res.status(400).json({
+                                "status": 400,
+                                "error": "Something went wrong",
+                            });
+                            return;
+                        }
+                    } else {
+                        res.status(400).json({
+                            "status": 400,
+                            "err": "blog title or description or image is not sent",
+                        });
+                        return;
+                    }
                 } else {
+                    console.log('iffff')
                     res.status(400).json({
                         "status": 400,
-                        "error": "Something went wrong",
+                        "err": "blog title or description or image is not sent",
                     });
                     return;
                 }
-            } else {
-                res.status(400).json({
-                    "status": 400,
-                    "err": "blog title & description is not sent",
+            } catch (e) {
+                console.log('isadasdffff', e)
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
                 });
-                return;
             }
-        } catch (error) {
-            res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
-            return;
-        }
+        });
     },
 
     updateBlog: async function (req, res) {
@@ -301,18 +323,46 @@ module.exports = {
             if (req.body.id) {
                 const blog_details = await Blogs.findOne({ id: req.body.id });
                 if (!blog_details) {
-                    return res.status(401).json({ err: 'invalid coin' });
+                    return res.status(401).json({ err: 'Invalid blog' });
                 }
-                var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
-                if (!updatedBlog) {
-                    return res.json({
-                        "status": 200,
-                        "message": "Something went wrong!"
-                    });
-                }
-                return res.json({
-                    "status": 200,
-                    "message": sails.__('Update Blog')
+                req.file('cover_image').upload(async function (err, uploadedFiles) {
+                    try {
+                        if (uploadedFiles.length > 0) {
+                            let filename = uploadedFiles[0].filename;
+                            var name = filename.substring(filename.indexOf("."));
+                            let timestamp = new Date()
+                                .getTime()
+                                .toString();
+                            var uploadFileName = timestamp + name;
+                            var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
+                            if (uploadCover) {
+                                delete req.body.cover_image;
+                                req.body.cover_image = 'faldax/blog/' + uploadFileName;
+
+                                var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
+                                return res.json({
+                                    "status": 200,
+                                    "message": sails.__("Update Blog")
+                                });
+                            }
+                        } else {
+                            if (blog_details.cover_image == 'true') {
+                                delete blog_details.cover_image;
+                                await Blogs.update({ id: req.body.id }).set(req.body).fetch();
+                            }
+                            var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
+
+                            return res.json({
+                                "status": 200,
+                                "message": sails.__("Update Blog"),
+                            });
+                        }
+                    } catch (e) {
+                        return res.status(500).json({
+                            status: 500,
+                            "err": sails.__("Something Wrong")
+                        });
+                    }
                 });
             } else {
                 return res.status(400).json({ 'status': 400, 'message': 'blog id is not sent.' })
@@ -344,5 +394,51 @@ module.exports = {
         }
     },
 
+    getAllNews: async function (req, res) {
+        // req.setLocale('en')
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            data = data.toLowerCase();
+            let newsData = await News.find({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        search_keywords: { contains: data }
+                    }]
+                }
+            }).sort("posted_at DESC").paginate(page - 1, parseInt(limit));
+
+            let NewsCount = await News.count({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        search_keywords: { contains: data }
+                    }]
+                }
+            });
+            if (newsData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("News list"),
+                    "data": newsData, NewsCount
+                });
+            }
+        } else {
+            let newsData = await News.find({
+                deleted_at: null
+            }).sort("posted_at DESC").paginate(page - 1, parseInt(limit));
+
+            let NewsCount = await News.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
+            return res.json({
+                "status": 200,
+                "message": sails.__("News list"),
+                "data": newsData, NewsCount
+            });
+        }
+    },
 
 };
