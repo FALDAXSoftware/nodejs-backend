@@ -28,6 +28,10 @@ module.exports = {
             type: 'string',
             columnName: 'owner',
         },
+        link: {
+            type: 'string',
+            columnName: 'link',
+        },
         posted_at: {
             type: 'ref',
             columnType: 'datetime',

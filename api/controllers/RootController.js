@@ -97,7 +97,7 @@ module.exports = {
 
 
     testnews: async function (req, res) {
-        var greeting = await sails.helpers.art19NewsUpdate();
+        var greeting = await sails.helpers.bitcoinistNewsUpdate();
         console.log(greeting);
         res.end();
     }

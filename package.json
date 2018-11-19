@@ -25,6 +25,7 @@
     "randomatic": "^3.1.0",
     "request": "^2.88.0",
     "sails": "^1.0.2",
+    "sails-hook-cron": "^3.0.0",
     "sails-hook-email": "^0.12.1",
     "sails-hook-grunt": "^3.0.2",
     "sails-hook-orm": "^2.0.0-16",
@@ -33,7 +34,8 @@
     "sails-postgresql": "^1.0.1",
     "skipper": "^0.8.7",
     "speakeasy": "^2.0.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "xml2json": "^0.11.2"
   },
   "devDependencies": {
     "@sailshq/eslint": "^4.19.3"
