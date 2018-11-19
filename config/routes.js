@@ -13,8 +13,8 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
-
-
+  // Test Routes
+  'get /newstest': 'RootController.testnews',
 
 
 

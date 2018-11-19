@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
 module.exports = {
 
     getContactInfo: async function (req, res) {
@@ -95,4 +94,11 @@ module.exports = {
             }
         }
     },
+
+
+    testnews: async function (req, res) {
+        var greeting = await sails.helpers.art19NewsUpdate();
+        console.log(greeting);
+        res.end();
+    }
 };
