@@ -268,7 +268,7 @@ module.exports = {
                         .toString();
                     var uploadFileName = timestamp + name;
                     var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
-                    console.log('blog>>>>>>>>>_detail', uploadCover)
+
                     if (req.body.title && req.body.description && uploadCover) {
                         var blog_detail = await Blogs.create({
                             title: req.body.title,
@@ -279,7 +279,7 @@ module.exports = {
                             search_keywords: req.body.title.toLowerCase(),
                             cover_image: 'faldax/blog/' + uploadFileName,
                         }).fetch();
-                        console.log('blog_detail', blog_detail)
+
                         if (blog_detail) {
                             res.json({
                                 "status": 200,
@@ -301,7 +301,6 @@ module.exports = {
                         return;
                     }
                 } else {
-                    console.log('iffff')
                     res.status(400).json({
                         "status": 400,
                         "err": "blog title or description or image is not sent",
@@ -309,7 +308,6 @@ module.exports = {
                     return;
                 }
             } catch (e) {
-                console.log('isadasdffff', e)
                 return res.status(500).json({
                     status: 500,
                     "err": sails.__("Something Wrong")
