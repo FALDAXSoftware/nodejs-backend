@@ -201,8 +201,8 @@ module.exports = {
     getJobApplications: async function (req, res) {
         try {
             let { page, limit, job_id } = req.allParams();
-            let applications = Career.find({ job_id: job_id }).paginate(page - 1, parseInt(limit));
-            let applicationCount = Career.count({ job_id: job_id })
+            let applications = await Career.find({ job_id: job_id }).paginate(page - 1, parseInt(limit));
+            let applicationCount = await Career.count({ job_id: job_id })
             return res.json({
                 "status": 200,
                 "message": "All job applications retrived successfully",

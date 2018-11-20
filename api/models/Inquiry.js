@@ -1,5 +1,5 @@
 /**
- * State.js
+ * Inquiry.js
  *
  * @description :: Represents a database table inquiries.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
