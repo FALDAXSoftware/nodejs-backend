@@ -35,7 +35,7 @@
     "skipper": "^0.8.7",
     "speakeasy": "^2.0.0",
     "uuid": "^3.3.2",
-    "xml2json": "^0.11.2"
+    "xml2json": "0.11.2"
   },
   "devDependencies": {
     "@sailshq/eslint": "^4.19.3"
