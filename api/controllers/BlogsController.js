@@ -397,7 +397,7 @@ module.exports = {
     getAllNews: async function (req, res) {
         // req.setLocale('en')
         let { page, limit, data } = req.allParams();
-        if (data) {
+        if (data && data.trim() != "") {
             data = data.toLowerCase();
             let newsData = await News.find({
                 where: {
