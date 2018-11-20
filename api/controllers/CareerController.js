@@ -198,4 +198,22 @@ module.exports = {
             });
         }
     },
+    getJobApplications: async function (req, res) {
+        try {
+            let { page, limit, job_id } = req.allParams();
+            let applications = Career.find({ job_id: job_id }).paginate(page - 1, parseInt(limit));
+            let applicationCount = Career.count({ job_id: job_id })
+            return res.json({
+                "status": 200,
+                "message": "All job applications retrived successfully",
+                "data": applications, applicationCount
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    }
 };
