@@ -68,7 +68,7 @@ module.exports = {
     getAllInquiries: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
-            let inquiryData = await Inquiry.find({ message: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            let inquiryData = await Inquiry.find({ message: { contains: data } }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
             let inquiryCount = await Inquiry.count({ message: { contains: data } });
             if (inquiryData) {
                 return res.json({
@@ -94,7 +94,6 @@ module.exports = {
             }
         }
     },
-
 
     testnews: async function (req, res) {
         var greeting = await sails.helpers.bitcoinNews();
