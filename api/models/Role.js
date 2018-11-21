@@ -99,6 +99,11 @@ module.exports = {
       columnName: 'coin_requests',
       defaultsTo: false,
     },
+    contact_setting: {
+      type: "boolean",
+      columnName: 'contact_setting',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

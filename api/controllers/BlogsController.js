@@ -155,7 +155,7 @@ module.exports = {
     getRelatedPost: async function (req, res) {
         try {
             let { blog_id } = req.body;
-            let blog = await Blogs.findOne({ id: blog_id });
+            let blog = await Blogs.findOne({ id: blog_id, deleted_at: null });
             if (!blog) {
                 return res.status(400).json({
                     "status": 400,
@@ -172,7 +172,7 @@ module.exports = {
                 conditionArray.push(temp)
             }
 
-            let relatedPosts = await Blogs.find({ id: { '!=': blog_id }, or: conditionArray }).sort('created_at DESC').limit(3);
+            let relatedPosts = await Blogs.find({ id: { '!=': blog_id }, deleted_at: null, or: conditionArray }).sort('created_at DESC').limit(3);
             for (let index = 0; index < relatedPosts.length; index++) {
                 if (relatedPosts[index].admin_id) {
                     let admin = await Admin.findOne({ id: relatedPosts[index].admin_id })
@@ -323,6 +323,9 @@ module.exports = {
                 if (!blog_details) {
                     return res.status(401).json({ err: 'Invalid blog' });
                 }
+                if (req.body.tags) {
+                    req.body.tags = req.body.tags.toLowerCase();
+                }
                 req.file('cover_image').upload(async function (err, uploadedFiles) {
                     try {
                         if (uploadedFiles.length > 0) {
@@ -396,7 +399,7 @@ module.exports = {
         // req.setLocale('en')
         let { page, limit, data } = req.allParams();
         if (data && data.trim() != "") {
-            data = data.toLowerCase();
+            data = atob();
             let newsData = await News.find({
                 where: {
                     deleted_at: null,
