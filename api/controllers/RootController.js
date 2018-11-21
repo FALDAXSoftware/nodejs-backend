@@ -78,7 +78,7 @@ module.exports = {
                 });
             }
         } else {
-            let inquiryData = await Inquiry.find().paginate(page - 1, parseInt(limit));
+            let inquiryData = await Inquiry.find().sort('created_at DESC').paginate(page - 1, parseInt(limit));
             let inquiryCount = await Inquiry.count();
             if (inquiryData) {
                 return res.json({
