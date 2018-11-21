@@ -42,11 +42,6 @@ module.exports = {
             columnType: 'datetime',
             columnName: 'created_at'
         },
-        created_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'created_at'
-        },
         updated_at: {
             type: 'ref',
             columnType: 'datetime',

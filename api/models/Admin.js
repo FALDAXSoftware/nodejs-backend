@@ -31,15 +31,15 @@ module.exports = {
       columnName: 'reset_token',
       allowNull: true
     },
-    updated_at: {
-      type: 'string',
-      columnName: 'updated_at',
-      allowNull: true
-    },
     created_at: {
-      type: 'string',
-      columnName: 'created_at',
-      allowNull: true
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
+    },
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at'
     },
     is_active: {
       type: 'boolean',
