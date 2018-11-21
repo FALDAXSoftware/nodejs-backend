@@ -114,6 +114,7 @@ module.exports.routes = {
   'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
 
   //Add Job route
+  'get /admin/all-jobs': 'CareerController.getAllJobsCMS',
   'post /admin/add-job': 'CareerController.addJob',
   'put /admin/edit-job': 'CareerController.editJob',
   'delete /admin/delete-job': 'CareerController.deleteJob',

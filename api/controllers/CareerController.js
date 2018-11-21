@@ -8,6 +8,9 @@ var UploadFiles = require('../services/UploadFiles');
 
 module.exports = {
     applyJob: async function (req, res) {
+        console.log("body", req.body);
+        console.log("file", req.file);
+
         let jobDetail = await Jobs.findOne({ id: req.body.job_id });
         if (jobDetail) {
             req.file('resume').upload(async function (err, uploadedDoc) {
@@ -36,6 +39,8 @@ module.exports = {
                                     }
 
                                     var uploadLetter = cover_letter;
+                                    console.log(uploadLetter);
+
                                     let jobDetails = await Career.create({
                                         first_name: req.body.first_name,
                                         last_name: req.body.last_name,
@@ -46,7 +51,7 @@ module.exports = {
                                         linkedin_profile: req.body.linkedin_profile,
                                         resume: 'faldax/career/' + uploadFileName,
                                         job_id: jobDetail.id,
-                                        cover_letter: uploadLetter !== null && 'faldax/career/' + uploadLetter,
+                                        cover_letter: (uploadLetter !== null ? ('faldax/career/' + uploadLetter) : null),
                                         created_at: new Date()
                                     }).fetch();
                                     if (jobDetails) {
@@ -84,6 +89,26 @@ module.exports = {
     },
 
     getAllJobs: async function (req, res) {
+        let { page, limit } = req.allParams();
+        let allJobs = await Jobs.find({ deleted_at: null, is_active: true }).paginate(page - 1, parseInt(limit));
+        let allJobsCount = await Jobs.count({ deleted_at: null, is_active: true });
+        let careerDesc = await Statics.findOne({ slug: 'career' });
+        if (allJobs) {
+            return res.json({
+                "status": 200,
+                "message": "All jobs retrived successfully",
+                "data": allJobs, careerDesc, allJobsCount
+            });
+        } else {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+
+
+    getAllJobsCMS: async function (req, res) {
         let { page, limit } = req.allParams();
         let allJobs = await Jobs.find({ deleted_at: null }).paginate(page - 1, parseInt(limit));
         let allJobsCount = await Jobs.count({ deleted_at: null });
