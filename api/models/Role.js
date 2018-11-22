@@ -104,6 +104,11 @@ module.exports = {
       columnName: 'contact_setting',
       defaultsTo: false,
     },
+    subscribe: {
+      type: "boolean",
+      columnName: 'subscribe',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

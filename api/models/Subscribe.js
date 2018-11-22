@@ -13,9 +13,8 @@ module.exports = {
       columnName: 'email'
     },
     is_news_feed: {
-      type: 'string',
-      columnName: 'is_news_feed',
-      required: true
+      type: 'boolean',
+      columnName: 'is_news_feed'
     },
     created_at: {
       type: 'ref',

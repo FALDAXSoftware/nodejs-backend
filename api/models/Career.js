@@ -1,12 +1,12 @@
 /**
- * Career.js
+ * JobApplications.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-    tableName: 'career',
+    tableName: 'job_applications',
     attributes: {
         first_name: {
             type: 'string',

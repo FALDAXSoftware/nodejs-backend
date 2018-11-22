@@ -46,5 +46,54 @@ module.exports = {
                 "err": sails.__("Something Wrong")
             });
         }
+    },
+
+    getAllSubscribers: async function (req, res) {
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            let subscriberData = await Subscribe.find({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        email: { contains: data }
+                    }]
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+            let subscriberCount = await Subscribe.count({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        email: { contains: data }
+                    }]
+                }
+            });
+            if (subscriberData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Subscriber list"),
+                    "data": subscriberData, subscriberCount
+                });
+            }
+        } else {
+            let subscriberData = await Subscribe.find({
+                where: {
+                    deleted_at: null,
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            let subscriberCount = await Subscribe.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
+
+            if (subscriberData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Subscriber list"),
+                    "data": subscriberData, subscriberCount
+                });
+            }
+        }
     }
 };

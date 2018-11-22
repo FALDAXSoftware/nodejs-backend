@@ -113,6 +113,9 @@ module.exports.routes = {
   //Send Inquiry routes
   'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
 
+  //Subscriber routes
+  'get /admin/get-all-subscribers': 'Subscribe.getAllSubscribers',
+
   //Add Job route
   'get /admin/all-jobs': 'CareerController.getAllJobsCMS',
   'post /admin/add-job': 'CareerController.addJob',
@@ -151,7 +154,7 @@ module.exports.routes = {
   'post /get-comments': 'BlogsController.getComment',
   'post /add-comments': 'BlogsController.addComment',
   'post /get-related-blog': 'BlogsController.getRelatedPost',
-  'get /users/get-all-news': 'BlogsController.getAllNews',
+  'post /users/get-all-news': 'BlogsController.getAllNews',
 
   //dashboard
   'post /dashboard': "DashboardController.get",
