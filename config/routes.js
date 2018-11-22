@@ -113,6 +113,9 @@ module.exports.routes = {
   //Send Inquiry routes
   'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
 
+  //Subscriber routes
+  'get /admin/get-all-subscribers': 'Subscribe.getAllSubscribers',
+
   //Add Job route
   'get /admin/all-jobs': 'CareerController.getAllJobsCMS',
   'post /admin/add-job': 'CareerController.addJob',
