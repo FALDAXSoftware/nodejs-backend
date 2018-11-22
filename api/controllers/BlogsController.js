@@ -399,7 +399,7 @@ module.exports = {
         // req.setLocale('en')
         let { page, limit, data } = req.allParams();
         if (data && data.trim() != "") {
-            data = atob();
+            data = atob(data).toLowerCase();
             let newsData = await News.find({
                 where: {
                     deleted_at: null,
