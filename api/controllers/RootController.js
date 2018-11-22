@@ -99,5 +99,12 @@ module.exports = {
         var greeting = await sails.helpers.bitcoinNews();
         console.log('greeting', greeting);
         res.end();
+    },
+
+    callbackTest: async function (req, res) {
+        console.log(req.body);
+        res.end();
+
     }
+
 };
