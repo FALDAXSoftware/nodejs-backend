@@ -99,5 +99,12 @@ module.exports = {
         var greeting = await sails.helpers.coinTelegraph();
         console.log('greeting', greeting);
         res.end();
+    },
+
+    callbackTest: async function (req, res) {
+        console.log(JSON.stringify(req.body));
+        res.end();
+
     }
+
 };

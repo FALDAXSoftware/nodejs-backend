@@ -54,7 +54,8 @@ module.exports.policies = {
   'RootController': {
     'getContactInfo': true,
     'sendInquiry': true,
-    'testnews': true
+    'testnews': true,
+    "callbackTest": true,
   },
   'AddCoinReqController': {
     "addCoinRequest": true

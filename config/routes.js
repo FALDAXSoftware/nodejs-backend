@@ -15,6 +15,7 @@ module.exports.routes = {
 
   // Test Routes
   'get /newstest': 'RootController.testnews',
+  'post /callbacktest': 'RootController.callbackTest',
 
 
 
