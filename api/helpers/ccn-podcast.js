@@ -3,8 +3,8 @@ var xmlParser = require('xml2json');
 var moment = require('moment');
 
 module.exports = {
-    friendlyName: 'Coin Telegraph',
-    description: 'Listing of Coin Telegraph RSS Feed - News',
+    friendlyName: 'CCN Podcast',
+    description: 'Listing of CCN Podcast RSS Feed - News',
     inputs: {
     },
 
@@ -16,17 +16,19 @@ module.exports = {
 
             for (let index = 0; index < items.length; index++) {
                 const element = items[index];
+                let temp = element.title.split(' ');
+                temp.slice(0, 1).join(' ');
+                delete temp[0];
+                temp = temp.join(' ');
                 let records = await News.find({ title: element.title });
-                //console.log('element', element)
 
                 if (records.length == 0) {
                     await News.create({
-                        title: element.title,
+                        title: temp,
                         search_keywords: element.title.toLowerCase(),
                         link: element.link,
                         owner: "ccnpodcast",
                         description: element.description,
-                        //cover_image: ,
                         posted_at: moment(element.pubDate).format("YYYY-MM-DD hh:mm:ss")
                     });
                 }

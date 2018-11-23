@@ -16,12 +16,10 @@ module.exports = {
             }
         };
         request(options, async function (error, response, body) {
-            // console.log('element???', error, response, body)
             var json = xmlParser.toJson(body);
 
             let res = JSON.parse(json);
             let items = res.rss.channel.item;
-            console.log(items[0]);
             for (let index = 0; index < items.length; index++) {
                 const element = items[index];
                 let records = await News.find({ title: element.title });
