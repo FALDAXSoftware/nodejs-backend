@@ -56,7 +56,7 @@ module.exports = {
 
     customToJSON: function () {
         if (!this.cover_image || this.cover_image == "" || this.cover_image == null) {
-            this.cover_image = "faldax/blog/default_blog.png"
+            this.cover_image = sails.config.urlconf.CMS_URL + "faldax/blog/default_blog.png"
         }
         return this;
     },

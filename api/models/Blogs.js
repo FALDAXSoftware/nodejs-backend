@@ -33,6 +33,10 @@ module.exports = {
             columnName: 'tags',
             allowNull: true
         },
+        is_featured: {
+            type: 'boolean',
+            columnName: 'is_featured',
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

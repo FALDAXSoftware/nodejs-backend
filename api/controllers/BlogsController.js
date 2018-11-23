@@ -13,6 +13,7 @@ module.exports = {
         let { page, limit, data } = req.allParams();
         if (data) {
             data = data.toLowerCase();
+
             let blogData = await Blogs.find({
                 where: {
                     deleted_at: null,
@@ -30,11 +31,18 @@ module.exports = {
                     }]
                 }
             });
+            let featuredBlog = {};
+            // let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
+            // if (page == 1 && featuredBlogArray.length > 0) {
+            //     featuredBlog = featuredBlogArray[0];
+            //     let admin = await Admin.findOne({ id: featuredBlog.admin_id });
+            //     featuredBlog.admin_name = admin.name
+            // }
             if (blogData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Blog list"),
-                    "data": blogData, BlogCount
+                    "data": blogData, BlogCount, featuredBlog
                 });
             }
         } else {
@@ -61,11 +69,18 @@ module.exports = {
                     deleted_at: null,
                 }
             });
+            let featuredBlog = {};
+            let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
+            if (page == 1 && featuredBlogArray.length > 0) {
+                featuredBlog = featuredBlogArray[0];
+                let admin = await Admin.findOne({ id: featuredBlog.admin_id });
+                featuredBlog.admin_name = admin.name
+            }
             if (blogData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Blog list"),
-                    "data": blogData, BlogCount
+                    "data": blogData, BlogCount, featuredBlog
                 });
             }
         }
@@ -440,4 +455,19 @@ module.exports = {
             });
         }
     },
+    setFeaturedBlog: async function (req, res) {
+        try {
+            await Blogs.update({ is_featured: true }).set({ is_featured: false });
+            await Blogs.update({ id: req.body.blog_id }).set({ is_featured: true });
+            return res.json({
+                "status": 200,
+                "message": sails.__("Featured Blog Changed"),
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    }
 };

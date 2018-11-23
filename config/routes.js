@@ -88,6 +88,7 @@ module.exports.routes = {
   'post /admin/create-blog': 'BlogsController.createBlog',
   'put /admin/edit-blog': 'BlogsController.updateBlog',
   'delete /admin/delete-blog': 'BlogsController.deleteBlog',
+  'post /admin/set-featured-blog': 'BlogsController.setFeaturedBlog',
 
   //Fees routes
   'get /admin/all-pairs': 'PairsController.getAllPairs',
