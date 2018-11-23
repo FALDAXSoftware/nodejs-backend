@@ -362,10 +362,10 @@ module.exports = {
                                 });
                             }
                         } else {
-                            if (blog_details.cover_image == 'true') {
-                                delete blog_details.cover_image;
-                                await Blogs.update({ id: req.body.id }).set(req.body).fetch();
-                            }
+                            // if (blog_details.cover_image == 'true') {
+                            //     delete blog_details.cover_image;
+                            //     await Blogs.update({ id: req.body.id }).set(req.body).fetch();
+                            // }
                             var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
 
                             return res.json({
