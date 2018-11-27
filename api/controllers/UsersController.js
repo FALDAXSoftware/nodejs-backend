@@ -49,6 +49,7 @@ module.exports = {
                     referral_code: randomize('Aa0', 10),
                     created_at: new Date(),
                     referred_id: referred_id,
+                    device_type: req.body.device_type,
                     email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
                         email_verify_code
                         : email_verify_token,

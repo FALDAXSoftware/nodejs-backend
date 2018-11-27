@@ -84,7 +84,7 @@ module.exports = {
                                 user: user_detail.id,
                                 ip: req.ip,
                                 created_at: new Date(),
-                                device_type: req.body.device_type ? req.body.device_type : null,
+                                device_type: req.body.device_type,
                                 device_token: req.body.device_token ? req.body.device_token : null
                             });
                             var token = await sails.helpers.jwtIssue(user_detail.id);
