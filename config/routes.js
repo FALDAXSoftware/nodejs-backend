@@ -15,11 +15,7 @@ module.exports.routes = {
 
   // Test Routes
   'get /newstest': 'RootController.testnews',
-  'post /callbacktest': 'RootController.callbackTest',
   'post /csv-to-json': 'RootController.csvToJson',
-
-
-
 
   // CMS Routes///////////////////////////////////////////
 
@@ -166,6 +162,7 @@ module.exports.routes = {
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
   'post /users/add-kyc-docs': "KYCController.uploadKYCDoc",
   'get /users/get-kyc-detail': 'KYCController.getKYCDetails',
+  'post /callbacktest': 'RootController.callbackTest',
 
   //Static Page routes
   'get /users/static-page/:page': 'Statics.getStaticPage',

@@ -83,6 +83,11 @@ module.exports = {
         });
     },
 
+    callbackTest: async function (req, res) {
+        console.log('>>>>>', JSON.stringify(req.body), req.body.er);
+        res.end();
+    },
+
     getKYCDetails: async function (req, res) {
         try {
             let user_id = req.user.id;

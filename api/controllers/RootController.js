@@ -102,11 +102,6 @@ module.exports = {
         res.end();
     },
 
-    callbackTest: async function (req, res) {
-        console.log(JSON.stringify(req.body));
-        res.end();
-
-    },
     csvToJson: function (req, res) {
         request('https://restcountries.eu/rest/v2/all', function (error, response, body) {
             jsonObj = JSON.parse(body);
