@@ -84,7 +84,7 @@ module.exports = {
     },
 
     callbackTest: async function (req, res) {
-        console.log('>>>>>', JSON.stringify(req.body), req.body.er);
+        console.log('>>>>>', JSON.stringify(req.body), req.body.ednaScoreCard.er);
         res.end();
     },
 
