@@ -1,7 +1,7 @@
 /**
  * Coins.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table coins.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -24,6 +24,11 @@ module.exports = {
       allowNull: true,
       defaultsTo: 0
     },
+    description: {
+      type: 'string',
+      columnName: 'description',
+      required: true
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
@@ -35,22 +40,30 @@ module.exports = {
       columnName: 'wallet_address',
       allowNull: true
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     }
-  }
+  },
+  beforeCreate: (values, next) => {
+    values.created_at = new Date();
+    next();
+  },
+  beforeUpadte: (values, next) => {
+    values.updated_at = new Date();
+    next();
+  },
 
 };
 

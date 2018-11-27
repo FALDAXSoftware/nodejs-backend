@@ -1,7 +1,7 @@
 /**
  * User.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table users.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -18,7 +18,6 @@ module.exports = {
       type: 'string',
       columnName: 'email',
       isEmail: true,
-      unique: true,
       required: true
     },
     password: {
@@ -55,23 +54,29 @@ module.exports = {
       columnName: 'street_address',
       allowNull: true
     },
+    street_address_2: {
+      type: 'string',
+      columnName: 'street_address_2',
+      allowNull: true
+    },
     city_town: {
       type: 'string',
       columnName: 'city_town',
       allowNull: true
     },
     postal_code: {
-      type: 'number',
+      type: 'string',
       columnName: 'postal_code',
       allowNull: true
     },
     profile_pic: {
       type: 'string',
       columnName: 'profile_pic',
-      allowNull: true
+      allowNull: true,
+      defaultsTo: ''
     },
     dob: {
-      type: 'string', 
+      type: 'string',
       columnName: 'dob',
       allowNull: true
     },
@@ -90,14 +95,19 @@ module.exports = {
       columnName: 'referral_code',
       allowNull: true
     },
-    email_verify_token:{
+    email_verify_token: {
       type: 'string',
       columnName: 'email_verify_token',
       allowNull: true
     },
-    reset_token:{
+    reset_token: {
       type: 'string',
       columnName: 'reset_token',
+      allowNull: true
+    },
+    reset_token_expire: {
+      type: 'number',
+      columnName: 'reset_token_expire',
       allowNull: true
     },
     is_active: {
@@ -112,88 +122,86 @@ module.exports = {
       defaultsTo: false,
       allowNull: true,
     },
-    is_twofactor:{
-      type:'boolean',
-      columnName:"is_twofactor",
+    is_twofactor: {
+      type: 'boolean',
+      columnName: "is_twofactor",
       defaultsTo: false,
     },
-    twofactor_secret:{
-      type:"string",
-      columnName:"twofactor_secret",
+    twofactor_secret: {
+      type: "string",
+      columnName: "twofactor_secret",
       allowNull: true,
     },
-    authCode:{
-      type:"string",
-      columnName:"authCode",
-      allowNull:true
+    auth_code: {
+      type: "string",
+      columnName: "auth_code",
+      allowNull: true
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    history:{
-      collection:'loginhistory',
-      via:'user'
+    history: {
+      collection: 'loginHistory',
+      via: 'user'
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne( {'email': values.email })
-    .exec(function (err, found){
-      values.created_at = new Date()
-      if(!found){
-        bcrypt.genSalt(10, function (err, salt) {
-          if(err) return next(err);
-          bcrypt.hash(values.password, salt, function (err, hash) {
-            if(err) return next(err);
-            values.password = hash;
-            next();
-          })
-        });     
-      } else{
-        next({ error: 'Email address or Phone number already exist' });
-      }
-    });
-  },
-  beforeUpdate: (values, next) => {
-    Users.findOne({ 'email': values.email })
-    .exec(async function (err, found){
-      values.updated_at = new Date()
-      if(found){
-         console.log(found);
-        if(values.password){
+    Users.findOne({ 'email': values.email, 'deleted_at': null })
+      .exec(function (err, found) {
+        values.created_at = new Date()
+        if (!found) {
           bcrypt.genSalt(10, function (err, salt) {
-            if(err) return next(err);
+            if (err) return next(err);
             bcrypt.hash(values.password, salt, function (err, hash) {
-              if(err) return next(err);
-              values.password = hash;   
+              if (err) return next(err);
+              values.password = hash;
               next();
             })
-          }); 
-        }else{
-          // delete values.email;
-          next();
+          });
+        } else {
+          next({ error: 'Email address already exist' });
         }
-          
-      } else{
-        next({ error: "Email address doesn't exist" });
-      }
-    });
+      });
   },
-  comparePassword : function (password, user, cb) {
+  beforeUpdate: (values, next) => {
+    Users.findOne({ 'email': values.email, 'deleted_at': null })
+      .exec(async function (err, found) {
+        values.updated_at = new Date()
+        if (found) {
+          if (values.password) {
+            bcrypt.genSalt(10, function (err, salt) {
+              if (err) return next(err);
+              bcrypt.hash(values.password, salt, function (err, hash) {
+                if (err) return next(err);
+                values.password = hash;
+                next();
+              })
+            });
+          } else {
+            // delete values.email;
+            next();
+          }
+        } else {
+          next({ error: "Email address doesn't exist" });
+        }
+      });
+  },
+  comparePassword: function (password, user, cb) {
     bcrypt.compare(password, user.password, function (err, match) {
-      if(err) cb(err);
-      if(match) {
+      if (err) cb(err);
+      if (match) {
         cb(null, true);
       } else {
         cb(err);
@@ -201,8 +209,8 @@ module.exports = {
     })
   },
 
-  customToJSON: function() {
-    if (!this.profile_pic || this.profile_pic == "" || this.profile_pic==null) {
+  customToJSON: function () {
+    if (!this.profile_pic || this.profile_pic == "" || this.profile_pic == null) {
       this.profile_pic = "faldax/profile/def_profile.jpg"
     }
     return this;

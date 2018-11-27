@@ -21,19 +21,49 @@ module.exports.policies = {
   '*': ['isAuthorized'], // Everything resctricted here
   'UsersController': {
     'create': true,
-   // We dont need authorization here, allowing public access,
+    'getCountries': true
+    // We dont need authorization here, allowing public access,
   },
   'AdminController': {
     'create': true,
-    "login":true,
-    "forgotPassword":true,
-    "resetPassword":true // We dont need authorization here, allowing public access,
+    "login": true,
+    "forgotPassword": true,
+    "resetPassword": true // We dont need authorization here, allowing public access,
   },
-  'CountriesController':{
-    '*':true
+  'CountriesController': {
+    '*': true
+  },
+  'SubscribeController': {
+    "*": true
   },
 
   'AuthController': {
     '*': true // We dont need authorization here, allowing public access
+  },
+  'BlogsController': {
+    'getAllBlogList': true,
+    'getBlogDetails': true,
+    'getComment': true,
+    'getRelatedPost': true,
+    'getAllNews': true
+  },
+  'StaticsController': {
+    "getStaticPage": true,
+    "getStaticPageJson": true
+  },
+  'RootController': {
+    'getContactInfo': true,
+    'sendInquiry': true,
+    'testnews': true, 
+    "csvToJson": true,
+  },
+  'AddCoinReqController': {
+    "addCoinRequest": true
+  },
+  'CareerController': {
+    "*": true
+  },
+  "KYCController": {
+    "callbackTest": true,
   }
 };

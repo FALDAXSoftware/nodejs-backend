@@ -1,50 +1,62 @@
 /**
  * Countries.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: Represents a database table countries.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-
+  tableName: 'countries',
   attributes: {
     name: {
       type: 'string',
       columnName: 'name',
       required: true
     },
-    country_code:{
-      type: 'string',
-      columnName: 'country_code',
-      required: true
+    legality: {
+      type: 'number',
+      columnName: 'legality',
+      defaultsTo: 1,
     },
-    latlng:{
-      type: 'string',
-      columnName: 'latlng',
-      required: true
+    color: {
+      type: "string",
+      columnName: 'color',
     },
-    is_active:{
+    is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      required: true
+      defaultsTo: true
     },
-    created_at : {
-      type: 'ref', 
+    created_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
     },
-    updated_at : {
-      type: 'ref', 
+    updated_at: {
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'updated_at'
     },
     deleted_at: {
-      type: 'ref', 
+      type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    state: {
+      collection: 'state',
+      via: 'country'
     }
 
   },
+  beforeCreate: function (values, next) {
+    values.created_at = new Date();
+    next();
+  },
+
+  beforeUpdate: function (values, next) {
+    values.updated_at = new Date();
+    next();
+  }
 
 };
 
