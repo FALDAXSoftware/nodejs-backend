@@ -96,7 +96,7 @@ module.exports = {
     },
 
     testnews: async function (req, res) {
-        var greeting = await sails.helpers.ccnPodcast();
+        var greeting = await sails.helpers.kycpicUpload();
         console.log('greeting', greeting);
         res.end();
     },
