@@ -55,7 +55,6 @@ module.exports.policies = {
     'getContactInfo': true,
     'sendInquiry': true,
     'testnews': true,
-    "callbackTest": true,
     "csvToJson": true,
   },
   'AddCoinReqController': {
@@ -63,5 +62,8 @@ module.exports.policies = {
   },
   'CareerController': {
     "*": true
+  },
+  "KYCController": {
+    "callbackTest": true,
   }
 };
