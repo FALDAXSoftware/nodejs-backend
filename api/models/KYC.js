@@ -73,6 +73,26 @@ module.exports = {
             type: 'string',
             columnName: 'result',
         },
+        direct_response: {
+            type: 'string',
+            columnName: 'direct_response',
+            allowNull: true
+        },
+        webhook_response: {
+            type: 'string',
+            columnName: 'webhook_response',
+            allowNull: true
+        },
+        mtid: {
+            type: 'string',
+            columnName: 'mtid',
+            allowNull: true
+        },
+        comments: {
+            type: 'string',
+            columnName: 'comments',
+            allowNull: true
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',
