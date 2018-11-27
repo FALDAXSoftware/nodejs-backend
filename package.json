@@ -13,7 +13,6 @@
     "aws-sdk": "^2.320.0",
     "bcrypt": "2",
     "bcrypt-nodejs": "0.0.3",
-    "csvtojson": "^2.0.8",
     "dom-parser": "^0.1.5",
     "gm": "^1.23.1",
     "grunt": "1.0.1",
