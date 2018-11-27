@@ -56,6 +56,7 @@ module.exports.policies = {
     'sendInquiry': true,
     'testnews': true,
     "callbackTest": true,
+    "csvToJson": true,
   },
   'AddCoinReqController': {
     "addCoinRequest": true

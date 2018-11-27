@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var request = require('request');
 module.exports = {
 
     getContactInfo: async function (req, res) {
@@ -105,6 +106,16 @@ module.exports = {
         console.log(JSON.stringify(req.body));
         res.end();
 
+    },
+    csvToJson: function (req, res) {
+        request('https://restcountries.eu/rest/v2/all', function (error, response, body) {
+            jsonObj = JSON.parse(body);
+            var countryArray = {};
+            jsonObj.forEach(row => {
+                countryArray[row['name']] = row['alpha2Code']
+            });
+            res.json(countryArray)
+        });
     }
 
 };
