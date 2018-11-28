@@ -98,10 +98,13 @@ module.exports = {
                     }
                 }
             } catch (err) {
-                let updated = await KYC.update({ mtid: data.mtid }).set({
-                    kycDoc_details: 'Something went wrong'
-                }).fetch();
-                console.log('>>catchupdated', updated);
+                console.log('>>catchupdated', data);
+                console.log('>>err', err);
+                if (data.mtid) {
+                    let updated = await KYC.update({ mtid: data.mtid }).set({
+                        kycDoc_details: 'Something went wrong'
+                    }).fetch();
+                }
             }
         }
         res.end();
