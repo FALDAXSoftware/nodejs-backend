@@ -18,7 +18,6 @@ module.exports = {
         let kyc_details = await KYC.findOne({ id: 56 });
         let kycUploadDetails = {};
 
-        console.log('finded kyc_details', kyc_details)
         countryData.forEach(function (item) {
             Object.keys(item).forEach(function (key) {
                 if (kyc_details.country == key) {
@@ -63,8 +62,6 @@ module.exports = {
         kycUploadDetails.bz = kyc_details.zip;
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
-        console.log('kyc_details>>', kycUploadDetails)
-
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
@@ -76,14 +73,13 @@ module.exports = {
                 //console.log('error', error);
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
-                console.log('response', response.body);
                 await KYC.update({ id: kyc_details.id }).set({
                     direct_response: response.body.res,
                     webhook_response: null,
                     mtid: response.body.mtid,
                     comments: response.body.frd
                 });
-                
+
             } catch (error) {
                 console.log('error', error);
             }

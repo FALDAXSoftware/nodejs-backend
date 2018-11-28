@@ -36,14 +36,11 @@ module.exports = {
 
                 req.body.created_at = new Date();
                 let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
-
+                console.log('>updated_kyc>>>>>>>>>>>', updated_kyc)
                 if (updated_kyc) {
                     // KYC API start
-                    console.log('inside', updated_kyc)
                     if (updated_kyc[0].steps == 3) {
-                        console.log('in if')
                         var greeting = await sails.helpers.kycpicUpload(updated_kyc[0]);
-                        console.log('greeting>>>>>', greeting)
                         return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
                     }
                     // KYC API end
@@ -60,6 +57,7 @@ module.exports = {
                 }
             }
         } catch (e) {
+            console.log('>>>>>>>>>>>>', e)
             return res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
@@ -86,7 +84,6 @@ module.exports = {
 
     callbackKYC: async function (req, res) {
         let data = req.body;
-        console.log('>>>>>', data.ednaScoreCard);
         if (data) {
             try {
                 if (data.ednaScoreCard) {
@@ -97,13 +94,10 @@ module.exports = {
                                     data.ednaScoreCard.er.reportedRule.details : '',
                                 webhook_response: data.ednaScoreCard.er.reportedRule.resultCode
                             }).fetch();
-                            console.log('>>updated', updated);
                         }
                     }
                 }
             } catch (err) {
-                console.log('>>catchupdated', data);
-                console.log('>>err', err);
                 if (data.mtid) {
                     let updated = await KYC.update({ mtid: data.mtid }).set({
                         kycDoc_details: 'Something went wrong',
@@ -137,5 +131,104 @@ module.exports = {
                 "err": sails.__("Something Wrong")
             });
         }
+    },
+
+    getAllKYCData: async function (req, res) {
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            let KYCData = await KYC.find({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        first_name: { contains: data }
+                    },
+                    { last_name: { contains: data } },
+                    { direct_response: { contains: data } }
+                    ]
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < KYCData.length; index++) {
+                if (KYCData[index].user_id) {
+                    let user = await Users.findOne({ id: KYCData[index].user_id })
+                    KYCData[index].email = user.email;
+                }
+            }
+
+            let KYCCount = await KYC.count({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        first_name: { contains: data }
+                    },
+                    { last_name: { contains: data } },
+                    { direct_response: { contains: data } }
+                    ]
+                }
+            });
+            if (KYCData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("KYC list"),
+                    "data": KYCData, KYCCount
+                });
+            }
+        } else {
+            let KYCData = await KYC.find({
+                where: {
+                    deleted_at: null,
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < KYCData.length; index++) {
+                if (KYCData[index].user_id) {
+                    let user = await Users.findOne({ id: KYCData[index].user_id })
+                    KYCData[index].email = user.email;
+                }
+            }
+
+            let KYCCount = await KYC.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
+            if (KYCData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("KYC list"),
+                    "data": KYCData, KYCCount
+                });
+            }
+        }
+    },
+
+    approveDisapproveKYC: async function (req, res) {
+        // try {
+        //     let kyc_details = await KYC.findOne({ user_id });
+
+        //     if (kyc_details) {
+        //         if (kyc_details.steps == 3) {
+
+        //         }
+
+        //         req.body.updated_at = new Date();
+        //         let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
+
+        //         if (updated_kyc) {
+        //             return res.json({ 'status': 200, 'message': sails.__('KYC Updated') })
+        //         }
+
+        //     } else {
+        //         return res.status(500).json({
+        //             status: 500,
+        //             "err": sails.__("Something Wrong")
+        //         });
+        //     }
+        // } catch (e) {
+        //     return res.status(500).json({
+        //         status: 500,
+        //         "err": sails.__("Something Wrong")
+        //     });
+        // }
     }
 };

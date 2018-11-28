@@ -15,6 +15,10 @@ module.exports = {
                 let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
                 if (user) {
                     await Users.update({ id: user.id, deleted_at: null }).set({ email: user.email, is_verified: true, email_verify_token: null });
+                    await KYC.update({ user_id: user.id }).set({
+                        first_name: user.first_name,
+                        last_name: user.last_name
+                    });
                     return res.json({ "status": 200, "message": sails.__('Verify User') });
                 } else {
                     return res.status(400).json({ "status": 400, "err": sails.__('Invalid Token') });
