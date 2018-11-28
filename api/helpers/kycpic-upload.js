@@ -15,7 +15,7 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
-        let kyc_details = await KYC.findOne({ id: 56 });
+        let kyc_details = await KYC.findOne({ id: inputs.params.id });
         let kycUploadDetails = {};
 
         countryData.forEach(function (item) {
@@ -70,7 +70,7 @@ module.exports = {
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
-                //console.log('error', error);
+                console.log('kyc_details', kyc_details);
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
                 await KYC.update({ id: kyc_details.id }).set({
