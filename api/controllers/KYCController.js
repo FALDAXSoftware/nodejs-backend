@@ -83,9 +83,27 @@ module.exports = {
         });
     },
 
-    callbackTest: async function (req, res) {
+    callbackKYC: async function (req, res) {
         let data = req.body;
         console.log('>>>>>', data.ednaScoreCard);
+        if (data) {
+            try {
+                if (data.ednaScoreCard.er) {
+                    if (data.ednaScoreCard.er.reportedRule) {
+                        let updated = await KYC.update({ mtid: data.mtid }).set({
+                            kycDoc_details: data.ednaScoreCard.er.reportedRule.details ?
+                                data.ednaScoreCard.er.reportedRule.details : ''
+                        }).fetch();
+                        console.log('>>updated', updated);
+                    }
+                }
+            } catch (err) {
+                let updated = await KYC.update({ mtid: data.mtid }).set({
+                    kycDoc_details: 'Something went wrong'
+                }).fetch();
+                console.log('>>catchupdated', updated);
+            }
+        }
         res.end();
     },
 
