@@ -125,6 +125,9 @@ module.exports.routes = {
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
 
+  // KYC Routes
+  'get /admin/get-all-kyc-data': 'KYCController.getAllKYCData',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
