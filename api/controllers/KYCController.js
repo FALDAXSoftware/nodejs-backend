@@ -88,13 +88,15 @@ module.exports = {
         console.log('>>>>>', data.ednaScoreCard);
         if (data) {
             try {
-                if (data.ednaScoreCard.er) {
-                    if (data.ednaScoreCard.er.reportedRule) {
-                        let updated = await KYC.update({ mtid: data.mtid }).set({
-                            kycDoc_details: data.ednaScoreCard.er.reportedRule.details ?
-                                data.ednaScoreCard.er.reportedRule.details : ''
-                        }).fetch();
-                        console.log('>>updated', updated);
+                if (data.ednaScoreCard) {
+                    if (data.ednaScoreCard.er) {
+                        if (data.ednaScoreCard.er.reportedRule) {
+                            let updated = await KYC.update({ mtid: data.mtid }).set({
+                                kycDoc_details: data.ednaScoreCard.er.reportedRule.details ?
+                                    data.ednaScoreCard.er.reportedRule.details : ''
+                            }).fetch();
+                            console.log('>>updated', updated);
+                        }
                     }
                 }
             } catch (err) {
