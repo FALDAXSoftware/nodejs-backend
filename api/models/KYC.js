@@ -98,6 +98,11 @@ module.exports = {
             columnName: 'kycDoc_details',
             allowNull: true
         },
+        isApprove: {
+            type: 'boolean',
+            columnName: 'isApprove',
+            defaultsTo: false,
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

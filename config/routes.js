@@ -127,6 +127,7 @@ module.exports.routes = {
 
   // KYC Routes
   'get /admin/get-all-kyc-data': 'KYCController.getAllKYCData',
+  'post /admin/update-kyc-status': 'KYCController.approveDisapproveKYC',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
