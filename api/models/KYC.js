@@ -93,6 +93,11 @@ module.exports = {
             columnName: 'comments',
             allowNull: true
         },
+        kycDoc_details: {
+            type: 'string',
+            columnName: 'kycDoc_details',
+            allowNull: true
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

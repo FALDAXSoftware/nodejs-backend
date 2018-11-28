@@ -1,7 +1,8 @@
 var request = require('request');
 const image2base64 = require('image-to-base64');
 var kycDocType = '';
-const countryData = require('../../json/country')
+const countryData = require('../../json/country');
+var moment = require('moment');
 
 module.exports = {
     friendlyName: 'KYC Upload',
@@ -57,10 +58,10 @@ module.exports = {
         kycUploadDetails.bfn = kyc_details.first_name;
         kycUploadDetails.bln = kyc_details.last_name;
         kycUploadDetails.bln = kyc_details.last_name;
-        kycUploadDetails.bsn = kyc_details.address + ' ' + kyc_details.address_2;
+        kycUploadDetails.bsn = kyc_details.address + ' ' + kyc_details.address_2 !== null ? kyc_details.address_2 : '';
         kycUploadDetails.bc = kyc_details.city;
         kycUploadDetails.bz = kyc_details.zip;
-        kycUploadDetails.dob = kyc_details.dob;
+        kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
         console.log('kyc_details>>', kycUploadDetails)
 
