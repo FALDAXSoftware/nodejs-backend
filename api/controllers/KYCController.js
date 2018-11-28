@@ -44,6 +44,7 @@ module.exports = {
                         console.log('in if')
                         var greeting = await sails.helpers.kycpicUpload(updated_kyc[0]);
                         console.log('greeting>>>>>', greeting)
+                        return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
                     }
                     // KYC API end
                     return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
@@ -93,7 +94,8 @@ module.exports = {
                         if (data.ednaScoreCard.er.reportedRule) {
                             let updated = await KYC.update({ mtid: data.mtid }).set({
                                 kycDoc_details: data.ednaScoreCard.er.reportedRule.details ?
-                                    data.ednaScoreCard.er.reportedRule.details : ''
+                                    data.ednaScoreCard.er.reportedRule.details : '',
+                                webhook_response: data.ednaScoreCard.er.reportedRule.resultCode
                             }).fetch();
                             console.log('>>updated', updated);
                         }
@@ -104,7 +106,8 @@ module.exports = {
                 console.log('>>err', err);
                 if (data.mtid) {
                     let updated = await KYC.update({ mtid: data.mtid }).set({
-                        kycDoc_details: 'Something went wrong'
+                        kycDoc_details: 'Something went wrong',
+                        webhook_response: 'MANUAL_REVIEW'
                     }).fetch();
                 }
             }
