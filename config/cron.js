@@ -6,7 +6,7 @@ module.exports.cron = {
     //     }
     // }
     KycUpdate: {
-        schedule: '0 * * * * *',
+        schedule: '0 */5 * * * *',
         onTick: async function () {
             console.log("cron sync call");
             // var bitcoinist = await sails.helpers.kycCron();
