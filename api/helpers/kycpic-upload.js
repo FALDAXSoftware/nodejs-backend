@@ -79,10 +79,17 @@ module.exports = {
                     direct_response: response.body.res,
                     webhook_response: null,
                     mtid: response.body.mtid,
-                    comments: response.body.frd
+                    comments: response.body.frd,
+                    status: true,
                 });
             } catch (error) {
                 console.log('error', error);
+                await KYC.update({ id: kyc_details.id }).set({
+                    direct_response: "MANUAL_REVIEW",
+                    webhook_response: "MANUAL_REVIEW",
+                    comments: "Could Not Verify",
+                    status: true,
+                });
             }
         });
     }
