@@ -60,7 +60,7 @@ module.exports = {
     values.created_at = new Date();
     next();
   },
-  beforeUpadte: (values, next) => {
+  beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
   },

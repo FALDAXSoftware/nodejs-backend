@@ -62,7 +62,7 @@ module.exports = {
         }
       });
   },
-  beforeUpadte: (values, next) => {
+  beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
   },
