@@ -59,6 +59,7 @@ module.exports = {
                 }
             }
         } catch (e) {
+            console.log('ins??????ide', e)
             return res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
@@ -85,7 +86,7 @@ module.exports = {
 
     callbackTest: async function (req, res) {
         let data = req.body;
-        console.log('>>>>>', data.ednaScoreCard);
+        console.log('>>>>>', data.ednaScoreCard.er);
         res.end();
     },
 
