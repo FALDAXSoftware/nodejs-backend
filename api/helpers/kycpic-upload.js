@@ -20,27 +20,31 @@ module.exports = {
 
         countryData.forEach(function (item) {
             Object.keys(item).forEach(function (key) {
-                if (kyc_details.country == key) {
+                if (kyc_details.country == key && !kyc_details.ssn) {
                     kycUploadDetails.docCountry = item[key];
                     kycUploadDetails.bco = item[key];
                 }
             });
         });
-        await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.front_doc)
-            .then((response) => {
-                kycUploadDetails.scanData = response;
-            }).catch(
-                (error) => {
-                    console.log('error', error);
-                })
 
-        await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.back_doc)
-            .then((response) => {
-                kycUploadDetails.backsideImageData = response;
-            }).catch(
-                (error) => {
-                    console.log('error', error);
-                })
+        if (!kyc_details.ssn) {
+            kycUploadDetails.docType = kycDocType;
+            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.front_doc)
+                .then((response) => {
+                    kycUploadDetails.scanData = response;
+                }).catch(
+                    (error) => {
+                        console.log('error', error);
+                    })
+
+            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.back_doc)
+                .then((response) => {
+                    kycUploadDetails.backsideImageData = response;
+                }).catch(
+                    (error) => {
+                        console.log('error', error);
+                    })
+        }
 
         if (kyc_details.id_type == 1) {
             kycDocType = 'PP';
@@ -51,8 +55,6 @@ module.exports = {
         } else {
             kycUploadDetails.ssn = kyc_details.ssn;
         }
-        kycUploadDetails.man = kyc_details.first_name + ' ' + kyc_details.last_name;
-        kycUploadDetails.docType = kycDocType;
         kycUploadDetails.man = kyc_details.first_name + ' ' + kyc_details.last_name;
         kycUploadDetails.bfn = kyc_details.first_name;
         kycUploadDetails.bln = kyc_details.last_name;
@@ -79,11 +81,9 @@ module.exports = {
                     mtid: response.body.mtid,
                     comments: response.body.frd
                 });
-
             } catch (error) {
                 console.log('error', error);
             }
-
         });
     }
 }
