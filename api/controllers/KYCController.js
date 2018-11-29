@@ -175,12 +175,14 @@ module.exports = {
                 });
             }
         } else {
-            let KYCData = await KYC.find({
-                where: {
-                    deleted_at: null,
-                    direct_response: { '!': ['ACCEPT', ''] }
-                }
-            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+            // KYC.query("select * from kyc where steps=3 AND status='true' AND ((direct_response != 'ACCEPT' AND webhook_response != 'ACCEPT') OR (id_type = '4' AND direct_response != 'ACCEPT'))", [], function (err, rawResult) {
+            //     console.log(rawResult);
+
+            // });
+            var rawResult = await sails.sendNativeQuery("SELECT * FROM public.kyc WHERE steps=3 AND status='true' AND ((direct_response != 'ACCEPT' AND webhook_response != 'ACCEPT') OR (id_type = '4' AND direct_response != 'ACCEPT')) ORDER BY updated_at LIMIT $1 OFFSET $2", [limit, limit * (page - 1)]);
+            console.log(rawResult);
+            let KYCData = rawResult.rows;
+            let KYCCount = rawResult.rowCount
 
             for (let index = 0; index < KYCData.length; index++) {
                 if (KYCData[index].user_id) {
@@ -188,12 +190,6 @@ module.exports = {
                     KYCData[index].email = user.email;
                 }
             }
-
-            let KYCCount = await KYC.count({
-                where: {
-                    deleted_at: null,
-                }
-            });
             if (KYCData) {
                 return res.json({
                     "status": 200,
