@@ -109,6 +109,11 @@ module.exports = {
       columnName: 'subscribe',
       defaultsTo: false,
     },
+    kyc: {
+      type: "boolean",
+      columnName: 'kyc',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

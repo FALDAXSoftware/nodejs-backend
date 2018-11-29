@@ -54,7 +54,7 @@ module.exports.policies = {
   'RootController': {
     'getContactInfo': true,
     'sendInquiry': true,
-    'testnews': true, 
+    'testnews': true,
     "csvToJson": true,
   },
   'AddCoinReqController': {
@@ -64,6 +64,6 @@ module.exports.policies = {
     "*": true
   },
   "KYCController": {
-    "callbackTest": true,
+    "callbackKYC": true,
   }
 };

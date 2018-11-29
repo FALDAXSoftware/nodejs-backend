@@ -125,6 +125,10 @@ module.exports.routes = {
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
 
+  // KYC Routes
+  'get /admin/get-all-kyc-data': 'KYCController.getAllKYCData',
+  'post /admin/update-kyc-status': 'KYCController.approveDisapproveKYC',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
@@ -162,7 +166,7 @@ module.exports.routes = {
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
   'post /users/add-kyc-docs': "KYCController.uploadKYCDoc",
   'get /users/get-kyc-detail': 'KYCController.getKYCDetails',
-  'post /callbacktest': 'KYCController.callbackTest',
+  'post /callback-kyc': 'KYCController.callbackKYC',
 
   //Static Page routes
   'get /users/static-page/:page': 'Statics.getStaticPage',

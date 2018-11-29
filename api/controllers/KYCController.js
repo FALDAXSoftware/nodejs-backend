@@ -36,14 +36,12 @@ module.exports = {
 
                 req.body.created_at = new Date();
                 let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
-
                 if (updated_kyc) {
                     // KYC API start
-                    console.log('inside', updated_kyc)
                     if (updated_kyc[0].steps == 3) {
-                        console.log('in if')
                         var greeting = await sails.helpers.kycpicUpload(updated_kyc[0]);
-                        console.log('greeting>>>>>', greeting)
+                        console.log('greeting', greeting);
+                        return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
                     }
                     // KYC API end
                     return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
@@ -84,9 +82,30 @@ module.exports = {
         });
     },
 
-    callbackTest: async function (req, res) {
+    callbackKYC: async function (req, res) {
         let data = req.body;
-        console.log('>>>>>', data.ednaScoreCard.er);
+        if (data) {
+            try {
+                if (data.ednaScoreCard) {
+                    if (data.ednaScoreCard.er) {
+                        if (data.ednaScoreCard.er.reportedRule) {
+                            let updated = await KYC.update({ mtid: data.mtid }).set({
+                                kycDoc_details: data.ednaScoreCard.er.reportedRule.details ?
+                                    data.ednaScoreCard.er.reportedRule.details : '',
+                                webhook_response: data.ednaScoreCard.er.reportedRule.resultCode
+                            }).fetch();
+                        }
+                    }
+                }
+            } catch (err) {
+                if (data.mtid) {
+                    let updated = await KYC.update({ mtid: data.mtid }).set({
+                        kycDoc_details: 'Something went wrong',
+                        webhook_response: 'MANUAL_REVIEW'
+                    }).fetch();
+                }
+            }
+        }
         res.end();
     },
 
@@ -104,6 +123,121 @@ module.exports = {
                 return res.status(500).json({
                     status: 500,
                     "err": sails.__("No KYC")
+                });
+            }
+        } catch (e) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+
+    getAllKYCData: async function (req, res) {
+        let { page, limit, data } = req.allParams();
+        if (data) {
+            let KYCData = await KYC.find({
+                where: {
+                    deleted_at: null,
+                    direct_response: { '!': ['ACCEPT', ''] },
+                    or: [{
+                        first_name: { contains: data }
+                    },
+                    { last_name: { contains: data } },
+                    { direct_response: { contains: data } },
+                    ]
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < KYCData.length; index++) {
+                if (KYCData[index].user_id) {
+                    let user = await Users.findOne({ id: KYCData[index].user_id })
+                    KYCData[index].email = user.email;
+                }
+            }
+
+            let KYCCount = await KYC.count({
+                where: {
+                    deleted_at: null,
+                    or: [{
+                        first_name: { contains: data }
+                    },
+                    { last_name: { contains: data } },
+                    { direct_response: { contains: data } }
+                    ]
+                }
+            });
+            if (KYCData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("KYC list"),
+                    "data": KYCData, KYCCount
+                });
+            }
+        } else {
+            let KYCData = await KYC.find({
+                where: {
+                    deleted_at: null,
+                    direct_response: { '!': ['ACCEPT', ''] }
+                }
+            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+
+            for (let index = 0; index < KYCData.length; index++) {
+                if (KYCData[index].user_id) {
+                    let user = await Users.findOne({ id: KYCData[index].user_id })
+                    KYCData[index].email = user.email;
+                }
+            }
+
+            let KYCCount = await KYC.count({
+                where: {
+                    deleted_at: null,
+                }
+            });
+            if (KYCData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("KYC list"),
+                    "data": KYCData, KYCCount
+                });
+            }
+        }
+    },
+
+    approveDisapproveKYC: async function (req, res) {
+        try {
+            let { id, isApprove } = req.body;
+            let kyc_details = await KYC.findOne({ id });
+
+            if (kyc_details) {
+                if (isApprove == true) {
+                    let updated_kyc = await KYC.update({ id: kyc_details.id }).set({
+                        direct_response: 'ACCEPT',
+                        webhook_response: 'ACCEPT',
+                        isApprove: true,
+                        updated_at: new Date()
+                    }).fetch();
+                    if (updated_kyc) {
+                        return res.json({ 'status': 200, 'message': 'KYC application approved' })
+                    }
+                } else {
+                    let updated_kyc = await KYC.update({ id: kyc_details.id }).set({
+                        isApprove: false,
+                        steps: 2,
+                        direct_response: null,
+                        webhook_response: null,
+                        mtid: null,
+                        kycDoc_details: null,
+                        updated_at: new Date()
+                    }).fetch();
+                    if (updated_kyc) {
+                        return res.json({ 'status': 200, 'message': 'KYC application rejected' })
+                    }
+                }
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": "Details Not Found"
                 });
             }
         } catch (e) {
