@@ -1,7 +1,7 @@
 /**
  * Wallet.js
  *
- * @description :: A model definition represents a database table/collection.
+ * @description :: A model definition represents a database of wallets.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
