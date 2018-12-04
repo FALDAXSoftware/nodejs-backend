@@ -24,12 +24,12 @@ module.exports = {
             required: true
         },
         maker_fee: {
-            type: 'string',
+            type: 'number',
             columnName: 'maker_fee',
             required: true
         },
         taker_fee: {
-            type: 'string',
+            type: 'number',
             columnName: 'taker_fee',
             required: true
         },

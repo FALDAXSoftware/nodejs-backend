@@ -185,4 +185,9 @@ module.exports.routes = {
   'get /all-jobs': 'CareerController.getAllJobs',
   'get /jobs/get-job-detail': 'CareerController.getJobDetail',
   'post /apply-job': 'CareerController.applyJob',
+
+
+  // Tradding Routes
+  // Market Trade Routes 
+  'post /market/sell': 'TradeController.marketSell'
 };

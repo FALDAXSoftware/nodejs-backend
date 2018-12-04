@@ -97,9 +97,11 @@ module.exports = {
     },
 
     testnews: async function (req, res) {
-        var greeting = await sails.helpers.kycpicUpload();
-        console.log('greeting', greeting);
-        res.end();
+        // var greeting = await sails.helpers.kycpicUpload();
+        // console.log('greeting', greeting);
+        // res.end();
+        var greeting = await sails.helpers.tradding.marketSell();
+        res.json();
     },
 
     csvToJson: function (req, res) {
