@@ -4,7 +4,7 @@ module.exports = {
   friendlyName: 'Update',
 
 
-  description: 'Update buy.',
+  description: 'Update sell.',
 
 
   inputs: {
@@ -31,8 +31,8 @@ module.exports = {
   },
 
 
-  fn: async function (inputs, exits) {
-    let updatedbook = await buyBook.update({ id: inputs.id }).set(inputs.data).fetch();
+  fn: async function (inputs,exits) {
+    let updatedbook = await sellBook.update({ id: inputs.id }).set(inputs.data).fetch();
     return exits.success(updatedbook);
   }
 

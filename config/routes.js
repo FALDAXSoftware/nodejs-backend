@@ -189,5 +189,6 @@ module.exports.routes = {
 
   // Tradding Routes
   // Market Trade Routes 
-  'post /market/sell': 'TradeController.marketSell'
+  'post /market/sell': 'TradeController.marketSell',
+  'post /market/buy': 'TradeController.marketBuy'
 };

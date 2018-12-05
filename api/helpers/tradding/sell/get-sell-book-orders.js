@@ -1,11 +1,8 @@
 module.exports = {
 
-
-  friendlyName: 'Get buy book orders',
-
+  friendlyName: 'Get sell book orders',
 
   description: '',
-
 
   inputs: {
     crypto: {
@@ -19,35 +16,29 @@ module.exports = {
       example: 'ETH',
       description: 'Code of Currency.',
       required: true
-    },
+    }
   },
-
 
   exits: {
 
     success: {
-      outputFriendlyName: 'Buy book orders',
-    },
-
+      outputFriendlyName: 'Sell book orders'
+    }
   },
 
+  fn: async function (inputs,exits) {
 
-  fn: async function (inputs, exits) {
-
-    // Get buy book orders.
-    var buyBookOrders;
-    buyBookOrders = await buyBook.find({
+    var sellBookOrders;
+    sellBookOrders = await sellBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,
         currency: inputs.currency
       },
-      sort: "price DESC"
+      sort: "price ASC"
     });
-    return exits.success(buyBookOrders);
+    return exits.success(sellBookOrders);
 
   }
 
-
 };
-
