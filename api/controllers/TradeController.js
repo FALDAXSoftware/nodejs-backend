@@ -15,6 +15,8 @@ module.exports = {
             console.log("done");
             res.end();
         } catch (error) {
+            console.log("---Error---", error);
+
             return res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
