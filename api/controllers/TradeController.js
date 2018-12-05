@@ -23,7 +23,20 @@ module.exports = {
             });
         }
     },
-
+    marketBuy: async function (req, res) {
+        try {
+            let { symbol, side, order_type, orderQuantity } = req.allParams();
+            let user_id = req.user.id;
+            let response = await sails.helpers.tradding.marketBuy(symbol, user_id, side, order_type, orderQuantity);
+            console.log("done");
+            res.end();
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
     //-------------------------------CMS Api--------------------------
     getAllTrades: async function (req, res) {
         // req.setLocale('en')
