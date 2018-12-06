@@ -189,5 +189,14 @@ module.exports.routes = {
 
   // Tradding Routes
   // Market Trade Routes 
-  'post /market/sell': 'TradeController.marketSell'
+  'post /market/sell': 'TradeController.marketSell',
+  'post /get-all-history': 'TradeController.getAllTradeHistory',
+
+  // Wallet Routes 
+  'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
+  'post /wallet-history': 'WalletController.getWalletTransactionHistory',
+
+  //coin routes
+  'get /get-all-coins': 'Coins.getAllCoins',
+
 };

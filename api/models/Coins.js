@@ -8,6 +8,10 @@
 module.exports = {
   tableName: 'coins',
   attributes: {
+    coin_icon: {
+      type: 'string',
+      columnName: 'coin_icon',
+    },
     coin_name: {
       type: 'string',
       columnName: 'coin_name',

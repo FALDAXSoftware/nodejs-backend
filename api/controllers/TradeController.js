@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const moment = require('moment');
+
 module.exports = {
     //---------------------------Web Api------------------------------
     marketSell: async function (req, res) {
@@ -15,6 +17,101 @@ module.exports = {
             console.log("done");
             res.end();
         } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+
+    getAllTradeHistory: async function (req, res) {
+        try {
+
+            let { fromDate, toDate, pair, Buy, Sell, deposit, withdraw } = req.body;
+
+
+            if (req.user.id && pair && Buy == 'true' && Sell == 'false' && fromDate && toDate) {
+                let tradeHistory = await TradeHistory.find({
+                    user_id: req.user.id,
+                    side: 'Buy',
+                    symbol: pair,
+                    or: [{
+                        created_at: {
+                            '<=': moment(toDate).format()
+                        },
+                    },
+                    {
+                        created_at: {
+                            '>=': moment(fromDate).format()
+                        },
+                    },
+                    { requested_user_id: req.user.id }
+                    ]
+                }).sort('created_at', 'DESC')
+
+                tradeHistory.map(value => {
+                    if (value.user_id == req.user.id) {
+                        value.fees = value.user_fee;
+                        value.coin = value.user_coin;
+                        value['Buy/Sell'] = 'Buy';
+                    } else if (value.requested_user_id == req.user.id) {
+                        value.fees = value.requested_fee;
+                        value.coin = value.requested_coin;
+                        value['Buy/Sell'] = 'Buy';
+                    }
+                })
+
+                delete tradeHistory.user_id;
+                delete tradeHistory.requested_user_id;
+                delete tradeHistory.currency;
+                delete tradeHistory.settle_currency;
+
+                console.log('>>>tradeHistory', tradeHistory);
+                return res.json({
+                    status: 200,
+                    message: 'Trade history retrieved successfully.',
+                    tradeHistory
+                })
+            } else if (req.user.id && pair && Buy == false && Sell == true && toDate && fromDate) {
+                let tradeHistory = await TradeHistory.find({
+                    user_id: req.user.id,
+                    side: 'Sell',
+                    symbol: pair,
+                    or: [{
+                        created_at: {
+                            '<=': moment(toDate).format()
+                        },
+                    },
+                    {
+                        created_at: {
+                            '>=': moment(fromDate).format()
+                        },
+                    },
+                    { requested_user_id: req.user.id }
+                    ]
+                }).sort('created_at', 'DESC')
+
+                tradeHistory.map(value => {
+                    if (value.user_id == req.user.id) {
+                        value.fees = value.user_fee;
+                        value.coin = value.user_coin;
+                        value['Buy/Sell'] = 'Sell';
+                    } else if (value.requested_user_id == req.user.id) {
+                        value.fees = value.requested_fee;
+                        value.coin = value.requested_coin;
+                        value['Buy/Sell'] = 'Sell';
+                    }
+                })
+
+                delete tradeHistory.user_id;
+                delete tradeHistory.requested_user_id;
+                delete tradeHistory.currency;
+                delete tradeHistory.settle_currency;
+
+                console.log('>>>else if tradeHistory', tradeHistory);
+            }
+        } catch (err) {
+            console.log('>>>err', err);
             return res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
@@ -162,4 +259,5 @@ module.exports = {
             }
         }
     },
+
 };

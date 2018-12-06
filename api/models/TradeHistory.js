@@ -93,6 +93,22 @@ module.exports = {
             columnName: 'user_id',
             required: true,
         },
+        user_fee: {
+            type: 'number',
+            columnName: 'user_fee',
+        },
+        user_coin: {
+            type: 'string',
+            columnName: 'user_coin',
+        },
+        requested_fee: {
+            type: 'number',
+            columnName: 'requested_fee',
+        },
+        requested_coin: {
+            type: 'string',
+            columnName: 'requested_coin',
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

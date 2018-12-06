@@ -7,6 +7,57 @@
 
 module.exports = {
     //---------------------------Web Api------------------------------
+    getAllCoins: async function (req, res) {
+        try {
+            let { page, limit, data } = req.allParams();
+            if (data) {
+                var balanceRes = await sails.sendNativeQuery("SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE (coins.coin_name LIKE '%" + data + "%' OR coins.coin_code LIKE '%" + data + "%') AND coins.is_active = true AND coins.deleted_at IS NULL ORDER BY wallets.balance DESC LIMIT " + limit + " OFFSET " + (limit * (page - 1)));
+
+                let allCoinsCount = await Coins.count({
+                    where: {
+                        deleted_at: null,
+                        is_active: true,
+                        or: [{
+                            coin_name: { contains: data }
+                        },
+                        { coin_code: { contains: data } }
+                        ]
+                    }
+                });
+                if (balanceRes) {
+                    return res.json({
+                        "status": 200,
+                        "message": sails.__("Coin list"),
+                        "data": balanceRes, allCoinsCount
+                    });
+                }
+            } else {
+                var balanceRes = await sails.sendNativeQuery(`SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE coins.is_active = true AND coins.deleted_at IS NULL ORDER BY wallets.balance DESC LIMIT ${limit} OFFSET ${page} `);
+
+                let allCoinsCount = await Coins.count({
+                    where: {
+                        deleted_at: null,
+                        is_active: true
+                    }
+                });
+
+                if (balanceRes) {
+                    return res.json({
+                        "status": 200,
+                        "message": sails.__("Coin list"),
+                        "data": balanceRes, allCoinsCount
+                    });
+                }
+            }
+        } catch (err) {
+            console.log('>>>>err', err);
+            res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+            return;
+        }
+    },
 
     //-------------------------------CMS Api--------------------------
     getCoins: async function (req, res) {

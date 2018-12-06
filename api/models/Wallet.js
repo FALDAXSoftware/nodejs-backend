@@ -26,7 +26,8 @@ module.exports = {
     },
     balance: {
       type: "number",
-      columnName: "balance"
+      columnName: "balance",
+      defaultsTo: 0,
     },
     placed_balance: {
       type: "number",
