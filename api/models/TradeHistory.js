@@ -57,11 +57,6 @@ module.exports = {
             type: 'string',
             columnName: 'order_status',
         },
-        deleted: {
-            type: 'boolean',
-            columnName: 'deleted',
-            defaultsTo: false
-        },
         requested_user_id: {
             type: 'number',
             columnName: 'requested_user_id',
@@ -72,9 +67,8 @@ module.exports = {
             defaultsTo: false
         },
         fix_quantity: {
-            type: 'boolean',
+            type: 'number',
             columnName: 'fix_quantity',
-            defaultsTo: false
         },
         symbol: {
             type: 'string',
@@ -89,7 +83,7 @@ module.exports = {
             columnName: 'taker_fee',
         },
         user_id: {
-            type: 'string',
+            type: 'number',
             columnName: 'user_id',
             required: true,
         },

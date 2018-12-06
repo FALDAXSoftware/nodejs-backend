@@ -93,7 +93,7 @@ module.exports = {
         requested_user_id: {
             type: 'string',
             columnName: 'requested_user_id',
-            required: true,
+            allowNull: true
         },
         is_market: {
             type: 'boolean',

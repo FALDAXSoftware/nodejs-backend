@@ -93,6 +93,10 @@ module.exports = {
             type: 'number',
             columnName: 'taker_fee',
         },
+        activity_id: {
+            type: 'number',
+            columnName: "activity_id"
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

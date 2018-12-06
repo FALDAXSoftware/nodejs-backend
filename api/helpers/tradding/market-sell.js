@@ -49,7 +49,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    console.log("market sell inputs -- ", inputs);
+    // console.log("market sell inputs -- ", inputs);
 
     let { crypto, currency } = await sails.helpers.utilities.getCurrencies(inputs.symbol);
     let wallet = await sails.helpers.utilities.getSellWalletBalance(crypto, currency, inputs.user_id);
@@ -84,10 +84,71 @@ module.exports = {
       resultData.fix_quantity = inputs.orderQuantity;
       resultData.maker_fee = fees.makerFee;
       resultData.taker_fee = fees.takerFee;
-      console.log("resultData -- ", resultData);
+      // console.log("currenct book", currentBuyBookDetails);
+
+      let activity = await sails.helpers.tradding.activity.add(resultData);
+
+      if (inputs.orderQuantity <= availableQty) {
+        // console.log("conditions----->>", (currentBuyBookDetails.price * inputs.orderQuantity), wallet.placed_balance);
+
+        if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+          var trade_history_data = {
+            ...orderData
+          };
+          trade_history_data.maker_fee = fees.makerFee;
+          trade_history_data.taker_fee = fees.takerFee;
+          trade_history_data.fix_quantity = inputs.orderQuantity;
+          trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
+          trade_history_data.created_at = now;
+          let tradeHistory = await sails.helpers.tradding.trade.add(trade_history_data);
+          trade_history_data.fix_quantity = inputs.orderQuantity;
+          let updatedActivity = await sails.helpers.tradding.activity.update(currentBuyBookDetails.activity_id, trade_history_data);
+          // Do Actual Tranasfer In Wallet Here
+          // 
+          let remainigQuantity = availableQty - inputs.orderQuantity;
+          if (remainigQuantity > 0) {
+            let updatedBuyBook = await sails.helpers.tradding.buy.update(currentBuyBookDetails.id, { quantity: remainigQuantity });
+          } else {
+            await sails.helpers.tradding.buy.deleteOrder(currentBuyBookDetails.id);
+          }
+
+        } else {
+          console.log("insufficient balance");
+        }
+      } else {
+        var remainingQty = inputs.orderQuantity - availableQty;
+        if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+          var trade_history_data = {
+            ...orderData
+          };
+          trade_history_data.maker_fee = fees.makerFee;
+          trade_history_data.taker_fee = fees.takerFee;
+          trade_history_data.fix_quantity = inputs.orderQuantity;
+          trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
+          trade_history_data.created_at = now;
+          let tradeHistory = await sails.helpers.tradding.trade.add(trade_history_data);
+          trade_history_data.fix_quantity = inputs.orderQuantity;
+          let updatedActivity = await sails.helpers.tradding.activity.update(currentBuyBookDetails.activity_id, trade_history_data);
+          // Do Actual Tranasfer In Wallet Here
+          // 
+          await sails.helpers.tradding.buy.deleteOrder(currentBuyBookDetails.id);
+          let requestData = {
+            ...inputs
+          }
+          requestData.orderQuantity = remainingQty;
+          let response = await sails.helpers.tradding.marketSell(requestData.symbol, requestData.user_id, requestData.side, requestData.order_type, requestData.orderQuantity);
+        } else {
+          console.log("insufficient balance");
+        }
+
+      }
+      // console.log("resultData -- ", resultData);
+
+    } else {
+      console.log("no more limit order in order book");
 
     }
-    console.log("----wallet", wallet);
+    // console.log("----wallet", wallet);
 
     return exits.success();
 
