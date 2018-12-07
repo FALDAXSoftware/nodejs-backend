@@ -7,6 +7,28 @@
 
 module.exports = {
     //---------------------------Web Api------------------------------
+    getBuyBookDetails: async function (req, res) {
+        try {
+
+            if (req.isSocket) {
+                //var socketId = sails.sockets.id(req);
+
+                //console.log('>>>IN IF', req.socket)
+                let buyBookDetails = await buyBook.find({
+                    deleted_at: null,
+                    settle_currency: 'ETH'
+                }).sort('price', 'DESC');
+
+                if (buyBookDetails) {
+                    return res.json({ buyBookDetails });
+                }
+            } else {
+                console.log('>>>IN else')
+            }
+        } catch (err) {
+            console.log('>>>', err)
+        }
+    },
 
     //-------------------------------CMS Api--------------------------
     getAllBuyOrders: async function (req, res) {
