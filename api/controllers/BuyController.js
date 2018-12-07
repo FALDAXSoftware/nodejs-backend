@@ -9,21 +9,29 @@ module.exports = {
     //---------------------------Web Api------------------------------
     getBuyBookDetails: async function (req, res) {
         try {
-
             if (req.isSocket) {
-                //var socketId = sails.sockets.id(req);
+                sails.sockets.join(req.socket, 'test', async function (err) {
+                    if (err) {
+                        console.log('>>>err', err);
+                        return res.status(403).json({ status: 403, "message": "Error occured" });
+                    } else {
+                        let buyBookDetails = await buyBook.find({
+                            deleted_at: null,
+                            settle_currency: 'ETH'
+                        }).sort('price', 'DESC');
 
-                //console.log('>>>IN IF', req.socket)
-                let buyBookDetails = await buyBook.find({
-                    deleted_at: null,
-                    settle_currency: 'ETH'
-                }).sort('price', 'DESC');
-
-                if (buyBookDetails) {
-                    return res.json({ buyBookDetails });
-                }
+                        if (buyBookDetails) {
+                            return res.json({
+                                status: 200,
+                                buyBookDetails,
+                                "message": "Sell data retrived successfully."
+                            });
+                        }
+                    }
+                });
             } else {
                 console.log('>>>IN else')
+                return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
             console.log('>>>', err)
