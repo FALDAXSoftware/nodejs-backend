@@ -5,4 +5,4 @@ RUN npm install
 RUN npm rebuild
 EXPOSE 8084
 COPY . .
-CMD [ "sails", "lift"]
+CMD [ "pm2-runtime", "start", "app.js" ]
