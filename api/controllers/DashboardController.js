@@ -6,10 +6,11 @@
  */
 
 module.exports = {
-  get: async function (req, res) {
+  getAllCounts: async function (req, res) {
     try {
       let userCount = await Users.count({ is_verified: true });
       let coinCount = await Coins.count({ deleted_at: null });
+      let pairCount = await Pairs.count({ deleted_at: null });
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
@@ -22,7 +23,7 @@ module.exports = {
       return res.json({
         "status": 200,
         "message": "Dashboard Data",
-        coinCount, userCount, AccountCreated24Hr
+        coinCount, userCount, AccountCreated24Hr, pairCount
       });
     } catch (e) {
       res.status(500).json({

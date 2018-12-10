@@ -66,7 +66,7 @@ module.exports.routes = {
   'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
-  'get /admin/dashboard/getData': 'Dashboard.get',
+  'get /admin/dashboard/getData': 'Dashboard.getAllCounts',
   // 'put /admin/changePassword': "Admin.changePassword",
 
   //countries
