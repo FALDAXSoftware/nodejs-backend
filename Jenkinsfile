@@ -4,7 +4,7 @@ node {
                  echo "Checkout Done & docker build started"
                  sh "cd /root/dcompose/faldax-nodejs && docker build -t node_faldax_backend ."
                  echo "docker build done and it will run......"
-                 sh "docker rm -f node_faldax"
+                 echo "docker rm -f node_faldax"
 				 sh "docker run -d --name node_faldax -p 8804:8804 node_faldax_backend"
                  echo "deployed"
        }
