@@ -19,7 +19,22 @@ module.exports = {
         deleted_at: null,
         created_at: { '>=': moment().subtract(1, 'months').format() }
       });
-      let employeeCount = await employeeCount.count({ is_active: true, deleted_at: null })
+      let employeeCount = await Admin.count({ is_active: true, deleted_at: null });
+      let jobsCount = await Jobs.count({ is_active: true, deleted_at: null });
+      let coinReqCount = await AddCoinRequest.count({ deleted_at: null });
+      let subscriberCount = await Subscribe.count({ deleted_at: null });
+      let withdrawReqCount = await WithdrawRequest.count({
+        deleted_at: null,
+        created_at: { '>=': moment().subtract(7, 'days').format() }
+      });
+      let lastSevenInquiry = await Inquiry.count({
+        deleted_at: null,
+        created_at: { '>=': moment().subtract(7, 'days').format() }
+      });
+      let lastThirtyInquiry = await Inquiry.count({
+        deleted_at: null,
+        created_at: { '>=': moment().subtract(1, 'months').format() }
+      })
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
@@ -33,7 +48,9 @@ module.exports = {
         "status": 200,
         "message": "Dashboard Data",
         coinCount, userCount, AccountCreated24Hr, pairCount,
-        legalCountries, illegalCountries, neutralCountries, blogsCount
+        legalCountries, illegalCountries, neutralCountries, blogsCount,
+        employeeCount, jobsCount, coinReqCount, subscriberCount, withdrawReqCount,
+        lastSevenInquiry, lastThirtyInquiry
       });
     } catch (e) {
       console.log('>>>>e,', e)
