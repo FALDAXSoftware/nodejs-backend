@@ -198,7 +198,7 @@ module.exports.routes = {
 
   // Wallet Routes 
   'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
-  'post /wallet-history': 'WalletController.getWalletTransactionHistory',
+  'post /wallet-details': 'WalletController.getWalletTransactionHistory',
 
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',

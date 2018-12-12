@@ -275,6 +275,7 @@ module.exports = {
     createBlog: async function (req, res) {
         req.file('cover_image').upload(async function (err, uploadedFiles) {
             try {
+                console.log('>>>>uploadedFiles', uploadedFiles)
                 if (uploadedFiles.length > 0) {
                     let filename = uploadedFiles[0].filename;
                     var name = filename.substring(filename.indexOf("."));
@@ -282,7 +283,9 @@ module.exports = {
                         .getTime()
                         .toString();
                     var uploadFileName = timestamp + name;
+                    console.log('>>>>uploadFileName', uploadFileName)
                     var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
+                    console.log('>>>>uploadCover', uploadCover)
 
                     if (req.body.title && req.body.description && uploadCover) {
                         var blog_detail = await Blogs.create({
