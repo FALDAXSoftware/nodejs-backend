@@ -41,12 +41,7 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
-    },
-    state: {
-      collection: 'state',
-      via: 'country'
     }
-
   },
   beforeCreate: function (values, next) {
     values.created_at = new Date();

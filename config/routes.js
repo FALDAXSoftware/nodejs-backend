@@ -66,7 +66,7 @@ module.exports.routes = {
   'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
-  'get /admin/dashboard/getData': 'Dashboard.get',
+  'get /admin/dashboard/getData': 'Dashboard.getAllCounts',
   // 'put /admin/changePassword': "Admin.changePassword",
 
   //countries
@@ -198,7 +198,7 @@ module.exports.routes = {
 
   // Wallet Routes 
   'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
-  'post /wallet-history': 'WalletController.getWalletTransactionHistory',
+  'post /wallet-details': 'WalletController.getWalletTransactionHistory',
 
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
