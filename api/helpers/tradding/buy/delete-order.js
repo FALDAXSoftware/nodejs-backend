@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Delete Order',
 
-
   description: 'Delete buy.',
-
 
   inputs: {
     id: {
@@ -16,22 +13,20 @@ module.exports = {
     }
   },
 
-
   exits: {
 
     success: {
-      description: 'All done.',
-    },
-
+      description: 'All done.'
+    }
   },
-
 
   fn: async function (inputs, exits) {
     let now = new Date();
-    await buyBook.update({ id: inputs.id }).set({ deleted_at: now });
+    console.log(inputs.id);
+    await buyBook
+      .update({id: inputs.id})
+      .set({deleted_at: now});
     return exits.success();
   }
 
-
 };
-

@@ -187,13 +187,19 @@ module.exports.routes = {
   'post /apply-job': 'CareerController.applyJob',
 
   // Tradding Routes
-  'post /market/buy': 'TradeController.marketBuy',
   'get /get-buy-book-details': 'BuyController.getBuyBookDetails',
   'get /get-sell-book-details': 'SellController.getSellBookDetails',
   'get /get-data': 'SellController.getData',
 
   // Market Trade Routes 
   'post /market/sell': 'TradeController.marketSell',
+  'post /market/buy': 'TradeController.marketBuy',
+
+  //Limit Trade Routes
+  'post /limit/sell': 'TradeController.limitSell',
+  'post /limit/buy': 'TradeController.limitSell',
+
+
   'post /get-all-history': 'TradeController.getAllTradeHistory',
 
   // Wallet Routes 

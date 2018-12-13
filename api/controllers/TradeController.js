@@ -51,29 +51,82 @@ module.exports = {
         });
     }
   },
+  limitSell: async function (req, res) {
+    try {
+      console.log(req.allParams());
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price);
+      console.log("done");
+      res.end();
+    } catch (error) {
+      console.log("---Error---", error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  limitBuy: async function (req, res) {
+    try {
+      console.log(req.allParams());
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price);
+      console.log("done");
+      res.end();
+    } catch (error) {
+      console.log("---Error---", error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 
   getAllTradeHistory: async function (req, res) {
     try {
 
-      let { fromDate, toDate, pair, Buy, Sell, deposit, withdraw } = req.body;
-
+      let {
+        fromDate,
+        toDate,
+        pair,
+        Buy,
+        Sell,
+        deposit,
+        withdraw
+      } = req.body;
 
       if (req.user.id && pair && Buy == 'true' && Sell == 'false' && fromDate && toDate) {
         let tradeHistory = await TradeHistory.find({
           user_id: req.user.id,
           side: 'Buy',
           symbol: pair,
-          or: [{
-            created_at: {
-              '<=': moment(toDate).format()
-            },
-          },
-          {
-            created_at: {
-              '>=': moment(fromDate).format()
-            },
-          },
-          { requested_user_id: req.user.id }
+          or: [
+            {
+              created_at: {
+                '<=': moment(toDate).format()
+              }
+            }, {
+              created_at: {
+                '>=': moment(fromDate).format()
+              }
+            }, {
+              requested_user_id: req.user.id
+            }
           ]
         }).sort('created_at', 'DESC')
 
@@ -95,27 +148,24 @@ module.exports = {
         delete tradeHistory.settle_currency;
 
         console.log('>>>tradeHistory', tradeHistory);
-        return res.json({
-          status: 200,
-          message: 'Trade history retrieved successfully.',
-          tradeHistory
-        })
+        return res.json({ status: 200, message: 'Trade history retrieved successfully.', tradeHistory })
       } else if (req.user.id && pair && Buy == false && Sell == true && toDate && fromDate) {
         let tradeHistory = await TradeHistory.find({
           user_id: req.user.id,
           side: 'Sell',
           symbol: pair,
-          or: [{
-            created_at: {
-              '<=': moment(toDate).format()
-            },
-          },
-          {
-            created_at: {
-              '>=': moment(fromDate).format()
-            },
-          },
-          { requested_user_id: req.user.id }
+          or: [
+            {
+              created_at: {
+                '<=': moment(toDate).format()
+              }
+            }, {
+              created_at: {
+                '>=': moment(fromDate).format()
+              }
+            }, {
+              requested_user_id: req.user.id
+            }
           ]
         }).sort('created_at', 'DESC')
 
@@ -140,10 +190,12 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>err', err);
-      return res.status(500).json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
