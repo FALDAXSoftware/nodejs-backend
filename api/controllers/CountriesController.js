@@ -4,9 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-var fetch = require('node-fetch')
 module.exports = {
-    getCountries: async function(req, res) {
+    getCountries: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
             let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
@@ -42,7 +41,7 @@ module.exports = {
             }
         }
     },
-    getStates: async function(req, res) {
+    getStates: async function (req, res) {
         let { country_id, data } = req.allParams();
         let param = {
             country: country_id
@@ -61,7 +60,7 @@ module.exports = {
         });
     },
 
-    countryActivate: async function(req, res) {
+    countryActivate: async function (req, res) {
         try {
             let { id, is_active } = req.body;
 
@@ -83,7 +82,7 @@ module.exports = {
         }
     },
 
-    stateActivate: async function(req, res) {
+    stateActivate: async function (req, res) {
         try {
             let { id, is_active } = req.body;
             let stateData = await State.update({ id: id }).set({ is_active: is_active }).fetch();
@@ -104,7 +103,7 @@ module.exports = {
         }
     },
 
-    countryUpdate: async function(req, res) {
+    countryUpdate: async function (req, res) {
         try {
             let countriesData = await Countries.update({ id: req.body.id }).set(req.body).fetch();
 
@@ -124,7 +123,7 @@ module.exports = {
         }
     },
 
-    stateUpdate: async function(req, res) {
+    stateUpdate: async function (req, res) {
         try {
             let stateData = await State.update({ id: req.body.id }).set(req.body).fetch();
 
@@ -144,7 +143,7 @@ module.exports = {
         }
     },
 
-    insertCountries: async function(req, res) {
+    insertCountries: async function (req, res) {
         let countries = [
             { name: 'Afghanistan', legality: 3, color: '#b6cbfa' },
             { name: 'Bangladesh', legality: 2, color: '#f6776e' },
@@ -378,7 +377,7 @@ module.exports = {
 
     },
 
-    insertState: async function(req, res) {
+    insertState: async function (req, res) {
         let states = [
             { name: 'Colorado', country: 378, legality: 1, color: '#63d3c7' },
             { name: 'Texas', country: 378, legality: 1, color: '#fcd26e' },

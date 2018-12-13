@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var moment = require
 
 module.exports = {
     //---------------------------Web Api------------------------------
@@ -11,10 +12,15 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getAllTransactions: async function (req, res) {
         // req.setLocale('en')
-        let { page, limit, data } = req.allParams();
+        let { page, limit, search, t_type, start_date, end_date } = req.allParams();
 
-        if (data) {
-            let userArray = await Users.find({ email: { 'contains': data } });
+        if (search) {
+            let q = { deleted_at: null };
+            if (t_type) {
+                q['transaction_type'] = t_type
+            }
+            console.log('>>>', search)
+            let userArray = await Users.find({ email: { 'contains': search } });
 
             let idArray = [];
             for (let index = 0; index < userArray.length; index++) {
@@ -22,7 +28,8 @@ module.exports = {
             }
 
             let transactionData = await Transaction.find({
-                user_id: idArray
+                user_id: idArray,
+                ...q
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             for (let index = 0; index < transactionData.length; index++) {
@@ -41,6 +48,7 @@ module.exports = {
 
             let transactionCount = await Transaction.count({
                 user_id: idArray,
+                ...q
             });
             if (transactionData) {
                 return res.json({
@@ -50,10 +58,17 @@ module.exports = {
                 });
             }
         } else {
+            let q = { deleted_at: null };
+            if (t_type) {
+                q['transaction_type'] = t_type
+            }
+            if (start_date && end_date) {
+                q['created_at'] = { '>': start_date };
+                q['created_at'] = { '<': end_date };
+            }
+
             let transactionData = await Transaction.find({
-                where: {
-                    deleted_at: null,
-                }
+                ...q
             }).sort("id ASC").paginate(page, parseInt(limit));
 
             for (let index = 0; index < transactionData.length; index++) {
@@ -70,7 +85,7 @@ module.exports = {
                 }
             }
 
-            let transactionCount = await Transaction.count();
+            let transactionCount = await Transaction.count({ ...q });
 
             if (transactionData) {
                 return res.json({

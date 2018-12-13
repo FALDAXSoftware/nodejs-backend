@@ -30,8 +30,8 @@ module.exports.globals = {
   ****************************************************************************/
 
   async: require('async'),
-  AWS_ACCESS_KEY:"AKIAINYFM7X4NCKMYSEA",
-  AWS_SECRET_KEY:"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",
+  AWS_ACCESS_KEY: "AKIAJO5OEFTPOECDZ6QA",
+  AWS_SECRET_KEY: "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",
   /****************************************************************************
   *                                                                           *
   * Whether to expose each of your app's models as global variables.          *

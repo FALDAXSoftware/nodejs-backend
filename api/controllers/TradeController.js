@@ -76,7 +76,6 @@ module.exports = {
 
   limitBuy: async function (req, res) {
     try {
-      console.log(req.allParams());
       let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
@@ -147,7 +146,6 @@ module.exports = {
         delete tradeHistory.currency;
         delete tradeHistory.settle_currency;
 
-        console.log('>>>tradeHistory', tradeHistory);
         return res.json({ status: 200, message: 'Trade history retrieved successfully.', tradeHistory })
       } else if (req.user.id && pair && Buy == false && Sell == true && toDate && fromDate) {
         let tradeHistory = await TradeHistory.find({
@@ -185,11 +183,8 @@ module.exports = {
         delete tradeHistory.requested_user_id;
         delete tradeHistory.currency;
         delete tradeHistory.settle_currency;
-
-        console.log('>>>else if tradeHistory', tradeHistory);
       }
     } catch (err) {
-      console.log('>>>err', err);
       return res
         .status(500)
         .json({
@@ -202,9 +197,10 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllTrades: async function (req, res) {
     // req.setLocale('en')
-    let { page, limit, data, user_id } = req.allParams();
+    let { page, limit, data, user_id, t_type } = req.allParams();
 
     if (data) {
+
       let userArray = await Users.find({
         where: {
           deleted_at: null,
@@ -222,11 +218,21 @@ module.exports = {
       for (let index = 0; index < userArray.length; index++) {
         idArray.push(userArray[index].id);
       }
+      console.log('idArray', idArray)
 
       let tradeData = await TradeHistory
-        .find({ user_id: idArray })
+        .find({
+          or: [
+            { user_id: idArray },
+            { symbol: { contains: data } },
+            { settle_currency: { contains: data } },
+            { currency: { contains: data } },
+            { side: { contains: t_type } }
+          ]
+        })
         .sort('id ASC')
         .paginate(page, parseInt(limit));
+      console.log('tradeData', tradeData)
 
       for (let index = 0; index < tradeData.length; index++) {
         if (tradeData[index].user_id) {
@@ -238,7 +244,15 @@ module.exports = {
         }
       }
 
-      let tradeCount = await TradeHistory.count({ user_id: idArray });
+      let tradeCount = await TradeHistory.count({
+        or: [
+          { user_id: idArray },
+          { symbol: { contains: data } },
+          { settle_currency: { contains: data } },
+          { currency: { contains: data } },
+          { side: { contains: t_type } }
+        ]
+      });
       if (tradeData) {
         return res.json({
           "status": 200,
@@ -248,6 +262,7 @@ module.exports = {
         });
       }
     } else if (user_id) {
+
       if (data) {
         let userArray = await Users.find({
           where: {
@@ -266,9 +281,13 @@ module.exports = {
         for (let index = 0; index < userArray.length; index++) {
           idArray.push(userArray[index].id);
         }
+        let q = { user_id: idArray, deleted_at: null };
+        if (t_type) {
+          q['side'] = t_type
+        }
 
         let tradeData = await TradeHistory
-          .find({ user_id: idArray })
+          .find({ ...q })
           .sort('id ASC')
           .paginate(page, parseInt(limit));
 
@@ -292,13 +311,13 @@ module.exports = {
           });
         }
       } else {
+        let q = { user_id, deleted_at: null };
+        if (t_type) {
+          q['side'] = t_type
+        }
+
         let tradeData = await TradeHistory
-          .find({
-            where: {
-              user_id,
-              deleted_at: null
-            }
-          })
+          .find({ ...q })
           .sort("id ASC")
           .paginate(page, parseInt(limit));
 
