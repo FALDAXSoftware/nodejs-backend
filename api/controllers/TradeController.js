@@ -52,6 +52,20 @@ module.exports = {
     }
   },
 
+  limitSell: async function (req, res) {
+    try {
+
+    } catch (error) {
+      console.log("---Error---", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   getAllTradeHistory: async function (req, res) {
     try {
 
