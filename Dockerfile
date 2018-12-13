@@ -1,5 +1,5 @@
 FROM pm291
-WORKDIR /usr/share/nginx/html/finrax-nodeJs
+WORKDIR /usr/share/nginx/html/faldax-nodejs
 COPY package*.json ./
 RUN npm install
 RUN npm rebuild

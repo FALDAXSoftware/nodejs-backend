@@ -16,7 +16,8 @@ module.exports = {
         search_keywords: {
             type: 'string',
             columnName: 'search_keywords',
-            required: true,
+            // required: true,
+            allowNull: true,
         },
         description: {
             type: 'string',

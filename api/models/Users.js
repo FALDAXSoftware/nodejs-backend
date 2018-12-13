@@ -106,7 +106,7 @@ module.exports = {
       allowNull: true
     },
     reset_token_expire: {
-      type: 'number',
+      type: 'string',
       columnName: 'reset_token_expire',
       allowNull: true
     },

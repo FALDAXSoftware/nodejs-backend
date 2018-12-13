@@ -33,14 +33,20 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getStatic: async function (req, res) {
-        let { page, limit } = req.allParams();
-        let staticData = await Statics.find({ is_active: true });
-        let staticCount = await Statics.count({ is_active: true });
-        if (staticData) {
-            return res.json({
-                "status": 200,
-                "message": "Static Pages retrived successfully",
-                "data": staticData, staticCount
+        try {
+            let staticData = await Statics.find({ is_active: true, deleted_at: null });
+            let staticCount = await Statics.count({ is_active: true, deleted_at: null });
+            if (staticData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Static Pages retrived successfully",
+                    "data": staticData, staticCount
+                });
+            }
+        } catch (err) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
             });
         }
     },
