@@ -49,23 +49,24 @@ module.exports = {
     },
 
     getAllSubscribers: async function (req, res) {
-        let { page, limit, data } = req.allParams();
+        let { page, limit, data, start_date, end_date } = req.allParams();
         if (data) {
+            let q = {
+                deleted_at: null
+            }
+            if (start_date && end_date) {
+                q['created_at'] = { '>': start_date };
+                q['created_at'] = { '<': end_date };
+            }
+            q['or'] = [
+                { email: { contains: data } },
+            ]
+
             let subscriberData = await Subscribe.find({
-                where: {
-                    deleted_at: null,
-                    or: [{
-                        email: { contains: data }
-                    }]
-                }
+                where: { ...q }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
             let subscriberCount = await Subscribe.count({
-                where: {
-                    deleted_at: null,
-                    or: [{
-                        email: { contains: data }
-                    }]
-                }
+                where: { ...q }
             });
             if (subscriberData) {
                 return res.json({
@@ -75,16 +76,20 @@ module.exports = {
                 });
             }
         } else {
+            let q = {
+                deleted_at: null
+            }
+            if (start_date && end_date) {
+                q['created_at'] = { '>': start_date };
+                q['created_at'] = { '<': end_date };
+            }
+
             let subscriberData = await Subscribe.find({
-                where: {
-                    deleted_at: null,
-                }
+                where: { ...q }
             }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
             let subscriberCount = await Subscribe.count({
-                where: {
-                    deleted_at: null,
-                }
+                where: { ...q }
             });
 
             if (subscriberData) {

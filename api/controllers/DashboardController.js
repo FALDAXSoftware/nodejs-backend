@@ -35,6 +35,10 @@ module.exports = {
         deleted_at: null,
         created_at: { '>=': moment().subtract(1, 'months').format() }
       })
+      let kyc_approved = await KYC.count({ isApprove: true, deleted_at: null })
+      let total_kyc = await KYC.count({ isApprove: true, deleted_at: null })
+      let kyc_disapproved = await KYC.count({ isApprove: false, deleted_at: null })
+
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
@@ -50,7 +54,7 @@ module.exports = {
         coinCount, userCount, AccountCreated24Hr, pairCount,
         legalCountries, illegalCountries, neutralCountries, blogsCount,
         employeeCount, jobsCount, coinReqCount, subscriberCount, withdrawReqCount,
-        lastSevenInquiry, lastThirtyInquiry
+        lastSevenInquiry, lastThirtyInquiry, kyc_approved, kyc_disapproved, total_kyc
       });
     } catch (e) {
       console.log('>>>>e,', e)
