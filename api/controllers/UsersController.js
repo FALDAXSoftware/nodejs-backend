@@ -426,8 +426,8 @@ module.exports = {
                     ]
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
-            for (let index = 0; index < userData.length; index++) {
-                const element = userData[index];
+            for (let index = 0; index < usersData.length; index++) {
+                const element = usersData[index];
                 let kyc = await KYC.findOne({ user_id: element.id });
                 usersData[index]["kyc"] = kyc;
             }
@@ -455,8 +455,8 @@ module.exports = {
                     is_verified: true,
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
-            for (let index = 0; index < userData.length; index++) {
-                const element = userData[index];
+            for (let index = 0; index < usersData.length; index++) {
+                const element = usersData[index];
                 let kyc = await KYC.findOne({ user_id: element.id });
                 usersData[index]["kyc"] = kyc;
             }
