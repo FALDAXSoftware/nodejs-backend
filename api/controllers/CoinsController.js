@@ -114,7 +114,7 @@ module.exports = {
 
     create: async function (req, res) {
         try {
-            if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address && req.body.description) {
+            if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address) {
                 let existingCoin = await Coins.find({
                     deleted_at: null,
                     or: [
@@ -133,7 +133,6 @@ module.exports = {
                     coin_name: req.body.coin_name,
                     coin_code: req.body.coin_code,
                     limit: req.body.limit,
-                    description: req.body.description,
                     wallet_address: req.body.wallet_address,
                     created_at: new Date()
                 }).fetch();
