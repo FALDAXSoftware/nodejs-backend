@@ -13,7 +13,7 @@ module.exports = {
       type: 'string',
       columnName: 'name',
     },
-    country: {
+    country_id: {
       model: 'countries',
       columnName: 'country_id'
     },

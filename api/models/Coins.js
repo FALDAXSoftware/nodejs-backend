@@ -8,6 +8,10 @@
 module.exports = {
   tableName: 'coins',
   attributes: {
+    // coin_icon: {
+    //   type: 'string',
+    //   columnName: 'coin_icon',
+    // },
     coin_name: {
       type: 'string',
       columnName: 'coin_name',
@@ -24,11 +28,11 @@ module.exports = {
       allowNull: true,
       defaultsTo: 0
     },
-    description: {
-      type: 'string',
-      columnName: 'description',
-      required: true
-    },
+    // description: {
+    //   type: 'string',
+    //   columnName: 'description',
+    //   required: true
+    // },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

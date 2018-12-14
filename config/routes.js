@@ -66,7 +66,7 @@ module.exports.routes = {
   'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
-  'get /admin/dashboard/getData': 'Dashboard.get',
+  'get /admin/dashboard/getData': 'Dashboard.getAllCounts',
   // 'put /admin/changePassword': "Admin.changePassword",
 
   //countries
@@ -185,4 +185,28 @@ module.exports.routes = {
   'get /all-jobs': 'CareerController.getAllJobs',
   'get /jobs/get-job-detail': 'CareerController.getJobDetail',
   'post /apply-job': 'CareerController.applyJob',
+
+  // Tradding Routes
+  'get /get-buy-book-details': 'BuyController.getBuyBookDetails',
+  'get /get-sell-book-details': 'SellController.getSellBookDetails',
+  'get /get-data': 'SellController.getData',
+
+  // Market Trade Routes 
+  'post /market/sell': 'TradeController.marketSell',
+  'post /market/buy': 'TradeController.marketBuy',
+
+  //Limit Trade Routes
+  'post /limit/sell': 'TradeController.limitSell',
+  'post /limit/buy': 'TradeController.limitSell',
+
+
+  'post /get-all-history': 'TradeController.getAllTradeHistory',
+
+  // Wallet Routes 
+  'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
+  'post /wallet-details': 'WalletController.getWalletTransactionHistory',
+
+  //coin routes
+  'get /get-all-coins': 'Coins.getAllCoins',
+
 };

@@ -49,7 +49,7 @@ module.exports = {
             allowNull: true
         },
         id_type: {
-            type: 'number',
+            type: 'string',
             columnName: 'id_type',
         },
         front_doc: {
@@ -65,9 +65,8 @@ module.exports = {
             columnName: 'ssn',
         },
         status: {
-            type: 'boolean',
+            type: 'string',
             columnName: 'status',
-            defaultsTo: false,
         },
         result: {
             type: 'string',

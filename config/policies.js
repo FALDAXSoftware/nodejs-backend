@@ -65,5 +65,12 @@ module.exports.policies = {
   },
   "KYCController": {
     "callbackKYC": true,
+  },
+  "BuyController": {
+    "getBuyBookDetails": true,
+  },
+  "SellController": {
+    "getSellBookDetails": true,
+    "getData": true
   }
 };

@@ -34,7 +34,7 @@ module.exports = {
                         "err": 'Invalid refferal code'
                     });
                 } else {
-                    referred_id = referredUser.id;
+                    referred_id = parseInt(referredUser.id);
                 }
             }
             let email_verify_token = randomize('Aa0', 10);
@@ -426,6 +426,11 @@ module.exports = {
                     ]
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
+            for (let index = 0; index < usersData.length; index++) {
+                const element = usersData[index];
+                let kyc = await KYC.findOne({ user_id: element.id });
+                usersData[index]["kyc"] = kyc;
+            }
             let userCount = await Users.count({
                 where: {
                     is_verified: true,
@@ -450,6 +455,23 @@ module.exports = {
                     is_verified: true,
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
+            for (let index = 0; index < usersData.length; index++) {
+                const element = usersData[index];
+                let kyc = await KYC.findOne({ user_id: element.id });
+                usersData[index]["kyc"] = kyc;
+            }
+            for (let index = 0; index < usersData.length; index++) {
+                if (usersData[index].id) {
+                    let userKyc = await KYC.find({ user_id: usersData[index].id })
+                    if (userKyc && userKyc.length > 0) {
+                        if (userKyc[index] && userKyc[index].isApprove == true) {
+                            console.log('in if', userKyc)
+                            usersData[index].is_kyc = userKyc[index].isApprove;
+                        }
+                    }
+                }
+            }
+
             let userCount = await Users.count({
                 is_verified: true,
             });

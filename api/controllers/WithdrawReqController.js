@@ -11,17 +11,28 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getAllWithdrawReq: async function (req, res) {
         // req.setLocale('en')
-        let { page, limit, data } = req.allParams();
+        let { page, limit, data, start_date, end_date, t_type } = req.allParams();
 
         if (data) {
+            let q = {
+                deleted_at: null,
+            }
+            if (start_date && end_date) {
+                q['created_at'] = { '>': start_date };
+                q['created_at'] = { '<': end_date };
+            }
+            if (t_type) {
+                q['is_approve'] = t_type == 'true' ? true : false;
+            }
+
+            q['or'] = [
+                { email: { contains: data } },
+                { amount: { contains: data } },
+            ]
+
             let userArray = await Users.find({
                 where: {
-                    deleted_at: null,
-                    or: [{
-                        title: { contains: data }
-                    },
-                    { email: { contains: data } },
-                    ]
+                    ...q
                 }
             });
 
@@ -52,9 +63,20 @@ module.exports = {
                 });
             }
         } else {
+            let q = {
+                deleted_at: null,
+            }
+            if (t_type) {
+                q['is_approve'] = t_type == 'true' ? true : false;
+            }
+            if (start_date && end_date) {
+                q['created_at'] = { '>': start_date };
+                q['created_at'] = { '<': end_date };
+            }
+
             let withdrawReqData = await WithdrawRequest.find({
                 where: {
-                    deleted_at: null,
+                    ...q
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 

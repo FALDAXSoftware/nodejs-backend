@@ -4,12 +4,16 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-var fetch = require('node-fetch')
 module.exports = {
     getCountries: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
-            let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').populate('state').paginate(page - 1, parseInt(limit));
+            let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            for (let i = 0; i < countryData.length; i++) {
+                let stateCount = await State.count({ country_id: countryData[i].id });
+                countryData[i].stateCount = stateCount;
+            }
+
             let CountriesCount = await Countries.count({ name: { contains: data } });
             if (countryData) {
                 return res.json({
@@ -19,8 +23,14 @@ module.exports = {
                 });
             }
         } else {
-            let countryData = await Countries.find().sort('id ASC').populate('state')
+            let countryData = await Countries.find().sort('id ASC')
                 .paginate(page - 1, parseInt(limit));
+
+            for (let i = 0; i < countryData.length; i++) {
+                let stateCount = await State.count({ country_id: countryData[i].id });
+                countryData[i].stateCount = stateCount;
+            }
+
             let CountriesCount = await Countries.count();
             if (countryData) {
                 return res.json({

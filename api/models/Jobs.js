@@ -1,7 +1,7 @@
 /**
  * Jobs.js
  *
- * @description :: A model definition.  Represents a database table/collection/etc.
+ * @description :: A model definition.  Represents a database of jobs.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 

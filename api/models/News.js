@@ -1,7 +1,7 @@
 /**
  * News.js
  *
- * @description :: Represents a database table blogs.
+ * @description :: Represents a database table news.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 

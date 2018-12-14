@@ -36,10 +36,24 @@ module.exports = {
 
     // Get Coin Request
     getCoinRequests: async function (req, res) {
-        let { page, limit, data } = req.allParams();
+        let { page, limit, data, start_date, end_date } = req.allParams();
+
         if (data) {
-            let coinReqData = await AddCoinRequest.find({ coin_name: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
-            let coinReqCount = await AddCoinRequest.count({ coin_name: { contains: data } });
+            let q = {
+                deleted_at: null
+            }
+            q['or'] = [
+                { coin_name: { contains: data } },
+                { email: { contains: data } }
+            ]
+            if (start_date && end_date) {
+                q['target_date'] = { '>': start_date };
+                q['target_date'] = { '<': end_date };
+            }
+            let coinReqData = await AddCoinRequest.find({ where: { ...q } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            let coinReqCount = await AddCoinRequest.count({
+                where: { ...q }
+            });
             if (coinReqData) {
                 return res.json({
                     "status": 200,
@@ -48,8 +62,16 @@ module.exports = {
                 });
             }
         } else {
-            let coinReqData = await AddCoinRequest.find().paginate(page - 1, parseInt(limit));
-            let coinReqCount = await AddCoinRequest.count();
+            let q = {
+                deleted_at: null
+            }
+            if (start_date && end_date) {
+                q['target_date'] = { '>': start_date };
+                q['target_date'] = { '<': end_date };
+            }
+
+            let coinReqData = await AddCoinRequest.find({ ...q }).paginate(page - 1, parseInt(limit));
+            let coinReqCount = await AddCoinRequest.count({ ...q });
             if (coinReqData) {
                 return res.json({
                     "status": 200,

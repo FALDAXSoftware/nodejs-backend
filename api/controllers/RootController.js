@@ -68,9 +68,19 @@ module.exports = {
 
     getAllInquiries: async function (req, res) {
         let { page, limit, data } = req.allParams();
+
         if (data) {
-            let inquiryData = await Inquiry.find({ message: { contains: data } }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
-            let inquiryCount = await Inquiry.count({ message: { contains: data } });
+            let q = {
+                deleted_at: null
+            }
+            q['or'] = [
+                { first_name: { contains: data } },
+                { last_name: { contains: data } },
+                { email: { contains: data } },
+            ]
+
+            let inquiryData = await Inquiry.find({ ...q }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count({ ...q });
             if (inquiryData) {
                 return res.json({
                     "status": 200,
@@ -79,8 +89,12 @@ module.exports = {
                 });
             }
         } else {
-            let inquiryData = await Inquiry.find().sort('created_at DESC').paginate(page - 1, parseInt(limit));
-            let inquiryCount = await Inquiry.count();
+            let q = {
+                deleted_at: null
+            }
+
+            let inquiryData = await Inquiry.find({ ...q }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count({ ...q });
             if (inquiryData) {
                 return res.json({
                     "status": 200,
@@ -97,9 +111,11 @@ module.exports = {
     },
 
     testnews: async function (req, res) {
-        var greeting = await sails.helpers.kycpicUpload();
-        console.log('greeting', greeting);
-        res.end();
+        // var greeting = await sails.helpers.kycpicUpload();
+        // console.log('greeting', greeting);
+        // res.end();
+        var greeting = await sails.helpers.tradding.marketSell();
+        res.json();
     },
 
     csvToJson: function (req, res) {

@@ -57,11 +57,6 @@ module.exports = {
             type: 'string',
             columnName: 'order_status',
         },
-        deleted: {
-            type: 'boolean',
-            columnName: 'deleted',
-            defaultsTo: false
-        },
         requested_user_id: {
             type: 'number',
             columnName: 'requested_user_id',
@@ -72,9 +67,8 @@ module.exports = {
             defaultsTo: false
         },
         fix_quantity: {
-            type: 'boolean',
+            type: 'number',
             columnName: 'fix_quantity',
-            defaultsTo: false
         },
         symbol: {
             type: 'string',
@@ -89,9 +83,25 @@ module.exports = {
             columnName: 'taker_fee',
         },
         user_id: {
-            type: 'string',
+            type: 'number',
             columnName: 'user_id',
             required: true,
+        },
+        user_fee: {
+            type: 'number',
+            columnName: 'user_fee',
+        },
+        user_coin: {
+            type: 'string',
+            columnName: 'user_coin',
+        },
+        requested_fee: {
+            type: 'number',
+            columnName: 'requested_fee',
+        },
+        requested_coin: {
+            type: 'string',
+            columnName: 'requested_coin',
         },
         created_at: {
             type: 'ref',
