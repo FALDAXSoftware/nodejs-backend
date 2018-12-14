@@ -426,6 +426,11 @@ module.exports = {
                     ]
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
+            for (let index = 0; index < userData.length; index++) {
+                const element = userData[index];
+                let kyc = await KYC.findOne({ user_id: element.id });
+                usersData[index]["kyc"] = kyc;
+            }
             let userCount = await Users.count({
                 where: {
                     is_verified: true,
@@ -450,7 +455,11 @@ module.exports = {
                     is_verified: true,
                 }
             }).sort("id DESC").paginate(page - 1, parseInt(limit));
-
+            for (let index = 0; index < userData.length; index++) {
+                const element = userData[index];
+                let kyc = await KYC.findOne({ user_id: element.id });
+                usersData[index]["kyc"] = kyc;
+            }
             for (let index = 0; index < usersData.length; index++) {
                 if (usersData[index].id) {
                     let userKyc = await KYC.find({ user_id: usersData[index].id })
