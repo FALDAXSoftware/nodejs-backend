@@ -115,6 +115,20 @@ module.exports = {
     create: async function (req, res) {
         try {
             if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address && req.body.description) {
+                let existingCoin = await Coins.find({
+                    deleted_at: null,
+                    or: [
+                        { coin_name: req.body.coin_name },
+                        { coin_code: req.body.coin_code },
+                    ]
+                });
+                if (existingCoin.length > 0) {
+                    res.status(400).json({
+                        "status": 400,
+                        "err": "Coin Name or code already in use.",
+                    });
+                    return;
+                }
                 var coins_detail = await Coins.create({
                     coin_name: req.body.coin_name,
                     coin_code: req.body.coin_code,

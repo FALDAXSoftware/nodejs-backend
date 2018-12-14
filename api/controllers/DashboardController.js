@@ -36,8 +36,10 @@ module.exports = {
         created_at: { '>=': moment().subtract(1, 'months').format() }
       })
       let kyc_approved = await KYC.count({ isApprove: true, deleted_at: null })
-      let total_kyc = await KYC.count({ isApprove: true, deleted_at: null })
+      let total_kyc = await KYC.count({ deleted_at: null })
       let kyc_disapproved = await KYC.count({ isApprove: false, deleted_at: null })
+      let kyc_pending = await KYC.count({ deleted_at: null, direct_response: null, step: 3 })
+
 
 
       let AccHrDate = new Date();
