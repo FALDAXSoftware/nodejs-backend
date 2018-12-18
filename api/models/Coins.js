@@ -22,6 +22,11 @@ module.exports = {
       columnName: 'coin_code',
       required: true
     },
+    coin: {
+      type: 'string',
+      columnName: 'coin',
+      required: true
+    },
     limit: {
       type: 'number',
       columnName: 'limit',
@@ -48,6 +53,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'created_at'
+    },
+    is_fiat: {
+      type: 'boolean',
+      columnName: 'is_fiat',
+      defaultsTo: false
     },
     updated_at: {
       type: 'ref',

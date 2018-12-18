@@ -72,5 +72,9 @@ module.exports.policies = {
   "SellController": {
     "getSellBookDetails": true,
     "getData": true
+  },
+  "CoinsController": {
+    "createWallet": true,
+    "createAllWallet": true
   }
 };
