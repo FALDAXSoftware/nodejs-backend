@@ -18,8 +18,7 @@ module.exports = {
                 deleted_at: null,
             }
             if (start_date && end_date) {
-                q['created_at'] = { '>': start_date };
-                q['created_at'] = { '<': end_date };
+                q['created_at'] = { '>=': start_date, '<=': end_date };
             }
             if (t_type) {
                 q['is_approve'] = t_type == 'true' ? true : false;
@@ -27,12 +26,14 @@ module.exports = {
 
             q['or'] = [
                 { email: { contains: data } },
-                { amount: { contains: data } },
             ]
+            console.log('>>>>>>')
 
             let userArray = await Users.find({
                 where: {
-                    ...q
+                    or: [
+                        { email: { contains: data } }
+                    ],
                 }
             });
 
@@ -42,7 +43,10 @@ module.exports = {
             }
 
             let withdrawReqData = await WithdrawRequest.find({
-                user_id: idArray
+                user_id: idArray,
+                or: [{
+                    amount: { contains: data }
+                }]
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             for (let index = 0; index < withdrawReqData.length; index++) {
@@ -70,8 +74,7 @@ module.exports = {
                 q['is_approve'] = t_type == 'true' ? true : false;
             }
             if (start_date && end_date) {
-                q['created_at'] = { '>': start_date };
-                q['created_at'] = { '<': end_date };
+                q['created_at'] = { '>=': start_date, '<=': end_date };
             }
 
             let withdrawReqData = await WithdrawRequest.find({
@@ -87,7 +90,7 @@ module.exports = {
                 }
             }
 
-            let withdrawReqCount = await WithdrawRequest.count();
+            let withdrawReqCount = await WithdrawRequest.count({ ...q });
 
             if (withdrawReqData) {
                 return res.json({

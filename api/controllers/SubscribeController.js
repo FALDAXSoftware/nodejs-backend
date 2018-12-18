@@ -55,8 +55,7 @@ module.exports = {
                 deleted_at: null
             }
             if (start_date && end_date) {
-                q['created_at'] = { '>': start_date };
-                q['created_at'] = { '<': end_date };
+                q['created_at'] = { '>=': start_date, '<=': end_date };
             }
             q['or'] = [
                 { email: { contains: data } },
@@ -80,8 +79,7 @@ module.exports = {
                 deleted_at: null
             }
             if (start_date && end_date) {
-                q['created_at'] = { '>': start_date };
-                q['created_at'] = { '<': end_date };
+                q['created_at'] = { '>=': start_date, '<=': end_date };
             }
 
             let subscriberData = await Subscribe.find({
