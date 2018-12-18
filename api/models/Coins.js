@@ -49,6 +49,11 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'created_at'
     },
+    is_fiat: {
+      type: 'boolean',
+      columnName: 'is_fiat',
+      defaultsTo: false
+    },
     updated_at: {
       type: 'ref',
       columnType: 'datetime',
