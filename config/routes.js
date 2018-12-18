@@ -129,6 +129,10 @@ module.exports.routes = {
   'get /admin/get-all-kyc-data': 'KYCController.getAllKYCData',
   'post /admin/update-kyc-status': 'KYCController.approveDisapproveKYC',
 
+  // Wallet
+  'get /admin/create-all-wallet': 'Coins.createAllWallet',
+  'post /admin/create-wallet': 'Coins.createWallet',
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
@@ -160,7 +164,7 @@ module.exports.routes = {
   'post /users/get-all-news': 'BlogsController.getAllNews',
 
   //dashboard
-  'post /dashboard': "DashboardController.get",
+  // 'post /dashboard': "DashboardController.get",
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",

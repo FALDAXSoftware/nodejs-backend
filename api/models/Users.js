@@ -7,9 +7,9 @@
 
 // We don't want to store password with out encryption
 var bcrypt = require('bcrypt');
-//  email, password, phone_number, full_name, firstname, lastname, 
-//  country, street_address, city_town, postal_code, profile_pic, 
-//  dob, updated_at, deleted_at, zip
+//  email, password, phone_number, full_name, firstname, lastname,  country,
+// street_address, city_town, postal_code, profile_pic,  dob, updated_at,
+// deleted_at, zip
 
 module.exports = {
   tableName: 'users',
@@ -114,28 +114,34 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true,
-      allowNull: true,
+      allowNull: true
     },
     is_verified: {
       type: 'boolean',
       columnName: 'is_verified',
       defaultsTo: false,
-      allowNull: true,
+      allowNull: true
     },
     is_twofactor: {
       type: 'boolean',
       columnName: "is_twofactor",
-      defaultsTo: false,
+      defaultsTo: false
     },
     twofactor_secret: {
       type: "string",
       columnName: "twofactor_secret",
-      allowNull: true,
+      allowNull: true
     },
     auth_code: {
       type: "string",
       columnName: "auth_code",
       allowNull: true
+    },
+    fiat: {
+      type: 'string',
+      columnName: 'fiat',
+      allowNull: true,
+      defaultsTo: "USD"
     },
     created_at: {
       type: 'ref',
@@ -158,55 +164,67 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    Users.findOne({ 'email': values.email, 'deleted_at': null })
+    Users
+      .findOne({'email': values.email, 'deleted_at': null})
       .exec(function (err, found) {
         values.created_at = new Date()
         if (!found) {
-          bcrypt.genSalt(10, function (err, salt) {
-            if (err) return next(err);
-            bcrypt.hash(values.password, salt, function (err, hash) {
-              if (err) return next(err);
-              values.password = hash;
-              next();
-            })
-          });
+          bcrypt
+            .genSalt(10, function (err, salt) {
+              if (err) 
+                return next(err);
+              bcrypt
+                .hash(values.password, salt, function (err, hash) {
+                  if (err) 
+                    return next(err);
+                  values.password = hash;
+                  next();
+                })
+            });
         } else {
-          next({ error: 'Email address already exist' });
+          next({error: 'Email address already exist'});
         }
       });
   },
   beforeUpdate: (values, next) => {
-    Users.findOne({ 'email': values.email, 'deleted_at': null })
+    Users
+      .findOne({'email': values.email, 'deleted_at': null})
       .exec(async function (err, found) {
         values.updated_at = new Date()
         if (found) {
           if (values.password) {
-            bcrypt.genSalt(10, function (err, salt) {
-              if (err) return next(err);
-              bcrypt.hash(values.password, salt, function (err, hash) {
-                if (err) return next(err);
-                values.password = hash;
-                next();
-              })
-            });
+            bcrypt
+              .genSalt(10, function (err, salt) {
+                if (err) 
+                  return next(err);
+                bcrypt
+                  .hash(values.password, salt, function (err, hash) {
+                    if (err) 
+                      return next(err);
+                    values.password = hash;
+                    next();
+                  })
+              });
           } else {
             // delete values.email;
             next();
           }
         } else {
-          next({ error: "Email address doesn't exist" });
+          next({error: "Email address doesn't exist"});
         }
       });
   },
   comparePassword: function (password, user, cb) {
-    bcrypt.compare(password, user.password, function (err, match) {
-      if (err) cb(err);
-      if (match) {
-        cb(null, true);
-      } else {
-        cb(err);
-      }
-    })
+    bcrypt
+      .compare(password, user.password, function (err, match) {
+        if (err) 
+          cb(err);
+        if (match) {
+          cb(null, true);
+        } else {
+          cb(err);
+        }
+      })
   },
 
   customToJSON: function () {
