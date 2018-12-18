@@ -210,6 +210,9 @@ module.exports.routes = {
   'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
   'post /wallet-details': 'WalletController.getWalletTransactionHistory',
 
+  //receive coin route
+  'get /wallet/get-qr-code/:coin': 'WalletController.getReceiveCoin',
+
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
 
