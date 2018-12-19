@@ -13,15 +13,12 @@ module.exports = {
     success: {
       description: 'All done.'
     },
-    unknown: {
+    serverError: {
       description: 'Something Went wrong'
     }
   },
 
   fn: async function (inputs, exits) {
-    return exits.unknown({
-      "err": sails.__("Something Wrong"),
-    });
     try {
       console.log(sails.config.local.BITGO_ENV_MODE);
       console.log(sails.config.local.BITGO_ACCESS_TOKEN);
@@ -54,8 +51,7 @@ module.exports = {
       return exits.success();
     } catch (error) {
       return exits.serverError({
-        "status": 500,
-        "message": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong"),
       });
     }
   }
