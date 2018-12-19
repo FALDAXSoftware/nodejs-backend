@@ -127,6 +127,11 @@ module.exports = {
             });
             res.json(countryArray)
         });
+    },
+    bitgoWebhook: async function (req, res) {
+        console.log("Bit go response--------->", req.body);
+        res.end();
+
     }
 
 };

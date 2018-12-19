@@ -206,6 +206,9 @@ module.exports = {
     let q = {
       deleted_at: null,
     }
+    if (start_date && end_date) {
+      q['created_at'] = { '>=': start_date, '<=': end_date };
+    }
     if (data) {
       let userArray = await Users.find({
         where: {
@@ -238,8 +241,7 @@ module.exports = {
       q['side'] = t_type;
     }
     if (start_date && end_date) {
-      q['created_at'] = { '>': start_date };
-      q['created_at'] = { '<': end_date };
+      q['created_at'] = { '>=': start_date, '<=': end_date };
     }
     let tradeData = await TradeHistory.find({ ...q }).sort("id ASC").paginate(page, parseInt(limit));
     for (let index = 0; index < tradeData.length; index++) {

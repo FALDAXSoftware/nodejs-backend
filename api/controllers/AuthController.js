@@ -83,6 +83,8 @@ module.exports = {
                             }
 
                             delete user_detail.password;
+                            // Create Recive Address
+                            await sails.helpers.wallet.receiveAddress(user_detail);
                             // Login History Save
                             await LoginHistory.create({
                                 user: user_detail.id,

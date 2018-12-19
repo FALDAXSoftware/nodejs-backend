@@ -44,7 +44,7 @@ module.exports = {
     getStates: async function (req, res) {
         let { country_id, data } = req.allParams();
         let param = {
-            country: country_id
+            country_id
         };
         if (data) {
             param['name'] = {
