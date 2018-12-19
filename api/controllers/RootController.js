@@ -4,6 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const BitGoJS = require('bitgo');
+
 var request = require('request');
 module.exports = {
 
@@ -130,8 +132,20 @@ module.exports = {
     },
     bitgoWebhook: async function (req, res) {
         console.log("Bit go response--------->", req.body);
+        if (req.body.state == "confirmed") {
+            var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+            var wallet = await bitgo
+                .coin(req.body.coin)
+                .wallets()
+                .get({ id: req.body.wallet });
+            let transferId = req.body.transfer;
+            wallet.getTransfer({ id: transferId })
+                .then(function (transfer) {
+                    // print the transfer object
+                    console.log("--=-=-=-=-=-=-=-", transfer);
+                });
+        }
         res.end();
-
     }
 
 };
