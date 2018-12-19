@@ -41,6 +41,10 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    state: {
+      collection: 'state',
+      via: 'country_id'
     }
   },
   beforeCreate: function (values, next) {
