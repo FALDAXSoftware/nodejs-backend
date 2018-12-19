@@ -24,7 +24,7 @@ module.exports = {
       console.log(sails.config.local.BITGO_ACCESS_TOKEN);
 
       var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-      var requestedCoin = await Coins.find({ deleted_at: null, is_active: true })
+      var requestedCoin = await Coins.find({ deleted_at: null, is_active: true, is_fiat: false })
 
       for (let index = 0; index < requestedCoin.length; index++) {
         const coin = requestedCoin[index];
@@ -50,6 +50,8 @@ module.exports = {
       }
       return exits.success();
     } catch (error) {
+      console.log(error);
+
       return exits.serverError({
         "err": sails.__("Something Wrong"),
       });
