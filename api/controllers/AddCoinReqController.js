@@ -47,8 +47,7 @@ module.exports = {
                 { email: { contains: data } }
             ]
             if (start_date && end_date) {
-                q['target_date'] = { '>': start_date };
-                q['target_date'] = { '<': end_date };
+                q['target_date'] = { '>=': start_date, '<=': end_date };
             }
             let coinReqData = await AddCoinRequest.find({ where: { ...q } }).sort('id ASC').paginate(page - 1, parseInt(limit));
             let coinReqCount = await AddCoinRequest.count({
@@ -66,11 +65,12 @@ module.exports = {
                 deleted_at: null
             }
             if (start_date && end_date) {
-                q['target_date'] = { '>': start_date };
-                q['target_date'] = { '<': end_date };
+                q['target_date'] = { '>=': start_date, '<=': end_date };
             }
 
-            let coinReqData = await AddCoinRequest.find({ ...q }).paginate(page - 1, parseInt(limit));
+            let coinReqData = await AddCoinRequest.find({
+                where: { ...q }
+            }).paginate(page - 1, parseInt(limit));
             let coinReqCount = await AddCoinRequest.count({ ...q });
             if (coinReqData) {
                 return res.json({

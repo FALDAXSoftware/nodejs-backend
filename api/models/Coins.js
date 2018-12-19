@@ -22,6 +22,11 @@ module.exports = {
       columnName: 'coin_code',
       required: true
     },
+    coin: {
+      type: 'string',
+      columnName: 'coin',
+      required: true
+    },
     limit: {
       type: 'number',
       columnName: 'limit',

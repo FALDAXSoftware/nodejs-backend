@@ -10,7 +10,9 @@ module.exports = {
         try {
             let { currency1, currency2, currency3 } = req.body;
             let walletBalance = [];
-            let coins = await Coins.find({ deleted_at: null }).sort('id', 'DESC');
+            let coins = await Coins
+                .find({ deleted_at: null })
+                .sort('id', 'DESC');
 
             coins.map(async (coin) => {
                 var obj = coin;
@@ -21,10 +23,9 @@ module.exports = {
                         obj.balance = walletData.balance;
                         delete obj.coin_id;
                         if (obj.balance != 0) {
-                            let last_price = await TradeHistory.find({
-                                settle_currency: obj.coin_code,
-                                currency: currency1
-                            }).sort('id', 'DESC');
+                            let last_price = await TradeHistory
+                                .find({ settle_currency: obj.coin_code, currency: currency1 })
+                                .sort('id', 'DESC');
 
                             if (last_price.length == 0) {
                                 obj.price = 0;
@@ -52,10 +53,9 @@ module.exports = {
                             obj.balance = walletData.balance;
                             delete obj.coin_id;
                             if (obj.balance != 0) {
-                                let last_price = await TradeHistory.find({
-                                    settle_currency: obj.coin_code,
-                                    currency: currency1
-                                }).sort('id', 'DESC');
+                                let last_price = await TradeHistory
+                                    .find({ settle_currency: obj.coin_code, currency: currency1 })
+                                    .sort('id', 'DESC');
 
                                 if (last_price.length == 0) {
                                     obj.price = 0;
@@ -76,24 +76,43 @@ module.exports = {
 
             setTimeout(() => {
                 if (walletBalance != null) {
-                    return res.json({
-                        status: 200,
-                        message: "Wallet balance retrived successfully.",
-                        walletBalance
-                    })
+                    return res.json({ status: 200, message: "Wallet balance retrived successfully.", walletBalance })
                 } else {
-                    return res.status(500).json({
-                        status: 500,
-                        "err": "No wallet data found."
-                    });
+                    return res
+                        .status(500)
+                        .json({ status: 500, "err": "No wallet data found." });
                 }
             }, 2000);
 
         } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+        }
+    },
+
+    //receive coin
+    getReceiveCoin: async function (req, res) {
+        try {
+            var { coin } = req.allParams();
+            var user_id = req.user.id;
+            var receiveCoin = await sails
+                .helpers
+                .wallet
+                .receiveCoin(coin, user_id);
+
+            return res.json({ status: 200, message: "Receive address retrieved successfuly", receiveCoin });
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
         }
     },
 
@@ -101,34 +120,20 @@ module.exports = {
         try {
             let { user_id, coin_id } = req.body;
 
-            let walletTransData = await WalletHistory.find({
-                user_id,
-                coin_id,
-                deleted_at: null,
-            });
-            let walletTransCount = await WalletHistory.count({
-                user_id,
-                coin_id,
-                deleted_at: null,
-            });
+            let walletTransData = await WalletHistory.find({ user_id, coin_id, deleted_at: null });
+            let walletTransCount = await WalletHistory.count({ user_id, coin_id, deleted_at: null });
             if (walletTransData) {
-                return res.json({
-                    status: 200,
-                    message: "Wallet data retrived successfully.",
-                    walletTransData,
-                    walletTransCount
-                })
+                return res.json({ status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount })
             } else {
-                return res.json({
-                    status: 200,
-                    message: "No data found.",
-                })
+                return res.json({ status: 200, message: "No data found." })
             }
         } catch (err) {
-            return res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
         }
     }
 };

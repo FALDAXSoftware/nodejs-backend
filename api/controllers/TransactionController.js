@@ -19,16 +19,22 @@ module.exports = {
             if (t_type) {
                 q['transaction_type'] = t_type
             }
-            console.log('>>>', search)
+            if (start_date && end_date) {
+                q['created_at'] = { '>=': start_date, '<=': end_date };
+            }
+            q['or'] = [
+                { source_address: { contains: search } },
+                { destination_address: { contains: search } },
+            ]
+
             let userArray = await Users.find({ email: { 'contains': search } });
 
             let idArray = [];
             for (let index = 0; index < userArray.length; index++) {
                 idArray.push(userArray[index].id);
             }
-
+            q['or'].push({ user_id: idArray });
             let transactionData = await Transaction.find({
-                user_id: idArray,
                 ...q
             }).sort('id ASC').paginate(page, parseInt(limit));
 
@@ -50,6 +56,7 @@ module.exports = {
                 user_id: idArray,
                 ...q
             });
+
             if (transactionData) {
                 return res.json({
                     "status": 200,
@@ -63,8 +70,7 @@ module.exports = {
                 q['transaction_type'] = t_type
             }
             if (start_date && end_date) {
-                q['created_at'] = { '>': start_date };
-                q['created_at'] = { '<': end_date };
+                q['created_at'] = { '>=': start_date, '<=': end_date };
             }
 
             let transactionData = await Transaction.find({
