@@ -56,6 +56,7 @@ module.exports.policies = {
     'sendInquiry': true,
     'testnews': true,
     "csvToJson": true,
+    "bitgoWebhook": true,
   },
   'AddCoinReqController': {
     "addCoinRequest": true
