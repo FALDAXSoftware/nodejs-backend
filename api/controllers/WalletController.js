@@ -8,83 +8,35 @@
 module.exports = {
     getCoinBalanceForWallet: async function (req, res) {
         try {
-            let { currency1, currency2, currency3 } = req.body;
-            let walletBalance = [];
+            let { currency } = req.body;
+            let currencyArray = currency.split(",");
             let coins = await Coins
                 .find({ deleted_at: null })
                 .sort('id', 'DESC');
-
-            coins.map(async (coin) => {
-                var obj = coin;
-                let walletData = await Wallet.findOne({ coin_id: coin.id });
-
-                if (currency1 == currency2 == currency3) {
-                    if (walletData && walletData.balance !== undefined) {
-                        obj.balance = walletData.balance;
-                        delete obj.coin_id;
-                        if (obj.balance != 0) {
-                            let last_price = await TradeHistory
-                                .find({ settle_currency: obj.coin_code, currency: currency1 })
-                                .sort('id', 'DESC');
-
-                            if (last_price.length == 0) {
-                                obj.price = 0;
-                            } else {
-                                obj.price = last_price[0]['fill_price'];
-                            }
-
-                            obj.currency = currency1;
-
-                        } else {
-                            obj.price = 0;
+            for (let index = 0; index < coins.length; index++) {
+                const coin = coins[index];
+                let price = 0;
+                let walletData = await Wallet.findOne({ coin_id: coin.id, user_id: req.user.id });
+                if (walletData && walletData.balance !== undefined) {
+                    for (let innerIndex = 0; innerIndex < currencyArray.length; innerIndex++) {
+                        const currencyName = currencyArray[innerIndex];
+                        let last_price = await TradeHistory
+                            .find({ where: { settle_currency: coin.coin, currency: currencyName }, sort: 'id DESC', limit: 1 });
+                        if (last_price.length > 0) {
+                            price = last_price[0].fill_price
                         }
-                        walletBalance.push(obj);
+                        console.log(price);
+
+                        coin[currencyName] = price;
                     }
-                } else {
-                    for (var i = 0; i < 3; i++) {
-                        if (i == 0) {
-                            currency1 = currency1;
-                        } else if (i == 1) {
-                            currency1 = currency2;
-                        } else {
-                            currency1 = currency3;
-                        }
-                        if (walletData && walletData.balance !== undefined) {
-                            obj.balance = walletData.balance;
-                            delete obj.coin_id;
-                            if (obj.balance != 0) {
-                                let last_price = await TradeHistory
-                                    .find({ settle_currency: obj.coin_code, currency: currency1 })
-                                    .sort('id', 'DESC');
-
-                                if (last_price.length == 0) {
-                                    obj.price = 0;
-                                } else {
-                                    obj.price = last_price[0]['fill_price'];
-                                }
-
-                                obj.currency = currency1;
-
-                            } else {
-                                obj.price = 0;
-                            }
-                            walletBalance.push(obj);
-                        }
-                    }
+                    coins[index] = coin;
                 }
-            })
-
-            setTimeout(() => {
-                if (walletBalance != null) {
-                    return res.json({ status: 200, message: "Wallet balance retrived successfully.", walletBalance })
-                } else {
-                    return res
-                        .status(500)
-                        .json({ status: 500, "err": "No wallet data found." });
-                }
-            }, 2000);
+            }
+            return res.json({ status: 200, message: "Wallet balance retrived successfully.", coins });
 
         } catch (error) {
+            console.log(error);
+
             return res
                 .status(500)
                 .json({
