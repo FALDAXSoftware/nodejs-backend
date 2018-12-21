@@ -24,11 +24,6 @@ module.exports = {
                 q['is_approve'] = t_type == 'true' ? true : false;
             }
 
-            q['or'] = [
-                { email: { contains: data } },
-            ]
-            console.log('>>>>>>')
-
             let userArray = await Users.find({
                 where: {
                     or: [
@@ -43,10 +38,12 @@ module.exports = {
             }
 
             let withdrawReqData = await WithdrawRequest.find({
-                user_id: idArray,
-                or: [{
-                    amount: { contains: data }
-                }]
+                ...q,
+                or: [
+                    { user_id: { 'in': idArray } },
+                    { source_address: { contains: data } },
+                    { destination_address: { contains: data } },
+                ]
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             for (let index = 0; index < withdrawReqData.length; index++) {

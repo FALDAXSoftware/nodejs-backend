@@ -16,7 +16,8 @@ module.exports = {
             for (let index = 0; index < coins.length; index++) {
                 const coin = coins[index];
                 let price = 0;
-                let walletData = await Wallet.findOne({ coin_id: coin.id, user_id: req.user.id });
+                let walletDataArray = await Wallet.find({ coin_id: coin.id, user_id: req.user.id }).sort("created_at DESC");
+                let walletData = walletDataArray[0];
                 if (walletData && walletData.balance !== undefined) {
                     for (let innerIndex = 0; innerIndex < currencyArray.length; innerIndex++) {
                         const currencyName = currencyArray[innerIndex];
@@ -25,8 +26,6 @@ module.exports = {
                         if (last_price.length > 0) {
                             price = last_price[0].fill_price
                         }
-                        console.log(price);
-
                         coin[currencyName] = price;
                     }
                     coins[index] = coin;
