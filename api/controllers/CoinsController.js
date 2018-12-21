@@ -251,7 +251,6 @@ module.exports = {
                     id: { '!=': req.body.coin_id },
                     coin_name: req.body.coin_name
                 });
-                console.log('existingCoin', existingCoin)
                 if (existingCoin.length > 0) {
                     res
                         .status(400)
