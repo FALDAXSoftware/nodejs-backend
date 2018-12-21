@@ -3,7 +3,7 @@ const BitGoJS = require('bitgo');
 
 module.exports = {
 
-  friendlyName: 'Receive address',
+  friendlyName: 'Receive address for particular user for which coin wallet address is available.',
 
   description: '',
 

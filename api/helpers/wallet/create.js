@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Create',
 
-  description: 'Create wallet.',
+  description: 'Create wallet address for particular coin only.',
 
   inputs: {
     coin: {
