@@ -67,6 +67,7 @@ module.exports = {
         status: {
             type: 'boolean',
             columnName: 'status',
+            allowNull: true
         },
         result: {
             type: 'string',

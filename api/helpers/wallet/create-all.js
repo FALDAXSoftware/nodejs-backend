@@ -4,7 +4,7 @@ module.exports = {
 
   friendlyName: 'Create all',
 
-  description: '',
+  description: 'Create wallet for all the coins.',
 
   inputs: {},
 

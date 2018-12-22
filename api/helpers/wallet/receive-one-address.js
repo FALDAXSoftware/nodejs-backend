@@ -2,7 +2,7 @@ const BitGoJS = require('bitgo');
 
 module.exports = {
 
-  friendlyName: 'Receive one address',
+  friendlyName: 'Receive address for one coin',
 
   description: '',
 

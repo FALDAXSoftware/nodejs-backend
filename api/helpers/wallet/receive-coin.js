@@ -2,7 +2,7 @@ var QRCode = require('qrcode')
 
 module.exports = {
 
-  friendlyName: 'Receive coin',
+  friendlyName: 'Receive coin from outside.',
 
   description: '',
 

@@ -45,8 +45,8 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    console.log("market buy ------",inputs);
-    
+    console.log("market buy ------", inputs);
+
     let {crypto, currency} = await sails
       .helpers
       .utilities
@@ -67,7 +67,7 @@ module.exports = {
       .helpers
       .utilities
       .getMakerTakerFees(crypto, currency);
-    
+
     if (sellBook && sellBook.length > 0) {
       var availableQty = sellBook[0].quantity;
       var currentSellBookDetails = sellBook[0];
@@ -106,8 +106,8 @@ module.exports = {
         .add(resultData);
 
       console.log(activity);
-      console.log("condition data",inputs.orderQuantity, availableQty);
-      
+      console.log("condition data", inputs.orderQuantity, availableQty);
+
       if (inputs.orderQuantity <= availableQty) {
         // console.log("conditions----->>", (currentBuyBookDetails.price *
         // inputs.orderQuantity), wallet.placed_balance);
@@ -136,6 +136,11 @@ module.exports = {
             .tradding
             .activity
             .update(currentSellBookDetails.activity_id, trade_history_data);
+          var abc = await sails
+            .helpers
+            .wallet
+            .tradingFees(request, fees.makerFee, fees.takerFee);
+          console.log(abc);
           // Do Actual Tranasfer In Wallet Here
           //
           let remainigQuantity = availableQty - inputs.orderQuantity;
@@ -180,6 +185,11 @@ module.exports = {
             .tradding
             .activity
             .update(currentSellBookDetails.activity_id, trade_history_data);
+          var abc = await sails
+            .helpers
+            .wallet
+            .tradingFees(request, fees.makerFee, fees.takerFee);
+          console.log(abc);
           // Do Actual Tranasfer In Wallet Here
           //
           await sails
