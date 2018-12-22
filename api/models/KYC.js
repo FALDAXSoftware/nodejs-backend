@@ -65,7 +65,7 @@ module.exports = {
             columnName: 'ssn',
         },
         status: {
-            type: 'string',
+            type: 'boolean',
             columnName: 'status',
         },
         result: {
