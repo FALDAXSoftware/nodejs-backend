@@ -141,7 +141,7 @@ module.exports = {
             let transferId = req.body.transfer;
             wallet
                 .getTransfer({ id: transferId })
-                .then(function (transfer) {
+                .then(async function (transfer) {
                     if (transfer.state == "confirmed") {
                         // Object Of receiver 
                         let dest = transfer.outputs[0];

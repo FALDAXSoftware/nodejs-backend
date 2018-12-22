@@ -33,7 +33,6 @@
     "sails-hook-grunt": "^3.0.2",
     "sails-hook-logger": "^1.1.2",
     "sails-hook-orm": "^2.1.1",
-    "sails-hook-queue": "0.0.1",
     "sails-hook-sockets": "^1.5.5",
     "sails-mysql": "^1.0.1",
     "sails-postgresql": "^1.0.1",

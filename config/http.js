@@ -38,7 +38,6 @@ module.exports.http = {
       'router',
       'www',
       'favicon',
-      'customMiddleware'
     ],
 
 
@@ -55,18 +54,5 @@ module.exports.http = {
       var middlewareFn = skipper({ strict: true, limit: '50mb' });
       return middlewareFn;
     })(),
-    customMiddleware: function (app) {
-      var kue = require('kue')
-      var ui = require('kue-ui')
-
-      ui.setup({
-        apiURL: '/api',
-        baseURL: '/kue',
-        updateInterval: 5000
-      })
-
-      app.use('/api', kue.app)
-      app.use('/kue', ui.app)
-    }
   },
 };
