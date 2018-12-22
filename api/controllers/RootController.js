@@ -130,8 +130,8 @@ module.exports = {
             res.json(countryArray)
         });
     },
-    bitgoWebhook: async function (req, res) {
-        console.log("Bit go response--------->", req.body);
+
+    webhookOnReciveBitgo: async function (req, res) {
         if (req.body.state == "confirmed") {
             var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
             var wallet = await bitgo
@@ -139,11 +139,45 @@ module.exports = {
                 .wallets()
                 .get({ id: req.body.wallet });
             let transferId = req.body.transfer;
-            wallet.getTransfer({ id: transferId })
-                .then(function (transfer) {
-                    // print the transfer object
-                    console.log("--=-=-=-=-=-=-=-", transfer);
+            wallet
+                .getTransfer({ id: transferId })
+                .then(async function (transfer) {
+                    if (transfer.state == "confirmed") {
+                        // Object Of receiver 
+                        let dest = transfer.outputs[0];
+                        // Object of sender
+                        let source = transfer.outputs[1];
+                        // receiver wallet
+                        let userWallet = await Wallet.findOne({
+                            receive_address: dest.address,
+                            deleted_at: null,
+                            is_active: true
+                        });
+                        // transaction amount
+                        let amount = (dest.value / 100000000);
+                        // user wallet exitence check
+                        if (userWallet) {
+                            // Set wallet history params
+                            let walletHistory = {
+                                coin_id: userWallet.coin_id,
+                                source_address: source.address,
+                                destination_address: dest.address,
+                                user_id: userWallet.user_id,
+                                amount: amount,
+                                transaction_type: 'receive',
+                                transaction_id: req.body.hash
+                            }
+                            // Entry in wallet history
+                            await WalletHistory.create({ ...walletHistory });
+                            // update wallet balance 
+                            await Wallet.update({ id: userWallet.id }).set({
+                                balance: userWallet.balance + amount,
+                                placed_balance: userWallet.placed_balance + amount
+                            });
+                        }
+                    }
                 });
+
         }
         res.end();
     }

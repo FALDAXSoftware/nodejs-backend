@@ -49,15 +49,20 @@ module.exports = {
       columnName: 'wallet_address',
       allowNull: true
     },
-    created_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'created_at'
-    },
     is_fiat: {
       type: 'boolean',
       columnName: 'is_fiat',
       defaultsTo: false
+    },
+    type: {
+      type: 'number',
+      columnName: 'type',
+      defaultsTo: 1
+    },
+    created_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
     },
     updated_at: {
       type: 'ref',

@@ -8,13 +8,18 @@ module.exports = {
     getCountries: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
-            let countryData = await Countries.find({ name: { contains: data } }).sort('id ASC').paginate(page - 1, parseInt(limit));
+            data = data.toLowerCase();
+            let countryData = await sails.sendNativeQuery("Select * from Countries WHERE LOWER(name) LIKE '%" + data + "%'", [])
+
+            countryData = countryData.rows;
             for (let i = 0; i < countryData.length; i++) {
                 let stateCount = await State.count({ country_id: countryData[i].id });
                 countryData[i].stateCount = stateCount;
             }
 
-            let CountriesCount = await Countries.count({ name: { contains: data } });
+            let CountriesCount = await sails.sendNativeQuery("Select COUNT(id) from Countries WHERE LOWER(name) LIKE '%" + data + "%'", [])
+            CountriesCount = CountriesCount.rows[0].count;
+
             if (countryData) {
                 return res.json({
                     "status": 200,

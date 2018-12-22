@@ -239,32 +239,26 @@ module.exports = {
 
     update: async function (req, res) {
         try {
-
             const coin_details = await Coins.findOne({ id: req.body.coin_id });
             if (!coin_details) {
                 return res
                     .status(401)
                     .json({ status: 401, err: 'Invalid coin' });
             }
-            let existingCoin = await Coins.find({
-                deleted_at: null,
-                id: {
-                    '!=': req.body.coin_id
-                },
-                or: [
-                    {
-                        coin_name: req.body.coin_name
-                    }, {
-                        coin_code: req.body.coin_code
-                    }
-                ]
-            });
-            if (existingCoin.length > 0) {
-                res
-                    .status(400)
-                    .json({ "status": 400, "err": "Coin name or code already in use." });
-                return;
+            if (req.body.coin_name) {
+                let existingCoin = await Coins.find({
+                    deleted_at: null,
+                    id: { '!=': req.body.coin_id },
+                    coin_name: req.body.coin_name
+                });
+                if (existingCoin.length > 0) {
+                    res
+                        .status(400)
+                        .json({ "status": 400, "err": "Coin name or code already in use." });
+                    return;
+                }
             }
+
             var coinData = {
                 id: req.body.coin_id,
                 ...req.body

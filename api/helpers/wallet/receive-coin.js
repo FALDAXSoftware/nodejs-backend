@@ -22,7 +22,6 @@ module.exports = {
   },
 
   exits: {
-
     success: {
       description: 'All done.'
     },
@@ -33,7 +32,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var coinData = await Coins.findOne({ deleted_at: null, coin: inputs.coin })
-    var walletData = await Wallet.findOne({ coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null });
+    var walletData = await Wallet.find({ coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null });
+    walletData = walletData[0];
     QRCode.toDataURL(walletData.receive_address, function (err, url) {
       if (err) {
         return exits.error(err);
@@ -42,5 +42,4 @@ module.exports = {
       }
     })
   }
-
 };
