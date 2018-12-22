@@ -35,6 +35,9 @@ module.exports = {
                 }
 
                 req.body.created_at = new Date();
+                if (req.body.steps == 3) {
+                    req.body['status'] = false;
+                }
                 let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
                 if (updated_kyc) {
                     // KYC API start
