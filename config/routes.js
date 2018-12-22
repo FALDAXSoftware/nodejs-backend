@@ -216,5 +216,6 @@ module.exports.routes = {
 
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
+  'get /coin-list': 'Coins.getAllCoinList',
 
 };
