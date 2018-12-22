@@ -137,6 +137,7 @@ module.exports = {
             .helpers
             .wallet
             .tradingFees(request, fees.makerFee, fees.takerFee);
+          console.log(abc);
           // Do Actual Tranasfer In Wallet Here
           //
           let remainigQuantity = availableQty - inputs.orderQuantity;
@@ -179,6 +180,11 @@ module.exports = {
             .tradding
             .activity
             .update(currentBuyBookDetails.activity_id, trade_history_data);
+          var abc = await sails
+            .helpers
+            .wallet
+            .tradingFees(request, fees.makerFee, fees.takerFee);
+          console.log(abc);
           // Do Actual Tranasfer In Wallet Here
           //
           await sails

@@ -48,9 +48,9 @@ module.exports = {
 
     sendCoin: async function (req, res) {
         try {
-            let { amount, destination_address, coin } = req.allParams();
+            let { amount, destination_address, coin_code } = req.allParams();
             let user_id = req.user.id;
-            let coin = await Coins.findOne({ deleted_at: null, is_active: true, coin: coin });
+            let coin = await Coins.findOne({ deleted_at: null, is_active: true, coin: coin_code });
             if (coin) {
                 let wallet = await Wallet.findOne({ deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id });
                 if (wallet) {
