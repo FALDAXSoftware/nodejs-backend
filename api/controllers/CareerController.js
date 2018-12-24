@@ -156,7 +156,8 @@ module.exports = {
             position: req.body.position,
             short_desc: req.body.short_desc,
             job_desc: req.body.job_desc,
-            location: req.body.location
+            location: req.body.location,
+            category: req.body.category
         }).fetch();
         if (addedJob) {
             return res.json({

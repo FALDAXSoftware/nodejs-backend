@@ -16,6 +16,10 @@ module.exports = {
             type: 'string',
             columnName: 'last_name'
         },
+        category: {
+            type: 'string',
+            columnName: 'category'
+        },
         email: {
             type: 'string',
             columnName: 'email',
