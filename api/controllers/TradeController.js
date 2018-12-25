@@ -13,15 +13,57 @@ module.exports = {
     try {
       let { symbol, side, order_type, orderQuantity } = req.allParams();
       let user_id = req.user.id;
+
       let response = await sails
         .helpers
         .tradding
-        .marketSell(symbol, user_id, side, order_type, orderQuantity);
+        .marketSell(symbol, user_id, side, order_type, orderQuantity).tolerate("coinNotFound", () => {
+          throw new Error("coinNotFound");
+        }).tolerate("serverError", () => {
+          throw new Error("serverError");
+        }).tolerate("insufficientBalance", () => {
+          throw new Error("insufficientBalance");
+        }).tolerate("orderBookEmpty", () => {
+          throw new Error("orderBookEmpty");
+        });
       console.log("done");
-      res.end();
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success"),
+      });
     } catch (error) {
-      console.log("---Error---", error);
-
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Coin Not Found"
+          });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Insufficient balance in wallet"
+          });
+      }
+      if (error.message == "orderBookEmpty") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "no more limit order in order book"
+          });
+      }
+      if (error.message == "serverError") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Coin Not Found"
+          });
+      }
       return res
         .status(500)
         .json({

@@ -180,6 +180,14 @@ module.exports = {
 
         }
         res.end();
+    },
+
+    queryTest: function (req, res) {
+        console.log("req.body-=-=-=-->", req.body);
+        console.log("req.query-=-=-=-->", req.query);
+        console.log("req.params-=-=-=-->", req.params);
+        console.log("req.allparams-=-=-=-->", req.allParams());
+        res.end();
     }
 
 };
