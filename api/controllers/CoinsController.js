@@ -6,6 +6,41 @@
  */
 
 module.exports = {
+    getAllCoinList: async function (req, res) {
+        try {
+            let allCoins = await Coins.find({
+                where: {
+                    deleted_at: null,
+                    is_active: true,
+                    is_fiat: false
+                }
+            }).select(['coin_name', 'coin_code']);
+
+            let allCoinsCount = await Coins.count({
+                where: {
+                    deleted_at: null,
+                    is_active: true,
+                    is_fiat: false
+                }
+            });
+            if (allCoins) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Coin list"),
+                    "data": allCoins,
+                    allCoinsCount
+                });
+            }
+        } catch (err) {
+            res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            return;
+        }
+    },
     //---------------------------Web Api------------------------------
     getAllCoins: async function (req, res) {
         try {
@@ -87,7 +122,6 @@ module.exports = {
 
     // create all wallet
     createAllWallet: async function (req, res) {
-
         try {
             let result = await sails.helpers.wallet.createAll().tolerate("unkown", (err) => {
                 console.log("unkown------");
@@ -125,15 +159,8 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [
-                        {
-                            coin_name: {
-                                contains: data
-                            }
-                        }, {
-                            coin_code: {
-                                contains: data
-                            }
-                        }
+                        { coin_name: { contains: data } },
+                        { coin_code: { contains: data } }
                     ]
                 }
             })
@@ -143,15 +170,8 @@ module.exports = {
                 where: {
                     deleted_at: null,
                     or: [
-                        {
-                            coin_name: {
-                                contains: data
-                            }
-                        }, {
-                            coin_code: {
-                                contains: data
-                            }
-                        }
+                        { coin_name: { contains: data } },
+                        { coin_code: { contains: data } }
                     ]
                 }
             });
