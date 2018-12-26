@@ -2,3 +2,6 @@
 Add column coins.type integer DEFAULT 1, -- 1 = Bitgo...
 //24 dec
 Job table , category field added
+//25 dec
+job category table added
+add coin req model changes
