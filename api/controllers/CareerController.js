@@ -89,15 +89,18 @@ module.exports = {
     },
 
     getAllJobs: async function (req, res) {
-        let { page, limit } = req.allParams();
-        let allJobs = await Jobs.find({ deleted_at: null, is_active: true }).paginate(page - 1, parseInt(limit));
-        let allJobsCount = await Jobs.count({ deleted_at: null, is_active: true });
+        let allJobCategories = await JobCategory.find({ deleted_at: null }).populate('jobs', {
+            where: {
+                is_active: true,
+                deleted_at: null
+            }
+        });
         let careerDesc = await Statics.findOne({ slug: 'career' });
-        if (allJobs) {
+        if (allJobCategories) {
             return res.json({
                 "status": 200,
                 "message": "All jobs retrived successfully",
-                "data": allJobs, careerDesc, allJobsCount
+                "data": allJobCategories, careerDesc
             });
         } else {
             return res.status(500).json({
@@ -107,6 +110,21 @@ module.exports = {
         }
     },
 
+    getAllJobCategories: async function (req, res) {
+        let allJobCategories = await JobCategory.find({ deleted_at: null });
+        if (allJobCategories) {
+            return res.json({
+                "status": 200,
+                "message": "All job categories retrived successfully",
+                "data": allJobCategories
+            });
+        } else {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
 
     getAllJobsCMS: async function (req, res) {
         let { page, limit } = req.allParams();
@@ -156,7 +174,8 @@ module.exports = {
             position: req.body.position,
             short_desc: req.body.short_desc,
             job_desc: req.body.job_desc,
-            location: req.body.location
+            location: req.body.location,
+            category: req.body.category
         }).fetch();
         if (addedJob) {
             return res.json({
