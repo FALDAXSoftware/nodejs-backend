@@ -80,6 +80,7 @@ module.exports = {
         .helpers
         .utilities
         .getMakerTakerFees(crypto, currency);
+
       if (buyBook && buyBook.length > 0) {
         var availableQty = buyBook[0].quantity;
         var currentBuyBookDetails = buyBook[0];
@@ -130,11 +131,6 @@ module.exports = {
             trade_history_data.fix_quantity = inputs.orderQuantity;
             trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
             trade_history_data.created_at = now;
-            let tradeHistory = await sails
-              .helpers
-              .tradding
-              .trade
-              .add(trade_history_data);
             trade_history_data.fix_quantity = inputs.orderQuantity;
             let updatedActivity = await sails
               .helpers
@@ -142,21 +138,30 @@ module.exports = {
               .activity
               .update(currentBuyBookDetails.activity_id, trade_history_data);
             var request = {
-              requestUser_id: trade_history_data.requested_user_id,
-              user_id: req.session.user_id,
-              currency,
-              side,
-              crypto,
-              qty: orderQty,
+              requested_user_id: trade_history_data.requested_user_id,
+              user_id: inputs.user_id,
+              currency: currency,
+              side: inputs.side,
+              crypto: crypto,
+              quantity: inputs.orderQuantity,
               fill_price: currentBuyBookDetails.price
             }
+
             var abc = await sails
               .helpers
               .wallet
               .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
                 return new Error("serverError")
               });
-            console.log(abc);
+            trade_history_data.user_fee = tradingFees.userFee;
+            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_coin = crypto;
+            trade_history_data.requested_coin = currency;
+            let tradeHistory = await sails
+              .helpers
+              .tradding
+              .trade
+              .add(trade_history_data);
             // Do Actual Tranasfer In Wallet Here
             //
             let remainigQuantity = availableQty - inputs.orderQuantity;
@@ -188,24 +193,38 @@ module.exports = {
             trade_history_data.fix_quantity = inputs.orderQuantity;
             trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
             trade_history_data.created_at = now;
-            let tradeHistory = await sails
-              .helpers
-              .tradding
-              .trade
-              .add(trade_history_data);
+
             trade_history_data.fix_quantity = inputs.orderQuantity;
             let updatedActivity = await sails
               .helpers
               .tradding
               .activity
               .update(currentBuyBookDetails.activity_id, trade_history_data);
+
+            var request = {
+              requested_user_id: trade_history_data.requested_user_id,
+              user_id: inputs.user_id,
+              currency: currency,
+              side: inputs.side,
+              crypto: crypto,
+              quantity: inputs.orderQuantity,
+              fill_price: currentBuyBookDetails.price
+            }
             var abc = await sails
               .helpers
               .wallet
               .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
                 return new Error("serverError")
               });
-            console.log(abc);
+            trade_history_data.user_fee = tradingFees.userFee;
+            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_coin = crypto;
+            trade_history_data.requested_coin = currency;
+            let tradeHistory = await sails
+              .helpers
+              .tradding
+              .trade
+              .add(trade_history_data);
             // Do Actual Tranasfer In Wallet Here
             //
             await sails
@@ -246,8 +265,6 @@ module.exports = {
       return exits.success();
 
     } catch (error) {
-      console.log("here");
-
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

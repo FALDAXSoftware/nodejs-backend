@@ -45,12 +45,17 @@ module.exports = {
   fn: async function (inputs, exits) {
     let buyLimitOrderData = inputs.buyLimitOrderData
     if (buyLimitOrderData.orderQuantity <= 0) {
+      // quantity can not be less than zero
       return exits.error()
     }
     var wallet = await sails
       .helpers
       .utilities
-      .getWalletBalance(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, buyLimitOrderData.user_id);
+      .getWalletBalance(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, buyLimitOrderData.user_id).intercept("coinNotFound", () => {
+        return new Error("coinNotFound");
+      }).intercept("serverError", () => {
+        return new Error("serverError");
+      });
     let sellBook = await sails
       .helpers
       .tradding

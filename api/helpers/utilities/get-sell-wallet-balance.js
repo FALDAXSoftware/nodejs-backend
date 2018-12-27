@@ -44,6 +44,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      console.log(inputs.crypto);
+
       // Get sell wallet balance.
       var sellWalletBalance;
       // TODO
@@ -52,6 +54,7 @@ module.exports = {
         deleted_at: null,
         coin: inputs.crypto
       });
+      console.log("------> ", coin);
 
       if (!coin) {
         return exits.coinNotFound();
