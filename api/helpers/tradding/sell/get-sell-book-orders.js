@@ -26,7 +26,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs,exits) {
+  fn: async function (inputs, exits) {
 
     var sellBookOrders;
     sellBookOrders = await sellBook.find({

@@ -25,7 +25,9 @@ module.exports = {
     coin: {
       type: 'string',
       columnName: 'coin',
-      required: true
+      // required: true
+      allowNull: true,
+
     },
     limit: {
       type: 'number',

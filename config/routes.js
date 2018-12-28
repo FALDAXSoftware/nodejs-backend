@@ -17,6 +17,7 @@ module.exports.routes = {
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
+  'post /query-test/:test': 'RootController.queryTest',
 
   // CMS Routes///////////////////////////////////////////
 
