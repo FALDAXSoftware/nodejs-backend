@@ -35,14 +35,17 @@ module.exports = {
                 }
 
                 req.body.created_at = new Date();
+                if (req.body.steps == 3) {
+                    req.body['status'] = false;
+                }
                 let updated_kyc = await KYC.update({ id: kyc_details.id }).set(req.body).fetch();
                 if (updated_kyc) {
                     // KYC API start
-                    if (updated_kyc[0].steps == 3) {
-                        var greeting = await sails.helpers.kycpicUpload(updated_kyc[0]);
-                        console.log('greeting', greeting);
-                        return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
-                    }
+                    // if (updated_kyc[0].steps == 3) {
+                    //     var greeting = await sails.helpers.kycpicUpload(updated_kyc[0]);
+                    //     console.log('greeting', greeting);
+                    //     return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
+                    // }
                     // KYC API end
                     return res.json({ 'status': 200, 'message': sails.__('Update KYC') })
                 } else {

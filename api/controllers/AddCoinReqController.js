@@ -11,12 +11,14 @@ module.exports = {
 
     // Add Coin Request 
     addCoinRequest: async function (req, res) {
+        let { message, url, email, coin_name, elevator_pitch, coin_symbol, target_date,
+            other_site, ref_site, phone, skype, country, title, last_name, first_name,
+            is_secure
+        } = req.body;
         let addReqData = await AddCoinRequest.create({
-            message: req.body.message,
-            url: req.body.url,
-            email: req.body.email,
-            coin_name: req.body.coin_name,
-            target_date: moment(req.body.target_date, 'DD-MM-YYYY').format(),
+            other_site, ref_site, phone, skype, country, title, last_name, first_name,
+            message, url, email, coin_name, elevator_pitch, coin_symbol, is_secure,
+            target_date: moment(target_date, 'DD-MM-YYYY').format(),
             created_at: new Date()
         }).fetch();
         if (addReqData) {

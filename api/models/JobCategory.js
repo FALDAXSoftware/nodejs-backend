@@ -1,38 +1,16 @@
 /**
- * Jobs.js
+ * jobCategory.js
  *
- * @description :: A model definition.  Represents a database of jobs.
+ * @description :: A model definition.  Represents a database of job_category.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-    tableName: 'jobs',
+    tableName: 'job_category',
     attributes: {
-        position: {
+        category: {
             type: 'string',
-            columnName: 'position',
-            allowNull: true
-        },
-        short_desc: {
-            type: 'string',
-            columnName: 'short_desc'
-        },
-        category_id: {
-            model: 'jobCategory',
-            columnName: 'category_id'
-        },
-        job_desc: {
-            type: 'string',
-            columnName: 'job_desc'
-        },
-        location: {
-            type: 'string',
-            columnName: 'location'
-        },
-        is_active: {
-            type: 'boolean',
-            columnName: 'is_active',
-            defaultsTo: true
+            columnName: 'category'
         },
         created_at: {
             type: 'ref',
@@ -48,6 +26,10 @@ module.exports = {
             type: 'ref',
             columnType: 'datetime',
             columnName: 'deleted_at'
+        },
+        jobs: {
+            collection: 'jobs',
+            via: 'category_id'
         }
     },
     beforeCreate: function (val, next) {

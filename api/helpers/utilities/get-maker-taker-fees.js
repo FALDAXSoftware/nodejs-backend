@@ -37,11 +37,11 @@ module.exports = {
     var makerTakerFees = {};
     // TODO
     let coin1 = await Coins.findOne({
-      coin_code: inputs.crypto,
+      coin: inputs.crypto,
       deleted_at: null
     });
     let coin2 = await Coins.findOne({
-      coin_code: inputs.currency,
+      coin: inputs.currency,
       deleted_at: null
     });
 

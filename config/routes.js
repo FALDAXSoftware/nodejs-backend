@@ -17,6 +17,7 @@ module.exports.routes = {
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
+  'post /query-test/:test': 'RootController.queryTest',
 
   // CMS Routes///////////////////////////////////////////
 
@@ -122,6 +123,7 @@ module.exports.routes = {
   'put /admin/edit-job': 'CareerController.editJob',
   'delete /admin/delete-job': 'CareerController.deleteJob',
   'get /job-applicants': 'CareerController.getJobApplications',
+  'get /admin/job-categories': 'CareerController.getAllJobCategories',
 
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
@@ -216,5 +218,6 @@ module.exports.routes = {
 
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
+  'get /coin-list': 'Coins.getAllCoinList',
 
 };

@@ -13,9 +13,19 @@ module.exports = {
             columnName: 'coin_name',
             required: true
         },
+        coin_symbol: {
+            type: 'string',
+            columnName: 'coin_symbol',
+            allowNull: true
+        },
         message: {
             type: 'string',
             columnName: 'message',
+            allowNull: true
+        },
+        elevator_pitch: {
+            type: 'string',
+            columnName: 'elevator_pitch',
             allowNull: true
         },
         url: {
@@ -26,6 +36,50 @@ module.exports = {
         email: {
             type: 'string',
             columnName: 'email',
+            allowNull: true
+        },
+        is_secure: {
+            type: 'boolean',
+            columnName: 'is_secure',
+        },
+        first_name: {
+            type: 'string',
+            columnName: 'first_name',
+            allowNull: true
+        },
+        last_name: {
+            type: 'string',
+            columnName: 'last_name',
+            allowNull: true
+        },
+        title: {
+            type: 'string',
+            columnName: 'title',
+            allowNull: true
+        },
+        country: {
+            type: 'string',
+            columnName: 'country',
+            allowNull: true
+        },
+        skype: {
+            type: 'string',
+            columnName: 'skype',
+            allowNull: true
+        },
+        phone: {
+            type: 'string',
+            columnName: 'phone',
+            allowNull: true
+        },
+        ref_site: {
+            type: 'string',
+            columnName: 'ref_site',
+            allowNull: true
+        },
+        other_site: {
+            type: 'string',
+            columnName: 'other_site',
             allowNull: true
         },
         target_date: {
