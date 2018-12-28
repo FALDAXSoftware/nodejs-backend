@@ -42,7 +42,6 @@ module.exports = {
     try {
       var request = inputs.request;
       console.log("request--------", request);
-
       var user_id = parseInt(request.user_id);
       var requested_user_id = parseInt(request.requested_user_id);
       var currencyData = await Coins.findOne({ deleted_at: null, is_active: true, coin: request.currency });

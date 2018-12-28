@@ -57,11 +57,11 @@ module.exports = {
     insufficientBalance: {
       description: 'Error when insufficient balance in wallet.'
     },
-    orderBookEmpty: {
-      description: 'Error when no order in orderbook'
-    },
     serverError: {
       description: 'serverError'
+    },
+    invalidQuantity: {
+      descritpion: 'Quantity can not be less than zero'
     }
   },
 
@@ -130,7 +130,15 @@ module.exports = {
             .helpers
             .tradding
             .limit
-            .limitBuyMatch(buyLimitOrderData, crypto, currency, activity);
+            .limitBuyMatch(buyLimitOrderData, crypto, currency, activity).intercept('invalidQuantity', () => {
+              return new Error("invalidQuantity");
+            }).intercept('coinNotFound', () => {
+              return new Error("coinNotFound");
+            }).intercept('insufficientBalance', () => {
+              return new Error("insufficientBalance");
+            }).intercept('serverError', () => {
+              return new Error("serverError");
+            });
           return exits.success(limitMatchData);
         } else {
           buyLimitOrderData.activity_id = activity.id;
@@ -145,7 +153,7 @@ module.exports = {
             //Add Socket Here Emit
             return exits.success(addBuyBook);
           } else {
-            return exits.error();
+            return exits.insufficientBalance();
           }
         }
       } else {
@@ -168,8 +176,14 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }
-      if (error.message == "serverError") {
-        return exits.serverError();
+      if (error.message == "invalidQuantity") {
+        return exits.invalidQuantity();
+      }
+      if (error.message == "insufficientBalance") {
+        return exits.insufficientBalance();
+      }
+      if (error.message == "invalidQuantity") {
+        return exits.invalidQuantity();
       }
       return exits.serverError();
     }
