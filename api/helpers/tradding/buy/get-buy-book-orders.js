@@ -27,7 +27,7 @@ module.exports = {
 
     success: {
       outputFriendlyName: 'Buy book orders',
-    },
+    }
 
   },
 

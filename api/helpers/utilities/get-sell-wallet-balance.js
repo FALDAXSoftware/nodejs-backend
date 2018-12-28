@@ -33,25 +33,31 @@ module.exports = {
     success: {
       outputFriendlyName: 'Sell wallet balance',
     },
-    error: {
-      descritpion: 'error'
+    serverError: {
+      descritpion: 'serverError'
+    },
+    coinNotFound: {
+      description: 'Error when coin not found'
     }
   },
 
 
   fn: async function (inputs, exits) {
     try {
+      console.log(inputs.crypto);
+
       // Get sell wallet balance.
       var sellWalletBalance;
       // TODO
       let coin = await Coins.findOne({
         is_active: true,
         deleted_at: null,
-        coin_code: inputs.crypto
+        coin: inputs.crypto
       });
+      console.log("------> ", coin);
 
       if (!coin) {
-        return exits.error("Coin Not Found");
+        return exits.coinNotFound();
       }
       sellWalletBalance = await Wallet.findOne({
         is_active: true,
@@ -62,7 +68,7 @@ module.exports = {
       // Send back the result through the success exit.
       return exits.success(sellWalletBalance);
     } catch (error) {
-      return exits.error();
+      return exits.serverError();
 
     }
   }
