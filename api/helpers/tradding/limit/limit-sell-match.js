@@ -84,11 +84,6 @@ module.exports = {
             trade_history_data.taker_fee = fees.takerFee;
             trade_history_data.requested_user_id = buyBook[0].user_id;
             trade_history_data.created = moment().utc();
-            var tradeHistory = await sails
-              .helpers
-              .tradding
-              .trade
-              .add(trade_history_data);
 
             let updatedActivity = await sails
               .helpers
@@ -106,6 +101,24 @@ module.exports = {
               fill_price: sellLimitOrderData.fill_price
             }
 
+            var abc = await sails
+              .helpers
+              .wallet
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
+                return new Error("serverError")
+              });
+            trade_history_data.user_fee = tradingFees.userFee;
+            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_coin = crypto;
+            trade_history_data.requested_coin = currency;
+
+            var tradeHistory = await sails
+              .helpers
+              .tradding
+              .trade
+              .add(trade_history_data);
+
             // Transfer fees here Updating the trade history data for adding fees
             var remainingQty = buyBook[0].quantity - sellLimitOrderData.quantity;
             console.log(buyBook[0].id);
@@ -114,7 +127,7 @@ module.exports = {
                 .helpers
                 .tradding
                 .buy
-                .update(buyBook[0].id, { 'quantity': remainingQty });
+                .update(buyBook[0].id, {'quantity': remainingQty});
               //Emit the socket
               return exits.success(updatedBuyBook);
             } else {
@@ -168,16 +181,13 @@ module.exports = {
             trade_history_data.quantity = buyBook[0].quantity;
             trade_history_data.requested_user_id = buyBook[0].user_id;
             trade_history_data.created = moment().utc();
-            await sails
-              .helpers
-              .tradding
-              .trade
-              .add(trade_history_data);
+
             var activityResult = await sails
               .helpers
               .tradding
               .activity
               .update(buyBook[0].activity_id, trade_history_data);
+              
             var request = {
               requestUser_id: trade_history_data.requested_user_id,
               user_id: inputs.user_id,
@@ -187,6 +197,24 @@ module.exports = {
               qty: buyBook[0].quantity,
               fill_price: sellLimitOrderData.fill_price
             }
+
+            var abc = await sails
+              .helpers
+              .wallet
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
+                return new Error("serverError")
+              });
+            trade_history_data.user_fee = tradingFees.userFee;
+            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_coin = crypto;
+            trade_history_data.requested_coin = currency;
+
+            var tradeHistory = await sails
+              .helpers
+              .tradding
+              .trade
+              .add(trade_history_data);
             // Wallet actual transfer here Update Trade Data Here
             var deletedResponse = await sails
               .helpers

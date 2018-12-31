@@ -182,7 +182,7 @@ module.exports = {
             //     console.log(rawResult);
 
             // });
-            var rawResult = await sails.sendNativeQuery("SELECT * FROM public.kyc WHERE steps=3 AND status='true' AND ((direct_response != 'ACCEPT' AND webhook_response != 'ACCEPT') OR (id_type = '4' AND direct_response != 'ACCEPT') OR direct_response = 'MANUAL_REVIEW' OR direct_response = 'DENY' OR webhook_response = 'MANUAL_REVIEW' OR webhook_response = 'DENY') ORDER BY updated_at LIMIT $1 OFFSET $2", [limit, limit * (page - 1)]);
+            var rawResult = await sails.sendNativeQuery("SELECT * FROM public.kyc ORDER BY updated_at LIMIT $1 OFFSET $2", [limit, limit * (page - 1)]);
             console.log(rawResult);
             let KYCData = rawResult.rows;
             let KYCCount = rawResult.rowCount

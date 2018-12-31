@@ -61,9 +61,11 @@ module.exports = {
       var wallet = await sails
         .helpers
         .utilities
-        .getWalletBalance(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, buyLimitOrderData.user_id).intercept("coinNotFound", () => {
+        .getWalletBalance(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, buyLimitOrderData.user_id)
+        .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
-        }).intercept("serverError", () => {
+        })
+        .intercept("serverError", () => {
           return new Error("serverError");
         });
       let sellBook = await sails
@@ -98,11 +100,6 @@ module.exports = {
               trade_history_data.taker_fee = fees.takerFee;
               trade_history_data.requested_user_id = sellBook[0].user_id;
               trade_history_data.created = moment().utc();
-              var tradeHistory = await sails
-                .helpers
-                .tradding
-                .trade
-                .add(trade_history_data);
 
               let updatedActivity = await sails
                 .helpers
@@ -120,6 +117,25 @@ module.exports = {
                 fill_price: buyLimitOrderData.fill_price
               }
 
+              var tradingFees = await sails
+                .helpers
+                .wallet
+                .tradingFees(request, fees.makerFee, fees.takerFee)
+                .intercept("serverError", () => {
+                  return new Error("serverError")
+                });
+
+              trade_history_data.user_fee = tradingFees.userFee;
+              trade_history_data.requested_fee = tradingFees.requestedFee;
+              trade_history_data.user_coin = crypto;
+              trade_history_data.requested_coin = currency;
+
+              var tradeHistory = await sails
+                .helpers
+                .tradding
+                .trade
+                .add(trade_history_data);
+
               // Transfer fees here Updating the trade history data for adding fees
 
               var remainingQty = sellBook[0].quantity - buyLimitOrderData.quantity;
@@ -129,7 +145,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, { 'quantity': remainingQty });
+                  .update(sellBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
                 return exits.success(updatedbuyBook);
               } else {
@@ -181,11 +197,7 @@ module.exports = {
               trade_history_data.quantity = sellBook[0].quantity;
               trade_history_data.requested_user_id = sellBook[0].user_id;
               trade_history_data.created = moment().utc();
-              await sails
-                .helpers
-                .tradding
-                .trade
-                .add(trade_history_data);
+
               var activityResult = await sails
                 .helpers
                 .tradding
@@ -200,6 +212,26 @@ module.exports = {
                 qty: sellBook[0].quantity,
                 fill_price: buyLimitOrderData.fill_price
               }
+
+              //Wallet Transfer
+              var tradingFees = await sails
+                .helpers
+                .wallet
+                .tradingFees(request, fees.makerFee, fees.takerFee)
+                .intercept("serverError", () => {
+                  return new Error("serverError")
+                });
+
+              trade_history_data.user_fee = tradingFees.userFee;
+              trade_history_data.requested_fee = tradingFees.requestedFee;
+              trade_history_data.user_coin = crypto;
+              trade_history_data.requested_coin = currency;
+
+              var tradeHistory = await sails
+                .helpers
+                .tradding
+                .trade
+                .add(trade_history_data);
               // Wallet actual transfer here Update Trade Data Here
               var deletedResponse = await sails
                 .helpers
@@ -218,13 +250,17 @@ module.exports = {
                   .helpers
                   .tradding
                   .limit
-                  .limitBuyMatch(resendDataLimit, resendData.settle_currency, resendData.currency, activityResult).intercept('invalidQuantity', () => {
+                  .limitBuyMatch(resendDataLimit, resendData.settle_currency, resendData.currency, activityResult)
+                  .intercept('invalidQuantity', () => {
                     return new Error("invalidQuantity");
-                  }).intercept('coinNotFound', () => {
+                  })
+                  .intercept('coinNotFound', () => {
                     return new Error("coinNotFound");
-                  }).intercept('insufficientBalance', () => {
+                  })
+                  .intercept('insufficientBalance', () => {
                     return new Error("insufficientBalance");
-                  }).intercept('serverError', () => {
+                  })
+                  .intercept('serverError', () => {
                     return new Error("serverError");
                   });
                 return exits.success(responseData);
