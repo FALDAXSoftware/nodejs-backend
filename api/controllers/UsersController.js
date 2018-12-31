@@ -220,10 +220,12 @@ module.exports = {
               });
             }
           } catch (e) {
+            console.log('>>>>>>>>>>>>>>>error>>>>>>', e)
             throw e;
           }
         });
     } catch (error) {
+      console.log('>>>>>>>>>>>>>>>error', error)
       res
         .status(500)
         .json({
