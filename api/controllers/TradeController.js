@@ -121,14 +121,7 @@ module.exports = {
             "err": "no more limit order in order book"
           });
       }
-      if (error.message == "serverError") {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
+
       return res
         .status(500)
         .json({
@@ -167,11 +160,42 @@ module.exports = {
       let response = await sails
         .helpers
         .tradding
-        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price);
+        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price).tolerate('invalidQuantity', () => {
+          throw new Error("invalidQuantity");
+        }).tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        }).tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        }).tolerate('serverError', () => {
+          throw new Error("serverError");
+        });;
       console.log("done");
       res.end();
     } catch (error) {
-      console.log("---Error---", error);
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Coin Not Found"
+          });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Insufficient balance in wallet"
+          });
+      }
+      if (error.message == "invalidQuantity") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "invalid order quantity"
+          });
+      }
 
       return res
         .status(500)
