@@ -23,7 +23,7 @@ module.exports = {
     },
     serverError: {
       description: 'serverError'
-    },
+    }
   },
 
   fn: async function (inputs, exits) {
@@ -39,7 +39,7 @@ module.exports = {
       var walletBalance = await sails
         .helpers
         .utilities
-        .getWalletBalance(orderData.crypto, orderData.currency, inputs.user_id)
+        .getWalletBalance(orderData.settle_currency, orderData.currency, orderData.user_id)
         .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
         })
@@ -51,12 +51,13 @@ module.exports = {
       var updatedBalance = balance - total_price;
       var updatedBalance = parseFloat((updatedBalance).toFixed(6));
 
-      var walletUpdate = Wallet
-        .update({ id: walletBalance.id })
-        .set({ placed_balance: updatedBalance });
+      var walletUpdate = await Wallet
+        .update({id: walletBalance.id})
+        .set({placed_balance: updatedBalance});
 
       return exits.success(buyAdded);
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

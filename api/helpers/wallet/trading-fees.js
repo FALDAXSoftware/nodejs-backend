@@ -41,16 +41,15 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
       var request = inputs.request;
-      console.log("request--------", request);
       var user_id = parseInt(request.user_id);
       var requested_user_id = parseInt(request.requested_user_id);
-      var currencyData = await Coins.findOne({ deleted_at: null, is_active: true, coin: request.currency });
-      var cryptoData = await Coins.findOne({ deleted_at: null, is_active: true, coin: request.crypto });
-      var currencyWalletUser = await Wallet.findOne({ deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.user_id });
-      var cryptoWalletRequested = await Wallet.findOne({ deleted_at: null, is_active: true, coin_id: cryptoData.id, user_id: request.requested_user_id });
-      var currencyWalletRequested = await Wallet.findOne({ deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.requested_user_id });
-      var cryptoWalletUser = await Wallet.findOne({ deleted_at: null, is_active: true, coin_id: cryptoData.id, user_id: request.user_id });
-
+      console.log(request);
+      var currencyData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.currency});
+      var cryptoData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.settle_currency});
+      var currencyWalletUser = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.user_id});
+      var cryptoWalletRequested = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: cryptoData.id, user_id: request.requested_user_id});
+      var currencyWalletRequested = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.requested_user_id});
+      var cryptoWalletUser = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: cryptoData.id, user_id: request.user_id});
 
       if (request.side == "Buy") {
 
@@ -59,15 +58,18 @@ module.exports = {
         var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(6));
         var cryptouserPlacedbalance = cryptoWalletUser.placed_balance + (request.quantity - (request.quantity * inputs.takerFee / 100));
         var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(6));
+
         var a = await Wallet
-          .update({ id: cryptoWalletUser.id })
-          .set({ balance: cryptouserbalance, placed_balance: cryptouserPlacedbalance });
+          .update({id: cryptoWalletUser.id})
+          .set({balance: cryptouserbalance, placed_balance: cryptouserPlacedbalance});
 
         var cryptorequestedbalance = cryptoWalletRequested.balance - (request.quantity);
         var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(6));
+
         var a = await Wallet
-          .update({ id: cryptoWalletRequested.id })
-          .set({ balance: cryptorequestedbalance });
+          .update({id: cryptoWalletRequested.id})
+          .set({balance: cryptorequestedbalance})
+          .fetch();
 
         // -----------------------currency-------------------------------------- //
         var currencyuserbalance = currencyWalletUser.balance - ((request.quantity * request.fill_price));
@@ -75,8 +77,9 @@ module.exports = {
         var currencyuserplacedbalance = currencyWalletUser.placed_balance - ((request.quantity * request.fill_price));
         var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(6))
         var b = await Wallet
-          .update({ id: currencyWalletUser.id })
-          .set({ balance: currencyuserbalance, placed_balance: currencyuserplacedbalance });
+          .update({id: currencyWalletUser.id})
+          .set({balance: currencyuserbalance, placed_balance: currencyuserplacedbalance})
+          .fetch();
 
         var currencyrequestedbalance = currencyWalletRequested.balance + ((request.quantity * request.fill_price) - (request.quantity * request.fill_price * (inputs.makerFee / 100)));
         var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(6));
@@ -84,8 +87,9 @@ module.exports = {
         var currencyrequestedplacedbalance = parseFloat(currencyrequestedplacedbalance.toFixed(6));
 
         var b = await Wallet
-          .update({ id: currencyWalletRequested.id })
-          .set({ balance: currencyrequestedbalance, placed_balance: currencyrequestedplacedbalance });
+          .update({id: currencyWalletRequested.id})
+          .set({balance: currencyrequestedbalance, placed_balance: currencyrequestedplacedbalance})
+          .fetch();
 
         var requestedFee = (request.quantity * request.fill_price * (inputs.makerFee / 100));
         var userFee = (request.quantity * inputs.takerFee / 100);
@@ -97,11 +101,10 @@ module.exports = {
         var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(6))
         var cryptouserPlacedbalance = cryptoWalletUser.placed_balance - ((request.quantity));
         var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(6))
-        console.log("cryptouserbalance", cryptouserbalance, "-cryptoWalletUser", cryptoWalletUser);
 
         var a = await Wallet
-          .update({ id: cryptoWalletUser.id })
-          .set({ balance: cryptouserbalance, placed_balance: cryptouserPlacedbalance });
+          .update({id: cryptoWalletUser.id})
+          .set({balance: cryptouserbalance, placed_balance: cryptouserPlacedbalance});
 
         var cryptorequestedbalance = cryptoWalletRequested.balance + (request.quantity - (request.quantity * (inputs.makerFee / 100)));
         var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(6))
@@ -109,8 +112,9 @@ module.exports = {
         var cryptorequestedplacedbalance = parseFloat(cryptorequestedplacedbalance.toFixed(6))
 
         var a = await Wallet
-          .update({ id: cryptoWalletRequested.id })
-          .set({ balance: cryptorequestedbalance, placed_balance: cryptorequestedplacedbalance });
+          .update({id: cryptoWalletRequested.id})
+          .set({balance: cryptorequestedbalance, placed_balance: cryptorequestedplacedbalance})
+          .fetch();
 
         // -------------------------- currency ---------------------------- //
 
@@ -120,19 +124,20 @@ module.exports = {
         var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(6))
 
         var b = await Wallet
-          .update({ id: currencyWalletUser.id })
-          .set({ balance: currencyuserbalance, placed_balance: currencyuserplacedbalance });
+          .update({id: currencyWalletUser.id})
+          .set({balance: currencyuserbalance, placed_balance: currencyuserplacedbalance});
 
         var currencyrequestedbalance = currencyWalletRequested.balance - ((request.quantity * request.fill_price));
         var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(6))
         var b = await Wallet
-          .update({ id: currencyWalletRequested.id })
-          .set({ balance: currencyrequestedbalance });
+          .update({id: currencyWalletRequested.id})
+          .set({balance: currencyrequestedbalance})
+          .fetch();
 
         var requestedFee = request.quantity * (inputs.makerFee / 100);
         var userFee = (request.quantity * request.fill_price * (inputs.takerFee / 100));
       }
-      return exits.success({ 'userFee': userFee, 'requestedFee': requestedFee })
+      return exits.success({'userFee': userFee, 'requestedFee': requestedFee})
     } catch (err) {
       console.log("fees Error", err);
 

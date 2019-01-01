@@ -67,7 +67,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-      let { crypto, currency } = await sails
+
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -86,10 +87,13 @@ module.exports = {
         .tradding
         .sell
         .getSellBookOrders(crypto, currency);
+
+
       let fees = await sails
         .helpers
         .utilities
         .getMakerTakerFees(crypto, currency);
+
       var now = new Date();
 
       var buyLimitOrderData = {
@@ -115,15 +119,16 @@ module.exports = {
         ...buyLimitOrderData
       }
       resultData.isMarket = false;
-      resultData.fix_quantity = inputs.orderQuantity;
-      resultData.maker_fee = fees.makerFee;
-      resultData.taker_fee = fees.takerFee;
+      resultData.fix_quantity = inputs.orderQuantity
 
       let activity = await sails
         .helpers
         .tradding
         .activity
         .add(resultData);
+
+      resultData.maker_fee = fees.makerFee;
+      resultData.taker_fee = fees.takerFee;
 
       if (sellBook && sellBook.length > 0) {
         var currentPrice = sellBook[0].price;
@@ -171,7 +176,8 @@ module.exports = {
             .helpers
             .tradding
             .buy
-            .addBuyOrder(buyLimitOrderData).intercept("coinNotFound", () => {
+            .addBuyOrder(buyLimitOrderData)
+            .intercept("coinNotFound", () => {
               return new Error("coinNotFound");
             })
             .intercept("serverError", () => {
@@ -184,6 +190,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log("From limit buy :: ",error)
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

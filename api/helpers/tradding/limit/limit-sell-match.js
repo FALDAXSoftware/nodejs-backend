@@ -110,12 +110,12 @@ module.exports = {
                 .update(buyBook[0].activity_id, trade_history_data);
 
               var request = {
-                request_user_id: trade_history_data.requested_user_id,
-                user_id: inputs.user_id,
+                requested_user_id: trade_history_data.requested_user_id,
+                user_id: sellLimitOrderData.user_id,
                 currency: sellLimitOrderData.currency,
                 side: sellLimitOrderData.side,
                 settle_currency: sellLimitOrderData.settle_currency,
-                qty: sellLimitOrderData.quantity,
+                quantity: sellLimitOrderData.quantity,
                 fill_price: sellLimitOrderData.fill_price
               }
 
@@ -207,12 +207,12 @@ module.exports = {
                 .update(buyBook[0].activity_id, trade_history_data);
 
               var request = {
-                requestUser_id: trade_history_data.requested_user_id,
-                user_id: inputs.user_id,
+                requested_user_id: trade_history_data.requested_user_id,
+                user_id: sellLimitOrderData.user_id,
                 currency: sellLimitOrderData.currency,
                 side: sellLimitOrderData.side,
                 settle_currency: sellLimitOrderData.settle_currency,
-                qty: buyBook[0].quantity,
+                quantity: buyBook[0].quantity,
                 fill_price: sellLimitOrderData.fill_price
               }
 
@@ -223,10 +223,12 @@ module.exports = {
                 .intercept("serverError", () => {
                   return new Error("serverError")
                 });
+
+                console.log("HERE :: ")
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
-              trade_history_data.user_coin = crypto;
-              trade_history_data.requested_coin = currency;
+              trade_history_data.user_coin = sellLimitOrderData.settle_currency;
+              trade_history_data.requested_coin = sellLimitOrderData.currency;
 
               var tradeHistory = await sails
                 .helpers

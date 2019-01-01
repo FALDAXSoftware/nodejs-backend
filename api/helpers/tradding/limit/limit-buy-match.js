@@ -107,13 +107,14 @@ module.exports = {
                 .activity
                 .update(sellBook[0].activity_id, trade_history_data);
 
+              
               var request = {
-                request_user_id: trade_history_data.requested_user_id,
-                user_id: inputs.user_id,
+                requested_user_id: trade_history_data.requested_user_id,
+                user_id: trade_history_data.user_id,
                 currency: buyLimitOrderData.currency,
                 side: buyLimitOrderData.side,
                 settle_currency: buyLimitOrderData.settle_currency,
-                qty: buyLimitOrderData.quantity,
+                quantity: buyLimitOrderData.quantity,
                 fill_price: buyLimitOrderData.fill_price
               }
 
@@ -127,14 +128,15 @@ module.exports = {
 
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
-              trade_history_data.user_coin = crypto;
-              trade_history_data.requested_coin = currency;
+              trade_history_data.user_coin = buyLimitOrderData.settle_currency;
+              trade_history_data.requested_coin = buyLimitOrderData.currency;
 
               var tradeHistory = await sails
                 .helpers
                 .tradding
                 .trade
                 .add(trade_history_data);
+              
 
               // Transfer fees here Updating the trade history data for adding fees
 
@@ -145,7 +147,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, { 'quantity': remainingQty });
+                  .update(sellBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
                 return exits.success(updatedbuyBook);
               } else {
@@ -204,8 +206,8 @@ module.exports = {
                 .activity
                 .update(sellBook[0].activity_id, trade_history_data);
               var request = {
-                requestUser_id: trade_history_data.requested_user_id,
-                user_id: inputs.user_id,
+                requested_user_id: trade_history_data.requested_user_id,
+                user_id: trade_history_data.user_id,
                 currency: buyLimitOrderData.currency,
                 side: buyLimitOrderData.side,
                 settle_currency: buyLimitOrderData.settle_currency,

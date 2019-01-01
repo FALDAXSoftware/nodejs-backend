@@ -68,16 +68,18 @@ module.exports = {
   fn: async function (inputs, exits) {
     // TODO
     try {
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
       let wallet = await sails
         .helpers
         .utilities
-        .getSellWalletBalance(crypto, currency, inputs.user_id).intercept("coinNotFound", () => {
+        .getSellWalletBalance(crypto, currency, inputs.user_id)
+        .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
-        }).intercept("serverError", () => {
+        })
+        .intercept("serverError", () => {
           return new Error("serverError");
         });;
       let buyBook = await sails
@@ -126,12 +128,15 @@ module.exports = {
 
       if (buyBook && buyBook.length > 0) {
         var currentPrice = buyBook[0].price;
+        console.log(currentPrice);
+        console.log(inputs.limit_price);
         if (inputs.limit_price <= currentPrice) {
           var limitMatchData = await sails
             .helpers
             .tradding
             .limit
-            .limitSellMatch(sellLimitOrderData, crypto, currency, activity).intercept('invalidQuantity', () => {
+            .limitSellMatch(sellLimitOrderData, crypto, currency, activity)
+            .intercept('invalidQuantity', () => {
               return new Error("invalidQuantity");
             })
             .intercept('coinNotFound', () => {
@@ -178,6 +183,7 @@ module.exports = {
       }
 
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

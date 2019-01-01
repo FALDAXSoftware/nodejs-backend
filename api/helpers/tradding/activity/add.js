@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Add',
 
-
   description: 'Add activity.',
-
 
   inputs: {
     orderData: {
@@ -15,21 +12,19 @@ module.exports = {
     }
   },
 
-
   exits: {
     success: {
-      description: 'All done.',
-    },
-
+      description: 'All done.'
+    }
   },
-
 
   fn: async function (inputs, exits) {
     let orderData = inputs.orderData;
-    let activityTable = await ActivityTable.create(orderData).fetch();
+    let activityTable = await ActivityTable
+      .create(orderData)
+      .fetch();
+
     return exits.success(activityTable);
   }
 
-
 };
-
