@@ -11,7 +11,8 @@ module.exports = {
   //---------------------------Web Api------------------------------
   marketSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -370,10 +371,13 @@ module.exports = {
         '<=': end_date
       };
     }
+
+    let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
+
     let tradeData = await TradeHistory
       .find({
-      ...q
-    })
+        ...q
+      })
       .sort("id ASC")
       .paginate(page, parseInt(limit));
     for (let index = 0; index < tradeData.length; index++) {
@@ -394,7 +398,7 @@ module.exports = {
       "status": 200,
       "message": sails.__("Trade list"),
       "data": tradeData,
-      tradeCount
+      tradeCount, user_name
     });
   }
 };
