@@ -67,7 +67,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-      let {crypto, currency} = await sails
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -171,11 +171,16 @@ module.exports = {
             .helpers
             .tradding
             .buy
-            .addBuyOrder(buyLimitOrderData);
+            .addBuyOrder(buyLimitOrderData).intercept("coinNotFound", () => {
+              return new Error("coinNotFound");
+            })
+            .intercept("serverError", () => {
+              return new Error("serverError");
+            });;
           //Add Socket Here Emit
           return exits.success(addBuyBook);
         } else {
-          return exits.error();
+          return exits.insufficientBalance();
         }
       }
     } catch (error) {

@@ -145,7 +145,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, {'quantity': remainingQty});
+                  .update(sellBook[0].id, { 'quantity': remainingQty });
                 //Emit the socket
                 return exits.success(updatedbuyBook);
               } else {
