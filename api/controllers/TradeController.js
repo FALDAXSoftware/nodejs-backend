@@ -11,7 +11,7 @@ module.exports = {
   //---------------------------Web Api------------------------------
   marketSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       let response = await sails
@@ -77,7 +77,7 @@ module.exports = {
   marketBuy: async function (req, res) {
     try {
       console.log(req.allParams());
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -141,7 +141,7 @@ module.exports = {
   limitSell: async function (req, res) {
     try {
       console.log(req.allParams());
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -163,7 +163,7 @@ module.exports = {
 
   limitBuy: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -233,7 +233,7 @@ module.exports = {
         delete tradeHistory.currency;
         delete tradeHistory.settle_currency;
 
-        return res.json({status: 200, message: 'Trade history retrieved successfully.', tradeHistory})
+        return res.json({ status: 200, message: 'Trade history retrieved successfully.', tradeHistory })
       } else if (req.user.id && pair && Buy == false && Sell == true && toDate && fromDate) {
         let tradeHistory = await TradeHistory.find({
           user_id: req.user.id,
@@ -356,16 +356,19 @@ module.exports = {
         '<=': end_date
       };
     }
+
+    let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
+
     let tradeData = await TradeHistory
       .find({
-      ...q
-    })
+        ...q
+      })
       .sort("id ASC")
       .paginate(page, parseInt(limit));
     for (let index = 0; index < tradeData.length; index++) {
       if (tradeData[index].user_id) {
-        let user = await Users.findOne({id: tradeData[index].user_id})
-        let user2 = await Users.findOne({id: tradeData[index].requested_user_id})
+        let user = await Users.findOne({ id: tradeData[index].user_id })
+        let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
         tradeData[index].maker_email = user.email;
         tradeData[index].taker_email = user2.email;
         tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
@@ -380,7 +383,7 @@ module.exports = {
       "status": 200,
       "message": sails.__("Trade list"),
       "data": tradeData,
-      tradeCount
+      tradeCount, user_name
     });
   }
 };
