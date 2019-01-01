@@ -122,14 +122,7 @@ module.exports = {
             "err": "no more limit order in order book"
           });
       }
-      if (error.message == "serverError") {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
+
       return res
         .status(500)
         .json({
@@ -168,11 +161,42 @@ module.exports = {
       let response = await sails
         .helpers
         .tradding
-        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price);
+        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price).tolerate('invalidQuantity', () => {
+          throw new Error("invalidQuantity");
+        }).tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        }).tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        }).tolerate('serverError', () => {
+          throw new Error("serverError");
+        });;
       console.log("done");
       res.end();
     } catch (error) {
-      console.log("---Error---", error);
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Coin Not Found"
+          });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Insufficient balance in wallet"
+          });
+      }
+      if (error.message == "invalidQuantity") {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "invalid order quantity"
+          });
+      } r
 
       return res
         .status(500)
@@ -284,28 +308,17 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllTrades: async function (req, res) {
     // req.setLocale('en')
-    let {
-      page,
-      limit,
-      data,
-      user_id,
-      t_type,
-      start_date,
-      end_date
-    } = req.allParams();
+    let { page, limit, data, user_id, t_type, start_date, end_date } = req.allParams();
     if (page && page > 0) {
       page = page - 1;
     } else {
       page = 0;
     }
     let q = {
-      deleted_at: null
+      deleted_at: null,
     }
     if (start_date && end_date) {
-      q['created_at'] = {
-        '>=': start_date,
-        '<=': end_date
-      };
+      q['created_at'] = { '>=': start_date, '<=': end_date };
     }
     if (data) {
       let userArray = await Users.find({
@@ -325,23 +338,11 @@ module.exports = {
         idArray.push(userArray[index].id);
       }
       q['or'] = [
-        {
-          user_id: idArray
-        }, {
-          requested_user_id: idArray
-        }, {
-          symbol: {
-            contains: data
-          }
-        }, {
-          settle_currency: {
-            contains: data
-          }
-        }, {
-          currency: {
-            contains: data
-          }
-        }
+        { user_id: idArray },
+        { requested_user_id: idArray },
+        { symbol: { contains: data } },
+        { settle_currency: { contains: data } },
+        { currency: { contains: data } },
       ]
     }
     if (user_id) {
@@ -351,10 +352,7 @@ module.exports = {
       q['side'] = t_type;
     }
     if (start_date && end_date) {
-      q['created_at'] = {
-        '>=': start_date,
-        '<=': end_date
-      };
+      q['created_at'] = { '>=': start_date, '<=': end_date };
     }
 
     let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
@@ -375,9 +373,7 @@ module.exports = {
       }
     }
 
-    let tradeCount = await TradeHistory.count({
-      ...q
-    });
+    let tradeCount = await TradeHistory.count({ ...q });
 
     return res.json({
       "status": 200,

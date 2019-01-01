@@ -17,37 +17,50 @@ module.exports = {
 
     success: {
       description: 'All done.'
-    }
+    },
+    coinNotFound: {
+      description: 'Error when coin not found'
+    },
+    serverError: {
+      description: 'serverError'
+    },
   },
 
   fn: async function (inputs, exits) {
-    let orderData = inputs.buyLimitOrderData;
-    var currency = orderData.currency;
-    var crypto = orderData.settle_currency;
-    var total_price = orderData.limit_price * orderData.quantity;
-    let buyAdded = await buyBook
-      .create(orderData)
-      .fetch();
+    try {
+      let orderData = inputs.buyLimitOrderData;
+      var currency = orderData.currency;
+      var crypto = orderData.settle_currency;
+      var total_price = orderData.limit_price * orderData.quantity;
+      let buyAdded = await buyBook
+        .create(orderData)
+        .fetch();
 
-    var walletBalance = await sails
-      .helpers
-      .utilities
-      .getWalletBalance(orderData.crypto, orderData.currency, inputs.user_id)
-      .intercept("coinNotFound", () => {
-        return new Error("coinNotFound");
-      })
-      .intercept("serverError", () => {
-        return new Error("serverError");
-      });
+      var walletBalance = await sails
+        .helpers
+        .utilities
+        .getWalletBalance(orderData.crypto, orderData.currency, inputs.user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError");
+        });
 
-    var balance = walletBalance.placed_balance;
-    var updatedBalance = balance - total_price;
-    var updatedBalance = parseFloat((updatedBalance).toFixed(6));
+      var balance = walletBalance.placed_balance;
+      var updatedBalance = balance - total_price;
+      var updatedBalance = parseFloat((updatedBalance).toFixed(6));
 
-    var walletUpdate = Wallet
-      .update({id: walletBalance.id})
-      .set({placed_balance: updatedBalance});
+      var walletUpdate = Wallet
+        .update({ id: walletBalance.id })
+        .set({ placed_balance: updatedBalance });
 
-    return exits.success(buyAdded);
+      return exits.success(buyAdded);
+    } catch (error) {
+      if (error.message == "coinNotFound") {
+        return exits.coinNotFound();
+      }
+      return exits.serverError();
+    }
   }
 };
