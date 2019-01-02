@@ -58,16 +58,18 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
       let wallet = await sails
         .helpers
         .utilities
-        .getWalletBalance(crypto, currency, inputs.user_id).intercept("coinNotFound", () => {
+        .getWalletBalance(crypto, currency, inputs.user_id)
+        .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
-        }).intercept("serverError", () => {
+        })
+        .intercept("serverError", () => {
           return new Error("serverError")
         });
       let sellBook = await sails
@@ -140,14 +142,16 @@ module.exports = {
               user_id: inputs.user_id,
               currency: currency,
               side: inputs.side,
-              crypto: crypto,
+              settle_currency: crypto,
               quantity: inputs.orderQuantity,
               fill_price: currentSellBookDetails.price
             }
+            console.log(request);
             var tradingFees = await sails
               .helpers
               .wallet
-              .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
                 return new Error("serverError")
               });
             trade_history_data.user_fee = tradingFees.userFee;
@@ -168,7 +172,7 @@ module.exports = {
                 .helpers
                 .tradding
                 .sell
-                .update(currentSellBookDetails.id, { quantity: remainigQuantity });
+                .update(currentSellBookDetails.id, {quantity: remainigQuantity});
             } else {
               await sails
                 .helpers
@@ -203,14 +207,15 @@ module.exports = {
               user_id: inputs.user_id,
               currency: currency,
               side: inputs.side,
-              crypto: crypto,
-              quantity: inputs.orderQuantity,
-              fill_price: currentBuyBookDetails.price
+              settle_currency: crypto,
+              quantity: availableQty,
+              fill_price: currentSellBookDetails.price
             }
             var tradingFees = await sails
               .helpers
               .wallet
-              .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
                 return new Error("serverError")
               });
             trade_history_data.user_fee = tradingFees.userFee;
@@ -236,13 +241,17 @@ module.exports = {
             let response = await sails
               .helpers
               .tradding
-              .marketBuy(requestData.symbol, requestData.user_id, requestData.side, requestData.order_type, requestData.orderQuantity).intercept("coinNotFound", () => {
+              .marketBuy(requestData.symbol, requestData.user_id, requestData.side, requestData.order_type, requestData.orderQuantity)
+              .intercept("coinNotFound", () => {
                 return new Error("coinNotFound");
-              }).intercept("serverError", () => {
+              })
+              .intercept("serverError", () => {
                 return new Error("serverError");
-              }).intercept("insufficientBalance", () => {
+              })
+              .intercept("insufficientBalance", () => {
                 return new Error("insufficientBalance");
-              }).intercept("orderBookEmpty", () => {
+              })
+              .intercept("orderBookEmpty", () => {
                 return new Error("orderBookEmpty");
               });
           } else {
