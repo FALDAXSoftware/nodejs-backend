@@ -79,8 +79,12 @@ module.exports = {
         .getMakerTakerFees(buyLimitOrderData.settle_currency, buyLimitOrderData.currency);
 
       if (sellBook && sellBook.length > 0) {
-        if ((sellBook[0].price >= buyLimitOrderData.limit_price) || (sellBook[0].price <= buyLimitOrderData.stop_price)) {
+        console.log(sellBook[0].price);
+        console.log(buyLimitOrderData.limit_price);
+        console.log(sellBook[0].price >= buyLimitOrderData.limit_price);
+        if ((sellBook[0].price <= buyLimitOrderData.limit_price) || (sellBook[0].price <= buyLimitOrderData.stop_price)) {
           if (sellBook[0].quantity >= buyLimitOrderData.quantity) {
+            console.log("INSIDE IF LOOP :: ");
             buyLimitOrderData.fill_price = sellBook[0].price;
             delete buyLimitOrderData.id;
             if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity) <= wallet.placed_balance) {
@@ -107,7 +111,6 @@ module.exports = {
                 .activity
                 .update(sellBook[0].activity_id, trade_history_data);
 
-              
               var request = {
                 requested_user_id: trade_history_data.requested_user_id,
                 user_id: trade_history_data.user_id,
@@ -136,7 +139,6 @@ module.exports = {
                 .tradding
                 .trade
                 .add(trade_history_data);
-              
 
               // Transfer fees here Updating the trade history data for adding fees
 
@@ -163,6 +165,7 @@ module.exports = {
               return exits.insufficientBalance();
             }
           } else {
+            console.log("INSIDE ELSE LOOP :: ");
             var remainingQty = buyLimitOrderData.quantity - sellBook[0].quantity;
             var feeResult = await sails
               .helpers
@@ -211,7 +214,7 @@ module.exports = {
                 currency: buyLimitOrderData.currency,
                 side: buyLimitOrderData.side,
                 settle_currency: buyLimitOrderData.settle_currency,
-                qty: sellBook[0].quantity,
+                quantity: sellBook[0].quantity,
                 fill_price: buyLimitOrderData.fill_price
               }
 
