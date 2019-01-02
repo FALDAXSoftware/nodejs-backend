@@ -149,6 +149,10 @@ module.exports = {
             .intercept('serverError', () => {
               return new Error("serverError");
             });
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(crypto, currency);
           return exits.success(limitMatchData);
         } else {
           buyLimitOrderData.activity_id = activity.id;
@@ -161,6 +165,10 @@ module.exports = {
               .buy
               .addBuyOrder(buyLimitOrderData);
             //Add Socket Here Emit
+            await sails
+              .helpers
+              .sockets
+              .tradeEmit(crypto, currency);
             return exits.success(addBuyBook);
           } else {
             return exits.insufficientBalance();
@@ -183,6 +191,10 @@ module.exports = {
               return new Error("serverError");
             });;
           //Add Socket Here Emit
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(crypto, currency);
           return exits.success(addBuyBook);
         } else {
           return exits.insufficientBalance();
