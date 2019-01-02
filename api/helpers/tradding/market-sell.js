@@ -261,7 +261,7 @@ module.exports = {
 
       }
       // console.log("----wallet", wallet);
-
+      await sails.helpers.sockets.tradeEmit(crypto, currency);
       return exits.success();
 
     } catch (error) {

@@ -17,7 +17,7 @@ module.exports.routes = {
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
-  'post /query-test/:test': 'RootController.queryTest',
+  'get /query-test': 'RootController.queryTest',
 
   // CMS Routes///////////////////////////////////////////
 
@@ -194,7 +194,7 @@ module.exports.routes = {
   'post /apply-job': 'CareerController.applyJob',
 
   // Tradding Routes
-  'get /get-buy-book-details': 'BuyController.getBuyBookDetails',
+  // 'get /get-buy-book-details': 'BuyController.getBuyBookDetails',
   'get /get-sell-book-details': 'SellController.getSellBookDetails',
   'get /get-data': 'SellController.getData',
 
@@ -219,5 +219,10 @@ module.exports.routes = {
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
   'get /coin-list': 'Coins.getAllCoinList',
+
+
+
+  // Socket Routes
+  'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
 
 };
