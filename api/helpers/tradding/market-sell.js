@@ -59,16 +59,18 @@ module.exports = {
     // console.log("market sell inputs -- ", inputs);
 
     try {
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
       let wallet = await sails
         .helpers
         .utilities
-        .getSellWalletBalance(crypto, currency, inputs.user_id).intercept("coinNotFound", () => {
+        .getSellWalletBalance(crypto, currency, inputs.user_id)
+        .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
-        }).intercept("serverError", () => {
+        })
+        .intercept("serverError", () => {
           return new Error("serverError")
         });
       let buyBook = await sails
@@ -119,8 +121,6 @@ module.exports = {
           .add(resultData);
 
         if (inputs.orderQuantity <= availableQty) {
-          // console.log("conditions----->>", (currentBuyBookDetails.price *
-          // inputs.orderQuantity), wallet.placed_balance);
 
           if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
             var trade_history_data = {
@@ -142,15 +142,16 @@ module.exports = {
               user_id: inputs.user_id,
               currency: currency,
               side: inputs.side,
-              crypto: crypto,
+              settle_currency: crypto,
               quantity: inputs.orderQuantity,
               fill_price: currentBuyBookDetails.price
             }
 
-            var abc = await sails
+            var tradingFees = await sails
               .helpers
               .wallet
-              .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
                 return new Error("serverError")
               });
             trade_history_data.user_fee = tradingFees.userFee;
@@ -170,7 +171,7 @@ module.exports = {
                 .helpers
                 .tradding
                 .buy
-                .update(currentBuyBookDetails.id, { quantity: remainigQuantity });
+                .update(currentBuyBookDetails.id, {quantity: remainigQuantity});
             } else {
               await sails
                 .helpers
@@ -206,14 +207,15 @@ module.exports = {
               user_id: inputs.user_id,
               currency: currency,
               side: inputs.side,
-              crypto: crypto,
-              quantity: inputs.orderQuantity,
+              settle_currency: crypto,
+              quantity: availableQty,
               fill_price: currentBuyBookDetails.price
             }
-            var abc = await sails
+            var tradingFees = await sails
               .helpers
               .wallet
-              .tradingFees(request, fees.makerFee, fees.takerFee).intercept("serverError", () => {
+              .tradingFees(request, fees.makerFee, fees.takerFee)
+              .intercept("serverError", () => {
                 return new Error("serverError")
               });
             trade_history_data.user_fee = tradingFees.userFee;
@@ -239,13 +241,17 @@ module.exports = {
             let response = await sails
               .helpers
               .tradding
-              .marketSell(requestData.symbol, requestData.user_id, requestData.side, requestData.order_type, requestData.orderQuantity).intercept("coinNotFound", () => {
+              .marketSell(requestData.symbol, requestData.user_id, requestData.side, requestData.order_type, requestData.orderQuantity)
+              .intercept("coinNotFound", () => {
                 return new Error("coinNotFound");
-              }).intercept("serverError", () => {
+              })
+              .intercept("serverError", () => {
                 return new Error("serverError");
-              }).intercept("insufficientBalance", () => {
+              })
+              .intercept("insufficientBalance", () => {
                 return new Error("insufficientBalance");
-              }).intercept("orderBookEmpty", () => {
+              })
+              .intercept("orderBookEmpty", () => {
                 return new Error("orderBookEmpty");
               });
           } else {
@@ -265,6 +271,7 @@ module.exports = {
       return exits.success();
 
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

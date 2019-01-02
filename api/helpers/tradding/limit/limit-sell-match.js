@@ -64,7 +64,8 @@ module.exports = {
       var wallet = await sails
         .helpers
         .utilities
-        .getSellWalletBalance(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, sellLimitOrderData.user_id).intercept("coinNotFound", () => {
+        .getSellWalletBalance(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, sellLimitOrderData.user_id)
+        .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
         })
         .intercept("serverError", () => {
@@ -119,7 +120,7 @@ module.exports = {
                 fill_price: sellLimitOrderData.fill_price
               }
 
-              var abc = await sails
+              var tradingFees = await sails
                 .helpers
                 .wallet
                 .tradingFees(request, fees.makerFee, fees.takerFee)
@@ -128,8 +129,8 @@ module.exports = {
                 });
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
-              trade_history_data.user_coin = crypto;
-              trade_history_data.requested_coin = currency;
+              trade_history_data.user_coin = sellLimitOrderData.settle_currency;
+              trade_history_data.requested_coin = sellLimitOrderData.currency;
 
               var tradeHistory = await sails
                 .helpers
@@ -145,7 +146,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .buy
-                  .update(buyBook[0].id, { 'quantity': remainingQty });
+                  .update(buyBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
                 return exits.success(updatedBuyBook);
               } else {
@@ -216,7 +217,7 @@ module.exports = {
                 fill_price: sellLimitOrderData.fill_price
               }
 
-              var abc = await sails
+              var tradingFees = await sails
                 .helpers
                 .wallet
                 .tradingFees(request, fees.makerFee, fees.takerFee)
@@ -224,7 +225,6 @@ module.exports = {
                   return new Error("serverError")
                 });
 
-                console.log("HERE :: ")
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
               trade_history_data.user_coin = sellLimitOrderData.settle_currency;
@@ -317,6 +317,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }
