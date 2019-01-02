@@ -59,7 +59,7 @@ module.exports = {
     // console.log("market sell inputs -- ", inputs);
 
     try {
-      let {crypto, currency} = await sails
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -171,7 +171,7 @@ module.exports = {
                 .helpers
                 .tradding
                 .buy
-                .update(currentBuyBookDetails.id, {quantity: remainigQuantity});
+                .update(currentBuyBookDetails.id, { quantity: remainigQuantity });
             } else {
               await sails
                 .helpers
@@ -261,7 +261,7 @@ module.exports = {
         }
         // console.log("resultData -- ", resultData);
 
-      } else {
+
         // console.log("no more limit order in order book");
         return exits.orderBookEmpty();
 

@@ -39,6 +39,13 @@ module.exports = {
       .buy
       .getBuyBookOrders(inputs.crypto, inputs.currency);
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "buybookUpdate", buyBookDetails);
+    let sellBookDetails = await sails
+      .helpers
+      .tradding
+      .sell
+      .getSellBookOrders(inputs.crypto, inputs.currency);
+    sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "sellbookUpdate", sellBookDetails);
+    return exits.success();
   }
 
 

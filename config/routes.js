@@ -224,5 +224,6 @@ module.exports.routes = {
 
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
+  'get /socket/get-sell-book': 'SellController.getSellBookDetails',
 
 };
