@@ -122,7 +122,6 @@ module.exports = {
   },
   limitSell: async function (req, res) {
     try {
-      console.log(req.allParams());
       let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
       let response = await sails
@@ -187,7 +186,7 @@ module.exports = {
           .status(500)
           .json({status: 500, "err": "invalid order quantity"});
       }
-      r
+      
 
       return res
         .status(500)

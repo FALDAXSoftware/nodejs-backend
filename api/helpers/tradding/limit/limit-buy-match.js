@@ -79,7 +79,7 @@ module.exports = {
         .getMakerTakerFees(buyLimitOrderData.settle_currency, buyLimitOrderData.currency);
 
       if (sellBook && sellBook.length > 0) {
-        if ((sellBook[0].price >= buyLimitOrderData.limit_price) || (sellBook[0].price <= buyLimitOrderData.stop_price)) {
+        if ((sellBook[0].price <= buyLimitOrderData.limit_price) || (sellBook[0].price <= buyLimitOrderData.stop_price)) {
           if (sellBook[0].quantity >= buyLimitOrderData.quantity) {
             buyLimitOrderData.fill_price = sellBook[0].price;
             delete buyLimitOrderData.id;
@@ -107,7 +107,6 @@ module.exports = {
                 .activity
                 .update(sellBook[0].activity_id, trade_history_data);
 
-              
               var request = {
                 requested_user_id: trade_history_data.requested_user_id,
                 user_id: trade_history_data.user_id,
@@ -136,7 +135,6 @@ module.exports = {
                 .tradding
                 .trade
                 .add(trade_history_data);
-              
 
               // Transfer fees here Updating the trade history data for adding fees
 
@@ -211,7 +209,7 @@ module.exports = {
                 currency: buyLimitOrderData.currency,
                 side: buyLimitOrderData.side,
                 settle_currency: buyLimitOrderData.settle_currency,
-                qty: sellBook[0].quantity,
+                quantity: sellBook[0].quantity,
                 fill_price: buyLimitOrderData.fill_price
               }
 
@@ -226,8 +224,8 @@ module.exports = {
 
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
-              trade_history_data.user_coin = crypto;
-              trade_history_data.requested_coin = currency;
+              trade_history_data.user_coin = buyLimitOrderData.settle_currency;
+              trade_history_data.requested_coin = buyLimitOrderData.currency;
 
               var tradeHistory = await sails
                 .helpers
@@ -328,6 +326,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }
