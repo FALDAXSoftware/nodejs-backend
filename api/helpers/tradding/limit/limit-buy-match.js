@@ -79,12 +79,8 @@ module.exports = {
         .getMakerTakerFees(buyLimitOrderData.settle_currency, buyLimitOrderData.currency);
 
       if (sellBook && sellBook.length > 0) {
-        console.log(sellBook[0].price);
-        console.log(buyLimitOrderData.limit_price);
-        console.log(sellBook[0].price >= buyLimitOrderData.limit_price);
         if ((sellBook[0].price <= buyLimitOrderData.limit_price) || (sellBook[0].price <= buyLimitOrderData.stop_price)) {
           if (sellBook[0].quantity >= buyLimitOrderData.quantity) {
-            console.log("INSIDE IF LOOP :: ");
             buyLimitOrderData.fill_price = sellBook[0].price;
             delete buyLimitOrderData.id;
             if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity) <= wallet.placed_balance) {
@@ -165,7 +161,6 @@ module.exports = {
               return exits.insufficientBalance();
             }
           } else {
-            console.log("INSIDE ELSE LOOP :: ");
             var remainingQty = buyLimitOrderData.quantity - sellBook[0].quantity;
             var feeResult = await sails
               .helpers
@@ -229,8 +224,8 @@ module.exports = {
 
               trade_history_data.user_fee = tradingFees.userFee;
               trade_history_data.requested_fee = tradingFees.requestedFee;
-              trade_history_data.user_coin = crypto;
-              trade_history_data.requested_coin = currency;
+              trade_history_data.user_coin = buyLimitOrderData.settle_currency;
+              trade_history_data.requested_coin = buyLimitOrderData.currency;
 
               var tradeHistory = await sails
                 .helpers
@@ -331,6 +326,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

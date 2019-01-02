@@ -67,7 +67,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-      console.log("Inisde thsi method :: ");
 
       let {crypto, currency} = await sails
         .helpers
@@ -132,11 +131,7 @@ module.exports = {
 
       if (sellBook && sellBook.length > 0) {
         var currentPrice = sellBook[0].price;
-        console.log(currentPrice);
-        console.log(inputs.limit_price);
-        console.log("Condition checking :: ", inputs.limit_price >= currentPrice);
         if (inputs.limit_price >= currentPrice) {
-          console.log("INISDE IDF LOOP :L: ")
           var limitMatchData = await sails
             .helpers
             .tradding
