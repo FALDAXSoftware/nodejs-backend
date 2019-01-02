@@ -11,7 +11,7 @@ module.exports = {
   //---------------------------Web Api------------------------------
   marketSell: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      let {symbol, side, order_type, orderQuantity} = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       let response = await sails
@@ -186,7 +186,64 @@ module.exports = {
           .status(500)
           .json({status: 500, "err": "invalid order quantity"});
       }
-      
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  stopLimitBuy: async function (req, res) {
+    try {
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity,
+        limit_price,
+        stop_price
+      } = req.allParams();
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .stopLimitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
+        .tolerate('invalidQuantity', () => {
+          throw new Error("invalidQuantity");
+        })
+        .tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
+        });;
+      console.log("done");
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+    } catch (error) {
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({status: 500, "err": "Coin Not Found"});
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({status: 500, "err": "Insufficient balance in wallet"});
+      }
+      if (error.message == "invalidQuantity") {
+        return res
+          .status(500)
+          .json({status: 500, "err": "invalid order quantity"});
+      }
 
       return res
         .status(500)
@@ -371,12 +428,17 @@ module.exports = {
       };
     }
 
-    let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
+    let user_name = await Users.findOne({
+      select: ['full_name'],
+      where: {
+        id: user_id
+      }
+    });
 
     let tradeData = await TradeHistory
       .find({
-        ...q
-      })
+      ...q
+    })
       .sort("id ASC")
       .paginate(page, parseInt(limit));
     for (let index = 0; index < tradeData.length; index++) {
@@ -397,7 +459,8 @@ module.exports = {
       "status": 200,
       "message": sails.__("Trade list"),
       "data": tradeData,
-      tradeCount, user_name
+      tradeCount,
+      user_name
     });
   }
 };
