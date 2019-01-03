@@ -206,6 +206,9 @@ module.exports.routes = {
   'post /limit/sell': 'TradeController.limitSell',
   'post /limit/buy': 'TradeController.limitBuy',
 
+  //Stop limit Trade
+  'post /stop/limit/sell': 'TradeController.stopLimitSell',
+  'post /stop/limit/buy': 'TradeController.stopLimitBuy',
 
   // 'post /get-all-history': 'TradeController.getAllTradeHistory',
 

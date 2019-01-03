@@ -79,7 +79,7 @@ module.exports = {
       defaultsTo: false
     },
     fix_quantity: {
-      type: 'string',
+      type: 'number',
       columnName: 'fix_quantity'
     },
     symbol: {
@@ -116,6 +116,8 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
+    values.updated_at = new Date();
+
     next();
   },
   beforeUpdate: (values, next) => {

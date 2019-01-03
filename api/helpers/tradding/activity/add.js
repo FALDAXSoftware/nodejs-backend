@@ -19,6 +19,7 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+
     let orderData = inputs.orderData;
     let activityTable = await ActivityTable
       .create(orderData)

@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = {
 
   friendlyName: 'Stop limit buy',
@@ -58,26 +60,26 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     // TODO
-    let {crypto, currency} = await sails
+    let { crypto, currency } = await sails
       .helpers
       .utilities
       .getCurrencies(inputs.symbol);
-
+    var now = new Date();
     var limitSellOrder = ({
       'user_id': inputs.user_id,
       'symbol': inputs.symbol,
       'side': inputs.side,
       'order_type': inputs.order_type,
-      'created': moment(),
-      'updated': moment(),
-      'maximum_time': moment().add(1, 'years'),
+      // 'created_at': now,
+      // 'updated_at': now,
+      'maximum_time': moment(now).add(1, 'years').format(),
       'fill_price': 0.0,
       'limit_price': inputs.limit_price,
       'stop_price': inputs.stop_price,
       'price': 0.0,
       'quantity': inputs.orderQuantity,
       'settl_currency': crypto,
-      'order_status': "Open",
+      'order_status': "open",
       'currency': currency
     });
 
@@ -98,7 +100,7 @@ module.exports = {
       .getMakerTakerFees(crypto, currency);
 
     var resultData = {
-      ...limitBuyOrder
+      ...limitSellOrder
     }
     resultData.is_market = false;
     resultData.fix_quantity = inputs.orderQuantity;

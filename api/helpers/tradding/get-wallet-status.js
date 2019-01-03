@@ -32,7 +32,7 @@ module.exports = {
     var walletStatus;
     var order = inputs.limitBuyOrder;
     var wallet = inputs.wallet;
-    if (order.limit_price * order.quantity <= walllet.placed_balance) {
+    if (order.limit_price * order.quantity <= wallet.placed_balance) {
       return exits.success(true);
     } else {
       return exits.success(false);

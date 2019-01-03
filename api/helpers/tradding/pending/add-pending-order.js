@@ -22,6 +22,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     // TODO
+    console.log("-----------", inputs.orderData);
+
     let orderData = inputs.orderData;
     let pendingData = await PendingBook
       .create(orderData)

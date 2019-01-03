@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
 const moment = require('moment');
 
 module.exports = {
@@ -171,6 +170,7 @@ module.exports = {
         "message": sails.__("Order Success")
       });
     } catch (error) {
+      console.log("tradecontroller", error)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -197,6 +197,8 @@ module.exports = {
   },
 
   stopLimitBuy: async function (req, res) {
+    console.log("stop limit but", req.body);
+
     try {
       let {
         symbol,
@@ -222,13 +224,15 @@ module.exports = {
         })
         .tolerate('serverError', () => {
           throw new Error("serverError");
-        });;
+        });
       console.log("done");
       res.json({
         "status": 200,
         "message": sails.__("Order Success")
       });
     } catch (error) {
+      console.log("tradeController", error);
+
       if (error.message == "coinNotFound") {
         return res
           .status(500)
