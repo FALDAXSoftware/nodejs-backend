@@ -210,7 +210,7 @@ module.exports = {
       let response = await sails
         .helpers
         .tradding
-        .stopLimitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
+        .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
         .tolerate('invalidQuantity', () => {
           throw new Error("invalidQuantity");
         })
