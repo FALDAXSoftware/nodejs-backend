@@ -469,7 +469,8 @@ module.exports = {
     let user_name = await Users.findOne({
       select: ['full_name'],
       where: {
-        id: user_id
+        id: user_id,
+        deleted_at: null
       }
     });
 

@@ -65,10 +65,10 @@ module.exports = {
 
         if (user_detail) {
           //   Create Recive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user_detail);
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user_detail);
           sails
             .hooks
             .email
