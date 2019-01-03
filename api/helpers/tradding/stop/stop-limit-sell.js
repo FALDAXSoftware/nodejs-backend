@@ -27,11 +27,15 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      console.log("Inisde this :: ")
       var order = inputs.pending_order_book;
+      console.log(order);
       var lastTradePrice = await sails
         .helpers
         .tradding
         .checkLastTradePrice(order.settle_currency, order.currency);
+
+      console.log(lastTradePrice)
 
       var activityResult = await sails
         .helpers
@@ -39,7 +43,10 @@ module.exports = {
         .activity
         .getActivityDetails(order.activity_id);
 
+      console.log(activityResult);
+      console.log("STOP PRICE :: ", order.stop_price);
       if (lastTradePrice <= order.stop_price) {
+        console.log("Inside if Loop :: ");
         var sellMatchResponse = await sails
           .helpers
           .tradding

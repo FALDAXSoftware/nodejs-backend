@@ -28,8 +28,8 @@ module.exports = {
 
   fn: async function (inputs,exits) {
     let now = new Date();
-    await sellBook.update({ id: inputs.id }).set({ deleted_at: now });
-    return exits.success();
+    var details = await sellBook.update({ id: inputs.id }).set({ deleted_at: now }).fetch();
+    return exits.success(details);
   }
 
 

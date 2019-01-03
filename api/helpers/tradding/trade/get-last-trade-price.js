@@ -30,6 +30,7 @@ module.exports = {
 
     // Get last trade price.
     var lastTradePrice;
+    console.log(inputs);
 
     lastTradePrice = await TradeHistory.find({
       where: {

@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = {
 
   friendlyName: 'Stop limit sell add pending',
@@ -63,21 +65,24 @@ module.exports = {
       .utilities
       .getCurrencies(inputs.symbol);
 
+    console.log(crypto);
+
+    var now = new Date();
     var limitSellOrder = ({
       'user_id': inputs.user_id,
       'symbol': inputs.symbol,
       'side': inputs.side,
       'order_type': inputs.order_type,
-      'created': moment(),
-      'updated': moment(),
-      'maximum_time': moment().add(1, 'years'),
+      'maximum_time': moment(now)
+        .add(1, 'years')
+        .format(),
       'fill_price': 0.0,
       'limit_price': inputs.limit_price,
       'stop_price': inputs.stop_price,
       'price': 0.0,
       'quantity': inputs.orderQuantity,
-      'settl_currency': crypto,
-      'order_status': "Open",
+      'settle_currency': crypto,
+      'order_status': "open",
       'currency': currency
     });
 
@@ -98,7 +103,7 @@ module.exports = {
       .getMakerTakerFees(crypto, currency);
 
     var resultData = {
-      ...limitBuyOrder
+      ...limitSellOrder
     }
     resultData.is_market = false;
     resultData.fix_quantity = inputs.orderQuantity;

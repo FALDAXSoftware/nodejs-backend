@@ -228,6 +228,9 @@ module.exports.routes = {
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
-  'get /socket/get-trade-history': 'TradeController.getAllTradeHistory'
+  'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
+
+
+  'get /stop-limit-execute':'TradeController.stopLimitExecute',
 
 };

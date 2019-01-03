@@ -20,7 +20,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs,exits) {
     let now = new Date();
     console.log(inputs.id);
     await PendingBook

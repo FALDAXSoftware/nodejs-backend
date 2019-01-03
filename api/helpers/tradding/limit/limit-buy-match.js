@@ -147,6 +147,7 @@ module.exports = {
                   .sell
                   .update(sellBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
+                console.log(updatedbuyBook);
                 return exits.success(updatedbuyBook);
               } else {
                 var deleteData = await sails
@@ -155,6 +156,7 @@ module.exports = {
                   .sell
                   .deleteOrder(sellBook[0].id);
                 //Emit the socket here
+                console.log(deleteData);
                 return exits.success(deleteData);
               }
             } else {
@@ -263,6 +265,7 @@ module.exports = {
                   .intercept('serverError', () => {
                     return new Error("serverError");
                   });
+                console.log(responseData);
                 return exits.success(responseData);
               }
             } else {

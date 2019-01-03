@@ -14,7 +14,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
     var now = moment();
     var pendingDetails = await sails
       .helpers
@@ -23,6 +23,7 @@ module.exports = {
       .getPendingOrderDetails();
 
     for (var i = 0; i < pendingDetails.length; i++) {
+      console.log(pendingDetails[i])
       var {
         order_type,
         side,
@@ -36,17 +37,22 @@ module.exports = {
         symbol,
         user_id,
         activity_id
-      } = pending_order;
+      } = pendingDetails[i];
 
+      console.log(settle_currency);
+
+      var now = Date();
       var pending_order_book = ({
         'id': id,
         'user_id': user_id,
         'symbol': symbol,
         'side': side,
         'order_type': order_type,
-        'created': moment(),
-        'updated': moment(),
-        'maximum_time': moment().add(1, 'years'),
+        'created': now,
+        'updated': now,
+        'maximum_time': moment(now)
+          .add(1, 'years')
+          .format(),
         'fill_price': 0.0,
         'limit_price': limit_price,
         'stop_price': stop_price,

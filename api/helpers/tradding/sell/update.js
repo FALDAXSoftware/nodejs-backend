@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Update',
 
-
   description: 'Update sell.',
-
 
   inputs: {
     id: {
@@ -21,21 +18,20 @@ module.exports = {
     }
   },
 
-
   exits: {
 
     success: {
-      description: 'All done.',
-    },
-
+      description: 'All done.'
+    }
   },
 
-
-  fn: async function (inputs,exits) {
-    let updatedbook = await sellBook.update({ id: inputs.id }).set(inputs.data).fetch();
+  fn: async function (inputs, exits) {
+    let updatedbook = await sellBook
+      .update({id: inputs.id})
+      .set(inputs.data)
+      .fetch();
+    console.log(updatedbook);
     return exits.success(updatedbook);
   }
 
-
 };
-
