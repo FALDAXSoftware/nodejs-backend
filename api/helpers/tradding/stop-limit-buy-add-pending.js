@@ -96,6 +96,40 @@ module.exports = {
       .helpers
       .utilities
       .getMakerTakerFees(crypto, currency);
+
+    var resultData = {
+      ...limitBuyOrder
+    }
+    resultData.is_market = false;
+    resultData.fix_quantity = inputs.orderQuantity;
+    resultData.maker_fee = fees.makerFee;
+    resultData.taker_fee = fees.takerFee;
+
+    var resultPending = await sails
+      .helpers
+      .tradding
+      .getWalletStatus(limitSellOrder, wallet);
+
+    if (resultPending == true) {
+      var result = await sails
+        .helpers
+        .tradding
+        .activity
+        .add(limitSellOrder);
+
+      limitSellOrder.activity_id = result.id;
+      var data = await sails
+        .helpers
+        .tradding
+        .pending
+        .addPendingOrder(limitSellOrder);
+
+      //Emit Socket Here
+      return exits.success(data);
+    } else {
+      // Not enough Balance
+      return exits.success();
+    }
   }
 
 };
