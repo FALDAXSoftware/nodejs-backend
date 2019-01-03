@@ -44,7 +44,7 @@ module.exports = {
           .helpers
           .tradding
           .limit
-          .limitBuyMtach(order, order.settle_currency, order.currency, activityResult);
+          .limitBuyMatch(order, order.settle_currency, order.currency, activityResult);
 
         if (buyMatchResponse) {
           var pendingOrder = await sails
