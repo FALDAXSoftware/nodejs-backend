@@ -1,8 +1,6 @@
-const moment = require('moment');
-
 module.exports = {
 
-  friendlyName: 'Stop limit buy',
+  friendlyName: 'Stop limit sell add pending',
 
   description: '',
 
@@ -60,33 +58,33 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     // TODO
-    let { crypto, currency } = await sails
+    let {crypto, currency} = await sails
       .helpers
       .utilities
       .getCurrencies(inputs.symbol);
-    var now = new Date();
+
     var limitSellOrder = ({
       'user_id': inputs.user_id,
       'symbol': inputs.symbol,
       'side': inputs.side,
       'order_type': inputs.order_type,
-      // 'created_at': now,
-      // 'updated_at': now,
-      'maximum_time': moment(now).add(1, 'years').format(),
+      'created': moment(),
+      'updated': moment(),
+      'maximum_time': moment().add(1, 'years'),
       'fill_price': 0.0,
       'limit_price': inputs.limit_price,
       'stop_price': inputs.stop_price,
       'price': 0.0,
       'quantity': inputs.orderQuantity,
       'settl_currency': crypto,
-      'order_status': "open",
+      'order_status': "Open",
       'currency': currency
     });
 
     var wallet = await sails
       .helpers
       .utilities
-      .getWalletBalance(crypto, currency, inputs.user_id)
+      .getSellWalletBalance(currency, crypto, inputs.user_id)
       .intercept("coinNotFound", () => {
         return new Error("coinNotFound");
       })
@@ -100,7 +98,7 @@ module.exports = {
       .getMakerTakerFees(crypto, currency);
 
     var resultData = {
-      ...limitSellOrder
+      ...limitBuyOrder
     }
     resultData.is_market = false;
     resultData.fix_quantity = inputs.orderQuantity;
@@ -129,7 +127,7 @@ module.exports = {
       //Emit Socket Here
       return exits.success(data);
     } else {
-      // Not enough Balance
+      // Not enough Balance Error
       return exits.success();
     }
   }

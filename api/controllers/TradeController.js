@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
 const moment = require('moment');
 
 module.exports = {
@@ -171,6 +170,7 @@ module.exports = {
         "message": sails.__("Order Success")
       });
     } catch (error) {
+      console.log("tradecontroller", error)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -197,6 +197,8 @@ module.exports = {
   },
 
   stopLimitBuy: async function (req, res) {
+    console.log("stop limit but", req.body);
+
     try {
       let {
         symbol,
@@ -211,6 +213,66 @@ module.exports = {
         .helpers
         .tradding
         .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
+        .tolerate('invalidQuantity', () => {
+          throw new Error("invalidQuantity");
+        })
+        .tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
+        });
+      console.log("done");
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+    } catch (error) {
+      console.log("tradeController", error);
+
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Coin Not Found" });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
+      }
+      if (error.message == "invalidQuantity") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "invalid order quantity" });
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  stopLimitSell: async function (req, res) {
+    try {
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity,
+        limit_price,
+        stop_price
+      } = req.allParams();
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .stopLimitSellAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
         .tolerate('invalidQuantity', () => {
           throw new Error("invalidQuantity");
         })
@@ -254,109 +316,50 @@ module.exports = {
     }
   },
 
-  // getAllTradeHistory: async function (req, res) {
-  //   try {
-
-  //     let {
-  //       fromDate,
-  //       toDate,
-  //       pair,
-  //       Buy,
-  //       Sell,
-  //       deposit,
-  //       withdraw
-  //     } = req.body;
-
-  //     if (req.user.id && pair && Buy == 'true' && Sell == 'false' && fromDate && toDate) {
-  //       let tradeHistory = await TradeHistory.find({
-  //         user_id: req.user.id,
-  //         side: 'Buy',
-  //         symbol: pair,
-  //         or: [
-  //           {
-  //             created_at: {
-  //               '<=': moment(toDate).format()
-  //             }
-  //           }, {
-  //             created_at: {
-  //               '>=': moment(fromDate).format()
-  //             }
-  //           }, {
-  //             requested_user_id: req.user.id
-  //           }
-  //         ]
-  //       }).sort('created_at', 'DESC')
-
-  //       tradeHistory.map(value => {
-  //         if (value.user_id == req.user.id) {
-  //           value.fees = value.user_fee;
-  //           value.coin = value.user_coin;
-  //           value['Buy/Sell'] = 'Buy';
-  //         } else if (value.requested_user_id == req.user.id) {
-  //           value.fees = value.requested_fee;
-  //           value.coin = value.requested_coin;
-  //           value['Buy/Sell'] = 'Buy';
-  //         }
-  //       })
-
-  //       delete tradeHistory.user_id;
-  //       delete tradeHistory.requested_user_id;
-  //       delete tradeHistory.currency;
-  //       delete tradeHistory.settle_currency;
-
-  //       return res.json({status: 200, message: 'Trade history retrieved successfully.', tradeHistory})
-  //     } else if (req.user.id && pair && Buy == false && Sell == true && toDate && fromDate) {
-  //       let tradeHistory = await TradeHistory.find({
-  //         user_id: req.user.id,
-  //         side: 'Sell',
-  //         symbol: pair,
-  //         or: [
-  //           {
-  //             created_at: {
-  //               '<=': moment(toDate).format()
-  //             }
-  //           }, {
-  //             created_at: {
-  //               '>=': moment(fromDate).format()
-  //             }
-  //           }, {
-  //             requested_user_id: req.user.id
-  //           }
-  //         ]
-  //       }).sort('created_at', 'DESC')
-
-  //       tradeHistory.map(value => {
-  //         if (value.user_id == req.user.id) {
-  //           value.fees = value.user_fee;
-  //           value.coin = value.user_coin;
-  //           value['Buy/Sell'] = 'Sell';
-  //         } else if (value.requested_user_id == req.user.id) {
-  //           value.fees = value.requested_fee;
-  //           value.coin = value.requested_coin;
-  //           value['Buy/Sell'] = 'Sell';
-  //         }
-  //       })
-
-  //       delete tradeHistory.user_id;
-  //       delete tradeHistory.requested_user_id;
-  //       delete tradeHistory.currency;
-  //       delete tradeHistory.settle_currency;
-  //     }
-  //   } catch (err) {
-  //     return res
-  //       .status(500)
-  //       .json({
-  //         status: 500,
-  //         "err": sails.__("Something Wrong")
-  //       });
-  //   }
-  // },
+  // getAllTradeHistory: async function (req, res) {   try {     let {
+  // fromDate,       toDate,       pair,       Buy,       Sell,       deposit,
+  //   withdraw     } = req.body;     if (req.user.id && pair && Buy == 'true' &&
+  // Sell == 'false' && fromDate && toDate) {       let tradeHistory = await
+  // TradeHistory.find({         user_id: req.user.id,         side: 'Buy',
+  //  symbol: pair,         or: [           {             created_at: {
+  //    '<=': moment(toDate).format()             }           }, {
+  // created_at: {               '>=': moment(fromDate).format()             }
+  //       }, {             requested_user_id: req.user.id           }         ]
+  //     }).sort('created_at', 'DESC')       tradeHistory.map(value => {
+  // if (value.user_id == req.user.id) {           value.fees = value.user_fee;
+  //        value.coin = value.user_coin;           value['Buy/Sell'] = 'Buy';
+  //     } else if (value.requested_user_id == req.user.id) {           value.fees
+  // = value.requested_fee;           value.coin = value.requested_coin;
+  // value['Buy/Sell'] = 'Buy';         }       })       delete
+  // tradeHistory.user_id;       delete tradeHistory.requested_user_id;
+  // delete tradeHistory.currency;       delete tradeHistory.settle_currency;
+  //  return res.json({status: 200, message: 'Trade history retrieved
+  // successfully.', tradeHistory})     } else if (req.user.id && pair && Buy ==
+  // false && Sell == true && toDate && fromDate) {       let tradeHistory = await
+  // TradeHistory.find({         user_id: req.user.id,         side: 'Sell',
+  //   symbol: pair,         or: [           {             created_at: {
+  //     '<=': moment(toDate).format()             }           }, {
+  // created_at: {               '>=': moment(fromDate).format()             }
+  //       }, {             requested_user_id: req.user.id           }         ]
+  //     }).sort('created_at', 'DESC')       tradeHistory.map(value => {
+  // if (value.user_id == req.user.id) {           value.fees = value.user_fee;
+  //        value.coin = value.user_coin;           value['Buy/Sell'] = 'Sell';
+  //      } else if (value.requested_user_id == req.user.id) {
+  // value.fees = value.requested_fee;           value.coin =
+  // value.requested_coin;           value['Buy/Sell'] = 'Sell';         }
+  // })       delete tradeHistory.user_id;       delete
+  // tradeHistory.requested_user_id;       delete tradeHistory.currency;
+  // delete tradeHistory.settle_currency;     }   } catch (err) {     return res
+  //     .status(500)       .json({         status: 500,         "err":
+  // sails.__("Something Wrong")       });   } },
 
   getAllTradeHistory: async function (req, res) {
+    console.log("Trade history call");
+
     let room = req.query.room;
     try {
       if (req.isSocket) {
-        console.log(room);
+        console.log("trade history call", room);
         sails.sockets.join(req.socket, room, async function (err) {
           if (err) {
             console.log('>>>err', err);
@@ -366,6 +369,8 @@ module.exports = {
               .helpers
               .utilities
               .getCurrencies(room);
+            console.log("-=-=-=-=-=", crypto, currency);
+
             let tradeDetails = await sails
               .helpers
               .tradding
@@ -373,17 +378,15 @@ module.exports = {
               .getTradeDetails(crypto, currency, 100);
 
             if (tradeDetails) {
-              return res.json({
-                status: 200,
-                data: tradeDetails,
-                "message": "Trade data retrived successfully."
-              });
+              return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
             }
           }
         });
       } else {
         console.log('>>>IN else')
-        return res.status(403).json({ status: 403, "message": "Error occured" });
+        return res
+          .status(403)
+          .json({ status: 403, "message": "Error occured" });
       }
     } catch (err) {
       console.log('>>>', err)
