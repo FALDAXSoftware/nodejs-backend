@@ -70,10 +70,10 @@ module.exports.policies = {
     "callbackKYC": true,
   },
   "BuyController": {
-    "getBuyBookDetails": true,
+    // "getBuyBookDetails": true,
   },
   "SellController": {
-    "getSellBookDetails": true,
+    // "getSellBookDetails": true,
     "getData": true
   },
   "CoinsController": {

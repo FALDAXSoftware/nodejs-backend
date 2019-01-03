@@ -38,6 +38,8 @@ module.exports = {
     var tradeDetails;
     // TODO
 
+    console.log(inputs);
+
     tradeDetails = await TradeHistory.find({
       where: {
         deleted_at: null,

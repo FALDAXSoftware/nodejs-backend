@@ -350,28 +350,28 @@ module.exports = {
   // sails.__("Something Wrong")       });   } },
 
   getAllTradeHistory: async function (req, res) {
+    console.log("Trade history call");
+
     let room = req.query.room;
     try {
       if (req.isSocket) {
-        console.log(room);
-        sails
-          .sockets
-          .join(req.socket, room, async function (err) {
-            if (err) {
-              console.log('>>>err', err);
-              return res
-                .status(403)
-                .json({status: 403, "message": "Error occured"});
-            } else {
-              let {crypto, currency} = await sails
-                .helpers
-                .utilities
-                .getCurrencies(room);
-              let tradeDetails = await sails
-                .helpers
-                .tradding
-                .trade
-                .getTradeDetails(crypto, currency, 100);
+        console.log("trade history call", room);
+        sails.sockets.join(req.socket, room, async function (err) {
+          if (err) {
+            console.log('>>>err', err);
+            return res.status(403).json({ status: 403, "message": "Error occured" });
+          } else {
+            let { crypto, currency } = await sails
+              .helpers
+              .utilities
+              .getCurrencies(room);
+            console.log("-=-=-=-=-=", crypto, currency);
+
+            let tradeDetails = await sails
+              .helpers
+              .tradding
+              .trade
+              .getTradeDetails(crypto, currency, 100);
 
               if (tradeDetails) {
                 return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
@@ -468,7 +468,8 @@ module.exports = {
     let user_name = await Users.findOne({
       select: ['full_name'],
       where: {
-        id: user_id
+        id: user_id,
+        deleted_at: null
       }
     });
 
