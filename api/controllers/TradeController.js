@@ -353,10 +353,12 @@ module.exports = {
   // },
 
   getAllTradeHistory: async function (req, res) {
+    console.log("Trade history call");
+
     let room = req.query.room;
     try {
       if (req.isSocket) {
-        console.log(room);
+        console.log("trade history call", room);
         sails.sockets.join(req.socket, room, async function (err) {
           if (err) {
             console.log('>>>err', err);
@@ -366,6 +368,8 @@ module.exports = {
               .helpers
               .utilities
               .getCurrencies(room);
+            console.log("-=-=-=-=-=", crypto, currency);
+
             let tradeDetails = await sails
               .helpers
               .tradding
