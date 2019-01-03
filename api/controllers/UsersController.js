@@ -108,7 +108,7 @@ module.exports = {
         return;
       }
     } catch (error) {
-
+      console.log('error>>>>>>>>>>', error)
       res
         .status(500)
         .json({
