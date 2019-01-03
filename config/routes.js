@@ -207,7 +207,7 @@ module.exports.routes = {
   'post /limit/buy': 'TradeController.limitBuy',
 
 
-  'post /get-all-history': 'TradeController.getAllTradeHistory',
+  // 'post /get-all-history': 'TradeController.getAllTradeHistory',
 
   // Wallet Routes 
   'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
@@ -225,5 +225,6 @@ module.exports.routes = {
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
+  'get /socket/get-trade-history': 'TradeController.getAllTradeHistory'
 
 };
