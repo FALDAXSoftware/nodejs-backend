@@ -6,7 +6,7 @@ module.exports = {
 
   inputs: {
     id: {
-      type: 'integer',
+      type: 'number',
       example: 1,
       description: 'id of pending book.',
       required: true
@@ -24,8 +24,8 @@ module.exports = {
     let now = new Date();
     console.log(inputs.id);
     await PendingBook
-      .update({id: inputs.id})
-      .set({deleted_at: now});
+      .update({ id: inputs.id })
+      .set({ deleted_at: now });
     return exits.success();
   }
 

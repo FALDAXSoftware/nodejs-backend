@@ -6,7 +6,7 @@ module.exports = {
 
   inputs: {
     id: {
-      type: 'integer',
+      type: 'number',
       example: 1,
       description: 'Id for which details need to be fetched',
       required: true
