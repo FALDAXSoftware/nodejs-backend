@@ -396,7 +396,7 @@ module.exports = {
     let {
       page,
       limit,
-      data,
+      search,
       user_id,
       t_type,
       start_date,
@@ -416,14 +416,14 @@ module.exports = {
         '<=': end_date
       };
     }
-    if (data) {
+    if (search) {
       let userArray = await Users.find({
         where: {
           deleted_at: null,
           or: [
             {
               email: {
-                contains: data
+                contains: search
               }
             }
           ]
@@ -440,66 +440,124 @@ module.exports = {
           requested_user_id: idArray
         }, {
           symbol: {
-            contains: data
+            contains: search
           }
         }, {
           settle_currency: {
-            contains: data
+            contains: search
           }
         }, {
           currency: {
-            contains: data
+            contains: search
           }
         }
       ]
-    }
-    if (user_id) {
-      q['user_id'] = user_id
-    }
-    if (t_type) {
-      q['side'] = t_type;
-    }
-    if (start_date && end_date) {
-      q['created_at'] = {
-        '>=': start_date,
-        '<=': end_date
-      };
-    }
 
-    let user_name = await Users.findOne({
-      select: ['full_name'],
-      where: {
-        id: user_id,
-        deleted_at: null
+
+      if (user_id) {
+        q['user_id'] = user_id
       }
-    });
+      if (t_type) {
+        q['side'] = t_type;
+      }
+      if (start_date && end_date) {
+        q['created_at'] = {
+          '>=': start_date,
+          '<=': end_date
+        };
+      }
 
-    let tradeData = await TradeHistory
-      .find({
+      let user_name = "";
+
+      if (user_id) {
+        user_name = await Users.findOne({
+          select: ['full_name'],
+          where: {
+            id: user_id,
+            deleted_at: null
+          }
+        });
+      }
+      let tradeData = await TradeHistory
+        .find({
+          ...q
+        })
+        .sort("id ASC")
+        .paginate(page, parseInt(limit));
+      for (let index = 0; index < tradeData.length; index++) {
+        if (tradeData[index].user_id) {
+          let user = await Users.findOne({ id: tradeData[index].user_id })
+          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
+          tradeData[index].maker_email = user.email;
+          tradeData[index].taker_email = user2.email;
+          tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
+        }
+      }
+
+      let tradeCount = await TradeHistory.count({
         ...q
-      })
-      .sort("id ASC")
-      .paginate(page, parseInt(limit));
-    for (let index = 0; index < tradeData.length; index++) {
-      if (tradeData[index].user_id) {
-        let user = await Users.findOne({ id: tradeData[index].user_id })
-        let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
-        tradeData[index].maker_email = user.email;
-        tradeData[index].taker_email = user2.email;
-        tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
+      });
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Trade list"),
+        "data": tradeData,
+        tradeCount,
+        user_name
+      });
+    } else {
+      if (user_id) {
+        q['user_id'] = user_id
       }
+      if (t_type) {
+        q['side'] = t_type;
+      }
+      if (start_date && end_date) {
+        q['created_at'] = {
+          '>=': start_date,
+          '<=': end_date
+        };
+      }
+
+      let user_name = "";
+
+      if (user_id) {
+        user_name = await Users.findOne({
+          select: ['full_name'],
+          where: {
+            id: user_id,
+            deleted_at: null
+          }
+        });
+      }
+      let tradeData = await TradeHistory
+        .find({
+          ...q
+        })
+        .sort("id ASC")
+        .paginate(page, parseInt(limit));
+      for (let index = 0; index < tradeData.length; index++) {
+        if (tradeData[index].user_id) {
+          let user = await Users.findOne({ id: tradeData[index].user_id })
+          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
+          tradeData[index].maker_email = user.email;
+          tradeData[index].taker_email = user2.email;
+          tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
+        }
+      }
+
+      let tradeCount = await TradeHistory.count({
+        ...q
+      });
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Trade list"),
+        "data": tradeData,
+        tradeCount,
+        user_name
+      });
     }
 
-    let tradeCount = await TradeHistory.count({
-      ...q
-    });
-
-    return res.json({
-      "status": 200,
-      "message": sails.__("Trade list"),
-      "data": tradeData,
-      tradeCount,
-      user_name
-    });
   }
 };
