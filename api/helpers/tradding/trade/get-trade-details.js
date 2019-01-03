@@ -16,6 +16,12 @@ module.exports = {
       example: 'BTC',
       description: 'Name of currency.',
       required: true
+    },
+    limit: {
+      type: 'number',
+      example: 1,
+      description: 'No of records needed',
+      required: true
     }
   },
 
@@ -26,7 +32,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs,exits) {
+  fn: async function (inputs, exits) {
 
     // Get trade details.
     var tradeDetails;
@@ -38,7 +44,8 @@ module.exports = {
         settle_currency: inputs.settle_currency,
         currency: inputs.currency
       },
-      sort: 'id DESC'
+      sort: 'id DESC',
+      limit: inputs.limit
     })
 
     // Send back the result through the success exit.

@@ -32,7 +32,7 @@ module.exports = {
       .helpers
       .tradding
       .trade
-      .getTradeDetails(input.crypto, inputs.currency);
+      .getTradeDetails(input.crypto, inputs.currency, 1);
 
     var lastTradePrice;
 
