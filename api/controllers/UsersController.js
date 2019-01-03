@@ -608,11 +608,12 @@ module.exports = {
 
   getUserloginHistoryAdmin: async function (req, res) {
     let { user_id } = req.allParams();
+    let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
     let history = await LoginHistory
       .find({ user: user_id })
       .sort("created_at DESC")
       .limit(10);
-    return res.json({ "status": 200, "message": "Users Login Data", "data": history });
+    return res.json({ "status": 200, "message": "Users Login Data", "data": history, user_name });
   }
 
 };

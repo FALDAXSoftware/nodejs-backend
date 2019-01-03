@@ -1,30 +1,33 @@
 module.exports = {
 
-  friendlyName: 'Add',
+  friendlyName: 'Add pending order',
 
-  description: 'Add activity.',
+  description: '',
 
   inputs: {
     orderData: {
       type: "json",
+      example: '{}',
       description: 'Order Data To add.',
       required: true
     }
   },
 
   exits: {
+
     success: {
       description: 'All done.'
     }
   },
 
   fn: async function (inputs, exits) {
+    // TODO
     let orderData = inputs.orderData;
-    let activityTable = await ActivityTable
+    let pendingData = await PendingBook
       .create(orderData)
       .fetch();
 
-    return exits.success(activityTable);
+    return exits.success(pendingData);
   }
 
 };

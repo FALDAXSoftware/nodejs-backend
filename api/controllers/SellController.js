@@ -8,23 +8,30 @@
 module.exports = {
     //---------------------------Web Api------------------------------
     getSellBookDetails: async function (req, res) {
+        // console.log("====>", req.query.room);
+        let room = req.query.room;
         try {
             if (req.isSocket) {
-                sails.sockets.join(req.socket, 'test', async function (err) {
+                console.log(room);
+                sails.sockets.join(req.socket, room, async function (err) {
                     if (err) {
                         console.log('>>>err', err);
                         return res.status(403).json({ status: 403, "message": "Error occured" });
                     } else {
-                        let sellBookDetails = await sellBook.find({
-                            deleted_at: null,
-                            settle_currency: 'ETH',
-                            currency
-                        }).sort('price', 'ASC');
+                        let { crypto, currency } = await sails
+                            .helpers
+                            .utilities
+                            .getCurrencies(room);
+                        let sellBookDetails = await sails
+                            .helpers
+                            .tradding
+                            .sell
+                            .getSellBookOrders(crypto, currency);
 
                         if (sellBookDetails) {
                             return res.json({
                                 status: 200,
-                                sellBookDetails,
+                                data: sellBookDetails,
                                 "message": "Sell data retrived successfully."
                             });
                         }
@@ -35,10 +42,7 @@ module.exports = {
                 return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
-            return res.status(500).json({
-                "status": 500,
-                "err": sails.__("Something Wrong")
-            });
+            console.log('>>>', err)
         }
     },
 
@@ -58,8 +62,11 @@ module.exports = {
         let { page, limit, data } = req.allParams();
 
         if (data) {
+            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
+
             let sellBookData = await sellBook.find({
-                user_id: req.body.user_id
+                user_id: req.body.user_id,
+                deleted_at: null,
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             let sellBookCount = await sellBook.count({
@@ -69,10 +76,12 @@ module.exports = {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount
+                    "data": sellBookData, sellBookCount, user_name
                 });
             }
         } else {
+            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
+
             let sellBookData = await sellBook.find({
                 where: {
                     deleted_at: null,
@@ -85,7 +94,7 @@ module.exports = {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount
+                    "data": sellBookData, sellBookCount, user_name
                 });
             }
         }

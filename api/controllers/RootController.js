@@ -183,10 +183,7 @@ module.exports = {
     },
 
     queryTest: function (req, res) {
-        console.log("req.body-=-=-=-->", req.body);
-        console.log("req.query-=-=-=-->", req.query);
-        console.log("req.params-=-=-=-->", req.params);
-        console.log("req.allparams-=-=-=-->", req.allParams());
+        console.log("------", sails.config.local.TEST);
         res.end();
     }
 

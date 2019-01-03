@@ -45,6 +45,7 @@ module.exports = {
                         console.log('error', error);
                     })
         }
+        console.log(kycUploadDetails);
 
         if (kyc_details.id_type == 1) {
             kycDocType = 'PP';
@@ -59,11 +60,14 @@ module.exports = {
         kycUploadDetails.bfn = kyc_details.first_name;
         kycUploadDetails.bln = kyc_details.last_name;
         kycUploadDetails.bln = kyc_details.last_name;
-        kycUploadDetails.bsn = kyc_details.address + ' ' + kyc_details.address_2 !== null ? kyc_details.address_2 : '';
+        kycUploadDetails.bsn = kyc_details.address;
+        if (kyc_details.address_2 !== null) {
+            kycUploadDetails.bsn = kycUploadDetails.bsn + ' ' + kyc_details.address_2;
+        }
         kycUploadDetails.bc = kyc_details.city;
         kycUploadDetails.bz = kyc_details.zip;
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
-
+        console.log(kycUploadDetails);
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='

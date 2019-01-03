@@ -26,7 +26,7 @@ module.exports = {
     //Adding balance in wallet
     var currency = orderData.currency;
     var crypto = orderData.settle_currency;
-    var total_price = orderData.limit_price * orderData.quantity;
+    var total_price =orderData.quantity;
 
     let sellAdded = await sellBook
       .create(orderData)
@@ -35,7 +35,7 @@ module.exports = {
     var walletBalance = await sails
       .helpers
       .utilities
-      .getSellWalletBalance(orderData.currency, orderData.crypto, inputs.user_id)
+      .getSellWalletBalance(orderData.settle_currency, orderData.currency, orderData.user_id)
       .intercept("coinNotFound", () => {
         return new Error("coinNotFound");
       })
@@ -47,7 +47,7 @@ module.exports = {
     var updatedBalance = balance - total_price;
     var updatedBalance = parseFloat((updatedBalance).toFixed(6));
 
-    var walletUpdate = Wallet
+    var walletUpdate =await Wallet
       .update({id: walletBalance.id})
       .set({placed_balance: updatedBalance});
     return exits.success(sellAdded);

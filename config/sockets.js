@@ -84,7 +84,7 @@ module.exports.sockets = {
     console.log("DISCONNECT SESSION", session);
     try {
       // Look up the user ID using the connected socket
-      var userId = session.users[sails.sockets.id(socket)].id;
+      // var userId = session.users[sails.sockets.id(socket)].id;
 
     } catch (e) {
       console.log("Error in onDisconnect: ", e);

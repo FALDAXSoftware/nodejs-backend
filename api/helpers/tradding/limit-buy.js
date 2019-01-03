@@ -67,6 +67,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -86,10 +87,12 @@ module.exports = {
         .tradding
         .sell
         .getSellBookOrders(crypto, currency);
+
       let fees = await sails
         .helpers
         .utilities
         .getMakerTakerFees(crypto, currency);
+
       var now = new Date();
 
       var buyLimitOrderData = {
@@ -115,15 +118,16 @@ module.exports = {
         ...buyLimitOrderData
       }
       resultData.isMarket = false;
-      resultData.fix_quantity = inputs.orderQuantity;
-      resultData.maker_fee = fees.makerFee;
-      resultData.taker_fee = fees.takerFee;
+      resultData.fix_quantity = inputs.orderQuantity
 
       let activity = await sails
         .helpers
         .tradding
         .activity
         .add(resultData);
+
+      resultData.maker_fee = fees.makerFee;
+      resultData.taker_fee = fees.takerFee;
 
       if (sellBook && sellBook.length > 0) {
         var currentPrice = sellBook[0].price;
@@ -145,6 +149,10 @@ module.exports = {
             .intercept('serverError', () => {
               return new Error("serverError");
             });
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(crypto, currency);
           return exits.success(limitMatchData);
         } else {
           buyLimitOrderData.activity_id = activity.id;
@@ -157,6 +165,10 @@ module.exports = {
               .buy
               .addBuyOrder(buyLimitOrderData);
             //Add Socket Here Emit
+            await sails
+              .helpers
+              .sockets
+              .tradeEmit(crypto, currency);
             return exits.success(addBuyBook);
           } else {
             return exits.insufficientBalance();
@@ -171,14 +183,25 @@ module.exports = {
             .helpers
             .tradding
             .buy
-            .addBuyOrder(buyLimitOrderData);
+            .addBuyOrder(buyLimitOrderData)
+            .intercept("coinNotFound", () => {
+              return new Error("coinNotFound");
+            })
+            .intercept("serverError", () => {
+              return new Error("serverError");
+            });;
           //Add Socket Here Emit
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(crypto, currency);
           return exits.success(addBuyBook);
         } else {
-          return exits.error();
+          return exits.insufficientBalance();
         }
       }
     } catch (error) {
+      console.log("From limit buy :: ", error)
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }
