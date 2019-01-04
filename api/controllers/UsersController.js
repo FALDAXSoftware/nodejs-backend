@@ -341,7 +341,7 @@ module.exports = {
       await Users
         .update({ id: user.id })
         .set({ "email": user.email, "twofactor_secret": secret.base32 });
-      let url = speakeasy.otpauthURL({ secret: secret.ascii, label: user.email });
+      let url = speakeasy.otpauthURL({ secret: secret.ascii, label: 'FALDAX( ' + user.email + ')' });
       QRCode.toDataURL(url, function (err, data_url) {
         return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
       });
