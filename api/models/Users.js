@@ -85,6 +85,16 @@ module.exports = {
       columnName: 'dob',
       allowNull: true
     },
+    country_id: {
+      type: 'string',
+      columnName: 'country_id',
+      allowNull: true
+    },
+    state_id: {
+      type: 'string',
+      columnName: 'state_id',
+      allowNull: true
+    },
     zip: {
       type: 'number',
       columnName: 'zip',
