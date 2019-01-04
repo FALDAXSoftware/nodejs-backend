@@ -46,8 +46,6 @@ module.exports = {
           .limit
           .limitBuyMatch(order, order.settle_currency, order.currency, activityResult);
 
-        console.log("Buy Match Response :: ", buyMatchResponse);
-
         if (buyMatchResponse) {
           var pendingOrder = await sails
             .helpers

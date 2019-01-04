@@ -41,10 +41,8 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
       var request = inputs.request;
-      console.log(request);
       var user_id = parseInt(request.user_id);
       var requested_user_id = parseInt(request.requested_user_id);
-      console.log(request);
       var currencyData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.currency});
       var cryptoData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.settle_currency});
       var currencyWalletUser = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.user_id});
@@ -72,8 +70,6 @@ module.exports = {
           .set({balance: cryptorequestedbalance})
           .fetch();
 
-        console.log(a);
-
         // -----------------------currency-------------------------------------- //
         var currencyuserbalance = currencyWalletUser.balance - ((request.quantity * request.fill_price));
         var currencyuserbalance = parseFloat(currencyuserbalance.toFixed(6))
@@ -96,7 +92,6 @@ module.exports = {
 
         var requestedFee = (request.quantity * request.fill_price * (inputs.makerFee / 100));
         var userFee = (request.quantity * inputs.takerFee / 100);
-        console.log(b);
 
       } else if (request.side == "Sell") {
 
@@ -141,7 +136,6 @@ module.exports = {
         var requestedFee = request.quantity * (inputs.makerFee / 100);
         var userFee = (request.quantity * request.fill_price * (inputs.takerFee / 100));
       }
-      console.log(userFee, requestedFee);
       return exits.success({'userFee': userFee, 'requestedFee': requestedFee})
     } catch (err) {
       console.log("fees Error", err);

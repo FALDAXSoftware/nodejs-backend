@@ -22,7 +22,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     let now = new Date();
-    console.log(inputs.id);
     await buyBook
       .update({id: inputs.id})
       .set({deleted_at: now});

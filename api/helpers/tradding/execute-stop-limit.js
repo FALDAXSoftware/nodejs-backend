@@ -23,7 +23,6 @@ module.exports = {
       .getPendingOrderDetails();
 
     for (var i = 0; i < pendingDetails.length; i++) {
-      console.log(pendingDetails[i])
       var {
         order_type,
         side,
@@ -38,8 +37,6 @@ module.exports = {
         user_id,
         activity_id
       } = pendingDetails[i];
-
-      console.log(settle_currency);
 
       var now = Date();
       var pending_order_book = ({
