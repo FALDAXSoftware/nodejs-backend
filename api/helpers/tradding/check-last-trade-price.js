@@ -28,14 +28,11 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     // TODO
-    console.log(inputs.crypto, inputs.currency);
     var tradeHistoryCount = await sails
       .helpers
       .tradding
       .trade
       .getTradeDetails(inputs.crypto, inputs.currency, 1);
-
-    console.log(tradeHistoryCount.length);
 
     var lastTradePrice;
 
@@ -64,8 +61,6 @@ module.exports = {
         .trade
         .getLastTradePrice(inputs.crypto, inputs.currency);
       lastTradePrice = tradeData[0].fill_price;
-
-      console.log("Last Trade Price :: ",lastTradePrice);
     }
     return exits.success(lastTradePrice)
 
