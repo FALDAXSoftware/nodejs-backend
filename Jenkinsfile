@@ -1,11 +1,54 @@
-node {
-    stage('Checkout'){
-                 sh "cd /root/dcompose/faldax-nodejs && git pull origin kalpit"
-                 echo "Checkout Done & docker build started"
-                 sh "cd /root/dcompose/faldax-nodejs && docker build -t node_faldax_backend ."
-                 echo "docker build done and it will run......"
-                 sh "docker rm -f node_faldax"
-                 sh "docker run -d --restart always --name node_faldax -p 8084:1337 node_faldax_backend"
-                 echo "deployed"
-       }
+#!/usr/bin/env groovy
+def label = "buildpod.${env.JOB_NAME}.${env.BUILD_NUMBER}".replace('-', '_').replace('/', '_').take(63)
+def gitCredentialsId = "github"
+def imageRepo = "100.69.158.196"
+podTemplate(label: label, containers: [
+     containerTemplate(name: 'build-container', image: imageRepo + '/buildtool:deployer', command: 'cat', ttyEnabled: true),
+     containerTemplate(name: 'pm291', image: imageRepo + '/buildtool:pm291', command: 'cat', ttyEnabled: true),
+], 
+volumes: [
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+  ]
+){
+  timeout(5){
+      def coinToDeploy;
+      def triggerByUser;
+      def namespace;
+      node(label) {
+     
+         // Wipe the workspace so we are building completely clean
+         deleteDir()
+
+         stage('Docker Build'){
+         container('build-container'){
+              def myRepo = checkout scm
+              gitCommit = myRepo.GIT_COMMIT
+              shortGitCommit = "${gitCommit[0..10]}"
+              imageTag = shortGitCommit
+              namespace = getNamespace(myRepo.GIT_BRANCH);
+              if (namespace){
+              sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
+              sh "docker push  ${imageRepo}/backend:${imageTag}"
+              sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag} ${namespace}-backend -f chart/values.yaml chart/"                
+                 }
+
+         }
+         }
+
+         }
+    }   }
+
+
+
+
+
+
+def getNamespace(branch){
+    switch(branch){
+        case 'master' : return "prod";
+        case 'development' :  return "dev";
+        default : return null;
+    }
 }
+
+
