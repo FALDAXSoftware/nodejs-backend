@@ -56,6 +56,8 @@ module.exports = {
       sort: 'price ASC'
     });
 
+    depthChartDetail
+
     // Send back the result through the success exit.
     return depthChartDetail;
 
