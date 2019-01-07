@@ -10,6 +10,7 @@ var request = require('request');
 module.exports = {
 
     getContactInfo: async function (req, res) {
+        console.log("Cron Status - ", sails.config.local.CRON_STATUS);
         let contactDetails = await AdminSetting.find({
             type: "contact"
         });
