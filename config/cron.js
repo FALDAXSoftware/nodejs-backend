@@ -1,6 +1,6 @@
 module.exports.cron = {
     newsUpdate: {
-        schedule: '0 0 * * * *',
+        schedule: '0 */5 * * * *',
         onTick: async function () {
             if (sails.config.local.CRON_STATUS == true) {
                 console.log("news sync call");
