@@ -23,7 +23,7 @@ module.exports = {
                         link: element.link,
                         owner: "bitcoinist",
                         description: element.description,
-                        cover_image: element['desciption'].url,
+                        cover_image: element['media:content'].url,
                         posted_at: moment(element.pubDate).format("YYYY-MM-DD hh:mm:ss")
                     });
                 }

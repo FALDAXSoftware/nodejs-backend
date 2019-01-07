@@ -182,8 +182,11 @@ module.exports = {
         res.end();
     },
 
-    queryTest: function (req, res) {
-        console.log("------", sails.config.local.TEST);
+    queryTest: async function (req, res) {
+        var bitcoinistNews = await sails.helpers.bitcoinistNewsUpdate();
+        var bitcoinNews = await sails.helpers.bitcoinNews();
+        var ccnPodcast = await sails.helpers.ccnPodcast();
+        var coinTelegraph = await sails.helpers.coinTelegraph();
         res.end();
     }
 
