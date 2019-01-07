@@ -55,6 +55,4 @@ module.exports.datastores = {
     ssl: false,
     pool: false
   },
-
-
 };
