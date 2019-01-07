@@ -2,8 +2,7 @@ module.exports.cron = {
     newsUpdate: {
         schedule: '0 */5 * * * *',
         onTick: async function () {
-            console.log("news sync call - ",sails.config.local.CRON_STATUS == "true")
-            if (sails.config.local.CRON_STATUS == true) {
+            if (sails.config.local.CRON_STATUS == "true") {
                 console.log("news sync call");
                 var bitcoinistNews = await sails.helpers.bitcoinistNewsUpdate();
                 var bitcoinNews = await sails.helpers.bitcoinNews();
@@ -15,7 +14,7 @@ module.exports.cron = {
     KycUpdate: {
         schedule: '0 */2 * * * *',
         onTick: async function () {
-            if (sails.config.local.CRON_STATUS == true) {
+            if (sails.config.local.CRON_STATUS == "true") {
                 console.log("cron sync call");
                 var kycCron = await sails.helpers.kycCron();
             }

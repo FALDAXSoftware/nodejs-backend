@@ -49,12 +49,10 @@ module.exports.datastores = {
     *                                                                          *
     ***************************************************************************/
     adapter: 'sails-postgresql',
-    url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
-    //url: "postgresql://root:vceqxN5hZPyfWz9Z@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+    //url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
+    url: "postgresql://root:vceqxN5hZPyfWz9Z@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     //client database
     ssl: false,
     pool: false
   },
-
-
 };
