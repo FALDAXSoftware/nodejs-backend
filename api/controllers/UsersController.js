@@ -316,11 +316,19 @@ module.exports = {
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
+    let { page, limit } = req.allParams();
     let history = await LoginHistory
       .find({ user: req.user.id })
       .sort('created_at DESC')
-      .limit(10);
-    return res.json({ "status": 200, "message": "Users Login History", "data": history });
+      .paginate(page - 1, parseInt(limit));
+
+    let historyCount = await LoginHistory.count({
+      where: {
+        user: req.user.id
+      }
+    });
+
+    return res.json({ "status": 200, "message": "Users Login History", "data": history, historyCount });
   },
 
   setupTwoFactor: async function (req, res) {
