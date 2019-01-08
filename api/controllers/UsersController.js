@@ -26,11 +26,10 @@ module.exports = {
 
 
       existedUser = await Users.findOne({ email, deleted_at: null });
-
       if (existedUser) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Email address already exist' });
+          .json({ status: 401, "err": 'Email address already exists' });
       }
       if (req.body.referral_code) {
         var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
@@ -45,8 +44,6 @@ module.exports = {
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
       if (req.body.email && req.body.password) {
-
-
 
         var user_detail = await Users.create({
           email: email,
@@ -117,8 +114,6 @@ module.exports = {
 
         });
       return;
-
-
     }
   },
 
