@@ -213,9 +213,6 @@ module.exports = {
         .helpers
         .tradding
         .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
-        .tolerate('invalidQuantity', () => {
-          throw new Error("invalidQuantity");
-        })
         .tolerate('coinNotFound', () => {
           throw new Error("coinNotFound");
         })
@@ -243,11 +240,6 @@ module.exports = {
           .status(500)
           .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
-      if (error.message == "invalidQuantity") {
-        return res
-          .status(500)
-          .json({ status: 500, "err": "invalid order quantity" });
-      }
 
       return res
         .status(500)
@@ -273,9 +265,6 @@ module.exports = {
         .helpers
         .tradding
         .stopLimitSellAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
-        .tolerate('invalidQuantity', () => {
-          throw new Error("invalidQuantity");
-        })
         .tolerate('coinNotFound', () => {
           throw new Error("coinNotFound");
         })
@@ -302,11 +291,7 @@ module.exports = {
           .status(500)
           .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
-      if (error.message == "invalidQuantity") {
-        return res
-          .status(500)
-          .json({ status: 500, "err": "invalid order quantity" });
-      }
+
 
       return res
         .status(500)
@@ -316,7 +301,7 @@ module.exports = {
         });
     }
   },
-  stopLimitExecute:async function (req,res) {
+  stopLimitExecute: async function (req, res) {
     await sails.helpers.tradding.executeStopLimit();
     res.end();
   },
@@ -371,9 +356,9 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({status: 403, "message": "Error occured"});
+                .json({ status: 403, "message": "Error occured" });
             } else {
-              let {crypto, currency} = await sails
+              let { crypto, currency } = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
@@ -385,11 +370,11 @@ module.exports = {
                 .trade
                 .getTradeDetails(crypto, currency, 100);
 
-            if (tradeDetails) {
-              return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
+              if (tradeDetails) {
+                return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
+              }
             }
-          }
-        });
+          });
       } else {
         console.log('>>>IN else')
         return res

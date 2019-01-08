@@ -27,6 +27,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: CRON_STATUS
+            value: "true"
           volumeMounts:
           - name: config-value
             mountPath: {{ .Values.configuration.pod_directory }}

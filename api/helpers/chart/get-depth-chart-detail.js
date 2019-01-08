@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get depth chart detail',
 
-
   description: '',
-
 
   inputs: {
     crypto: {
@@ -19,18 +16,15 @@ module.exports = {
       example: 'ETH',
       description: 'Code of Currency.',
       required: true
-    },
+    }
   },
-
 
   exits: {
 
     success: {
-      outputFriendlyName: 'Depth chart detail',
-    },
-
+      outputFriendlyName: 'Depth chart detail'
+    }
   },
-
 
   fn: async function (inputs, exits) {
 
@@ -59,10 +53,8 @@ module.exports = {
     depthChartDetail
 
     // Send back the result through the success exit.
-    return depthChartDetail;
+    return exits.succes({ "buyDetails": buyDetails, "sellDetails": sellDetails });
 
   }
 
-
 };
-
