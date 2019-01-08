@@ -58,7 +58,7 @@ module.exports = {
         if (!found) {
           next();
         } else {
-          next({ error: 'Page already exist' });
+          next({ error: 'Page already exists' });
         }
       });
   },

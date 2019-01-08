@@ -26,11 +26,10 @@ module.exports = {
 
 
       existedUser = await Users.findOne({ email, deleted_at: null });
-
       if (existedUser) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Email address already exist' });
+          .json({ status: 401, "err": 'Email address already exists' });
       }
       if (req.body.referral_code) {
         var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
@@ -45,8 +44,6 @@ module.exports = {
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
       if (req.body.email && req.body.password) {
-
-
 
         var user_detail = await Users.create({
           email: email,
@@ -117,8 +114,6 @@ module.exports = {
 
         });
       return;
-
-
     }
   },
 
@@ -321,11 +316,19 @@ module.exports = {
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
+    let { page, limit } = req.allParams();
     let history = await LoginHistory
       .find({ user: req.user.id })
       .sort('created_at DESC')
-      .limit(10);
-    return res.json({ "status": 200, "message": "Users Login History", "data": history });
+      .paginate(page - 1, parseInt(limit));
+
+    let historyCount = await LoginHistory.count({
+      where: {
+        user: req.user.id
+      }
+    });
+
+    return res.json({ "status": 200, "message": "Users Login History", "data": history, historyCount });
   },
 
   setupTwoFactor: async function (req, res) {

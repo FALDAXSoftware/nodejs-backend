@@ -52,86 +52,101 @@ module.exports = {
   },
 
   exits: {
-
     success: {
       description: 'All done.'
-    }
+    },
+    serverError: {
+      description: 'serverError'
+    },
+    insufficientBalance: {
+      description: 'Error when insufficient balance in wallet.'
+    },
+    coinNotFound: {
+      description: 'Error when coin not found'
+    },
   },
 
   fn: async function (inputs, exits) {
-    // TODO
-    let {crypto, currency} = await sails
-      .helpers
-      .utilities
-      .getCurrencies(inputs.symbol);
+    try {
+      // TODO
+      let { crypto, currency } = await sails
+        .helpers
+        .utilities
+        .getCurrencies(inputs.symbol);
 
-    var now = new Date();
-    var limitSellOrder = ({
-      'user_id': inputs.user_id,
-      'symbol': inputs.symbol,
-      'side': inputs.side,
-      'order_type': inputs.order_type,
-      'maximum_time': moment(now)
-        .add(1, 'years')
-        .format(),
-      'fill_price': 0.0,
-      'limit_price': inputs.limit_price,
-      'stop_price': inputs.stop_price,
-      'price': 0.0,
-      'quantity': inputs.orderQuantity,
-      'settle_currency': crypto,
-      'order_status': "open",
-      'currency': currency
-    });
-
-    var wallet = await sails
-      .helpers
-      .utilities
-      .getSellWalletBalance(currency, crypto, inputs.user_id)
-      .intercept("coinNotFound", () => {
-        return new Error("coinNotFound");
-      })
-      .intercept("serverError", () => {
-        return new Error("serverError");
+      var now = new Date();
+      var limitSellOrder = ({
+        'user_id': inputs.user_id,
+        'symbol': inputs.symbol,
+        'side': inputs.side,
+        'order_type': inputs.order_type,
+        'maximum_time': moment(now)
+          .add(1, 'years')
+          .format(),
+        'fill_price': 0.0,
+        'limit_price': inputs.limit_price,
+        'stop_price': inputs.stop_price,
+        'price': 0.0,
+        'quantity': inputs.orderQuantity,
+        'settle_currency': crypto,
+        'order_status': "open",
+        'currency': currency
       });
 
-    let fees = await sails
-      .helpers
-      .utilities
-      .getMakerTakerFees(crypto, currency);
+      var wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(currency, crypto, inputs.user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError");
+        });
 
-    var resultData = {
-      ...limitSellOrder
-    }
-    resultData.is_market = false;
-    resultData.fix_quantity = inputs.orderQuantity;
-    resultData.maker_fee = fees.makerFee;
-    resultData.taker_fee = fees.takerFee;
+      let fees = await sails
+        .helpers
+        .utilities
+        .getMakerTakerFees(crypto, currency);
 
-    var resultPending = await sails
-      .helpers
-      .tradding
-      .getWalletStatus(limitSellOrder, wallet);
+      var resultData = {
+        ...limitSellOrder
+      }
+      resultData.is_market = false;
+      resultData.fix_quantity = inputs.orderQuantity;
+      resultData.maker_fee = fees.makerFee;
+      resultData.taker_fee = fees.takerFee;
 
-    if (resultPending == true) {
-      var result = await sails
+      var resultPending = await sails
         .helpers
         .tradding
-        .activity
-        .add(limitSellOrder);
+        .getWalletStatus(limitSellOrder, wallet);
 
-      limitSellOrder.activity_id = result.id;
-      var data = await sails
-        .helpers
-        .tradding
-        .pending
-        .addPendingOrder(limitSellOrder);
+      if (resultPending == true) {
+        var result = await sails
+          .helpers
+          .tradding
+          .activity
+          .add(limitSellOrder);
 
-      //Emit Socket Here
-      return exits.success(data);
-    } else {
-      // Not enough Balance Error
-      return exits.success();
+        limitSellOrder.activity_id = result.id;
+        var data = await sails
+          .helpers
+          .tradding
+          .pending
+          .addPendingOrder(limitSellOrder);
+
+        //Emit Socket Here
+        return exits.success(data);
+      } else {
+        // Not enough Balance Error
+        return exits.insufficientBalance();
+      }
+    } catch (error) {
+      if (error.message == "coinNotFound") {
+        return exits.coinNotFound();
+      }
+      return exits.serverError();
     }
   }
 

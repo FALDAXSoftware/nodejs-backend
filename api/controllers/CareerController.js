@@ -158,7 +158,7 @@ module.exports = {
             } else {
                 return res.status(400).json({
                     status: 400,
-                    "err": "Job does not exist"
+                    "err": "Job does not exists"
                 });
             }
         } catch (err) {

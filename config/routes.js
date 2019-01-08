@@ -19,9 +19,7 @@ module.exports.routes = {
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
 
-  // CMS Routes///////////////////////////////////////////
-
-  //Admin 
+  // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
   'post /admin/forgotPassword': "Admin.forgotPassword",
   'post /admin/create': "Admin.create",
@@ -38,14 +36,14 @@ module.exports.routes = {
   'put /admin/role/update': 'RoleController.update',
   'delete /admin/role/delete': 'RoleController.delete',
 
-  //users 
+  //users
   'post /admin/changePassword': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
   'get /admin/referredUsers': 'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
 
-  //coins 
+  //coins
   'get /admin/getCoins': 'Coins.getCoins',
   'post /admin/coins/create': 'Coins.create',
   'put /admin/coins/update': 'Coins.update',
@@ -69,9 +67,7 @@ module.exports.routes = {
 
   //DashBoard
   'get /admin/dashboard/getData': 'Dashboard.getAllCounts',
-  // 'put /admin/changePassword': "Admin.changePassword",
-
-  //countries
+  // 'put /admin/changePassword': "Admin.changePassword", countries
   'get /admin/getCountriesData': 'Countries.getCountries',
   'put /admin/countryActivate': 'Countries.countryActivate',
   'put /admin/countryUpdate': 'Countries.countryUpdate',
@@ -79,10 +75,8 @@ module.exports.routes = {
   'put /admin/stateActivate': 'Countries.stateActivate',
   'put /admin/stateUpdate': 'Countries.stateUpdate',
 
-  // 'post /admin/insertCountries': 'Countries.insertCountries',
-  // 'post /admin/insertState': 'Countries.insertState',
-
-  //Blogs routes
+  // 'post /admin/insertCountries': 'Countries.insertCountries', 'post
+  // /admin/insertState': 'Countries.insertState', Blogs routes
   'get /admin/all-blogs': 'BlogsController.getAllBlogs',
   'post /admin/create-blog': 'BlogsController.createBlog',
   'put /admin/edit-blog': 'BlogsController.updateBlog',
@@ -166,8 +160,9 @@ module.exports.routes = {
   'post /get-related-blog': 'BlogsController.getRelatedPost',
   'post /users/get-all-news': 'BlogsController.getAllNews',
 
-  //dashboard
-  // 'post /dashboard': "DashboardController.get",
+  // dashboard 'post /dashboard': "DashboardController.get",
+  'get /dashboard/get-activity': 'DashboardController.getActivity',
+  'get /dashboard/get-portfolio': 'DashboardController.getPortfolio',
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
@@ -193,12 +188,12 @@ module.exports.routes = {
   'get /jobs/get-job-detail': 'CareerController.getJobDetail',
   'post /apply-job': 'CareerController.applyJob',
 
-  // Tradding Routes
-  // 'get /get-buy-book-details': 'BuyController.getBuyBookDetails',
+  // Tradding Routes 'get /get-buy-book-details':
+  // 'BuyController.getBuyBookDetails',
   'get /get-sell-book-details': 'SellController.getSellBookDetails',
   'get /get-data': 'SellController.getData',
 
-  // Market Trade Routes 
+  // Market Trade Routes
   'post /market/sell': 'TradeController.marketSell',
   'post /market/buy': 'TradeController.marketBuy',
 
@@ -210,9 +205,7 @@ module.exports.routes = {
   'post /stop/limit/sell': 'TradeController.stopLimitSell',
   'post /stop/limit/buy': 'TradeController.stopLimitBuy',
 
-  // 'post /get-all-history': 'TradeController.getAllTradeHistory',
-
-  // Wallet Routes 
+  // 'post /get-all-history': 'TradeController.getAllTradeHistory', Wallet Routes
   'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
   'post /wallet-details': 'WalletController.getWalletTransactionHistory',
 
@@ -223,14 +216,10 @@ module.exports.routes = {
   'get /get-all-coins': 'Coins.getAllCoins',
   'get /coin-list': 'Coins.getAllCoinList',
 
-
-
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
   'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
 
-
-  'get /stop-limit-execute':'TradeController.stopLimitExecute',
-
+  'get /stop-limit-execute': 'TradeController.stopLimitExecute'
 };

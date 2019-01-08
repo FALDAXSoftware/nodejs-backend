@@ -70,7 +70,7 @@ module.exports = {
                 })
             });
         } else {
-          next({ error: 'Email address already exist' });
+          next({ error: 'Email address already exists' });
         }
       });
   },
@@ -96,7 +96,7 @@ module.exports = {
             next();
           }
         } else {
-          next({ error: "Email address doesn't exist" });
+          next({ error: "Email address doesn't exists" });
         }
       });
   },
