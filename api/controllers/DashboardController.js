@@ -11,20 +11,39 @@ module.exports = {
   getActivity: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let activity = await sails.helpers.dashboard.getActivity(user_id);
-      res.json({
-        "status": 200,
-        "message": "Activity retrived successfully.",
-        data: activity
-      });
+      let activity = await sails
+        .helpers
+        .dashboard
+        .getActivity(user_id);
+      res.json({ "status": 200, "message": "Activity retrived successfully.", data: activity });
     } catch (error) {
-      res.status(500).json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
+  getPortfolio: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let portfolio = await sails
+        .helpers
+        .dashboard
+        .getPortfolio(user_id);
+      res.json({ "status": 200, "message": "Portfolio retrived successfully.", data: portfolio });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 
   // CMS api
   getAllCounts: async function (req, res) {
@@ -40,26 +59,46 @@ module.exports = {
       let neutralCountries = await Countries.count({ legality: 3 });
       let blogsCount = await Blogs.count({
         deleted_at: null,
-        created_at: { '>=': moment().subtract(1, 'months').format() }
+        created_at: {
+          '>=': moment()
+            .subtract(1, 'months')
+            .format()
+        }
       });
       let employeeCount = await Admin.count({ is_active: true, deleted_at: null });
       let jobsCount = await Jobs.count({ is_active: true, deleted_at: null });
       let coinReqCount = await AddCoinRequest.count({
         deleted_at: null,
-        created_at: { '>=': moment().subtract(1, 'months').format() }
+        created_at: {
+          '>=': moment()
+            .subtract(1, 'months')
+            .format()
+        }
       });
       let subscriberCount = await Subscribe.count({ deleted_at: null });
       let withdrawReqCount = await WithdrawRequest.count({
         deleted_at: null,
-        created_at: { '>=': moment().subtract(7, 'days').format() }
+        created_at: {
+          '>=': moment()
+            .subtract(7, 'days')
+            .format()
+        }
       });
       let lastSevenInquiry = await Inquiry.count({
         deleted_at: null,
-        created_at: { '>=': moment().subtract(7, 'days').format() }
+        created_at: {
+          '>=': moment()
+            .subtract(7, 'days')
+            .format()
+        }
       });
       let lastThirtyInquiry = await Inquiry.count({
         deleted_at: null,
-        created_at: { '>=': moment().subtract(1, 'months').format() }
+        created_at: {
+          '>=': moment()
+            .subtract(1, 'months')
+            .format()
+        }
       })
       let kyc_approved = await KYC.count({ isApprove: true, deleted_at: null, webhook_response: 'ACCEPT' })
       let total_kyc = await KYC.count({ deleted_at: null })
@@ -72,23 +111,44 @@ module.exports = {
       let AccountCreated24Hr = await Users.count({
         is_active: true,
         is_verified: true,
-        created_at: { '<=': AccHrDate }
+        created_at: {
+          '<=': AccHrDate
+        }
       })
       return res.json({
         "status": 200,
         "message": "Dashboard Data",
-        activeCoins, InactiveCoins, activeUsers, inactiveUsers, AccountCreated24Hr, activePairs,
-        InactivePairs, legalCountries, illegalCountries, neutralCountries, blogsCount,
-        employeeCount, jobsCount, coinReqCount, subscriberCount, withdrawReqCount,
-        lastSevenInquiry, lastThirtyInquiry, kyc_approved, kyc_disapproved, total_kyc,
+        activeCoins,
+        InactiveCoins,
+        activeUsers,
+        inactiveUsers,
+        AccountCreated24Hr,
+        activePairs,
+        InactivePairs,
+        legalCountries,
+        illegalCountries,
+        neutralCountries,
+        blogsCount,
+        employeeCount,
+        jobsCount,
+        coinReqCount,
+        subscriberCount,
+        withdrawReqCount,
+        lastSevenInquiry,
+        lastThirtyInquiry,
+        kyc_approved,
+        kyc_disapproved,
+        total_kyc,
         kyc_pending
       });
     } catch (e) {
       console.log('>>>>e,', e)
-      res.status(500).json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };
