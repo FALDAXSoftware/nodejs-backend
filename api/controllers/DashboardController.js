@@ -7,6 +7,26 @@
 var moment = require('moment');
 
 module.exports = {
+  // Web Apis
+  getActivity: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let activity = await sails.helpers.dashboard.getActivity(user_id);
+      res.json({
+        "status": 200,
+        "message": "Activity retrived successfully.",
+        data: activity
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+
+  // CMS api
   getAllCounts: async function (req, res) {
     try {
       let activeUsers = await Users.count({ is_verified: true, is_active: true });

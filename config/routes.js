@@ -166,8 +166,9 @@ module.exports.routes = {
   'post /get-related-blog': 'BlogsController.getRelatedPost',
   'post /users/get-all-news': 'BlogsController.getAllNews',
 
-  //dashboard
+  // dashboard
   // 'post /dashboard': "DashboardController.get",
+  'get /dashboard/get-activity': 'DashboardController.getActivity',
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
@@ -231,6 +232,6 @@ module.exports.routes = {
   'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
 
 
-  'get /stop-limit-execute':'TradeController.stopLimitExecute',
+  'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
 };
