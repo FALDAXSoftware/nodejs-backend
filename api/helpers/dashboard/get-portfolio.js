@@ -138,14 +138,13 @@ module.exports = {
         "name": coinBalance.rows[i].coin_name,
         "average_price": average_price,
         "percentchange": percentChange,
-        "amounts": coinBalance.rows[i].balance,
+        "amount": coinBalance.rows[i].balance,
         'symbol': coinBalance.rows[i].coin,
         "fiatPrice": priceFiat,
         "fiat": userData.fiat
       }
       portfolioData.push(portfolio_data);
     }
-    console.log(portfolioData);
 
     // Send back the result through the success exit.
     return portfolioData;
