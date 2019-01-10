@@ -26,7 +26,7 @@ module.exports = {
     try {
       var cardData = [];
 
-      let {crypto, currency} = await sails
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -35,6 +35,8 @@ module.exports = {
         .subtract(1, 'days')
         .format('YYYY-MM-DD HH:mm:ss.SSS');
       var today = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+      console.log("yestretday", yesterday);
+
 
       var total_price = 0;
       var average_price = 0;
@@ -75,7 +77,7 @@ module.exports = {
         sort: 'id DESC'
       });
 
-      if (current_price == undefined) {
+      if (current_price == undefined || current_price.length == 0) {
         current_price = 0;
       } else {
         current_price = current_price[0]['fill_price'];
@@ -92,8 +94,9 @@ module.exports = {
         },
         sort: 'id ASC'
       });
+      console.log(previous_price);
 
-      if (previous_price == undefined) {
+      if (previous_price == undefined || previous_price.length == 0) {
         previous_price = 0;
       } else {
         previous_price = previous_price[0]['fill_price'];
@@ -124,12 +127,12 @@ module.exports = {
         "currency": currency,
         "settle_currency": crypto,
         "average_price": average_price,
-        "diffrence": diffrence,
+        "diffrence": diffrrence,
         "percentchange": percentchange,
-        "tradeChartDetails": tradeorderdetails
+        "tradeChartDetails": tradeOrderDetails
       }
 
-      return cardData;
+      return exits.success(cardData);
     } catch (err) {
       console.log(err);
     }

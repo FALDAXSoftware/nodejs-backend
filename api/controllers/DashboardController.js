@@ -48,7 +48,7 @@ module.exports = {
     try {
       let room = req.query.room;
       if (req.isSocket) {
-        sails.socket.join(req.socket, room, function (err) {
+        sails.sockets.join(req.socket, room, async function (err) {
           if (err) {
             return res
               .status(500)
@@ -56,6 +56,11 @@ module.exports = {
                 status: 500,
                 "err": sails.__("Something Wrong")
               });
+          } else {
+            console.log("pair", room);
+
+            let cardDate = await sails.helpers.dashboard.getCardData(room);
+            return res.json({ status: 200, data: cardDate, "message": "Card data retrived successfully." });
           }
         });
       } else {
