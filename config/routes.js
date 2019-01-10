@@ -224,6 +224,7 @@ module.exports.routes = {
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
   'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
   'get /socket/get-card-data': 'DashboardController.getCardData',
+  'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
 
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 };

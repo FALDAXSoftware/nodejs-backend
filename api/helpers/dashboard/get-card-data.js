@@ -24,19 +24,23 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     try {
-      var cardData = [];
+      var card_data = [];
+      var current_price = 0;
+      var previous_price = 0;
+      var flag = true;
 
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
 
-      var yesterday = moment()
+      var yesterday = moment
+        .utc()
         .subtract(1, 'days')
-        .format('YYYY-MM-DD HH:mm:ss.SSS');
-      var today = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
-      console.log("yestretday", yesterday);
-
+        .format();
+      var today = moment
+        .utc()
+        .format();
 
       var total_price = 0;
       var average_price = 0;
@@ -62,28 +66,26 @@ module.exports = {
         average_price = total_price / (price.length);
       }
 
-      var current_price = await TradeHistory.find({
+      var current = await TradeHistory.find({
         where: {
           settle_currency: crypto,
           currency: currency,
           deleted_at: null,
           created_at: {
-            '>=': yesterday
-          },
-          created_at: {
+            '>=': yesterday,
             '<=': today
           }
         },
         sort: 'id DESC'
       });
 
-      if (current_price == undefined || current_price.length == 0) {
+      if (current == undefined || current.length == 0) {
         current_price = 0;
       } else {
-        current_price = current_price[0]['fill_price'];
+        current_price = current[0]['fill_price'];
       }
 
-      var previous_price = await TradeHistory.find({
+      var previous = await TradeHistory.find({
         where: {
           settle_currency: crypto,
           currency: currency,
@@ -94,12 +96,11 @@ module.exports = {
         },
         sort: 'id ASC'
       });
-      console.log(previous_price);
 
-      if (previous_price == undefined || previous_price.length == 0) {
+      if (previous == undefined || previous.length == 0) {
         previous_price = 0;
       } else {
-        previous_price = previous_price[0]['fill_price'];
+        previous_price = previous[0]['fill_price'];
       }
 
       var diffrrence = current_price - previous_price;
@@ -109,6 +110,12 @@ module.exports = {
         percentchange = 0;
       } else {
         percentchange = percentchange;
+      }
+
+      if (diffrrence < 0) {
+        flag = false;
+      } else {
+        flag = true;
       }
 
       var tradeOrderDetails = await TradeHistory.find({
@@ -123,16 +130,17 @@ module.exports = {
         sort: 'id DESC'
       });
 
-      var card_data = {
+      card_data = {
         "currency": currency,
         "settle_currency": crypto,
         "average_price": average_price,
         "diffrence": diffrrence,
         "percentchange": percentchange,
+        "flag": flag,
         "tradeChartDetails": tradeOrderDetails
       }
 
-      return exits.success(cardData);
+      return exits.success(card_data);
     } catch (err) {
       console.log(err);
     }

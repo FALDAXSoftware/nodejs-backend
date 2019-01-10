@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 module.exports = {
 
   friendlyName: 'Get trade pending detaiails',
@@ -22,6 +24,12 @@ module.exports = {
       example: 'BTC',
       description: 'Name of currency',
       required: true
+    },
+    month: {
+      type: 'number',
+      example: 1,
+      description: 'Number of months',
+      required: true
     }
   },
 
@@ -37,13 +45,19 @@ module.exports = {
     // Get trade pending detaiails.
     var tradePendingDetails;
     // TODO
-
+    var yesterday = moment
+      .utc()
+      .subtract(inputs.month, 'months')
+      .format();
     var pendingOrderDetails = await PendingBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,
         currency: inputs.currency,
-        user_id: inputs.user_id
+        user_id: inputs.user_id,
+        created: {
+          '>=': yesterday
+        }
       },
       sort: 'id DESC'
     });
@@ -54,7 +68,10 @@ module.exports = {
         settle_currency: inputs.crypto,
         currency: inputs.currency,
         user_id: inputs.user_id,
-        is_partially_fulfilled: true
+        is_partially_fulfilled: true,
+        created: {
+          '>=': yesterday
+        }
       },
       sort: 'id DESC'
     });
@@ -67,7 +84,10 @@ module.exports = {
         settle_currency: inputs.crypto,
         currency: inputs.currency,
         user_id: inputs.user_id,
-        is_partially_fulfilled: true
+        is_partially_fulfilled: true,
+        created: {
+          '>=': yesterday
+        }
       },
       sort: 'id DESC'
     });

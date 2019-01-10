@@ -145,7 +145,6 @@ module.exports = {
       }
       portfolioData.push(portfolio_data);
     }
-    console.log(portfolioData);
 
     // Send back the result through the success exit.
     return portfolioData;
