@@ -36,7 +36,7 @@ module.exports = {
       res.json({ "status": 200, "message": "Portfolio retrived successfully.", data: portfolio });
     } catch (error) {
       console.log(error);
-      res
+      return res
         .status(500)
         .json({
           status: 500,
@@ -44,7 +44,36 @@ module.exports = {
         });
     }
   },
-
+  getCardData: async function (req, res) {
+    try {
+      let room = req.query.room;
+      if (req.isSocket) {
+        sails.socket.join(req.socket, room, function (err) {
+          if (err) {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        });
+      } else {
+        console.log('>>>IN else')
+        return res
+          .status(403)
+          .json({ status: 403, "message": "Error occured" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
   // CMS api
   getAllCounts: async function (req, res) {
     try {
