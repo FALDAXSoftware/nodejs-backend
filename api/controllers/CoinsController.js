@@ -209,52 +209,71 @@ module.exports = {
     },
 
     create: async function (req, res) {
-        try {
-            if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address) {
-                let existingCoin = await Coins.find({
-                    deleted_at: null,
-                    or: [
-                        {
-                            coin_name: req.body.coin_name
-                        }, {
-                            coin_code: req.body.coin_code
+        req.file('coin_icon').upload(async function (err, uploadedFiles) {
+            try {
+                if (uploadedFiles.length > 0) {
+                    var uploadIcon = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/coin/' + req.body.coin_code);
+
+                    if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address) {
+                        let existingCoin = await Coins.find({
+                            deleted_at: null,
+                            or: [
+                                {
+                                    coin_name: req.body.coin_name
+                                }, {
+                                    coin_code: req.body.coin_code
+                                }
+                            ]
+                        });
+                        if (existingCoin.length > 0) {
+                            res
+                                .status(400)
+                                .json({ "status": 400, "err": "Coin name or code already in use." });
+                            return;
                         }
-                    ]
-                });
-                if (existingCoin.length > 0) {
-                    res
-                        .status(400)
-                        .json({ "status": 400, "err": "Coin name or code already in use." });
-                    return;
-                }
-                var coins_detail = await Coins
-                    .create({ coin_name: req.body.coin_name, coin_code: req.body.coin_code, limit: req.body.limit, wallet_address: req.body.wallet_address, created_at: new Date() })
-                    .fetch();
-                if (coins_detail) {
-                    //Send verification email in before create
-                    res.json({ "status": 200, "message": "Coin created successfully." });
-                    return;
+                        var coins_detail = await Coins
+                            .create({
+                                coin_icon: 'faldax/coin/' + req.body.coin_code,
+                                coin_name: req.body.coin_name,
+                                coin_code: req.body.coin_code,
+                                limit: req.body.limit,
+                                wallet_address: req.body.wallet_address,
+                                created_at: new Date()
+                            })
+                            .fetch();
+                        if (coins_detail) {
+                            //Send verification email in before create
+                            res.json({ "status": 200, "message": "Coin created successfully." });
+                            return;
+                        } else {
+                            res
+                                .status(400)
+                                .json({ "status": 400, "err": "Something went wrong" });
+                            return;
+                        }
+                    } else {
+                        res
+                            .status(400)
+                            .json({ "status": 400, "err": "coin id is not sent" });
+                        return;
+                    }
                 } else {
-                    res
-                        .status(400)
-                        .json({ "status": 400, "err": "Something went wrong" });
+                    res.status(400).json({
+                        "status": 400,
+                        "err": "coin icon is not sent",
+                    });
                     return;
                 }
-            } else {
+            } catch (error) {
                 res
-                    .status(400)
-                    .json({ "status": 400, "err": "coin id is not sent" });
+                    .status(500)
+                    .json({
+                        status: 500,
+                        "err": sails.__("Something Wrong")
+                    });
                 return;
             }
-        } catch (error) {
-            res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-            return;
-        }
+        });
     },
 
     update: async function (req, res) {
@@ -278,7 +297,6 @@ module.exports = {
                     return;
                 }
             }
-
             var coinData = {
                 id: req.body.coin_id,
                 ...req.body
@@ -291,6 +309,7 @@ module.exports = {
                 return res.json({ "status": 200, "message": "Something went wrong! could not able to update coin details" });
             }
             return res.json({ "status": 200, "message": "Coin details updated successfully" });
+
         } catch (error) {
             res
                 .status(500)
