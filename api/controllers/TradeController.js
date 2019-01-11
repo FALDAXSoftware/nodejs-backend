@@ -10,7 +10,7 @@ module.exports = {
   //---------------------------Web Api------------------------------
   marketSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       let response = await sails
@@ -40,17 +40,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
+          .json({ status: 500, "err": "Coin Not Found" });
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({status: 500, "err": "no more limit order in order book"});
+          .json({ status: 500, "err": "no more limit order in order book" });
       }
       if (error.message == "serverError") {
         return res
@@ -70,8 +70,7 @@ module.exports = {
   },
   marketBuy: async function (req, res) {
     try {
-      console.log(req.allParams());
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -98,17 +97,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
+          .json({ status: 500, "err": "Coin Not Found" });
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({status: 500, "err": "no more limit order in order book"});
+          .json({ status: 500, "err": "no more limit order in order book" });
       }
 
       return res
@@ -121,7 +120,7 @@ module.exports = {
   },
   limitSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -146,7 +145,7 @@ module.exports = {
 
   limitBuy: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -174,17 +173,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
+          .json({ status: 500, "err": "Coin Not Found" });
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
       if (error.message == "invalidQuantity") {
         return res
           .status(500)
-          .json({status: 500, "err": "invalid order quantity"});
+          .json({ status: 500, "err": "invalid order quantity" });
       }
 
       return res
@@ -233,12 +232,12 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
+          .json({ status: 500, "err": "Coin Not Found" });
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
 
       return res
@@ -284,12 +283,12 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
+          .json({ status: 500, "err": "Coin Not Found" });
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
       }
 
       return res
@@ -306,6 +305,46 @@ module.exports = {
       .tradding
       .executeStopLimit();
     res.end();
+  },
+
+  cancelPendingOrder: async function (req, res) {
+
+    try {
+      let { side, id, order_type } = req.allParams();
+      console.log(req.allParams());
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .pending
+        .cancelPendingData(side, order_type, id);
+      console.log(response);
+      console.log("done");
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+    } catch (error) {
+      console.log("tradeController", error);
+
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Coin Not Found" });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   },
 
   // getAllTradeHistory: async function (req, res) {   try {     let { fromDate,
@@ -355,9 +394,9 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({status: 403, "message": "Error occured"});
+                .json({ status: 403, "message": "Error occured" });
             } else {
-              let {crypto, currency} = await sails
+              let { crypto, currency } = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
@@ -370,7 +409,7 @@ module.exports = {
                 .getTradeDetails(crypto, currency, 100);
 
               if (tradeDetails) {
-                return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
+                return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
               }
             }
           });
@@ -378,7 +417,7 @@ module.exports = {
         console.log('>>>IN else')
         return res
           .status(403)
-          .json({status: 403, "message": "Error occured"});
+          .json({ status: 403, "message": "Error occured" });
       }
     } catch (err) {
       console.log('>>>', err)
@@ -402,34 +441,34 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({status: 403, "message": "Error occured"});
+                .json({ status: 403, "message": "Error occured" });
             } else {
-              let {crypto, currency} = await sails
+              let { crypto, currency } = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
               console.log("-=-=-=-=-=", crypto, currency);
-
+              var userTradeDetails;
               if (filter_type == 1) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .getCompletedData(user_id, crypto, currency, month);
               } else if (filter_type == 2) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .pending
                   .getTradePendingDetails(user_id, crypto, currency, month);
               } else if (filter_type == 3) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .getCancelDetails(user_id, crypto, currency, month);
               }
 
               if (userTradeDetails) {
-                return res.json({status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully."});
+                return res.json({ status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully." });
               }
             }
           });
@@ -437,13 +476,45 @@ module.exports = {
         console.log('>>>IN else')
         return res
           .status(403)
-          .json({status: 403, "message": "Error occured"});
+          .json({ status: 403, "message": "Error occured" });
       }
     } catch (err) {
       console.log('>>>', err)
     }
   },
+  getDepthchartData: async function (req, res) {
+    var room = req.query.room;
+    try {
+      if (req.isSocket) {
+        sails
+          .sockets
+          .join(req.socket, room, async function (err) {
+            if (err) {
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
+            } else {
+              let { crypto, currency } = await sails.helpers.utilities.getCurrencies(room);
+              let data = await sails.helpers.chart.getDepthChartDetail(crypto, currency);
+              return res.json({ status: 200, data: data, "message": "User Trade data retrived successfully." });
+            }
 
+          });
+      } else { }
+    } catch (error) {
+      console.log(error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
   //-------------------------------CMS Api--------------------------
   getAllTrades: async function (req, res) {
     // req.setLocale('en')
@@ -533,14 +604,14 @@ module.exports = {
       }
       let tradeData = await TradeHistory
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
       for (let index = 0; index < tradeData.length; index++) {
         if (tradeData[index].user_id) {
-          let user = await Users.findOne({id: tradeData[index].user_id})
-          let user2 = await Users.findOne({id: tradeData[index].requested_user_id})
+          let user = await Users.findOne({ id: tradeData[index].user_id })
+          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
           tradeData[index].maker_email = user.email;
           tradeData[index].taker_email = user2.email;
           tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
@@ -585,14 +656,14 @@ module.exports = {
       }
       let tradeData = await TradeHistory
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
       for (let index = 0; index < tradeData.length; index++) {
         if (tradeData[index].user_id) {
-          let user = await Users.findOne({id: tradeData[index].user_id})
-          let user2 = await Users.findOne({id: tradeData[index].requested_user_id})
+          let user = await Users.findOne({ id: tradeData[index].user_id })
+          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
           tradeData[index].maker_email = user.email;
           tradeData[index].taker_email = user2.email;
           tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);

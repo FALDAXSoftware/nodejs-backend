@@ -9,81 +9,120 @@ var UploadFiles = require('../services/UploadFiles');
 module.exports = {
     //---------------------------Web Api------------------------------
     getAllBlogList: async function (req, res) {
+        var https = require('https');
+
+        var options = {
+            hostname: 'testing.atlassian.net',
+            port: 443,
+            path: 'https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
+            method: 'GET',
+        };
+
+        https.request('https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245', function (response) {
+            var responseData = '';
+            response.setEncoding('utf8');
+
+            response.on('data', function (chunk) {
+                responseData += chunk;
+            });
+
+            response.once('error', function (err) {
+                // Some error handling here, e.g.:
+                res.serverError(err);
+            });
+
+            response.on('end', function () {
+                try {
+                    // response available as `responseData` in `yourview`
+                    return res.json({
+                        "status": 200,
+                        "message": sails.__("Blog list"),
+                        "data": JSON.parse(responseData)
+                    });
+                    //res.locals.requestData = JSON.parse(responseData);
+                } catch (e) {
+                    sails.log.warn('Could not parse response from options.hostname: ' + e);
+                }
+
+                res.view('yourview');
+            });
+        }).end()
+
         // req.setLocale('en')
-        let { page, limit, data } = req.allParams();
-        if (data) {
-            data = data.toLowerCase();
+        // let { page, limit, data } = req.allParams();
+        // if (data) {
+        //     data = data.toLowerCase();
 
-            let blogData = await Blogs.find({
-                where: {
-                    deleted_at: null,
-                    or: [{
-                        search_keywords: { contains: data }
-                    }]
-                }
-            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+        //     let blogData = await Blogs.find({
+        //         where: {
+        //             deleted_at: null,
+        //             or: [{
+        //                 search_keywords: { contains: data }
+        //             }]
+        //         }
+        //     }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
-            let BlogCount = await Blogs.count({
-                where: {
-                    deleted_at: null,
-                    or: [{
-                        search_keywords: { contains: data }
-                    }]
-                }
-            });
-            let featuredBlog = {};
-            // let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
-            // if (page == 1 && featuredBlogArray.length > 0) {
-            //     featuredBlog = featuredBlogArray[0];
-            //     let admin = await Admin.findOne({ id: featuredBlog.admin_id });
-            //     featuredBlog.admin_name = admin.name
-            // }
-            if (blogData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Blog list"),
-                    "data": blogData, BlogCount, featuredBlog
-                });
-            }
-        } else {
-            let blogData = await Blogs.find({
-                deleted_at: null
-            }).sort("id ASC").paginate(page - 1, parseInt(limit));
+        //     let BlogCount = await Blogs.count({
+        //         where: {
+        //             deleted_at: null,
+        //             or: [{
+        //                 search_keywords: { contains: data }
+        //             }]
+        //         }
+        //     });
+        //     let featuredBlog = {};
+        // let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
+        // if (page == 1 && featuredBlogArray.length > 0) {
+        //     featuredBlog = featuredBlogArray[0];
+        //     let admin = await Admin.findOne({ id: featuredBlog.admin_id });
+        //     featuredBlog.admin_name = admin.name
+        // }
+        //     if (blogData) {
+        //         return res.json({
+        //             "status": 200,
+        //             "message": sails.__("Blog list"),
+        //             "data": blogData, BlogCount, featuredBlog
+        //         });
+        //     }
+        // } else {
+        //     let blogData = await Blogs.find({
+        //         deleted_at: null
+        //     }).sort("id ASC").paginate(page - 1, parseInt(limit));
 
-            for (let index = 0; index < blogData.length; index++) {
-                if (blogData[index].admin_id) {
-                    let admin = await Admin.findOne({ id: blogData[index].admin_id })
-                    blogData[index].admin_name = admin.name
-                }
-                let BlogCommentCount = await BlogComment.count({
-                    where: {
-                        deleted_at: null,
-                        blog: blogData[index].id
-                    }
-                });
-                blogData[index].comment_count = BlogCommentCount;
-            }
+        //     for (let index = 0; index < blogData.length; index++) {
+        //         if (blogData[index].admin_id) {
+        //             let admin = await Admin.findOne({ id: blogData[index].admin_id })
+        //             blogData[index].admin_name = admin.name
+        //         }
+        //         let BlogCommentCount = await BlogComment.count({
+        //             where: {
+        //                 deleted_at: null,
+        //                 blog: blogData[index].id
+        //             }
+        //         });
+        //         blogData[index].comment_count = BlogCommentCount;
+        //     }
 
-            let BlogCount = await Blogs.count({
-                where: {
-                    deleted_at: null,
-                }
-            });
-            let featuredBlog = {};
-            let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
-            if (page == 1 && featuredBlogArray.length > 0) {
-                featuredBlog = featuredBlogArray[0];
-                let admin = await Admin.findOne({ id: featuredBlog.admin_id });
-                featuredBlog.admin_name = admin.name
-            }
-            if (blogData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Blog list"),
-                    "data": blogData, BlogCount, featuredBlog
-                });
-            }
-        }
+        //     let BlogCount = await Blogs.count({
+        //         where: {
+        //             deleted_at: null,
+        //         }
+        //     });
+        //     let featuredBlog = {};
+        //     let featuredBlogArray = await Blogs.find({ is_featured: true, deleted_at: null });
+        //     if (page == 1 && featuredBlogArray.length > 0) {
+        //         featuredBlog = featuredBlogArray[0];
+        //         let admin = await Admin.findOne({ id: featuredBlog.admin_id });
+        //         featuredBlog.admin_name = admin.name
+        //     }
+        //     if (blogData) {
+        //         return res.json({
+        //             "status": 200,
+        //             "message": sails.__("Blog list"),
+        //             "data": blogData, BlogCount, featuredBlog
+        //         });
+        //     }
+        // }
     },
 
     getBlogDetails: async function (req, res) {
