@@ -158,12 +158,8 @@ module.exports = {
     try {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
-      console.log("Coin Data ::: ", coinData);
-      console.log(req.user.id);
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
-      console.log("wallet Transfer Data ", walletTransData);
       walletTransData[0]['coin_code'] = coinData.coin_code;
-      console.log('walletTransData', walletTransData)
 
       let walletTransCount = await WalletHistory.count({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData) {

@@ -212,6 +212,9 @@ module.exports.routes = {
   //receive coin route
   'get /wallet/get-qr-code/:coin': 'WalletController.getReceiveCoin',
 
+  //send Coin
+  'post /wallet/send': 'WalletController.sendCoin',
+
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
   'get /coin-list': 'Coins.getAllCoinList',
@@ -220,6 +223,8 @@ module.exports.routes = {
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
   'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
+  'get /socket/get-card-data': 'DashboardController.getCardData',
+  'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
 
-  'get /stop-limit-execute': 'TradeController.stopLimitExecute'
+  'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 };
