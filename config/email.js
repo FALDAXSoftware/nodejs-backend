@@ -9,8 +9,8 @@ module.exports.email = {
     //     }
     // },
     service: 'Gmail',
-    auth: { user: 'kalpit.akhawat@openxcell.info', pass: 'HeyGoogle,ThisIsDjKalpit1712' }, //Local Cred
-    //auth: { user: 'donotreply@faldax.com', pass: '!cuQ$$7APY9f2a2A6pFhpc@0m!Z$@FS*x' }, // Live Cred
+    // auth: { user: 'kalpit.akhawat@openxcell.info', pass: 'HeyGoogle,ThisIsDjKalpit1712' }, //Local Cxred
+    // auth: { user: 'donotreply@faldax.com', pass: '!cuQ$$7APY9f2a2A6pFhpc@0m!Z$@FS*x' }, // Live Cred
     templateDir: "views/emailTemplates",
     testMode: false,
 };
