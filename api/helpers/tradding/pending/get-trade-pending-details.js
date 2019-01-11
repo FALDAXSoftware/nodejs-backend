@@ -55,21 +55,21 @@ module.exports = {
         settle_currency: inputs.crypto,
         currency: inputs.currency,
         user_id: inputs.user_id,
-        created: {
+        created_at: {
           '>=': yesterday
         }
       },
       sort: 'id DESC'
     });
 
-    var buyBookDetails = await buyBookDetails.find({
+    var buyBookDetails = await buyBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,
         currency: inputs.currency,
         user_id: inputs.user_id,
         is_partially_fulfilled: true,
-        created: {
+        created_at: {
           '>=': yesterday
         }
       },
@@ -78,14 +78,26 @@ module.exports = {
 
     var pendingDetailsBuy = pendingOrderDetails.concat(buyBookDetails);
 
-    var sellBookDetails = await sellBookDetails.find({
+    var sellBookDetails = await sellBook.find({
+      select: [
+        'id',
+        'fix_quantity',
+        'quantity',
+        'fill_price',
+        'side',
+        'order_type',
+        'symbol',
+        'created_at',
+        'deleted_at',
+        'limit_price'
+      ],
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,
         currency: inputs.currency,
         user_id: inputs.user_id,
         is_partially_fulfilled: true,
-        created: {
+        created_at: {
           '>=': yesterday
         }
       },
@@ -93,6 +105,8 @@ module.exports = {
     });
 
     tradePendingDetails = pendingDetailsBuy.concat(sellBookDetails);
+    
+    console.log("Trading Pending Details :: ", tradePendingDetails);
     // Send back the result through the success exit.
     return exits.success(tradePendingDetails);
 
