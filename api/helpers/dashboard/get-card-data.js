@@ -106,7 +106,7 @@ module.exports = {
       var diffrrence = current_price - previous_price;
       var percentchange = (diffrrence / current_price) * 100;
 
-      if (percentchange == NaN || percentchange == "-Infinity") {
+      if (isNaN(percentchange) || percentchange == "-Infinity") {
         percentchange = 0;
       } else {
         percentchange = percentchange;

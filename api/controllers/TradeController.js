@@ -70,7 +70,6 @@ module.exports = {
   },
   marketBuy: async function (req, res) {
     try {
-      console.log(req.allParams());
       let { symbol, side, order_type, orderQuantity } = req.allParams();
       let user_id = req.user.id;
       let response = await sails
@@ -308,6 +307,46 @@ module.exports = {
     res.end();
   },
 
+  cancelPendingOrder: async function (req, res) {
+
+    try {
+      let { side, id, order_type } = req.allParams();
+      console.log(req.allParams());
+      let user_id = req.user.id;
+      let response = await sails
+        .helpers
+        .tradding
+        .pending
+        .cancelPendingData(side, order_type, id);
+      console.log(response);
+      console.log("done");
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+    } catch (error) {
+      console.log("tradeController", error);
+
+      if (error.message == "coinNotFound") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Coin Not Found" });
+      }
+      if (error.message == "insufficientBalance") {
+        return res
+          .status(500)
+          .json({ status: 500, "err": "Insufficient balance in wallet" });
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   // getAllTradeHistory: async function (req, res) {   try {     let { fromDate,
   // toDate,       pair,       Buy,       Sell,       deposit,   withdraw } =
   // req.body;     if (req.user.id && pair && Buy == 'true' && Sell == 'false' &&
@@ -409,20 +448,20 @@ module.exports = {
                 .utilities
                 .getCurrencies(room);
               console.log("-=-=-=-=-=", crypto, currency);
-
+              var userTradeDetails;
               if (filter_type == 1) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .getCompletedData(user_id, crypto, currency, month);
               } else if (filter_type == 2) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .pending
                   .getTradePendingDetails(user_id, crypto, currency, month);
               } else if (filter_type == 3) {
-                let userTradeDetails = await sails
+                userTradeDetails = await sails
                   .helpers
                   .tradding
                   .getCancelDetails(user_id, crypto, currency, month);

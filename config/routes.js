@@ -228,4 +228,7 @@ module.exports.routes = {
   'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
 
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
+
+  //Cancel Pending Order
+  'get /cancel-pending-order': 'TradeController.cancelPendingOrder'
 };
