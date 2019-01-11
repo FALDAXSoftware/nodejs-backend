@@ -59,13 +59,11 @@ module.exports = {
                   "err": sails.__("Something Wrong")
                 });
             } else {
-              console.log("pair", room);
 
               let cardDate = await sails
                 .helpers
                 .dashboard
                 .getCardData(room);
-              console.log(cardDate);
               return res.json({status: 200, data: cardDate, "message": "Card data retrived successfully."});
             }
           });

@@ -51,11 +51,23 @@ module.exports = {
       .format();
 
     cancelDetails = await ActivityTable.find({
+      select: [
+        'id',
+        'fix_quantity',
+        'quantity',
+        'fill_price',
+        'side',
+        'order_type',
+        'symbol',
+        'created_at',
+        'deleted_at',
+        'limit_price'
+      ],
       where: {
         is_cancel: true,
         settle_currency: inputs.crypto,
         currency: inputs.currency,
-        created: {
+        created_at: {
           '>=': yesterday
         }
       },

@@ -1,16 +1,23 @@
 module.exports.email = {
-    // transporter: {
-    //     host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: true, // use SSL
-    //     auth: {
-    //         user: 'developers.openxcell@gmail.com',
-    //         pass: 'dev123!@#'
-    //     }
+    transporter: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: 'developers.openxcell@gmail.com',
+            pass: 'dev123!@#'
+        }
+    },
+    // service: 'Gmail',
+    // // auth: { user: 'kalpit.akhawat@openxcell.info', pass:
+    // // 'HeyGoogle,ThisIsDjKalpit1712' }, //Local Cred
+    // auth: {
+    //     user: 'developers.openxcell@gmail.com',
+    //     pass: 'dev123!@#'
     // },
-    service: 'Gmail',
-    auth: { user: 'kalpit.akhawat@openxcell.info', pass: 'HeyGoogle,ThisIsDjKalpit1712' }, //Local Cred
-    //auth: { user: 'donotreply@faldax.com', pass: '!cuQ$$7APY9f2a2A6pFhpc@0m!Z$@FS*x' }, // Live Cred
+    // auth: { user: 'donotreply@faldax.com', pass:
+    // '!cuQ$$7APY9f2a2A6pFhpc@0m!Z$@FS*x' }, // Live Cred
+    from: 'developers.openxcell@gmail.com',
     templateDir: "views/emailTemplates",
-    testMode: false,
+    testMode: false
 };

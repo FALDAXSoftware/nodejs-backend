@@ -53,7 +53,7 @@ module.exports = {
     depthChartDetail
 
     // Send back the result through the success exit.
-    return exits.succes({ "buyDetails": buyDetails, "sellDetails": sellDetails });
+    return exits.success({ "buyDetails": buyDetails, "sellDetails": sellDetails });
 
   }
 
