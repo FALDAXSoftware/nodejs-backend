@@ -84,7 +84,6 @@ module.exports = {
                 subject: "Signup Verification"
               }, function (err) {
                 console.log(err);
-
                 if (!err) {
                   return res.json({
                     "status": 200,
