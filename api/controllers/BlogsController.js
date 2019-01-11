@@ -10,15 +10,9 @@ module.exports = {
     //---------------------------Web Api------------------------------
     getAllBlogList: async function (req, res) {
         var https = require('https');
+        let { page, limit, data } = req.allParams();
 
-        var options = {
-            hostname: 'testing.atlassian.net',
-            port: 443,
-            path: 'https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
-            method: 'GET',
-        };
-
-        https.request('https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245', function (response) {
+        https.request('https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245&offset=' + page * 9 + '&limit=9', function (response) {
             var responseData = '';
             response.setEncoding('utf8');
 
@@ -39,7 +33,6 @@ module.exports = {
                         "message": sails.__("Blog list"),
                         "data": JSON.parse(responseData)
                     });
-                    //res.locals.requestData = JSON.parse(responseData);
                 } catch (e) {
                     sails.log.warn('Could not parse response from options.hostname: ' + e);
                 }
@@ -126,26 +119,39 @@ module.exports = {
     },
 
     getBlogDetails: async function (req, res) {
-        let blog = await Blogs.findOne({ id: req.body.id, deleted_at: null });
-        if (blog) {
-            let adminData = await Admin.findOne({ id: blog.admin_id });
-            blog.admin_name = adminData.name;
-            let BlogCommentCount = await BlogComment.count({
-                where: {
-                    deleted_at: null,
-                    blog: blog.id
-                }
-            });
-            blog.comment_count = BlogCommentCount;
-            return res.json({
-                "status": 200, "message": sails.__('Blog Details'), data: blog
-            })
-        } else {
-            return res.status(400).json({
-                "status": 400,
-                "err": "Blog not found",
-            });
-        }
+        var request = require('request');
+        // let blog = await Blogs.findOne({ id: req.body.id, deleted_at: null });
+        // if (blog) {
+        //     let adminData = await Admin.findOne({ id: blog.admin_id });
+        //     blog.admin_name = adminData.name;
+        //     let BlogCommentCount = await BlogComment.count({
+        //         where: {
+        //             deleted_at: null,
+        //             blog: blog.id
+        //         }
+        //     });
+        //     blog.comment_count = BlogCommentCount;
+        //     return res.json({
+        //         "status": 200, "message": sails.__('Blog Details'), data: blog
+        //     })
+        // } else {
+        //     return res.status(400).json({
+        //         "status": 400,
+        //         "err": "Blog not found",
+        //     });
+        // }
+        request('https://api.hubapi.com/content/api/v2/blog-posts/' + req.body.id + '?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245', function (error, response, body) {
+            if (response) {
+                return res.json({
+                    "status": 200, "message": sails.__('Blog Details'), data: response
+                })
+            } else {
+                return res.status(400).json({
+                    "status": 400,
+                    "err": "Blog not found",
+                });
+            }
+        });
     },
 
     addComment: async function (req, res) {
