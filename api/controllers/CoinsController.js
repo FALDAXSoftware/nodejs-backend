@@ -213,7 +213,6 @@ module.exports = {
             try {
                 if (uploadedFiles.length > 0) {
                     var uploadIcon = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/coin/' + req.body.coin_code);
-                    console.log('>>>>uploadCover', uploadIcon)
 
                     if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address) {
                         let existingCoin = await Coins.find({
@@ -298,36 +297,19 @@ module.exports = {
                     return;
                 }
             }
+            var coinData = {
+                id: req.body.coin_id,
+                ...req.body
+            }
+            var updatedCoin = await Coins
+                .update({ id: req.body.coin_id })
+                .set(req.body)
+                .fetch();
+            if (!updatedCoin) {
+                return res.json({ "status": 200, "message": "Something went wrong! could not able to update coin details" });
+            }
+            return res.json({ "status": 200, "message": "Coin details updated successfully" });
 
-            req.file('coin_icon').upload(async function (err, uploadedFiles) {
-                try {
-                    if (uploadedFiles.length > 0) {
-                        var uploadIcon = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/coin/' + coin_details.coin_code);
-                        if (uploadIcon) {
-                            delete req.body.coin_icon;
-                            req.body.coin_icon = 'faldax/coin/' + coin_details.coin_code;
-                        }
-
-                        var coinData = {
-                            id: req.body.coin_id,
-                            ...req.body
-                        }
-                        var updatedCoin = await Coins
-                            .update({ id: req.body.coin_id })
-                            .set(req.body)
-                            .fetch();
-                        if (!updatedCoin) {
-                            return res.json({ "status": 200, "message": "Something went wrong! could not able to update coin details" });
-                        }
-                        return res.json({ "status": 200, "message": "Coin details updated successfully" });
-                    }
-                } catch (err) {
-                    return res.status(500).json({
-                        status: 500,
-                        "err": sails.__("Something Wrong")
-                    });
-                }
-            })
         } catch (error) {
             res
                 .status(500)
