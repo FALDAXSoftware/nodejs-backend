@@ -151,6 +151,7 @@ module.exports.routes = {
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
   'post /logout': "AuthController.logOut",
+  'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
 
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
