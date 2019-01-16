@@ -230,5 +230,8 @@ module.exports.routes = {
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
-  'get /cancel-pending-order': 'TradeController.cancelPendingOrder'
+  'get /cancel-pending-order': 'TradeController.cancelPendingOrder',
+
+  //Get User Trade History
+  'get /get-user-history': 'TradeController.getUserHistory'
 };
