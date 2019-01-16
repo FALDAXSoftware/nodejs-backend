@@ -4,8 +4,8 @@ module.exports.email = {
         port: 465,
         secure: true,
         auth: {
-            user: 'AKIAIQQCO77B36AL25DQ',
-            pass: 'At1hx84V7GoKhDlqElWUghrlIG30kM6QejfUjgxdoQzf'
+            user: 'AKIAJWOHLEGWHMBOR5WQ',
+            pass: 'AgOcwXoZ8+kKv6C7RU8RuLHQ2O0eiy4tIaUMfB7OVPkL'
         }
     },
     // service: 'Gmail',
