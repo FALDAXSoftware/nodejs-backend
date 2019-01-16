@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get sell wallet balance',
 
-
   description: 'Get sell wallet balance',
-
 
   inputs: {
     crypto: {
@@ -28,10 +25,9 @@ module.exports = {
     }
   },
 
-
   exits: {
     success: {
-      outputFriendlyName: 'Sell wallet balance',
+      outputFriendlyName: 'Sell wallet balance'
     },
     serverError: {
       descritpion: 'serverError'
@@ -41,7 +37,6 @@ module.exports = {
     }
   },
 
-
   fn: async function (inputs, exits) {
     try {
       console.log(inputs.crypto);
@@ -49,30 +44,20 @@ module.exports = {
       // Get sell wallet balance.
       var sellWalletBalance;
       // TODO
-      let coin = await Coins.findOne({
-        is_active: true,
-        deleted_at: null,
-        coin: inputs.crypto
-      });
+      let coin = await Coins.findOne({is_active: true, deleted_at: null, coin: inputs.crypto});
       console.log("------> ", coin);
 
       if (!coin) {
         return exits.coinNotFound();
       }
-      sellWalletBalance = await Wallet.findOne({
-        is_active: true,
-        deleted_at: null,
-        coin_id: coin.id,
-        user_id: inputs.user_id
-      });
+      sellWalletBalance = await Wallet.findOne({is_active: true, deleted_at: null, coin_id: coin.id, user_id: inputs.user_id});
       // Send back the result through the success exit.
       return exits.success(sellWalletBalance);
     } catch (error) {
+      console.log(error);
       return exits.serverError();
 
     }
   }
 
-
 };
-
