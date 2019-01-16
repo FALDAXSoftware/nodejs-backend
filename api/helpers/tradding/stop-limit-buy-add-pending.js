@@ -63,16 +63,18 @@ module.exports = {
     },
     coinNotFound: {
       description: 'Error when coin not found'
-    },
+    }
   },
 
   fn: async function (inputs, exits) {
     // TODO
     try {
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
+
+      console.log(currency, crypto);
 
       var now = new Date();
       var limitSellOrder = ({
@@ -80,7 +82,9 @@ module.exports = {
         'symbol': inputs.symbol,
         'side': inputs.side,
         'order_type': inputs.order_type,
-        'maximum_time': moment(now).add(1, 'years').format(),
+        'maximum_time': moment(now)
+          .add(1, 'years')
+          .format(),
         'fill_price': 0.0,
         'limit_price': inputs.limit_price,
         'stop_price': inputs.stop_price,
@@ -141,6 +145,7 @@ module.exports = {
         return exits.insufficientBalance();
       }
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

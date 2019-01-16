@@ -7,7 +7,30 @@
 
 module.exports = {
     //---------------------------Web Api------------------------------
+    getInstrumentPair: async function (req, res) {
+        let coin = req.query.coin;
+        try {
+            if (req.isSocket) {
+                sails.sockets.join(coin, function (err) {
+                    if (err) {
+                        console.log('>>>err', err);
+                        return res
+                            .status(403)
+                            .json({ status: 403, "message": "Error occured" });
+                    } else {
 
+                    }
+                });
+            } else {
+                console.log('>>>IN else')
+                return res
+                    .status(403)
+                    .json({ status: 403, "message": "Error occured" });
+            }
+        } catch (error) {
+
+        }
+    },
     //-------------------------------CMS Api--------------------------
     getAllPairs: async function (req, res) {
         // req.setLocale('en')

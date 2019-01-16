@@ -63,13 +63,13 @@ module.exports = {
     },
     coinNotFound: {
       description: 'Error when coin not found'
-    },
+    }
   },
 
   fn: async function (inputs, exits) {
     try {
       // TODO
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -96,7 +96,7 @@ module.exports = {
       var wallet = await sails
         .helpers
         .utilities
-        .getSellWalletBalance(currency, crypto, inputs.user_id)
+        .getSellWalletBalance(crypto, currency, inputs.user_id)
         .intercept("coinNotFound", () => {
           return new Error("coinNotFound");
         })
@@ -143,6 +143,7 @@ module.exports = {
         return exits.insufficientBalance();
       }
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

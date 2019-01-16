@@ -58,7 +58,8 @@ module.exports.policies = {
     'testnews': true,
     "csvToJson": true,
     "webhookOnReciveBitgo": true,
-    "queryTest": true
+    "queryTest": true,
+    "sendOpenTicketForm": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true
@@ -80,7 +81,7 @@ module.exports.policies = {
     "createWallet": true,
     "createAllWallet": true
   },
-  "TradeController":{
-    "stopLimitExecute":true
+  "TradeController": {
+    "stopLimitExecute": true
   }
 };

@@ -151,6 +151,7 @@ module.exports.routes = {
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
   'post /logout': "AuthController.logOut",
+  'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
 
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
@@ -230,5 +231,8 @@ module.exports.routes = {
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
-  'get /cancel-pending-order': 'TradeController.cancelPendingOrder'
+  'get /cancel-pending-order': 'TradeController.cancelPendingOrder',
+
+  //Get User Trade History
+  'get /get-user-history': 'TradeController.getUserHistory'
 };
