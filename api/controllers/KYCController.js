@@ -22,16 +22,16 @@ module.exports = {
                     let extension = req.body.front_doc.split('.');
                     let filename = new Date().getTime().toString();
                     filename += '.' + extension[extension.length - 1];
-                    await UploadFiles.upload(req.body.front_doc, 'faldax', '/kyc/' + filename)
-                    req.body.front_doc = 'faldax/kyc/' + filename;
+                    await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
+                    req.body.front_doc = 'kyc/' + filename;
                 }
 
                 if (req.body.back_doc) {
                     let extension = req.body.back_doc.split('.');
                     let filename = new Date().getTime().toString();
                     filename += '.' + extension[extension.length - 1];
-                    await UploadFiles.upload(req.body.back_doc, 'faldax', '/kyc/' + filename)
-                    req.body.back_doc = 'faldax/kyc/' + filename;
+                    await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
+                    req.body.back_doc = 'kyc/' + filename;
                 }
 
                 req.body.created_at = new Date();

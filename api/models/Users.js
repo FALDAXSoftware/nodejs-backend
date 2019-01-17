@@ -244,7 +244,7 @@ module.exports = {
 
   customToJSON: function () {
     if (!this.profile_pic || this.profile_pic == "" || this.profile_pic == null) {
-      this.profile_pic = "faldax/profile/def_profile.jpg"
+      this.profile_pic = "profile/def_profile.jpg"
     }
     return this;
   }

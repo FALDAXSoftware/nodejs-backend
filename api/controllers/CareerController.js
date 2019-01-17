@@ -22,7 +22,7 @@ module.exports = {
                             .getTime()
                             .toString();
                         var uploadFileName = timestamp + name;
-                        var uploadResume = await UploadFiles.upload(uploadedDoc[0].fd, 'faldax', '/career/' + uploadFileName);
+                        var uploadResume = await UploadFiles.upload(uploadedDoc[0].fd, 'career/' + uploadFileName);
 
                         if (uploadResume) {
                             req.file('cover_letter').upload(async function (err, uploadedLetter) {
@@ -35,7 +35,7 @@ module.exports = {
                                             .getTime()
                                             .toString();
                                         var uploadCoverName = timestamp + name;
-                                        cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'faldax', '/career/' + uploadCoverName);
+                                        cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'career/' + uploadCoverName);
                                     }
 
                                     var uploadLetter = cover_letter;
@@ -49,9 +49,9 @@ module.exports = {
                                         phone_number: req.body.phone_number,
                                         website_url: req.body.website_url,
                                         linkedin_profile: req.body.linkedin_profile,
-                                        resume: 'faldax/career/' + uploadFileName,
+                                        resume: 'career/' + uploadFileName,
                                         job_id: jobDetail.id,
-                                        cover_letter: (uploadLetter !== null ? ('faldax/career/' + uploadLetter) : null),
+                                        cover_letter: (uploadLetter !== null ? ('career/' + uploadLetter) : null),
                                         created_at: new Date()
                                     }).fetch();
                                     if (jobDetails) {
