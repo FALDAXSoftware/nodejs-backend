@@ -358,11 +358,11 @@ module.exports = {
         .helpers
         .tradding
         .getUserTradeHistory(data);
-      console.log(response);
-      console.log("done");
+      // console.log(response); console.log("done");
       res.json({
         "status": 200,
-        "message": sails.__("Order Success")
+        "message": sails.__("Order Success"),
+        "data": response
       });
     } catch (error) {
       console.log("tradeController", error);
@@ -384,6 +384,50 @@ module.exports = {
           status: 500,
           "err": sails.__("Something Wrong")
         });
+    }
+  },
+
+  getUserWallet: async function (req, res) {
+    console.log("Trade history call");
+
+    var room = req.query.room;
+    try {
+      var user_id = inputs.user.id;
+      if (req.isSocket) {
+        console.log("trade history call", room);
+        sails
+          .sockets
+          .join(req.socket, room + '-' + user_id, async function (err) {
+            if (err) {
+              console.log('>>>err', err);
+              return res
+                .status(403)
+                .json({status: 403, "message": "Error occured"});
+            } else {
+              let {crypto, currency} = await sails
+                .helpers
+                .utilities
+                .getCurrencies(room);
+              console.log("-=-=-=-=-=", crypto, currency);
+
+              let userBalanceDetails = await sails
+                .helpers
+                .tradding
+                .getUserWalletBalance(user_id, currency, crypto);
+
+              if (tradeDetails) {
+                return res.json({status: 200, data: userBalanceDetails, "message": "User Balance retrieved successfully"});
+              }
+            }
+          });
+      } else {
+        console.log('>>>IN else')
+        return res
+          .status(403)
+          .json({status: 403, "message": "Error occured"});
+      }
+    } catch (err) {
+      console.log('>>>', err)
     }
   },
 
@@ -545,6 +589,7 @@ module.exports = {
                 .helpers
                 .chart
                 .getDepthChartDetail(crypto, currency);
+              console.log("DEPTH DATA :::: ", data);
               return res.json({status: 200, data: data, "message": "User Trade data retrived successfully."});
             }
 

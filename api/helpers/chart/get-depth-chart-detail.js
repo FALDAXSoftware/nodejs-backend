@@ -50,10 +50,8 @@ module.exports = {
       sort: 'price ASC'
     });
 
-    depthChartDetail
-
     // Send back the result through the success exit.
-    return exits.success({ "buyDetails": buyDetails, "sellDetails": sellDetails });
+    return exits.success({"buyDetails": buyDetails, "sellDetails": sellDetails});
 
   }
 
