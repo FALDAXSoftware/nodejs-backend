@@ -59,7 +59,7 @@ module.exports = {
     // console.log("market sell inputs -- ", inputs);
 
     try {
-      let { crypto, currency } = await sails
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -82,6 +82,8 @@ module.exports = {
         .helpers
         .utilities
         .getMakerTakerFees(crypto, currency);
+
+      console.log("Buy Book ::::: ", buyBook);
 
       if (buyBook && buyBook.length > 0) {
         var availableQty = buyBook[0].quantity;
@@ -121,7 +123,7 @@ module.exports = {
           .add(resultData);
 
         if (inputs.orderQuantity <= availableQty) {
-
+          console.log("Current Buy Book Details ::  ", (currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance);
           if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
             var trade_history_data = {
               ...orderData
@@ -147,6 +149,8 @@ module.exports = {
               fill_price: currentBuyBookDetails.price
             }
 
+            console.log("request :: ", request);
+
             var tradingFees = await sails
               .helpers
               .wallet
@@ -154,6 +158,8 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
+
+            console.log("Trading Fees ::: ", tradingFees);
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;
@@ -165,13 +171,15 @@ module.exports = {
               .add(trade_history_data);
             // Do Actual Tranasfer In Wallet Here
             //
+            console.log("Trade History ::: ", tradeHistory);
             let remainigQuantity = availableQty - inputs.orderQuantity;
+            console.log("Remainning Quantity ::: ", remainigQuantity);
             if (remainigQuantity > 0) {
               let updatedBuyBook = await sails
                 .helpers
                 .tradding
                 .buy
-                .update(currentBuyBookDetails.id, { quantity: remainigQuantity });
+                .update(currentBuyBookDetails.id, {quantity: remainigQuantity});
             } else {
               await sails
                 .helpers
@@ -259,15 +267,18 @@ module.exports = {
           }
 
         }
-        // console.log("resultData -- ", resultData);
+        // console.log("resultData -- ", resultData); console.log("no more limit order
+        // in order book");
+        
 
-
-        // console.log("no more limit order in order book");
+      }else{
         return exits.orderBookEmpty();
-
       }
       // console.log("----wallet", wallet);
-      await sails.helpers.sockets.tradeEmit(crypto, currency);
+      await sails
+        .helpers
+        .sockets
+        .tradeEmit(crypto, currency);
       return exits.success();
 
     } catch (error) {

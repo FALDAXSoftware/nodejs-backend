@@ -45,6 +45,23 @@ module.exports = {
       .sell
       .getSellBookOrders(inputs.crypto, inputs.currency);
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "sellbookUpdate", sellBookDetails);
+    let tradeDetails = await sails
+      .helpers
+      .tradding
+      .trade
+      .getTradeDetails(inputs.crypto, inputs.currency, 100);
+    sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "tradehistoryUpdate", tradeDetails);
+    let cardDate = await sails
+      .helpers
+      .dashboard
+      .getCardData(inputs.crypto + "-" + inputs.currency);
+    sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "cardDataUpdate", cardDate);
+    let depthChartData = await sails
+      .helpers
+      .chart
+      .getDepthChartDetail(inputs.crypto, inputs.currency);
+    sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "depthChartUpdate", depthChartData);
+
     return exits.success();
   }
 
