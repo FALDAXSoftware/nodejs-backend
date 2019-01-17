@@ -8,6 +8,9 @@ const BitGoJS = require('bitgo');
 
 var request = require('request');
 module.exports = {
+    sendOpenTicketForm: async function (req, res) {
+        return res.view('pages/openTicket');
+    },
 
     getContactInfo: async function (req, res) {
         console.log("Cron Status - ", sails.config.local.CRON_STATUS);
