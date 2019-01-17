@@ -1,0 +1,47 @@
+<%- partial('../header.ejs') %>
+
+<tr>
+    <td valign="top" align="left" style="padding:0px 15px 0px 15px;color:#333333;font-size:14px;line-height:22px;text-align:left;font-weight:bolder">
+        Hi,
+        <%= recipientName%>
+    </td>
+</tr>
+
+<tr>
+    <td valign='top' align='left' style='padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        Welcome to Faldax.
+    </td>
+</tr>
+<tr>
+    <td valign='top' align='left' style='padding:10px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        We just need to verify your email address before your sign up is complete. Please enter following code to
+        activate your account.
+    </td>
+</tr>
+
+<tr>
+    <td valign='top' align='left' style='padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:center;font-weight:none'>
+        <b>
+            <%= tokenCode%>
+        </b>
+    </td>
+</tr>
+
+<tr>
+    <td valign='top' align='left' style='padding:25px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        Thank you so much for joining us.
+    </td>
+</tr>
+
+<tr>
+    <td valign="top" align="left" style="padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">Regards,</td>
+</tr>
+
+<tr>
+    <td valign="top" align="left" style="padding:0px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">
+        Faldax Team.
+    </td>
+</tr>
+
+
+<%- partial('../footer.ejs') %>
