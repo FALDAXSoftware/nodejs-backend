@@ -35,7 +35,7 @@ module.exports = {
       q['settle_currency'] = data.settle_currency
     }
     q['created_at'] = {}
-    console.log("-=-=-=-",moment(data.toDate).format());
+    // console.log("-=-=-=-",moment(data.toDate).format());
     
     if (data.toDate) {
       q['created_at']['<='] = moment(data.toDate).format();
@@ -54,7 +54,7 @@ module.exports = {
       q['or'].push({requested_user_id: data.user_id, side: 'Buy'})
     }
 
-    console.log("Q value ", q);
+    // console.log("Q value ", q);
 
     userTradeHistory = await TradeHistory
       .find({
