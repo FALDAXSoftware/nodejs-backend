@@ -185,9 +185,9 @@ module.exports = {
                 .getTime()
                 .toString();
               var uploadFileName = timestamp + name;
-              var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/profile/' + uploadFileName);
+              var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'profile/' + uploadFileName);
               if (uploadProfile) {
-                user.profile_pic = 'faldax/profile/' + uploadFileName;
+                user.profile_pic = 'profile/' + uploadFileName;
 
                 var updatedUsers = await Users
                   .update({ email: user.email, deleted_at: null })

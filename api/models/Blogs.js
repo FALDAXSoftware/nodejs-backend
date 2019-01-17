@@ -61,7 +61,7 @@ module.exports = {
 
     customToJSON: function () {
         if (!this.cover_image || this.cover_image == "" || this.cover_image == null) {
-            this.cover_image = "faldax/blog/default_blog.png"
+            this.cover_image = "blog/default_blog.png"
         }
         return this;
     },
