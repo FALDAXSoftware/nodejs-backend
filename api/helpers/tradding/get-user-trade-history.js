@@ -36,7 +36,7 @@ module.exports = {
     }
     q['created_at'] = {}
     // console.log("-=-=-=-",moment(data.toDate).format());
-    
+    console.log("To Date :: ", data.toDate);
     if (data.toDate) {
       q['created_at']['<='] = moment(data.toDate).format();
     }
@@ -44,17 +44,22 @@ module.exports = {
       q['created_at']['>='] = moment(data.fromDate).format();
     }
     q['or'] = [];
-    if (data.buy) {
+    if (data.buy == "true") {
       q['or'].push({user_id: data.user_id, side: 'Buy'}),
       q['or'].push({requested_user_id: data.user_id, side: 'Sell'})
     }
 
-    if (data.sell) {
+    if (data.sell == "true") {
       q['or'].push({user_id: data.user_id, side: 'Sell'}),
       q['or'].push({requested_user_id: data.user_id, side: 'Buy'})
     }
 
-    // console.log("Q value ", q);
+    if (data.buy == "false" && data.sell == "false") {
+      q['or'].push({user_id: data.user_id});
+      q['or'].push({requested_user_id: data.user_id})
+    }
+
+    console.log("Q value ", q);
 
     userTradeHistory = await TradeHistory
       .find({
