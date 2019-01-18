@@ -13,30 +13,67 @@ module.exports = {
         try {
             if (req.isSocket) {
                 console.log(room);
-                sails.sockets.join(req.socket, room, async function (err) {
-                    if (err) {
-                        console.log('>>>err', err);
-                        return res.status(403).json({ status: 403, "message": "Error occured" });
-                    } else {
-                        let { crypto, currency } = await sails
-                            .helpers
-                            .utilities
-                            .getCurrencies(room);
-                        let sellBookDetails = await sails
-                            .helpers
-                            .tradding
-                            .sell
-                            .getSellBookOrders(crypto, currency);
 
-                        if (sellBookDetails) {
-                            return res.json({
-                                status: 200,
-                                data: sellBookDetails,
-                                "message": "Sell data retrived successfully."
+                if (req.query.prevRoom) {
+                    let prevRoom = req.query.prevRoom;
+                    sails.sockets.leave(req.socket, prevRoom, function (leaveErr) {
+                        if (leaveErr) {
+                            console.log('>>>leaveErr', leaveErr);
+                            return res.status(403).json({ status: 403, "message": "Error occured" });
+                        } else {
+                            sails.sockets.join(req.socket, room, async function (err) {
+                                if (err) {
+                                    console.log('>>>err', err);
+                                    return res.status(403).json({ status: 403, "message": "Error occured" });
+                                } else {
+                                    let { crypto, currency } = await sails
+                                        .helpers
+                                        .utilities
+                                        .getCurrencies(room);
+                                    let sellBookDetails = await sails
+                                        .helpers
+                                        .tradding
+                                        .sell
+                                        .getSellBookOrders(crypto, currency);
+
+                                    if (sellBookDetails) {
+                                        return res.json({
+                                            status: 200,
+                                            data: sellBookDetails,
+                                            "message": "Sell data retrived successfully."
+                                        });
+                                    }
+                                }
                             });
                         }
-                    }
-                });
+                    });
+                } else {
+                    sails.sockets.join(req.socket, room, async function (err) {
+                        if (err) {
+                            console.log('>>>err', err);
+                            return res.status(403).json({ status: 403, "message": "Error occured" });
+                        } else {
+                            let { crypto, currency } = await sails
+                                .helpers
+                                .utilities
+                                .getCurrencies(room);
+                            let sellBookDetails = await sails
+                                .helpers
+                                .tradding
+                                .sell
+                                .getSellBookOrders(crypto, currency);
+
+                            if (sellBookDetails) {
+                                return res.json({
+                                    status: 200,
+                                    data: sellBookDetails,
+                                    "message": "Sell data retrived successfully."
+                                });
+                            }
+                        }
+                    });
+                }
+
             } else {
                 console.log('>>>IN else')
                 return res.status(403).json({ status: 403, "message": "Error occured" });

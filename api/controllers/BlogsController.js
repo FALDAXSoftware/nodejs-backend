@@ -8,6 +8,44 @@ var UploadFiles = require('../services/UploadFiles');
 
 module.exports = {
     //---------------------------Web Api------------------------------
+
+    CreateComment: async function (req, res) {
+        var https = require('https');
+        let { comment, contentId, } = req.allParams();
+
+        console.log('>>>>>>>>comment', JSON.parse(responseData))
+
+        https.request('', function (response) {
+            var responseData = '';
+            response.setEncoding('utf8');
+
+            response.on('data', function (chunk) {
+                responseData += chunk;
+            });
+
+            response.once('error', function (err) {
+                // Some error handling here, e.g.:
+                res.serverError(err);
+            });
+
+            response.on('end', function () {
+                try {
+                    console.log('>>>>>>>>comment', JSON.parse(responseData))
+                    // response available as `responseData` in `yourview`
+                    return res.json({
+                        "status": 200,
+                        "message": sails.__("Blog list"),
+                        "data": JSON.parse(responseData)
+                    });
+                } catch (e) {
+                    sails.log.warn('Could not parse response from options.hostname: ' + e);
+                }
+
+                res.view('yourview');
+            });
+        }).end()
+    },
+
     getAllBlogList: async function (req, res) {
         var https = require('https');
         let { page, limit, data } = req.allParams();
@@ -27,6 +65,7 @@ module.exports = {
 
             response.on('end', function () {
                 try {
+                    console.log('>>>>>>>>JSON.parse(responseData)', JSON.parse(responseData))
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,
@@ -329,7 +368,7 @@ module.exports = {
                         .toString();
                     var uploadFileName = timestamp + name;
                     console.log('>>>>uploadFileName', uploadFileName)
-                    var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
+                    var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'blog/' + uploadFileName);
                     console.log('>>>>uploadCover', uploadCover)
 
                     if (req.body.title && req.body.description && uploadCover) {
@@ -340,7 +379,7 @@ module.exports = {
                             description: req.body.description,
                             created_at: new Date(),
                             search_keywords: req.body.title.toLowerCase(),
-                            cover_image: 'faldax/blog/' + uploadFileName,
+                            cover_image: 'blog/' + uploadFileName,
                         }).fetch();
 
                         if (blog_detail) {
@@ -398,10 +437,10 @@ module.exports = {
                                 .getTime()
                                 .toString();
                             var uploadFileName = timestamp + name;
-                            var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'faldax', '/blog/' + uploadFileName);
+                            var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'blog/' + uploadFileName);
                             if (uploadCover) {
                                 delete req.body.cover_image;
-                                req.body.cover_image = 'faldax/blog/' + uploadFileName;
+                                req.body.cover_image = 'blog/' + uploadFileName;
 
                                 var updatedBlog = await Blogs.update({ id: req.body.id }).set(req.body).fetch();
                                 return res.json({

@@ -237,5 +237,9 @@ module.exports.routes = {
   'get /cancel-pending-order': 'TradeController.cancelPendingOrder',
 
   //Get User Trade History
-  'get /get-user-history': 'TradeController.getUserHistory'
+  'get /get-user-history': 'TradeController.getUserHistory',
+
+  //Get All Tickets
+  'get /get-all-tickets': 'TicketController.getAllTickets',
+  'get /get-ticket': 'TicketController.getAllTicketByID'
 };
