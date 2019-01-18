@@ -8,7 +8,7 @@
 module.exports = {
     //---------------------------Web Api------------------------------
     getSellBookDetails: async function (req, res) {
-        // console.log("====>", req.query.room);
+        console.log("====>", req.query.room);
         let room = req.query.room;
         try {
             if (req.isSocket) {

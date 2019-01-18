@@ -81,7 +81,7 @@ module.exports.sockets = {
 
   // This custom onDisconnect function will be run each time a socket disconnects
   afterDisconnect: function (session, socket, cb) {
-    console.log("DISCONNECT SESSION", session);
+    // console.log("DISCONNECT SESSION", session);
     try {
       // Look up the user ID using the connected socket
       // var userId = session.users[sails.sockets.id(socket)].id;

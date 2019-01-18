@@ -6,6 +6,7 @@
  */
 
 module.exports = async function (req, res, next) {
+
     var token;
 
     try {
@@ -25,7 +26,24 @@ module.exports = async function (req, res, next) {
             token = req.param('token');
             // We delete the token from param to not mess with blueprints
             delete req.query.token;
-        } else {
+        } else if (req.isSocket) {
+            if (req.socket.handshake.headers.authorization) {
+                var parts = req.socket.handshake.headers.authorization.split(' ');
+                if (parts.length == 2) {
+                    var scheme = parts[0],
+                        credentials = parts[1];
+
+                    if (/^Bearer$/i.test(scheme)) {
+                        token = credentials;
+                    }
+                } else {
+                    return res.status(403).json({ status: 403, err: 'Invalid Authorization token' });
+                }
+            } else {
+                return res.status(401).json({ status: 401, err: 'No Authorization header was found' });
+            }
+        }
+        else {
             return res.status(401).json({ status: 401, err: 'No Authorization header was found' });
         }
 
