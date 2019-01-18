@@ -7,12 +7,14 @@ AWS
   .loadFromPath('json/aws_config.json');
 var s3 = new AWS.S3({ signatureVersion: 'v4' });
 var mime = require('mime');
-var S3BucketName = "varshalteamprivatebucket";
+var S3BucketName = "production-static-asset";
 
 function UploadFiles() {
   return { upload: _upload };
 
   function _upload(filePath, name, uploadFileName) {
+    console.log("uploadFileName", uploadFileName);
+
     return new Promise((resolve, reject) => {
 
       gm(filePath).noProfile().stream(function (err, stdout, stderr) {
