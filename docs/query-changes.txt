@@ -5,3 +5,4 @@ Job table , category field added
 //25 dec
 job category table added
 add coin req model changes
+//17 Jan - Everything updated

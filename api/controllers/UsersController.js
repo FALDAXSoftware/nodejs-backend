@@ -185,7 +185,7 @@ module.exports = {
                 .getTime()
                 .toString();
               var uploadFileName = timestamp + name;
-              var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, '', 'profile/' + uploadFileName);
+              var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'profile/' + uploadFileName);
               if (uploadProfile) {
                 user.profile_pic = 'profile/' + uploadFileName;
 

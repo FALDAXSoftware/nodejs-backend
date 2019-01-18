@@ -86,6 +86,11 @@ module.exports = {
     values.updated_at = new Date();
     next();
   },
-
+  customToJSON: function () {
+    if (!this.coin_icon || this.coin_icon == "" || this.coin_icon == null) {
+      this.coin_icon = "coin/defualt_coin.png"
+    }
+    return this;
+  }
 };
 
