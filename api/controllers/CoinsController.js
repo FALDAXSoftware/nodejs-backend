@@ -16,7 +16,7 @@ module.exports = {
           is_fiat: false
         }
       })
-        .select(['coin_name', 'coin_code']);
+        .select(['coin_name', 'coin_code','coin']);
 
       let allCoinsCount = await Coins.count({
         where: {

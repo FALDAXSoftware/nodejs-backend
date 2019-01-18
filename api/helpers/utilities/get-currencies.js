@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get currencies',
 
-
   description: 'Get Currencies From Symbol',
-
 
   inputs: {
     symbol: {
@@ -16,31 +13,31 @@ module.exports = {
     }
   },
 
-
   exits: {
 
     success: {
-      outputFriendlyName: 'Currencies',
-    },
-
+      outputFriendlyName: 'Currencies'
+    }
   },
-
 
   fn: async function (inputs, exits) {
 
     // Get currencies.
     var currencies;
     // TODO
-    var data = inputs.symbol.split("-");
+    console.log(inputs.symbol);
+    var data = inputs
+      .symbol
+      .split("-");
     currencies = {
       crypto: data[0],
       currency: data[1]
     }
+
+    console.log(currencies);
     // Send back the result through the success exit.
     return exits.success(currencies);
 
   }
 
-
 };
-
