@@ -10,13 +10,13 @@ module.exports = {
     try {
       let allCoins = await Coins
         .find({
-          where: {
-            deleted_at: null,
-            is_active: true,
-            is_fiat: false
-          }
-        })
-        .select(['coin_name', 'coin_code']);
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_fiat: false
+        }
+      })
+        .select(['coin_name', 'coin_code','coin']);
 
       let allCoinsCount = await Coins.count({
         where: {

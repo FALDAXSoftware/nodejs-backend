@@ -30,17 +30,37 @@ module.exports = {
 
     var q = [];
 
-    if (data.currency && data.settle_currency) {
-      q['currency'] = data.currency,
-      q['settle_currency'] = data.settle_currency
+    console.log("Symbol ::: ", data.symbol);
+    var currency,
+      settle_currency;
+    if (data.symbol != null || data.symbol != undefined) {
+      var values = await sails
+        .helpers
+        .utilities
+        .getCurrencies(data.symbol);
+
+      settle_currency = values.crypto;
+      currency = values.currency;
     }
-    q['created_at'] = {}
+
+    console.log("Currency ", currency, "Crypto :::: ", settle_currency);
+    if (data.symbol != null || data.symbol != undefined) {
+      if (currency != "null" && settle_currency != "null") {
+        q['currency'] = currency,
+        q['settle_currency'] = settle_currency
+      }
+    }
+
+    if (data.toDate != undefined && data.toDate != null && data.fromDate != undefined && data.fromDate != null) {
+      q['created_at'] = {}
+    }
+
     // console.log("-=-=-=-",moment(data.toDate).format());
     console.log("To Date :: ", data.toDate);
-    if (data.toDate) {
+    if (data.toDate != undefined || data.toDate != null) {
       q['created_at']['<='] = moment(data.toDate).format();
     }
-    if (data.fromDate) {
+    if (data.fromDate != undefined || data.fromDate != null) {
       q['created_at']['>='] = moment(data.fromDate).format();
     }
     q['or'] = [];
