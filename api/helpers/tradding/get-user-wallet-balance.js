@@ -70,9 +70,36 @@ module.exports = {
       }
     });
 
+    let fees = await sails
+      .helpers
+      .utilities
+      .getMakerTakerFees(inputs.crypto, inputs.currency);
+
+    let sellBook = await sails
+      .helpers
+      .tradding
+      .sell
+      .getSellBookOrders(inputs.crypto, inputs.currency);
+
+    let buyBook = await sails
+      .helpers
+      .tradding
+      .buy
+      .getBuyBookOrders(inputs.crypto, inputs.currency);
+
+    var buyEstimatedFee = sellBook[0].price * fees.takerFee;
+    var sellEstimatedFee = buyBook[0].price * fees.takerFee;
+
+    var buyPay = sellBook[0].price;
+    var sellPay = buyBook[0].price;
+
     userWalletBalance = {
       'currency': userWalletCurrencyBalance,
-      'crypto': userWalletCryptoBalance
+      'crypto': userWalletCryptoBalance,
+      'buyEstimatedPrice': buyEstimatedFee,
+      'sellEstimatedPrice': sellEstimatedFee,
+      'buyPay': buyPay,
+      'sellPay': sellPay
     };
 
     // Send back the result through the success exit.
