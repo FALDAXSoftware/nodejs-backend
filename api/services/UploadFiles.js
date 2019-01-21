@@ -12,8 +12,7 @@ var S3BucketName = "production-static-asset";
 function UploadFiles() {
   return { upload: _upload };
 
-  function _upload(filePath, name, uploadFileName) {
-
+  function _upload(filePath, uploadFileName) {
     return new Promise((resolve, reject) => {
 
       gm(filePath).noProfile().stream(function (err, stdout, stderr) {
@@ -26,7 +25,7 @@ function UploadFiles() {
         stdout.on('end', function (data) {
           var profile = {
             Bucket: S3BucketName,
-            Key: name + uploadFileName,
+            Key: uploadFileName,
             ACL: 'public-read',
             Body: buf,
             ContentType: mime.lookup(uploadFileName)
