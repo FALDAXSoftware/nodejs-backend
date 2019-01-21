@@ -74,8 +74,6 @@ module.exports = {
         .utilities
         .getCurrencies(inputs.symbol);
 
-      console.log(currency, crypto);
-
       var now = new Date();
       var limitSellOrder = ({
         'user_id': inputs.user_id,

@@ -13,8 +13,6 @@ module.exports = {
         var https = require('https');
         let { comment, contentId, } = req.allParams();
 
-        console.log('>>>>>>>>comment', JSON.parse(responseData))
-
         https.request('', function (response) {
             var responseData = '';
             response.setEncoding('utf8');
@@ -30,7 +28,6 @@ module.exports = {
 
             response.on('end', function () {
                 try {
-                    console.log('>>>>>>>>comment', JSON.parse(responseData))
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,
@@ -65,7 +62,6 @@ module.exports = {
 
             response.on('end', function () {
                 try {
-                    console.log('>>>>>>>>JSON.parse(responseData)', JSON.parse(responseData))
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,
@@ -359,7 +355,6 @@ module.exports = {
     createBlog: async function (req, res) {
         req.file('cover_image').upload(async function (err, uploadedFiles) {
             try {
-                console.log('>>>>uploadedFiles', uploadedFiles)
                 if (uploadedFiles.length > 0) {
                     let filename = uploadedFiles[0].filename;
                     var name = filename.substring(filename.indexOf("."));
@@ -367,9 +362,7 @@ module.exports = {
                         .getTime()
                         .toString();
                     var uploadFileName = timestamp + name;
-                    console.log('>>>>uploadFileName', uploadFileName)
                     var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'blog/' + uploadFileName);
-                    console.log('>>>>uploadCover', uploadCover)
 
                     if (req.body.title && req.body.description && uploadCover) {
                         var blog_detail = await Blogs.create({

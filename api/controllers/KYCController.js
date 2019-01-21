@@ -60,7 +60,7 @@ module.exports = {
                 }
             }
         } catch (e) {
-            console.log('ins??????ide', e)
+            console.log(e)
             return res.status(500).json({
                 status: 500,
                 "err": sails.__("Something Wrong")
@@ -87,7 +87,6 @@ module.exports = {
 
     callbackKYC: async function (req, res) {
         let data = req.body;
-        console.log(data);
         if (data) {
             try {
                 if (data.ednaScoreCard) {
@@ -184,7 +183,6 @@ module.exports = {
 
             // });
             var rawResult = await sails.sendNativeQuery("SELECT * FROM public.kyc ORDER BY updated_at LIMIT $1 OFFSET $2", [limit, limit * (page - 1)]);
-            console.log(rawResult);
             let KYCData = rawResult.rows;
             let KYCCount = rawResult.rowCount
 

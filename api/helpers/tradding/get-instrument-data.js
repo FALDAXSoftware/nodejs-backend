@@ -83,8 +83,7 @@ module.exports = {
         } else {
           previous_price = tradeData[tradeData.length - 1]['fill_price'];
         }
-        // console.log("Current Price ::: ", current_price);
-        // console.log("Previous Price :: ", tradeData[tradeData.length - 1]['fill_price']);
+
         var diffrence = current_price - previous_price
         var percentChange = (diffrence / current_price) * 100;
 

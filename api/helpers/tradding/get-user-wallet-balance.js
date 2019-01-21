@@ -58,7 +58,8 @@ module.exports = {
       where: {
         coin_id: coinId.id,
         deleted_at: null,
-        is_active: true
+        is_active: true,
+        user_id: inputs.user_id
       }
     });
 
@@ -66,10 +67,13 @@ module.exports = {
       where: {
         coin_id: cryptoId.id,
         deleted_at: null,
-        is_active: true
+        is_active: true,
+        user_id: inputs.user_id
       }
     });
 
+    var sellBookValue,
+      buyBookValue;
     let fees = await sails
       .helpers
       .utilities
@@ -87,11 +91,21 @@ module.exports = {
       .buy
       .getBuyBookOrders(inputs.crypto, inputs.currency);
 
-    var buyEstimatedFee = sellBook[0].price * fees.takerFee;
-    var sellEstimatedFee = buyBook[0].price * fees.takerFee;
+    if (sellBook.length == 0) {
+      sellBookValue = 0;
+    } else {
+      sellBookValue = sellBook[0].price;
+    }
+    if (buyBook.length == 0) {
+      buyBookValue = 0;
+    } else {
+      buyBookValue = buyBook[0].price;
+    }
+    var buyEstimatedFee = sellBookValue - (sellBookValue * (fees.takerFee/100));
+    var sellEstimatedFee = buyBookValue - (buyBookValue * (fees.takerFee/100));
 
-    var buyPay = sellBook[0].price;
-    var sellPay = buyBook[0].price;
+    var buyPay = sellBookValue;
+    var sellPay = buyBookValue;
 
     userWalletBalance = {
       'currency': userWalletCurrencyBalance,
@@ -99,7 +113,8 @@ module.exports = {
       'buyEstimatedPrice': buyEstimatedFee,
       'sellEstimatedPrice': sellEstimatedFee,
       'buyPay': buyPay,
-      'sellPay': sellPay
+      'sellPay': sellPay,
+      'fees' : fees.takerFee
     };
 
     // Send back the result through the success exit.

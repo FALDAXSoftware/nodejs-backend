@@ -54,7 +54,6 @@ module.exports = {
     values.created_at = new Date();
     Announcement.findOne({ 'slug': values.slug })
       .exec(function (err, found) {
-        console.log(found);
         if (!found) {
           next();
         } else {

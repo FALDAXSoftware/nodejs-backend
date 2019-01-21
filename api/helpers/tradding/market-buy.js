@@ -146,7 +146,6 @@ module.exports = {
               quantity: inputs.orderQuantity,
               fill_price: currentSellBookDetails.price
             }
-            console.log(request);
             var tradingFees = await sails
               .helpers
               .wallet
@@ -166,7 +165,6 @@ module.exports = {
             // Do Actual Tranasfer In Wallet Here
             //
             let remainigQuantity = availableQty - inputs.orderQuantity;
-            console.log(remainigQuantity);
             if (remainigQuantity > 0) {
               let updatedBuyBook = await sails
                 .helpers
@@ -183,7 +181,6 @@ module.exports = {
 
           } else {
             return exits.insufficientBalance();
-            // console.log("insufficient balance");
           }
         } else {
           var remainingQty = inputs.orderQuantity - availableQty;

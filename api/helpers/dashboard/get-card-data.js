@@ -34,6 +34,15 @@ module.exports = {
         .utilities
         .getCurrencies(inputs.symbol);
 
+      let coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          coin: crypto
+        }
+      });
+
+
       var yesterday = moment
         .utc()
         .subtract(1, 'days')
@@ -137,7 +146,8 @@ module.exports = {
         "diffrence": diffrrence,
         "percentchange": percentchange,
         "flag": flag,
-        "tradeChartDetails": tradeOrderDetails
+        "tradeChartDetails": tradeOrderDetails,
+        "icon": coinData.coin_icon
       }
 
       return exits.success(card_data);

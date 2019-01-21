@@ -30,7 +30,6 @@ module.exports = {
 
     var q = [];
 
-    console.log("Symbol ::: ", data.symbol);
     var currency,
       settle_currency;
     if (data.symbol != null || data.symbol != undefined) {
@@ -43,7 +42,6 @@ module.exports = {
       currency = values.currency;
     }
 
-    console.log("Currency ", currency, "Crypto :::: ", settle_currency);
     if (data.symbol != null || data.symbol != undefined) {
       if (currency != "null" && settle_currency != "null") {
         q['currency'] = currency,
@@ -55,8 +53,6 @@ module.exports = {
       q['created_at'] = {}
     }
 
-    // console.log("-=-=-=-",moment(data.toDate).format());
-    console.log("To Date :: ", data.toDate);
     if (data.toDate != undefined || data.toDate != null) {
       q['created_at']['<='] = moment(data.toDate).format();
     }
@@ -78,8 +74,6 @@ module.exports = {
       q['or'].push({user_id: data.user_id});
       q['or'].push({requested_user_id: data.user_id})
     }
-
-    console.log("Q value ", q);
 
     userTradeHistory = await TradeHistory
       .find({

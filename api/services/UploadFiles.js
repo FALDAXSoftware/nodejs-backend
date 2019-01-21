@@ -13,7 +13,6 @@ function UploadFiles() {
   return { upload: _upload };
 
   function _upload(filePath, name, uploadFileName) {
-    console.log("uploadFileName", uploadFileName);
 
     return new Promise((resolve, reject) => {
 
