@@ -24,6 +24,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    console.log("data :: ", inputs.data);
     // Get user trade history.
     var userTradeHistory;
     var data = inputs.data;
@@ -74,6 +75,8 @@ module.exports = {
       q['or'].push({user_id: data.user_id});
       q['or'].push({requested_user_id: data.user_id})
     }
+
+    console.log("Q Value :: ", q);
 
     userTradeHistory = await TradeHistory
       .find({

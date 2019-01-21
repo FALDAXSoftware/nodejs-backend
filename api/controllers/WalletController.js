@@ -10,6 +10,15 @@ module.exports = {
   getCoinBalanceForWallet: async function (req, res) {
     try {
       let {currency} = req.body;
+      console.log("Currency ::: ", currency);
+      if (currency == "USD") {
+        currency = "USD,USD,USD";
+      } else if (currency == "INR") {
+        currency = "INR,INR,INR";
+      } else if (currency == "EUR") {
+        currency = "EUR,EUR,EUR";
+      }
+      console.log("after updating currency ::: ", currency);
       let currencyArray = currency.split(",");
       let coins = await Coins
         .find({deleted_at: null})
@@ -111,7 +120,7 @@ module.exports = {
         } else {
           return res
             .status(400)
-            .json({status: 400, message: "Issuficient coin balance in wallet"});
+            .json({status: 400, message: "Insuficient coin balance in wallet"});
 
         }
       } else {
@@ -159,9 +168,11 @@ module.exports = {
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       walletTransData[0]['coin_code'] = coinData.coin_code;
 
+      let walletUserData = await Wallet.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true})
+
       let walletTransCount = await WalletHistory.count({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData) {
-        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount})
+        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount, walletUserData});
       } else {
         return res.json({status: 200, message: "No data found."})
       }
