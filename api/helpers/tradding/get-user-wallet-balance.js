@@ -79,6 +79,8 @@ module.exports = {
       .utilities
       .getMakerTakerFees(inputs.crypto, inputs.currency);
 
+    console.log(inputs.crypto, inputs.currency);
+
     let sellBook = await sails
       .helpers
       .tradding
@@ -101,8 +103,8 @@ module.exports = {
     } else {
       buyBookValue = buyBook[0].price;
     }
-    var buyEstimatedFee = sellBookValue - (sellBookValue * (fees.takerFee/100));
-    var sellEstimatedFee = buyBookValue - (buyBookValue * (fees.takerFee/100));
+    var buyEstimatedFee = sellBookValue - (sellBookValue * (fees.takerFee / 100));
+    var sellEstimatedFee = buyBookValue - (buyBookValue * (fees.takerFee / 100));
 
     var buyPay = sellBookValue;
     var sellPay = buyBookValue;
@@ -114,7 +116,7 @@ module.exports = {
       'sellEstimatedPrice': sellEstimatedFee,
       'buyPay': buyPay,
       'sellPay': sellPay,
-      'fees' : fees.takerFee
+      'fees': fees.takerFee
     };
 
     // Send back the result through the success exit.
