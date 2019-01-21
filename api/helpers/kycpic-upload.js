@@ -45,7 +45,6 @@ module.exports = {
                         console.log('error', error);
                     })
         }
-        console.log(kycUploadDetails);
 
         if (kyc_details.id_type == 1) {
             kycDocType = 'PP';
@@ -67,7 +66,6 @@ module.exports = {
         kycUploadDetails.bc = kyc_details.city;
         kycUploadDetails.bz = kyc_details.zip;
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
-        console.log(kycUploadDetails);
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
@@ -76,7 +74,6 @@ module.exports = {
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
-                console.log('kyc_details', kyc_details);
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
                 await KYC.update({ id: kyc_details.id }).set({

@@ -52,7 +52,6 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    // console.log(values.email);
     Admin
       .findOne({ 'email': values.email })
       .exec(function (err, found) {

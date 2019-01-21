@@ -30,7 +30,6 @@ module.exports = {
       .update({id: inputs.id})
       .set(inputs.data)
       .fetch();
-    console.log(updatedbook);
     return exits.success(updatedbook);
   }
 

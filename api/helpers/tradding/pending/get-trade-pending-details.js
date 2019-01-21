@@ -106,7 +106,6 @@ module.exports = {
 
     tradePendingDetails = pendingDetailsBuy.concat(sellBookDetails);
     
-    console.log("Trading Pending Details :: ", tradePendingDetails);
     // Send back the result through the success exit.
     return exits.success(tradePendingDetails);
 

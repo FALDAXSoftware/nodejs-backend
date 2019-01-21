@@ -11,7 +11,7 @@ module.exports = {
     coin_icon: {
       type: 'string',
       columnName: 'coin_icon',
-      allowNull: true,
+      allowNull: true
     },
     coin_name: {
       type: 'string',
@@ -27,8 +27,7 @@ module.exports = {
       type: 'string',
       columnName: 'coin',
       // required: true
-      allowNull: true,
-
+      allowNull: true
     },
     limit: {
       type: 'number',
@@ -36,16 +35,13 @@ module.exports = {
       allowNull: true,
       defaultsTo: 0
     },
-    // description: {
-    //   type: 'string',
-    //   columnName: 'description',
-    //   required: true
-    // },
+    // description: {   type: 'string',   columnName: 'description',   required:
+    // true },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true,
-      allowNull: true,
+      allowNull: true
     },
     wallet_address: {
       type: 'string',
@@ -93,4 +89,3 @@ module.exports = {
     return this;
   }
 };
-

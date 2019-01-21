@@ -140,7 +140,6 @@ module.exports = {
 
               // Transfer fees here Updating the trade history data for adding fees
               var remainingQty = buyBook[0].quantity - sellLimitOrderData.quantity;
-              console.log(buyBook[0].id);
               if (remainingQty > 0) {
                 let updatedBuyBook = await sails
                   .helpers
@@ -163,7 +162,6 @@ module.exports = {
               return exits.insufficientBalance();
             }
           } else {
-            console.log("Inside else loop :: ");
             var remainingQty = sellLimitOrderData.quantity - buyBook[0].quantity;
             var feeResult = await sails
               .helpers
@@ -245,7 +243,6 @@ module.exports = {
               var resendDataLimit = {
                 ...sellLimitOrderData
               }
-              console.log(remainingQty);
               resendDataLimit.quantity = remainingQty;
               resendDataLimit.activity_id = activityResult.id;
               if (remainingQty > 0) {

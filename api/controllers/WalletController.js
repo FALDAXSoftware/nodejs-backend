@@ -65,7 +65,6 @@ module.exports = {
         let wallet = await Wallet.findOne({ deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id });
         if (wallet) {
           if (wallet.placed_balance >= parseInt(amount)) {
-            console.log("transfer");
             if (coin.type == 1) {
               var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
               var bitgoWallet = await bitgo
@@ -80,7 +79,6 @@ module.exports = {
               bitgoWallet
                 .send(params)
                 .then(async function (transaction) {
-                  console.log("transaction", transaction);
                   let walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,

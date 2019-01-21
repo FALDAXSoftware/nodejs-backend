@@ -13,8 +13,6 @@ function UploadFiles() {
   return { upload: _upload };
 
   function _upload(filePath, uploadFileName) {
-    console.log("uploadFileName", uploadFileName);
-
     return new Promise((resolve, reject) => {
 
       gm(filePath).noProfile().stream(function (err, stdout, stderr) {

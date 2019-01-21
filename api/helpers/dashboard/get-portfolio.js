@@ -25,6 +25,10 @@ module.exports = {
 
     // Get portfolio.
     var portfolio;
+    var total = 0;
+    var diffrenceValue = 0;
+    var percentChange;
+    var diffrence;
     // TODO
     var yesterday = moment()
       .subtract(1, 'days')
@@ -43,8 +47,8 @@ module.exports = {
     });
 
     var coinBalance = await sails.sendNativeQuery("SELECT coins.coin_name, coins.coin , wallets.balance, wallets.placed_balance FRO" +
-      "M coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE ((wallets.user_id " +
-      "= " + inputs.user_id + " AND wallets.deleted_at IS NULL))");
+        "M coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE ((wallets.user_id " +
+        "= " + inputs.user_id + " AND wallets.deleted_at IS NULL))");
 
     for (var i = 0; i < coinBalance.rowCount; i++) {
       var total_price = 0;
@@ -56,8 +60,6 @@ module.exports = {
         },
         sort: 'id DESC'
       });
-
-      console.log(price.length);
 
       if (price.length == 0) {
         average_price = 0;
@@ -107,8 +109,8 @@ module.exports = {
         previousPrice = previousPrice[0]['fill_price'];
       }
 
-      var diffrence = currentPrice - previousPrice;
-      var percentChange = (diffrence / currentPrice) * 100;
+      diffrence = currentPrice - previousPrice;
+      percentChange = (diffrence / currentPrice) * 100;
 
       if (percentChange) {
         percentChange = percentChange;
@@ -134,20 +136,32 @@ module.exports = {
         priceFiat = priceFiat;
       }
 
+      total = total + percentChange;
+      diffrenceValue = diffrenceValue + diffrence;
+
       var portfolio_data = {
         "name": coinBalance.rows[i].coin_name,
         "average_price": average_price,
         "percentchange": percentChange,
         "amount": coinBalance.rows[i].balance,
         'symbol': coinBalance.rows[i].coin,
-        "fiatPrice": priceFiat,
-        "fiat": userData.fiat
+        "fiatPrice": priceFiat
       }
       portfolioData.push(portfolio_data);
     }
 
+    var changeValue = userData.diffrence_fiat - diffrenceValue;
+    var totalFiat = userData.total_value - total;
+
+    var response = {
+      'portfolioData': portfolioData,
+      'diffrence': changeValue,
+      'total': totalFiat,
+      "fiat": userData.fiat
+    };
+
     // Send back the result through the success exit.
-    return portfolioData;
+    return response;
 
   }
 

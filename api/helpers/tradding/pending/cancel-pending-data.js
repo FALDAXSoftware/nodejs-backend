@@ -39,6 +39,7 @@ module.exports = {
     try {
       var deletePending;
       var now = moment().format();
+      console.log("ID :: ", inputs.id);
       if (inputs.type == "Limit" && inputs.side == "Buy") {
         var pendingBookDetailsBuy = await buyBook.findOne({
           where: {
@@ -47,20 +48,18 @@ module.exports = {
           }
         });
 
+        console.log(pendingBookDetailsBuy);
+
         var fees = await sails
           .helpers
           .utilities
           .getMakerTakerFees(pendingBookDetailsBuy.settle_currency, pendingBookDetailsBuy.currency);
-        console.log(pendingBookDetailsBuy);
-        console.log(pendingBookDetailsBuy.user_id);
         var coinId = await Coins.findOne({
           where: {
             coin: pendingBookDetailsBuy.currency,
             deleted_at: null
           }
         });
-
-        console.log(coinId);
 
         var walletDetails = await Wallet.findOne({
           where: {
@@ -71,8 +70,6 @@ module.exports = {
         });
 
         var userPlacedBalance = walletDetails.placed_balance + (pendingBookDetailsBuy.price * pendingBookDetailsBuy.quantity);
-
-        console.log(userPlacedBalance);
 
         var updateWalletDetails = await Wallet
           .update({user_id: pendingBookDetailsBuy.user_id, coin_id: coinId.id})
@@ -98,8 +95,6 @@ module.exports = {
             id: inputs.id
           }
         });
-
-        console.log(pendingBookDetailsSell);
 
         var fees = await sails
           .helpers
@@ -157,8 +152,8 @@ module.exports = {
           .set({deleted_at: now})
           .fetch();
       }
-      console.log(deletePending);
       if (deletePending) {
+        console.log("Deleted Successfully  ::");
         return exits.success("Deleted Successfully")
       } else {
         throw "Server Error";
