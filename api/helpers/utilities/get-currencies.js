@@ -25,7 +25,6 @@ module.exports = {
     // Get currencies.
     var currencies;
     // TODO
-    console.log(inputs.symbol);
     var data = inputs
       .symbol
       .split("-");
@@ -34,7 +33,6 @@ module.exports = {
       currency: data[1]
     }
 
-    console.log(currencies);
     // Send back the result through the success exit.
     return exits.success(currencies);
 

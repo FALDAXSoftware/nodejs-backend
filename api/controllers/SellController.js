@@ -8,11 +8,9 @@
 module.exports = {
     //---------------------------Web Api------------------------------
     getSellBookDetails: async function (req, res) {
-        console.log("====>", req.query.room);
         let room = req.query.room;
         try {
             if (req.isSocket) {
-                console.log(room);
 
                 if (req.query.prevRoom) {
                     let prevRoom = req.query.prevRoom;
@@ -75,7 +73,6 @@ module.exports = {
                 }
 
             } else {
-                console.log('>>>IN else')
                 return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
@@ -85,7 +82,6 @@ module.exports = {
 
     getData: async function (req, res) {
         try {
-            console.log('>getData>>');
             sails.sockets.broadcast('test', { 'message': 'blahhhh' });
 
         } catch (err) {

@@ -8,8 +8,6 @@ var UploadFiles = require('../services/UploadFiles');
 
 module.exports = {
     applyJob: async function (req, res) {
-        console.log("body", req.body);
-        console.log("file", req.file);
 
         let jobDetail = await Jobs.findOne({ id: req.body.job_id });
         if (jobDetail) {
@@ -39,7 +37,6 @@ module.exports = {
                                     }
 
                                     var uploadLetter = cover_letter;
-                                    console.log(uploadLetter);
 
                                     let jobDetails = await Career.create({
                                         first_name: req.body.first_name,
