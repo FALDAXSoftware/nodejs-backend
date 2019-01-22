@@ -116,10 +116,11 @@ module.exports = {
     },
 
     testnews: async function (req, res) {
-        // var greeting = await sails.helpers.kycpicUpload();
-        // console.log('greeting', greeting);
-        // res.end();
-        var greeting = await sails.helpers.tradding.marketSell();
+        let user_details = await Users.findOne({ id: 80 });
+        await sails
+            .helpers
+            .wallet
+            .receiveAddress(user_details);
         res.json();
     },
 
