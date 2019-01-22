@@ -72,6 +72,10 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    userWallets:{
+      collection:"wallet",
+      via:'coin_id'
     }
   },
   beforeCreate: (values, next) => {

@@ -47,11 +47,47 @@ module.exports = {
   getAllCoins: async function (req, res) {
     try {
       let {page, limit, data} = req.allParams();
-      if (data) {
-        var balanceRes = await sails.sendNativeQuery("SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins LEFT JOIN wal" +
-            "lets ON coins.id = wallets.coin_id WHERE (coins.coin_name LIKE '%" + data + "%' OR coins.coin_code LIKE '%" + data + "%') AND coins.is_active = true AND coins.deleted_at IS NULL ORDER BY wallets.bal" +
-            "ance DESC LIMIT " + limit + " OFFSET " + (limit * (page - 1)));
+      var user_id = req.user.id;
 
+      
+
+      if (data) {
+        // var balanceRes = await sails.sendNativeQuery("SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins JOIN wallets " +
+        //     "ON coins.id = wallets.coin_id WHERE wallets.user_id = " + user_id + " AND (coins.coin_name LIKE '%" + data + "%' OR coins.coin_code LIKE '%" + data + "%') AND coins.is_active = true AND coins.deleted_at IS NULL AND wallets.deleted_" +
+        //     "at IS NULL ORDER BY wallets.balance DESC LIMIT " + limit + " OFFSET " + (limit * (page - 1)));
+        let balanceRes = await Coins
+        .find({
+          deleted_at: null,
+          is_active: true,
+          or: [
+            {
+              coin_name: {
+                contains: data
+              }
+            }, {
+              coin_code: {
+                contains: data
+              }
+            }
+          ]
+      })
+        .paginate(page - 1, parseInt(limit))
+        .populate('userWallets', {
+          where: {
+            deleted_at: null,
+            is_active: true,
+            user_id: user_id
+          }
+        });
+      for (let index = 0; index < balanceRes.length; index++) {
+        const element = balanceRes[index];
+        if (element.userWallets.length > 0) {
+          element["balance"] = element.userWallets[0].balance,
+          element["placed_balance"] = element.userWallets[0].placed_balance
+          delete element.userWallets;
+          balanceRes[index] = element
+        }
+      }
         let allCoinsCount = await Coins.count({
           where: {
             deleted_at: null,
@@ -78,8 +114,29 @@ module.exports = {
           });
         }
       } else {
-        var balanceRes = await sails.sendNativeQuery(`SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE coins.is_active = true AND coins.deleted_at IS NULL ORDER BY wallets.balance DESC LIMIT ${limit} OFFSET ${page} `);
-
+        // var balanceRes = await sails.sendNativeQuery(`SELECT coins.*, wallets.balance, wallets.placed_balance FROM coins LEFT JOIN wallets ON coins.id = wallets.coin_id WHERE wallets.user_id = ` + user_id + ` AND  coins.is_active = true AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL ORDER BY wallets.balance DESC LIMIT ${limit} OFFSET ${page} `);
+        let balanceRes = await Coins
+        .find({
+          deleted_at: null,
+          is_active: true,
+      })
+        .paginate(page - 1, parseInt(limit))
+        .populate('userWallets', {
+          where: {
+            deleted_at: null,
+            is_active: true,
+            user_id: user_id
+          }
+        });
+      for (let index = 0; index < balanceRes.length; index++) {
+        const element = balanceRes[index];
+        if (element.userWallets.length > 0) {
+          element["balance"] = element.userWallets[0].balance,
+          element["placed_balance"] = element.userWallets[0].placed_balance
+          delete element.userWallets;
+          balanceRes[index] = element
+        }
+      }
         let allCoinsCount = await Coins.count({
           where: {
             deleted_at: null,
