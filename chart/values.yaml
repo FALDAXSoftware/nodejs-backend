@@ -39,7 +39,7 @@ ingress:
   #  kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 #    asdasdad: "asdasda"
-  path: /
+  path: /*
   hosts:
     - backend.faldax.com
   tls: []
