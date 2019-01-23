@@ -32,6 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var coinData = await Coins.findOne({deleted_at: null, coin: inputs.coin})
+    console.log(coinData);
     var walletData = await Wallet.find({coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null});
     console.log("Wallet Data ::: ", walletData);
     walletData = walletData[0];

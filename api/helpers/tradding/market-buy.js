@@ -259,7 +259,10 @@ module.exports = {
       } else {
         return exits.orderBookEmpty();
       }
-      await sails.helpers.sockets.tradeEmit(crypto, currency);
+      await sails
+        .helpers
+        .sockets
+        .tradeEmit(crypto, currency);
       return exits.success();
     } catch (error) {
       console.log(error);
