@@ -61,7 +61,12 @@ module.exports = {
       .chart
       .getDepthChartDetail(inputs.crypto, inputs.currency);
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "depthChartUpdate", depthChartData);
-
+    var cryptoInstrumentUpdate = await sails
+      .helpers
+      .tradding
+      .getInstrumentData(inputs.currency);
+    sails.sockets.broadcast(inputs.currency, "instrumentUpdate", cryptoInstrumentUpdate);
+    sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "orderUpdated", { crypto: inputs.crypto, currency: inputs.currency });
     return exits.success();
   }
 
