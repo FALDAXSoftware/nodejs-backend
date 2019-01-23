@@ -12,7 +12,7 @@ module.exports = {
     CreateComment: async function (req, res) {
         var https = require('https');
         let { comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
-            contentPermalink, contentTitle, userEmail, userName } = req.allParams();
+            contentPermalink, contentTitle, userEmail, userName, portalId } = req.allParams();
         console.log('>>>>>>>>>>>', comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
             contentPermalink, contentTitle, userEmail, userName)
         var responseData = '';
@@ -25,12 +25,13 @@ module.exports = {
             contentAuthorName,
             contentPermalink, contentTitle,
             userEmail,
+            portalId,
             userName
         }
         console.log("---->form--->", form);
 
         var apiConfig = {
-            path: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
+            path: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245&portalid=4933498',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -39,7 +40,7 @@ module.exports = {
 
         request.post({
             url: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
-            form: { form }
+            form: form
         }, function (err, httpResponse, body) {
             console.log("----err----->", err);
             // console.log("---------http-response---->",httpResponse);
