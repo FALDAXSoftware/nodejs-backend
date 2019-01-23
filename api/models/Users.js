@@ -158,6 +158,18 @@ module.exports = {
       allowNull: true,
       defaultsTo: "USD"
     },
+    diffrence_fiat: {
+      type: 'number',
+      columnName: 'diffrence_fiat'
+    },
+    total_value: {
+      type: 'number',
+      columnName: 'total_value'
+    },
+    percent_wallet: {
+      type: 'number',
+      columnName: 'percent_wallet'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

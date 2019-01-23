@@ -20,7 +20,6 @@ module.exports = {
                 responseData += chunk;
             });
 
-            //console.log('>>>>>>>>>>>responseData', responseData)
             response.once('error', function (err) {
                 // Some error handling here, e.g.:
                 res.serverError(err);
@@ -30,8 +29,6 @@ module.exports = {
             response.on('end', function () {
                 try {
                     let temp = JSON.parse(responseData);
-
-                    console.log('>>>>>>>>sdfsdfsdfsdf', temp.objects[0].properties.subject.versions)
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,
@@ -69,7 +66,6 @@ module.exports = {
                 try {
                     let temp = JSON.parse(responseData);
 
-                    console.log('>>>>>>>>ID', temp)
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,

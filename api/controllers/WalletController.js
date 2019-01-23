@@ -10,9 +10,33 @@ module.exports = {
   getCoinBalanceForWallet: async function (req, res) {
     try {
       let {currency} = req.body;
+      var total = 0;
+      var flag = false;
+      var wallet_user = await Users.findOne({
+        where: {
+          id: req.user.id,
+          deleted_at: null,
+          is_active: true
+        }
+      });
+      console.log("Wallet User :: ", wallet_user);
+      console.log("Currency ::: ", currency);
+      if (currency == "USD") {
+        currency = "USD,USD,USD";
+      } else if (currency == "INR") {
+        currency = "INR,INR,INR";
+      } else if (currency == "EUR") {
+        currency = "EUR,EUR,EUR";
+      }
+      console.log("after updating currency ::: ", currency);
       let currencyArray = currency.split(",");
       let coins = await Coins
-        .find({deleted_at: null})
+        .find({
+        deleted_at: null,
+        "wallet_address": {
+          "!": null
+        }
+      })
         .sort('id', 'DESC');
       for (let index = 0; index < coins.length; index++) {
         const coin = coins[index];
@@ -38,11 +62,42 @@ module.exports = {
               price = last_price[0].fill_price
             }
             coin[currencyName] = price;
+            var total = total + price;
           }
           coins[index] = coin;
         }
       }
-      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins});
+      var calculation = 0;
+      console.log("Value :: ", wallet_user.percent_wallet);
+      if (wallet_user.percent_wallet == null) {
+        calculation = 0;
+      } else {
+        calculation = wallet_user.percent_wallet;
+      }
+      var percentchange = (total / (wallet_user.percent_wallet) * 100);
+      if (percentchange == NaN || percentchange == undefined || percentchange == Infinity) {
+        percentchange = 0;
+      }
+      var updateData = await Users
+        .update({id: req.user.id, deleted_at: null, is_active: true})
+        .set({'percent_wallet': percentchange, "email": wallet_user.email});
+
+      // console.log(percentchange); console.log(wallet_user.)
+      if (percentchange >= wallet_user.percent_wallet) {
+        flag = true;
+      } else {
+        flag = false;
+      }
+
+      var data = {
+        "percentChange": percentchange,
+        "flag": flag
+      }
+
+      // coins.push(data);
+
+      // console.log("Coins Push :: ", coins);
+      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins, data});
 
     } catch (error) {
       console.log(error);
@@ -65,7 +120,6 @@ module.exports = {
         let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
         if (wallet) {
           if (wallet.placed_balance >= parseInt(amount)) {
-            console.log("transfer");
             if (coin.type == 1) {
               var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
               var bitgoWallet = await bitgo
@@ -80,7 +134,6 @@ module.exports = {
               bitgoWallet
                 .send(params)
                 .then(async function (transaction) {
-                  console.log("transaction", transaction);
                   let walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
@@ -113,7 +166,7 @@ module.exports = {
         } else {
           return res
             .status(400)
-            .json({status: 400, message: "Issuficient coin balance in wallet"});
+            .json({status: 400, message: "Insuficient coin balance in wallet"});
 
         }
       } else {
@@ -135,6 +188,7 @@ module.exports = {
   //receive coin
   getReceiveCoin: async function (req, res) {
     try {
+      console.log("receive Paramters :: ", req.allParams());
       var {coin} = req.allParams();
       var user_id = req.user.id;
       var receiveCoin = await sails
@@ -160,10 +214,14 @@ module.exports = {
       let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       walletTransData[0]['coin_code'] = coinData.coin_code;
+      walletTransData[0]['coin_icon'] = coinData.coin_icon;
+      walletTransData[0]['coin'] = coinData.coin;
+
+      let walletUserData = await Wallet.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true})
 
       let walletTransCount = await WalletHistory.count({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData) {
-        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount})
+        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount, walletUserData});
       } else {
         return res.json({status: 200, message: "No data found."})
       }

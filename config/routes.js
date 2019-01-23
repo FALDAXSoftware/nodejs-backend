@@ -160,6 +160,7 @@ module.exports.routes = {
   'post /add-comments': 'BlogsController.addComment',
   'post /get-related-blog': 'BlogsController.getRelatedPost',
   'post /users/get-all-news': 'BlogsController.getAllNews',
+  'post /create-comments': 'BlogsController.CreateComment',
 
   // dashboard 'post /dashboard': "DashboardController.get",
   'get /dashboard/get-activity': 'DashboardController.getActivity',
@@ -241,5 +242,8 @@ module.exports.routes = {
 
   //Get All Tickets
   'get /get-all-tickets': 'TicketController.getAllTickets',
-  'get /get-ticket': 'TicketController.getAllTicketByID'
+  'get /get-ticket': 'TicketController.getAllTicketByID',
+
+  //Socket route server
+  'get /enable-web-socket':'RootController.enableWebSocket'
 };

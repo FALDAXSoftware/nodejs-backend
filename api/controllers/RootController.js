@@ -13,38 +13,34 @@ module.exports = {
     },
 
     getContactInfo: async function (req, res) {
-        console.log("Cron Status - ", sails.config.local.CRON_STATUS);
-        let contactDetails = await AdminSetting.find({
-            type: "contact"
-        });
+        let contactDetails = await AdminSetting.find({ type: "contact" });
         let contacts = {};
         contactDetails.forEach(element => {
             contacts[element.slug] = element.value;
         });
-        return res.json({
-            status: 200,
-            message: "contact details retrived successfully.",
-            data: contacts
-        })
+        return res.json({ status: 200, message: "contact details retrived successfully.", data: contacts })
     },
 
     updateContactInfo: async function (req, res) {
         try {
             let contactDetails = [];
-            Object.keys(req.body)
+            Object
+                .keys(req.body)
                 .forEach(async function eachKey(key) {
-                    contactDetails = await AdminSetting.update({ slug: key }).set({ value: req.body[key] }).fetch();
+                    contactDetails = await AdminSetting
+                        .update({ slug: key })
+                        .set({ value: req.body[key] })
+                        .fetch();
                 });
             if (contactDetails) {
-                return res.json({
-                    status: 200,
-                    message: "Contact details updated successfully.",
-                })
+                return res.json({ status: 200, message: "Contact details updated successfully." })
             } else {
-                return res.status(500).json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+                return res
+                    .status(500)
+                    .json({
+                        status: 500,
+                        "err": sails.__("Something Wrong")
+                    });
             }
         } catch (error) {
             console.log('index', error)
@@ -52,23 +48,18 @@ module.exports = {
     },
 
     sendInquiry: async function (req, res) {
-        let inquiryDetails = await Inquiry.create({
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            message: req.body.message,
-            created_at: new Date()
-        }).fetch();
+        let inquiryDetails = await Inquiry
+            .create({ first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date() })
+            .fetch();
         if (inquiryDetails) {
-            return res.json({
-                status: 200,
-                message: "Inquiry sent successfully.",
-            })
+            return res.json({ status: 200, message: "Inquiry sent successfully." })
         } else {
-            return res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
         }
     },
 
@@ -80,47 +71,67 @@ module.exports = {
                 deleted_at: null
             }
             q['or'] = [
-                { first_name: { contains: data } },
-                { last_name: { contains: data } },
-                { email: { contains: data } },
+                {
+                    first_name: {
+                        contains: data
+                    }
+                }, {
+                    last_name: {
+                        contains: data
+                    }
+                }, {
+                    email: {
+                        contains: data
+                    }
+                }
             ]
 
-            let inquiryData = await Inquiry.find({ ...q }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
-            let inquiryCount = await Inquiry.count({ ...q });
+            let inquiryData = await Inquiry
+                .find({
+                    ...q
+                })
+                .sort('created_at DESC')
+                .paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count({
+                ...q
+            });
             if (inquiryData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Inquiries retrived successfully",
-                    "data": inquiryData, inquiryCount
-                });
+                return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
             }
         } else {
             let q = {
                 deleted_at: null
             }
 
-            let inquiryData = await Inquiry.find({ ...q }).sort('created_at DESC').paginate(page - 1, parseInt(limit));
-            let inquiryCount = await Inquiry.count({ ...q });
+            let inquiryData = await Inquiry
+                .find({
+                    ...q
+                })
+                .sort('created_at DESC')
+                .paginate(page - 1, parseInt(limit));
+            let inquiryCount = await Inquiry.count({
+                ...q
+            });
             if (inquiryData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Inquiries retrived successfully",
-                    "data": inquiryData, inquiryCount
-                });
+                return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
             } else {
-                return res.status(500).json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+                return res
+                    .status(500)
+                    .json({
+                        status: 500,
+                        "err": sails.__("Something Wrong")
+                    });
             }
         }
     },
 
     testnews: async function (req, res) {
-        // var greeting = await sails.helpers.kycpicUpload();
-        // console.log('greeting', greeting);
-        // res.end();
-        var greeting = await sails.helpers.tradding.marketSell();
+        // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
+        // greeting); res.end();
+        var greeting = await sails
+            .helpers
+            .tradding
+            .marketSell();
         res.json();
     },
 
@@ -147,16 +158,12 @@ module.exports = {
                 .getTransfer({ id: transferId })
                 .then(async function (transfer) {
                     if (transfer.state == "confirmed") {
-                        // Object Of receiver 
+                        // Object Of receiver
                         let dest = transfer.outputs[0];
                         // Object of sender
                         let source = transfer.outputs[1];
                         // receiver wallet
-                        let userWallet = await Wallet.findOne({
-                            receive_address: dest.address,
-                            deleted_at: null,
-                            is_active: true
-                        });
+                        let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
                         // transaction amount
                         let amount = (dest.value / 100000000);
                         // user wallet exitence check
@@ -172,12 +179,16 @@ module.exports = {
                                 transaction_id: req.body.hash
                             }
                             // Entry in wallet history
-                            await WalletHistory.create({ ...walletHistory });
-                            // update wallet balance 
-                            await Wallet.update({ id: userWallet.id }).set({
-                                balance: userWallet.balance + amount,
-                                placed_balance: userWallet.placed_balance + amount
+                            await WalletHistory.create({
+                                ...walletHistory
                             });
+                            // update wallet balance
+                            await Wallet
+                                .update({ id: userWallet.id })
+                                .set({
+                                    balance: userWallet.balance + amount,
+                                    placed_balance: userWallet.placed_balance + amount
+                                });
                         }
                     }
                 });
@@ -187,11 +198,32 @@ module.exports = {
     },
 
     queryTest: async function (req, res) {
-        var bitcoinistNews = await sails.helpers.bitcoinistNewsUpdate();
-        var bitcoinNews = await sails.helpers.bitcoinNews();
-        var ccnPodcast = await sails.helpers.ccnPodcast();
-        var coinTelegraph = await sails.helpers.coinTelegraph();
+        var bitcoinistNews = await sails
+            .helpers
+            .bitcoinistNewsUpdate();
+        var bitcoinNews = await sails
+            .helpers
+            .bitcoinNews();
+        var ccnPodcast = await sails
+            .helpers
+            .ccnPodcast();
+        var coinTelegraph = await sails
+            .helpers
+            .coinTelegraph();
         res.end();
+    },
+
+    enableWebSocket: async function (req, res) {
+
+        try {
+            console.log("Enable Web Socket :: ", req);
+            return res
+                .status(101)
+                .json({ status: 101 });
+        } catch (err) {
+            console.log("error :: ", err);
+        }
+
     }
 
 };

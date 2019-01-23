@@ -56,7 +56,6 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    // console.log("market sell inputs -- ", inputs);
 
     try {
       let {crypto, currency} = await sails
@@ -82,8 +81,6 @@ module.exports = {
         .helpers
         .utilities
         .getMakerTakerFees(crypto, currency);
-
-      console.log("Buy Book ::::: ", buyBook);
 
       if (buyBook && buyBook.length > 0) {
         var availableQty = buyBook[0].quantity;
@@ -114,7 +111,6 @@ module.exports = {
         resultData.fix_quantity = inputs.orderQuantity;
         resultData.maker_fee = fees.makerFee;
         resultData.taker_fee = fees.takerFee;
-        // console.log("currenct book", currentBuyBookDetails);
 
         let activity = await sails
           .helpers
@@ -149,8 +145,6 @@ module.exports = {
               fill_price: currentBuyBookDetails.price
             }
 
-            console.log("request :: ", request);
-
             var tradingFees = await sails
               .helpers
               .wallet
@@ -169,11 +163,9 @@ module.exports = {
               .tradding
               .trade
               .add(trade_history_data);
-            // Do Actual Tranasfer In Wallet Here
-            //
-            console.log("Trade History ::: ", tradeHistory);
+
             let remainigQuantity = availableQty - inputs.orderQuantity;
-            console.log("Remainning Quantity ::: ", remainigQuantity);
+
             if (remainigQuantity > 0) {
               let updatedBuyBook = await sails
                 .helpers
@@ -235,8 +227,7 @@ module.exports = {
               .tradding
               .trade
               .add(trade_history_data);
-            // Do Actual Tranasfer In Wallet Here
-            //
+
             await sails
               .helpers
               .tradding
@@ -267,11 +258,8 @@ module.exports = {
           }
 
         }
-        // console.log("resultData -- ", resultData); console.log("no more limit order
-        // in order book");
-        
 
-      }else{
+      } else {
         return exits.orderBookEmpty();
       }
       // console.log("----wallet", wallet);

@@ -5,45 +5,84 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var UploadFiles = require('../services/UploadFiles');
-
+var request = require('request');
 module.exports = {
     //---------------------------Web Api------------------------------
 
     CreateComment: async function (req, res) {
         var https = require('https');
-        let { comment, contentId, } = req.allParams();
+        let { comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
+            contentPermalink, contentTitle, userEmail, userName } = req.allParams();
+        console.log('>>>>>>>>>>>', comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
+            contentPermalink, contentTitle, userEmail, userName)
+        var responseData = '';
 
-        console.log('>>>>>>>>comment', JSON.parse(responseData))
+        var form = {
+            comment,
+            contentId,
+            collectionId,
+            contentAuthorEmail,
+            contentAuthorName,
+            contentPermalink, contentTitle,
+            userEmail,
+            userName
+        }
+        console.log("---->form--->", form);
 
-        https.request('', function (response) {
-            var responseData = '';
-            response.setEncoding('utf8');
+        var apiConfig = {
+            path: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        };
 
-            response.on('data', function (chunk) {
-                responseData += chunk;
-            });
+        request.post({
+            url: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245',
+            form: { form }
+        }, function (err, httpResponse, body) {
+            console.log("----err----->", err);
+            // console.log("---------http-response---->",httpResponse);
+            console.log("---------body--->", body);
+        })
 
-            response.once('error', function (err) {
-                // Some error handling here, e.g.:
-                res.serverError(err);
-            });
 
-            response.on('end', function () {
-                try {
-                    console.log('>>>>>>>>comment', JSON.parse(responseData))
-                    // response available as `responseData` in `yourview`
-                    return res.json({
-                        "status": 200,
-                        "message": sails.__("Blog list"),
-                        "data": JSON.parse(responseData)
-                    });
-                } catch (e) {
-                    sails.log.warn('Could not parse response from options.hostname: ' + e);
-                }
+        // request.post(apiConfig, { form: JSON.stringify(form) }, function (err, httpResponse, body) {
+        //     console.log("----err----->", err);
+        //     // console.log("---------http-response---->",httpResponse);
+        //     console.log("---------body--->", body);
+        // })
 
-                res.view('yourview');
-            });
-        }).end()
+
+        // https.request(apiConfig, { form }, function (response) {
+        //     var responseData = '';
+        //     response.setEncoding('utf8');
+
+        //     response.on('data', function (chunk) {
+        //         responseData += chunk;
+        //     });
+
+        //     response.once('error', function (err) {
+        //         // Some error handling here, e.g.:
+        //         res.serverError(err);
+        //     });
+
+        //     response.on('end', function () {
+        //         try {
+        //             console.log('SUCCESSss', responseData)
+        //             // response available as `responseData` in `yourview`
+        //             return res.json({
+        //                 "status": 200,
+        //                 "message": sails.__("Blog list"),
+        //                 "data": JSON.parse(responseData)
+        //             });
+        //         } catch (e) {
+        //             sails.log.warn('Could not parse response from options.hostname: ' + e);
+        //         }
+
+        //         res.view('yourview');
+        //     });
+        // }).end()
     },
 
     getAllBlogList: async function (req, res) {
@@ -65,7 +104,6 @@ module.exports = {
 
             response.on('end', function () {
                 try {
-                    console.log('>>>>>>>>JSON.parse(responseData)', JSON.parse(responseData))
                     // response available as `responseData` in `yourview`
                     return res.json({
                         "status": 200,
@@ -359,7 +397,6 @@ module.exports = {
     createBlog: async function (req, res) {
         req.file('cover_image').upload(async function (err, uploadedFiles) {
             try {
-                console.log('>>>>uploadedFiles', uploadedFiles)
                 if (uploadedFiles.length > 0) {
                     let filename = uploadedFiles[0].filename;
                     var name = filename.substring(filename.indexOf("."));
@@ -367,9 +404,7 @@ module.exports = {
                         .getTime()
                         .toString();
                     var uploadFileName = timestamp + name;
-                    console.log('>>>>uploadFileName', uploadFileName)
                     var uploadCover = await UploadFiles.upload(uploadedFiles[0].fd, 'blog/' + uploadFileName);
-                    console.log('>>>>uploadCover', uploadCover)
 
                     if (req.body.title && req.body.description && uploadCover) {
                         var blog_detail = await Blogs.create({

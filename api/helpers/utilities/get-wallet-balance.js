@@ -44,7 +44,6 @@ module.exports = {
       // Get sell wallet balance.
       var walletBalance;
       // TODO
-      console.log(inputs.currency);
       let coin = await Coins.findOne({ is_active: true, deleted_at: null, coin: inputs.currency });
 
       if (!coin) {
