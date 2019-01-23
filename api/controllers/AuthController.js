@@ -11,6 +11,7 @@ module.exports = {
   // Verify User Api
   verifyUser: async function (req, res) {
     try {
+      
       if (req.body.email_verify_token) {
         let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
         if (user) {
