@@ -108,16 +108,18 @@ module.exports = {
     try {
       let {amount, destination_address, coin_code} = req.allParams();
       let user_id = req.user.id;
-      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin: coin_code});
+      console.log("USer ID :: ", user_id);
+      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin_code: coin_code});
       console.log(coin);
       if (coin) {
         let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
+        console.log(wallet);
         if (wallet) {
           if (wallet.placed_balance >= parseInt(amount)) {
             if (coin.type == 1) {
               var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
               var bitgoWallet = await bitgo
-                .coin(coin.coin)
+                .coin(coin.coin_code)
                 .wallets()
                 .get({id: coin.wallet_address});
               let params = {
@@ -125,9 +127,11 @@ module.exports = {
                 address: destination_address,
                 walletPassphrase: sails.config.local.BITGO_PASSPHRASE
               };
+              console.log("Parameters :: ", params);
               bitgoWallet
                 .send(params)
                 .then(async function (transaction) {
+                  console.log(transaction);
                   let walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
@@ -170,6 +174,7 @@ module.exports = {
 
       }
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -182,13 +187,15 @@ module.exports = {
   //receive coin
   getReceiveCoin: async function (req, res) {
     try {
-      console.log("receive Paramters :: ", req.allParams());
+      console.log("receive Paramters after checking :: ", req.allParams());
       var {coin} = req.allParams();
       var user_id = req.user.id;
       var receiveCoin = await sails
         .helpers
         .wallet
         .receiveCoin(coin, user_id);
+
+      console.log(receiveCoin);
 
       return res.json({status: 200, message: "Receive address retrieved successfuly", receiveCoin});
     } catch (err) {
@@ -207,9 +214,11 @@ module.exports = {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
-      walletTransData[0]['coin_code'] = coinData.coin_code;
-      walletTransData[0]['coin_icon'] = coinData.coin_icon;
-      walletTransData[0]['coin'] = coinData.coin;
+      if (walletTransData.length > 0) {
+        walletTransData[0]['coin_code'] = coinData.coin_code;
+        walletTransData[0]['coin_icon'] = coinData.coin_icon;
+        walletTransData[0]['coin'] = coinData.coin;
+      }
 
       let walletUserData = await Wallet.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true})
 
