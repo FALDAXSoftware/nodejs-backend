@@ -10,6 +10,16 @@ module.exports = {
   getCoinBalanceForWallet: async function (req, res) {
     try {
       let {currency} = req.body;
+      var total = 0;
+      var flag = false;
+      var wallet_user = await Users.findOne({
+        where: {
+          id: req.user.id,
+          deleted_at: null,
+          is_active: true
+        }
+      });
+      console.log("Wallet User :: ", wallet_user);
       console.log("Currency ::: ", currency);
       if (currency == "USD") {
         currency = "USD,USD,USD";
@@ -52,11 +62,42 @@ module.exports = {
               price = last_price[0].fill_price
             }
             coin[currencyName] = price;
+            var total = total + price;
           }
           coins[index] = coin;
         }
       }
-      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins});
+      var calculation = 0;
+      console.log("Value :: ", wallet_user.percent_wallet);
+      if (wallet_user.percent_wallet == null) {
+        calculation = 0;
+      } else {
+        calculation = wallet_user.percent_wallet;
+      }
+      var percentchange = (total / (wallet_user.percent_wallet) * 100);
+      if (percentchange == NaN || percentchange == undefined || percentchange == Infinity) {
+        percentchange = 0;
+      }
+      var updateData = await Users
+        .update({id: req.user.id, deleted_at: null, is_active: true})
+        .set({'percent_wallet': percentchange, "email": wallet_user.email});
+
+      // console.log(percentchange); console.log(wallet_user.)
+      if (percentchange >= wallet_user.percent_wallet) {
+        flag = true;
+      } else {
+        flag = false;
+      }
+
+      var data = {
+        "percentChange": percentchange,
+        "flag": flag
+      }
+
+      // coins.push(data);
+
+      // console.log("Coins Push :: ", coins);
+      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins, data});
 
     } catch (error) {
       console.log(error);
