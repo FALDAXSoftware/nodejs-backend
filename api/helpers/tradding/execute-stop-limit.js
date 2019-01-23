@@ -38,16 +38,16 @@ module.exports = {
         activity_id
       } = pendingDetails[i];
 
-      var now = Date();
+      // var now = Date();
       var pending_order_book = ({
         'id': id,
         'user_id': user_id,
         'symbol': symbol,
         'side': side,
         'order_type': order_type,
-        'created': now,
-        'updated': now,
-        'maximum_time': moment(now)
+        'created': now.format(),
+        'updated': now.format(),
+        'maximum_time': now
           .add(1, 'years')
           .format(),
         'fill_price': 0.0,
