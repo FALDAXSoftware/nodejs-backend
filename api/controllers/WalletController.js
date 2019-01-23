@@ -19,8 +19,6 @@ module.exports = {
           is_active: true
         }
       });
-      console.log("Wallet User :: ", wallet_user);
-      console.log("Currency ::: ", currency);
       if (currency == "USD") {
         currency = "USD,USD,USD";
       } else if (currency == "INR") {
@@ -28,7 +26,6 @@ module.exports = {
       } else if (currency == "EUR") {
         currency = "EUR,EUR,EUR";
       }
-      console.log("after updating currency ::: ", currency);
       let currencyArray = currency.split(",");
       let coins = await Coins
         .find({
@@ -68,7 +65,6 @@ module.exports = {
         }
       }
       var calculation = 0;
-      console.log("Value :: ", wallet_user.percent_wallet);
       if (wallet_user.percent_wallet == null) {
         calculation = 0;
       } else {
@@ -82,7 +78,6 @@ module.exports = {
         .update({id: req.user.id, deleted_at: null, is_active: true})
         .set({'percent_wallet': percentchange, "email": wallet_user.email});
 
-      // console.log(percentchange); console.log(wallet_user.)
       if (percentchange >= wallet_user.percent_wallet) {
         flag = true;
       } else {
