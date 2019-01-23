@@ -136,6 +136,10 @@ module.exports = {
           .pending
           .addPendingOrder(limitSellOrder);
 
+        await sails
+          .helpers
+          .sockets
+          .tradeEmit(crypto, currency);
         //Emit Socket Here
         return exits.success(data);
       } else {
