@@ -140,6 +140,8 @@ module.exports = {
         return;
       }
     } catch (error) {
+      console.log(error);
+
       res
         .status(500)
         .json({ "status": 500, "err": error });
