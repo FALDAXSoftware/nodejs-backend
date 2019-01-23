@@ -38,6 +38,8 @@ module.exports = {
     walletData = walletData[0];
     QRCode.toDataURL(walletData.receive_address, function (err, url) {
       if (err) {
+        console.log(err);
+        
         return exits.error(err);
       } else {
         return exits.success({'url': url, 'receive_address': walletData.receive_address});
