@@ -94,9 +94,7 @@ module.exports = {
         "flag": flag
       }
 
-      // coins.push(data);
-
-      // console.log("Coins Push :: ", coins);
+      // coins.push(data); console.log("Coins Push :: ", coins);
       return res.json({status: 200, message: "Wallet balance retrived successfully.", coins, data});
 
     } catch (error) {
@@ -116,6 +114,7 @@ module.exports = {
       let {amount, destination_address, coin_code} = req.allParams();
       let user_id = req.user.id;
       let coin = await Coins.findOne({deleted_at: null, is_active: true, coin: coin_code});
+      console.log(coin);
       if (coin) {
         let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
         if (wallet) {
