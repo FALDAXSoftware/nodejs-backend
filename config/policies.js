@@ -59,7 +59,8 @@ module.exports.policies = {
     "csvToJson": true,
     "webhookOnReciveBitgo": true,
     "queryTest": true,
-    "sendOpenTicketForm": true
+    "sendOpenTicketForm": true,
+    "enableWebSocket":true
   },
   'AddCoinReqController': {
     "addCoinRequest": true

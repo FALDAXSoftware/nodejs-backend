@@ -19,6 +19,11 @@ module.exports = {
                         first_name: user.first_name,
                         last_name: user.last_name
                     });
+                    //   Create Recive Address
+                    await sails
+                        .helpers
+                        .wallet
+                        .receiveAddress(user_detail);
                     return res.json({ "status": 200, "message": sails.__('Verify User') });
                 } else {
                     return res.status(400).json({ "status": 400, "err": sails.__('Invalid Token') });

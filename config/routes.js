@@ -242,5 +242,8 @@ module.exports.routes = {
 
   //Get All Tickets
   'get /get-all-tickets': 'TicketController.getAllTickets',
-  'get /get-ticket': 'TicketController.getAllTicketByID'
+  'get /get-ticket': 'TicketController.getAllTicketByID',
+
+  //Socket route server
+  'get /enable-web-socket':'RootController.enableWebSocket'
 };

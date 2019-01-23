@@ -166,6 +166,10 @@ module.exports = {
       type: 'number',
       columnName: 'total_value'
     },
+    percent_wallet: {
+      type: 'number',
+      columnName: 'percent_wallet'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
