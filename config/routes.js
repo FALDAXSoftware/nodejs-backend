@@ -18,6 +18,7 @@ module.exports.routes = {
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
+  'get /create-all-wallet': 'RootController.createAllWallet',
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
@@ -245,5 +246,5 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket':'RootController.enableWebSocket'
+  'get /enable-web-socket': 'RootController.enableWebSocket'
 };

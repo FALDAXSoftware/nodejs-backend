@@ -60,7 +60,8 @@ module.exports.policies = {
     "webhookOnReciveBitgo": true,
     "queryTest": true,
     "sendOpenTicketForm": true,
-    "enableWebSocket":true
+    "enableWebSocket": true,
+    "createAllWallet": true,
   },
   'AddCoinReqController': {
     "addCoinRequest": true

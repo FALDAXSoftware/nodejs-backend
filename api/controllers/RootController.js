@@ -224,6 +224,10 @@ module.exports = {
             console.log("error :: ", err);
         }
 
+    },
+    createAllWallet: async function (req, res) {
+        await sails.helpers.wallet.createAll();
+        return res.end();
     }
 
 };
