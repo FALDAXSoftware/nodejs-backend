@@ -13,12 +13,12 @@ module.exports = {
   },
 
   getContactInfo: async function (req, res) {
-    let contactDetails = await AdminSetting.find({type: "contact"});
+    let contactDetails = await AdminSetting.find({ type: "contact" });
     let contacts = {};
     contactDetails.forEach(element => {
       contacts[element.slug] = element.value;
     });
-    return res.json({status: 200, message: "contact details retrived successfully.", data: contacts})
+    return res.json({ status: 200, message: "contact details retrived successfully.", data: contacts })
   },
 
   updateContactInfo: async function (req, res) {
@@ -28,12 +28,12 @@ module.exports = {
         .keys(req.body)
         .forEach(async function eachKey(key) {
           contactDetails = await AdminSetting
-            .update({slug: key})
-            .set({value: req.body[key]})
+            .update({ slug: key })
+            .set({ value: req.body[key] })
             .fetch();
         });
       if (contactDetails) {
-        return res.json({status: 200, message: "Contact details updated successfully."})
+        return res.json({ status: 200, message: "Contact details updated successfully." })
       } else {
         return res
           .status(500)
@@ -49,10 +49,10 @@ module.exports = {
 
   sendInquiry: async function (req, res) {
     let inquiryDetails = await Inquiry
-      .create({first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date()})
+      .create({ first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date() })
       .fetch();
     if (inquiryDetails) {
-      return res.json({status: 200, message: "Inquiry sent successfully."})
+      return res.json({ status: 200, message: "Inquiry sent successfully." })
     } else {
       return res
         .status(500)
@@ -64,7 +64,7 @@ module.exports = {
   },
 
   getAllInquiries: async function (req, res) {
-    let {page, limit, data} = req.allParams();
+    let { page, limit, data } = req.allParams();
 
     if (data) {
       let q = {
@@ -88,15 +88,15 @@ module.exports = {
 
       let inquiryData = await Inquiry
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort('created_at DESC')
         .paginate(page - 1, parseInt(limit));
       let inquiryCount = await Inquiry.count({
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
       }
     } else {
       let q = {
@@ -105,15 +105,15 @@ module.exports = {
 
       let inquiryData = await Inquiry
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort('created_at DESC')
         .paginate(page - 1, parseInt(limit));
       let inquiryCount = await Inquiry.count({
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
       } else {
         return res
           .status(500)
@@ -128,10 +128,14 @@ module.exports = {
   testnews: async function (req, res) {
     // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
     // greeting); res.end();
-    var greeting = await sails
+    // var greeting = await sails
+    //   .helpers
+    //   .tradding
+    //   .marketSell();
+    var stopExecution = await sails
       .helpers
       .tradding
-      .marketSell();
+      .executeStopLimit();
     res.json();
   },
 
@@ -150,14 +154,14 @@ module.exports = {
     console.log("Webnhook Req body", req.body);
     if (req.body.state == "confirmed") {
       console.log("Confirmed status");
-      var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+      var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
       var wallet = await bitgo
         .coin(req.body.coin)
         .wallets()
-        .get({id: req.body.wallet});
+        .get({ id: req.body.wallet });
       let transferId = req.body.transfer;
       wallet
-        .getTransfer({id: transferId})
+        .getTransfer({ id: transferId })
         .then(async function (transfer) {
           console.log("Trsnafer success");
           if (transfer.state == "confirmed") {
@@ -166,7 +170,7 @@ module.exports = {
             // Object of sender
             let source = transfer.outputs[1];
             // receiver wallet
-            let userWallet = await Wallet.findOne({receive_address: dest.address, deleted_at: null, is_active: true});
+            let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
             // transaction amount
             let amount = (dest.value / 100000000);
             // user wallet exitence check
@@ -189,7 +193,7 @@ module.exports = {
               });
               // update wallet balance
               await Wallet
-                .update({id: userWallet.id})
+                .update({ id: userWallet.id })
                 .set({
                   balance: userWallet.balance + amount,
                   placed_balance: userWallet.placed_balance + amount
@@ -224,7 +228,7 @@ module.exports = {
       console.log("Enable Web Socket :: ", req);
       return res
         .status(101)
-        .json({status: 101});
+        .json({ status: 101 });
     } catch (err) {
       console.log("error :: ", err);
     }
