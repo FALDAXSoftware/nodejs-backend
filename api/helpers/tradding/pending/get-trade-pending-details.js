@@ -114,6 +114,18 @@ module.exports = {
       });
 
       var buyBookDetails = await buyBook.find({
+        select: [
+          'id',
+          'fix_quantity',
+          'quantity',
+          'fill_price',
+          'side',
+          'order_type',
+          'symbol',
+          'created_at',
+          'deleted_at',
+          'limit_price'
+        ],
         where: {
           deleted_at: null,
           settle_currency: inputs.crypto,

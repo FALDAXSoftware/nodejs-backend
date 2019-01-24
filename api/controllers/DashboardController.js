@@ -46,7 +46,6 @@ module.exports = {
   },
   getCardData: async function (req, res) {
     try {
-      console.log("Request ::: ", req);
       let room = req.query.room;
       if (req.isSocket) {
         if (req.query.prevRoom) {

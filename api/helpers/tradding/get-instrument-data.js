@@ -46,8 +46,16 @@ module.exports = {
           is_active: true,
           deleted_at: null
         }
-      })
-
+      });
+      let coins = await Coins.find({
+        is_active: true,
+        deleted_at: null
+      });
+      let coinList = {};
+      for (let index = 0; index < coins.length; index++) {
+        const element = coins[index];
+        coinList[element.id] = element;
+      }
       for (var i = 0; i < instrumentData.length; i++) {
         var total_volume = 0;
         var current_price = 0;
@@ -87,17 +95,20 @@ module.exports = {
         var diffrence = current_price - previous_price
         var percentChange = (diffrence / current_price) * 100;
 
-        if (percentChange) {
-          percentChange = percentChange;
-        } else {
+        if (isNaN(percentChange)) {
           percentChange = 0;
+        } else if (percentChange == '-Infinity') {
+          percentChange = 0;
+        } else {
+          percentChange = percentChange;
         }
 
         var instrument_data = {
           "name": instrumentData[i].name,
           "last_price": lastTradePrice,
           "volume": total_volume,
-          "percentChange": percentChange
+          "percentChange": percentChange,
+          "coin_icon": (coinList[instrumentData[i].coin_code1] != undefined && coinList[instrumentData[i].coin_code1].coin_icon != null ? coinList[instrumentData[i].coin_code1].coin_icon : "")
         }
         pairData.push(instrument_data);
       }
