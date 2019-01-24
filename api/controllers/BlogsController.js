@@ -6,6 +6,7 @@
  */
 var UploadFiles = require('../services/UploadFiles');
 var request = require('request');
+var h2p = require('html2plaintext')
 module.exports = {
     //---------------------------Web Api------------------------------
 
@@ -105,11 +106,16 @@ module.exports = {
 
             response.on('end', function () {
                 try {
-                    // response available as `responseData` in `yourview`
+                    let data = JSON.parse(responseData);
+                    for (let index = 0; index < data.objects.length; index++) {
+                        const element = data.objects[index];
+                        let blog_desc = h2p(element.post_body);
+                        data.objects[index]["short_desc"] = blog_desc.substring(0, 279) + "...";
+                    }
                     return res.json({
                         "status": 200,
                         "message": sails.__("Blog list"),
-                        "data": JSON.parse(responseData)
+                        "data": data
                     });
                 } catch (e) {
                     sails.log.warn('Could not parse response from options.hostname: ' + e);
