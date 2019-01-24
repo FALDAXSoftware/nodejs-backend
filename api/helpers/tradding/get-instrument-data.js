@@ -87,10 +87,12 @@ module.exports = {
         var diffrence = current_price - previous_price
         var percentChange = (diffrence / current_price) * 100;
 
-        if (percentChange) {
-          percentChange = percentChange;
-        } else {
+        if (isNaN(percentChange)) {
           percentChange = 0;
+        } else if (percentChange == '-Infinity') {
+          percentChange = 0;
+        } else {
+          percentChange = percentChange;
         }
 
         var instrument_data = {

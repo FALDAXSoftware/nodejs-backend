@@ -10,6 +10,8 @@ module.exports = {
   getCoinBalanceForWallet: async function (req, res) {
     try {
       let {currency} = req.body;
+      var balanceCoin = [];
+      var nonBalanceCoin = [];
       var total = 0;
       var flag = false;
       var wallet_user = await Users.findOne({
@@ -62,7 +64,17 @@ module.exports = {
             var total = total + price;
           }
           coins[index] = coin;
+
+          if (coins[index].balance > 0) {
+            balanceCoin.push(coins[index])
+          } else {
+            nonBalanceCoin.push(coins[index]);
+          }
         }
+      }
+      var balanceData = {
+        'balanceWallet': balanceCoin,
+        'nonBalanceWallet': nonBalanceCoin
       }
       var calculation = 0;
       if (wallet_user.percent_wallet == null) {
@@ -89,8 +101,7 @@ module.exports = {
         "flag": flag
       }
 
-      // coins.push(data); console.log("Coins Push :: ", coins);
-      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins, data});
+      return res.json({status: 200, message: "Wallet balance retrived successfully.", balanceData, data});
 
     } catch (error) {
       console.log(error);
@@ -108,8 +119,17 @@ module.exports = {
     try {
       let {amount, destination_address, coin_code} = req.allParams();
       let user_id = req.user.id;
-      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin_code: coin_code});
-      console.log(coin);
+      let coin = await Coins.findOne({
+        deleted_at: null,
+        is_active: true,
+        or: [
+          {
+            coin_code: coin_code
+          }, {
+            coin: coin_code
+          }
+        ]
+      });
       if (coin) {
         let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
         if (wallet) {
@@ -183,15 +203,12 @@ module.exports = {
   //receive coin
   getReceiveCoin: async function (req, res) {
     try {
-      console.log("receive Paramters after checking :: ", req.allParams());
       var {coin} = req.allParams();
       var user_id = req.user.id;
       var receiveCoin = await sails
         .helpers
         .wallet
         .receiveCoin(coin, user_id);
-
-      console.log(receiveCoin);
 
       return res.json({status: 200, message: "Receive address retrieved successfuly", receiveCoin});
     } catch (err) {
