@@ -46,8 +46,16 @@ module.exports = {
           is_active: true,
           deleted_at: null
         }
-      })
-
+      });
+      let coins = await Coins.find({
+        is_active: true,
+        deleted_at: null
+      });
+      let coinList = {};
+      for (let index = 0; index < coins.length; index++) {
+        const element = coins[index];
+        coinList[element.id] = element;
+      }
       for (var i = 0; i < instrumentData.length; i++) {
         var total_volume = 0;
         var current_price = 0;
@@ -97,7 +105,8 @@ module.exports = {
           "name": instrumentData[i].name,
           "last_price": lastTradePrice,
           "volume": total_volume,
-          "percentChange": percentChange
+          "percentChange": percentChange,
+          "coin_icon": (coinList[instrumentData[i].coin_code1] != undefined && coinList[instrumentData[i].coin_code1].coin_icon != null ? coinList[instrumentData[i].coin_code1].coin_icon : "")
         }
         pairData.push(instrument_data);
       }
