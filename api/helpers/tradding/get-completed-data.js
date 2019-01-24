@@ -69,7 +69,14 @@ module.exports = {
         currency: inputs.currency,
         created_at: {
           '>=': yesterday
-        }
+        },
+        or: [
+          {
+            user_id: inputs.user_id
+          }, {
+            requested_user_id: inputs.user_id
+          }
+        ]
       }
     })
 
