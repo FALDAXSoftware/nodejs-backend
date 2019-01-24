@@ -125,6 +125,36 @@ module.exports = {
     }
   },
 
+  deleteInquiry: async function (req, res) {
+    try {
+      let { inquiry_id } = req.allParams();
+      if (!inquiry_id) {
+        res.status(500).json({
+          "status": 500,
+          "err": "Inquiry id is not sent"
+        });
+        return;
+      }
+      let deleteInquiry = await Inquiry.update({ id: inquiry_id }).set({ deleted_at: new Date() }).fetch();
+      if (deleteInquiry) {
+        return res.json({
+          "status": 200,
+          "message": "Inquiry removed successfully",
+        });
+      } else {
+        return res.status(500).json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      }
+    } catch (err) {
+      return res.status(500).json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
   testnews: async function (req, res) {
     // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
     // greeting); res.end();

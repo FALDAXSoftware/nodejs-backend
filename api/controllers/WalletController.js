@@ -9,7 +9,7 @@ const BitGoJS = require('bitgo');
 module.exports = {
   getCoinBalanceForWallet: async function (req, res) {
     try {
-      let { currency } = req.body;
+      let {currency} = req.body;
       var total = 0;
       var flag = false;
       var wallet_user = await Users.findOne({
@@ -29,17 +29,17 @@ module.exports = {
       let currencyArray = currency.split(",");
       let coins = await Coins
         .find({
-          deleted_at: null,
-          "wallet_address": {
-            "!": null
-          }
-        })
+        deleted_at: null,
+        "wallet_address": {
+          "!": null
+        }
+      })
         .sort('id', 'DESC');
       for (let index = 0; index < coins.length; index++) {
         const coin = coins[index];
         let price = 0;
         let walletDataArray = await Wallet
-          .find({ coin_id: coin.id, user_id: req.user.id })
+          .find({coin_id: coin.id, user_id: req.user.id})
           .sort("created_at DESC");
         let walletData = walletDataArray[0];
         coin['balance'] = 0;
@@ -75,8 +75,8 @@ module.exports = {
         percentchange = 0;
       }
       var updateData = await Users
-        .update({ id: req.user.id, deleted_at: null, is_active: true })
-        .set({ 'percent_wallet': percentchange, "email": wallet_user.email });
+        .update({id: req.user.id, deleted_at: null, is_active: true})
+        .set({'percent_wallet': percentchange, "email": wallet_user.email});
 
       if (percentchange >= wallet_user.percent_wallet) {
         flag = true;
@@ -90,7 +90,7 @@ module.exports = {
       }
 
       // coins.push(data); console.log("Coins Push :: ", coins);
-      return res.json({ status: 200, message: "Wallet balance retrived successfully.", coins, data });
+      return res.json({status: 200, message: "Wallet balance retrived successfully.", coins, data});
 
     } catch (error) {
       console.log(error);
@@ -106,32 +106,28 @@ module.exports = {
 
   sendCoin: async function (req, res) {
     try {
-      let { amount, destination_address, coin_code } = req.allParams();
+      let {amount, destination_address, coin_code} = req.allParams();
       let user_id = req.user.id;
-      console.log("USer ID :: ", user_id);
-      let coin = await Coins.findOne({ deleted_at: null, is_active: true, coin_code: coin_code });
+      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin_code: coin_code});
       console.log(coin);
       if (coin) {
-        let wallet = await Wallet.findOne({ deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id });
-        console.log(wallet);
+        let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
         if (wallet) {
           if (wallet.placed_balance >= parseInt(amount)) {
             if (coin.type == 1) {
-              var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+              var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
               var bitgoWallet = await bitgo
                 .coin(coin.coin_code)
                 .wallets()
-                .get({ id: coin.wallet_address });
+                .get({id: coin.wallet_address});
               let params = {
                 amount: amount * 1e8,
                 address: destination_address,
                 walletPassphrase: sails.config.local.BITGO_PASSPHRASE
               };
-              console.log("Parameters :: ", params);
               bitgoWallet
                 .send(params)
                 .then(async function (transaction) {
-                  console.log(transaction);
                   let walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
@@ -147,30 +143,30 @@ module.exports = {
                   });
                   // update wallet balance
                   await Wallet
-                    .update({ id: wallet.id })
+                    .update({id: wallet.id})
                     .set({
                       balance: wallet.balance - amount,
                       placed_balance: wallet.placed_balance - amount
                     });
-                  return res.json({ status: 200, message: "Token send successfully" });
+                  return res.json({status: 200, message: "Token send successfully"});
                 });
             }
           } else {
             return res
               .status(400)
-              .json({ status: 400, message: "Issuficient coin balance in wallet" });
+              .json({status: 400, message: "Issuficient coin balance in wallet"});
 
           }
         } else {
           return res
             .status(400)
-            .json({ status: 400, message: "Insuficient coin balance in wallet" });
+            .json({status: 400, message: "Insuficient coin balance in wallet"});
 
         }
       } else {
         return res
           .status(400)
-          .json({ status: 400, message: "Coin or token not available" });
+          .json({status: 400, message: "Coin or token not available"});
 
       }
     } catch (error) {
@@ -188,7 +184,7 @@ module.exports = {
   getReceiveCoin: async function (req, res) {
     try {
       console.log("receive Paramters after checking :: ", req.allParams());
-      var { coin } = req.allParams();
+      var {coin} = req.allParams();
       var user_id = req.user.id;
       var receiveCoin = await sails
         .helpers
@@ -197,7 +193,7 @@ module.exports = {
 
       console.log(receiveCoin);
 
-      return res.json({ status: 200, message: "Receive address retrieved successfuly", receiveCoin });
+      return res.json({status: 200, message: "Receive address retrieved successfuly", receiveCoin});
     } catch (err) {
       console.log(err);
       return res
@@ -211,9 +207,9 @@ module.exports = {
 
   getWalletTransactionHistory: async function (req, res) {
     try {
-      let { coinReceive } = req.body;
-      let coinData = await Coins.findOne({ coin: coinReceive, deleted_at: null });
-      let walletTransData = await WalletHistory.find({ user_id: req.user.id, coin_id: coinData.id, deleted_at: null });
+      let {coinReceive} = req.body;
+      let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
+      let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData.length > 0) {
         walletTransData[0]['coin_code'] = coinData.coin_code;
         walletTransData[0]['coin_icon'] = coinData.coin_icon;
@@ -221,7 +217,7 @@ module.exports = {
         walletTransData[0]['coin_name'] = coinData.coin_name;
       }
 
-      let walletUserData = await Wallet.find({ user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true })
+      let walletUserData = await Wallet.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true})
       if (walletUserData.length > 0) {
         walletUserData[0]['coin_code'] = coinData.coin_code;
         walletUserData[0]['coin_icon'] = coinData.coin_icon;
@@ -229,12 +225,11 @@ module.exports = {
         walletUserData[0]['coin_name'] = coinData.coin_name;
       }
 
-
-      let walletTransCount = await WalletHistory.count({ user_id: req.user.id, coin_id: coinData.id, deleted_at: null });
+      let walletTransCount = await WalletHistory.count({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData) {
-        return res.json({ status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount, walletUserData });
+        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount, walletUserData});
       } else {
-        return res.json({ status: 200, message: "No data found." })
+        return res.json({status: 200, message: "No data found."})
       }
     } catch (err) {
       console.log('err', err)
