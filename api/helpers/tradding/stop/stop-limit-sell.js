@@ -57,7 +57,7 @@ module.exports = {
       await sails
         .helpers
         .sockets
-        .tradeEmit(crypto, currency);
+        .tradeEmit(order.settle_currency, order.currency);
       return exits.success();
     } catch (error) {
       console.log(error);

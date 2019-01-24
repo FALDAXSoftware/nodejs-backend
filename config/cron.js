@@ -34,6 +34,7 @@ module.exports.cron = {
       if (sails.config.local.CRON_STATUS == "true") {
         var stopExecution = await sails
           .helpers
+          .tradding
           .executeStopLimit();
       }
     }

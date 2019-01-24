@@ -98,5 +98,36 @@ module.exports = {
                 });
             }
         }
-    }
+    },
+
+    deleteSubscriber: async function (req, res) {
+        try {
+            let { subscriber_id } = req.allParams();
+            if (!subscriber_id) {
+                res.status(500).json({
+                    "status": 500,
+                    "err": "Subscriber id is not sent"
+                });
+                return;
+            }
+            let deleteSubscriber = await Subscribe.update({ id: subscriber_id }).set({ deleted_at: new Date() }).fetch();
+            if (deleteSubscriber) {
+                return res.json({
+                    "status": 200,
+                    "message": "Subscriber removed successfully",
+                });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            }
+        } catch (err) {
+            return res.status(500).json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+            });
+        }
+    },
+
 };

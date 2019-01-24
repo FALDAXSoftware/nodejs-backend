@@ -145,7 +145,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .buy
-                  .update(buyBook[0].id, {'quantity': remainingQty});
+                  .update(buyBook[0].id, { 'quantity': remainingQty });
                 //Emit the socket
                 return exits.success(updatedBuyBook);
               } else {
@@ -267,6 +267,7 @@ module.exports = {
             sellAddedData.fix_quantity = sellAddedData.quantity;
             sellAddedData.maker_fee = fees.makerFee;
             sellAddedData.taker_fee = fees.takerFee;
+            delete sellAddedData.id;
             var addData = await sails
               .helpers
               .tradding
@@ -294,6 +295,7 @@ module.exports = {
           sellAddedData.fix_quantity = sellAddedData.quantity;
           sellAddedData.maker_fee = fees.makerFee;
           sellAddedData.taker_fee = fees.takerFee;
+          delete sellAddedData.id;
           var addData = await sails
             .helpers
             .tradding

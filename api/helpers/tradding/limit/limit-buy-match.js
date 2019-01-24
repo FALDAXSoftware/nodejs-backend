@@ -145,7 +145,7 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, {'quantity': remainingQty});
+                  .update(sellBook[0].id, { 'quantity': remainingQty });
                 //Emit the socket
                 return exits.success(updatedbuyBook);
               } else {
@@ -279,6 +279,8 @@ module.exports = {
             buyAddedData.fix_quantity = buyAddedData.quantity;
             buyAddedData.maker_fee = fees.makerFee;
             buyAddedData.taker_fee = fees.takerFee;
+            delete buyAddedData.id;
+            console.log("Buy Added Data :::", buyAddedData);
             var addData = await sails
               .helpers
               .tradding
@@ -306,6 +308,8 @@ module.exports = {
           buyAddedData.fix_quantity = buyAddedData.quantity;
           buyAddedData.maker_fee = fees.makerFee;
           buyAddedData.taker_fee = fees.takerFee;
+          delete buyAddedData.id;
+          console.log("Buy Added Data :::", buyAddedData);
           var addData = await sails
             .helpers
             .tradding
@@ -326,7 +330,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("Limit Buy Match error ::: ", error);
       if (error.message == "coinNotFound") {
         return exits.coinNotFound();
       }

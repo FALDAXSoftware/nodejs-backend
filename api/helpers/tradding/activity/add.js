@@ -20,12 +20,16 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    let orderData = inputs.orderData;
-    let activityTable = await ActivityTable
-      .create(orderData)
-      .fetch();
+    try {
+      let orderData = inputs.orderData;
+      let activityTable = await ActivityTable
+        .create(orderData)
+        .fetch();
 
-    return exits.success(activityTable);
+      return exits.success(activityTable);
+    } catch (err) {
+      console.log("activity Error :: ", err);
+    }
   }
 
 };
