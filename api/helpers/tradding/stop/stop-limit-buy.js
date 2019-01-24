@@ -44,7 +44,7 @@ module.exports = {
           .helpers
           .tradding
           .limit
-          .limitBuyMatch(order, order.settle_currency, order.currency, activityResult);
+          .limitBuyMatch(order, order.settle_currency, order.currency,  activityResult);
 
         if (buyMatchResponse) {
           var pendingOrder = await sails
@@ -58,7 +58,7 @@ module.exports = {
       await sails
         .helpers
         .sockets
-        .tradeEmit(crypto, currency);
+        .tradeEmit(order.settle_currency, order.currency);
       return exits.success();
     } catch (error) {
       console.log(error);

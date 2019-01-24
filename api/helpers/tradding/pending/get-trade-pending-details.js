@@ -107,7 +107,8 @@ module.exports = {
           user_id: inputs.user_id,
           created_at: {
             '>=': yesterday
-          }
+          },
+          user_id: inputs.user_id
         },
         sort: 'id DESC'
       });
@@ -121,7 +122,8 @@ module.exports = {
           is_partially_fulfilled: true,
           created_at: {
             '>=': yesterday
-          }
+          },
+          user_id: inputs.user_id
         },
         sort: 'id DESC'
       });
@@ -149,7 +151,8 @@ module.exports = {
           is_partially_fulfilled: true,
           created_at: {
             '>=': yesterday
-          }
+          },
+          user_id: inputs.user_id
         },
         sort: 'id DESC'
       });
