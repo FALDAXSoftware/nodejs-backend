@@ -112,7 +112,6 @@ module.exports = {
       console.log(coin);
       if (coin) {
         let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
-        console.log(wallet);
         if (wallet) {
           if (wallet.placed_balance >= parseInt(amount)) {
             if (coin.type == 1) {
