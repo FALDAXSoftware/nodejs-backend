@@ -555,6 +555,9 @@ module.exports = {
                         .status(403)
                         .json({status: 403, "message": "Error occured"});
                     } else {
+                      if (month == undefined) {
+                        month = 0;
+                      }
                       let {crypto, currency} = await sails
                         .helpers
                         .utilities
