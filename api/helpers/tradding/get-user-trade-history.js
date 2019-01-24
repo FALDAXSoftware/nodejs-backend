@@ -24,7 +24,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    console.log("data :: ", inputs.data.buy);
     // Get user trade history.
     var userTradeHistory;
     var data = inputs.data;
@@ -55,7 +54,9 @@ module.exports = {
     }
 
     if (data.toDate != undefined || data.toDate != null) {
-      q['created_at']['<='] = moment(data.toDate).format();
+      q['created_at']['<='] = moment(data.toDate)
+        .endOf('day')
+        .format();
     }
     if (data.fromDate != undefined || data.fromDate != null) {
       q['created_at']['>='] = moment(data.fromDate).format();
@@ -76,15 +77,12 @@ module.exports = {
       q['or'].push({requested_user_id: data.user_id})
     }
 
-    console.log("Q Value :: ", q);
-
     userTradeHistory = await TradeHistory
       .find({
       ...q
     })
       .sort("id DESC");
 
-    console.log("User Trade History ::: ", userTradeHistory);
     // TODO Send back the result through the success exit.
     return exits.success(userTradeHistory);
 

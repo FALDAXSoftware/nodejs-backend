@@ -11,7 +11,7 @@ module.exports = {
   // Verify User Api
   verifyUser: async function (req, res) {
     try {
-      
+
       if (req.body.email_verify_token) {
         let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
         if (user) {
@@ -22,10 +22,10 @@ module.exports = {
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
           //   Create Recive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user);
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user);
           return res.json({
             "status": 200,
             "message": sails.__('Verify User')

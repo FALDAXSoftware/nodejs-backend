@@ -34,11 +34,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'static_page',
     },
-    blogs: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'blogs',
-    },
+    // blogs: {
+    //   type: "boolean",
+    //   defaultsTo: false,
+    //   columnName: 'blogs',
+    // },
     countries: {
       type: "boolean",
       defaultsTo: false,

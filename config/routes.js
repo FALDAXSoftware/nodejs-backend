@@ -108,9 +108,11 @@ module.exports.routes = {
 
   //Send Inquiry routes
   'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
+  'delete /admin/delete-inquiry': 'RootController.deleteInquiry',
 
   //Subscriber routes
   'get /admin/get-all-subscribers': 'Subscribe.getAllSubscribers',
+  'delete /admin/delete-subscriber': 'Subscribe.deleteSubscriber',
 
   //Add Job route
   'get /admin/all-jobs': 'CareerController.getAllJobsCMS',
@@ -236,7 +238,7 @@ module.exports.routes = {
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
-  'get /cancel-pending-order': 'TradeController.cancelPendingOrder',
+  'post /cancel-pending-order': 'TradeController.cancelPendingOrder',
 
   //Get User Trade History
   'get /get-user-history': 'TradeController.getUserHistory',

@@ -39,7 +39,6 @@ module.exports = {
     try {
       var deletePending;
       var now = moment().format();
-      console.log("ID :: ", inputs.id);
       if (inputs.type == "Limit" && inputs.side == "Buy") {
         var pendingBookDetailsBuy = await buyBook.findOne({
           where: {
@@ -47,8 +46,6 @@ module.exports = {
             id: inputs.id
           }
         });
-
-        console.log(pendingBookDetailsBuy);
 
         var fees = await sails
           .helpers
@@ -153,7 +150,6 @@ module.exports = {
           .fetch();
       }
       if (deletePending) {
-        console.log("Deleted Successfully  ::");
         return exits.success("Deleted Successfully")
       } else {
         throw "Server Error";
