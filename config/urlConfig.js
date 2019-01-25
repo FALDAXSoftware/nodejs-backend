@@ -4,7 +4,7 @@ module.exports.urlconf = {
     CMS_URL: 'https://admin.faldax.com',
     //        'staging-admin.faldax.com',
     APP_URL: 'https://dev.faldax.com',
-    //    'https://www.faldax.com',
+    //    'https://dev.faldax.com',
     BUCKET_URL: "https://s3.us-east-2.amazonaws.com/production-static-asset/",
     //"https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/faldax/",
     BUCKET_NAME: "production-static-asset"
