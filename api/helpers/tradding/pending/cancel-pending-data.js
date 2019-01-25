@@ -32,11 +32,11 @@ module.exports = {
     success: {
       description: 'All done.'
     },
-    noBuyLimitOrder:{
-      description:"no buy limit order found"
+    noBuyLimitOrder: {
+      description: "no buy limit order found"
     },
-    serverError:{
-      description:"server error"
+    serverError: {
+      description: "server error"
     }
   },
 
@@ -151,7 +151,7 @@ module.exports = {
 
         console.log(pendingDetails);
 
-        if (pendingDetails == undefined) {
+        if (pendingDetails == undefined || pendingDetails.length == 0) {
           // throw("No pending order found.")
           return exits.noBuyLimitOrder();
 
