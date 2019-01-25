@@ -266,7 +266,7 @@ module.exports = {
         })
         .tolerate('serverError', () => {
           throw new Error("serverError");
-        });;
+        });
       res.json({
         "status": 200,
         "message": sails.__("Order Success")
@@ -309,7 +309,12 @@ module.exports = {
         .helpers
         .tradding
         .pending
-        .cancelPendingData(side, order_type, id);
+        .cancelPendingData(side, order_type, id).tolerate('noBuyLimitOrder', () => {
+          throw new Error("noBuyLimitOrder");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
+        });
       res.json({
         "status": 200,
         "message": sails.__("Order Success")
@@ -317,15 +322,10 @@ module.exports = {
     } catch (error) {
       console.log("tradeController", error);
 
-      if (error.message == "coinNotFound") {
+      if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
-          .json({status: 500, "err": "Coin Not Found"});
-      }
-      if (error.message == "insufficientBalance") {
-        return res
-          .status(500)
-          .json({status: 500, "err": "Insufficient balance in wallet"});
+          .json({status: 500, "err": "No Pending Order Found"});
       }
 
       return res
