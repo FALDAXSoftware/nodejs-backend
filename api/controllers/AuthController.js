@@ -55,7 +55,7 @@ module.exports = {
     try {
       if (req.body.email && req.body.password) {
         let query = {
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           password: req.body.password
         }
 
