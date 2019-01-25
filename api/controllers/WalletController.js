@@ -14,7 +14,7 @@ module.exports = {
       var nonBalanceCoin = [];
       var total = 0;
       var flag = false;
-      
+
       var wallet_user = await Users.findOne({
         where: {
           id: req.user.id,
@@ -42,7 +42,7 @@ module.exports = {
         const coin = coins[index];
         let price = 0;
         let walletDataArray = await Wallet
-          .find({coin_id: coin.id, user_id: req.user.id})
+          .find({coin_id: coin.id, user_id: req.user.id, deleted_at: null})
           .sort("created_at DESC");
         let walletData = walletDataArray[0];
         coin['balance'] = 0;
@@ -87,7 +87,6 @@ module.exports = {
       if (isNaN(percentchange) || percentchange == undefined || percentchange == Infinity) {
         percentchange = 0;
       }
-      console.log(percentchange);
       var updateData = await Users
         .update({id: req.user.id, deleted_at: null, is_active: true})
         .set({'percent_wallet': percentchange, "email": wallet_user.email});
@@ -171,18 +170,23 @@ module.exports = {
                       placed_balance: wallet.placed_balance - amount
                     });
                   return res.json({status: 200, message: "Token send successfully"});
+                })
+                .catch(error => {
+                  return res
+                    .status(500)
+                    .json({status: 500, message: "Insufficient Balance"});
                 });
             }
           } else {
             return res
               .status(400)
-              .json({status: 400, message: "Issuficient coin balance in wallet"});
+              .json({status: 400, message: "Insufficient coin balance in wallet"});
 
           }
         } else {
           return res
             .status(400)
-            .json({status: 400, message: "Insuficient coin balance in wallet"});
+            .json({status: 400, message: "Insufficient coin balance in wallet"});
 
         }
       } else {
