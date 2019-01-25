@@ -31,6 +31,12 @@ module.exports = {
 
     success: {
       description: 'All done.'
+    },
+    noBuyLimitOrder: {
+      description: "no buy limit order found"
+    },
+    serverError: {
+      description: "server error"
     }
   },
 
@@ -73,7 +79,8 @@ module.exports = {
           .set({placed_balance: userPlacedBalance});
 
         if (pendingBookDetailsBuy.length === 0) {
-          throw("No buy limit order found.")
+          // throw("No buy limit order found.")
+          return exits.noBuyLimitOrder();
         }
 
         var activityCancel = await ActivityTable
@@ -120,7 +127,9 @@ module.exports = {
           .set({placed_balance: userPlacedBalance});
 
         if (pendingBookDetailsSell.length === 0) {
-          throw("No buy limit order found.")
+          // throw("No buy limit order found.")
+          return exits.noBuyLimitOrder();
+
         }
 
         var activityCancel = await ActivityTable
@@ -140,8 +149,12 @@ module.exports = {
           }
         });
 
-        if (pendingDetails.length == 0) {
-          throw("No pending order found.")
+        console.log(pendingDetails);
+
+        if (pendingDetails == undefined || pendingDetails.length == 0) {
+          // throw("No pending order found.")
+          return exits.noBuyLimitOrder();
+
         }
 
         deletePending = await PendingBook
@@ -152,10 +165,12 @@ module.exports = {
       if (deletePending) {
         return exits.success("Deleted Successfully")
       } else {
-        throw "Server Error";
+        // throw "Server Error";
+        return exits.serverError();
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
+      return exits.serverError();
     }
 
   }

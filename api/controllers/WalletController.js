@@ -14,6 +14,7 @@ module.exports = {
       var nonBalanceCoin = [];
       var total = 0;
       var flag = false;
+      
       var wallet_user = await Users.findOne({
         where: {
           id: req.user.id,
@@ -77,15 +78,16 @@ module.exports = {
         'nonBalanceWallet': nonBalanceCoin
       }
       var calculation = 0;
-      if (wallet_user.percent_wallet == null) {
+      if (isNaN(wallet_user.percent_wallet) || wallet_user.percent_wallet == null || wallet_user.percent_wallet == undefined) {
         calculation = 0;
       } else {
         calculation = wallet_user.percent_wallet;
       }
       var percentchange = (total / (wallet_user.percent_wallet) * 100);
-      if (percentchange == NaN || percentchange == undefined || percentchange == Infinity) {
+      if (isNaN(percentchange) || percentchange == undefined || percentchange == Infinity) {
         percentchange = 0;
       }
+      console.log(percentchange);
       var updateData = await Users
         .update({id: req.user.id, deleted_at: null, is_active: true})
         .set({'percent_wallet': percentchange, "email": wallet_user.email});
