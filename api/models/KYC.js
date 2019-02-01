@@ -18,6 +18,10 @@ module.exports = {
             columnName: 'last_name',
             allowNull: true
         },
+        phone_number: {
+            type: 'string',
+            columnName: 'phone_number'
+        },
         country: {
             type: 'string',
             columnName: 'country',
