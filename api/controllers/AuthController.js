@@ -21,11 +21,11 @@ module.exports = {
           await KYC
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
-          //   Create Recive Address
-          // await sails
-          //   .helpers
-          //   .wallet
-          //   .receiveAddress(user);
+          // Create Recive Address
+          await sails
+            .helpers
+            .wallet
+            .receiveAddress(user);
           return res.json({
             "status": 200,
             "message": sails.__('Verify User')
