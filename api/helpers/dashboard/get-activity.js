@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get activity',
 
-
   description: '',
-
 
   inputs: {
     user_id: {
@@ -16,21 +13,19 @@ module.exports = {
     }
   },
 
-
   exits: {
 
     success: {
-      outputFriendlyName: 'Activity',
-    },
-
+      outputFriendlyName: 'Activity'
+    }
   },
-
 
   fn: async function (inputs) {
 
     // Get activity.
     var activity;
     // TODO
+    console.log("USERD| ID ::: ", inputs.user_id);
     activity = await ActivityTable.find({
       where: {
         deleted_at: null,
@@ -45,6 +40,4 @@ module.exports = {
 
   }
 
-
 };
-

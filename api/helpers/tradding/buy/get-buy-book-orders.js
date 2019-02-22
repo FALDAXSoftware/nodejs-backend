@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get buy book orders',
 
-
   description: '',
-
 
   inputs: {
     crypto: {
@@ -19,18 +16,16 @@ module.exports = {
       example: 'ETH',
       description: 'Code of Currency.',
       required: true
-    },
+    }
   },
-
 
   exits: {
 
     success: {
-      outputFriendlyName: 'Buy book orders',
+      outputFriendlyName: 'Buy book orders'
     }
 
   },
-
 
   fn: async function (inputs, exits) {
 
@@ -48,6 +43,4 @@ module.exports = {
 
   }
 
-
 };
-
