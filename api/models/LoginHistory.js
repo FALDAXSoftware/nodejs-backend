@@ -28,6 +28,11 @@ module.exports = {
       columnName: "device_token",
       allowNull: true
     },
+    jwt_token: {
+      type: "string",
+      columnName: "jwt_token",
+      allowNull: true
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

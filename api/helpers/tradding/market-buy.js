@@ -153,6 +153,11 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
+
+            // Adding USD value in database trade_history_data.usd_value =
+            // tradingFees.user_usd;
+
+            var usd_value = resultData * (request.fill_price * request.quantity);
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;
@@ -215,6 +220,8 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
+            // Adding USD value in database trade_history_data.usd_value =
+            // tradingFees.user_usd;
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;

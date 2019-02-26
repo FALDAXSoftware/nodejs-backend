@@ -7,5 +7,6 @@ module.exports.local = {
     'BITGO_PASSPHRASE': process.env.BITGO_PASSPHRASE,
     "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
     "TEST": process.env.TESTDEMO,
-    "CRON_STATUS": process.env.CRON_STATUS
+    "CRON_STATUS": process.env.CRON_STATUS,
+    "COIN_MARKET_CAP_API" : process.env.MARKETPRICE
 }
