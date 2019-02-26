@@ -123,6 +123,10 @@ module.exports.routes = {
   'get /job-applicants': 'CareerController.getJobApplications',
   'get /admin/job-categories': 'CareerController.getAllJobCategories',
 
+  //Fee route
+  'get /admin/get-all-fee': 'FeesController.getAllFees',
+  'put /admin/edit-fee': 'FeesController.editFees',
+
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
 
