@@ -85,5 +85,8 @@ module.exports.policies = {
   },
   "TradeController": {
     "stopLimitExecute": true
+  },
+  "TradingViewController": {
+    "*": true
   }
 };

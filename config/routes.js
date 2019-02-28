@@ -248,5 +248,12 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket': 'RootController.enableWebSocket'
+  'get /enable-web-socket': 'RootController.enableWebSocket',
+
+
+  // Tradding View Chart
+  'get /tradingview/config': 'TradingView.getConfig',
+  'get /tradingview/time': 'TradingView.getCurrentTime',
+  'get /tradingview/symbols': 'TradingView.getSymbolInfo',
+  'get /tradingview/history': 'TradingView.getHistoryData',
 };

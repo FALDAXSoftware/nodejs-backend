@@ -24,22 +24,21 @@ module.exports = {
                                     return res.status(403).json({ status: 403, "message": "Error occured" });
                                 } else {
                                     let { crypto, currency } = await sails
-                                        .helpers
-                                        .utilities
-                                        .getCurrencies(room);
-                                    let buyBookDetails = await sails
-                                        .helpers
-                                        .tradding
-                                        .buy
-                                        .getBuyBookOrders(crypto, currency);
-
-                                    if (buyBookDetails) {
-                                        return res.json({
-                                            status: 200,
-                                            data: buyBookDetails,
-                                            "message": "Buy data retrived successfully."
-                                        });
-                                    }
+                                    .helpers
+                                    .utilities
+                                    .getCurrencies(room);
+                                let buyBookDetails = await sails
+                                    .helpers
+                                    .tradding
+                                    .buy
+                                    .getBuyBookOrders(crypto, currency);
+                                if (buyBookDetails) {
+                                    return res.json({
+                                        status: 200,
+                                        data: buyBookDetails,
+                                        "message": "Buy data retrived successfully."
+                                    });
+                                }
                                 }
                             });
                         }
@@ -74,7 +73,10 @@ module.exports = {
                 return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
-            console.log('>>>', err)
+            console.log('>>>', err);
+            return res
+            .status(500)
+            .json({ "status": 500, "err": err });
         }
     },
 

@@ -185,6 +185,7 @@ module.exports = {
                 .toString();
               var uploadFileName = timestamp + name;
               var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'profile/' + uploadFileName);
+
               if (uploadProfile) {
                 user.profile_pic = 'profile/' + uploadFileName;
 
@@ -266,7 +267,6 @@ module.exports = {
         .update({ id: req.user.id })
         .set({ email: user_details.email, password: req.body.new_password })
         .fetch();
-
       if (updatedUsers) {
         return res.json({ "status": 200, "message": "Password changed successfully" });
       } else {
