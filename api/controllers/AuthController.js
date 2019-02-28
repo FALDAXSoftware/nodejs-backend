@@ -404,8 +404,8 @@ module.exports = {
       let user = await LoginHistory.find({ device_token: req.body.device_token });
 
       let logged_user = await LoginHistory
-        .update({ device_token: req.body.device_token })
-        .set({ is_logged_in: false, device_token: null, jwt_token: null })
+        .update({ device_token: req.body.device_token, jwt_token })
+        .set({ is_logged_in: false, device_token: null, jwt_token: null, updated_at: new Date() })
         .fetch();
 
       if (logged_user) {

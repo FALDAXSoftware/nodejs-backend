@@ -32,7 +32,6 @@ module.exports = {
                                         .tradding
                                         .buy
                                         .getBuyBookOrders(crypto, currency);
-
                                     if (buyBookDetails) {
                                         return res.json({
                                             status: 200,
@@ -74,7 +73,10 @@ module.exports = {
                 return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
-            console.log('>>>', err)
+            console.log('>>>', err);
+            return res
+                .status(500)
+                .json({ "status": 500, "err": err });
         }
     },
 

@@ -88,5 +88,8 @@ module.exports.policies = {
   },
   "DashboardController": {
     "getRisingFalling": true
+  },
+  "TradingViewController": {
+    "*": true
   }
 };

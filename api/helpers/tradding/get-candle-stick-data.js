@@ -24,10 +24,22 @@ module.exports = {
       description: 'Interval at which data needs to be obtained',
       required: true
     },
-    duration: {
-      type: 'number',
-      example: 1,
-      description: 'Number of days for which data needs to be found',
+    // duration: {
+    //   type: 'number',
+    //   example: 1,
+    //   description: 'Number of days for which data needs to be found',
+    //   required: true
+    // },
+    from: {
+      type: 'string',
+      example: "1550893613",
+      description: 'Time stamp from data you want',
+      required: true
+    },
+    to: {
+      type: 'string',
+      example: "1550893613",
+      description: 'Time stamp until data you want',
       required: true
     }
   },
@@ -36,54 +48,68 @@ module.exports = {
 
     success: {
       outputFriendlyName: 'Candle stick data'
+    },
+    serverError: {
+      description: 'serverError'
     }
+
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
-    try { // Get candle stick data.
-      var candleStickData = [];
+    try {
+      // Get candle stick data.
+      var candleStickData = {};
       // TODO Send back the result through the success exit.
 
-      var today = moment()
-        .utc()
-        .format('YYYY-MM-DD 23:59:59');
 
-      var lastData = moment()
-        .utc()
-        .subtract(inputs.duration, "days")
-        .format('YYYY-MM-DD');
+      var from = moment.unix(inputs.from).utc().format("YYYY-MM-DD HH:mm:ss");
+      var to = moment.unix(inputs.to).utc().format("YYYY-MM-DD HH:mm:ss");
+      // console.log("Form To-----------------", from, to);
+      let openQuery = "SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND id IN (SELECT min(id) FROM trade_history WHERE created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + "))) ORDER BY interval";
+      var openResult = await sails.sendNativeQuery(openQuery);
+      // console.log("Open------------", openResult);
 
-      var open = await sails.sendNativeQuery("SELECT fill_price as open, to_timestamp(floor((extract('epoch' from created_at) " +
-          "/ 60 * " + inputs.time_period + " )) * 60*" + inputs.time_period + " ) AT TIME ZONE 'UTC' as interval_alias FROM trade_history WHERE settle_currency" +
-          " = " + inputs.crypto + "AND currency = " + inputs.currency + " AND id in ( select min(id)  FROM trade_history WHERE created_at >= " + lastData + " AND created_at <= " + today + " group by to_timestamp(floor((extract('epoch' from created_at) / 60*" + inputs.time_period + " )) * 60*" + inputs.time_period + ") AT TIME ZONE 'UTC' )");
+      let closeQuery = "SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND id IN (SELECT min(id) FROM trade_history WHERE created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + "))) ORDER BY interval";
+      var closeResult = await sails.sendNativeQuery(closeQuery);
+      // console.log("Close------------", closeResult);
 
-      var close = await sails.sendNativeQuery("SELECT fill_price as close, to_timestamp(floor((extract('epoch' from created_at)" +
-          " / 60 * " + inputs.time_period + " )) * 60*" + inputs.time_period + " ) AT TIME ZONE 'UTC' as interval_alias FROM trade_history WHERE settle_currency" +
-          " = " + inputs.crypto + "AND currency = " + inputs.currency + " AND id in ( select max(id)  FROM trade_history WHERE created_at >= " + lastData + " AND created_at <= " + today + " group by to_timestamp(floor((extract('epoch' from created_at) / 60*" + inputs.time_period + " )) * 60*" + inputs.time_period + ") AT TIME ZONE 'UTC' )")
+      let highQuery = "SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval";
+      var highResult = await sails.sendNativeQuery(highQuery);
+      // console.log("highResult-------------", highResult);
 
-      var high = await sails.sendNativeQuery("SELECT max(fill_price) as high, to_timestamp(floor((extract('epoch' from created" +
-          "_at) / 60 *" + inputs.time_period + " )) * 60*" + inputs.time_period + ") AT TIME ZONE 'UTC' as createdNew FROM trade_history WHERE settle_currency = " + inputs.crypto + " AND currency = " + inputs.currency + " AND GROUP BY to_timestamp(floor((extract('epoch' from created_at) / 60 *21 )) *" +
-          " 60*21) AT TIME ZONE 'UTC' ORDER BY createdNew");
+      let lowQuery = "SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval";
+      var lowResult = await sails.sendNativeQuery(lowQuery);
 
-      var low = await sails.sendNativeQuery("SELECT min(fill_price) as high, to_timestamp(floor((extract('epoch' from created" +
-          "_at) / 60 *" + inputs.time_period + " )) * 60*" + inputs.time_period + ") AT TIME ZONE 'UTC' as createdNew FROM trade_history WHERE settle_currency = " + inputs.crypto + " AND currency = " + inputs.currency + " AND GROUP BY to_timestamp(floor((extract('epoch' from created_at) / 60 *21 )) *" +
-          " 60*21) AT TIME ZONE 'UTC' ORDER BY createdNew");
-
-      open.map((data, i) => {
-        var newData = [];
-        newData[0] = parseInt(moment(open[i].interval_alias).format('X'));
-        newData[1] = open[i].open;
-        newData[2] = high[i].high;
-        newData[3] = low[i].low;
-        newData[4] = close[i].close;
-        candleStickData.push(newData);
-
-      });
-
-      return candleStickData;
+      let volumnQuery = "SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval";
+      var volumnResult = await sails.sendNativeQuery(volumnQuery);
+      let open = [];
+      let close = [];
+      let high = [];
+      let low = [];
+      let time = [];
+      let volumn = [];
+      for (let index = 0; index < openResult.rows.length; index++) {
+        open.push(openResult.rows[index].fill_price);
+        time.push(moment.utc(openResult.rows[index].interval).unix());
+        close.push(closeResult.rows[index].fill_price);
+        high.push(highResult.rows[index].fill_price);
+        low.push(lowResult.rows[index].fill_price);
+        volumn.push(volumnResult.rows[index].quantity)
+      }
+      candleStickData = {
+        o: open,
+        h: high,
+        l: low,
+        c: close,
+        t: time,
+        v: volumn
+      }
+      return exits.success(candleStickData);
     } catch (error) {
       console.log(error);
+
+      return exits.serverError();
     }
 
   }

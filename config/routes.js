@@ -19,6 +19,7 @@ module.exports.routes = {
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
+  'get /panic-button': 'RootController.panicBtn',
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
@@ -121,6 +122,10 @@ module.exports.routes = {
   'delete /admin/delete-job': 'CareerController.deleteJob',
   'get /job-applicants': 'CareerController.getJobApplications',
   'get /admin/job-categories': 'CareerController.getAllJobCategories',
+
+  //Fee route
+  'get /admin/get-all-fee': 'FeesController.getAllFees',
+  'put /admin/edit-fee': 'FeesController.editFees',
 
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
@@ -249,6 +254,12 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket': 'RootController.enableWebSocket'
-  
+  'get /enable-web-socket': 'RootController.enableWebSocket',
+
+
+  // Tradding View Chart
+  'get /tradingview/config': 'TradingView.getConfig',
+  'get /tradingview/time': 'TradingView.getCurrentTime',
+  'get /tradingview/symbols': 'TradingView.getSymbolInfo',
+  'get /tradingview/history': 'TradingView.getHistoryData',
 };
