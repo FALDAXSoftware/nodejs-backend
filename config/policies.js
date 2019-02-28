@@ -61,7 +61,7 @@ module.exports.policies = {
     "queryTest": true,
     "sendOpenTicketForm": true,
     "enableWebSocket": true,
-    "createAllWallet": true,
+    "createAllWallet": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true
@@ -70,7 +70,7 @@ module.exports.policies = {
     "*": true
   },
   "KYCController": {
-    "callbackKYC": true,
+    "callbackKYC": true
   },
   "BuyController": {
     // "getBuyBookDetails": true,
@@ -85,5 +85,8 @@ module.exports.policies = {
   },
   "TradeController": {
     "stopLimitExecute": true
+  },
+  "DashboardController": {
+    "getRisingFalling": true
   }
 };

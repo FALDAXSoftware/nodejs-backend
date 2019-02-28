@@ -168,6 +168,7 @@ module.exports.routes = {
   // dashboard 'post /dashboard': "DashboardController.get",
   'get /dashboard/get-activity': 'DashboardController.getActivity',
   'get /dashboard/get-portfolio': 'DashboardController.getPortfolio',
+  'get /get-rising-falling-data':'DashboardController.getRisingFalling',
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
@@ -249,4 +250,5 @@ module.exports.routes = {
 
   //Socket route server
   'get /enable-web-socket': 'RootController.enableWebSocket'
+  
 };

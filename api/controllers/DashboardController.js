@@ -26,6 +26,33 @@ module.exports = {
     }
   },
 
+  getRisingFalling: async function (req, res) {
+    try {
+      // if (req.isSocket) {
+      //   if (req.query.currency) {
+      //     currency = req.query.currency;
+      //   } else {
+      //     currency = 'USD';
+      //   }
+
+      var currency='USD'
+
+        let risingFalling = await sails
+          .helpers
+          .dashboard
+          .getRisingFallingData(currency);
+        res.json({"status": 200, "message": "Rising Falling data retrived successfully.", data: risingFalling});
+      // }
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   getPortfolio: async function (req, res) {
     try {
       let user_id = req.user.id;
