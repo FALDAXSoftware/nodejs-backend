@@ -8,6 +8,41 @@ const BitGoJS = require('bitgo');
 
 var request = require('request');
 module.exports = {
+  panicBtn: async function (req, res) {
+    try {
+      let btnCall = await sails
+        .helpers
+        .panicButton();
+
+      btnCall.forEach(async (element) => {
+        let userDetails = await Users.find({ id: element });
+        sails
+          .hooks
+          .email
+          .send("panicButton", {
+            homelink: sails.config.urlconf.APP_URL,
+            recipientName: userDetails.first_name,
+            senderName: "Faldax"
+          }, {
+              to: "krina.soni@openxcellinc.com",
+              subject: "Panic Button"
+            }, function (err) {
+              if (!err) {
+                return res.json({ "status": 200, "message": "Email sent successfully." });
+              }
+            })
+      });
+    } catch (error) {
+      console.log('error>>>>>>>>>>>>>>>>', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   sendOpenTicketForm: async function (req, res) {
     return res.view('pages/openTicket');
   },

@@ -107,19 +107,24 @@ module.exports = {
 
                 delete user_detail.password;
                 // Create Recive Address await sails.helpers.wallet.receiveAddress(user_detail);
+
+                //Generating JWT Token
+                var token = await sails
+                  .helpers
+                  .jwtIssue(user_detail.id);
+                console.log('TOKEN', token)
                 // Login History Save
                 await LoginHistory.create({
                   user: user_detail.id,
                   ip: req.ip,
                   created_at: new Date(),
                   device_type: req.body.device_type,
+                  jwt_token: token,
                   device_token: req.body.device_token
                     ? req.body.device_token
                     : null
                 });
-                var token = await sails
-                  .helpers
-                  .jwtIssue(user_detail.id);
+
                 return res.json({
                   status: 200,
                   user: user_detail,
@@ -384,19 +389,38 @@ module.exports = {
   },
 
   logOut: async function (req, res) {
-    let user = await LoginHistory.find({ device_token: req.body.device_token });
+    try {
+      let { jwt_token, user_id } = req.allParams();
 
-    let logged_user = await LoginHistory
-      .update({ device_token: req.body.device_token })
-      .set({ is_logged_in: false, device_token: null })
-      .fetch();
+      if (jwt_token && user_id) {
+        let logged_user = await LoginHistory.find({ jwt_token, user: user_id })
+        if (logged_user.length <= 0) {
+          return res
+            .status(400)
+            .json({ status: 400, message: "Invalid Token" });
+        }
+      }
 
-    if (logged_user) {
-      return res.json({ status: 200, message: "User Log out successfully." });
-    } else {
-      return res
-        .status(400)
-        .json({ status: 400, message: "Invalid Token" });
+      let user = await LoginHistory.find({ device_token: req.body.device_token });
+
+      let logged_user = await LoginHistory
+        .update({ device_token: req.body.device_token, jwt_token })
+        .set({ is_logged_in: false, device_token: null, jwt_token: null, updated_at: new Date() })
+        .fetch();
+
+      if (logged_user) {
+        return res.json({ status: 200, message: "User Log out successfully." });
+      } else {
+        return res
+          .status(400)
+          .json({ status: 400, message: "Invalid Token" });
+      }
+    } catch (e) {
+      console.log(e);
+      res
+        .status(500)
+        .json({ "status": 500, "err": error });
+      return;
     }
   }
 };

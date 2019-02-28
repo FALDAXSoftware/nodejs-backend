@@ -114,6 +114,11 @@ module.exports = {
       columnName: 'kyc',
       defaultsTo: false,
     },
+    fees: {
+      type: "boolean",
+      columnName: 'fees',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
