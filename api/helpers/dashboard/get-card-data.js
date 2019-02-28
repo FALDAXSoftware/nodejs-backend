@@ -29,7 +29,7 @@ module.exports = {
       var previous_price = 0;
       var flag = true;
 
-      let {crypto, currency} = await sails
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -103,7 +103,7 @@ module.exports = {
             '>=': yesterday
           }
         },
-        sort: 'id ASC'
+        sort: 'id DESC'
       });
 
       if (previous == undefined || previous.length == 0) {

@@ -15,7 +15,7 @@ var QRCode = require('qrcode');
 module.exports = {
 
     //------------------Web APi------------------------------------------------//
-    create: async function(req, res) {
+    create: async function (req, res) {
         try {
 
             var referred_id = null;
@@ -82,7 +82,7 @@ module.exports = {
                             }, {
                                 to: user_detail.email,
                                 subject: "Signup Verification"
-                            }, function(err) {
+                            }, function (err) {
                                 console.log(err);
                                 if (!err) {
                                     return res.json({
@@ -119,7 +119,7 @@ module.exports = {
         }
     },
 
-    getUserDetails: async function(req, res) {
+    getUserDetails: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
         let userKyc = await KYC.findOne({ user_id: id });
@@ -138,7 +138,7 @@ module.exports = {
         }
     },
 
-    getReferred: async function(req, res) {
+    getReferred: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ select: ['email'], where: { referred_id: id } });
 
@@ -152,7 +152,7 @@ module.exports = {
     },
 
     // For Get Login History
-    getLoginHistory: async function(req, res) {
+    getLoginHistory: async function (req, res) {
         let history = await LoginHistory.find({
             user: req.user.id
         }).sort('created_at DESC').limit(10);
@@ -163,7 +163,7 @@ module.exports = {
         });
     },
 
-    update: async function(req, res) {
+    update: async function (req, res) {
         try {
             const user_details = await Users.findOne({ id: req.user.id });
             if (!user_details) {
@@ -176,7 +176,7 @@ module.exports = {
             delete user.profile;
             req
                 .file('profile_pic')
-                .upload(async function(err, uploadedFiles) {
+                .upload(async function (err, uploadedFiles) {
                     try {
                         if (uploadedFiles.length > 0) {
                             let filename = uploadedFiles[0].filename;
@@ -232,7 +232,7 @@ module.exports = {
         }
     },
 
-    changePassword: async function(req, res) {
+    changePassword: async function (req, res) {
         try {
             if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
                 return res
@@ -286,7 +286,7 @@ module.exports = {
         return;
     },
 
-    getUserDetails: async function(req, res) {
+    getUserDetails: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
         let userKyc = await KYC.findOne({ user_id: id });
@@ -301,7 +301,7 @@ module.exports = {
         }
     },
 
-    getReferred: async function(req, res) {
+    getReferred: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({
             select: ['email'],
@@ -316,7 +316,7 @@ module.exports = {
     },
 
     // For Get Login History
-    getLoginHistory: async function(req, res) {
+    getLoginHistory: async function (req, res) {
         let { page, limit } = req.allParams();
         let history = await LoginHistory
             .find({ user: req.user.id })
@@ -332,7 +332,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users Login History", "data": history, historyCount });
     },
 
-    setupTwoFactor: async function(req, res) {
+    setupTwoFactor: async function (req, res) {
         try {
             let user_id = req.user.id;
             let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
@@ -346,7 +346,7 @@ module.exports = {
                 .update({ id: user.id })
                 .set({ "email": user.email, "twofactor_secret": secret.base32 });
             let url = speakeasy.otpauthURL({ secret: secret.ascii, label: 'FALDAX( ' + user.email + ')' });
-            QRCode.toDataURL(url, function(err, data_url) {
+            QRCode.toDataURL(url, function (err, data_url) {
                 return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
             });
         } catch (error) {
@@ -359,7 +359,7 @@ module.exports = {
         }
     },
 
-    verifyTwoFactor: async function(req, res) {
+    verifyTwoFactor: async function (req, res) {
         try {
             let user_id = req.user.id;
             let { otp } = req.allParams();
@@ -397,7 +397,7 @@ module.exports = {
         }
     },
 
-    disableTwoFactor: async function(req, res) {
+    disableTwoFactor: async function (req, res) {
         try {
             let user_id = req.user.id;
             let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
@@ -425,7 +425,7 @@ module.exports = {
         }
     },
 
-    deleteUser: async function(req, res) {
+    deleteUser: async function (req, res) {
         let user_id = req.user.id;
         let userEmail = req.email;
 
@@ -451,7 +451,7 @@ module.exports = {
     },
     //------------------CMS APi------------------------------------------------//
 
-    getUserPaginate: async function(req, res) {
+    getUserPaginate: async function (req, res) {
         let { page, limit, data } = req.allParams();
         if (data) {
             let usersData = await Users.find({
@@ -537,7 +537,7 @@ module.exports = {
         }
     },
 
-    userActivate: async function(req, res) {
+    userActivate: async function (req, res) {
         let { user_id, email, is_active } = req.body;
 
         let usersData = await Users
@@ -552,7 +552,7 @@ module.exports = {
         }
     },
 
-    getCountriesData: async function(req, res) {
+    getCountriesData: async function (req, res) {
         fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
             .then(resData => resData.json())
             .then(resData => {
@@ -568,7 +568,7 @@ module.exports = {
             })
     },
 
-    getCountries: async function(req, res) {
+    getCountries: async function (req, res) {
         let countriesResponse = [];
         let countries = await Countries
             .find({ is_active: true })
@@ -597,7 +597,7 @@ module.exports = {
         res.json({ state: 200, message: "Countries retirved successfully", countries: countriesResponse });
     },
 
-    getUserReferredAdmin: async function(req, res) {
+    getUserReferredAdmin: async function (req, res) {
         let { page, limit, id } = req.allParams();
 
         let usersData = await Users
@@ -610,7 +610,7 @@ module.exports = {
         }
     },
 
-    getUserloginHistoryAdmin: async function(req, res) {
+    getUserloginHistoryAdmin: async function (req, res) {
         let { user_id } = req.allParams();
         let user_name = await Users.findOne({ select: ['full_name'], where: { id: user_id } });
         let history = await LoginHistory
