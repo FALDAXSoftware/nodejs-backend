@@ -103,6 +103,10 @@ module.exports = {
             type: 'string',
             columnName: 'requested_coin',
         },
+        is_collected: {
+            type: 'boolean',
+            columnName: 'is_collected',
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

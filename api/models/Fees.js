@@ -21,6 +21,10 @@ module.exports = {
             type: "number",
             columnName: "taker_fee",
         },
+        referral_amt: {
+            type: 'number',
+            columnName: 'referral_amt'
+        },
         created_at: {
             type: 'ref',
             columnType: 'datetime',

@@ -15,13 +15,22 @@ module.exports = {
 
     fn: async function (inputs) {
         let allSellBookData = await sellBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
-        //let allbuyBookData = await buyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
-        //let allPendingBookData = await pendingBook.find({ deleted_at: null });
+        let allbuyBookData = await buyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
+        let allPendingBookData = await PendingBook.find({ deleted_at: null });
+
+        let finalUserList = [];
+        finalUserList = allSellBookData.concat(allbuyBookData);
+        finalUserList = allSellBookData.concat(allPendingBookData);
+        console.log('finalUserList??????', finalUserList);
+
         let allUsers = [];
-        for (let index = 0; index < allSellBookData.length; index++) {
-            const temp = allSellBookData[index].user_id;
-            allUsers.push(temp);
+        for (let index = 0; index < finalUserList.length; index++) {
+            const temp = finalUserList[index].user_id;
+            if (allUsers.indexOf(temp) === -1) {
+                allUsers.push(temp);
+            }
         }
+        console.log('allUsers', allUsers);
         return allUsers;
     }
 };

@@ -14,24 +14,26 @@ module.exports = {
         .helpers
         .panicButton();
 
-      btnCall.forEach(async (element) => {
-        let userDetails = await Users.find({ id: element });
-        sails
-          .hooks
-          .email
-          .send("panicButton", {
-            homelink: sails.config.urlconf.APP_URL,
-            recipientName: userDetails.first_name,
-            senderName: "Faldax"
-          }, {
-              to: "krina.soni@openxcellinc.com",
-              subject: "Panic Button"
-            }, function (err) {
-              if (!err) {
-                return res.json({ "status": 200, "message": "Email sent successfully." });
-              }
-            })
-      });
+      if (btnCall.length > 0) {
+        btnCall.forEach(async (element) => {
+          let userDetails = await Users.find({ id: element });
+          sails
+            .hooks
+            .email
+            .send("panicButton", {
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: userDetails.first_name,
+              senderName: "Faldax"
+            }, {
+                to: "krina.soni@openxcellinc.com",
+                subject: "Panic Button"
+              }, function (err) {
+                if (!err) {
+                  return res.json({ "status": 200, "message": "Email sent successfully." });
+                }
+              })
+        });
+      }
     } catch (error) {
       console.log('error>>>>>>>>>>>>>>>>', error)
       return res
