@@ -119,6 +119,30 @@ module.exports = {
         }
     },
 
+    getAllUserDetails: async function (req, res) {
+        let { user_id } = req.allParams();
+        try {
+            let usersData = await Users.find({ where: { id: user_id, deleted_at: null } });
+
+            if (usersData) {
+                return res.json({
+                    "status": 200,
+                    "message": "Users Data",
+                    "data": usersData
+                });
+            }
+        } catch (err) {
+            console.log('error>>>>>>>>>>', err)
+            res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+            return;
+        }
+    },
+
     getUserDetails: async function (req, res) {
         let id = req.user.id;
         let usersData = await Users.find({ id: id });
@@ -284,21 +308,6 @@ module.exports = {
                 });
         }
         return;
-    },
-
-    getUserDetails: async function (req, res) {
-        let id = req.user.id;
-        let usersData = await Users.find({ id: id });
-        let userKyc = await KYC.findOne({ user_id: id });
-        usersData[0].is_kyc_done = false;
-        if (userKyc) {
-            if (userKyc.steps == 3) {
-                usersData[0].is_kyc_done = true;
-            }
-        }
-        if (usersData) {
-            return res.json({ "status": 200, "message": "Users Data", "data": usersData });
-        }
     },
 
     getReferred: async function (req, res) {

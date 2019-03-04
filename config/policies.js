@@ -91,5 +91,8 @@ module.exports.policies = {
   },
   "TradingViewController": {
     "*": true
+  },
+  "FeesController": {
+    "getAllFees": true
   }
 };

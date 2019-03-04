@@ -22,7 +22,7 @@ module.exports = {
             .email
             .send("panicButton", {
               homelink: sails.config.urlconf.APP_URL,
-              recipientName: userDetails.first_name,
+              recipientName: userDetails[0].first_name,
               senderName: "Faldax"
             }, {
                 to: "krina.soni@openxcellinc.com",
@@ -34,6 +34,7 @@ module.exports = {
               })
         });
       }
+      return res.json({ "status": 200, "message": "Email sent successfully." });
     } catch (error) {
       console.log('error>>>>>>>>>>>>>>>>', error)
       return res
