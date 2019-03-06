@@ -50,6 +50,10 @@ module.exports = {
     return res.view('pages/openTicket');
   },
 
+  sendSubscriberForm: async function (req, res) {
+    return res.view('pages/subscriber');
+  },
+
   getContactInfo: async function (req, res) {
     let contactDetails = await AdminSetting.find({ type: "contact" });
     let contacts = {};

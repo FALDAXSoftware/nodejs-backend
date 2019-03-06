@@ -25,6 +25,8 @@ module.exports = {
             q['or'] = [
                 { source_address: { contains: search } },
                 { destination_address: { contains: search } },
+                { amount: search },
+                { transaction_id: search }
             ]
 
             let userArray = await Users.find({ email: { 'contains': search } });

@@ -93,15 +93,19 @@ module.exports = {
                     deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
-                        {
-                            symbol: { contains: data }
-                        },
+                        { symbol: { contains: data } },
                     ]
                 }
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             let buyBookCount = await buyBook.count({
-                user_id: req.body.user_id,
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                    or: [
+                        { symbol: { contains: data } },
+                    ]
+                }
             });
             if (buyBookData) {
                 return res.json({
@@ -120,7 +124,12 @@ module.exports = {
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 
-            let buyBookCount = await buyBook.count();
+            let buyBookCount = await buyBook.count({
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                }
+            });
 
             if (buyBookData) {
                 return res.json({
