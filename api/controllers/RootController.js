@@ -54,6 +54,10 @@ module.exports = {
     return res.view('pages/subscriber');
   },
 
+  sendListTokenForm: async function (req, res) {
+    return res.view('pages/listYourToken');
+  },
+
   getContactInfo: async function (req, res) {
     let contactDetails = await AdminSetting.find({ type: "contact" });
     let contacts = {};

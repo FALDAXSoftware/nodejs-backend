@@ -62,7 +62,8 @@ module.exports.policies = {
     "sendOpenTicketForm": true,
     "enableWebSocket": true,
     "createAllWallet": true,
-    "sendSubscriberForm": true
+    "sendSubscriberForm": true,
+    "sendListTokenForm": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true

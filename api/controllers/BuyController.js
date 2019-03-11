@@ -86,14 +86,14 @@ module.exports = {
         let { page, limit, data } = req.allParams();
 
         if (data) {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let buyBookData = await buyBook.find({
                 where: {
                     deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
                     ]
                 }
             }).sort('id ASC').paginate(page, parseInt(limit));
@@ -104,6 +104,8 @@ module.exports = {
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
                     ]
                 }
             });
@@ -111,12 +113,10 @@ module.exports = {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount, user_name
+                    "data": buyBookData, buyBookCount
                 });
             }
         } else {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let buyBookData = await buyBook.find({
                 where: {
                     deleted_at: null,
@@ -135,7 +135,7 @@ module.exports = {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount, user_name
+                    "data": buyBookData, buyBookCount
                 });
             }
         }

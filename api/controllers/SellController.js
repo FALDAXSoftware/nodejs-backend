@@ -101,6 +101,8 @@ module.exports = {
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
                     ]
                 }
             }).sort('id ASC').paginate(page, parseInt(limit));
@@ -110,6 +112,8 @@ module.exports = {
                 deleted_at: null,
                 or: [
                     { symbol: { contains: data } },
+                    { fill_price: data },
+                    { quantity: data },
                 ]
             });
             if (sellBookData) {
