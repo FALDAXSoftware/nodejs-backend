@@ -119,6 +119,11 @@ module.exports = {
       columnName: 'fees',
       defaultsTo: false,
     },
+    panic_button: {
+      type: "boolean",
+      columnName: 'panic_button',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

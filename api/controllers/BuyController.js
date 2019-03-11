@@ -32,7 +32,6 @@ module.exports = {
                                         .tradding
                                         .buy
                                         .getBuyBookOrders(crypto, currency);
-
                                     if (buyBookDetails) {
                                         return res.json({
                                             status: 200,
@@ -74,7 +73,10 @@ module.exports = {
                 return res.status(403).json({ status: 403, "message": "Error occured" });
             }
         } catch (err) {
-            console.log('>>>', err)
+            console.log('>>>', err);
+            return res
+                .status(500)
+                .json({ "status": 500, "err": err });
         }
     },
 
@@ -84,33 +86,37 @@ module.exports = {
         let { page, limit, data } = req.allParams();
 
         if (data) {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let buyBookData = await buyBook.find({
                 where: {
                     deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
-                        {
-                            symbol: { contains: data }
-                        },
+                        { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
                     ]
                 }
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             let buyBookCount = await buyBook.count({
-                user_id: req.body.user_id,
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                    or: [
+                        { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
+                    ]
+                }
             });
             if (buyBookData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount, user_name
+                    "data": buyBookData, buyBookCount
                 });
             }
         } else {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let buyBookData = await buyBook.find({
                 where: {
                     deleted_at: null,
@@ -118,13 +124,18 @@ module.exports = {
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 
-            let buyBookCount = await buyBook.count();
+            let buyBookCount = await buyBook.count({
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                }
+            });
 
             if (buyBookData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount, user_name
+                    "data": buyBookData, buyBookCount
                 });
             }
         }

@@ -1,3 +1,4 @@
+var fetch = require('node-fetch')
 module.exports = {
 
   friendlyName: 'Get rising falling data',
@@ -25,7 +26,7 @@ module.exports = {
     // Get rising falling data.
     var risingFallingData;
     try {
-      fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?convert=' + currency + '&start=1&limit=600', {
+      fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?convert=' + inputs.currency + '&start=1&limit=600', {
           method: "GET",
           headers: {
             'X-CMC_PRO_API_KEY': sails.config.local.COIN_MARKET_CAP_API

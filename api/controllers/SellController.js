@@ -95,39 +95,54 @@ module.exports = {
         let { page, limit, data } = req.allParams();
 
         if (data) {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let sellBookData = await sellBook.find({
-                user_id: req.body.user_id,
-                deleted_at: null,
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                    or: [
+                        { symbol: { contains: data } },
+                        { fill_price: data },
+                        { quantity: data },
+                    ]
+                }
             }).sort('id ASC').paginate(page, parseInt(limit));
 
             let sellBookCount = await sellBook.count({
                 user_id: req.body.user_id,
+                deleted_at: null,
+                or: [
+                    { symbol: { contains: data } },
+                    { fill_price: data },
+                    { quantity: data },
+                ]
             });
             if (sellBookData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount, user_name
+                    "data": sellBookData, sellBookCount
                 });
             }
         } else {
-            let user_name = await Users.findOne({ select: ['full_name'], where: { id: req.body.userId } });
-
             let sellBookData = await sellBook.find({
                 where: {
                     deleted_at: null,
+                    user_id: req.body.user_id,
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 
-            let sellBookCount = await sellBook.count();
+            let sellBookCount = await sellBook.count({
+                where: {
+                    deleted_at: null,
+                    user_id: req.body.user_id,
+                }
+            });
 
             if (sellBookData) {
                 return res.json({
                     "status": 200,
                     "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount, user_name
+                    "data": sellBookData, sellBookCount
                 });
             }
         }

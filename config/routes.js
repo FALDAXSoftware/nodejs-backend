@@ -44,6 +44,7 @@ module.exports.routes = {
   'get /admin/referredUsers': 'Users.getUserReferredAdmin',
   'post /admin/userActivate': 'Users.userActivate',
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
+  'get /admin/get-user-details': 'Users.getAllUserDetails',
 
   //coins
   'get /admin/getCoins': 'Coins.getCoins',
@@ -96,6 +97,7 @@ module.exports.routes = {
 
   //Transaction routes
   'get /admin/all-transactions': 'TransactionController.getAllTransactions',
+  'get /admin/user-transactions': 'TransactionController.getUserTransactions',
 
   //Trade routes
   'get /admin/all-trades': 'TradeController.getAllTrades',
@@ -122,6 +124,10 @@ module.exports.routes = {
   'delete /admin/delete-job': 'CareerController.deleteJob',
   'get /job-applicants': 'CareerController.getJobApplications',
   'get /admin/job-categories': 'CareerController.getAllJobCategories',
+
+  //Fee route
+  'get /get-all-fee': 'FeesController.getAllFees',
+  'put /admin/edit-fee': 'FeesController.editFees',
 
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
@@ -155,7 +161,11 @@ module.exports.routes = {
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
   'post /logout': "AuthController.logOut",
+
+  //all forms
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
+  'get /get-subscriber-form': "RootController.sendSubscriberForm",
+  'get /get-list-token-form': "RootController.sendListTokenForm",
 
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
@@ -169,6 +179,7 @@ module.exports.routes = {
   // dashboard 'post /dashboard': "DashboardController.get",
   'get /dashboard/get-activity': 'DashboardController.getActivity',
   'get /dashboard/get-portfolio': 'DashboardController.getPortfolio',
+  'get /get-rising-falling-data': 'DashboardController.getRisingFalling',
 
   //KYC routes
   'post /users/add-kyc-details': "KYCController.updateKYCInfo",
@@ -249,5 +260,12 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket': 'RootController.enableWebSocket'
+  'get /enable-web-socket': 'RootController.enableWebSocket',
+
+
+  // Tradding View Chart
+  'get /tradingview/config': 'TradingView.getConfig',
+  'get /tradingview/time': 'TradingView.getCurrentTime',
+  'get /tradingview/symbols': 'TradingView.getSymbolInfo',
+  'get /tradingview/history': 'TradingView.getHistoryData',
 };

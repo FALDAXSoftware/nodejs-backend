@@ -308,7 +308,8 @@ module.exports = {
         .helpers
         .tradding
         .pending
-        .cancelPendingData(side, order_type, id).tolerate('noBuyLimitOrder', () => {
+        .cancelPendingData(side, order_type, id)
+        .tolerate('noBuyLimitOrder', () => {
           throw new Error("noBuyLimitOrder");
         })
         .tolerate('serverError', () => {
@@ -449,6 +450,7 @@ module.exports = {
 
   getAllTradeHistory: async function (req, res) {
     var room = req.query.room;
+    console.log("Inside this method ::::: ", room);
     try {
       if (req.isSocket) {
         if (req.query.prevRoom) {
@@ -481,6 +483,8 @@ module.exports = {
                         .tradding
                         .trade
                         .getTradeDetails(crypto, currency, 100);
+
+                      console.log("Trade Details :: ", tradeDetails);
 
                       if (tradeDetails) {
                         return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
@@ -719,7 +723,7 @@ module.exports = {
     let {
       page,
       limit,
-      search,
+      data,
       user_id,
       t_type,
       start_date,
@@ -739,42 +743,23 @@ module.exports = {
         '<=': end_date
       };
     }
-    if (search) {
+    console.log("Data ::: ", data);
+    if (data) {
+      // q['fill_price'] = data;
+
       let userArray = await Users.find({
         where: {
           deleted_at: null,
           or: [
             {
               email: {
-                contains: search
+                contains: data
               }
             }
           ]
         }
       });
-      let idArray = [];
-      for (let index = 0; index < userArray.length; index++) {
-        idArray.push(userArray[index].id);
-      }
-      q['or'] = [
-        {
-          user_id: idArray
-        }, {
-          requested_user_id: idArray
-        }, {
-          symbol: {
-            contains: search
-          }
-        }, {
-          settle_currency: {
-            contains: search
-          }
-        }, {
-          currency: {
-            contains: search
-          }
-        }
-      ]
+
 
       if (user_id) {
         q['user_id'] = user_id
@@ -782,12 +767,15 @@ module.exports = {
       if (t_type) {
         q['side'] = t_type;
       }
+
+
       if (start_date && end_date) {
         q['created_at'] = {
           '>=': start_date,
           '<=': end_date
         };
       }
+
 
       let user_name = "";
 
@@ -800,21 +788,56 @@ module.exports = {
           }
         });
       }
+
+      let idArray = [];
+      for (let index = 0; index < userArray.length; index++) {
+        idArray.push(userArray[index].id);
+      }
+      q['or'] = [
+        {
+          user_id: idArray
+        }, {
+          requested_user_id: idArray
+        }, {
+          symbol: {
+            contains: data
+          }
+        }, {
+          settle_currency: {
+            contains: data
+          }
+        }, {
+          currency: {
+            contains: data
+          }
+        }, {
+          fill_price: data
+        }, {
+          quantity: data
+        }, {
+          maker_fee: data
+        }, {
+          taker_fee: data
+        }
+      ]
+
+      console.log('...q???????????????????????', q);
       let tradeData = await TradeHistory
         .find({
           ...q
         })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
-      for (let index = 0; index < tradeData.length; index++) {
-        if (tradeData[index].user_id) {
-          let user = await Users.findOne({ id: tradeData[index].user_id })
-          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
-          tradeData[index].maker_email = user.email;
-          tradeData[index].taker_email = user2.email;
-          tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
-        }
-      }
+
+      // for (let index = 0; index < tradeData.length; index++) {
+      //   if (tradeData[index].user_id) {
+      //     let user = await Users.findOne({ id: tradeData[index].user_id })
+      //     let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
+      //     tradeData[index].maker_email = user.email;
+      //     tradeData[index].taker_email = user2.email;
+      //     tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
+      //   }
+      // }
 
       let tradeCount = await TradeHistory.count({
         ...q
@@ -858,15 +881,15 @@ module.exports = {
         })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
-      for (let index = 0; index < tradeData.length; index++) {
-        if (tradeData[index].user_id) {
-          let user = await Users.findOne({ id: tradeData[index].user_id })
-          let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
-          tradeData[index].maker_email = user.email;
-          tradeData[index].taker_email = user2.email;
-          tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
-        }
-      }
+      // for (let index = 0; index < tradeData.length; index++) {
+      //   if (tradeData[index].user_id) {
+      //     let user = await Users.findOne({ id: tradeData[index].user_id })
+      //     let user2 = await Users.findOne({ id: tradeData[index].requested_user_id })
+      //     tradeData[index].maker_email = user.email;
+      //     tradeData[index].taker_email = user2.email;
+      //     tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) * parseFloat(tradeData[index]['fill_price']);
+      //   }
+      // }
 
       let tradeCount = await TradeHistory.count({
         ...q
