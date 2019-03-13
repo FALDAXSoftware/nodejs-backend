@@ -8,9 +8,11 @@
 module.exports = {
     //---------------------------Web Api------------------------------
     getBuyBookDetails: async function (req, res) {
+        console.log('SOCKET call BUY Book');
         let room = req.query.room;
         try {
             if (req.isSocket) {
+                console.log('SOCKET call BUY Book', req.ip)
                 if (req.query.prevRoom) {
                     let prevRoom = req.query.prevRoom;
                     sails.sockets.leave(req.socket, prevRoom, function (err) {
