@@ -25,7 +25,7 @@ module.exports = {
                 .toLowerCase();
 
 
-            existedUser = await Users.findOne({ email, deleted_at: null });
+            var existedUser = await Users.findOne({ email, deleted_at: null });
             if (existedUser) {
                 return res
                     .status(401)

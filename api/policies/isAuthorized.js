@@ -10,6 +10,7 @@ module.exports = async function (req, res, next) {
     var token;
 
     try {
+        console.log('RWEQ LOG??????????????????????????', req);
         if (req.headers && req.headers.authorization) {
             var parts = req.headers.authorization.split(' ');
             if (parts.length == 2) {
