@@ -269,5 +269,6 @@ module.exports.routes = {
   'get /tradingview/history': 'TradingView.getHistoryData',
 
   //Type2coins API
-  'get /type2coin/info': 'Type2CoinController.getCoinInfo'
+  'get /type2coin/getinfo/:coin_code': 'Type2CoinController.getCoinInfo',
+  'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress'
 };

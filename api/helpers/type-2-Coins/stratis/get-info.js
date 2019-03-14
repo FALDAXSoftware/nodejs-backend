@@ -32,7 +32,7 @@ module.exports = {
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '0',
-      'method': 'getnewaddress'
+      'method': 'getinfo'
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
@@ -50,7 +50,7 @@ module.exports = {
       // TODO Send back the result through the success exit.
       return exits.success(newAddress);
     } catch (err) {
-      console.log(err);
+      consol.log(err);
     }
 
   }
