@@ -23,30 +23,32 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    console.log("Inputs :: ", inputs.coin_code);
     var newAddress;
     console.log("URL :::::: ", sails.config.local.coinArray[inputs.coin_code].url);
-    var encodeData = sails
-      .helper
+    var encodeData = await sails
+      .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
     // Get new address.
+    var bodyData = {
+      'jsonrpc': '2.0',
+      'id': '0',
+      'method': 'getinfo'
+    }
     try {
       fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
-        body: {
-          "jsonrpc": "2.0",
-          "id": "0",
-          "method": "getinfo"
-        },
-          header: {
-            'Content-Type': 'application/json',
-            'Authorization': encodeData
-          }
-        })
-        .then(resData => resData.json())
+        body: JSON.stringify(bodyData),
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + encodeData
+        }
+      })
+      // .then(resData => resData)
         .then(resData => {
-          console.log(resData);
-        })
+        console.log(resData);
+      }).catch(err => console.log(err))
       // TODO Send back the result through the success exit.
       return newAddress;
     } catch (err) {

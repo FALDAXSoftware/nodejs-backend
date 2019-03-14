@@ -10,7 +10,8 @@ module.exports = {
   getCoinInfo: async function (req, res) {
     var coin_code = 'STRAT';
 
-    var getInfo = sails
+    console.log("Inside this method ::");
+    var getInfo = await sails
       .helpers
       .type2Coins
       .stratis

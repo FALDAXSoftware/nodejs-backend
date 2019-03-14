@@ -14,7 +14,7 @@ module.exports.local = {
       'coin_name': 'stratis',
       'rpcuser': 'stratisrpc',
       'rpcpassword': 'JBnWFtwqbwwZXCFyBuHXHsUsMfyU1GhwKYroYy6bzjXv',
-      'url': 'http://dev-stratis-currency.faldax.com'
+      'url': 'http://dev-stratis-currency.faldax.com/'
     }
 
   }
