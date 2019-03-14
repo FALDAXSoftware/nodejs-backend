@@ -30,18 +30,18 @@ module.exports = {
       .encodeAuth()
     // Get new address.
     try {
-      fetch('http://dev-stratis-currency.faldax.com/', {
+      fetch('http://dev-' + sails.config.local.coinArray[inputs.coin_code].coin_names + '-currency.faldax.com/', {
         method: 'POST',
         body: {
           "jsonrpc": "2.0",
           "id": "0",
           "method": "getnewaddress"
         },
-          header: {
-            'Content-Type': 'application/json',
-            'Authorization': encodeData
-          }
-        })
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': encodeData
+        }
+      })
         .then(resData => resData.json())
         .then(resData => {
           console.log(resData);

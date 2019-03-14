@@ -8,14 +8,15 @@ module.exports.local = {
     "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
     "TEST": process.env.TESTDEMO,
     "CRON_STATUS": process.env.CRON_STATUS,
-    "COIN_MARKET_CAP_API" : process.env.MARKETPRICE
+    "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
+    "coinArray": {
+        'BTC': {
+            'coin_name': 'stratis',
+            'rpcuser': 'stratisrpc',
+            'rpcpassword': 'JBnWFtwqbwwZXCFyBuHXHsUsMfyU1GhwKYroYy6bzjXv'
+        }
+
+    }
 }
 
-module.exports.coinintegration = [{        
-            'BTC' : {
-                'coin_code':'stratis',
-            'rpcuser' : 'stratisrpc',
-            'rpcpassword': 'JBnWFtwqbwwZXCFyBuHXHsUsMfyU1GhwKYroYy6bzjXv'
-            }
-        
-}]
+module.exports.coinintegration = []
