@@ -36,7 +36,7 @@ module.exports = {
                 if (!referredUser) {
                     return res
                         .status(401)
-                        .json({ status: 401, "err": 'Invalid refferal code' });
+                        .json({ status: 401, "err": 'Invalid referral code.' });
                 } else {
                     referred_id = parseInt(referredUser.id);
                 }
