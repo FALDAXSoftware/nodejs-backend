@@ -15,6 +15,18 @@ module.exports.local = {
       'rpcuser': 'stratisrpc',
       'rpcpassword': 'JBnWFtwqbwwZXCFyBuHXHsUsMfyU1GhwKYroYy6bzjXv',
       'url': 'http://dev-stratis-currency.faldax.com/'
+    },
+    'peercoin': {
+      'coin_name': 'peercoin',
+      'rpcuser': 'peercoin',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-peercoin-currency.faldax.com/'
+    },
+    'FCT': {
+      'coin_name': 'factom',
+      'rpcuser': 'factomrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-factom-currency.faldax.com/v2'
     }
 
   }

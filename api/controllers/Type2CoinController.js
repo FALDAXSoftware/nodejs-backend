@@ -6,18 +6,42 @@
  */
 
 module.exports = {
-  //---------------------------Web Api------------------------------
+  // ---------------------------Web Api------------------------------ Get Coin
+  // Info for particular coin
   getCoinInfo: async function (req, res) {
-    var coin_code = 'STRAT';
+    try {
+      var {coin_code} = req.allParams();
 
-    console.log("Inside this method ::");
-    var getInfo = await sails
-      .helpers
-      .type2Coins
-      .stratis
-      .getNewAddress(coin_code);
+      console.log("Inside this method ::");
+      var getInfo = await sails
+        .helpers
+        .type2Coins
+        .stratis
+        .getInfo(coin_code);
 
-    console.log("Coin Info :: ", getInfo);
+      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+    } catch (err) {
+      console.log(err);
+    }
+
+  },
+
+  getCoinNewAddress: async function (req, res) {
+    try {
+      var {coin_code} = req.allParams();
+
+      console.log("Inside this method ::");
+      var getInfo = await sails
+        .helpers
+        .type2Coins
+        .stratis
+        .getNewAddress(coin_code);
+
+      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+    } catch (err) {
+      console.log(err);
+    }
+
   }
 
 }
