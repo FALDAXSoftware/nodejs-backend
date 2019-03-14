@@ -5,7 +5,14 @@ module.exports = {
 
   description: '',
 
-  inputs: {},
+  inputs: {
+    coin_code: {
+      type: 'string',
+      example: 'BTC',
+      description: 'coin code of coin',
+      required: true
+    }
+  },
 
   exits: {
 
@@ -17,6 +24,10 @@ module.exports = {
   fn: async function (inputs) {
 
     var newAddress;
+    var encodeData = sails
+      .helper
+      .type2Coins
+      .encodeAuth()
     // Get new address.
     try {
       fetch('http://dev-stratis-currency.faldax.com/', {
@@ -27,7 +38,8 @@ module.exports = {
           "method": "getnewaddress"
         },
           header: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': encodeData
           }
         })
         .then(resData => resData.json())

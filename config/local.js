@@ -10,3 +10,12 @@ module.exports.local = {
     "CRON_STATUS": process.env.CRON_STATUS,
     "COIN_MARKET_CAP_API" : process.env.MARKETPRICE
 }
+
+module.exports.coinintegration = [{        
+            'BTC' : {
+                'coin_code':'stratis',
+            'rpcuser' : 'stratisrpc',
+            'rpcpassword': 'JBnWFtwqbwwZXCFyBuHXHsUsMfyU1GhwKYroYy6bzjXv'
+            }
+        
+}]
