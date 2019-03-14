@@ -96,5 +96,8 @@ module.exports.policies = {
   },
   "FeesController": {
     "getAllFees": true
+  },
+  "Type2Coincontroller": {
+    "getCoinInfo": true
   }
 };

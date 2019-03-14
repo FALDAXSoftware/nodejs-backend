@@ -262,10 +262,12 @@ module.exports.routes = {
   //Socket route server
   'get /enable-web-socket': 'RootController.enableWebSocket',
 
-
   // Tradding View Chart
   'get /tradingview/config': 'TradingView.getConfig',
   'get /tradingview/time': 'TradingView.getCurrentTime',
   'get /tradingview/symbols': 'TradingView.getSymbolInfo',
   'get /tradingview/history': 'TradingView.getHistoryData',
+
+  //Type2coins API
+  'get /type2coin/info': 'Type2CoinController.getCoinInfo'
 };

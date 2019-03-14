@@ -21,27 +21,28 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
     var newAddress;
+    console.log("URL :::::: ", sails.config.local.coinArray[inputs.coin_code].url);
     var encodeData = sails
       .helper
       .type2Coins
-      .encodeAuth()
+      .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
     // Get new address.
     try {
-      fetch('http://dev-' + sails.config.local.coinArray[inputs.coin_code].coin_names + '-currency.faldax.com/', {
+      fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: {
           "jsonrpc": "2.0",
           "id": "0",
-          "method": "getnewaddress"
+          "method": "getinfo"
         },
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': encodeData
-        }
-      })
+          header: {
+            'Content-Type': 'application/json',
+            'Authorization': encodeData
+          }
+        })
         .then(resData => resData.json())
         .then(resData => {
           console.log(resData);
