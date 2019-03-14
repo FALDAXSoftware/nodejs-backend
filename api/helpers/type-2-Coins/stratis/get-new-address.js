@@ -34,21 +34,21 @@ module.exports = {
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '0',
-      'method': 'getinfo'
+      'method': 'getnewaddress'
     }
     try {
       fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: JSON.stringify(bodyData),
-        header: {
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + encodeData
         }
       })
-      // .then(resData => resData)
+        .then(resData => resData.json())
         .then(resData => {
-        console.log(resData);
-      }).catch(err => console.log(err))
+          console.log(resData);
+        }).catch(err => console.log(err))
       // TODO Send back the result through the success exit.
       return newAddress;
     } catch (err) {
