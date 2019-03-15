@@ -22,12 +22,12 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-peercoin-currency.faldax.com/'
     },
-    'FCT': {
-      'coin_name': 'factom',
-      'rpcuser': 'factomrpc',
-      'rpcpassword': 'secret',
-      'url': 'http://dev-factom-currency.faldax.com/v2'
-    },
+    // 'FCT': {
+    //   'coin_name': 'factom',
+    //   'rpcuser': 'factomrpc',
+    //   'rpcpassword': 'secret',
+    //   'url': 'http://dev-factom-currency.faldax.com/v2'
+    // },
     'RADS': {
       'coin_name': 'radium',
       'rpcuser': 'radiumrpc',
