@@ -291,22 +291,24 @@ module.exports = {
         var reset_token = req.body.reset_token;
 
         let user_details = await Users.findOne({ reset_token });
-        if (!user_details) {
-          return res
-            .status(500)
-            .json({ "status": 500, "err": "Something went wrong." });
-        } else {
+        console.log('>user_details', user_details)
+        if (user_details == undefined) {
           if (user_details.reset_token_expire < new Date().getTime()) {
             let updateUsers = await Users
               .update({ email: user_details.email, deleted_at: null })
               .set({ email: user_details.email, reset_token: null, reset_token_expire: null })
               .fetch();
             if (updateUsers) {
+              console.log('>IF')
               return res
                 .status(400)
                 .json({ "status": 400, "err": "Reset Token expired." });
             }
           }
+        } else {
+          return res
+            .status(500)
+            .json({ "status": 500, "err": "Something went wrong." });
         }
         let updateUsers = await Users
           .update({ email: user_details.email, deleted_at: null })
@@ -338,7 +340,7 @@ module.exports = {
       if (!user_details) {
         return res
           .status(401)
-          .json({ "status": 401, err: 'Email not Registered with us.' });
+          .json({ "status": 401, err: 'This email is not registered with us.' });
       }
       if (user_details.is_active == false) {
         return res
