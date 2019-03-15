@@ -385,8 +385,8 @@ module.exports = {
         let logged_user = await LoginHistory.find({ jwt_token, user: user_id })
         if (logged_user.length <= 0) {
           return res
-            .status(400)
-            .json({ status: 400, message: "Invalid Token" });
+            .status(200)
+            .json({ status: 200, message: "User Log out successfully." });
         }
       }
 
@@ -401,8 +401,8 @@ module.exports = {
         return res.json({ status: 200, message: "User Log out successfully." });
       } else {
         return res
-          .status(400)
-          .json({ status: 400, message: "Invalid Token" });
+          .status(200)
+          .json({ status: 200, message: "User Log out successfully." });
       }
     } catch (e) {
       console.log(e);
