@@ -38,11 +38,11 @@ module.exports = {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: JSON.stringify(bodyData),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + encodeData
-          }
-        })
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + encodeData
+        }
+      })
         .then(resData => resData.json())
         .then(resData => {
           newAddress = resData.result;
