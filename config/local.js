@@ -22,11 +22,29 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-peercoin-currency.faldax.com/'
     },
-    'FCT': {
-      'coin_name': 'factom',
-      'rpcuser': 'factomrpc',
+    // 'FCT': {
+    //   'coin_name': 'factom',
+    //   'rpcuser': 'factomrpc',
+    //   'rpcpassword': 'secret',
+    //   'url': 'http://dev-factom-currency.faldax.com/v2'
+    // },
+    'RADS': {
+      'coin_name': 'radium',
+      'rpcuser': 'radiumrpc',
       'rpcpassword': 'secret',
-      'url': 'http://dev-factom-currency.faldax.com/v2'
+      'url': 'http://dev-radium-currency.faldax.com'
+    },
+    'DGB': {
+      'coin_name': 'digibyte',
+      'rpcuser': 'digibyterpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-digibyte-currency.faldax.com'
+    },
+    'XPM': {
+      'coin_name': 'primecoin',
+      'rpcuser': 'primecoinrpc',
+      'rpcpassword': '2aVqjhV2qcdBM4TU2Ncy5Xkh3ZH1pTvq9mZhoUcwgrhn',
+      'url': 'http://dev-primecoin-currency.faldax.com/'
     }
 
   }
