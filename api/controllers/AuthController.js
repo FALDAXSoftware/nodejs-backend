@@ -291,31 +291,20 @@ module.exports = {
         var reset_token = req.body.reset_token;
 
         let user_details = await Users.findOne({ reset_token });
-        if (!user_details) {
+        if (user_details == undefined) {
           return res
-            .status(500)
-            .json({ "status": 500, "err": "Something went wrong." });
+            .status(400)
+            .json({ "status": 400, "err": "Reset Token expired." });
         } else {
-          if (user_details.reset_token_expire < new Date().getTime()) {
-            let updateUsers = await Users
-              .update({ email: user_details.email, deleted_at: null })
-              .set({ email: user_details.email, reset_token: null, reset_token_expire: null })
-              .fetch();
-            if (updateUsers) {
-              return res
-                .status(400)
-                .json({ "status": 400, "err": "Reset Token expired." });
-            }
+          let updateUsers = await Users
+            .update({ email: user_details.email, deleted_at: null })
+            .set({ email: user_details.email, password: req.body.password, reset_token: null, reset_token_expire: null })
+            .fetch();
+          if (updateUsers) {
+            return res.json({ "status": 200, "message": "Password updated Successfully" });
+          } else {
+            throw "Update password Error"
           }
-        }
-        let updateUsers = await Users
-          .update({ email: user_details.email, deleted_at: null })
-          .set({ email: user_details.email, password: req.body.password, reset_token: null, reset_token_expire: null })
-          .fetch();
-        if (updateUsers) {
-          return res.json({ "status": 200, "message": "Password updated Successfully" });
-        } else {
-          throw "Update password Error"
         }
       } else {
         return res
@@ -334,11 +323,11 @@ module.exports = {
 
   forgotPassword: async function (req, res) {
     try {
-      const user_details = await Users.findOne({ email: req.body.email, deleted_at: null });
+      const user_details = await Users.findOne({ email: req.body.email, deleted_at: null, is_active: true });
       if (!user_details) {
         return res
           .status(401)
-          .json({ "status": 401, err: 'Email not Registered with us.' });
+          .json({ "status": 401, err: 'This email is not registered with us.' });
       }
       if (user_details.is_active == false) {
         return res
