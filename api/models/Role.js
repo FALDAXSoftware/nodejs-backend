@@ -24,16 +24,16 @@ module.exports = {
       defaultsTo: false,
       columnName: 'users',
     },
-    announcement: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'announcement',
-    },
-    static_page: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'static_page',
-    },
+    // announcement: {
+    //   type: "boolean",
+    //   defaultsTo: false,
+    //   columnName: 'announcement',
+    // },
+    // static_page: {
+    //   type: "boolean",
+    //   defaultsTo: false,
+    //   columnName: 'static_page',
+    // },
     // blogs: {
     //   type: "boolean",
     //   defaultsTo: false,
@@ -94,21 +94,21 @@ module.exports = {
       columnName: 'withdraw_requests',
       defaultsTo: false,
     },
-    coin_requests: {
-      type: "boolean",
-      columnName: 'coin_requests',
-      defaultsTo: false,
-    },
-    contact_setting: {
-      type: "boolean",
-      columnName: 'contact_setting',
-      defaultsTo: false,
-    },
-    subscribe: {
-      type: "boolean",
-      columnName: 'subscribe',
-      defaultsTo: false,
-    },
+    // coin_requests: {
+    //   type: "boolean",
+    //   columnName: 'coin_requests',
+    //   defaultsTo: false,
+    // },
+    // contact_setting: {
+    //   type: "boolean",
+    //   columnName: 'contact_setting',
+    //   defaultsTo: false,
+    // },
+    // subscribe: {
+    //   type: "boolean",
+    //   columnName: 'subscribe',
+    //   defaultsTo: false,
+    // },
     kyc: {
       type: "boolean",
       columnName: 'kyc',
