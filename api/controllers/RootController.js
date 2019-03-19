@@ -46,6 +46,11 @@ module.exports = {
     }
   },
 
+  callKrakenAPI: async function () {
+    var data = await sails.helpers.krakenApi('1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX');
+    console.log('>>>>>>>>>DATA', data)
+  },
+
   sendOpenTicketForm: async function (req, res) {
     return res.view('pages/openTicket');
   },
