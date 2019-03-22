@@ -77,7 +77,8 @@ module.exports = {
             requested_user_id: inputs.user_id
           }
         ]
-      }
+      },
+      sort: 'id DESC'
     })
 
     return exits.success(completedData);

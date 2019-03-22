@@ -514,6 +514,8 @@ module.exports = {
                   .trade
                   .getTradeDetails(crypto, currency, 100);
 
+                  console.log("Trade Details :: ", tradeDetails);
+
                 if (tradeDetails) {
                   return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
                 }
