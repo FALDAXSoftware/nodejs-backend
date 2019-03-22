@@ -50,6 +50,7 @@ module.exports = {
       .tradding
       .trade
       .getTradeDetails(inputs.crypto, inputs.currency, 100);
+      console.log("Updated value ::: ",tradeDetails)
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "tradehistoryUpdate", tradeDetails);
     let cardDate = await sails
       .helpers
