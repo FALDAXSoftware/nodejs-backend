@@ -63,7 +63,8 @@ module.exports.policies = {
     "enableWebSocket": true,
     "createAllWallet": true,
     "sendSubscriberForm": true,
-    "sendListTokenForm": true
+    "sendListTokenForm": true,
+    "callKrakenAPI": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true

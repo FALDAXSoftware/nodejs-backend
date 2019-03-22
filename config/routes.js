@@ -270,5 +270,7 @@ module.exports.routes = {
 
   //Type2coins API
   'get /type2coin/getinfo/:coin_code': 'Type2CoinController.getCoinInfo',
-  'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress'
+  'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
+
+  'get /call-helper': 'RootController.callKrakenAPI'
 };

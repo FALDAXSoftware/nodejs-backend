@@ -11,11 +11,14 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getAllWithdrawReq: async function (req, res) {
         // req.setLocale('en')
-        let { page, limit, data, start_date, end_date, t_type } = req.allParams();
+        let { page, limit, data, start_date, end_date, t_type, user_id } = req.allParams();
 
         if (data) {
             let q = {
                 deleted_at: null,
+            }
+            if (user_id) {
+                q['user_id'] = user_id
             }
             if (start_date && end_date) {
                 q['created_at'] = { '>=': start_date, '<=': end_date };
@@ -27,7 +30,7 @@ module.exports = {
             let userArray = await Users.find({
                 where: {
                     or: [
-                        { email: { contains: data } }
+                        { email: { contains: data } },
                     ],
                 }
             });
@@ -43,6 +46,7 @@ module.exports = {
                     { user_id: { 'in': idArray } },
                     { source_address: { contains: data } },
                     { destination_address: { contains: data } },
+                    { amount: data }
                 ]
             }).sort('id ASC').paginate(page, parseInt(limit));
 
@@ -54,7 +58,13 @@ module.exports = {
             }
 
             let withdrawReqCount = await WithdrawRequest.count({
-                user_id: idArray,
+                ...q,
+                or: [
+                    { user_id: { 'in': idArray } },
+                    { source_address: { contains: data } },
+                    { destination_address: { contains: data } },
+                    { amount: data }
+                ]
             });
             if (withdrawReqData) {
                 return res.json({
@@ -66,6 +76,9 @@ module.exports = {
         } else {
             let q = {
                 deleted_at: null,
+            }
+            if (user_id) {
+                q['user_id'] = user_id
             }
             if (t_type) {
                 q['is_approve'] = t_type == 'true' ? true : false;

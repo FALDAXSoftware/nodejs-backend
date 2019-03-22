@@ -6,44 +6,97 @@
  */
 module.exports = {
     getCountries: async function (req, res) {
-        let { page, limit, data } = req.allParams();
-        if (data) {
-            data = data.toLowerCase();
-            let countryData = await sails.sendNativeQuery("Select * from Countries WHERE LOWER(name) LIKE '%" + data + "%'", [])
+        // let { page, limit, data, legality } = req.allParams();
+        // if (data) {
+        //     data = data.toLowerCase();
+        //     let countryData = await sails.sendNativeQuery("Select * from Countries WHERE LOWER(name) LIKE '%" + data + "%' AND legality= " + legality, [])
 
-            countryData = countryData.rows;
-            for (let i = 0; i < countryData.length; i++) {
-                let stateCount = await State.count({ country_id: countryData[i].id });
-                countryData[i].stateCount = stateCount;
+        //     countryData = countryData.rows;
+        //     for (let i = 0; i < countryData.length; i++) {
+        //         let stateCount = await State.count({ country_id: countryData[i].id });
+        //         countryData[i].stateCount = stateCount;
+        //     }
+
+        //     let CountriesCount = await sails.sendNativeQuery("Select COUNT(id) from Countries WHERE LOWER(name) LIKE '%" + data + "%' AND legality= " + legality, [])
+        //     CountriesCount = CountriesCount.rows[0].count;
+
+        //     if (countryData) {
+        //         return res.json({
+        //             "status": 200,
+        //             "message": "Country list",
+        //             "data": countryData, CountryCount: CountriesCount
+        //         });
+        //     }
+        // } else {
+        //     if (legality > 0) {
+        //         var countryData = await Countries.find({
+        //             where: {
+        //                 legality: legality
+        //             }
+        //         }).sort('id ASC')
+        //             .paginate(page - 1, parseInt(limit));
+
+        //         var CountriesCount = await Countries.count({
+        //             where: {
+        //                 legality: legality
+        //             }
+        //         });
+        //     } else {
+        //         countryData = await Countries.find().sort('id ASC')
+        //             .paginate(page - 1, parseInt(limit));
+
+        //         CountriesCount = await Countries.count();
+        //     }
+
+        //     for (let i = 0; i < countryData.length; i++) {
+        //         let stateCount = await State.count({ country_id: countryData[i].id });
+        //         countryData[i].stateCount = stateCount;
+        //     }
+
+        //     if (countryData) {
+        //         return res.json({
+        //             "status": 200,
+        //             "message": "Country list",
+        //             "data": countryData, CountryCount: CountriesCount
+        //         });
+        //     }
+        // }
+
+        let { page, limit, data, legality } = req.allParams();
+        let query = " from Countries";
+        if ((data && data != "") || (legality && legality != "")) {
+            query += " WHERE"
+            let isDataAppended = false;
+            if (data && data != "" && data != null) {
+                query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+                isDataAppended = true;
             }
 
-            let CountriesCount = await sails.sendNativeQuery("Select COUNT(id) from Countries WHERE LOWER(name) LIKE '%" + data + "%'", [])
-            CountriesCount = CountriesCount.rows[0].count;
-
-            if (countryData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Country list",
-                    "data": countryData, CountryCount: CountriesCount
-                });
+            if (legality && legality != "" && legality != null) {
+                if (isDataAppended) {
+                    query += " AND"
+                }
+                query = query + " legality= " + legality
             }
-        } else {
-            let countryData = await Countries.find().sort('id ASC')
-                .paginate(page - 1, parseInt(limit));
+        }
+        query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        let countryData = await sails.sendNativeQuery("Select *" + query, [])
 
-            for (let i = 0; i < countryData.length; i++) {
-                let stateCount = await State.count({ country_id: countryData[i].id });
-                countryData[i].stateCount = stateCount;
-            }
+        countryData = countryData.rows;
+        for (let i = 0; i < countryData.length; i++) {
+            let stateCount = await State.count({ country_id: countryData[i].id });
+            countryData[i].stateCount = stateCount;
+        }
 
-            let CountriesCount = await Countries.count();
-            if (countryData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Country list",
-                    "data": countryData, CountryCount: CountriesCount
-                });
-            }
+        let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + query, [])
+        CountriesCount = CountriesCount.rows[0].count;
+
+        if (countryData) {
+            return res.json({
+                "status": 200,
+                "message": "Country list",
+                "data": countryData, CountryCount: CountriesCount
+            });
         }
     },
     getStates: async function (req, res) {

@@ -455,86 +455,107 @@ module.exports = {
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
-    let { page, limit, data } = req.allParams();
-    if (data) {
-      let usersData = await Users.find({
-        where: {
-          is_verified: true,
-          or: [
-            {
-              email: {
-                contains: data
-              }
-            }, {
-              first_name: {
-                contains: data
-              }
-            }, {
-              last_name: {
-                contains: data
-              }
-            }, {
-              country: {
-                contains: data
-              }
-            }
-          ]
-        }
-      })
-        .sort("id DESC")
-        .paginate(page - 1, parseInt(limit));
-      // for (let index = 0; index < usersData.length; index++) {     const element =
-      // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-      //   usersData[index]["kyc"] = kyc; }
-      let userCount = await Users.count({
-        where: {
-          is_verified: true,
-          or: [
-            {
-              email: {
-                contains: data
-              }
-            }, {
-              first_name: {
-                contains: data
-              }
-            }, {
-              last_name: {
-                contains: data
-              }
-            }, {
-              country: {
-                contains: data
-              }
-            }
-          ]
-        }
-      });
-      if (usersData) {
-        return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
-      }
-    } else {
-      let usersData = await Users
-        .find({
+    try {
+      let { page, limit, data } = req.allParams();
+      if (data) {
+        let usersData = await Users.find({
+          select: ['email', 'full_name', 'first_name', 'last_name',
+            'country', 'street_address', 'city_town', 'profile_pic', 'created_at', 'id',
+            'is_active', 'is_verified', 'dob', 'street_address_2', 'postal_code',
+            'fiat', 'state'],
           where: {
-            is_verified: true
+            is_verified: true,
+            or: [
+              {
+                email: {
+                  contains: data
+                }
+              }, {
+                first_name: {
+                  contains: data
+                }
+              }, {
+                last_name: {
+                  contains: data
+                }
+              }, {
+                country: {
+                  contains: data
+                }
+              }, {
+                full_name: {
+                  contains: data
+                }
+              }
+            ]
           }
         })
-        .sort("id DESC")
-        .paginate(page - 1, parseInt(limit));
-      // for (let index = 0; index < usersData.length; index++) {     const element =
-      // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-      //   usersData[index]["kyc"] = kyc; } for (let index = 0; index <
-      // usersData.length; index++) {     if (usersData[index].id) {         let
-      // userKyc = await KYC.find({ user_id: usersData[index].id })         if
-      // (userKyc && userKyc.length > 0) {             if (userKyc[index] &&
-      // userKyc[index].isApprove == true) {                 usersData[index].is_kyc =
-      // userKyc[index].isApprove;             }         }     } }
+          .sort("id DESC")
+          .paginate(page - 1, parseInt(limit));
+        // for (let index = 0; index < usersData.length; index++) {     const element =
+        // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
+        //   usersData[index]["kyc"] = kyc; }
+        let userCount = await Users.count({
+          where: {
+            is_verified: true,
+            or: [
+              {
+                email: {
+                  contains: data
+                }
+              }, {
+                first_name: {
+                  contains: data
+                }
+              }, {
+                last_name: {
+                  contains: data
+                }
+              }, {
+                country: {
+                  contains: data
+                }
+              }, {
+                full_name: {
+                  contains: data
+                }
+              }
+            ]
+          }
+        });
+        if (usersData) {
+          return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+        }
+      } else {
+        let usersData = await Users
+          .find({
+            select: ['email', 'full_name', 'first_name', 'last_name',
+              'country', 'street_address', 'city_town', 'profile_pic', 'created_at', 'id',
+              'is_active', 'is_verified', 'dob', 'street_address_2', 'postal_code',
+              'fiat', 'state'],
+            where: {
+              is_verified: true
+            }
+          })
+          .sort("id DESC")
+          .paginate(page - 1, parseInt(limit));
+        // for (let index = 0; index < usersData.length; index++) {     const element =
+        // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
+        //   usersData[index]["kyc"] = kyc; } for (let index = 0; index <
+        // usersData.length; index++) {     if (usersData[index].id) {         let
+        // userKyc = await KYC.find({ user_id: usersData[index].id })         if
+        // (userKyc && userKyc.length > 0) {             if (userKyc[index] &&
+        // userKyc[index].isApprove == true) {                 usersData[index].is_kyc =
+        // userKyc[index].isApprove;             }         }     } }
 
-      let userCount = await Users.count({ is_verified: true });
-      if (usersData) {
-        return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+        let userCount = await Users.count({ is_verified: true });
+        if (usersData) {
+          return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+        }
       }
+    }
+    catch (err) {
+      console.log('ERRRR', err)
     }
   },
 

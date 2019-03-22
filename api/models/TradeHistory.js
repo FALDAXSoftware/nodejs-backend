@@ -121,7 +121,11 @@ module.exports = {
             type: 'ref',
             columnType: 'datetime',
             columnName: 'deleted_at'
-        }
+        },
+        deleted: {
+            type: 'boolean',
+            columnName: 'deleted'
+        },
     },
     beforeCreate: function (values, next) {
         values.created_at = new Date();
