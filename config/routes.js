@@ -144,6 +144,12 @@ module.exports.routes = {
   'get /admin/create-all-wallet': 'Coins.createAllWallet',
   'post /admin/create-wallet': 'Coins.createWallet',
 
+
+  // News 
+  'get /admin/get-all-news': 'News.getAllNews',
+  'post /admin/change-news-status': 'News.changeNewsStatus',
+
+
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
