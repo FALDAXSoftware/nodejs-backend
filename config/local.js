@@ -8,6 +8,8 @@ module.exports.local = {
   "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
   "TEST": process.env.TESTDEMO,
   "CRON_STATUS": process.env.CRON_STATUS,
+  "KRAKEN_API_KEY": process.env.API_KEY,
+  "KRAKEN_API_SIGN":process.env.API_SIGN,
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "coinArray": {
     'STRAT': {
@@ -22,12 +24,6 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-peercoin-currency.faldax.com/'
     },
-    // 'FCT': {
-    //   'coin_name': 'factom',
-    //   'rpcuser': 'factomrpc',
-    //   'rpcpassword': 'secret',
-    //   'url': 'http://dev-factom-currency.faldax.com/v2'
-    // },
     'RADS': {
       'coin_name': 'radium',
       'rpcuser': 'radiumrpc',

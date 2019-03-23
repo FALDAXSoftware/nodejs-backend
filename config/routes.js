@@ -32,6 +32,9 @@ module.exports.routes = {
   'delete /admin/delete-employee': "Admin.deleteEmployee",
   'put /admin/update-employee': "Admin.updateEmployee",
   'get /admin/get-employee-details': "Admin.getEmployeeDetails",
+  'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
+  'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
+  'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
 
   // Role
   'post /admin/role/create': 'RoleController.create',

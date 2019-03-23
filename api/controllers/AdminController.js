@@ -484,5 +484,105 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+
+  //Setup Two Factor
+  setupTwoFactor: async function (req, res) {
+    try {
+      let {admin_id} = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Admin not found or it's not active" });
+      }
+      const secret = speakeasy.generateSecret({ length: 10 });
+      await Admin
+        .update({ id: user.id })
+        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+      let url = speakeasy.otpauthURL({
+        secret: secret.ascii,
+        label: 'FALDAX( ' + user.email + ')'
+      });
+      QRCode.toDataURL(url, function (err, data_url) {
+        return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //Verify 2 factor
+  verifyTwoFactor: async function (req, res) {
+    try {
+      let {admin_id, otp} = req.body;
+      // let { otp } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "User not found or it's not active" });
+      }
+      if (user.is_twofactor == true) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Two factor authentication is already enabled" });
+      }
+
+      let verified = speakeasy
+        .totp
+        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp, window: 2 });
+      if (verified) {
+        await Admin
+          .update({ id: user.id })
+          .set({ email: user.email, is_twofactor: true });
+        return res.json({ status: 200, message: "Two factor authentication has been enabled" });
+      }
+      return res
+        .status(401)
+        .json({ err: "Invalid OTP" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //Disable 2 factor
+  disableTwoFactor: async function (req, res) {
+    try {
+      let {admin_id} = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "User not found or it's not active" });
+      }
+      if (user.is_twofactor == false) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Two factor authentication is already disabled" });
+      }
+      await Admin
+        .update({ id: user.id, deleted_at: null })
+        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
+      return res.json({ status: 200, message: "Two factor authentication has been disabled" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
 };
