@@ -1,15 +1,15 @@
 var KrakenClient = require('kraken-api');
 module.exports = {
 
-  friendlyName: 'Get export report',
+  friendlyName: 'Recent withdrawl status',
 
   description: '',
 
   inputs: {
-    id: {
+    asset: {
       type: 'string',
-      example: '12szd',
-      description: 'ID of report',
+      example: 'BTC',
+      description: 'Asset being deposited.',
       required: true
     }
   },
@@ -17,7 +17,7 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'Export report'
+      description: 'All done.'
     }
   },
 
@@ -68,12 +68,11 @@ module.exports = {
       timeout: 5000
     };
     try {
-      status = await kraken.api('RetrieveExport', {id: inputs.id});
-      return exits.success(status)
+      status = await kraken.api('WithdrawStatus', {asset: inputs.asset});
+      return exits.success(status);
     } catch (err) {
       console.log(err);
     }
-
   }
 
 };
