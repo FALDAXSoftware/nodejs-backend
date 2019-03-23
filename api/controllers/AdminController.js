@@ -464,5 +464,25 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  getEmployeeDetails: async function (req, res) {
+    let { emp_id } = req.allParams()
+    try {
+      if (emp_id) {
+        let employee = await Admin.find({ id: emp_id })
+
+        return res.json({ "status": 200, "message": "Employee Details", "data": employee });
+      } else {
+        return res.json({ "status": 400, "message": "Employee id is required" });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
 };

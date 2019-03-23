@@ -21,9 +21,38 @@ module.exports = {
       columnName: 'password',
       required: true
     },
-    name: {
+    first_name: {
       type: 'string',
-      columnName: 'name',
+      columnName: 'first_name',
+      allowNull: true
+    },
+    last_name: {
+      type: 'string',
+      columnName: 'last_name',
+      allowNull: true
+    },
+    phone_number: {
+      type: 'string',
+      columnName: 'phone_number'
+    },
+    address: {
+      type: 'string',
+      columnName: 'address',
+      allowNull: true
+    },
+    is_twofactor: {
+      type: 'boolean',
+      columnName: "is_twofactor",
+      defaultsTo: false
+    },
+    twofactor_secret: {
+      type: "string",
+      columnName: "twofactor_secret",
+      allowNull: true
+    },
+    auth_code: {
+      type: "string",
+      columnName: "auth_code",
       allowNull: true
     },
     reset_token: {
