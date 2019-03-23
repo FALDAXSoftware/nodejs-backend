@@ -1,15 +1,21 @@
 var KrakenClient = require('kraken-api');
 module.exports = {
 
-  friendlyName: 'Get export report',
+  friendlyName: 'Get withdrawl cancel',
 
   description: '',
 
   inputs: {
-    id: {
+    asset: {
       type: 'string',
-      example: '12szd',
-      description: 'ID of report',
+      example: 'BTC',
+      description: 'Asset being deposited.',
+      required: true
+    },
+    refid: {
+      type: 'string',
+      example: '123vfg',
+      description: 'Referrence Id for which withdrawl needs to be cancel.',
       required: true
     }
   },
@@ -17,14 +23,16 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'Export report'
+      outputFriendlyName: 'Withdrawl cancel'
     }
   },
 
-  fn: async function (inputs, exits) {
+  fn: async function (inputs) {
+
     var status;
     var key = sails.config.local.KRAKEN_API_KEY;
     var secret = sails.config.local.KRAKEN_API_SIGN;
+    var key = sails.config.local.KEY_NAME;
     var kraken = new KrakenClient(key, secret);
     console.log("Kraken :::: ", kraken);
     const methods = {
@@ -68,8 +76,11 @@ module.exports = {
       timeout: 5000
     };
     try {
-      status = await kraken.api('RetrieveExport', {id: inputs.id});
-      return exits.success(status)
+      status = await kraken.api('WithdrawCancel', {
+        asset: inputs.asset,
+        refid: inputs.refid
+      });
+      return exits.success(status);
     } catch (err) {
       console.log(err);
     }

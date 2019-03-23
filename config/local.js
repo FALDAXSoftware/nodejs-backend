@@ -10,6 +10,7 @@ module.exports.local = {
   "CRON_STATUS": process.env.CRON_STATUS,
   "KRAKEN_API_KEY": process.env.API_KEY,
   "KRAKEN_API_SIGN":process.env.API_SIGN,
+  "KEY_NAME":process.env.KEY_NAME,
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "coinArray": {
     'STRAT': {
