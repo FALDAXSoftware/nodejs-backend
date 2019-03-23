@@ -10,7 +10,7 @@ module.exports = {
     getAllNews: async function (req, res) {
         try {
             let { page, limit, search } = req.allParams();
-            let q = {}
+            let q = { deleted_at: null }
             if (search && search != "") {
                 q = {
                     ...q,
@@ -29,6 +29,7 @@ module.exports = {
                 newsCount
             });
         } catch (error) {
+            console.log('>>>>>>', error)
             return res
                 .status(500)
                 .json({

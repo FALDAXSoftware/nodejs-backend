@@ -6,6 +6,8 @@
  */
 var randomize = require('randomatic');
 var bcrypt = require('bcrypt');
+var speakeasy = require('speakeasy');
+var QRCode = require('qrcode');
 
 module.exports = {
 
@@ -489,8 +491,8 @@ module.exports = {
   //Setup Two Factor
   setupTwoFactor: async function (req, res) {
     try {
-      let {admin_id} = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      let { admin_id } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
       if (!user) {
         return res
           .status(401)
@@ -508,6 +510,7 @@ module.exports = {
         return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
       });
     } catch (error) {
+      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -520,9 +523,8 @@ module.exports = {
   //Verify 2 factor
   verifyTwoFactor: async function (req, res) {
     try {
-      let {admin_id, otp} = req.body;
-      // let { otp } = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      let { admin_id, otp } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
       if (!user) {
         return res
           .status(401)
@@ -547,6 +549,7 @@ module.exports = {
         .status(401)
         .json({ err: "Invalid OTP" });
     } catch (error) {
+      console.log('>>>>>>>>>err', error)
       return res
         .status(500)
         .json({
@@ -559,8 +562,8 @@ module.exports = {
   //Disable 2 factor
   disableTwoFactor: async function (req, res) {
     try {
-      let {admin_id} = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, is_verified: true, deleted_at: null });
+      let { admin_id } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
       if (!user) {
         return res
           .status(401)
@@ -576,6 +579,7 @@ module.exports = {
         .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
       return res.json({ status: 200, message: "Two factor authentication has been disabled" });
     } catch (error) {
+      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -584,5 +588,22 @@ module.exports = {
         });
     }
   },
+
+  getAdminDetails: async function (req, res) {
+    try {
+      const { admin_id } = req.allParams();
+      let adminDetails = await Admin.findOne({ is_active: true, id: admin_id, deleted_at: null })
+
+      return res.json({ status: 200, message: "Admin Details", data: adminDetails });
+    } catch (err) {
+      console.log('error', err)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  }
 
 };
