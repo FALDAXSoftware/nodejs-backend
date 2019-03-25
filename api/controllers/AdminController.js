@@ -6,6 +6,8 @@
  */
 var randomize = require('randomatic');
 var bcrypt = require('bcrypt');
+var speakeasy = require('speakeasy');
+var QRCode = require('qrcode');
 
 module.exports = {
 
@@ -464,5 +466,144 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  getEmployeeDetails: async function (req, res) {
+    let { emp_id } = req.allParams()
+    try {
+      if (emp_id) {
+        let employee = await Admin.find({ id: emp_id })
+
+        return res.json({ "status": 200, "message": "Employee Details", "data": employee });
+      } else {
+        return res.json({ "status": 400, "message": "Employee id is required" });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //Setup Two Factor
+  setupTwoFactor: async function (req, res) {
+    try {
+      let { admin_id } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Admin not found or it's not active" });
+      }
+      const secret = speakeasy.generateSecret({ length: 10 });
+      await Admin
+        .update({ id: user.id })
+        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+      let url = speakeasy.otpauthURL({
+        secret: secret.ascii,
+        label: 'FALDAX( ' + user.email + ')'
+      });
+      QRCode.toDataURL(url, function (err, data_url) {
+        return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
+      });
+    } catch (error) {
+      console.log('error', error)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //Verify 2 factor
+  verifyTwoFactor: async function (req, res) {
+    try {
+      let { admin_id, otp } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "User not found or it's not active" });
+      }
+      if (user.is_twofactor == true) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Two factor authentication is already enabled" });
+      }
+
+      let verified = speakeasy
+        .totp
+        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp, window: 2 });
+      if (verified) {
+        await Admin
+          .update({ id: user.id })
+          .set({ email: user.email, is_twofactor: true });
+        return res.json({ status: 200, message: "Two factor authentication has been enabled" });
+      }
+      return res
+        .status(401)
+        .json({ err: "Invalid OTP" });
+    } catch (error) {
+      console.log('>>>>>>>>>err', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //Disable 2 factor
+  disableTwoFactor: async function (req, res) {
+    try {
+      let { admin_id } = req.body;
+      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "User not found or it's not active" });
+      }
+      if (user.is_twofactor == false) {
+        return res
+          .status(401)
+          .json({ "status": 401, "err": "Two factor authentication is already disabled" });
+      }
+      await Admin
+        .update({ id: user.id, deleted_at: null })
+        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
+      return res.json({ status: 200, message: "Two factor authentication has been disabled" });
+    } catch (error) {
+      console.log('error', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getAdminDetails: async function (req, res) {
+    try {
+      const { admin_id } = req.allParams();
+      let adminDetails = await Admin.findOne({ is_active: true, id: admin_id, deleted_at: null })
+
+      return res.json({ status: 200, message: "Admin Details", data: adminDetails });
+    } catch (err) {
+      console.log('error', err)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
+
 };

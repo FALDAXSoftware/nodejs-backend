@@ -31,6 +31,11 @@ module.exports.routes = {
   'get /admin/get-employees': "Admin.getAllEmployee",
   'delete /admin/delete-employee': "Admin.deleteEmployee",
   'put /admin/update-employee': "Admin.updateEmployee",
+  'get /admin/get-employee-details': "Admin.getEmployeeDetails",
+  'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
+  'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
+  'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
+  'get /admin/get-details': 'Admin.getAdminDetails',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
@@ -139,6 +144,10 @@ module.exports.routes = {
   // Wallet
   'get /admin/create-all-wallet': 'Coins.createAllWallet',
   'post /admin/create-wallet': 'Coins.createWallet',
+
+  // News 
+  'get /admin/get-all-news': 'News.getAllNews',
+  'post /admin/change-news-status': 'News.changeNewsStatus',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",

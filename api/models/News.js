@@ -51,6 +51,11 @@ module.exports = {
             type: 'ref',
             columnType: 'datetime',
             columnName: 'deleted_at'
+        },
+        is_active: {
+            type: 'boolean',
+            columnName: 'is_active',
+            defaultsTo: true,
         }
     },
 
