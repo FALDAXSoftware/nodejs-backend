@@ -150,6 +150,10 @@ module.exports = {
         usersData[0].is_kyc_done = true;
       }
     }
+    var dataResponse = await sails
+      .helpers
+      .userTradeChecking(usersData[0].id);
+    usersData[0].is_allowed = dataResponse;
     if (usersData) {
       return res.json({ "status": 200, "message": "Users Data", "data": usersData });
     }
@@ -459,10 +463,26 @@ module.exports = {
       let { page, limit, data } = req.allParams();
       if (data) {
         let usersData = await Users.find({
-          select: ['email', 'full_name', 'first_name', 'last_name',
-            'country', 'street_address', 'city_town', 'profile_pic', 'created_at', 'id',
-            'is_active', 'is_verified', 'dob', 'street_address_2', 'postal_code',
-            'fiat', 'state'],
+          select: [
+            'email',
+            'full_name',
+            'first_name',
+            'last_name',
+            'country',
+            'street_address',
+            'city_town',
+            'profile_pic',
+            'created_at',
+            'id',
+            'is_active',
+            'is_verified',
+            'dob',
+            'street_address_2',
+            'postal_code',
+            'fiat',
+            'state',
+            'referal_percentage'
+          ],
           where: {
             is_verified: true,
             or: [
@@ -494,7 +514,7 @@ module.exports = {
           .paginate(page - 1, parseInt(limit));
         // for (let index = 0; index < usersData.length; index++) {     const element =
         // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-        //   usersData[index]["kyc"] = kyc; }
+        // usersData[index]["kyc"] = kyc; }
         let userCount = await Users.count({
           where: {
             is_verified: true,
@@ -527,21 +547,36 @@ module.exports = {
           return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
         }
       } else {
-        let usersData = await Users
-          .find({
-            select: ['email', 'full_name', 'first_name', 'last_name',
-              'country', 'street_address', 'city_town', 'profile_pic', 'created_at', 'id',
-              'is_active', 'is_verified', 'dob', 'street_address_2', 'postal_code',
-              'fiat', 'state'],
-            where: {
-              is_verified: true
-            }
-          })
+        let usersData = await Users.find({
+          select: [
+            'email',
+            'full_name',
+            'first_name',
+            'last_name',
+            'country',
+            'street_address',
+            'city_town',
+            'profile_pic',
+            'created_at',
+            'id',
+            'is_active',
+            'is_verified',
+            'dob',
+            'street_address_2',
+            'postal_code',
+            'fiat',
+            'state',
+            'referal_percentage'
+          ],
+          where: {
+            is_verified: true
+          }
+        })
           .sort("id DESC")
           .paginate(page - 1, parseInt(limit));
         // for (let index = 0; index < usersData.length; index++) {     const element =
         // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-        //   usersData[index]["kyc"] = kyc; } for (let index = 0; index <
+        // usersData[index]["kyc"] = kyc; } for (let index = 0; index <
         // usersData.length; index++) {     if (usersData[index].id) {         let
         // userKyc = await KYC.find({ user_id: usersData[index].id })         if
         // (userKyc && userKyc.length > 0) {             if (userKyc[index] &&
@@ -553,9 +588,23 @@ module.exports = {
           return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
         }
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.log('ERRRR', err)
+    }
+  },
+
+  updateUserDetails: async function (req, res) {
+    let { user_id, email, referal_percentage } = req.body;
+
+    var updateUserData = await Users
+      .update({ id: user_id })
+      .set({ email: email, referal_percentage: referal_percentage })
+      .fetch();
+
+    if (updateUserData) {
+      return res.json({ "status": 200, "message": "User Referal Percentage Updated" });
+    } else {
+      return res.json({ "status": 200, "message": "User(id) not found" });
     }
   },
 

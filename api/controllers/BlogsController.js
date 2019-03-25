@@ -546,6 +546,7 @@ module.exports = {
             let newsData = await News.find({
                 where: {
                     deleted_at: null,
+                    is_active: true,
                     or: [{
                         search_keywords: { contains: data }
                     }]
@@ -555,6 +556,7 @@ module.exports = {
             let NewsCount = await News.count({
                 where: {
                     deleted_at: null,
+                    is_active: true,
                     or: [{
                         search_keywords: { contains: data }
                     }]
@@ -569,12 +571,14 @@ module.exports = {
             }
         } else {
             let newsData = await News.find({
-                deleted_at: null
+                deleted_at: null,
+                is_active: true,
             }).sort("posted_at DESC").paginate(page - 1, parseInt(limit));
 
             let NewsCount = await News.count({
                 where: {
                     deleted_at: null,
+                    is_active: true,
                 }
             });
             return res.json({
