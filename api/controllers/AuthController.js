@@ -108,40 +108,10 @@ module.exports = {
                   }
                 }
 
-                var country;
-                var userKyc = await KYC.findOne({user_id: user_detail.id});
-                var countryData;
-                var stateData;
-
-                if (userKyc) {
-                  countryData = await Countries.find({
-                    where: {
-                      name: userKyc.country
-                    }
-                  });
-
-                  if (countryData != undefined) {
-                    if (countryData[0].legality == 1) {
-                      user_detail.is_allowed = true;
-                    } else if (countryData[0].legality == 4) {
-                      stateData = await State.findOne({
-                        where: {
-                          deleted_at: null,
-                          name: userKyc.state
-                        }
-                      });
-                      if (stateData != undefined) {
-                        if (stateData.legality == 1) {
-                          user_detail.is_allowed = true;
-                        } else {
-                          user_detail.is_allowed = false;
-                        }
-                      }
-                    } else {
-                      user_detail.is_allowed = false;
-                    }
-                  }
-                }
+                var dataResponse = await sails
+                  .helpers
+                  .userTradeChecking(user_detail.id);
+                user_detail.is_allowed = dataResponse;
 
                 delete user_detail.password;
                 // Create Recive Address await sails.helpers.wallet.receiveAddress(user_detail);

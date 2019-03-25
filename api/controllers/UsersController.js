@@ -150,6 +150,10 @@ module.exports = {
         usersData[0].is_kyc_done = true;
       }
     }
+    var dataResponse = await sails
+      .helpers
+      .userTradeChecking(usersData[0].id);
+    usersData[0].is_allowed = dataResponse;
     if (usersData) {
       return res.json({"status": 200, "message": "Users Data", "data": usersData});
     }
