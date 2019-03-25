@@ -47,6 +47,7 @@ module.exports.routes = {
   'post /admin/changePassword': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
   'get /admin/referredUsers': 'Users.getUserReferredAdmin',
+  'post /admin/updateUserReferal': 'Users.updateUserDetails',
   'post /admin/userActivate': 'Users.userActivate',
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
   'get /admin/get-user-details': 'Users.getAllUserDetails',
@@ -145,7 +146,7 @@ module.exports.routes = {
   'get /admin/create-all-wallet': 'Coins.createAllWallet',
   'post /admin/create-wallet': 'Coins.createWallet',
 
-  // News 
+  // News
   'get /admin/get-all-news': 'News.getAllNews',
   'post /admin/change-news-status': 'News.changeNewsStatus',
 

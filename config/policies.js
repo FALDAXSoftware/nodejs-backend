@@ -22,14 +22,15 @@ module.exports.policies = {
   'UsersController': {
     'create': true,
     'getCountries': true,
-    'getCountriesData': true
+    'getCountriesData': true,
+    // 'updateUserDetails': true
     // We dont need authorization here, allowing public access,
   },
   'AdminController': {
     'create': true,
     "login": true,
     "forgotPassword": true,
-    "resetPassword": true // We dont need authorization here, allowing public access,
+    "resetPassword": true, // We dont need authorization here, allowing public access,
   },
   'CountriesController': {
     '*': true
