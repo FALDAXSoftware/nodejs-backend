@@ -149,6 +149,7 @@ module.exports.routes = {
   // News
   'get /admin/get-all-news': 'News.getAllNews',
   'post /admin/change-news-status': 'News.changeNewsStatus',
+  'get /admin/get-news-details': 'News.getNewsDetails',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",

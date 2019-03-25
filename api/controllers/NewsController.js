@@ -64,6 +64,27 @@ module.exports = {
                     "err": sails.__("Something Wrong")
                 });
         }
+    },
+
+    // get news details
+    getNewsDetails: async function (req, res) {
+        try {
+            let { news_id } = req.allParams();
+            let newsDetails = await News.findOne({ id: news_id });
+            if (newsDetails) {
+                return res.json({ "status": 200, "message": "News data Updated", data: newsDetails });
+            } else {
+                return res.json({ "status": 400, "message": "No news found" });
+            }
+        } catch (error) {
+            console.log('error', error)
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
+        }
     }
 
 };
