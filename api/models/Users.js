@@ -170,6 +170,10 @@ module.exports = {
       type: 'number',
       columnName: 'percent_wallet'
     },
+    referal_percentage : {
+      type : 'number',
+      columnName: 'referal_percentage'
+    },
     date_format: {
       type: 'string',
       columnName: 'date_format'
