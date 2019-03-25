@@ -1,0 +1,3 @@
+//23-3-2019
+Employee table fields added first_name, last_name, phone_no, address, is_two_factor, two_factor_sceret, auth_code
+Add is_active column in News Table

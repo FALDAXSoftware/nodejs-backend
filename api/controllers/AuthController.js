@@ -240,7 +240,7 @@ module.exports = {
     }
     await User
       .update({ id: user.id })
-      .set({ is_twofactor: false, twofactor_secret: null, email: user.email, auth_code: null });
+      .set({ is_twofactor: true, twofactor_secret: null, email: user.email, auth_code: null });
     var token = await sails
       .helpers
       .jwtIssue(user_detail.id);

@@ -45,6 +45,8 @@ module.exports = {
     try {
       var deletePending;
       var now = moment().format();
+      var crypto;
+      var currency;
       if (inputs.type == "Limit" && inputs.side == "Buy") {
         var pendingBookDetailsBuy = await buyBook.findOne({
           where: {
@@ -52,6 +54,8 @@ module.exports = {
             id: inputs.id
           }
         });
+        crypto = pendingBookDetailsBuy.settle_currency;
+        currency = pendingBookDetailsBuy.currency;
 
         var fees = await sails
           .helpers
@@ -100,6 +104,9 @@ module.exports = {
           }
         });
 
+        crypto = pendingBookDetailsSell.settle_currency;
+        currency = pendingBookDetailsSell.currency;
+
         var fees = await sails
           .helpers
           .utilities
@@ -136,6 +143,8 @@ module.exports = {
           .update({ id: pendingBookDetailsSell.activity_id })
           .set({ is_cancel: true });
 
+          
+
         deletePending = await sellBook
           .update({ id: inputs.id })
           .set({ deleted_at: now })
@@ -149,6 +158,9 @@ module.exports = {
           }
         });
 
+        crypto = pendingDetails.settle_currency;
+        currency = pendingDetails.currency;
+        
         console.log(pendingDetails);
 
         if (pendingDetails == undefined || pendingDetails.length == 0) {
@@ -163,6 +175,10 @@ module.exports = {
           .fetch();
       }
       if (deletePending) {
+        await sails
+        .helpers
+        .sockets
+        .tradeEmit(crypto, currency);
         return exits.success("Deleted Successfully")
       } else {
         // throw "Server Error";

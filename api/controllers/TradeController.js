@@ -514,6 +514,8 @@ module.exports = {
                   .trade
                   .getTradeDetails(crypto, currency, 100);
 
+                  console.log("Trade Details :: ", tradeDetails);
+
                 if (tradeDetails) {
                   return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
                 }
@@ -702,13 +704,11 @@ module.exports = {
                   .getDepthChartDetail(crypto, currency);
                 return res.json({ status: 200, data: data, "message": "User Trade data retrived successfully." });
               }
-
             });
         }
       } else { }
     } catch (error) {
       console.log(error);
-
       return res
         .status(500)
         .json({
@@ -743,10 +743,7 @@ module.exports = {
         '<=': end_date
       };
     }
-    console.log("Data ::: ", data);
     if (data) {
-      // q['fill_price'] = data;
-
       let userArray = await Users.find({
         where: {
           deleted_at: null,
@@ -760,14 +757,12 @@ module.exports = {
         }
       });
 
-
       if (user_id) {
         q['user_id'] = user_id
       }
       if (t_type) {
         q['side'] = t_type;
       }
-
 
       if (start_date && end_date) {
         q['created_at'] = {
@@ -776,18 +771,15 @@ module.exports = {
         };
       }
 
-
-      let user_name = "";
-
-      if (user_id) {
-        user_name = await Users.findOne({
-          select: ['full_name'],
-          where: {
-            id: user_id,
-            deleted_at: null
-          }
-        });
-      }
+      // if (user_id) {
+      //   user_name = await Users.findOne({
+      //     select: ['full_name'],
+      //     where: {
+      //       id: user_id,
+      //       deleted_at: null
+      //     }
+      //   });
+      // }
 
       let idArray = [];
       for (let index = 0; index < userArray.length; index++) {
@@ -820,11 +812,14 @@ module.exports = {
           taker_fee: data
         }
       ]
-
-      console.log('...q???????????????????????', q);
       let tradeData = await TradeHistory
         .find({
-          ...q
+          ...q,
+          select: ['id', 'fill_price', 'limit_price', 'stop_price',
+            'price', 'quantity', 'currency', 'average_price', 'settle_currency', 'side',
+            'order_type', 'order_status', 'is_partially_filled', 'fix_quantity',
+            'symbol', 'maker_fee', 'taker_fee', 'user_fee', 'user_coin', 'requested_fee',
+            'requested_coin', 'created_at'],
         })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
@@ -839,16 +834,13 @@ module.exports = {
       //   }
       // }
 
-      let tradeCount = await TradeHistory.count({
-        ...q
-      });
+      let tradeCount = await TradeHistory.count({ ...q });
 
       return res.json({
         "status": 200,
         "message": sails.__("Trade list"),
         "data": tradeData,
-        tradeCount,
-        user_name
+        tradeCount
       });
     } else {
       if (user_id) {
@@ -864,20 +856,25 @@ module.exports = {
         };
       }
 
-      let user_name = "";
-
-      if (user_id) {
-        user_name = await Users.findOne({
-          select: ['full_name'],
-          where: {
-            id: user_id,
-            deleted_at: null
-          }
-        });
-      }
+      // if (user_id) {
+      //   user_name = await Users.findOne({
+      //     select: ['full_name'],
+      //     where: {
+      //       id: user_id,
+      //       deleted_at: null
+      //     }
+      //   });
+      // }
       let tradeData = await TradeHistory
         .find({
-          ...q
+          where: {
+            ...q
+          },
+          select: ['id', 'fill_price', 'limit_price', 'stop_price',
+            'price', 'quantity', 'currency', 'average_price', 'settle_currency', 'side',
+            'order_type', 'order_status', 'is_partially_filled', 'fix_quantity',
+            'symbol', 'maker_fee', 'taker_fee', 'user_fee', 'user_coin', 'requested_fee',
+            'requested_coin', 'created_at'],
         })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
@@ -891,18 +888,14 @@ module.exports = {
       //   }
       // }
 
-      let tradeCount = await TradeHistory.count({
-        ...q
-      });
+      let tradeCount = await TradeHistory.count({ ...q });
 
       return res.json({
         "status": 200,
         "message": sails.__("Trade list"),
         "data": tradeData,
-        tradeCount,
-        user_name
+        tradeCount
       });
     }
-
   }
 };

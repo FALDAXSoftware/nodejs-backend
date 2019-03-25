@@ -124,6 +124,11 @@ module.exports = {
       columnName: 'panic_button',
       defaultsTo: false,
     },
+    news: {
+      type: "boolean",
+      columnName: 'news',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
