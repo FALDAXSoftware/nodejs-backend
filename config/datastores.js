@@ -53,6 +53,6 @@ module.exports.datastores = {
     // url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     url: "postgresql://root:vceqxN5hZPyfWz9Z@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     ssl: false,
-    pool: false
+    // pool: false
   },
 };
