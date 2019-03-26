@@ -61,7 +61,9 @@ module.exports = {
         'symbol',
         'created_at',
         'deleted_at',
-        'limit_price'
+        'limit_price',
+        'settle_currency',
+        'currency'
       ],
       where: {
         deleted_at: null,
@@ -80,6 +82,8 @@ module.exports = {
       },
       sort: 'id DESC'
     })
+
+    console.log(completedData);
 
     return exits.success(completedData);
 

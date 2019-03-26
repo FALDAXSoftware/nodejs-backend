@@ -124,7 +124,6 @@ module.exports = {
           deleted_at: null
         }
       });
-
       if (usersData) {
         return res.json({ "status": 200, "message": "Users Data", "data": usersData });
       }
