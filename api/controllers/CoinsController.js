@@ -156,7 +156,6 @@ module.exports = {
         }
       }
     } catch (err) {
-      console.log('>>>>err', err);
       res
         .status(500)
         .json({
@@ -203,13 +202,11 @@ module.exports = {
             "err": sails.__("Something Wrong")
           });
       }
-
     }
   },
 
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
-    // req.setLocale('en')
     let { page, limit, data } = req.allParams();
     if (data) {
       let coinsData = await Coins.find({
@@ -287,7 +284,7 @@ module.exports = {
           if (uploadedFiles.length > 0) {
             var uploadIcon = await UploadFiles.upload(uploadedFiles[0].fd, 'coin/' + req.body.coin_code);
 
-            if (req.body.coin_name && req.body.coin_code && req.body.limit && req.body.wallet_address) {
+            if (req.body.coin_name && req.body.coin_code && req.body.minLimit) {
               let existingCoin = await Coins.find({
                 deleted_at: null,
                 or: [
@@ -309,13 +306,14 @@ module.exports = {
                   coin_icon: 'faldax/coin/' + req.body.coin_code,
                   coin_name: req.body.coin_name,
                   coin_code: req.body.coin_code,
-                  limit: req.body.limit,
-                  wallet_address: req.body.wallet_address,
+                  minlimit: req.body.minlimit,
+                  maxlimit: req.body.maxlimit,
+                  isERC: req.body.isERC,
+                  //wallet_address: req.body.wallet_address,
                   created_at: new Date()
                 })
                 .fetch();
               if (coins_detail) {
-                //Send verification email in before create
                 res.json({ "status": 200, "message": "Coin created successfully." });
                 return;
               } else {
@@ -383,7 +381,6 @@ module.exports = {
         return res.json({ "status": 200, "message": "Something went wrong! could not able to update coin details" });
       }
       return res.json({ "status": 200, "message": "Coin details updated successfully" });
-
     } catch (error) {
       res
         .status(500)

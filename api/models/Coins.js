@@ -29,11 +29,22 @@ module.exports = {
       // required: true
       allowNull: true
     },
-    limit: {
+    minLimit: {
       type: 'number',
-      columnName: 'limit',
+      columnName: 'minLimit',
       allowNull: true,
       defaultsTo: 0
+    },
+    maxLimit: {
+      type: 'number',
+      columnName: 'maxLimit',
+      allowNull: true,
+      defaultsTo: 0
+    },
+    isERC: {
+      type: 'boolean',
+      columnName: 'isERC',
+      defaultsTo: false
     },
     // description: {   type: 'string',   columnName: 'description',   required:
     // true },
@@ -73,9 +84,9 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    userWallets:{
-      collection:"wallet",
-      via:'coin_id'
+    userWallets: {
+      collection: "wallet",
+      via: 'coin_id'
     }
   },
   beforeCreate: (values, next) => {
