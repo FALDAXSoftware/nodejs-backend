@@ -407,6 +407,7 @@ module.exports = {
         .helpers
         .tradding
         .getUserTradeHistory(data);
+      console.log("Reponse ::: ", response);
       res.json({
         "status": 200,
         "message": sails.__("Order Success"),
@@ -510,7 +511,7 @@ module.exports = {
 
   getAllTradeHistory: async function (req, res) {
     var room = req.query.room;
-    console.log("Inside this method ::::: ", room);
+    // console.log("Inside this method ::::: ", room);
     try {
       if (req.isSocket) {
         if (req.query.prevRoom) {
@@ -519,7 +520,7 @@ module.exports = {
             .sockets
             .leave(req.socket, prevRoom, async function (leaveErr) {
               if (leaveErr) {
-                console.log('>>>leaveErr', leaveErr);
+                // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
                   .json({status: 403, "message": "Error occured"});
@@ -528,7 +529,7 @@ module.exports = {
                   .sockets
                   .join(req.socket, room, async function (err) {
                     if (err) {
-                      console.log('>>>err', err);
+                      // console.log('>>>err', err);
                       return res
                         .status(403)
                         .json({status: 403, "message": "Error occured"});
@@ -544,7 +545,7 @@ module.exports = {
                         .trade
                         .getTradeDetails(crypto, currency, 100);
 
-                      console.log("Trade Details :: ", tradeDetails);
+                      // console.log("Trade Details :: ", tradeDetails);
 
                       if (tradeDetails) {
                         return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
@@ -574,7 +575,7 @@ module.exports = {
                   .trade
                   .getTradeDetails(crypto, currency, 100);
 
-                console.log("Trade Details :: ", tradeDetails);
+                // console.log("Trade Details :: ", tradeDetails);
 
                 if (tradeDetails) {
                   return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
@@ -598,6 +599,7 @@ module.exports = {
     var user_id = req.user.id;
     var month = req.query.month;
     var filter_type = req.query.filter_type;
+    // console.log(req.query);
     try {
       if (req.isSocket) {
         if (req.query.prevRoom) {
@@ -606,7 +608,7 @@ module.exports = {
             .sockets
             .leave(req.socket, prevRoom + '-' + user_id, async function (leaveErr) {
               if (leaveErr) {
-                console.log('>>>leaveErr', leaveErr);
+                // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
                   .json({status: 403, "message": "Error occured"});
@@ -615,7 +617,7 @@ module.exports = {
                   .sockets
                   .join(req.socket, room + '-' + user_id, async function (err) {
                     if (err) {
-                      console.log('>>>err', err);
+                      // console.log('>>>err', err);
                       return res
                         .status(403)
                         .json({status: 403, "message": "Error occured"});
@@ -628,6 +630,8 @@ module.exports = {
                         .utilities
                         .getCurrencies(room);
                       var userTradeDetails;
+
+                      console.log("Filter Type ::: ", filter_type);
 
                       if (filter_type == 1) {
                         userTradeDetails = await sails
@@ -646,7 +650,6 @@ module.exports = {
                           .tradding
                           .getCancelDetails(user_id, crypto, currency, month);
                       }
-
                       if (userTradeDetails) {
                         return res.json({status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully."});
                       }
@@ -659,7 +662,7 @@ module.exports = {
             .sockets
             .join(req.socket, room + '-' + user_id, async function (err) {
               if (err) {
-                console.log('>>>err', err);
+                // console.log('>>>err', err);
                 return res
                   .status(403)
                   .json({status: 403, "message": "Error occured"});
@@ -694,7 +697,7 @@ module.exports = {
             });
         }
       } else {
-        console.log('>>>IN else')
+        // console.log('>>>IN else')
         return res
           .status(403)
           .json({status: 403, "message": "Error occured"});

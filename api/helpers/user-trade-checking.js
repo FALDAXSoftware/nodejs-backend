@@ -34,8 +34,9 @@ module.exports = {
             name: userKyc.country
           }
         });
+        console.log(countryData);
 
-        if (countryData != undefined) {
+        if (countryData != undefined && countryData.length > 0) {
           if (countryData[0].legality == 1) {
             response = true;
           } else if (countryData[0].legality == 4) {
@@ -45,7 +46,7 @@ module.exports = {
                 name: userKyc.state
               }
             });
-            if (stateData != undefined) {
+            if (stateData != undefined && stateData.length > 0) {
               if (stateData.legality == 1) {
                 response = true;
               } else {
