@@ -207,7 +207,7 @@ module.exports = {
   },
 
   testnews: async function (req, res) {
-    console.log("ip ----- >>>>>>>", req.connection.remoteAddress);
+    console.log("ip ----- >>>>>>>", req.headers);
     // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
     // greeting); res.end();
     // var greeting = await sails
