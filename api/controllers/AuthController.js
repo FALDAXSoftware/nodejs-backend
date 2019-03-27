@@ -120,9 +120,17 @@ module.exports = {
                   .helpers
                   .jwtIssue(user_detail.id);
                 // Login History Save
+                var ip;
+                if (req.headers['x-forwarded-for']) {
+                  ip = req.headers['x-forwarded-for'].split(",")[0];
+                } else if (req.connection && req.connection.remoteAddress) {
+                  ip = req.connection.remoteAddress;
+                } else {
+                  ip = req.ip;
+                }
                 await LoginHistory.create({
                   user: user_detail.id,
-                  ip: req.connection.remoteAddress,
+                  ip: ip,
                   created_at: new Date(),
                   device_type: req.body.device_type,
                   jwt_token: token,
