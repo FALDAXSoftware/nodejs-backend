@@ -90,7 +90,6 @@ module.exports = {
         if (data) {
             let buyBookData = await buyBook.find({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
@@ -102,7 +101,6 @@ module.exports = {
 
             let buyBookCount = await buyBook.count({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
@@ -121,14 +119,12 @@ module.exports = {
         } else {
             let buyBookData = await buyBook.find({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 
             let buyBookCount = await buyBook.count({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                 }
             });

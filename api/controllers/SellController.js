@@ -11,17 +11,14 @@ module.exports = {
         let room = req.query.room;
         try {
             if (req.isSocket) {
-
                 if (req.query.prevRoom) {
                     let prevRoom = req.query.prevRoom;
                     sails.sockets.leave(req.socket, prevRoom, function (leaveErr) {
                         if (leaveErr) {
-                            console.log('>>>leaveErr', leaveErr);
                             return res.status(403).json({ status: 403, "message": "Error occured" });
                         } else {
                             sails.sockets.join(req.socket, room, async function (err) {
                                 if (err) {
-                                    console.log('>>>err', err);
                                     return res.status(403).json({ status: 403, "message": "Error occured" });
                                 } else {
                                     let { crypto, currency } = await sails
@@ -48,7 +45,6 @@ module.exports = {
                 } else {
                     sails.sockets.join(req.socket, room, async function (err) {
                         if (err) {
-                            console.log('>>>err', err);
                             return res.status(403).json({ status: 403, "message": "Error occured" });
                         } else {
                             let { crypto, currency } = await sails
@@ -97,7 +93,6 @@ module.exports = {
         if (data) {
             let sellBookData = await sellBook.find({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                     or: [
                         { symbol: { contains: data } },
@@ -109,7 +104,6 @@ module.exports = {
 
             let sellBookCount = await sellBook.count({
                 user_id: req.body.user_id,
-                deleted_at: null,
                 or: [
                     { symbol: { contains: data } },
                     { fill_price: data },
@@ -126,14 +120,12 @@ module.exports = {
         } else {
             let sellBookData = await sellBook.find({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                 }
             }).sort("id ASC").paginate(page, parseInt(limit));
 
             let sellBookCount = await sellBook.count({
                 where: {
-                    deleted_at: null,
                     user_id: req.body.user_id,
                 }
             });
