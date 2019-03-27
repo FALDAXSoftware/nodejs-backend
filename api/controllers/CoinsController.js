@@ -306,8 +306,8 @@ module.exports = {
                   coin_icon: 'faldax/coin/' + req.body.coin_code,
                   coin_name: req.body.coin_name,
                   coin_code: req.body.coin_code,
-                  minlimit: req.body.minlimit,
-                  maxlimit: req.body.maxlimit,
+                  minLimit: req.body.minLimit,
+                  maxLimit: req.body.maxLimit,
                   isERC: req.body.isERC,
                   //wallet_address: req.body.wallet_address,
                   created_at: new Date()
