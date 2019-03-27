@@ -55,6 +55,11 @@ module.exports = {
                     .status(401)
                     .json({ "status": 401, "err": 'Invalid email or password' });
                 } else {
+
+                  if (admin_details.is_twofactor) {
+                    console.log('>>>>>>>Is two factor')
+                  }
+
                   delete admin_details.password;
                   // Token Issue
                   var token = await sails
