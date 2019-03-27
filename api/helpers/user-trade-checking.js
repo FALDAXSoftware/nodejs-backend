@@ -27,6 +27,8 @@ module.exports = {
       var countryData;
       var stateData;
       var response;
+      var msg;
+      var sendInfo
 
       if (userKyc) {
         countryData = await Countries.find({
@@ -34,7 +36,6 @@ module.exports = {
             name: userKyc.country
           }
         });
-        console.log(countryData);
 
         if (countryData != undefined && countryData.length > 0) {
           if (countryData[0].legality == 1) {
@@ -51,14 +52,28 @@ module.exports = {
                 response = true;
               } else {
                 response = false;
+                msg = 'You are allowed to trade in this regoin'
+
               }
             }
           } else {
             response = false;
+            msg = 'You are allowed to trade in this regoin'
           }
+        } else {
+          response = false;
+          msg = 'You need to complete your KYC to trade in FALDAX';
         }
+      } else {
+        response = false;
+        msg = 'You need to complete your KYC to trade in FALDAX';
       }
-      return exits.success(response);
+
+      sendInfo = {
+        response: response,
+        msg: msg
+      }
+      return exits.success(sendInfo);
     } catch (err) {
       console.log(err);
     }
