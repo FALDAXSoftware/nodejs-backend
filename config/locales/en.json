@@ -43,5 +43,6 @@
 	"Featured Blog Changed": "Featured Blog Changed",
 	"Order Success": "Order fulfiled successfully",
 	"Order Palce Success": "Order placed successfully",
-	"You are not allowed to trade": "You are not allowed to trade"
+	"You are not allowed to trade": "You are not allowed to trade",
+	"You are not allowed to trade in this region": "You are not allowed to trade in this region"
 }

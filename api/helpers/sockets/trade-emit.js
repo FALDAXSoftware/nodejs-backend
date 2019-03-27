@@ -19,6 +19,11 @@ module.exports = {
       example: 'ETH',
       description: 'Code of Currency.',
       required: true
+    },
+    userIds: {
+      type: 'ref',
+      required: false,
+      defaultsTo: []
     }
   },
 
@@ -50,7 +55,7 @@ module.exports = {
       .tradding
       .trade
       .getTradeDetails(inputs.crypto, inputs.currency, 100);
-      console.log("Updated value ::: ",tradeDetails)
+    console.log("Updated value ::: ", tradeDetails)
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "tradehistoryUpdate", tradeDetails);
     let cardDate = await sails
       .helpers
@@ -67,6 +72,20 @@ module.exports = {
       .tradding
       .getInstrumentData(inputs.currency);
     sails.sockets.broadcast(inputs.currency, "instrumentUpdate", cryptoInstrumentUpdate);
+    // Get only unique user ids
+    var filteredUsers = inputs.userIds.filter(function (item, pos) {
+      return inputs.userIds.indexOf(item) == pos;
+    });
+    // Broadcast balance update for all user
+    for (let index = 0; index < filteredUsers.length; index++) {
+      const element = filteredUsers[index];
+      let userBalanceDetails = await sails
+        .helpers
+        .tradding
+        .getUserWalletBalance(element, inputs.currency, inputs.crypto);
+      sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency + "-" + element, "walletBalanceUpdate", userBalanceDetails);
+    }
+
     sails.sockets.broadcast(inputs.crypto + "-" + inputs.currency, "orderUpdated", { crypto: inputs.crypto, currency: inputs.currency });
     return exits.success();
   }

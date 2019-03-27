@@ -37,6 +37,7 @@ module.exports = {
     // Get user wallet balance.
     var userWalletBalance;
     // TODO
+    console.log("user id in walletbalanced", inputs);
 
     var coinId = await Coins.findOne({
       where: {
