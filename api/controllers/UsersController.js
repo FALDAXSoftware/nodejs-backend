@@ -596,7 +596,7 @@ module.exports = {
       .fetch();
 
     if (updateUserData) {
-      return res.json({ "status": 200, "message": "User Referal Percentage Updated" });
+      return res.json({ "status": 200, "message": "User Referral Percentage Updated." });
     } else {
       return res.json({ "status": 200, "message": "User(id) not found" });
     }

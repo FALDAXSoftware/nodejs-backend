@@ -68,7 +68,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     // TODO
     try {
-      let {crypto, currency} = await sails
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);

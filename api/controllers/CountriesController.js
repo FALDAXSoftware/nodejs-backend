@@ -79,6 +79,7 @@ module.exports = {
                 query = query + " legality= " + legality
             }
         }
+        countQuery = query;
         query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
         let countryData = await sails.sendNativeQuery("Select *" + query, [])
 
@@ -88,7 +89,7 @@ module.exports = {
             countryData[i].stateCount = stateCount;
         }
 
-        let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + query, [])
+        let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
         CountriesCount = CountriesCount.rows[0].count;
 
         if (countryData) {
@@ -99,23 +100,36 @@ module.exports = {
             });
         }
     },
+
     getStates: async function (req, res) {
-        let { country_id, data } = req.allParams();
-        let param = {
-            country_id
-        };
-        if (data) {
-            param['name'] = {
-                contains: data
+        let { data } = req.allParams();
+        let query = " from states";
+        if ((data && data != "")) {
+            query += " WHERE"
+            if (data && data != "" && data != null) {
+                query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
             }
         }
 
-        let state = await State.find(param).sort('id ASC');
-        return res.json({
-            "status": 200,
-            "message": "State list",
-            "data": state
-        });
+        stateQuery = query;
+        let stateData = await sails.sendNativeQuery("Select *" + query, [])
+
+        stateData = stateData.rows;
+        for (let i = 0; i < stateData.length; i++) {
+            let stateCount = await State.count({ country_id: stateData[i].id });
+            stateData[i].stateCount = stateCount;
+        }
+
+        let stateCount = await sails.sendNativeQuery("Select COUNT(id)" + stateQuery, [])
+        stateCount = stateCount.rows[0].count;
+
+        if (stateData) {
+            return res.json({
+                "status": 200,
+                "message": "State list",
+                "data": stateData, stateCount
+            });
+        }
     },
 
     countryActivate: async function (req, res) {
