@@ -68,7 +68,9 @@ module.exports = {
   fn: async function (inputs, exits) {
     // TODO
     try {
-      let { crypto, currency } = await sails
+      var userIds = [];
+      userIds.push(inputs.user_id);
+      let {crypto, currency} = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -146,10 +148,6 @@ module.exports = {
             .intercept('serverError', () => {
               return new Error("serverError");
             });
-          await sails
-            .helpers
-            .sockets
-            .tradeEmit(crypto, currency);
           return exits.success(limitMatchData);
         } else {
           sellLimitOrderData.activity_id = activity.id;
@@ -165,7 +163,7 @@ module.exports = {
             await sails
               .helpers
               .sockets
-              .tradeEmit(crypto, currency);
+              .tradeEmit(crypto, currency, userIds);
             return exits.success(addSellBook);
           } else {
             return exits.insufficientBalance();
@@ -185,7 +183,7 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(crypto, currency, userIds);
           return exits.success(addSellBook);
         } else {
           return exits.insufficientBalance();

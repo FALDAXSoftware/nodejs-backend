@@ -52,13 +52,13 @@ module.exports = {
                 response = true;
               } else {
                 response = false;
-                msg = 'You are allowed to trade in this regoin'
+                msg = 'You are not allowed to trade in this regoin'
 
               }
             }
           } else {
             response = false;
-            msg = 'You are allowed to trade in this regoin'
+            msg = 'You are not allowed to trade in this regoin'
           }
         } else {
           response = false;

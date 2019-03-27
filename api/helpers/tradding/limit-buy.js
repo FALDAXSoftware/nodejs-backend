@@ -67,7 +67,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-
+      var userIds = [];
+      userIds.push(inputs.user_id);
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -168,7 +169,7 @@ module.exports = {
             await sails
               .helpers
               .sockets
-              .tradeEmit(crypto, currency);
+              .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
             return exits.success(addBuyBook);
           } else {
             return exits.insufficientBalance();
@@ -194,7 +195,7 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
           return exits.success(addBuyBook);
         } else {
           return exits.insufficientBalance();

@@ -53,6 +53,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      var userIds = [];
+      userIds.push(inputs.buyLimitOrderData.user_id);
       let buyLimitOrderData = inputs.buyLimitOrderData
       if (buyLimitOrderData.orderQuantity <= 0) {
         // quantity can not be less than zero
@@ -107,6 +109,7 @@ module.exports = {
                 .activity
                 .update(sellBook[0].activity_id, trade_history_data);
 
+              userIds.push(parseInt(trade_history_data.requested_user_id));
               var request = {
                 requested_user_id: trade_history_data.requested_user_id,
                 user_id: trade_history_data.user_id,
@@ -145,8 +148,12 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, { 'quantity': remainingQty });
+                  .update(sellBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
+                await sails
+                  .helpers
+                  .sockets
+                  .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
                 return exits.success(updatedbuyBook);
               } else {
                 var deleteData = await sails
@@ -155,6 +162,10 @@ module.exports = {
                   .sell
                   .deleteOrder(sellBook[0].id);
                 //Emit the socket here
+                await sails
+                  .helpers
+                  .sockets
+                  .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
                 return exits.success(deleteData);
               }
             } else {
@@ -293,6 +304,10 @@ module.exports = {
               .tradding
               .buy
               .addBuyOrder(buyAddedData);
+            await sails
+              .helpers
+              .sockets
+              .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
             //Add Socket Here Emit
             return exits.success(addSellBook);
           } else {
@@ -322,6 +337,10 @@ module.exports = {
             .tradding
             .buy
             .addBuyOrder(buyAddedData);
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
           //Add Socket Here Emit
           return exits.success(addSellBook);
         } else {

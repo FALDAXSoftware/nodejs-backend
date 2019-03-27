@@ -75,12 +75,7 @@ module.exports = {
     // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>", await kraken.api('Ticker', { pair:
     // 'XXBTZUSD' })); var data = await kraken.api('AddOrder', { pair: 'XXBTZUSD',
     // type: 'buy', ordertype: 'market', volume: 1 })
-    var data = await kraken.api('AddOrder', {
-      pair: 'XBTGBP',
-      type: 'buy',
-      ordertype: 'market',
-      volume: 1
-    })
+    var data = await kraken.api('DepositMethods', {asset: 'XBT'})
     console.log(JSON.stringify(data));
     return exits.success(data);
   }
