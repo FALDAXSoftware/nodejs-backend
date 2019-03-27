@@ -483,7 +483,6 @@ module.exports = {
             'referal_percentage'
           ],
           where: {
-            is_verified: true,
             or: [
               {
                 email: {
@@ -516,7 +515,6 @@ module.exports = {
         // usersData[index]["kyc"] = kyc; }
         let userCount = await Users.count({
           where: {
-            is_verified: true,
             or: [
               {
                 email: {
@@ -566,10 +564,7 @@ module.exports = {
             'fiat',
             'state',
             'referal_percentage'
-          ],
-          where: {
-            is_verified: true
-          }
+          ]
         })
           .sort("id DESC")
           .paginate(page - 1, parseInt(limit));
@@ -582,7 +577,7 @@ module.exports = {
         // userKyc[index].isApprove == true) {                 usersData[index].is_kyc =
         // userKyc[index].isApprove;             }         }     } }
 
-        let userCount = await Users.count({ is_verified: true });
+        let userCount = await Users.count();
         if (usersData) {
           return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
         }

@@ -16,7 +16,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -40,7 +40,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -84,7 +84,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -108,7 +108,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -143,7 +143,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -155,7 +155,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -177,7 +177,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -201,7 +201,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -246,7 +246,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -267,7 +267,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -307,7 +307,7 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse == true) {
+      if (dataResponse.response == true) {
         let response = await sails
           .helpers
           .tradding
@@ -328,7 +328,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__("You are not allowed to trade in this region")
+          "message": sails.__(dataResponse.msg)
         });
       }
     } catch (error) {
@@ -461,6 +461,8 @@ module.exports = {
                 .helpers
                 .tradding
                 .getUserWalletBalance(user_id, currency, crypto);
+
+              console.log("User Balance Detials :: ", userBalanceDetails);
 
               if (userBalanceDetails) {
                 return res.json({ status: 200, data: userBalanceDetails, "message": "User Balance retrieved successfully" + user_id });
