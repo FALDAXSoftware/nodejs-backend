@@ -43,5 +43,8 @@
 	"Featured Blog Changed": "Featured Blog Changed",
 	"Order Success": "Order fulfiled successfully",
 	"Order Palce Success": "Order placed successfully",
-	"You are not allowed to trade": "You are not allowed to trade"
+	"You are not allowed to trade": "You are not allowed to trade",
+	"You need to complete you KYC before trading": "You need to complete you KYC before trading",
+	"You need to complete your KYC to trade in FALDAX": "You need to complete your KYC to trade in FALDAX",
+	"You are allowed to trade in this regoin": "You are allowed to trade in this regoin"
 }
