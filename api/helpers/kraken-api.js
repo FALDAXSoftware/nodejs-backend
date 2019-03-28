@@ -1,4 +1,6 @@
 var fetch = require('node-fetch')
+// var Kraken = require("kraken");
+var Kraken = require('kraken-exchange');
 module.exports = {
 
   friendlyName: 'Get new address',
@@ -26,8 +28,8 @@ module.exports = {
     const key = 'rEnog9yX4OCr0oGs6aPy2MUtT9yHushTSzGh6aWovyPwhlw0z858DXot'; // API Key
     const secret = '8F16MdjpzhbrAzyfNQ7TeyG1feopxZ1ngeZnsxVVFd4MnjGwLgPJvv5xT0fRpCj3B7a/QXEMN2U3F4Ih' +
         'LwphgA==4lSiCw=='; // API Private Key
-    const KrakenClient = require('kraken-api');
-    const kraken = new KrakenClient(key, secret);
+
+    const kraken = new Kraken(key, secret);
 
     console.log("Kraken :::: ", kraken);
 
@@ -66,29 +68,25 @@ module.exports = {
       ]
     };
 
-    // const defaults = {   url: 'https://api.kraken.com/0/private',   version: 0,
-    // timeout: 5000,   wait: true }; console.log('>>>>>>>>>>>>>>>>>>', await
-    // kraken.api('Balance')); console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>", await
-    // kraken.api('Ticker', { pair: 'XXBTZUSD' }));
-    var data = await kraken.api('DepositAddresses', {
-      asset: 'XBT',
-      method: 'Bitcoin',
-      // ordertype: 'market', volume: 0.1,
-      nonce: 0,
-      wait: true
-    });
-    console.log(data);
-    // var data = await kraken.api('DepositMethods', {asset: 'XBT'}) await
-    // fetch('https://api.kraken.com/0/private/AddOrder', {   method: "POST", body:
-    // {     "pair": "XXBTZUSD",     "type": "buy",     "ordertype": "market",
-    // "volume": 1,     "nonce": 0   },     headers: {       'API-Key':
-    // 'rEnog9yX4OCr0oGs6aPy2MUtT9yHushTSzGh6aWovyPwhlw0z858DXot',       'API-Sign':
-    // '8F16MdjpzhbrAzyfNQ7TeyG1feopxZ1ngeZnsxVVFd4MnjGwLgPJvv5xT0fRpCj3B7a/QXEMN2U3
-    // F4Ih' +           'LwphgA==',       'Content-Type': 'application/json'     }
-    // })   .then(resData => resData.json())   .then(resData => { console.log("HERE
-    // ::: ");     risingFallingData = resData; console.log(risingFallingData); //
-    // return exits.success(risingFallingData);   });
+    // kraken.depositAddresses('XBT', 'Bitocin' [, newAddress])
+
+    var method;
+
+    await kraken
+      .depositMethods('XBT')
+      .then(response => {
+        method = response;
+      })
+
+    console.log(method[0].method);
+
+    kraken
+      .depositAddress('XBT', method[0].method)
+      .then(response => console.log("Reponse :: ", response))
+      .catch(err => console.error("Error :: ", err));
+
+    // var data = await kraken.api('DepositAddresses', {   asset: 'XBT',   method:
+    // 'Bitcoin',   nonce: 0,   wait: true,   dev: true,   validate: true })
     // console.log(JSON.stringify(data)); return exits.success(data);
   }
-
 };

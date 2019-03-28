@@ -152,7 +152,7 @@ module.exports = {
     var dataResponse = await sails
       .helpers
       .userTradeChecking(usersData[0].id);
-    usersData[0].is_allowed = dataResponse;
+    usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
       return res.json({ "status": 200, "message": "Users Data", "data": usersData });
     }
