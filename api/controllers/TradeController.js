@@ -175,9 +175,11 @@ module.exports = {
     try {
       let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
+      console.log(user_id);
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
+
       if (dataResponse.response == true) {
         let response = await sails
           .helpers
