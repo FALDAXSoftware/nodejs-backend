@@ -57,6 +57,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      var userIds = [];
+      userIds.push(inputs.sellLimitOrderData.user_id);
       let sellLimitOrderData = inputs.sellLimitOrderData
       if (sellLimitOrderData.orderQuantity <= 0) {
         return exits.invalidQuantity()
@@ -110,6 +112,7 @@ module.exports = {
                 .activity
                 .update(buyBook[0].activity_id, trade_history_data);
 
+              userIds.push(parseInt(trade_history_data.requested_user_id));
               var request = {
                 requested_user_id: trade_history_data.requested_user_id,
                 user_id: sellLimitOrderData.user_id,
@@ -145,8 +148,12 @@ module.exports = {
                   .helpers
                   .tradding
                   .buy
-                  .update(buyBook[0].id, { 'quantity': remainingQty });
+                  .update(buyBook[0].id, {'quantity': remainingQty});
                 //Emit the socket
+                await sails
+                  .helpers
+                  .sockets
+                  .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
                 return exits.success(updatedBuyBook);
               } else {
                 var deleteData = await sails
@@ -155,6 +162,10 @@ module.exports = {
                   .buy
                   .deleteOrder(buyBook[0].id);
                 //Emit the socket here
+                await sails
+                  .helpers
+                  .sockets
+                  .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
                 return exits.success(deleteData);
               }
             } else {
@@ -205,6 +216,7 @@ module.exports = {
                 .activity
                 .update(buyBook[0].activity_id, trade_history_data);
 
+              userIds.push(parseInt(trade_history_data.requested_user_id));
               var request = {
                 requested_user_id: trade_history_data.requested_user_id,
                 user_id: sellLimitOrderData.user_id,
@@ -280,7 +292,12 @@ module.exports = {
               .tradding
               .sell
               .addSellOrder(sellAddedData);
+            console.log(userIds);
             //Add Socket Here Emit
+            await sails
+              .helpers
+              .sockets
+              .tradeEmit(crypto, currency, userIds);
             return exits.success(addSellBook);
           } else {
             //Not enough fund
@@ -309,6 +326,10 @@ module.exports = {
             .sell
             .addSellOrder(sellAddedData);
           //Add Socket Here Emit
+          await sails
+            .helpers
+            .sockets
+            .tradeEmit(crypto, currency, userIds);
           return exits.success(addSellBook);
         } else {
           //Not enough fund

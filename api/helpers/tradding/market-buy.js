@@ -58,6 +58,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      var userIds = [];
+      userIds.push(inputs.user_id);
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -136,6 +138,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentSellBookDetails.activity_id, trade_history_data);
+            userIds.push(parseInt(trade_history_data.requested_user_id));
 
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
@@ -204,6 +207,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentSellBookDetails.activity_id, trade_history_data);
+            userIds.push(parseInt(trade_history_data.requested_user_id));
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
               user_id: inputs.user_id,
@@ -269,7 +273,7 @@ module.exports = {
       await sails
         .helpers
         .sockets
-        .tradeEmit(crypto, currency);
+        .tradeEmit(crypto, currency, userIds);
       return exits.success();
     } catch (error) {
       console.log(error);

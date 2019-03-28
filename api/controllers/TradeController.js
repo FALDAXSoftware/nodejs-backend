@@ -10,7 +10,7 @@ module.exports = {
   //---------------------------Web Api------------------------------
   marketSell: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      let {symbol, side, order_type, orderQuantity} = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       var dataResponse = await sails
@@ -49,17 +49,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({ status: 500, "err": "no more limit order in order book" });
+          .json({status: 500, "err": "no more limit order in order book"});
       }
       if (error.message == "serverError") {
         return res
@@ -79,11 +79,12 @@ module.exports = {
   },
   marketBuy: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      let {symbol, side, order_type, orderQuantity} = req.allParams();
       let user_id = req.user.id;
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
+      console.log(dataResponse);
       if (dataResponse.response == true) {
         let response = await sails
           .helpers
@@ -115,17 +116,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({ status: 500, "err": "no more limit order in order book" });
+          .json({status: 500, "err": "no more limit order in order book"});
       }
 
       return res
@@ -138,7 +139,7 @@ module.exports = {
   },
   limitSell: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
       var dataResponse = await sails
         .helpers
@@ -172,7 +173,7 @@ module.exports = {
 
   limitBuy: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
       var dataResponse = await sails
         .helpers
@@ -209,17 +210,17 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
       if (error.message == "invalidQuantity") {
         return res
           .status(500)
-          .json({ status: 500, "err": "invalid order quantity" });
+          .json({status: 500, "err": "invalid order quantity"});
       }
 
       return res
@@ -276,12 +277,12 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
 
       return res
@@ -336,12 +337,12 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
 
       return res
@@ -362,7 +363,7 @@ module.exports = {
 
   cancelPendingOrder: async function (req, res) {
     try {
-      let { side, id, order_type } = req.allParams();
+      let {side, id, order_type} = req.allParams();
       let user_id = req.user.id;
       let response = await sails
         .helpers
@@ -385,7 +386,7 @@ module.exports = {
       if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
-          .json({ status: 500, "err": "No Pending Order Found" });
+          .json({status: 500, "err": "No Pending Order Found"});
       }
 
       return res
@@ -419,12 +420,12 @@ module.exports = {
       if (error.message == "coinNotFound") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Coin Not Found" });
+          .json({status: 500, "err": "Coin Not Found"});
       }
       if (error.message == "insufficientBalance") {
         return res
           .status(500)
-          .json({ status: 500, "err": "Insufficient balance in wallet" });
+          .json({status: 500, "err": "Insufficient balance in wallet"});
       }
 
       return res
@@ -450,9 +451,9 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({ status: 403, "message": "Error occured" });
+                .json({status: 403, "message": "Error occured"});
             } else {
-              let { crypto, currency } = await sails
+              let {crypto, currency} = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
@@ -465,14 +466,18 @@ module.exports = {
               console.log("User Balance Detials :: ", userBalanceDetails);
 
               if (userBalanceDetails) {
-                return res.json({ status: 200, data: userBalanceDetails, "message": "User Balance retrieved successfully" + user_id });
+                return res.json({
+                  status: 200,
+                  data: userBalanceDetails,
+                  "message": "User Balance retrieved successfully" + user_id
+                });
               }
             }
           });
       } else {
         return res
           .status(403)
-          .json({ status: 403, "message": "Error occured" });
+          .json({status: 403, "message": "Error occured"});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -526,7 +531,7 @@ module.exports = {
                 // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
                 sails
                   .sockets
@@ -535,9 +540,9 @@ module.exports = {
                       // console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({ status: 403, "message": "Error occured" });
+                        .json({status: 403, "message": "Error occured"});
                     } else {
-                      let { crypto, currency } = await sails
+                      let {crypto, currency} = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -551,7 +556,7 @@ module.exports = {
                       // console.log("Trade Details :: ", tradeDetails);
 
                       if (tradeDetails) {
-                        return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
+                        return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
                       }
                     }
                   });
@@ -565,9 +570,9 @@ module.exports = {
                 console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
-                let { crypto, currency } = await sails
+                let {crypto, currency} = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -581,7 +586,7 @@ module.exports = {
                 // console.log("Trade Details :: ", tradeDetails);
 
                 if (tradeDetails) {
-                  return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
+                  return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
                 }
               }
             });
@@ -589,7 +594,7 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({ status: 403, "message": "Error occured" });
+          .json({status: 403, "message": "Error occured"});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -614,7 +619,7 @@ module.exports = {
                 // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
                 sails
                   .sockets
@@ -623,12 +628,12 @@ module.exports = {
                       // console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({ status: 403, "message": "Error occured" });
+                        .json({status: 403, "message": "Error occured"});
                     } else {
                       if (month == undefined) {
                         month = 0;
                       }
-                      let { crypto, currency } = await sails
+                      let {crypto, currency} = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -654,7 +659,7 @@ module.exports = {
                           .getCancelDetails(user_id, crypto, currency, month);
                       }
                       if (userTradeDetails) {
-                        return res.json({ status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully." });
+                        return res.json({status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully."});
                       }
                     }
                   });
@@ -668,9 +673,9 @@ module.exports = {
                 // console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
-                let { crypto, currency } = await sails
+                let {crypto, currency} = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -694,7 +699,7 @@ module.exports = {
                 }
 
                 if (userTradeDetails) {
-                  return res.json({ status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully." });
+                  return res.json({status: 200, data: userTradeDetails, "message": "User Trade data retrived successfully."});
                 }
               }
             });
@@ -703,7 +708,7 @@ module.exports = {
         // console.log('>>>IN else')
         return res
           .status(403)
-          .json({ status: 403, "message": "Error occured" });
+          .json({status: 403, "message": "Error occured"});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -722,7 +727,7 @@ module.exports = {
                 console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
                 sails
                   .sockets
@@ -735,7 +740,7 @@ module.exports = {
                           "err": sails.__("Something Wrong")
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {crypto, currency} = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -743,7 +748,7 @@ module.exports = {
                         .helpers
                         .chart
                         .getDepthChartDetail(crypto, currency);
-                      return res.json({ status: 200, data: data, "message": "User Trade data retrived successfully." });
+                      return res.json({status: 200, data: data, "message": "User Trade data retrived successfully."});
                     }
                   });
               }
@@ -760,7 +765,7 @@ module.exports = {
                     "err": sails.__("Something Wrong")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {crypto, currency} = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -768,11 +773,11 @@ module.exports = {
                   .helpers
                   .chart
                   .getDepthChartDetail(crypto, currency);
-                return res.json({ status: 200, data: data, "message": "User Trade data retrived successfully." });
+                return res.json({status: 200, data: data, "message": "User Trade data retrived successfully."});
               }
             });
         }
-      } else { }
+      } else {}
     } catch (error) {
       console.log(error);
       return res
@@ -873,32 +878,32 @@ module.exports = {
       ]
       let tradeData = await TradeHistory
         .find({
-          ...q,
-          select: [
-            'id',
-            'fill_price',
-            'limit_price',
-            'stop_price',
-            'price',
-            'quantity',
-            'currency',
-            'average_price',
-            'settle_currency',
-            'side',
-            'order_type',
-            'order_status',
-            'is_partially_filled',
-            'fix_quantity',
-            'symbol',
-            'maker_fee',
-            'taker_fee',
-            'user_fee',
-            'user_coin',
-            'requested_fee',
-            'requested_coin',
-            'created_at'
-          ]
-        })
+        ...q,
+        select: [
+          'id',
+          'fill_price',
+          'limit_price',
+          'stop_price',
+          'price',
+          'quantity',
+          'currency',
+          'average_price',
+          'settle_currency',
+          'side',
+          'order_type',
+          'order_status',
+          'is_partially_filled',
+          'fix_quantity',
+          'symbol',
+          'maker_fee',
+          'taker_fee',
+          'user_fee',
+          'user_coin',
+          'requested_fee',
+          'requested_coin',
+          'created_at'
+        ]
+      })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
 
@@ -940,30 +945,30 @@ module.exports = {
         where: {
           ...q
         },
-        select: [
-          'id',
-          'fill_price',
-          'limit_price',
-          'stop_price',
-          'price',
-          'quantity',
-          'currency',
-          'average_price',
-          'settle_currency',
-          'side',
-          'order_type',
-          'order_status',
-          'is_partially_filled',
-          'fix_quantity',
-          'symbol',
-          'maker_fee',
-          'taker_fee',
-          'user_fee',
-          'user_coin',
-          'requested_fee',
-          'requested_coin',
-          'created_at'
-        ]
+          select: [
+            'id',
+            'fill_price',
+            'limit_price',
+            'stop_price',
+            'price',
+            'quantity',
+            'currency',
+            'average_price',
+            'settle_currency',
+            'side',
+            'order_type',
+            'order_status',
+            'is_partially_filled',
+            'fix_quantity',
+            'symbol',
+            'maker_fee',
+            'taker_fee',
+            'user_fee',
+            'user_coin',
+            'requested_fee',
+            'requested_coin',
+            'created_at'
+          ]
       })
         .sort("id ASC")
         .paginate(page, parseInt(limit));
