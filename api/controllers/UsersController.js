@@ -460,130 +460,31 @@ module.exports = {
   getUserPaginate: async function (req, res) {
     try {
       let { page, limit, data } = req.allParams();
-      if (data) {
-        let usersData = await Users.find({
-          select: [
-            'email',
-            'full_name',
-            'first_name',
-            'last_name',
-            'country',
-            'street_address',
-            'city_town',
-            'profile_pic',
-            'created_at',
-            'id',
-            'is_active',
-            'is_verified',
-            'dob',
-            'street_address_2',
-            'postal_code',
-            'fiat',
-            'state',
-            'referal_percentage'
-          ],
-          where: {
-            or: [
-              {
-                email: {
-                  contains: data
-                }
-              }, {
-                first_name: {
-                  contains: data
-                }
-              }, {
-                last_name: {
-                  contains: data
-                }
-              }, {
-                country: {
-                  contains: data
-                }
-              }, {
-                full_name: {
-                  contains: data
-                }
-              }
-            ]
-          }
-        })
-          .sort("id DESC")
-          .paginate(page - 1, parseInt(limit));
-        // for (let index = 0; index < usersData.length; index++) {     const element =
-        // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-        // usersData[index]["kyc"] = kyc; }
-        let userCount = await Users.count({
-          where: {
-            or: [
-              {
-                email: {
-                  contains: data
-                }
-              }, {
-                first_name: {
-                  contains: data
-                }
-              }, {
-                last_name: {
-                  contains: data
-                }
-              }, {
-                country: {
-                  contains: data
-                }
-              }, {
-                full_name: {
-                  contains: data
-                }
-              }
-            ]
-          }
-        });
-        if (usersData) {
-          return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
-        }
-      } else {
-        let usersData = await Users.find({
-          select: [
-            'email',
-            'full_name',
-            'first_name',
-            'last_name',
-            'country',
-            'street_address',
-            'city_town',
-            'profile_pic',
-            'created_at',
-            'id',
-            'is_active',
-            'is_verified',
-            'dob',
-            'street_address_2',
-            'postal_code',
-            'fiat',
-            'state',
-            'referal_percentage'
-          ]
-        })
-          .sort("id DESC")
-          .paginate(page - 1, parseInt(limit));
-        // for (let index = 0; index < usersData.length; index++) {     const element =
-        // usersData[index];     let kyc = await KYC.findOne({ user_id: element.id });
-        // usersData[index]["kyc"] = kyc; } for (let index = 0; index <
-        // usersData.length; index++) {     if (usersData[index].id) {         let
-        // userKyc = await KYC.find({ user_id: usersData[index].id })         if
-        // (userKyc && userKyc.length > 0) {             if (userKyc[index] &&
-        // userKyc[index].isApprove == true) {                 usersData[index].is_kyc =
-        // userKyc[index].isApprove;             }         }     } }
-
-        let userCount = await Users.count();
-        if (usersData) {
-          return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+      let query = " from users";
+      if ((data && data != "")) {
+        query += " WHERE"
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
+      countQuery = query;
+      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      let usersData = await sails.sendNativeQuery("Select *" + query, [])
+
+      usersData = usersData.rows;
+
+      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      userCount = userCount.rows[0].count;
+
+      if (usersData) {
+        return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+      }
     } catch (err) {
-      console.log('ERRRR', err)
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
