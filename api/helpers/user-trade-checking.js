@@ -30,6 +30,8 @@ module.exports = {
       var msg;
       var sendInfo
 
+      console.log(userKyc);
+
       if (userKyc) {
         countryData = await Countries.find({
           where: {
@@ -40,6 +42,7 @@ module.exports = {
         if (countryData != undefined && countryData.length > 0) {
           if (countryData[0].legality == 1) {
             response = true;
+            msg = "You are allowed to trade"
           } else if (countryData[0].legality == 4) {
             stateData = await State.findOne({
               where: {
@@ -50,11 +53,15 @@ module.exports = {
             if (stateData != undefined && stateData.length > 0) {
               if (stateData.legality == 1) {
                 response = true;
+                msg = "You are allowed to trade"
               } else {
                 response = false;
                 msg = 'You are not allowed to trade in this regoin'
 
               }
+            } else {
+              response = false;
+              msg = 'You are not allowed to trade in this regoin'
             }
           } else {
             response = false;
