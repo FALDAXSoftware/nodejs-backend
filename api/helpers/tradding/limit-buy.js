@@ -165,6 +165,8 @@ module.exports = {
               .tradding
               .buy
               .addBuyOrder(buyLimitOrderData);
+            console.log("USER  IDS :::: ", userIds);
+
             //Add Socket Here Emit
             await sails
               .helpers
@@ -191,6 +193,8 @@ module.exports = {
             .intercept("serverError", () => {
               return new Error("serverError");
             });;
+          console.log("USER  IDS :::: ", userIds);
+
           //Add Socket Here Emit
           await sails
             .helpers
