@@ -1,6 +1,7 @@
 var fetch = require('node-fetch')
 // var Kraken = require("kraken");
-var Kraken = require('kraken-exchange');
+var KrakenClient = require('kraken-api');
+// var Kraken = require('kraken-exchange');
 module.exports = {
 
   friendlyName: 'Get new address',
@@ -29,7 +30,7 @@ module.exports = {
     const secret = '8F16MdjpzhbrAzyfNQ7TeyG1feopxZ1ngeZnsxVVFd4MnjGwLgPJvv5xT0fRpCj3B7a/QXEMN2U3F4Ih' +
         'LwphgA==4lSiCw=='; // API Private Key
 
-    const kraken = new Kraken(key, secret);
+    var kraken = new KrakenClient(key, secret);
 
     console.log("Kraken :::: ", kraken);
 
@@ -68,25 +69,12 @@ module.exports = {
       ]
     };
 
-    // kraken.depositAddresses('XBT', 'Bitocin' [, newAddress])
-
-    var method;
-
-    await kraken
-      .depositMethods('XBT')
-      .then(response => {
-        method = response;
-      })
-
-    console.log(method[0].method);
-
-    kraken
-      .depositAddress('XBT', method[0].method)
-      .then(response => console.log("Reponse :: ", response))
-      .catch(err => console.error("Error :: ", err));
-
-    // var data = await kraken.api('DepositAddresses', {   asset: 'XBT',   method:
-    // 'Bitcoin',   nonce: 0,   wait: true,   dev: true,   validate: true })
-    // console.log(JSON.stringify(data)); return exits.success(data);
+    var data = await kraken.api('DepositAddresses', {
+      asset: 'XBT',
+      method: 'Bitcoin',
+      new: true
+    })
+    console.log(JSON.stringify(data));
+    return exits.success(data);
   }
 };

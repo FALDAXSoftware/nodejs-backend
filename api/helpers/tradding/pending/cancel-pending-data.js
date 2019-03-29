@@ -47,6 +47,7 @@ module.exports = {
       var now = moment().format();
       var crypto;
       var currency;
+      var userIds = [];
       if (inputs.type == "Limit" && inputs.side == "Buy") {
         var pendingBookDetailsBuy = await buyBook.findOne({
           where: {
@@ -56,6 +57,7 @@ module.exports = {
         });
         crypto = pendingBookDetailsBuy.settle_currency;
         currency = pendingBookDetailsBuy.currency;
+        userIds.push(pendingBookDetailsBuy.user_id);
 
         var fees = await sails
           .helpers
@@ -79,8 +81,8 @@ module.exports = {
         var userPlacedBalance = walletDetails.placed_balance + (pendingBookDetailsBuy.price * pendingBookDetailsBuy.quantity);
 
         var updateWalletDetails = await Wallet
-          .update({ user_id: pendingBookDetailsBuy.user_id, coin_id: coinId.id })
-          .set({ placed_balance: userPlacedBalance });
+          .update({user_id: pendingBookDetailsBuy.user_id, coin_id: coinId.id})
+          .set({placed_balance: userPlacedBalance});
 
         if (pendingBookDetailsBuy.length === 0) {
           // throw("No buy limit order found.")
@@ -88,12 +90,12 @@ module.exports = {
         }
 
         var activityCancel = await ActivityTable
-          .update({ id: pendingBookDetailsBuy.activity_id })
-          .set({ is_cancel: true });
+          .update({id: pendingBookDetailsBuy.activity_id})
+          .set({is_cancel: true});
 
         deletePending = await buyBook
-          .update({ id: inputs.id })
-          .set({ deleted_at: now })
+          .update({id: inputs.id})
+          .set({deleted_at: now})
           .fetch();
 
       } else if (inputs.type == "Limit" && inputs.side == "Sell") {
@@ -106,6 +108,7 @@ module.exports = {
 
         crypto = pendingBookDetailsSell.settle_currency;
         currency = pendingBookDetailsSell.currency;
+        userIds.push(pendingBookDetailsSell.user_id);
 
         var fees = await sails
           .helpers
@@ -130,8 +133,8 @@ module.exports = {
         var userPlacedBalance = walletDetails.placed_balance + (pendingBookDetailsSell.quantity);
 
         var updateWalletDetails = await Wallet
-          .update({ user_id: pendingBookDetailsSell.user_id, coin_id: coinId.id })
-          .set({ placed_balance: userPlacedBalance });
+          .update({user_id: pendingBookDetailsSell.user_id, coin_id: coinId.id})
+          .set({placed_balance: userPlacedBalance});
 
         if (pendingBookDetailsSell.length === 0) {
           // throw("No buy limit order found.")
@@ -140,14 +143,12 @@ module.exports = {
         }
 
         var activityCancel = await ActivityTable
-          .update({ id: pendingBookDetailsSell.activity_id })
-          .set({ is_cancel: true });
-
-          
+          .update({id: pendingBookDetailsSell.activity_id})
+          .set({is_cancel: true});
 
         deletePending = await sellBook
-          .update({ id: inputs.id })
-          .set({ deleted_at: now })
+          .update({id: inputs.id})
+          .set({deleted_at: now})
           .fetch();
 
       } else {
@@ -160,7 +161,8 @@ module.exports = {
 
         crypto = pendingDetails.settle_currency;
         currency = pendingDetails.currency;
-        
+        userIds.push(pendingDetails.user_id);
+
         console.log(pendingDetails);
 
         if (pendingDetails == undefined || pendingDetails.length == 0) {
@@ -170,15 +172,15 @@ module.exports = {
         }
 
         deletePending = await PendingBook
-          .update({ id: inputs.id })
-          .set({ deleted_at: now })
+          .update({id: inputs.id})
+          .set({deleted_at: now})
           .fetch();
       }
       if (deletePending) {
         await sails
-        .helpers
-        .sockets
-        .tradeEmit(crypto, currency);
+          .helpers
+          .sockets
+          .tradeEmit(crypto, currency, userIds);
         return exits.success("Deleted Successfully")
       } else {
         // throw "Server Error";
