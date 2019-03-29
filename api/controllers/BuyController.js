@@ -8,21 +8,17 @@
 module.exports = {
     //---------------------------Web Api------------------------------
     getBuyBookDetails: async function (req, res) {
-        console.log('SOCKET call BUY Book');
         let room = req.query.room;
         try {
             if (req.isSocket) {
-                console.log('SOCKET call BUY Book', req.ip)
                 if (req.query.prevRoom) {
                     let prevRoom = req.query.prevRoom;
                     sails.sockets.leave(req.socket, prevRoom, function (err) {
                         if (err) {
-                            console.log('>>>err', err);
                             return res.status(403).json({ status: 403, "message": "Error occured" });
                         } else {
                             sails.sockets.join(req.socket, room, async function (err) {
                                 if (err) {
-                                    console.log('>>>err', err);
                                     return res.status(403).json({ status: 403, "message": "Error occured" });
                                 } else {
                                     let { crypto, currency } = await sails
@@ -48,7 +44,6 @@ module.exports = {
                 } else {
                     sails.sockets.join(req.socket, room, async function (err) {
                         if (err) {
-                            console.log('>>>err', err);
                             return res.status(403).json({ status: 403, "message": "Error occured" });
                         } else {
                             let { crypto, currency } = await sails
@@ -84,58 +79,32 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getAllBuyOrders: async function (req, res) {
-        // req.setLocale('en')
         let { page, limit, data } = req.allParams();
-
-        if (data) {
-            let buyBookData = await buyBook.find({
-                where: {
-                    user_id: req.body.user_id,
-                    or: [
-                        { symbol: { contains: data } },
-                        { fill_price: data },
-                        { quantity: data },
-                    ]
+        let query = " from buy_book";
+        if ((data && data != "")) {
+            query += " WHERE"
+            if (data && data != "" && data != null) {
+                query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+                if (!isNaN(data)) {
+                    query = query + " OR fill_price=" + data + " OR quantity=" + data;
                 }
-            }).sort('id ASC').paginate(page, parseInt(limit));
-
-            let buyBookCount = await buyBook.count({
-                where: {
-                    user_id: req.body.user_id,
-                    or: [
-                        { symbol: { contains: data } },
-                        { fill_price: data },
-                        { quantity: data },
-                    ]
-                }
-            });
-            if (buyBookData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount
-                });
             }
-        } else {
-            let buyBookData = await buyBook.find({
-                where: {
-                    user_id: req.body.user_id,
-                }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+        }
+        countQuery = query;
+        query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
 
-            let buyBookCount = await buyBook.count({
-                where: {
-                    user_id: req.body.user_id,
-                }
+        buyBookData = buyBookData.rows;
+
+        let buyBookCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+        buyBookCount = buyBookCount.rows[0].count;
+
+        if (buyBookData) {
+            return res.json({
+                "status": 200,
+                "message": sails.__("Buy Order list"),
+                "data": buyBookData, buyBookCount
             });
-
-            if (buyBookData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Buy Order list"),
-                    "data": buyBookData, buyBookCount
-                });
-            }
         }
     },
 };

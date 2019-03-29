@@ -87,56 +87,32 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getAllSellOrders: async function (req, res) {
-        // req.setLocale('en')
         let { page, limit, data } = req.allParams();
-
-        if (data) {
-            let sellBookData = await sellBook.find({
-                where: {
-                    user_id: req.body.user_id,
-                    or: [
-                        { symbol: { contains: data } },
-                        { fill_price: data },
-                        { quantity: data },
-                    ]
+        let query = " from sell_book";
+        if ((data && data != "")) {
+            query += " WHERE"
+            if (data && data != "" && data != null) {
+                query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+                if (!isNaN(data)) {
+                    query = query + " OR fill_price=" + data + " OR quantity=" + data;
                 }
-            }).sort('id ASC').paginate(page, parseInt(limit));
-
-            let sellBookCount = await sellBook.count({
-                user_id: req.body.user_id,
-                or: [
-                    { symbol: { contains: data } },
-                    { fill_price: data },
-                    { quantity: data },
-                ]
-            });
-            if (sellBookData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount
-                });
             }
-        } else {
-            let sellBookData = await sellBook.find({
-                where: {
-                    user_id: req.body.user_id,
-                }
-            }).sort("id ASC").paginate(page, parseInt(limit));
+        }
+        countQuery = query;
+        query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
 
-            let sellBookCount = await sellBook.count({
-                where: {
-                    user_id: req.body.user_id,
-                }
+        sellBookData = sellBookData.rows;
+
+        let sellBookCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+        sellBookCount = sellBookCount.rows[0].count;
+
+        if (sellBookData) {
+            return res.json({
+                "status": 200,
+                "message": sails.__("Sell Order list"),
+                "data": sellBookData, sellBookCount
             });
-
-            if (sellBookData) {
-                return res.json({
-                    "status": 200,
-                    "message": sails.__("Sell Order list"),
-                    "data": sellBookData, sellBookCount
-                });
-            }
         }
     },
 };
