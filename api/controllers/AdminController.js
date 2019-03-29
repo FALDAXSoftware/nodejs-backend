@@ -12,7 +12,7 @@ var QRCode = require('qrcode');
 module.exports = {
 
     // CMS Login
-    login: async function(req, res) {
+    login: async function (req, res) {
         try {
             // Parameter Existence
             if (req.body.email && req.body.password) {
@@ -59,7 +59,7 @@ module.exports = {
 
                         // Credentials Check (Password Compare)
                         Admin
-                            .comparePassword(query.password, admin_details, async function(err, valid) {
+                            .comparePassword(query.password, admin_details, async function (err, valid) {
                                 if (err) {
                                     return res
                                         .status(403)
@@ -118,7 +118,7 @@ module.exports = {
     },
 
     // Create Admin
-    create: async function(req, res) {
+    create: async function (req, res) {
         try {
             // Parameter Existence
             if (req.body.email && req.body.password) {
@@ -158,7 +158,7 @@ module.exports = {
     },
 
     // Change Password Admin
-    changePassword: async function(req, res) {
+    changePassword: async function (req, res) {
         try {
             if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
                 return res
@@ -216,7 +216,7 @@ module.exports = {
     },
 
     // Update Profile Details Admin
-    update: async function(req, res) {
+    update: async function (req, res) {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email });
             if (!admin_details) {
@@ -246,7 +246,7 @@ module.exports = {
     },
 
     // Reset Passsword
-    resetPassword: async function(req, res) {
+    resetPassword: async function (req, res) {
         try {
             var reset_token = req.body.reset_token;
 
@@ -278,7 +278,7 @@ module.exports = {
     },
 
     // Forgot Password request Admin
-    forgotPassword: async function(req, res) {
+    forgotPassword: async function (req, res) {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email, deleted_at: null });
 
@@ -304,7 +304,7 @@ module.exports = {
                     }, {
                             to: admin_details.email,
                             subject: "Forgot Password"
-                        }, function(err) {
+                        }, function (err) {
                             if (!err) {
                                 return res.json({ "status": 200, "message": "Reset password link sent to your email successfully." });
                             }
@@ -326,7 +326,7 @@ module.exports = {
     },
 
     //get all employees function
-    getAllEmployee: async function(req, res) {
+    getAllEmployee: async function (req, res) {
         try {
             let employees = await Admin
                 .find({
@@ -366,7 +366,7 @@ module.exports = {
     },
 
     //add employee controller function
-    addEmployee: async function(req, res) {
+    addEmployee: async function (req, res) {
         try {
             if (req.body.email && req.body.roles) {
 
@@ -379,7 +379,10 @@ module.exports = {
                 }
 
                 var employee_detail = await Admin.create({
-                    name: req.body.name,
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
+                    address: req.body.address,
+                    phone_number: req.body.phone_number,
                     email: req.body.email,
                     role_id: req.body.roles,
                     password: req.body.password
@@ -412,7 +415,7 @@ module.exports = {
     },
 
     // Delete Employee
-    deleteEmployee: async function(req, res) {
+    deleteEmployee: async function (req, res) {
         try {
             if (req.body.id) {
                 let employee = await Admin
@@ -450,7 +453,7 @@ module.exports = {
     },
 
     // Update Employee Details
-    updateEmployee: async function(req, res) {
+    updateEmployee: async function (req, res) {
         try {
             if (req.body.id) {
                 let employee = await Admin
@@ -459,7 +462,15 @@ module.exports = {
                 if (employee) {
                     let updatedEmp = await Admin
                         .update({ id: req.body.id })
-                        .set({ name: req.body.name, email: employee.email, role_id: req.body.role_id, is_active: req.body.is_active })
+                        .set({
+                            first_name: req.body.first_name,
+                            last_name: req.body.last_name,
+                            address: req.body.address,
+                            phone_number: req.body.phone_number,
+                            email: employee.email,
+                            role_id: req.body.role_id,
+                            is_active: req.body.is_active
+                        })
                         .fetch();
                     if (updatedEmp) {
                         res
@@ -480,16 +491,12 @@ module.exports = {
                     .json({ 'status': '400', 'err': 'Employee id is not sent.' })
             }
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            console.log(error)
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
-    getEmployeeDetails: async function(req, res) {
+    getEmployeeDetails: async function (req, res) {
         let { emp_id } = req.allParams()
         try {
             if (emp_id) {
@@ -510,7 +517,7 @@ module.exports = {
     },
 
     //Setup Two Factor
-    setupTwoFactor: async function(req, res) {
+    setupTwoFactor: async function (req, res) {
         try {
             let { admin_id } = req.body;
             let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
@@ -527,7 +534,7 @@ module.exports = {
                 secret: secret.ascii,
                 label: 'FALDAX( ' + user.email + ')'
             });
-            QRCode.toDataURL(url, function(err, data_url) {
+            QRCode.toDataURL(url, function (err, data_url) {
                 return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
             });
         } catch (error) {
@@ -542,7 +549,7 @@ module.exports = {
     },
 
     //Verify 2 factor
-    verifyTwoFactor: async function(req, res) {
+    verifyTwoFactor: async function (req, res) {
         try {
             let { admin_id, otp } = req.body;
             let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
@@ -581,7 +588,7 @@ module.exports = {
     },
 
     //Disable 2 factor
-    disableTwoFactor: async function(req, res) {
+    disableTwoFactor: async function (req, res) {
         try {
             let { admin_id } = req.body;
             let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
@@ -610,7 +617,7 @@ module.exports = {
         }
     },
 
-    getAdminDetails: async function(req, res) {
+    getAdminDetails: async function (req, res) {
         try {
             const { admin_id } = req.allParams();
             let adminDetails = await Admin.findOne({ is_active: true, id: admin_id, deleted_at: null })
