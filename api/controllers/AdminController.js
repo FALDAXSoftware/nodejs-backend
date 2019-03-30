@@ -28,6 +28,7 @@ module.exports = {
                     // Admin Active
                     if (admin_details.is_active) {
                         let role = await Role.findOne({ id: admin_details.role_id })
+                        console.log('>>>>>>>>>>>>role', role)
                         admin_details.roles = role;
 
                         // Role Not Active
