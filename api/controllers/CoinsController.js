@@ -208,71 +208,32 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     let { page, limit, data } = req.allParams();
-    if (data) {
-      let coinsData = await Coins.find({
-        where: {
-          deleted_at: null,
-          or: [
-            {
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
-            }, { limit: data }
-          ]
+    let query = " from coins";
+    if ((data && data != "")) {
+      query += " WHERE"
+      if (data && data != "" && data != null) {
+        query = query + " LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'" +
+          "OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
+        if (!isNaN(data)) {
+          query = query + " OR minLimit=" + data + " OR maxLimit=" + data;
         }
-      })
-        .sort("id ASC")
-        .paginate(page - 1, parseInt(limit));
-      let CoinsCount = await Coins.count({
-        where: {
-          deleted_at: null,
-          or: [
-            {
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
-            }, { limit: data }
-          ]
-        }
-      });
-      if (coinsData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Coin list"),
-          "data": coinsData,
-          CoinsCount
-        });
       }
-    } else {
-      let coinsData = await Coins
-        .find({
-          where: {
-            deleted_at: null
-          }
-        })
-        .sort("id ASC")
-        .paginate(page - 1, parseInt(limit));
-      let CoinsCount = await Coins.count({
-        where: {
-          deleted_at: null
-        }
+    }
+    countQuery = query;
+    query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+    let coinData = await sails.sendNativeQuery("Select *" + query, [])
+
+    coinData = coinData.rows;
+
+    let CoinsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+    CoinsCount = CoinsCount.rows[0].count;
+
+    if (coinData) {
+      return res.json({
+        "status": 200,
+        "message": sails.__("Coin list"),
+        "data": coinData, CoinsCount
       });
-      if (coinsData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Coin list"),
-          "data": coinsData,
-          CoinsCount
-        });
-      }
     }
   },
 
