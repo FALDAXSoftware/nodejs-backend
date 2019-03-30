@@ -44,6 +44,11 @@ module.exports = {
       columnName: 'last_name',
       allowNull: true
     },
+    hubspot_id: {
+      type: 'string',
+      columnName: 'hubspot_id',
+      allowNull: true
+    },
     country: {
       type: 'string',
       columnName: 'country',
@@ -170,8 +175,8 @@ module.exports = {
       type: 'number',
       columnName: 'percent_wallet'
     },
-    referal_percentage : {
-      type : 'number',
+    referal_percentage: {
+      type: 'number',
       columnName: 'referal_percentage'
     },
     date_format: {
