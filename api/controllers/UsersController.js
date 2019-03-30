@@ -43,13 +43,17 @@ module.exports = {
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
       if (req.body.email && req.body.password) {
-
+        let hubspotcontact = await sails.helpers.hubspot.contacts.create(req.body.first_name, req.body.last_name, req.body.email)
+          .tolerate("serverError", () => {
+            throw new Error("serverError");
+          });
         var user_detail = await Users.create({
           email: email,
           password: req.body.password,
           full_name: req.body.first_name + ' ' + req.body.last_name,
           first_name: req.body.first_name,
           last_name: req.body.last_name,
+          hubspot_id: hubspotcontact,
           referral_code: randomize('Aa0', 10),
           created_at: new Date(),
           referred_id: referred_id,
@@ -206,7 +210,7 @@ module.exports = {
               var uploadProfile = await UploadFiles.upload(uploadedFiles[0].fd, 'profile/' + uploadFileName);
               if (uploadProfile) {
                 user.profile_pic = 'profile/' + uploadFileName;
-
+                await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + ", " + user.street_address_2, user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
                 var updatedUsers = await Users
                   .update({ email: user.email, deleted_at: null })
                   .set(user)
@@ -224,6 +228,9 @@ module.exports = {
                   .update({ email: user.email })
                   .set({ email: user.email, profile_pic: null });
               }
+              console.log("-----", user);
+
+              await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + ", " + user.street_address_2, user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
               var updatedUsers = await Users
                 .update({ email: user.email, deleted_at: null })
                 .set(user);
@@ -453,6 +460,15 @@ module.exports = {
     res.json({
       status: 200,
       message: sails.__("user_delete_success")
+    });
+  },
+
+  getUserTickets: async function (req, res) {
+    let tickets = await sails.helpers.hubspot.tickets.getUsersTickets(req.user.id);
+    res.json({
+      status: 200,
+      tickets: tickets.reverse(),
+      message: "Ticket"
     });
   },
   //------------------CMS APi------------------------------------------------//

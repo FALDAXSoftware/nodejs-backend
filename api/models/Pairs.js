@@ -6,61 +6,76 @@
  */
 
 module.exports = {
-    tableName: 'pairs',
-    attributes: {
-        name: {
-            type: 'string',
-            columnName: 'name',
-            required: true
-        },
-        coin_code1: {
-            type: 'string',
-            columnName: 'coin_code1',
-            required: true
-        },
-        coin_code2: {
-            type: 'string',
-            columnName: 'coin_code2',
-            required: true
-        },
-        maker_fee: {
-            type: 'number',
-            columnName: 'maker_fee',
-            required: true
-        },
-        taker_fee: {
-            type: 'number',
-            columnName: 'taker_fee',
-            required: true
-        },
-        is_active: {
-            type: 'boolean',
-            columnName: 'is_active',
-            defaultsTo: true,
-            allowNull: true,
-        },
-        created_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'created_at'
-        },
-        updated_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'updated_at'
-        },
-        deleted_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'deleted_at'
-        }
+  tableName: 'pairs',
+  attributes: {
+    name: {
+      type: 'string',
+      columnName: 'name',
+      required: true
     },
-    beforeCreate: (values, next) => {
-        values.created_at = new Date();
-        next();
+    coin_code1: {
+      type: 'string',
+      columnName: 'coin_code1',
+      required: true
     },
-    beforeUpdate: (values, next) => {
-        values.updated_at = new Date();
-        next();
+    coin_code2: {
+      type: 'string',
+      columnName: 'coin_code2',
+      required: true
     },
+    maker_fee: {
+      type: 'number',
+      columnName: 'maker_fee',
+      required: true
+    },
+    taker_fee: {
+      type: 'number',
+      columnName: 'taker_fee',
+      required: true
+    },
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: true,
+      allowNull: true
+    },
+    symbol: {
+      type: 'string',
+      columnName: 'symbol',
+      required: true
+    },
+    ask_price: {
+      type: 'number',
+      columnName: 'ask_price',
+      required: true
+    },
+    bid_price: {
+      type: 'number',
+      columnName: 'bid_price',
+      required: true
+    },
+    created_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
+    },
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at'
+    },
+    deleted_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'deleted_at'
+    }
+  },
+  beforeCreate: (values, next) => {
+    values.created_at = new Date();
+    next();
+  },
+  beforeUpdate: (values, next) => {
+    values.updated_at = new Date();
+    next();
+  }
 };
