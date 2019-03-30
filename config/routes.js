@@ -284,5 +284,9 @@ module.exports.routes = {
   'get /type2coin/getinfo/:coin_code': 'Type2CoinController.getCoinInfo',
   'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
 
-  'get /call-helper': 'RootController.callKrakenAPI'
+  'get /call-helper': 'RootController.callKrakenAPI',
+
+  //Kraken API
+  'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
+  'post /add-order': 'KrakenController.addOrder'
 };

@@ -69,11 +69,7 @@ module.exports = {
       ]
     };
 
-    var data = await kraken.api('DepositAddresses', {
-      asset: 'XBT',
-      method: 'Bitcoin',
-      new: true
-    })
+    var data = await kraken.api('AssetPairs')
     console.log(JSON.stringify(data));
     return exits.success(data);
   }
