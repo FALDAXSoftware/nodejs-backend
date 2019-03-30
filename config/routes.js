@@ -268,7 +268,7 @@ module.exports.routes = {
   'get /get-user-history': 'TradeController.getUserHistory',
 
   //Get All Tickets
-  'get /get-all-tickets': 'TicketController.getAllTickets',
+  'get /get-all-tickets': 'UsersController.getUserTickets',
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
@@ -283,6 +283,6 @@ module.exports.routes = {
   //Type2coins API
   'get /type2coin/getinfo/:coin_code': 'Type2CoinController.getCoinInfo',
   'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
+  'get /call-helper': 'RootController.callKrakenAPI',
 
-  'get /call-helper': 'RootController.callKrakenAPI'
 };

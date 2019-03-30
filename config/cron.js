@@ -9,9 +9,9 @@ module.exports.cron = {
         var bitcoinNews = await sails
           .helpers
           .bitcoinNews();
-        var ccnPodcast = await sails
-          .helpers
-          .ccnPodcast();
+        // var ccnPodcast = await sails
+        //   .helpers
+        //   .ccnPodcast();
         var coinTelegraph = await sails
           .helpers
           .coinTelegraph();
@@ -25,6 +25,7 @@ module.exports.cron = {
         var kycCron = await sails
           .helpers
           .kycCron();
+
       }
     }
   },
