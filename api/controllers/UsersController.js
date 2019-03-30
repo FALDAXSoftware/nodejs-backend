@@ -581,18 +581,75 @@ module.exports = {
   },
 
   getUserloginHistoryAdmin: async function (req, res) {
-    let { user_id } = req.allParams();
-    let user_name = await Users.findOne({
-      select: ['full_name'],
-      where: {
-        id: user_id
+    let { page, limit, data, user_id, start_date, end_date } = req.allParams();
+    let q = {
+      deleted_at: null,
+      user: user_id
+    }
+    if (start_date && end_date) {
+      q['created_at'] = {
+        '>=': start_date,
+        '<=': end_date
+      };
+    }
+    if (data) {
+      let allHistoryData = await LoginHistory.find({
+        where: {
+          ...q,
+          or: [
+            {
+              ip: {
+                contains: data
+              }
+            }
+          ]
+        }
+      })
+        .sort("created_at DESC")
+        .paginate(page - 1, parseInt(limit));
+      let allHistoryCount = await LoginHistory.count({
+        where: {
+          ...q,
+          or: [
+            {
+              ip: {
+                contains: data
+              }
+            }
+          ]
+        }
+      });
+      if (allHistoryData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Coin list"),
+          "data": allHistoryData,
+          allHistoryCount
+        });
       }
-    });
-    let history = await LoginHistory
-      .find({ user: user_id })
-      .sort("created_at DESC")
-      .limit(10);
-    return res.json({ "status": 200, "message": "Users Login Data", "data": history, user_name });
-  }
+    } else {
+      let allHistoryData = await LoginHistory
+        .find({
+          where: {
+            ...q
+          }
+        })
+        .sort("created_at DESC")
+        .paginate(page - 1, parseInt(limit));
 
+      let allHistoryCount = await LoginHistory.count({
+        where: {
+          ...q
+        }
+      });
+      if (allHistoryData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("History list"),
+          "data": allHistoryData,
+          allHistoryCount
+        });
+      }
+    }
+  }
 };
