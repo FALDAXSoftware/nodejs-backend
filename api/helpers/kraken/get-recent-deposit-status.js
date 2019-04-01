@@ -11,12 +11,6 @@ module.exports = {
       example: 'BTC',
       description: 'Asset being deposited.',
       required: true
-    },
-    method: {
-      type: 'string',
-      example: 'Bitcoin',
-      description: 'Method for which address in needed.',
-      required: true
     }
   },
 
@@ -68,16 +62,20 @@ module.exports = {
       ]
     };
 
-    const defaults = {
-      url: 'https://api.kraken.com',
-      version: 0,
-      timeout: 5000
-    };
     try {
+
+      var methodData = await Coins.findOne({
+        where: {
+          kraken_coin_name: inputs.asset,
+          is_active: true,
+          deleted_at: null
+        }
+      });
       status = await kraken.api('DepositStatus', {
         asset: inputs.asset,
-        method: inputs.method
+        method: methodData.deposit_method
       });
+      console.log("Deposit Status ::::: ", status);
       return exits.success(status);
     } catch (err) {
       console.log(err);

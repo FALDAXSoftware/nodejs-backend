@@ -84,7 +84,6 @@ module.exports = {
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
-      console.log(dataResponse);
       if (dataResponse.response == true) {
         let response = await sails
           .helpers
@@ -175,7 +174,6 @@ module.exports = {
     try {
       let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
-      console.log(user_id);
       var dataResponse = await sails
         .helpers
         .userTradeChecking(user_id);
@@ -410,7 +408,6 @@ module.exports = {
         .helpers
         .tradding
         .getUserTradeHistory(data);
-      console.log("Reponse ::: ", response);
       res.json({
         "status": 200,
         "message": sails.__("Order Success"),
@@ -464,8 +461,6 @@ module.exports = {
                 .helpers
                 .tradding
                 .getUserWalletBalance(user_id, currency, crypto);
-
-              console.log("User Balance Detials :: ", userBalanceDetails);
 
               if (userBalanceDetails) {
                 return res.json({
@@ -640,8 +635,6 @@ module.exports = {
                         .utilities
                         .getCurrencies(room);
                       var userTradeDetails;
-
-                      console.log("Filter Type ::: ", filter_type);
 
                       if (filter_type == 1) {
                         userTradeDetails = await sails

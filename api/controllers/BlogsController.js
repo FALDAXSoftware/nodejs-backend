@@ -14,8 +14,6 @@ module.exports = {
         var https = require('https');
         let { comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
             contentPermalink, contentTitle, userEmail, userName, portalId } = req.allParams();
-        console.log('>>>>>>>>>>>', comment, contentId, collectionId, contentAuthorEmail, contentAuthorName,
-            contentPermalink, contentTitle, userEmail, userName)
         var responseData = '';
 
         var form = {
@@ -29,7 +27,6 @@ module.exports = {
             portalId,
             userName
         }
-        console.log("---->form--->", form);
 
         var apiConfig = {
             path: 'http://api.hubapi.com/comments/v3/comments?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245&portalid=4933498',
@@ -45,7 +42,6 @@ module.exports = {
         }, function (err, httpResponse, body) {
             console.log("----err----->", err);
             // console.log("---------http-response---->",httpResponse);
-            console.log("---------body--->", body);
         })
 
 

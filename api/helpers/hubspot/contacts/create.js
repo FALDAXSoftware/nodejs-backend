@@ -72,7 +72,6 @@ module.exports = {
               })
               .then(createResData => createResData.json())
               .then(createResData => {
-                console.log(createResData);
                 if (createResData.vid) {
                   return exits.success(createResData.vid);
                 } else {

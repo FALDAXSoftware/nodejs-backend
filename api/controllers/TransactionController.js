@@ -189,7 +189,6 @@ module.exports = {
             }
 
             let transactionCount = await Transaction.count({ ...q });
-            console.log('>>>>>>>>>>>>>>>>>q', ...q)
 
             if (userTransactionData) {
                 return res.json({

@@ -149,7 +149,6 @@ module.exports = {
                   .tradding
                   .sell
                   .update(sellBook[0].id, {'quantity': remainingQty});
-                console.log("USER  IDS :::: ", userIds);
                 //Emit the socket
                 await sails
                   .helpers
@@ -162,7 +161,6 @@ module.exports = {
                   .tradding
                   .sell
                   .deleteOrder(sellBook[0].id);
-                console.log("USER  IDS :::: ", userIds);
 
                 //Emit the socket here
                 await sails
@@ -294,7 +292,6 @@ module.exports = {
             buyAddedData.maker_fee = fees.makerFee;
             buyAddedData.taker_fee = fees.takerFee;
             delete buyAddedData.id;
-            console.log("Buy Added Data :::", buyAddedData);
             var addData = await sails
               .helpers
               .tradding
@@ -327,7 +324,6 @@ module.exports = {
           buyAddedData.maker_fee = fees.makerFee;
           buyAddedData.taker_fee = fees.takerFee;
           delete buyAddedData.id;
-          console.log("Buy Added Data :::", buyAddedData);
           var addData = await sails
             .helpers
             .tradding

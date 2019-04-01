@@ -121,7 +121,6 @@ module.exports = {
           .add(resultData);
 
         if (inputs.orderQuantity <= availableQty) {
-          console.log("Current Buy Book Details ::  ", (currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance);
           if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
             var trade_history_data = {
               ...orderData
@@ -156,7 +155,6 @@ module.exports = {
                 return new Error("serverError")
               });
 
-            console.log("Trading Fees ::: ", tradingFees);
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;

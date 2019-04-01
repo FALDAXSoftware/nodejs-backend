@@ -24,9 +24,6 @@ function UploadFiles() {
             buf = Buffer.concat([buf, data]);
           });
 
-          console.log(buf);
-
-          console.log(uploadFileName);
           stdout.on('end', function (data) {
             var profile = {
               Bucket: S3BucketName,
@@ -35,12 +32,10 @@ function UploadFiles() {
               Body: buf,
               ContentType: mime.lookup(uploadFileName)
             };
-            console.log(profile);
             s3.putObject(profile, function (err, rese) {
               if (err) {
                 reject(err);
               } else {
-                console.log(rese);
                 resolve(rese)
               }
             });

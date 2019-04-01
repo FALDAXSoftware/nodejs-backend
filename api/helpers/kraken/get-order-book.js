@@ -1,33 +1,21 @@
 var KrakenClient = require('kraken-api');
 module.exports = {
 
-  friendlyName: 'Add standard order',
+  friendlyName: 'Get order book',
 
   description: '',
 
   inputs: {
     pair: {
       type: 'string',
-      example: 'BTC-ETH',
-      description: 'Pair of trading.',
+      example: 'XRPXBT',
+      description: 'Pair Name',
       required: true
     },
-    type: {
+    pair_value: {
       type: 'string',
-      example: 'buy',
-      description: 'Side for which is it need to be paired.',
-      required: true
-    },
-    ordertype: {
-      type: 'string',
-      example: 'market',
-      description: 'Order Type',
-      required: true
-    },
-    volume: {
-      type: 'number',
-      example: 1,
-      description: 'Amount of quantity need to done',
+      example: 'XRP-XBT',
+      description: 'Pair Value',
       required: true
     }
   },
@@ -35,16 +23,21 @@ module.exports = {
   exits: {
 
     success: {
-      description: 'All done.'
+      outputFriendlyName: 'Order book'
     }
   },
 
   fn: async function (inputs, exits) {
+
+    // Get order book.
+    var orderBook = [];
     // TODO
+
     var status;
     var key = sails.config.local.KRAKEN_API_KEY;
     var secret = sails.config.local.KRAKEN_API_SIGN;
     var kraken = new KrakenClient(key, secret);
+
     const methods = {
       public: [
         'Time',
@@ -80,24 +73,30 @@ module.exports = {
       ]
     };
 
-    const defaults = {
-      url: 'https://api.kraken.com',
-      version: 0,
-      timeout: 5000
-    };
     try {
-      status = await kraken.api('AddOrder', {
-        pair: inputs.pair,
-        type: inputs.type,
-        ordertype: inputs.ordertype,
-        volume: inputs.volume,
-        validate: true,
-        wait: true
-      });
-      return exits.success(status);
+      var pair_name = await Pairs.findOne({
+        where: {
+          kraken_pair: inputs.pair_value,
+          deleted_at: null,
+          is_active: true
+        }
+      })
+      status = await kraken.api('Depth', {pair: inputs.pair});
+      var value = pair_name.symbol;
+      var askValue = JSON.stringify(status.result[value].asks[0]);
+      var bidValue = JSON.stringify(status.result[value].bids[0])
+      askValue = JSON.parse(askValue);
+      bidValue = JSON.parse(bidValue);
+
+      var updatedData = await Pairs
+        .update({kraken_pair: inputs.pair_value, symbol: pair_name.symbol})
+        .set({ask_price: askValue[0], bid_price: bidValue[0]})
+        .fetch();
+      return exits.success(1);
     } catch (err) {
       console.log(err);
     }
+
   }
 
 };

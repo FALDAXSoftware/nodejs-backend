@@ -23,8 +23,8 @@ module.exports.policies = {
     'create': true,
     'getCountries': true,
     'getCountriesData': true,
-    // 'updateUserDetails': true
-    // We dont need authorization here, allowing public access,
+    // 'updateUserDetails': true We dont need authorization here, allowing public
+    // access,
   },
   'AdminController': {
     'create': true,
@@ -102,5 +102,11 @@ module.exports.policies = {
   "Type2CoinController": {
     "getCoinInfo": true,
     "getCoinNewAddress": true
+  },
+  "KrakenController": {
+    "getOrderBookData": true,
+    "addOrder": true,
+    "depositAddress": true,
+    "getDepositStatus": true
   }
 };

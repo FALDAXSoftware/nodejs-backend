@@ -31,7 +31,6 @@ module.exports = {
             }
           });
       } else {
-        console.log('>>>IN else')
         return res
           .status(403)
           .json({ status: 403, "message": "Error occured" });

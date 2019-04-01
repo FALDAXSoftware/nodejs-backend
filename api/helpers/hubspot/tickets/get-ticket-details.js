@@ -32,7 +32,6 @@ module.exports = {
     // Get ticket details.
     var ticketDetails;
     // TODO
-    console.log(inputs.ids);
     fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.ticket.getTicketsById + "?hapikey=" + sails.config.local.hubspot.apiKey + "&properties=subject&properties=created_by&properties=status&properties=content",
       {
         method: "POST",
@@ -46,7 +45,6 @@ module.exports = {
       })
       .then(resData => resData.json())
       .then(resData => {
-        console.log("-----------", resData);
 
         return exits.success(resData);
       })

@@ -51,6 +51,7 @@ module.exports.routes = {
   'post /admin/userActivate': 'Users.userActivate',
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
   'get /admin/get-user-details': 'Users.getAllUserDetails',
+  'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
 
   //coins
   'get /admin/getCoins': 'Coins.getCoins',
@@ -285,4 +286,11 @@ module.exports.routes = {
   'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
   'get /call-helper': 'RootController.callKrakenAPI',
 
+  'get /call-helper': 'RootController.callKrakenAPI',
+
+  //Kraken API
+  'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
+  'post /add-order': 'KrakenController.addOrder',
+  'get /deposit-address/:symbol': 'KrakenController.depositAddress',
+  'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus'
 };
