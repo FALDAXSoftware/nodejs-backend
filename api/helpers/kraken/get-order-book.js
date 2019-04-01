@@ -95,6 +95,7 @@ module.exports = {
       return exits.success(1);
     } catch (err) {
       console.log(err);
+      return exits.success(err);
     }
 
   }

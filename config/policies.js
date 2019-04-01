@@ -107,6 +107,10 @@ module.exports.policies = {
     "getOrderBookData": true,
     "addOrder": true,
     "depositAddress": true,
-    "getDepositStatus": true
+    "getDepositStatus": true,
+    "getWithdrawlInformation": true,
+    "getWithdrawlFunds": true,
+    "getRecentWithdrawlStatus": true,
+    "withdrwalCancellationStatus": true
   }
 };

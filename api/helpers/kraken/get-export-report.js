@@ -72,6 +72,7 @@ module.exports = {
       return exits.success(status)
     } catch (err) {
       console.log(err);
+      return exits.success(err);
     }
 
   }
