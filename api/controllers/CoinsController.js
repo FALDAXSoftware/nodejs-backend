@@ -207,33 +207,38 @@ module.exports = {
 
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
-    let { page, limit, data } = req.allParams();
-    let query = " from coins";
-    if ((data && data != "")) {
-      query += " WHERE"
-      if (data && data != "" && data != null) {
-        query = query + " LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
-        if (!isNaN(data)) {
-          query = query + " OR minLimit=" + data + " OR maxLimit=" + data;
+    try {
+      let { page, limit, data } = req.allParams();
+      let query = " from coins";
+      if ((data && data != "")) {
+        query += " WHERE"
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(wallet_address) LIKE '%" + data.toLowerCase() + "%'";
+          // if (!isNaN(data)) {
+          //   query = query + " OR minLimit=" + data + " OR maxLimit=" + data;
+          // }
         }
       }
-    }
-    countQuery = query;
-    query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    let coinData = await sails.sendNativeQuery("Select *" + query, [])
+      countQuery = query;
+      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      let coinData = await sails.sendNativeQuery("Select *" + query, [])
 
-    coinData = coinData.rows;
+      coinData = coinData.rows;
 
-    let CoinsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
-    CoinsCount = CoinsCount.rows[0].count;
+      let CoinsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      CoinsCount = CoinsCount.rows[0].count;
 
-    if (coinData) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("Coin list"),
-        "data": coinData, CoinsCount
-      });
+      if (coinData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Coin list"),
+          "data": coinData, CoinsCount
+        });
+      }
+    } catch (err) {
+      console.log('????????????', err)
     }
   },
 
