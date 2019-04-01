@@ -25,7 +25,6 @@ module.exports = {
     // Get activity.
     var activity;
     // TODO
-    console.log("USERD| ID ::: ", inputs.user_id);
     activity = await ActivityTable.find({
       where: {
         deleted_at: null,

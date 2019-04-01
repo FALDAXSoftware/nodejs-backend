@@ -11,12 +11,6 @@ module.exports = {
       example: 'BTC',
       description: 'Asset being deposited.',
       required: true
-    },
-    method: {
-      type: 'string',
-      example: 'Bitcoin',
-      description: 'Method for which address in needed.',
-      required: true
     }
   },
 
@@ -32,7 +26,6 @@ module.exports = {
     var key = sails.config.local.KRAKEN_API_KEY;
     var secret = sails.config.local.KRAKEN_API_SIGN;
     var kraken = new KrakenClient(key, secret);
-    console.log("Kraken :::: ", kraken);
     const methods = {
       public: [
         'Time',
@@ -68,15 +61,20 @@ module.exports = {
       ]
     };
 
-    const defaults = {
-      url: 'https://api.kraken.com',
-      version: 0,
-      timeout: 5000
-    };
     try {
+
+      var methodData = await Coins.findOne({
+        where: {
+          kraken_coin_name: inputs.asset,
+          is_active: true,
+          deleted_at: null
+        }
+      });
+
       status = await kraken.api('DepositAddresses', {
         asset: inputs.asset,
-        method: inputs.method
+        method: methodData.deposit_method,
+        new: true
       });
       return exits.success(status);
     } catch (err) {

@@ -77,7 +77,6 @@ module.exports = {
         try {
             let { symbol, resolution, from, to } = req.allParams();
             let { crypto, currency } = await sails.helpers.utilities.getCurrencies(symbol);
-            console.log(symbol, crypto, currency);
 
             let resolutionInMinute = 0;
             // Covert Resolution In Day

@@ -32,7 +32,6 @@ module.exports = {
     try {
       var rpccall = inputs.coinuser + ':' + inputs.coinpassword
       var encodedData = base64.encode(rpccall);
-      console.log(encodedData);
       return exits.success(encodedData);
     } catch (err) {
       console.log(err);

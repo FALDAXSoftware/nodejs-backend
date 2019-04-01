@@ -163,8 +163,6 @@ module.exports = {
         currency = pendingDetails.currency;
         userIds.push(pendingDetails.user_id);
 
-        console.log(pendingDetails);
-
         if (pendingDetails == undefined || pendingDetails.length == 0) {
           // throw("No pending order found.")
           return exits.noBuyLimitOrder();

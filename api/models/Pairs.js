@@ -44,6 +44,11 @@ module.exports = {
       columnName: 'symbol',
       required: true
     },
+    kraken_pair: {
+      type: 'string',
+      columnName: 'kraken_pair',
+      required: true
+    },
     ask_price: {
       type: 'number',
       columnName: 'ask_price',

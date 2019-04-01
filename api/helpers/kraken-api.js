@@ -32,8 +32,6 @@ module.exports = {
 
     var kraken = new KrakenClient(key, secret);
 
-    console.log("Kraken :::: ", kraken);
-
     const methods = {
       public: [
         'Time',
@@ -70,7 +68,6 @@ module.exports = {
     };
 
     var data = await kraken.api('AssetPairs')
-    console.log(JSON.stringify(data));
     return exits.success(data);
   }
 };

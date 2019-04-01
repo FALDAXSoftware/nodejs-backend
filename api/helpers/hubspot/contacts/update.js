@@ -108,7 +108,6 @@ module.exports = {
       })
       // .then(createResData => createResData.json())
       .then(createResData => {
-        console.log(createResData);
         return exits.success();
       })
       .catch(err => {

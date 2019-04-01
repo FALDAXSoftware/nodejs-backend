@@ -28,7 +28,6 @@ module.exports = async function (req, res, next) {
             // We delete the token from param to not mess with blueprints
             delete req.query.token;
         } else if (req.isSocket) {
-            console.log("Socket connected");
             if (req.socket.handshake.headers.authorization) {
                 var parts = req.socket.handshake.headers.authorization.split(' ');
                 if (parts.length == 2) {

@@ -28,9 +28,7 @@ module.exports = {
       var stateData;
       var response;
       var msg;
-      var sendInfo
-
-      console.log(userKyc);
+      var sendInfo;
 
       if (userKyc) {
         countryData = await Countries.find({

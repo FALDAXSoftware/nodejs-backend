@@ -45,10 +45,34 @@ module.exports = {
   //Get Deposit Address
   depositAddress: async function (req, res) {
     try {
-      
+      var {symbol} = req.allParams();
+
+      var depositAdd = await sails
+        .helpers
+        .kraken
+        .getDepositAddress(symbol);
+
+      return res.json({status: 200, "data": depositAdd});
     } catch (err) {
       console.log(err);
-      return res.json({status: 500, "data": err});
+      return res.json({status: 500, "err": err});
+    }
+  },
+
+  //Get recent Deposit status
+  getDepositStatus: async function (req, res) {
+    try {
+      var {symbol} = req.allParams();
+
+      var depositStatus = await sails
+        .helpers
+        .kraken
+        .getRecentDepositStatus(symbol);
+
+      return res.json({status: 200, "data": depositStatus});
+    } catch (err) {
+      console.log(err);
+      return res.json({status: 500, "err": err});
     }
   }
 }
