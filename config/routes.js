@@ -51,6 +51,7 @@ module.exports.routes = {
   'post /admin/userActivate': 'Users.userActivate',
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
   'get /admin/get-user-details': 'Users.getAllUserDetails',
+  'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
 
   //coins
   'get /admin/getCoins': 'Coins.getCoins',
