@@ -196,6 +196,15 @@ module.exports = {
       var user = req.body;
       user['email'] = user_details['email'];
       delete user.profile;
+
+      if (req.body.first_name) {
+        user.full_name = req.body.first_name + ' ' + user.last_name;
+      } else if (req.body.last_name) {
+        user.full_name = user.first_name + ' ' + req.body.last_name;
+      } else {
+        user.full_name = req.body.first_name + ' ' + req.body.last_name;
+      }
+
       req
         .file('profile_pic')
         .upload(async function (err, uploadedFiles) {
@@ -228,8 +237,10 @@ module.exports = {
                   .update({ email: user.email })
                   .set({ email: user.email, profile_pic: null });
               }
+              if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
+                await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + ", " + user.street_address_2, user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
+              }
 
-              await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + ", " + user.street_address_2, user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
               var updatedUsers = await Users
                 .update({ email: user.email, deleted_at: null })
                 .set(user);
@@ -580,18 +591,43 @@ module.exports = {
 
   getUserReferredAdmin: async function (req, res) {
     try {
-      let { page, limit, id } = req.allParams();
 
-      let usersData = await Users
-        .find({ referred_id: id, is_verified: true })
-        .sort("id ASC")
-        .paginate(page, parseInt(limit));
-      let usersDataCount = await Users.count({ referred_id: id, is_verified: true });
+      let { page, limit, data, id } = req.allParams();
+      let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
+      query += " WHERE users.is_verified='true'";
+      if (id) {
+        query += "AND users.referred_id =" + id;
+      }
+      if ((data && data != "")) {
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'" +
+          "OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'" +
+          "OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
+          "OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'" +
+          "OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        if (data % 1 !== 0) {
+          query = query + "OR referral.amount=" + data;
+        }
+      }
+
+      countQuery = query;
+      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1)) + " ORDER BY referral.amount DESC";
+      let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
+
+      usersData = usersData.rows;
+
+      let referralCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+      referralCount = referralCount.rows[0].count;
+
       if (usersData) {
-        return res.json({ "status": 200, "message": "Users Data", "data": usersData, usersDataCount });
+        return res.json({
+          "status": 200,
+          "message": "Referral Users Data",
+          "data": usersData, referralCount
+        });
       }
     } catch (err) {
-      console.log('>>>>>>>>>>>', err)
+      console.log('err', err)
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
