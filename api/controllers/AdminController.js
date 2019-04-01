@@ -28,7 +28,6 @@ module.exports = {
                     // Admin Active
                     if (admin_details.is_active) {
                         let role = await Role.findOne({ id: admin_details.role_id })
-                        console.log('>>>>>>>>>>>>role', role)
                         admin_details.roles = role;
 
                         // Role Not Active
@@ -73,7 +72,6 @@ module.exports = {
                                         .json({ "status": 401, "err": 'Invalid email or password' });
                                 } else {
                                     if (admin_details.is_twofactor) {
-                                        console.log('>>>>>>>Is two factor')
                                     }
 
                                     delete admin_details.password;

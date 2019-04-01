@@ -45,12 +45,9 @@ module.exports = {
             })
             .then(resData => resData.json())
             .then(async function (resData) {
-              console.log("-----------", resData);
               let tickets = await sails.helpers.hubspot.tickets.getTicketDetails(resData.results);
-              console.log(tickets);
               for (let index = 0; index < resData.results.length; index++) {
                 const element = resData.results[index];
-                console.log(tickets[element].properties);
 
                 usersTickets.push(tickets[element]);
 

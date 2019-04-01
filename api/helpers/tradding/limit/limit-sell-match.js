@@ -292,7 +292,6 @@ module.exports = {
               .tradding
               .sell
               .addSellOrder(sellAddedData);
-            console.log(userIds);
             //Add Socket Here Emit
             await sails
               .helpers

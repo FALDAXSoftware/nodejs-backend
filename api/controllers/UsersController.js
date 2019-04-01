@@ -228,7 +228,6 @@ module.exports = {
                   .update({ email: user.email })
                   .set({ email: user.email, profile_pic: null });
               }
-              console.log("-----", user);
 
               await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + ", " + user.street_address_2, user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
               var updatedUsers = await Users

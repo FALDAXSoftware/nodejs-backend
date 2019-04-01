@@ -25,12 +25,10 @@ module.exports = {
     editFees: async function (req, res) {
         let fees = await Fees.findOne({ id: req.body.fee_id, deleted_at: null })
         if (fees) {
-            console.log('>>>>>>>>updatedFee', req.body);
             let updatedFee = await Fees.update({ id: req.body.fee_id }).set({
                 taker_fee: req.body.taker_fee,
                 maker_fee: req.body.maker_fee
             }).fetch();
-            console.log('>>>>>>>>updatedFee', updatedFee);
             if (updatedFee) {
                 return res.json({
                     "status": 200,

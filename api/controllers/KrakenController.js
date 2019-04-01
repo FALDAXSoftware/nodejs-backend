@@ -52,7 +52,6 @@ module.exports = {
         .kraken
         .getDepositAddress(symbol);
 
-      console.log(depositAdd);
       return res.json({status: 200, "data": depositAdd});
     } catch (err) {
       console.log(err);

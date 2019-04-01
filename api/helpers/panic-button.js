@@ -21,7 +21,6 @@ module.exports = {
         let finalUserList = [];
         finalUserList = allSellBookData.concat(allbuyBookData);
         finalUserList = allSellBookData.concat(allPendingBookData);
-        console.log('finalUserList??????', finalUserList);
 
         let allUsers = [];
         for (let index = 0; index < finalUserList.length; index++) {
@@ -30,7 +29,6 @@ module.exports = {
                 allUsers.push(temp);
             }
         }
-        console.log('allUsers', allUsers);
         return allUsers;
     }
 };

@@ -83,8 +83,6 @@ module.exports = {
       sort: 'id DESC'
     })
 
-    console.log(completedData);
-
     return exits.success(completedData);
 
   }

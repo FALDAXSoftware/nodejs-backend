@@ -50,7 +50,6 @@ module.exports = {
     var data = await sails
       .helpers
       .krakenApi('1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX');
-    console.log('>>>>>>>>>DATA', data)
     return res.json({status: 200, "data": data});
   },
 
@@ -213,7 +212,6 @@ module.exports = {
   },
 
   testnews: async function (req, res) {
-    console.log("ip ----- >>>>>>>", req.headers);
     // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
     // greeting); res.end(); var greeting = await sails   .helpers   .tradding
     // .marketSell(); var stopExecution = await sails   .helpers   .tradding
@@ -232,9 +230,7 @@ module.exports = {
   },
 
   webhookOnReciveBitgo: async function (req, res) {
-    console.log("Webnhook Req body", req.body);
     if (req.body.state == "confirmed") {
-      console.log("Confirmed status");
       var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
       var wallet = await bitgo
         .coin(req.body.coin)
@@ -244,7 +240,6 @@ module.exports = {
       wallet
         .getTransfer({id: transferId})
         .then(async function (transfer) {
-          console.log("Trsnafer success");
           if (transfer.state == "confirmed") {
             // Object Of receiver
             let dest = transfer.outputs[0];
@@ -256,7 +251,6 @@ module.exports = {
             let amount = (dest.value / 100000000);
             // user wallet exitence check
             if (userWallet) {
-              console.log("USer WAllet ::: ", userWallet);
               // Set wallet history params
               let walletHistory = {
                 coin_id: userWallet.coin_id,
@@ -267,7 +261,6 @@ module.exports = {
                 transaction_type: 'receive',
                 transaction_id: req.body.hash
               }
-              console.log("Wallet History :: ", walletHistory);
               // Entry in wallet history
               await WalletHistory.create({
                 ...walletHistory
@@ -306,7 +299,6 @@ module.exports = {
   enableWebSocket: async function (req, res) {
 
     try {
-      console.log("Enable Web Socket :: ", req);
       return res
         .status(101)
         .json({status: 101});

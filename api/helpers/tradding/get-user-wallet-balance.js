@@ -37,7 +37,6 @@ module.exports = {
     // Get user wallet balance.
     var userWalletBalance;
     // TODO
-    console.log("user id in walletbalanced", inputs);
 
     var coinId = await Coins.findOne({
       where: {
@@ -79,8 +78,6 @@ module.exports = {
       .helpers
       .utilities
       .getMakerTakerFees(inputs.crypto, inputs.currency);
-
-    console.log(inputs.crypto, inputs.currency);
 
     let sellBook = await sails
       .helpers

@@ -12,7 +12,6 @@ module.exports = {
     try {
       var {coin_code} = req.allParams();
 
-      console.log("Inside this method ::");
       var getInfo = await sails
         .helpers
         .type2Coins
@@ -30,7 +29,6 @@ module.exports = {
     try {
       var {coin_code} = req.allParams();
 
-      console.log("Inside this method ::");
       var getInfo = await sails
         .helpers
         .type2Coins
