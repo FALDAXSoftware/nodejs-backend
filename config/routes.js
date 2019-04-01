@@ -289,5 +289,7 @@ module.exports.routes = {
 
   //Kraken API
   'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
-  'post /add-order': 'KrakenController.addOrder'
+  'post /add-order': 'KrakenController.addOrder',
+  'get /deposit-address/:symbol': 'KrakenController.depositAddress',
+  'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus'
 };

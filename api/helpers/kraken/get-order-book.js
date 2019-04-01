@@ -76,7 +76,7 @@ module.exports = {
     try {
       var pair_name = await Pairs.findOne({
         where: {
-          name: inputs.pair_value,
+          kraken_pair: inputs.pair_value,
           deleted_at: null,
           is_active: true
         }
@@ -89,7 +89,7 @@ module.exports = {
       bidValue = JSON.parse(bidValue);
 
       var updatedData = await Pairs
-        .update({name: inputs.pair_value, symbol: pair_name.symbol})
+        .update({kraken_pair: inputs.pair_value, symbol: pair_name.symbol})
         .set({ask_price: askValue[0], bid_price: bidValue[0]})
         .fetch();
       return exits.success(1);

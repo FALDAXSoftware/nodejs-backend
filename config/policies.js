@@ -105,6 +105,8 @@ module.exports.policies = {
   },
   "KrakenController": {
     "getOrderBookData": true,
-    "addOrder": true
+    "addOrder": true,
+    "depositAddress": true,
+    "getDepositStatus": true
   }
 };

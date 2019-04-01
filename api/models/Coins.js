@@ -41,6 +41,16 @@ module.exports = {
       allowNull: true,
       defaultsTo: 0
     },
+    deposit_method: {
+      type: 'string',
+      columnName: 'deposit_method',
+      required: true
+    },
+    kraken_coin_name: {
+      type: 'string',
+      columnName: 'kraken_coin_name',
+      required: true
+    },
     isERC: {
       type: 'boolean',
       columnName: 'isERC',
