@@ -183,6 +183,16 @@ module.exports = {
       type: 'string',
       columnName: 'date_format'
     },
+    new_ip_verification_token: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_ip_verification_token'
+    },
+    new_ip: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_ip'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

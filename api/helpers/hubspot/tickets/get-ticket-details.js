@@ -32,7 +32,7 @@ module.exports = {
     // Get ticket details.
     var ticketDetails;
     // TODO
-    fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.ticket.getTicketsById + "?hapikey=" + sails.config.local.hubspot.apiKey + "&properties=subject&properties=created_by&properties=status&properties=content",
+    fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.ticket.getTicketsById + "?hapikey=" + sails.config.local.hubspot.apiKey + "&properties=subject&properties=created_by&properties=status&properties=content&properties=hs_pipeline_stage",
       {
         method: "POST",
         body: JSON.stringify({

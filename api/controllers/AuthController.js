@@ -128,23 +128,61 @@ module.exports = {
                 } else {
                   ip = req.ip;
                 }
-                await LoginHistory.create({
+                // Check For New Ip
+                let loginData = await LoginHistory.find({
                   user: user_detail.id,
-                  ip: ip,
-                  created_at: new Date(),
-                  device_type: req.body.device_type,
-                  jwt_token: token,
-                  device_token: req.body.device_token
-                    ? req.body.device_token
-                    : null
+                  ip: ip
                 });
+                if (loginData.length > 0) {
+                  await LoginHistory.create({
+                    user: user_detail.id,
+                    ip: ip,
+                    created_at: new Date(),
+                    device_type: req.body.device_type,
+                    jwt_token: token,
+                    device_token: req.body.device_token
+                      ? req.body.device_token
+                      : null
+                  });
 
-                return res.json({
-                  status: 200,
-                  user: user_detail,
-                  token,
-                  message: "Welcome back, " + user_detail.first_name + "!"
-                });
+                  return res.json({
+                    status: 200,
+                    user: user_detail,
+                    token,
+                    message: "Welcome back, " + user_detail.first_name + "!"
+                  });
+                } else {
+                  let verifyToken = randomize("Aa0", 30);
+                  await Users.update({
+                    id: user_detail["id"]
+                  }).set({
+                    email: user_detail["email"],
+                    new_ip_verification_token: verifyToken,
+                    new_ip: ip
+                  });
+                  sails
+                    .hooks
+                    .email
+                    .send("NewIpVerification", {
+                      homelink: sails.config.urlconf.APP_URL,
+                      recipientName: user_detail.first_name,
+                      token: verifyToken,
+                      ip: ip,
+                      senderName: "Faldax"
+                    }, {
+                        to: user_detail["email"],
+                        subject: "New Device Confirmation"
+                      }, function (err) {
+                        if (!err) {
+                          return res.status(401).json({ "status": 401, "err": "New device confirmation email sent to your email." });
+                        } else {
+                          console.log(err);
+                          return res
+                            .status(500)
+                            .json({ "status": 500, "err": sails.__("Something Wrong") });
+                        }
+                      })
+                }
               }
             });
         } else {
@@ -164,11 +202,67 @@ module.exports = {
 
       res
         .status(500)
-        .json({ "status": 500, "err": error });
+        .json({ "status": 500, "err": sails.__("Something Wrong") });
       return;
     }
   },
-
+  verifyNewIp: async function (req, res) {
+    try {
+      var ip;
+      if (req.headers['x-forwarded-for']) {
+        ip = req.headers['x-forwarded-for'].split(",")[0];
+      } else if (req.connection && req.connection.remoteAddress) {
+        ip = req.connection.remoteAddress;
+      } else {
+        ip = req.ip;
+      }
+      if (req.token) {
+        let user_detail = await Users.findOne({
+          new_ip: ip,
+          new_ip_verification_token: req.token
+        });
+        if (user_detail) {
+          await Users.update({
+            id: user_detail.id
+          }).set({
+            new_ip: null,
+            new_ip_verification_token: null,
+            email: user_detail.email
+          });
+          let loginData = await LoginHistory.find({
+            user: user_detail.id,
+            ip: ip
+          });
+          if (loginData.length > 0) {
+            await LoginHistory.create({
+              user: user_detail.id,
+              ip: ip,
+              created_at: new Date(),
+              device_type: req.body.device_type,
+              jwt_token: token,
+              device_token: req.body.device_token
+                ? req.body.device_token
+                : null
+            });
+            var token = await sails
+              .helpers
+              .jwtIssue(user_detail.id);
+            return res.json({
+              status: 200,
+              user: user_detail,
+              token,
+              message: "Welcome back, " + user_detail.first_name + "!"
+            });
+          }
+        }
+      }
+      return res.status(401).json({ "status": 401, "err": "Invalid verification token" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ "status": 500, "err": sails.__("Something Wrong") });
+    }
+  },
   //   Send auth code in email
   sendOtpEmail: async function (req, res) {
     let { email } = req.allParams();
@@ -215,7 +309,7 @@ module.exports = {
           } else {
             return res
               .status(500)
-              .json({ "status": 500, "err": err });
+              .json({ "status": 500, "err": sails.__("Something Wrong") });
           }
         })
   },
