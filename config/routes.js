@@ -296,5 +296,6 @@ module.exports.routes = {
   'get /get-withdrawl-info/:asset/:amount': 'KrakenController.getWithdrawlInformation',
   'get /withdraw-funds/:asset/:amount': 'KrakenController.getWithdrawlFunds',
   'get /recent-withdrawl-status/:asset': 'KrakenController.getRecentWithdrawlStatus',
-  'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus'
+  'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus',
+  'get /query-trade-information/:txid': 'KrakenController.queryTradeInformation'
 };

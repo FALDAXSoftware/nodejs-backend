@@ -71,6 +71,8 @@ module.exports = {
         }
       });
 
+      console.log(methodData);
+
       status = await kraken.api('DepositAddresses', {
         asset: inputs.asset,
         method: methodData.deposit_method,

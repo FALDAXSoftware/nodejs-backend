@@ -166,6 +166,27 @@ module.exports = {
         "err": sails.__("Something Wrong")
       });
     }
+  },
+
+  //Query for trade INFO
+  queryTradeInformation: async function (req, res) {
+    try {
+      var {txid} = req.allParams();
+
+      var result = await sails
+        .helpers
+        .kraken
+        .queryTradeInfo(txid);
+
+      console.log("Result :: ", result);
+      return res.json({status: 200, "data": result});
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
   }
 
 }
