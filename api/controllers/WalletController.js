@@ -14,6 +14,7 @@ module.exports = {
       var nonBalanceCoin = [];
       var total = 0;
       var flag = false;
+      var dataRecuur = [];
 
       var wallet_user = await Users.findOne({
         where: {
@@ -77,6 +78,7 @@ module.exports = {
         'balanceWallet': balanceCoin,
         'nonBalanceWallet': nonBalanceCoin
       }
+      
       var calculation = 0;
       if (isNaN(wallet_user.percent_wallet) || wallet_user.percent_wallet == null || wallet_user.percent_wallet == undefined) {
         calculation = 0;

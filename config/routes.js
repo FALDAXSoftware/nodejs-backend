@@ -292,5 +292,9 @@ module.exports.routes = {
   'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
   'post /add-order': 'KrakenController.addOrder',
   'get /deposit-address/:symbol': 'KrakenController.depositAddress',
-  'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus'
+  'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus',
+  'get /get-withdrawl-info/:asset/:amount': 'KrakenController.getWithdrawlInformation',
+  'get /withdraw-funds/:asset/:amount': 'KrakenController.getWithdrawlFunds',
+  'get /recent-withdrawl-status/:asset': 'KrakenController.getRecentWithdrawlStatus',
+  'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus'
 };

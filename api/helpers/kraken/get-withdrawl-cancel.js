@@ -27,7 +27,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
     var status;
     var key = sails.config.local.KRAKEN_API_KEY;
@@ -70,11 +70,6 @@ module.exports = {
       ]
     };
 
-    const defaults = {
-      url: 'https://api.kraken.com',
-      version: 0,
-      timeout: 5000
-    };
     try {
       status = await kraken.api('WithdrawCancel', {
         asset: inputs.asset,
@@ -83,6 +78,7 @@ module.exports = {
       return exits.success(status);
     } catch (err) {
       console.log(err);
+      return exits.success(err);
     }
 
   }

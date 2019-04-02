@@ -20,7 +20,10 @@ module.exports = {
       return res.json({status: 200, "data": 1})
     } catch (err) {
       console.log(err);
-      return res.json({status: 500, "err": err});
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
     }
   },
 
@@ -38,7 +41,10 @@ module.exports = {
       return res.json({status: 200, "data": addedData});
     } catch (err) {
       console.log(err);
-      return res.json({status: 500, "err": err});
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
     }
   },
 
@@ -55,7 +61,10 @@ module.exports = {
       return res.json({status: 200, "data": depositAdd});
     } catch (err) {
       console.log(err);
-      return res.json({status: 500, "err": err});
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
     }
   },
 
@@ -72,7 +81,91 @@ module.exports = {
       return res.json({status: 200, "data": depositStatus});
     } catch (err) {
       console.log(err);
-      return res.json({status: 500, "err": err});
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  //Get withdrawl Information
+  getWithdrawlInformation: async function (req, res) {
+    try {
+      var {asset, amount} = req.allParams()
+
+      var withdrwalInfo = await sails
+        .helpers
+        .kraken
+        .getWithdrawlInfo(asset, amount);
+
+      return res.json({status: 200, "data": withdrwalInfo});
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  //Withdraw Funds
+  getWithdrawlFunds: async function (req, res) {
+    try {
+      var {asset, amount} = req.allParams()
+
+      var withdrawlFunds = await sails
+        .helpers
+        .kraken
+        .withdrawFunds(asset, amount);
+
+      return res.json({status: 200, "data": withdrawlFunds});
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  //Get Recent withdrawl Status
+  getRecentWithdrawlStatus: async function (req, res) {
+    try {
+      var {asset} = req.allParams();
+
+      var withdrawStatus = await sails
+        .helpers
+        .kraken
+        .recentWithdrawlStatus(asset);
+
+      return res.json({status: 200, "data": withdrawStatus});
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("something Wrong")
+      });
+    }
+  },
+
+  //Withdrawl Cancellation LEFT
+  withdrwalCancellationStatus: async function (req, res) {
+    try {
+      var {asset, refid} = req.body;
+
+      var cancelStatus = await sails
+        .helpers
+        .kraken
+        .getWithdrawlCancel(asset, refid);
+
+      return res.json({status: 200, "data": cancelStatus});
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
     }
   }
+
 }
