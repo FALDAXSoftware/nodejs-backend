@@ -111,6 +111,7 @@ module.exports.policies = {
     "getWithdrawlInformation": true,
     "getWithdrawlFunds": true,
     "getRecentWithdrawlStatus": true,
-    "withdrwalCancellationStatus": true
+    "withdrwalCancellationStatus": true,
+    "queryTradeInformation": true
   }
 };
