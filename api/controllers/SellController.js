@@ -99,12 +99,12 @@ module.exports = {
             }
         }
 
+        countQuery = query;
         if (sortCol && sortOrder) {
             let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
             query += " ORDER BY " + sortCol + " " + sortVal;
         }
 
-        countQuery = query;
         query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
         let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
 
