@@ -32,7 +32,7 @@ module.exports = {
     var status;
     var key = sails.config.local.KRAKEN_API_KEY;
     var secret = sails.config.local.KRAKEN_API_SIGN;
-    var key = sails.config.local.KEY_NAME;
+    var key_name = sails.config.local.KEY_NAME;
     var kraken = new KrakenClient(key, secret);
     console.log("Kraken :::: ", kraken);
     const methods = {
@@ -78,9 +78,12 @@ module.exports = {
     try {
       status = await kraken.api('WithdrawInfo', {
         asset: inputs.asset,
-        key: key,
-        amount: inputs.amount
+        key: key_name,
+        amount: inputs.amount,
+        new: true,
+        validate: true
       });
+      console.log(status);
       return exits.success(status);
     } catch (err) {
       console.log(err);

@@ -87,7 +87,7 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getAllSellOrders: async function (req, res) {
-        let { page, limit, data } = req.allParams();
+        let { page, limit, data, sortCol, sortOrder } = req.allParams();
         let query = " from sell_book";
         if ((data && data != "")) {
             query += " WHERE"
@@ -98,7 +98,13 @@ module.exports = {
                 }
             }
         }
+
         countQuery = query;
+        if (sortCol && sortOrder) {
+            let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
+            query += " ORDER BY " + sortCol + " " + sortVal;
+        }
+
         query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
         let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
 

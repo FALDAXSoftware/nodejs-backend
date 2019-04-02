@@ -1,21 +1,15 @@
 var KrakenClient = require('kraken-api');
 module.exports = {
 
-  friendlyName: 'Withdraw funds',
+  friendlyName: 'Query trade info',
 
   description: '',
 
   inputs: {
-    asset: {
+    txid: {
       type: 'string',
-      example: 'BTC',
-      description: 'Asset being deposited.',
-      required: true
-    },
-    amount: {
-      type: 'number',
-      example: 1,
-      description: 'Amount of coin which need to be withdraw.',
+      example: '2s514d54d1s5d4s',
+      description: 'Transaction ID of Trade.',
       required: true
     }
   },
@@ -31,7 +25,7 @@ module.exports = {
     var status;
     var key = sails.config.local.KRAKEN_API_KEY;
     var secret = sails.config.local.KRAKEN_API_SIGN;
-    var key = sails.config.local.KEY_NAME;
+    var key_name = sails.config.local.KEY_NAME;
     var kraken = new KrakenClient(key, secret);
     console.log("Kraken :::: ", kraken);
     const methods = {
@@ -69,18 +63,20 @@ module.exports = {
       ]
     };
 
+    const defaults = {
+      url: 'https://api.kraken.com',
+      version: 0,
+      timeout: 5000
+    };
     try {
-      status = await kraken.api('Withdraw', {
-        asset: inputs.asset,
-        key: key,
-        amount: inputs.amount
-      });
+      status = await kraken.api('QueryTrades', {txid: inputs.txid});
       console.log(status);
       return exits.success(status);
     } catch (err) {
       console.log(err);
       return exits.success(err);
     }
+
   }
 
 };

@@ -26,7 +26,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    const key = 'rEnog9yX4OCr0oGs6aPy2MUtT9yHushTSzGh6aWovyPwhlw0z858DXot'; // API Key
+    const key = 'YL4+gCHMerqCbiTHlKO6N3l8qaNib9JHvXPJhN+Fa3dZK1F4KUNFhxjw'; // API Key
     const secret = '8F16MdjpzhbrAzyfNQ7TeyG1feopxZ1ngeZnsxVVFd4MnjGwLgPJvv5xT0fRpCj3B7a/QXEMN2U3F4Ih' +
         'LwphgA==4lSiCw=='; // API Private Key
 
@@ -67,7 +67,8 @@ module.exports = {
       ]
     };
 
-    var data = await kraken.api('AssetPairs')
+    var data = await kraken.api('OpenOrders')
+    console.log(data);
     return exits.success(data);
   }
 };
