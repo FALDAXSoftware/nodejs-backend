@@ -252,6 +252,65 @@ module.exports = {
       return;
     }
   },
+  getPairDetails: async function (req, res) {
+    try {
+      let room = req.query.room;
+      if (req.isSocket) {
+        if (req.query.prevRoom) {
+          let prevRoom = req.query.prevRoom;
+          sails.sockets.leave(req.socket, prevRoom, function (err) {
+            if (err) {
+              return res.status(403).json({ status: 403, "message": "Error occured" });
+            } else {
+              sails.sockets.join(req.socket, room, async function (err) {
+                if (err) {
+                  return res.status(403).json({ status: 403, "message": "Error occured" });
+                } else {
+
+                  let pair = await Pairs.findOne({
+                    name: room,
+                    is_active: true,
+                    deleted_at: null
+                  });
+                  return res.json({
+                    status: 200,
+                    data: pair,
+                    "message": "Pair retrived successfully"
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          sails.sockets.join(req.socket, room, async function (err) {
+            if (err) {
+              return res.status(403).json({ status: 403, "message": "Error occured" });
+            } else {
+              let pair = await Pairs.findOne({
+                name: room,
+                is_active: true,
+                deleted_at: null
+              });
+              return res.json({
+                status: 200,
+                data: pair,
+                "message": "Pair retrived successfully"
+              });
+            }
+          });
+        }
+      } else {
+        return res.status(403).json({ status: 403, "message": "Error occured" });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     try {
