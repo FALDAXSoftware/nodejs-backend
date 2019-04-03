@@ -485,7 +485,8 @@ module.exports = {
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sort_fname } = req.allParams();
+      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      console.log('sortCol, sortOrder', sortCol, sortOrder)
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
@@ -498,10 +499,14 @@ module.exports = {
         }
       }
       countQuery = query;
-      // query += " ORDER BY first_name " + sort_fname;
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      }
+
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      console.log('query', query)
+      console.log('query users', query)
       let usersData = await sails.sendNativeQuery("Select *" + query, [])
 
       usersData = usersData.rows;
@@ -521,10 +526,17 @@ module.exports = {
   updateUserDetails: async function (req, res) {
     let { user_id, email, referal_percentage } = req.body;
 
-    var updateUserData = await Users
-      .update({ id: user_id })
-      .set({ email: email, referal_percentage: referal_percentage })
-      .fetch();
+    if (user_id && email) {
+      var updateUserData = await Users
+        .update({ id: user_id })
+        .set({ email: email, referal_percentage: referal_percentage })
+        .fetch();
+    } else {
+      updateUserData = await AdminSetting
+        .update({ slug: 'default_referral_percentage' })
+        .set({ value: referal_percentage })
+        .fetch();
+    }
 
     if (updateUserData) {
       return res.json({ "status": 200, "message": "User Referral Percentage Updated." });
@@ -614,7 +626,8 @@ module.exports = {
       }
 
       countQuery = query;
-      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1)) + " ORDER BY referral.amount DESC";
+      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      // query += " ORDER BY referral.amount DESC";
       let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
 
       usersData = usersData.rows;

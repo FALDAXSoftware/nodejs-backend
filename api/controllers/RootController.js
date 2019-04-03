@@ -15,8 +15,8 @@ module.exports = {
         .panicButton();
 
       if (btnCall.length > 0) {
-        btnCall.forEach(async(element) => {
-          let userDetails = await Users.find({id: element});
+        btnCall.forEach(async (element) => {
+          let userDetails = await Users.find({ id: element });
           sails
             .hooks
             .email
@@ -25,16 +25,16 @@ module.exports = {
               recipientName: userDetails[0].first_name,
               senderName: "Faldax"
             }, {
-              to: "krina.soni@openxcellinc.com",
-              subject: "Panic Button"
-            }, function (err) {
-              if (!err) {
-                return res.json({"status": 200, "message": "Email sent successfully."});
-              }
-            })
+                to: "krina.soni@openxcellinc.com",
+                subject: "Panic Button"
+              }, function (err) {
+                if (!err) {
+                  return res.json({ "status": 200, "message": "Email sent successfully." });
+                }
+              })
         });
       }
-      return res.json({"status": 200, "message": "Email sent successfully."});
+      return res.json({ "status": 200, "message": "Email sent successfully." });
     } catch (error) {
       console.log('error>>>>>>>>>>>>>>>>', error)
       return res
@@ -50,7 +50,7 @@ module.exports = {
     var data = await sails
       .helpers
       .krakenApi('1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX');
-    return res.json({status: 200, "data": data});
+    return res.json({ status: 200, "data": data });
   },
 
   sendOpenTicketForm: async function (req, res) {
@@ -66,12 +66,12 @@ module.exports = {
   },
 
   getContactInfo: async function (req, res) {
-    let contactDetails = await AdminSetting.find({type: "contact"});
+    let adminSettingDetails = await AdminSetting.find();
     let contacts = {};
-    contactDetails.forEach(element => {
+    adminSettingDetails.forEach(element => {
       contacts[element.slug] = element.value;
     });
-    return res.json({status: 200, message: "contact details retrived successfully.", data: contacts})
+    return res.json({ status: 200, message: "contact details retrived successfully.", data: contacts })
   },
 
   updateContactInfo: async function (req, res) {
@@ -81,12 +81,12 @@ module.exports = {
         .keys(req.body)
         .forEach(async function eachKey(key) {
           contactDetails = await AdminSetting
-            .update({slug: key})
-            .set({value: req.body[key]})
+            .update({ slug: key })
+            .set({ value: req.body[key] })
             .fetch();
         });
       if (contactDetails) {
-        return res.json({status: 200, message: "Contact details updated successfully."})
+        return res.json({ status: 200, message: "Contact details updated successfully." })
       } else {
         return res
           .status(500)
@@ -102,10 +102,10 @@ module.exports = {
 
   sendInquiry: async function (req, res) {
     let inquiryDetails = await Inquiry
-      .create({first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date()})
+      .create({ first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date() })
       .fetch();
     if (inquiryDetails) {
-      return res.json({status: 200, message: "Inquiry sent successfully."})
+      return res.json({ status: 200, message: "Inquiry sent successfully." })
     } else {
       return res
         .status(500)
@@ -117,7 +117,7 @@ module.exports = {
   },
 
   getAllInquiries: async function (req, res) {
-    let {page, limit, data} = req.allParams();
+    let { page, limit, data } = req.allParams();
 
     if (data) {
       let q = {
@@ -141,15 +141,15 @@ module.exports = {
 
       let inquiryData = await Inquiry
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort('created_at DESC')
         .paginate(page - 1, parseInt(limit));
       let inquiryCount = await Inquiry.count({
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
       }
     } else {
       let q = {
@@ -158,15 +158,15 @@ module.exports = {
 
       let inquiryData = await Inquiry
         .find({
-        ...q
-      })
+          ...q
+        })
         .sort('created_at DESC')
         .paginate(page - 1, parseInt(limit));
       let inquiryCount = await Inquiry.count({
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
       } else {
         return res
           .status(500)
@@ -180,19 +180,19 @@ module.exports = {
 
   deleteInquiry: async function (req, res) {
     try {
-      let {inquiry_id} = req.allParams();
+      let { inquiry_id } = req.allParams();
       if (!inquiry_id) {
         res
           .status(500)
-          .json({"status": 500, "err": "Inquiry id is not sent"});
+          .json({ "status": 500, "err": "Inquiry id is not sent" });
         return;
       }
       let deleteInquiry = await Inquiry
-        .update({id: inquiry_id})
-        .set({deleted_at: new Date()})
+        .update({ id: inquiry_id })
+        .set({ deleted_at: new Date() })
         .fetch();
       if (deleteInquiry) {
-        return res.json({"status": 200, "message": "Inquiry removed successfully"});
+        return res.json({ "status": 200, "message": "Inquiry removed successfully" });
       } else {
         return res
           .status(500)
@@ -231,14 +231,14 @@ module.exports = {
 
   webhookOnReciveBitgo: async function (req, res) {
     if (req.body.state == "confirmed") {
-      var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+      var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
       var wallet = await bitgo
         .coin(req.body.coin)
         .wallets()
-        .get({id: req.body.wallet});
+        .get({ id: req.body.wallet });
       let transferId = req.body.transfer;
       wallet
-        .getTransfer({id: transferId})
+        .getTransfer({ id: transferId })
         .then(async function (transfer) {
           if (transfer.state == "confirmed") {
             // Object Of receiver
@@ -246,7 +246,7 @@ module.exports = {
             // Object of sender
             let source = transfer.outputs[1];
             // receiver wallet
-            let userWallet = await Wallet.findOne({receive_address: dest.address, deleted_at: null, is_active: true});
+            let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
             // transaction amount
             let amount = (dest.value / 100000000);
             // user wallet exitence check
@@ -267,7 +267,7 @@ module.exports = {
               });
               // update wallet balance
               await Wallet
-                .update({id: userWallet.id})
+                .update({ id: userWallet.id })
                 .set({
                   balance: userWallet.balance + amount,
                   placed_balance: userWallet.placed_balance + amount
@@ -301,7 +301,7 @@ module.exports = {
     try {
       return res
         .status(101)
-        .json({status: 101});
+        .json({ status: 101 });
     } catch (err) {
       console.log("error :: ", err);
     }
