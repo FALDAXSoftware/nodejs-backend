@@ -157,6 +157,7 @@ module.exports.routes = {
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
   'post /users/verify-user': "AuthController.verifyUser",
+  'post /users/verify-new-ip': "AuthController.verifyNewIp",
   'post /users/send-verification-email': "AuthController.sendVerificationCodeEmail",
   'post /users/forgotPassword': "AuthController.forgotPassword",
   'put /users/resetPassword': "AuthController.resetPassword",
@@ -248,7 +249,8 @@ module.exports.routes = {
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
   'get /coin-list': 'Coins.getAllCoinList',
-
+  'get /coin-list-converison': 'Coins.getCoinsForConversion',
+  'get /coin-currency-list-conversion': 'Coins.getCurrencyForConversion',
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
