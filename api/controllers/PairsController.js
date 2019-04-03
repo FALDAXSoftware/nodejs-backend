@@ -18,7 +18,7 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({ status: 403, "message": "Error occured" });
+                .json({status: 403, "message": "Error occured"});
             } else {
               var response = await sails
                 .helpers
@@ -27,13 +27,13 @@ module.exports = {
 
               return res
                 .status(200)
-                .json({ status: 200, "message": "", data: response });
+                .json({status: 200, "message": "", data: response});
             }
           });
       } else {
         return res
           .status(403)
-          .json({ status: 403, "message": "Error occured" });
+          .json({status: 403, "message": "Error occured"});
       }
     } catch (error) {
       console.log(error);
@@ -47,21 +47,26 @@ module.exports = {
   },
   //-------------------------------CMS Api--------------------------
   getAllPairs: async function (req, res) {
-    let { page, limit, data } = req.allParams();
+    let {page, limit, data, sortCol, sortOrder} = req.allParams();
+    console.log('sortCol, sortOrder', sortCol, sortOrder)
     let query = " from pairs";
     if ((data && data != "")) {
       query += " WHERE"
       if (data && data != "" && data != null) {
-        query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
+        query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
           query = query + " OR maker_fee=" + data + " OR taker_fee=" + data;
         }
       }
     }
     countQuery = query;
-    query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+    if (sortCol && sortOrder) {
+      let sortVal = (sortOrder == 'descend'
+        ? 'DESC'
+        : 'ASC');
+      query += " ORDER BY " + sortCol + " " + sortVal;
+    }
+    query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
     let pairData = await sails.sendNativeQuery("Select *" + query, [])
 
     pairData = pairData.rows;
@@ -81,7 +86,9 @@ module.exports = {
       return res.json({
         "status": 200,
         "message": sails.__("Pair list"),
-        "data": pairData, pairsCount, allCoins
+        "data": pairData,
+        pairsCount,
+        allCoins
       });
     }
   },
@@ -90,18 +97,18 @@ module.exports = {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code1) {
 
-        let coinID_1 = await Coins.findOne({ coin_code: req.body.coin_code1 });
-        let coinID_2 = await Coins.findOne({ coin_code: req.body.coin_code1 });
+        let coinID_1 = await Coins.findOne({coin_code: req.body.coin_code1});
+        let coinID_2 = await Coins.findOne({coin_code: req.body.coin_code1});
 
         var pair_details = await Pairs
           .create({
-            name: req.body.name,
-            coin_code1: coinID_1.id,
-            coin_code2: coinID_2.id,
-            maker_fee: req.body.maker_fee,
-            taker_fee: req.body.taker_fee,
-            created_at: new Date()
-          })
+          name: req.body.name,
+          coin_code1: coinID_1.id,
+          coin_code2: coinID_2.id,
+          maker_fee: req.body.maker_fee,
+          taker_fee: req.body.taker_fee,
+          created_at: new Date()
+        })
           .fetch();
         if (pair_details) {
           res.json({
@@ -112,13 +119,13 @@ module.exports = {
         } else {
           res
             .status(400)
-            .json({ "status": 400, "err": "not listed" });
+            .json({"status": 400, "err": "not listed"});
           return;
         }
       } else {
         res
           .status(400)
-          .json({ "status": 400, "err": "Pair Name & coin is not sent" });
+          .json({"status": 400, "err": "Pair Name & coin is not sent"});
         return;
       }
     } catch (error) {
@@ -135,14 +142,14 @@ module.exports = {
   updatePair: async function (req, res) {
     try {
       if (req.body.id) {
-        const pair_details = await Pairs.findOne({ id: req.body.id });
+        const pair_details = await Pairs.findOne({id: req.body.id});
         if (!pair_details) {
           return res
             .status(401)
-            .json({ err: 'invalid coin' });
+            .json({err: 'invalid coin'});
         }
         var updatedPair = await Pairs
-          .update({ id: req.body.id })
+          .update({id: req.body.id})
           .set(req.body)
           .fetch();
         if (!updatedPair) {
@@ -160,7 +167,7 @@ module.exports = {
       } else {
         return res
           .status(400)
-          .json({ 'status': 400, 'err': 'pair id is not sent.' })
+          .json({'status': 400, 'err': 'pair id is not sent.'})
       }
     } catch (error) {
       return res
