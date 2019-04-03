@@ -163,13 +163,15 @@ module.exports = {
   },
 
   getReferred: async function (req, res) {
+    let { page, limit } = req.allParams();
+
     let id = req.user.id;
     let usersData = await Users.find({
       select: ['email'],
       where: {
         referred_id: id
       }
-    });
+    }).paginate(parseInt(page) - 1, parseInt(limit));
 
     if (usersData) {
       return res.json({ "status": 200, "message": "User referred Data", "data": usersData });

@@ -1,0 +1,61 @@
+<%- partial('../header.ejs') %>
+
+<tr>
+    <td valign="top" align="left"
+        style="padding:0px 15px 0px 15px;color:#333333;font-size:14px;line-height:22px;text-align:left;font-weight:bolder">
+        Hi <%=recipientName%>,
+    </td>
+</tr>
+
+<tr>
+    <td valign='top' align='left'
+        style='padding:10px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        You recently attempted to sign into your FALDAX account from a new device or in a new location. As a security
+        measure, we require additional confirmation before allowing access to your FALDAX account.
+
+
+
+    </td>
+</tr>
+<tr>
+    <td valign="top" align="left"
+        style="padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">
+        <b>IP Address:</b> <%=ip%>
+    </td>
+</tr>
+
+<tr>
+    <td valign='top' align='left'
+        style='padding:10px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        If this was legitimate activity, you can authorize your new device below.
+    </td>
+</tr>
+<tr>
+    <td valign='top' align='left'
+        style='padding:10px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none'>
+        Note that you need to access this email with the same device that you are confirming.
+    </td>
+</tr>
+<tr>
+    <td valign="top" align="left"
+        style="padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">
+        <a href="<%=homelink%>/login/?IpVerifyToken=<%=token%>"
+            style="background-color: #25a8ab;color: #ffffff;width:200px;padding: 10px 16px;font-size: 14px;text-decoration:none;border-radius: 4px;display: inline-block;text-align:center;">
+            I Authorize This Computer</a>
+    </td>
+</tr>
+<tr>
+    <td valign="top" align="left"
+        style="padding:10px 15px 0px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">Regards,
+    </td>
+</tr>
+
+<tr>
+    <td valign="top" align="left"
+        style="padding:0px 15px 15px 15px;font-size:14px;line-height:20px;text-align:left;font-weight:none">
+        FALDAX Team.
+    </td>
+</tr>
+
+
+<%- partial('../footer.ejs') %>
