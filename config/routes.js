@@ -249,7 +249,8 @@ module.exports.routes = {
   //coin routes
   'get /get-all-coins': 'Coins.getAllCoins',
   'get /coin-list': 'Coins.getAllCoinList',
-
+  'get /coin-list-converison': 'Coins.getCoinsForConversion',
+  'get /coin-currency-list-conversion': 'Coins.getCurrencyForConversion',
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',

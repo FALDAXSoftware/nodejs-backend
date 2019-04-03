@@ -216,44 +216,40 @@ module.exports = {
       } else {
         ip = req.ip;
       }
-      if (req.token) {
+      if (req.body.token) {
+
         let user_detail = await Users.findOne({
           new_ip: ip,
-          new_ip_verification_token: req.token
+          new_ip_verification_token: req.body.token
         });
+
         if (user_detail) {
-          await Users.update({
-            id: user_detail.id
-          }).set({
-            new_ip: null,
-            new_ip_verification_token: null,
-            email: user_detail.email
-          });
-          let loginData = await LoginHistory.find({
+          // await Users.update({
+          //   id: user_detail.id
+          // }).set({
+          //   new_ip: null,
+          //   new_ip_verification_token: null,
+          //   email: user_detail.email
+          // });
+          await LoginHistory.create({
             user: user_detail.id,
-            ip: ip
+            ip: ip,
+            created_at: new Date(),
+            device_type: req.body.device_type,
+            jwt_token: token,
+            device_token: req.body.device_token
+              ? req.body.device_token
+              : null
           });
-          if (loginData.length > 0) {
-            await LoginHistory.create({
-              user: user_detail.id,
-              ip: ip,
-              created_at: new Date(),
-              device_type: req.body.device_type,
-              jwt_token: token,
-              device_token: req.body.device_token
-                ? req.body.device_token
-                : null
-            });
-            var token = await sails
-              .helpers
-              .jwtIssue(user_detail.id);
-            return res.json({
-              status: 200,
-              user: user_detail,
-              token,
-              message: "Welcome back, " + user_detail.first_name + "!"
-            });
-          }
+          var token = await sails
+            .helpers
+            .jwtIssue(user_detail.id);
+          return res.json({
+            status: 200,
+            user: user_detail,
+            token,
+            message: "Welcome back, " + user_detail.first_name + "!"
+          });
         }
       }
       return res.status(401).json({ "status": 401, "err": "Invalid verification token" });

@@ -34,6 +34,8 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err);
+
       res
         .status(500)
         .json({
@@ -205,6 +207,74 @@ module.exports = {
     }
   },
 
+  // Get Coin list for conversion screen
+  getCoinsForConversion: async function (req, res) {
+    try {
+      let coins = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_fiat: false,
+          kraken_coin_name: { '!=': null }
+        }
+      }).select(["coin_icon", "coin_name", "coin"]);
+      return res.json({
+        "status": 200,
+        "message": sails.__("Coin list"),
+        "data": coins
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
+    }
+  },
+
+  // Get Currency for perticular currency
+  getCurrencyForConversion: async function (req, res) {
+    try {
+      let pair = await Pairs.find({
+        name: { startsWith: req.query.crypto + '-' },
+        deleted_at: null,
+        is_active: true,
+      });
+      console.log("pair", req.query.crypto, pair);
+
+      let coinIds = [];
+      for (let index = 0; index < pair.length; index++) {
+        const element = pair[index];
+        coinIds.push(element.coin_code2);
+      }
+      let coins = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_fiat: false,
+          kraken_coin_name: { '!=': null },
+          id: { in: coinIds }
+        }
+      }).select(["coin_icon", "coin_name", "coin"]);
+      return res.json({
+        "status": 200,
+        "message": sails.__("Coin list"),
+        "data": coins
+      });
+    } catch (error) {
+      console.log(error);
+
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
+    }
+  },
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     try {
@@ -238,7 +308,13 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log('????????????', err)
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
     }
   },
 
