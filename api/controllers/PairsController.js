@@ -15,40 +15,26 @@ module.exports = {
           .sockets
           .join(req.socket, coin, async function (err) {
             if (err) {
-              console.log('>>>err', err);
-              return res
-                .status(403)
-                .json({status: 403, "message": "Error occured"});
+              return res.status(403).json({ status: 403, "message": "Error occured" });
             } else {
               var response = await sails
                 .helpers
                 .tradding
                 .getInstrumentData(coin);
 
-              return res
-                .status(200)
-                .json({status: 200, "message": "", data: response});
+              return res.status(200).json({ status: 200, "message": "", data: response });
             }
           });
       } else {
-        return res
-          .status(403)
-          .json({status: 403, "message": "Error occured"});
+        return res.status(403).json({ status: 403, "message": "Error occured" });
       }
     } catch (error) {
-      console.log(error);
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
   //-------------------------------CMS Api--------------------------
   getAllPairs: async function (req, res) {
-    let {page, limit, data, sortCol, sortOrder} = req.allParams();
-    console.log('sortCol, sortOrder', sortCol, sortOrder)
+    let { page, limit, data, sortCol, sortOrder } = req.allParams();
     let query = " from pairs";
     if ((data && data != "")) {
       query += " WHERE"
@@ -97,86 +83,52 @@ module.exports = {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code1) {
 
-        let coinID_1 = await Coins.findOne({coin_code: req.body.coin_code1});
-        let coinID_2 = await Coins.findOne({coin_code: req.body.coin_code1});
+        let coinID_1 = await Coins.findOne({ coin_code: req.body.coin_code1 });
+        let coinID_2 = await Coins.findOne({ coin_code: req.body.coin_code1 });
 
         var pair_details = await Pairs
           .create({
-          name: req.body.name,
-          coin_code1: coinID_1.id,
-          coin_code2: coinID_2.id,
-          maker_fee: req.body.maker_fee,
-          taker_fee: req.body.taker_fee,
-          created_at: new Date()
-        })
+            name: req.body.name,
+            coin_code1: coinID_1.id,
+            coin_code2: coinID_2.id,
+            maker_fee: req.body.maker_fee,
+            taker_fee: req.body.taker_fee,
+            created_at: new Date()
+          })
           .fetch();
         if (pair_details) {
-          res.json({
-            "status": 200,
-            "message": sails.__('Create Pair')
-          });
-          return;
+          return res.json({ "status": 200, "message": sails.__('Create Pair') });
         } else {
-          res
-            .status(400)
-            .json({"status": 400, "err": "not listed"});
-          return;
+          return res.status(400).json({ "status": 400, "err": "not listed" });
         }
       } else {
-        res
-          .status(400)
-          .json({"status": 400, "err": "Pair Name & coin is not sent"});
-        return;
+        return res.status(400).json({ "status": 400, "err": "Pair Name & coin is not sent" });
       }
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   updatePair: async function (req, res) {
     try {
       if (req.body.id) {
-        const pair_details = await Pairs.findOne({id: req.body.id});
+        const pair_details = await Pairs.findOne({ id: req.body.id });
         if (!pair_details) {
-          return res
-            .status(401)
-            .json({err: 'invalid coin'});
+          return res.status(401).json({ "status": 401, err: 'invalid coin' });
         }
         var updatedPair = await Pairs
-          .update({id: req.body.id})
+          .update({ id: req.body.id })
           .set(req.body)
           .fetch();
         if (!updatedPair) {
-          return res
-            .status(400)
-            .json({
-              "status": 400,
-              "err": sails.__("Something Wrong")
-            });
+          return res.status(400).json({ "status": 400, "err": sails.__("Something Wrong") });
         }
-        return res.json({
-          "status": 200,
-          "message": sails.__('Update Pair')
-        });
+        return res.json({ "status": 200, "message": sails.__('Update Pair') });
       } else {
-        return res
-          .status(400)
-          .json({'status': 400, 'err': 'pair id is not sent.'})
+        return res.status(400).json({ 'status': 400, 'err': 'pair id is not sent.' })
       }
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }
 };
