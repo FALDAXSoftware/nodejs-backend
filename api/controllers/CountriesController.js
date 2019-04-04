@@ -6,177 +6,164 @@
  */
 module.exports = {
   getCountries: async function (req, res) {
-    let {
-      page,
-      limit,
-      data,
-      legality,
-      sortCol,
-      sortOrder
-    } = req.allParams();
-    let query = " from Countries";
-    if ((data && data != "") || (legality && legality != "")) {
-      query += " WHERE"
-      let isDataAppended = false;
-      if (data && data != "" && data != null) {
-        query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
-        isDataAppended = true;
-      }
-
-      if (legality && legality != "" && legality != null) {
-        if (isDataAppended) {
-          query += " AND"
+    try {
+      let { page, limit, data, legality, sortCol, sortOrder } = req.allParams();
+      let query = " from countries";
+      if ((data && data != "") || (legality && legality != "")) {
+        query += " WHERE"
+        let isDataAppended = false;
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+          isDataAppended = true;
         }
-        query = query + " legality= " + legality
+
+        if (legality && legality != "" && legality != null) {
+          if (isDataAppended) {
+            query += " AND"
+          }
+          query = query + " legality= " + legality
+        }
       }
-    }
-    countQuery = query;
-    if (sortCol && sortOrder) {
-      let sortVal = (sortOrder == 'descend'
-        ? 'DESC'
-        : 'ASC');
-      query += " ORDER BY " + sortCol + " " + sortVal;
-    }
-    query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-    let countryData = await sails.sendNativeQuery("Select *" + query, [])
+      countQuery = query;
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      }
+      if (limit != null) {
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      }
+      let countryData = await sails.sendNativeQuery("Select *" + query, [])
 
-    countryData = countryData.rows;
-    for (let i = 0; i < countryData.length; i++) {
-      let stateCount = await State.count({country_id: countryData[i].id});
-      countryData[i].stateCount = stateCount;
-    }
+      countryData = countryData.rows;
 
-    let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
-    CountriesCount = CountriesCount.rows[0].count;
+      for (let i = 0; i < countryData.length; i++) {
+        let stateCount = await State.count({ country_id: countryData[i].id });
+        countryData[i].stateCount = stateCount;
+      }
 
-    if (countryData) {
-      return res.json({"status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount});
+      let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      CountriesCount = CountriesCount.rows[0].count;
+
+      if (countryData) {
+        return res.json({ "status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount });
+      }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   getStates: async function (req, res) {
-    let {page, limit, data, sortCol, sortOrder} = req.allParams();
-    let query = " from states";
-    if ((data && data != "")) {
-      query += " WHERE"
-      if (data && data != "" && data != null) {
-        query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+    try {
+      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let query = " from states";
+      if ((data && data != "")) {
+        query += " WHERE"
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+        }
       }
-    }
 
-    countQuery = query;
-    if (sortCol && sortOrder) {
-      let sortVal = (sortOrder == 'descend'
-        ? 'DESC'
-        : 'ASC');
-      query += " ORDER BY " + sortCol + " " + sortVal;
-    }
+      countQuery = query;
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      }
 
-    query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-    let stateData = await sails.sendNativeQuery("Select *" + query, [])
+      if (limit != null) {
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      }
 
-    stateData = stateData.rows;
-    for (let i = 0; i < stateData.length; i++) {
-      let stateCount = await State.count({country_id: stateData[i].id});
-      stateData[i].stateCount = stateCount;
-    }
+      let stateData = await sails.sendNativeQuery("Select *" + query, [])
 
-    let stateCount = await sails.sendNativeQuery("Select COUNT(id)" + stateQuery, [])
-    stateCount = stateCount.rows[0].count;
+      stateData = stateData.rows;
+      for (let i = 0; i < stateData.length; i++) {
+        let stateCount = await State.count({ country_id: stateData[i].id });
+        stateData[i].stateCount = stateCount;
+      }
 
-    if (stateData) {
-      return res.json({"status": 200, "message": "State list", "data": stateData, stateCount});
+      let stateCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      stateCount = stateCount.rows[0].count;
+
+      if (stateData) {
+        return res.json({ "status": 200, "message": "State list", "data": stateData, stateCount });
+      }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   countryActivate: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
 
       let countriesData = await Countries
-        .update({id: id})
-        .set({is_active: is_active})
+        .update({ id: id })
+        .set({ is_active: is_active })
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({"status": 200, "message": "Country Status Updated"});
+        return res.json({ "status": 200, "message": "Country Status Updated" });
       } else {
         throw "Country(id) not found."
       }
     } catch (e) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   stateActivate: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
       let stateData = await State
-        .update({id: id})
-        .set({is_active: is_active})
+        .update({ id: id })
+        .set({ is_active: is_active })
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({"status": 200, "message": "State Status Updated"});
+        return res.json({ "status": 200, "message": "State Status Updated" });
       } else {
         throw "State(id) not found."
       }
     } catch (e) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   countryUpdate: async function (req, res) {
     try {
       let countriesData = await Countries
-        .update({id: req.body.id})
+        .update({ id: req.body.id })
         .set(req.body)
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({"status": 200, "message": "Country Updated"});
+        return res.json({ "status": 200, "message": "Country Updated" });
       } else {
         throw "Country(id) not found."
       }
     } catch (e) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   stateUpdate: async function (req, res) {
     try {
       let stateData = await State
-        .update({id: req.body.id})
+        .update({ id: req.body.id })
         .set(req.body)
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({"status": 200, "message": "State Updated"});
+        return res.json({ "status": 200, "message": "State Updated" });
       } else {
         throw "State(id) not found."
       }
     } catch (e) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -1351,7 +1338,7 @@ module.exports = {
     let s = await State
       .createEach(states)
       .fetch();
-    res.json({status: 200});
+    res.json({ status: 200 });
   }
 
 };
