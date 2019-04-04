@@ -7,7 +7,7 @@
 
 module.exports = {
   getAllFees: async function (req, res) {
-    let {page, limit, data, sortCol, sortOrder} = req.allParams();
+    let {page, limit, sortCol, sortOrder} = req.allParams();
     console.log('sortCol, sortOrder', sortCol, sortOrder)
     let query = " from fees";
     countQuery = query;
