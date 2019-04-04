@@ -786,233 +786,69 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllTrades: async function (req, res) {
     // req.setLocale('en')
-    let {
-      page,
-      limit,
-      data,
-      user_id,
-      t_type,
-      start_date,
-      end_date
-    } = req.allParams();
+    try {
+      let {
+        page,
+        limit,
+        data,
+        user_id,
+        t_type,
+        start_date,
+        end_date, sortCol, sortOrder
+      } = req.allParams();
 
-    if (page && page > 0) {
-      page = page - 1;
-    } else {
-      page = 0;
-    }
-
-    // try {
-    //   let { page, limit, data } = req.allParams();
-    //   let query = " from users";
-    //   if ((data && data != "")) {
-    //     query += " WHERE"
-    //     if (data && data != "" && data != null) {
-    //       query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'" +
-    //         "OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'" +
-    //         "OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'" +
-    //         "OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'" +
-    //         "OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
-    //     }
-    //   }
-    //   countQuery = query;
-    //   query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    //   let usersData = await sails.sendNativeQuery("Select *" + query, [])
-
-    //   usersData = usersData.rows;
-
-    //   let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
-    //   userCount = userCount.rows[0].count;
-
-    //   if (usersData) {
-    //     return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
-    //   }
-    // } catch (err) {
-    //   return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
-    // }
-
-
-
-    let q = {
-      deleted_at: null
-    }
-    if (start_date && end_date) {
-      q['created_at'] = {
-        '>=': start_date,
-        '<=': end_date
-      };
-    }
-    if (data) {
-      let userArray = await Users.find({
-        where: {
-          deleted_at: null,
-          or: [
-            {
-              email: {
-                contains: data
-              }
-            }
-          ]
-        }
-      });
-
+      let query = " from trade_history";
       if (user_id) {
-        q['user_id'] = user_id
+        query += " LEFT JOIN users ON trade_history.user_id = users.id OR trade_history.requested_user_id = users.id "
       }
+      query += " WHERE trade_history.deleted_at IS NULL";
       if (t_type) {
-        q['side'] = t_type;
+        query += " AND trade_history.side='" + t_type + "'";
       }
-
-      if (start_date && end_date) {
-        q['created_at'] = {
-          '>=': start_date,
-          '<=': end_date
-        };
-      }
-
-      let idArray = [];
-      for (let index = 0; index < userArray.length; index++) {
-        idArray.push(userArray[index].id);
-      }
-      q['or'] = [
-        {
-          user_id: idArray
-        }, {
-          requested_user_id: idArray
-        }, {
-          symbol: {
-            contains: data
+      if ((data && data != "")) {
+        if (data && data != "" && data != null) {
+          query += " LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          if (!isNaN(data)) {
+            query += " OR fill_price=" + data + " OR quantity=" + data
+            " OR fill_price=" + data + " OR quantity=" + data +
+              " OR maker_fee=" + data + " OR taker_fee=" + data
           }
-        }, {
-          settle_currency: {
-            contains: data
+          if (start_date && end_date) {
+            query += " created_at >= " + start_date + " created_at <= " + start_date
           }
-        }, {
-          currency: {
-            contains: data
-          }
-        }, {
-          fill_price: data
-        }, {
-          quantity: data
-        }, {
-          maker_fee: data
-        }, {
-          taker_fee: data
         }
-      ]
-      let tradeData = await TradeHistory
-        .find({
-          ...q,
-          select: [
-            'id',
-            'fill_price',
-            'limit_price',
-            'stop_price',
-            'price',
-            'quantity',
-            'currency',
-            'average_price',
-            'settle_currency',
-            'side',
-            'order_type',
-            'order_status',
-            'is_partially_filled',
-            'fix_quantity',
-            'symbol',
-            'maker_fee',
-            'taker_fee',
-            'user_fee',
-            'user_coin',
-            'requested_fee',
-            'requested_coin',
-            'created_at'
-          ]
-        })
-        .sort("id ASC")
-        .paginate(page, parseInt(limit));
-
-      // for (let index = 0; index < tradeData.length; index++) {   if
-      // (tradeData[index].user_id) {     let user = await Users.findOne({ id:
-      // tradeData[index].user_id })     let user2 = await Users.findOne({ id:
-      // tradeData[index].requested_user_id })     tradeData[index].maker_email =
-      // user.email;     tradeData[index].taker_email = user2.email;
-      // tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) *
-      // parseFloat(tradeData[index]['fill_price']);   } }
-
-      let tradeCount = await TradeHistory.count({
-        ...q
-      });
-
-      return res.json({
-        "status": 200,
-        "message": sails.__("Trade list"),
-        "data": tradeData,
-        tradeCount
-      });
-    } else {
-      if (user_id) {
-        q['user_id'] = user_id
-      }
-      if (t_type) {
-        q['side'] = t_type;
-      }
-      if (start_date && end_date) {
-        q['created_at'] = {
-          '>=': start_date,
-          '<=': end_date
-        };
       }
 
-      let tradeData = await TradeHistory.find({
-        where: {
-          ...q
-        },
-        select: [
-          'id',
-          'fill_price',
-          'limit_price',
-          'stop_price',
-          'price',
-          'quantity',
-          'currency',
-          'average_price',
-          'settle_currency',
-          'side',
-          'order_type',
-          'order_status',
-          'is_partially_filled',
-          'fix_quantity',
-          'symbol',
-          'maker_fee',
-          'taker_fee',
-          'user_fee',
-          'user_coin',
-          'requested_fee',
-          'requested_coin',
-          'created_at'
-        ]
-      })
-        .sort("id ASC")
-        .paginate(page, parseInt(limit));
-      // for (let index = 0; index < tradeData.length; index++) {   if
-      // (tradeData[index].user_id) {     let user = await Users.findOne({ id:
-      // tradeData[index].user_id })     let user2 = await Users.findOne({ id:
-      // tradeData[index].requested_user_id })     tradeData[index].maker_email =
-      // user.email;     tradeData[index].taker_email = user2.email;
-      // tradeData[index]['volume'] = parseFloat(tradeData[index]['quantity']) *
-      // parseFloat(tradeData[index]['fill_price']);   } }
+      // query += " GROUP BY trade_history.id";
+      countQuery = query;
 
-      let tradeCount = await TradeHistory.count({
-        ...q
-      });
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      }
 
-      return res.json({
-        "status": 200,
-        "message": sails.__("Trade list"),
-        "data": tradeData,
-        tradeCount
-      });
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      console.log('query trade', query)
+      let tradeData = await sails.sendNativeQuery("Select *" + query, [])
+
+      tradeData = tradeData.rows;
+
+      let tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
+      tradeCount = tradeCount.rows[0].count;
+
+      if (tradeData) {
+        return res.json({ "status": 200, "message": sails.__("Trade list"), "data": tradeData, tradeCount });
+      }
+    } catch (err) {
+      console.log('query err', err)
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }
 };

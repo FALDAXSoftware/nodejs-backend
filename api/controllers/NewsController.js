@@ -6,86 +6,93 @@
  */
 
 module.exports = {
-    // Get All News Pagination
-    getAllNews: async function (req, res) {
-        try {
-            let { page, limit, search, filterVal, start_date, end_date } = req.allParams();
-            let q = { deleted_at: null }
-            if (filterVal) {
-                q["owner"] = filterVal
-            }
-            if (start_date && end_date) {
-                q['posted_at'] = {
-                    '>=': start_date,
-                    '<=': end_date
-                };
-            }
-            if (search && search != "") {
-                q = {
-                    ...q,
-                    search_keywords: {
-                        'contains': search.toLowerCase()
-                    }
-                }
-            }
+  // Get All News Pagination
+  getAllNews: async function (req, res) {
+    try {
+      let {
+        page,
+        limit,
+        data,
+        filterVal,
+        start_date,
+        end_date,
+        sortCol,
+        sortOrder
+      } = req.allParams();
+      if ((data && data != "")) {
+        query += " WHERE"
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
+          if (start_date) {
+            query = query + "created_at >=" + start_date;
+          }
+          if (end_date) {
+            query = query + "created_at <=" + end_date;
+          }
+        }
+      }
+      countQuery = query;
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      }
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      let news = await sails.sendNativeQuery("Select *" + query, []);
 
-            let news = await News.find({ ...q })
-                .sort('id ASC')
-                .paginate(parseInt(page) - 1, parseInt(limit));
-            let newsCount = await News.count({ ...q });
-            return res.json({
-                "status": 200,
-                "message": "News retrived successfully",
-                "data": news,
-                newsCount
-            });
-        } catch (error) {
-            console.log('>>>>>>', error)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-        }
-    },
-    // Change News Status
-    changeNewsStatus: async function (req, res) {
-        try {
-            let { id, is_active } = req.body;
-            await News.update({ id: id }).set({ is_active });
-            return res.json({ "status": 200, "message": "News Status Updated" });
-        } catch (error) {
-            console.log('error', error)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-        }
-    },
+      let newsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      newsCount = newsCount.rows[0].count;
 
-    // get news details
-    getNewsDetails: async function (req, res) {
-        try {
-            let { news_id } = req.allParams();
-            let newsDetails = await News.findOne({ id: news_id });
-            if (newsDetails) {
-                return res.json({ "status": 200, "message": "News data Updated", data: newsDetails });
-            } else {
-                return res.json({ "status": 400, "message": "No news found" });
-            }
-        } catch (error) {
-            console.log('error', error)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-        }
+      return res.json({"status": 200, "message": "News retrived successfully", "data": news, newsCount});
+    } catch (error) {
+      console.log('>>>>>>', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
+  },
+  // Change News Status
+  changeNewsStatus: async function (req, res) {
+    try {
+      let {id, is_active} = req.body;
+      await News
+        .update({id: id})
+        .set({is_active});
+      return res.json({"status": 200, "message": "News Status Updated"});
+    } catch (error) {
+      console.log('error', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // get news details
+  getNewsDetails: async function (req, res) {
+    try {
+      let {news_id} = req.allParams();
+      let newsDetails = await News.findOne({id: news_id});
+      if (newsDetails) {
+        return res.json({"status": 200, "message": "News data Updated", data: newsDetails});
+      } else {
+        return res.json({"status": 400, "message": "No news found"});
+      }
+    } catch (error) {
+      console.log('error', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  }
 
 };
-

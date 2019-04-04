@@ -44,12 +44,12 @@ module.exports = {
       // Get sell wallet balance.
       var walletBalance;
       // TODO
-      let coin = await Coins.findOne({ is_active: true, deleted_at: null, coin: inputs.currency });
+      let coin = await Coins.findOne({is_active: true, deleted_at: null, coin: inputs.currency});
 
       if (!coin) {
         return exits.coinNotFound();
       }
-      walletBalance = await Wallet.findOne({ is_active: true, deleted_at: null, coin_id: coin.id, user_id: inputs.user_id });
+      walletBalance = await Wallet.findOne({is_active: true, deleted_at: null, coin_id: coin.id, user_id: inputs.user_id});
       // Send back the result through the success exit.
       return exits.success(walletBalance);
     } catch (error) {
