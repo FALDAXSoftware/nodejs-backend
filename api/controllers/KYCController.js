@@ -166,9 +166,14 @@ module.exports = {
     try {
       let user_id = req.user.id;
       let KYCData = await KYC.findOne({user_id});
-      KYCData.city_town = KYCData.city;
-      delete KYCData.city;
       if (KYCData) {
+        KYCData.city_town = KYCData.city;
+        delete KYCData.city;
+      }
+      if (KYCData == undefined) {
+        KYCData = [];
+        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+      } else if (KYCData) {
         return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
       } else {
         return res
