@@ -27,8 +27,8 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     const key = 'YL4+gCHMerqCbiTHlKO6N3l8qaNib9JHvXPJhN+Fa3dZK1F4KUNFhxjw'; // API Key
-    const secret = '8F16MdjpzhbrAzyfNQ7TeyG1feopxZ1ngeZnsxVVFd4MnjGwLgPJvv5xT0fRpCj3B7a/QXEMN2U3F4Ih' +
-        'LwphgA==4lSiCw=='; // API Private Key
+    const secret = 'xfAlQbL6KvD3pWGqJ7uXzHSLykmn19bXoV5Oic5+QNCqx4/5ipth8uBCAMPtJUSmkF9iDf4gqMJeeHyN' +
+        'jMl4LQ=='; // API Private Key
 
     var kraken = new KrakenClient(key, secret);
 
@@ -67,7 +67,7 @@ module.exports = {
       ]
     };
 
-    var data = await kraken.api('OpenOrders')
+    var data = await kraken.api('TradesHistory')
     console.log(data);
     return exits.success(data);
   }

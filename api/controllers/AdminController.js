@@ -10,7 +10,6 @@ var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 
 module.exports = {
-
     // CMS Login
     login: async function (req, res) {
         try {
@@ -32,28 +31,18 @@ module.exports = {
 
                         // Role Not Active
                         if (!role.is_active) {
-                            res
-                                .status(400)
-                                .json({
-                                    "status": 400,
-                                    "err": sails.__("Contact Admin")
-                                });
-                            return;
+                            res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") }); return;
                         }
 
                         if (admin_details.is_twofactor) {
                             if (!req.body.otp) {
-                                return res
-                                    .status(201)
-                                    .json({ "status": 201, "err": 'Please enter OTP to continue' });
+                                return res.status(201).json({ "status": 201, "err": 'Please enter OTP to continue' });
                             }
                             let verified = speakeasy
                                 .totp
                                 .verify({ secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2 });
                             if (!verified) {
-                                return res
-                                    .status(402)
-                                    .json({ "status": 402, "err": 'Invalid OTP' });
+                                return res.status(402).json({ "status": 402, "err": 'Invalid OTP' });
                             }
                         }
 
@@ -61,15 +50,11 @@ module.exports = {
                         Admin
                             .comparePassword(query.password, admin_details, async function (err, valid) {
                                 if (err) {
-                                    return res
-                                        .status(403)
-                                        .json({ "status": 403, "err": 'Forbidden' });
+                                    return res.status(403).json({ "status": 403, "err": 'Forbidden' });
                                 }
 
                                 if (!valid) {
-                                    return res
-                                        .status(401)
-                                        .json({ "status": 401, "err": 'Invalid email or password' });
+                                    return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
                                 } else {
                                     if (admin_details.is_twofactor) {
                                     }
@@ -83,34 +68,16 @@ module.exports = {
                                 }
                             });
                     } else {
-                        res
-                            .status(400)
-                            .json({
-                                "status": 400,
-                                "err": sails.__("Contact Admin")
-                            });
-                        return;
+                        return res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") });
                     }
                 } else {
-                    res
-                        .status(400)
-                        .json({ "status": 400, "err": "Invalid email or password" });
-                    return;
+                    return res.status(400).json({ "status": 400, "err": "Invalid email or password" });
                 }
             } else {
-                res
-                    .status(400)
-                    .json({ "status": 400, "err": "Email or password is not sent" });
-                return;
+                return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
             }
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-            return;
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -129,28 +96,15 @@ module.exports = {
                     .helpers
                     .jwtIssue(user_detail.id);
                 if (user_detail) {
-                    res.json({ "status": 200, "message": "listed", "data": user_detail, token });
-                    return;
+                    return res.json({ "status": 200, "message": "listed", "data": user_detail, token });
                 } else {
-                    res
-                        .status(400)
-                        .json({ "status": 400, "err": "Something went wrong" });
-                    return;
+                    return res.status(400).json({ "status": 400, "err": "Something went wrong" });
                 }
             } else {
-                res
-                    .status(400)
-                    .json({ "status": 400, "err": "Email or password is not sent" });
-                return;
+                return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
             }
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-            return;
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -158,35 +112,25 @@ module.exports = {
     changePassword: async function (req, res) {
         try {
             if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
-                return res
-                    .status(401)
-                    .json({ err: 'Please provide email, current password, new password, confirm password' });
+                return res.status(401).json({ err: 'Please provide email, current password, new password, confirm password' });
             }
 
             if (req.body.new_password !== req.body.confirm_password) {
-                return res
-                    .status(401)
-                    .json({ "status": 401, err: 'New and confirm password should match' });
+                return res.status(401).json({ "status": 401, err: 'New and confirm password should match' });
             }
 
             if (req.body.current_password === req.body.new_password) {
-                return res
-                    .status(401)
-                    .json({ "status": 401, err: 'Current and new password should not be match' });
+                return res.status(401).json({ "status": 401, err: 'Current and new password should not be match' });
             }
 
             const user_details = await Admin.findOne({ email: req.body.email });
             if (!user_details) {
-                return res
-                    .status(401)
-                    .json({ "status": 401, err: 'Email address not found' });
+                return res.status(401).json({ "status": 401, err: 'Email address not found' });
             }
 
             let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
             if (!compareCurrent) {
-                return res
-                    .status(401)
-                    .json({ "status": 401, err: "Current password mismatch" });
+                return res.status(401).json({ "status": 401, err: "Current password mismatch" });
             }
             // Update New Password
             var adminUpdates = await Admin
@@ -197,17 +141,10 @@ module.exports = {
             if (adminUpdates) {
                 return res.json({ "status": 200, "message": "Password changed successfully", "data": adminUpdates });
             } else {
-                return res
-                    .status(401)
-                    .json({ err: 'Something went wrong! Could not able to update the password' });
+                return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
             }
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
             return;
         }
     },
@@ -217,9 +154,7 @@ module.exports = {
         try {
             const admin_details = await Admin.findOne({ email: req.body.email });
             if (!admin_details) {
-                return res
-                    .status(401)
-                    .json({ status: '401', err: 'Invalid email' });
+                return res.status(401).json({ status: '401', err: 'Invalid email' });
             }
             var updatedAdmin = await Admin
                 .update({ email: req.body.email })
@@ -232,13 +167,7 @@ module.exports = {
             return res.json({ "status": 200, "message": "User details updated successfully", data: updatedAdmin });
 
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-            return;
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -307,9 +236,7 @@ module.exports = {
                             }
                         })
             } else {
-                return res
-                    .status(401)
-                    .json({ err: 'This email id is not registered with us.' });
+                return res.status(401).json({ err: 'This email id is not registered with us.' });
             }
         } catch (error) {
             res
@@ -325,40 +252,48 @@ module.exports = {
     //get all employees function
     getAllEmployee: async function (req, res) {
         try {
-            let employees = await Admin
-                .find({
-                    where: {
-                        deleted_at: null
-                    }
-                })
-                .sort('id ASC');
-            for (let index = 0; index < employees.length; index++) {
-                if (employees[index].role_id) {
-                    let role = await Role.findOne({ id: employees[index].role_id })
-                    employees[index].role = role.name
+            let { sortCol, sortOrder, data } = req.allParams();
+            let query = " from admin";
+
+            if ((data && data != "")) {
+                if (data && data != "" && data != null) {
+                    query = query + " WHERE LOWER(first_name) LIKE '%" + data.toLowerCase() +
+                        "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+                        "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'";
                 }
             }
-            let employeeCount = await Admin.count({
-                where: {
-                    deleted_at: null
-                }
-            });
+            countQuery = query;
 
-            if (employees) {
+            if (sortCol && sortOrder) {
+                let sortVal = (sortOrder == 'descend'
+                    ? 'DESC'
+                    : 'ASC');
+                query += " ORDER BY " + sortCol + " " + sortVal;
+            }
+            let allEmployees = await sails.sendNativeQuery("Select *" + query, [])
+
+            allEmployees = allEmployees.rows;
+
+            let employeeCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+            employeeCount = employeeCount.rows[0].count;
+
+            for (let index = 0; index < allEmployees.length; index++) {
+                if (allEmployees[index].role_id) {
+                    let role = await Role.findOne({ id: allEmployees[index].role_id })
+                    allEmployees[index].role = role.name
+                }
+            }
+
+            if (allEmployees) {
                 res.json({
                     status: 200,
                     'message': sails.__("Employee list"),
-                    'data': employees,
-                    employeeCount
+                    'data': { employees: allEmployees, employeeCount }
                 })
             }
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            console.log(error)
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -370,9 +305,7 @@ module.exports = {
                 let existedEmployee = await Admin.findOne({ email: req.body.email, deleted_at: null });
 
                 if (existedEmployee) {
-                    return res
-                        .status(401)
-                        .json({ status: 401, "message": 'Email address already exists' });
+                    return res.status(401).json({ status: 401, "message": 'Email address already exists' });
                 }
 
                 var employee_detail = await Admin.create({
@@ -390,24 +323,17 @@ module.exports = {
                 }).fetch();
 
                 if (employee_detail) {
-                    res.json({
+                    return res.json({
                         'message': sails.__('Add Employee'),
                         'status': 200,
                         'data': employee_detail
                     })
                 }
             } else {
-                res
-                    .status(400)
-                    .json({ 'message': 'Email & roles is required.', 'status': 400 })
+                return res.status(400).json({ 'message': 'Email & roles is required.', 'status': 400 })
             }
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -424,28 +350,16 @@ module.exports = {
                         .set({ email: employee.email, deleted_at: new Date() })
                         .fetch();
                     if (updatedEmp) {
-                        res.json({
-                            'status': 200,
-                            'message': sails.__('Delete Employee')
-                        })
+                        return res.json({ 'status': 200, 'message': sails.__('Delete Employee') })
                     }
                 } else {
-                    res
-                        .status(400)
-                        .json({ status: 400, 'err': 'Employee not found' })
+                    return res.status(400).json({ status: 400, 'err': 'Employee not found' })
                 }
             } else {
-                res
-                    .status(400)
-                    .json({ status: 400, 'err': 'Employee id is not sent.' })
+                return res.status(400).json({ status: 400, 'err': 'Employee id is not sent.' })
             }
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -470,25 +384,15 @@ module.exports = {
                         })
                         .fetch();
                     if (updatedEmp) {
-                        res
-                            .status(200)
-                            .json({
-                                status: 200,
-                                'message': sails.__('Update Employee')
-                            })
+                        return res.status(200).json({ status: 200, 'message': sails.__('Update Employee') })
                     }
                 } else {
-                    res
-                        .status(400)
-                        .json({ 'status': '400', 'err': 'Employee not found.' })
+                    return res.status(400).json({ 'status': '400', 'err': 'Employee not found.' })
                 }
             } else {
-                res
-                    .status(400)
-                    .json({ 'status': '400', 'err': 'Employee id is not sent.' })
+                return res.status(400).json({ 'status': '400', 'err': 'Employee id is not sent.' })
             }
         } catch (error) {
-            console.log(error)
             return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
@@ -504,12 +408,7 @@ module.exports = {
                 return res.json({ "status": 400, "message": "Employee id is required" });
             }
         } catch (err) {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -535,13 +434,7 @@ module.exports = {
                 return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
             });
         } catch (error) {
-            console.log('error', error)
-            return res
-                .status(500)
-                .json({
-                    "status": 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -570,17 +463,10 @@ module.exports = {
                     .set({ email: user.email, is_twofactor: true });
                 return res.json({ status: 200, message: "Two factor authentication has been enabled" });
             }
-            return res
-                .status(401)
-                .json({ err: "Invalid OTP" });
+            return res.status(401).json({ status: 401, err: "Invalid OTP" });
         } catch (error) {
             console.log('>>>>>>>>>err', error)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -605,12 +491,7 @@ module.exports = {
             return res.json({ status: 200, message: "Two factor authentication has been disabled" });
         } catch (error) {
             console.log('error', error)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -622,13 +503,7 @@ module.exports = {
             return res.json({ status: 200, message: "Admin Details", data: adminDetails });
         } catch (err) {
             console.log('error', err)
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     }
-
 };

@@ -59,7 +59,7 @@ module.exports = {
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({ status: 500, "err": "no more limit order in order book" });
+          .json({ status: 500, "err": "No more limit order in Sell book." });
       }
       if (error.message == "serverError") {
         return res
@@ -125,7 +125,7 @@ module.exports = {
       if (error.message == "orderBookEmpty") {
         return res
           .status(500)
-          .json({ status: 500, "err": "no more limit order in order book" });
+          .json({ status: 500, "err": "No more limit order in Buy book." });
       }
 
       return res
