@@ -490,7 +490,6 @@ module.exports = {
   getUserPaginate: async function (req, res) {
     try {
       let { page, limit, data, sortCol, sortOrder } = req.allParams();
-      console.log('sortCol, sortOrder', sortCol, sortOrder)
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
@@ -510,7 +509,6 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      console.log('query users', query)
       let usersData = await sails.sendNativeQuery("Select *" + query, [])
 
       usersData = usersData.rows;
@@ -522,7 +520,6 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
       }
     } catch (err) {
-      console.log('err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },

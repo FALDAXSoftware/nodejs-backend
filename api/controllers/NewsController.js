@@ -19,6 +19,8 @@ module.exports = {
         sortCol,
         sortOrder
       } = req.allParams();
+
+      let query = " from news";
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
@@ -40,11 +42,12 @@ module.exports = {
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let news = await sails.sendNativeQuery("Select *" + query, []);
+      news = news.rows;
 
       let newsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       newsCount = newsCount.rows[0].count;
 
-      return res.json({"status": 200, "message": "News retrived successfully", "data": news, newsCount});
+      return res.json({ "status": 200, "message": "News retrived successfully", "data": news, newsCount });
     } catch (error) {
       console.log('>>>>>>', error)
       return res
@@ -58,11 +61,11 @@ module.exports = {
   // Change News Status
   changeNewsStatus: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
       await News
-        .update({id: id})
-        .set({is_active});
-      return res.json({"status": 200, "message": "News Status Updated"});
+        .update({ id: id })
+        .set({ is_active });
+      return res.json({ "status": 200, "message": "News Status Updated" });
     } catch (error) {
       console.log('error', error)
       return res
@@ -77,12 +80,12 @@ module.exports = {
   // get news details
   getNewsDetails: async function (req, res) {
     try {
-      let {news_id} = req.allParams();
-      let newsDetails = await News.findOne({id: news_id});
+      let { news_id } = req.allParams();
+      let newsDetails = await News.findOne({ id: news_id });
       if (newsDetails) {
-        return res.json({"status": 200, "message": "News data Updated", data: newsDetails});
+        return res.json({ "status": 200, "message": "News data Updated", data: newsDetails });
       } else {
-        return res.json({"status": 400, "message": "No news found"});
+        return res.json({ "status": 400, "message": "No news found" });
       }
     } catch (error) {
       console.log('error', error)
