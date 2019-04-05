@@ -31,12 +31,19 @@ module.exports = {
   addOrder: async function (req, res) {
     try
     {
-      var {pair, type, ordertype, volume} = req.body;
+      var {
+        pair,
+        type,
+        ordertype,
+        price,
+        volume,
+        leverage
+      } = req.body;
 
       var addedData = await sails
         .helpers
         .kraken
-        .addStandardOrder(pair, type, ordertype, volume);
+        .addStandardOrder(pair, type, ordertype, volume, leverage, price);
 
       return res.json({status: 200, "data": addedData});
     } catch (err) {

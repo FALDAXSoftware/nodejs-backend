@@ -43,7 +43,11 @@ module.exports = {
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
       if (req.body.email && req.body.password) {
-        let hubspotcontact = await sails.helpers.hubspot.contacts.create(req.body.first_name, req.body.last_name, req.body.email)
+        let hubspotcontact = await sails
+          .helpers
+          .hubspot
+          .contacts
+          .create(req.body.first_name, req.body.last_name, req.body.email)
           .tolerate("serverError", () => {
             throw new Error("serverError");
           });
@@ -222,7 +226,19 @@ module.exports = {
               if (uploadProfile) {
                 user.profile_pic = 'profile/' + uploadFileName;
                 if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
-                  await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ? ", " + user.street_address_2 : ''), user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
+                  await sails
+                    .helpers
+                    .hubspot
+                    .contacts
+                    .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
+                      ? ", " + user.street_address_2
+                      : ''), user.country
+                        ? user.country
+                        : user_details["country"], user.state
+                        ? user.state
+                        : user_details["state"], user.city_town
+                        ? user.city_town
+                        : user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
                   .update({ email: user.email, deleted_at: null })
@@ -242,7 +258,19 @@ module.exports = {
                   .set({ email: user.email, profile_pic: null });
               }
               if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
-                await sails.helpers.hubspot.contacts.update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ? ", " + user.street_address_2 : ''), user.country ? user.country : user_details["country"], user.state ? user.state : user_details["state"], user.city_town ? user.city_town : user_details["city_town"], user.postal_code);
+                await sails
+                  .helpers
+                  .hubspot
+                  .contacts
+                  .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
+                    ? ", " + user.street_address_2
+                    : ''), user.country
+                      ? user.country
+                      : user_details["country"], user.state
+                      ? user.state
+                      : user_details["state"], user.city_town
+                      ? user.city_town
+                      : user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
@@ -478,7 +506,11 @@ module.exports = {
   },
 
   getUserTickets: async function (req, res) {
-    let tickets = await sails.helpers.hubspot.tickets.getUsersTickets(req.user.id);
+    let tickets = await sails
+      .helpers
+      .hubspot
+      .tickets
+      .getUsersTickets(req.user.id);
     res.json({
       status: 200,
       tickets: tickets.reverse(),
@@ -490,27 +522,23 @@ module.exports = {
   getUserPaginate: async function (req, res) {
     try {
       let { page, limit, data, sortCol, sortOrder } = req.allParams();
-      console.log('sortCol, sortOrder', sortCol, sortOrder)
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'" +
-            "OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'" +
-            "OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'" +
-            "OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'" +
-            "OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
       countQuery = query;
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
+        let sortVal = (sortOrder == 'descend'
+          ? 'DESC'
+          : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      console.log('query users', query)
       let usersData = await sails.sendNativeQuery("Select *" + query, [])
 
       usersData = usersData.rows;
@@ -522,7 +550,6 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
       }
     } catch (err) {
-      console.log('err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
@@ -619,11 +646,7 @@ module.exports = {
         query += "AND users.referred_id =" + id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'" +
-          "OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
         if (data % 1 !== 0) {
           query = query + "OR referral.amount=" + data;
         }
@@ -640,20 +663,28 @@ module.exports = {
       referralCount = referralCount.rows[0].count;
 
       if (usersData) {
-        return res.json({
-          "status": 200,
-          "message": "Referral Users Data",
-          "data": usersData, referralCount
-        });
+        return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
       console.log('err', err)
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getUserloginHistoryAdmin: async function (req, res) {
-    let { page, limit, data, user_id, start_date, end_date } = req.allParams();
+    let {
+      page,
+      limit,
+      data,
+      user_id,
+      start_date,
+      end_date
+    } = req.allParams();
     let q = {
       deleted_at: null,
       user: user_id
@@ -665,18 +696,19 @@ module.exports = {
       };
     }
     if (data) {
-      let allHistoryData = await LoginHistory.find({
-        where: {
-          ...q,
-          or: [
-            {
-              ip: {
-                contains: data
+      let allHistoryData = await LoginHistory
+        .find({
+          where: {
+            ...q,
+            or: [
+              {
+                ip: {
+                  contains: data
+                }
               }
-            }
-          ]
-        }
-      })
+            ]
+          }
+        })
         .sort("created_at DESC")
         .paginate(page - 1, parseInt(limit));
       let allHistoryCount = await LoginHistory.count({
