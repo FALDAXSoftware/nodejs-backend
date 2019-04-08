@@ -258,6 +258,7 @@ module.exports.routes = {
   'get /socket/get-card-data': 'DashboardController.getCardData',
   'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
   'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
+  'get /socket/get-pair-details': 'Coins.getPairDetails',
   //Get Instrument
   'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
   'get /socket/get-user-balance': 'TradeController.getUserWallet',
