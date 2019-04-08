@@ -466,7 +466,7 @@ module.exports = {
                 return res.json({
                   status: 200,
                   data: userBalanceDetails,
-                  "message": "User Balance retrieved successfully" + user_id
+                  "message": "User Balance retrieved successfully"
                 });
               }
             }
