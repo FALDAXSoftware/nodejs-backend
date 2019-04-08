@@ -29,18 +29,6 @@ module.exports = {
       example: 1,
       description: 'Amount of quantity need to done',
       required: true
-    },
-    leverage: {
-      type: 'number',
-      example: 1,
-      description: 'For Margin Order',
-      required: true
-    },
-    price: {
-      type: 'number',
-      example: 1,
-      description: 'For Margin Order',
-      required: true
     }
   },
 
@@ -102,15 +90,13 @@ module.exports = {
         pair: inputs.pair,
         type: inputs.type,
         ordertype: inputs.ordertype,
-        price: inputs.price,
         volume: inputs.volume,
-        leverage: inputs.leverage,
         validate: true
       });
       console.log(status['result'])
       console.log(status['txid'])
 
-      
+
 
       return exits.success(status);
     } catch (err) {

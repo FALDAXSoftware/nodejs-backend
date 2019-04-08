@@ -28,7 +28,7 @@ module.exports = {
 
     const key = 'YL4+gCHMerqCbiTHlKO6N3l8qaNib9JHvXPJhN+Fa3dZK1F4KUNFhxjw'; // API Key
     const secret = 'xfAlQbL6KvD3pWGqJ7uXzHSLykmn19bXoV5Oic5+QNCqx4/5ipth8uBCAMPtJUSmkF9iDf4gqMJeeHyN' +
-        'jMl4LQ=='; // API Private Key
+      'jMl4LQ=='; // API Private Key
 
     var kraken = new KrakenClient(key, secret);
 
@@ -67,7 +67,7 @@ module.exports = {
       ]
     };
 
-    var data = await kraken.api('TradesHistory')
+    var data = await kraken.api('Balance')
     console.log(data);
     return exits.success(data);
   }
