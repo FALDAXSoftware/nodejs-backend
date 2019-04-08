@@ -41,6 +41,7 @@ module.exports = {
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      console.log(query)
       let news = await sails.sendNativeQuery("Select *" + query, []);
       news = news.rows;
 
