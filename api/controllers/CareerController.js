@@ -95,14 +95,12 @@ module.exports = {
             });
         let careerDesc = await Statics.findOne({ slug: 'career' });
         if (allJobCategories) {
-            return res.json({ "status": 200, "message": "All jobs retrived successfully", "data": allJobCategories, careerDesc });
+            return res.json({
+                "status": 200, "message": "All jobs retrived successfully",
+                "data": allJobCategories, careerDesc
+            });
         } else {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
@@ -111,12 +109,7 @@ module.exports = {
         if (allJobCategories) {
             return res.json({ "status": 200, "message": "All job categories retrived successfully", "data": allJobCategories });
         } else {
-            return res
-                .status(500)
-                .json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 
