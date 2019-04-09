@@ -173,6 +173,7 @@ module.exports.routes = {
   'post /users/send-otp-email': 'Auth.sendOtpEmail',
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser',
+  'post /users/update-email': 'Users.updateEmail',
   'post /logout': "AuthController.logOut",
 
   //all forms
