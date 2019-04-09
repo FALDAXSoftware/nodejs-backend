@@ -107,6 +107,11 @@ module.exports = {
       columnName: 'kycDoc_details',
       allowNull: true
     },
+    country_code: {
+      type: 'string',
+      columnName: 'country_code',
+      allowNull: true
+    },
     isApprove: {
       type: 'boolean',
       columnName: 'isApprove',

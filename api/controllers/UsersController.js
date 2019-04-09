@@ -43,21 +43,12 @@ module.exports = {
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
       if (req.body.email && req.body.password) {
-        let hubspotcontact = await sails
-          .helpers
-          .hubspot
-          .contacts
-          .create(req.body.first_name, req.body.last_name, req.body.email)
-          .tolerate("serverError", () => {
-            throw new Error("serverError");
-          });
         var user_detail = await Users.create({
           email: email,
           password: req.body.password,
           full_name: req.body.first_name + ' ' + req.body.last_name,
           first_name: req.body.first_name,
           last_name: req.body.last_name,
-          hubspot_id: hubspotcontact,
           referral_code: randomize('Aa0', 10),
           created_at: new Date(),
           referred_id: referred_id,
@@ -401,7 +392,7 @@ module.exports = {
         secret: secret.ascii,
         label: 'FALDAX( ' + user.email + ')'
       });
-      QRCode.toDataURL(url, function (err, data_url) {
+      QRCode.toDataURL(encodeURI(url), function (err, data_url) {
         return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
       });
     } catch (error) {

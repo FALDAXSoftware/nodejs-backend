@@ -15,9 +15,17 @@ module.exports = {
       if (req.body.email_verify_token) {
         let user = await Users.findOne({email_verify_token: req.body.email_verify_token});
         if (user) {
+          let hubspotcontact = await sails
+            .helpers
+            .hubspot
+            .contacts
+            .create(user.first_name, user.last_name, user.email)
+            .tolerate("serverError", () => {
+              throw new Error("serverError");
+            });
           await Users
             .update({id: user.id, deleted_at: null})
-            .set({email: user.email, is_verified: true, email_verify_token: null});
+            .set({email: user.email, is_verified: true, email_verify_token: null, hubspot_id: hubspotcontact});
           await KYC
             .update({user_id: user.id})
             .set({first_name: user.first_name, last_name: user.last_name});
