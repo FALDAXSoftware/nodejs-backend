@@ -114,6 +114,56 @@ module.exports = {
     }
   },
 
+  updateEmail: async function (req, res) {
+    let oldEmail = req.body.oldEmail.toLowerCase();
+    let newEmail = req.body.newEmail.toLowerCase();
+    var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
+    var existedEmail = await Users.find({ email: newEmail });
+
+    console.log('existedUser', existedEmail)
+
+    if (existedEmail && existedEmail.length > 0) {
+      return res.status(401).json({ status: 401, "err": 'Email address already exists' });
+    }
+
+    if (existedUser && existedUser.email == oldEmail) {
+      let email_verify_token = randomize('Aa0', 10);
+
+      var user = await Users
+        .update({ email: newEmail, deleted_at: null })
+        .set({ email_verify_token: email_verify_token });
+
+      if (user) {
+        sails
+          .hooks
+          .email
+          .send("signup", {
+            homelink: sails.config.urlconf.APP_URL,
+            recipientName: existedUser.first_name,
+            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+            tokenCode: email_verify_token,
+            senderName: "Faldax"
+          }, {
+              to: email,
+              subject: "Email Verification"
+            }, function (err) {
+              console.log(err);
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "email_verify_token": email_verify_token,
+                  "message": "Verification link sent to email successfully"
+                });
+              }
+            })
+      }
+
+
+    } else {
+      return res.status(401).json({ status: 401, "err": 'Email address does not exists' });
+    }
+  },
+
   getAllUserDetails: async function (req, res) {
     let {user_id} = req.allParams();
     try {
