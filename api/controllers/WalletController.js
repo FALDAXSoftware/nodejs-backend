@@ -78,7 +78,7 @@ module.exports = {
         'balanceWallet': balanceCoin,
         'nonBalanceWallet': nonBalanceCoin
       }
-      
+
       var calculation = 0;
       if (isNaN(wallet_user.percent_wallet) || wallet_user.percent_wallet == null || wallet_user.percent_wallet == undefined) {
         calculation = 0;
@@ -235,6 +235,13 @@ module.exports = {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
+      let coinFee = await AdminSetting.find({
+        where: {
+          slug: 'default_send_coin_fee',
+          deleted_at: null
+        }
+      });
+
       if (walletTransData.length > 0) {
         walletTransData[0]['coin_code'] = coinData.coin_code;
         walletTransData[0]['coin_icon'] = coinData.coin_icon;
@@ -252,7 +259,14 @@ module.exports = {
 
       let walletTransCount = await WalletHistory.count({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       if (walletTransData) {
-        return res.json({status: 200, message: "Wallet data retrived successfully.", walletTransData, walletTransCount, walletUserData});
+        return res.json({
+          status: 200,
+          message: "Wallet data retrived successfully.",
+          walletTransData,
+          walletTransCount,
+          walletUserData,
+          coinFee
+        });
       } else {
         return res.json({status: 200, message: "No data found."})
       }
