@@ -33,7 +33,9 @@ module.exports = {
           await sails
             .helpers
             .wallet
-            .receiveAddress(user);
+            .receiveAddress(user, req.body.test_key
+              ? req.body.test_key
+              : "false");
           return res.json({
             "status": 200,
             "message": sails.__('Verify User')
@@ -140,7 +142,7 @@ module.exports = {
                 }
                 // Check For New Ip
                 let loginData = await LoginHistory.find({user: user_detail.id, ip: ip});
-                if (loginData.length > 0) {
+                if (loginData.length > 0 || req.body.test_key == sails.config.local.test_key) {
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
