@@ -13,6 +13,13 @@ module.exports = {
       example: '{}',
       description: 'User Data for which wallet needs to be created',
       required: true
+    },
+    test_key: {
+      type: 'string',
+      example: 'hjkghbg',
+      description: 'Testing key',
+      required: false,
+      defaultsTo: "false"
     }
   },
 
@@ -31,6 +38,7 @@ module.exports = {
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
       if (coin.coin_name == inputs.user.fiat) {
+
         var obj = {
           wallet_id: "wallet",
           coin_id: parseInt(coin.id),
@@ -50,14 +58,27 @@ module.exports = {
         if (wallet) {
 
           var address = await wallet.createAddress({"chain": 0});
-          var obj = {
-            wallet_id: coin.wallet_address,
-            coin_id: parseInt(coin.id),
-            receive_address: address.address,
-            user_id: parseInt(inputs.user.id),
-            balance: 0.0
-          }
+          if (inputs.test_key == sails.config.local.test_key) {
+            var obj = {
+              wallet_id: "wallet",
+              coin_id: parseInt(coin.id),
+              receive_address: address.address,
+              user_id: parseInt(inputs.user.id),
+              balance: 100000.0,
+              placed_balance: 100000.0
+            }
 
+          } else {
+            var obj = {
+              wallet_id: "wallet",
+              coin_id: parseInt(coin.id),
+              receive_address: address.address,
+              user_id: parseInt(inputs.user.id),
+              balance: 0.0,
+              placed_balance: 0.0
+            }
+
+          }
           var create = await Wallet
             .create(obj)
             .fetch();

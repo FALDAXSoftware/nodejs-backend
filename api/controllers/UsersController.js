@@ -24,18 +24,18 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({ email, deleted_at: null });
+      var existedUser = await Users.findOne({email, deleted_at: null, is_active: true});
       if (existedUser) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Email address already exists' });
+          .json({status: 401, "err": 'Email address already exists'});
       }
       if (req.body.referral_code) {
-        var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
+        var referredUser = await Users.findOne({referral_code: req.body.referral_code});
         if (!referredUser) {
           return res
             .status(401)
-            .json({ status: 401, "err": 'Invalid referral code.' });
+            .json({status: 401, "err": 'Invalid referral code.'});
         } else {
           referred_id = parseInt(referredUser.id);
         }
@@ -67,38 +67,38 @@ module.exports = {
             .send((req.body.device_type == 1 || req.body.device_type == 2)
               ? "signupCode"
               : "signup", {
-                homelink: sails.config.urlconf.APP_URL,
-                recipientName: user_detail.first_name,
-                token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-                tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
-                  ? email_verify_code
-                  : email_verify_token,
-                senderName: "Faldax"
-              }, {
-                to: user_detail.email,
-                subject: "Signup Verification"
-              }, function (err) {
-                console.log(err);
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "email_verify_token": email_verify_token,
-                    "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                      ? "Verification code sent to email successfully"
-                      : "Verification link sent to email successfully"
-                  });
-                }
-              })
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: user_detail.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
+                ? email_verify_code
+                : email_verify_token,
+              senderName: "Faldax"
+            }, {
+              to: user_detail.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              console.log(err);
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "email_verify_token": email_verify_token,
+                  "message": (req.body.device_type == 1 || req.body.device_type == 2)
+                    ? "Verification code sent to email successfully"
+                    : "Verification link sent to email successfully"
+                });
+              }
+            })
         } else {
           res
             .status(401)
-            .json({ status: 401, "err": "Something went wrong" });
+            .json({status: 401, "err": "Something went wrong"});
           return;
         }
       } else {
         res
           .status(401)
-          .json({ status: 401, "err": "email or password or phone_number is not sent" });
+          .json({status: 401, "err": "email or password or phone_number is not sent"});
         return;
       }
     } catch (error) {
@@ -165,7 +165,7 @@ module.exports = {
   },
 
   getAllUserDetails: async function (req, res) {
-    let { user_id } = req.allParams();
+    let {user_id} = req.allParams();
     try {
       let usersData = await Users.find({
         where: {
@@ -174,7 +174,7 @@ module.exports = {
         }
       });
       if (usersData) {
-        return res.json({ "status": 200, "message": "Users Data", "data": usersData });
+        return res.json({"status": 200, "message": "Users Data", "data": usersData});
       }
     } catch (err) {
       console.log('error>>>>>>>>>>', err)
@@ -190,8 +190,8 @@ module.exports = {
 
   getUserDetails: async function (req, res) {
     let id = req.user.id;
-    let usersData = await Users.find({ id: id });
-    let userKyc = await KYC.findOne({ user_id: id });
+    let usersData = await Users.find({id: id});
+    let userKyc = await KYC.findOne({user_id: id});
     usersData[0].is_kyc_done = false;
     if (userKyc) {
       if (userKyc.steps == 3) {
@@ -203,12 +203,12 @@ module.exports = {
       .userTradeChecking(usersData[0].id);
     usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
-      return res.json({ "status": 200, "message": "Users Data", "data": usersData });
+      return res.json({"status": 200, "message": "Users Data", "data": usersData});
     }
   },
 
   getReferred: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {page, limit} = req.allParams();
 
     let id = req.user.id;
     let usersData = await Users.find({
@@ -219,26 +219,26 @@ module.exports = {
     }).paginate(parseInt(page) - 1, parseInt(limit));
 
     if (usersData) {
-      return res.json({ "status": 200, "message": "User referred Data", "data": usersData });
+      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
     }
   },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({user: req.user.id})
       .sort('created_at DESC')
       .limit(10);
-    return res.json({ "status": 200, "message": "Users Login History", "data": history });
+    return res.json({"status": 200, "message": "Users Login History", "data": history});
   },
 
   update: async function (req, res) {
     try {
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({id: req.user.id});
       if (!user_details) {
         return res
           .status(401)
-          .json({ "status": 401, "err": 'Invalid email' });
+          .json({"status": 401, "err": 'Invalid email'});
       }
       var user = req.body;
       user['email'] = user_details['email'];
@@ -274,15 +274,15 @@ module.exports = {
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
                       ? ", " + user.street_address_2
                       : ''), user.country
-                        ? user.country
-                        : user_details["country"], user.state
-                        ? user.state
-                        : user_details["state"], user.city_town
-                        ? user.city_town
-                        : user_details["city_town"], user.postal_code);
+                      ? user.country
+                      : user_details["country"], user.state
+                      ? user.state
+                      : user_details["state"], user.city_town
+                      ? user.city_town
+                      : user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
-                  .update({ email: user.email, deleted_at: null })
+                  .update({email: user.email, deleted_at: null})
                   .set(user)
                   .fetch();
                 delete updatedUsers.password
@@ -295,8 +295,8 @@ module.exports = {
               if (user.remove_pic == 'true') {
                 delete user.remove_pic;
                 await Users
-                  .update({ email: user.email })
-                  .set({ email: user.email, profile_pic: null });
+                  .update({email: user.email})
+                  .set({email: user.email, profile_pic: null});
               }
               if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
                 await sails
@@ -306,16 +306,16 @@ module.exports = {
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
                     ? ", " + user.street_address_2
                     : ''), user.country
-                      ? user.country
-                      : user_details["country"], user.state
-                      ? user.state
-                      : user_details["state"], user.city_town
-                      ? user.city_town
-                      : user_details["city_town"], user.postal_code);
+                    ? user.country
+                    : user_details["country"], user.state
+                    ? user.state
+                    : user_details["state"], user.city_town
+                    ? user.city_town
+                    : user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
-                .update({ email: user.email, deleted_at: null })
+                .update({email: user.email, deleted_at: null})
                 .set(user);
 
               return res.json({
@@ -345,43 +345,43 @@ module.exports = {
       if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Please provide current password, new password, confirm password' });
+          .json({status: 401, "err": 'Please provide current password, new password, confirm password'});
       }
       if (req.body.new_password != req.body.confirm_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'New and confirm password should match' });
+          .json({status: 401, "err": 'New and confirm password should match'});
       }
       if (req.body.current_password == req.body.new_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Current and new password should not be same.' });
+          .json({status: 401, "err": 'Current and new password should not be same.'});
       }
 
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({id: req.user.id});
       if (!user_details) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'User not found' });
+          .json({status: 401, "err": 'User not found'});
       }
       let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
       if (!compareCurrent) {
         return res
           .status(401)
-          .json({ status: 401, "err": "Old password is incorrect" });
+          .json({status: 401, "err": "Old password is incorrect"});
       }
 
       var updatedUsers = await Users
-        .update({ id: req.user.id })
-        .set({ email: user_details.email, password: req.body.new_password })
+        .update({id: req.user.id})
+        .set({email: user_details.email, password: req.body.new_password})
         .fetch();
 
       if (updatedUsers) {
-        return res.json({ "status": 200, "message": "Password changed successfully" });
+        return res.json({"status": 200, "message": "Password changed successfully"});
       } else {
         return res
           .status(401)
-          .json({ "status": 401, err: 'Something went wrong! Could not able to update the password' });
+          .json({"status": 401, err: 'Something went wrong! Could not able to update the password'});
       }
     } catch (error) {
       return res
@@ -404,15 +404,15 @@ module.exports = {
     });
 
     if (usersData) {
-      return res.json({ "status": 200, "message": "User referred Data", "data": usersData });
+      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
     }
   },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {page, limit} = req.allParams();
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({user: req.user.id})
       .sort('created_at DESC')
       .paginate(page - 1, parseInt(limit));
 
@@ -422,28 +422,28 @@ module.exports = {
       }
     });
 
-    return res.json({ "status": 200, "message": "Users Login History", "data": history, historyCount });
+    return res.json({"status": 200, "message": "Users Login History", "data": history, historyCount});
   },
 
   setupTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
-      const secret = speakeasy.generateSecret({ length: 10 });
+      const secret = speakeasy.generateSecret({length: 10});
       await Users
-        .update({ id: user.id })
-        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+        .update({id: user.id})
+        .set({"email": user.email, "twofactor_secret": secret.base32});
       let url = speakeasy.otpauthURL({
         secret: secret.ascii,
         label: 'FALDAX( ' + user.email + ')'
       });
       QRCode.toDataURL(encodeURI(url), function (err, data_url) {
-        return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
+        return res.json({status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url})
       });
     } catch (error) {
       return res
@@ -458,31 +458,31 @@ module.exports = {
   verifyTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let { otp } = req.allParams();
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let {otp} = req.allParams();
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
       if (user.is_twofactor == true) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "Two factor authentication is already enabled" });
+          .json({"status": 401, "err": "Two factor authentication is already enabled"});
       }
 
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp, window: 2 });
+        .verify({secret: user.twofactor_secret, encoding: "base32", token: otp});
       if (verified) {
         await Users
-          .update({ id: user.id })
-          .set({ email: user.email, is_twofactor: true });
-        return res.json({ status: 200, message: "Two factor authentication has been enabled" });
+          .update({id: user.id})
+          .set({email: user.email, is_twofactor: true});
+        return res.json({status: 200, message: "Two factor authentication has been enabled"});
       }
       return res
         .status(401)
-        .json({ err: "Invalid OTP" });
+        .json({err: "Invalid OTP"});
     } catch (error) {
       return res
         .status(500)
@@ -496,21 +496,21 @@ module.exports = {
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
       if (user.is_twofactor == false) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "Two factor authentication is already disabled" });
+          .json({"status": 401, "err": "Two factor authentication is already disabled"});
       }
       await Users
-        .update({ id: user.id, deleted_at: null })
-        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
-      return res.json({ status: 200, message: "Two factor authentication has been disabled" });
+        .update({id: user.id, deleted_at: null})
+        .set({email: user.email, is_twofactor: false, twofactor_secret: null});
+      return res.json({status: 200, message: "Two factor authentication has been disabled"});
     } catch (error) {
       return res
         .status(500)
@@ -525,7 +525,7 @@ module.exports = {
     let user_id = req.user.id;
     let userEmail = req.email;
 
-    let user = await Users.findOne({ id: user_id, email: userEmail, deleted_at: null });
+    let user = await Users.findOne({id: user_id, email: userEmail, deleted_at: null});
 
     if (!user) {
       res
@@ -537,8 +537,8 @@ module.exports = {
     }
 
     await Users
-      .update({ id: user.id })
-      .set({ email: user.email, deleted_at: new Date() });
+      .update({id: user.id})
+      .set({email: user.email, deleted_at: new Date()});
 
     res.json({
       status: 200,
@@ -547,22 +547,27 @@ module.exports = {
   },
 
   getUserTickets: async function (req, res) {
-    let tickets = await sails
-      .helpers
-      .hubspot
-      .tickets
-      .getUsersTickets(req.user.id);
-    res.json({
-      status: 200,
-      tickets: tickets.reverse(),
-      message: "Ticket"
-    });
+    try {
+      console.log("User ID ::: ", req.user.id);
+      let tickets = await sails
+        .helpers
+        .hubspot
+        .tickets
+        .getUsersTickets(req.user.id);
+      res.json({
+        status: 200,
+        tickets: tickets.reverse(),
+        message: "Ticket"
+      });
+    } catch (err) {
+      console.log(err);
+    }
   },
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let {page, limit, data, sortCol, sortOrder} = req.allParams();
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
@@ -588,55 +593,60 @@ module.exports = {
       userCount = userCount.rows[0].count;
 
       if (usersData) {
-        return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+        return res.json({"status": 200, "message": "Users list", "data": usersData, userCount});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   updateUserDetails: async function (req, res) {
-    let { user_id, email, referal_percentage } = req.body;
+    let {user_id, email, referal_percentage} = req.body;
 
     if (user_id && email) {
       var updateUserData = await Users
-        .update({ id: user_id })
-        .set({ email: email, referal_percentage: referal_percentage })
+        .update({id: user_id})
+        .set({email: email, referal_percentage: referal_percentage})
         .fetch();
     } else {
       updateUserData = await AdminSetting
-        .update({ slug: 'default_referral_percentage' })
-        .set({ value: referal_percentage })
+        .update({slug: 'default_referral_percentage'})
+        .set({value: referal_percentage})
         .fetch();
     }
 
     if (updateUserData) {
-      return res.json({ "status": 200, "message": "User Referral Percentage Updated." });
+      return res.json({"status": 200, "message": "User Referral Percentage Updated."});
     } else {
-      return res.json({ "status": 200, "message": "User(id) not found" });
+      return res.json({"status": 200, "message": "User(id) not found"});
     }
   },
 
   userActivate: async function (req, res) {
-    let { user_id, email, is_active } = req.body;
+    let {user_id, email, is_active} = req.body;
 
     let usersData = await Users
-      .update({ id: user_id })
-      .set({ email: email, is_active: is_active })
+      .update({id: user_id})
+      .set({email: email, is_active: is_active})
       .fetch();
 
     if (usersData && typeof usersData === 'object' && usersData.length > 0) {
-      return res.json({ "status": 200, "message": "User Status Updated" });
+      return res.json({"status": 200, "message": "User Status Updated"});
     } else {
-      return res.json({ "status": 200, "message": "User(id) not found" });
+      return res.json({"status": 200, "message": "User(id) not found"});
     }
   },
 
   getCountriesData: async function (req, res) {
-    fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
+    fetch(' https://restcountries.eu/rest/v2/all', {method: "GET"})
       .then(resData => resData.json())
       .then(resData => {
-        res.json({ status: 200, data: resData })
+        res.json({status: 200, data: resData})
       })
       .catch(err => {
         return res
@@ -651,7 +661,7 @@ module.exports = {
   getCountries: async function (req, res) {
     let countriesResponse = [];
     let countries = await Countries
-      .find({ is_active: true })
+      .find({is_active: true})
       .populate('state');
     countries.forEach(country => {
       let temp = {
@@ -674,13 +684,13 @@ module.exports = {
           }
         });
     });
-    res.json({ state: 200, message: "Countries retirved successfully", countries: countriesResponse });
+    res.json({state: 200, message: "Countries retirved successfully", countries: countriesResponse});
   },
 
   getUserReferredAdmin: async function (req, res) {
     try {
 
-      let { page, limit, data, id } = req.allParams();
+      let {page, limit, data, id} = req.allParams();
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
       query += " WHERE users.is_verified='true'";
       if (id) {
@@ -704,7 +714,7 @@ module.exports = {
       referralCount = referralCount.rows[0].count;
 
       if (usersData) {
-        return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
+        return res.json({"status": 200, "message": "Referral Users Data", "data": usersData, referralCount});
       }
     } catch (err) {
       console.log('err', err)
@@ -739,17 +749,17 @@ module.exports = {
     if (data) {
       let allHistoryData = await LoginHistory
         .find({
-          where: {
-            ...q,
-            or: [
-              {
-                ip: {
-                  contains: data
-                }
+        where: {
+          ...q,
+          or: [
+            {
+              ip: {
+                contains: data
               }
-            ]
-          }
-        })
+            }
+          ]
+        }
+      })
         .sort("created_at DESC")
         .paginate(page - 1, parseInt(limit));
       let allHistoryCount = await LoginHistory.count({
@@ -775,10 +785,10 @@ module.exports = {
     } else {
       let allHistoryData = await LoginHistory
         .find({
-          where: {
-            ...q
-          }
-        })
+        where: {
+          ...q
+        }
+      })
         .sort("created_at DESC")
         .paginate(page - 1, parseInt(limit));
 

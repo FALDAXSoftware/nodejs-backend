@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
+  'test_key': 'nikita',
   'BITGO_ACCESS_TOKEN': process.env.BITGO_ACCESS_TOKEN,
   'BITGO_ENV_MODE': process.env.BITGO_ENV_MODE,
   'chain': process.env.CHAIN,
