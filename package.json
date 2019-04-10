@@ -12,7 +12,7 @@
     "async": "2.0.1",
     "aws-sdk": "^2.375.0",
     "base-64": "^0.1.0",
-    "bcrypt": "2",
+    "bcrypt": "^2.0.1",
     "bcrypt-nodejs": "0.0.3",
     "bitgo": "^4.42.0",
     "dom-parser": "^0.1.5",

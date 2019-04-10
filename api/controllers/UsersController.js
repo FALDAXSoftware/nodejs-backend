@@ -24,7 +24,7 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({ email, deleted_at: null });
+      var existedUser = await Users.findOne({ email, deleted_at: null, is_active: true });
       if (existedUser) {
         return res
           .status(401)
@@ -509,7 +509,7 @@ module.exports = {
 
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp, window: 2 });
+        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
       if (verified) {
         await Users
           .update({ id: user.id })
@@ -583,16 +583,21 @@ module.exports = {
   },
 
   getUserTickets: async function (req, res) {
-    let tickets = await sails
-      .helpers
-      .hubspot
-      .tickets
-      .getUsersTickets(req.user.id);
-    res.json({
-      status: 200,
-      tickets: tickets.reverse(),
-      message: "Ticket"
-    });
+    try {
+      console.log("User ID ::: ", req.user.id);
+      let tickets = await sails
+        .helpers
+        .hubspot
+        .tickets
+        .getUsersTickets(req.user.id);
+      res.json({
+        status: 200,
+        tickets: tickets.reverse(),
+        message: "Ticket"
+      });
+    } catch (err) {
+      console.log(err);
+    }
   },
   //------------------CMS APi------------------------------------------------//
 
@@ -631,7 +636,12 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -654,6 +664,23 @@ module.exports = {
       return res.json({ "status": 200, "message": "User Referral Percentage Updated." });
     } else {
       return res.json({ "status": 200, "message": "User(id) not found" });
+    }
+  },
+
+  updateSendCoinFee: async function (req, res) {
+    try {
+      let { send_coin_fee } = req.body;
+
+      updateCoinFee = await AdminSetting
+        .update({ slug: 'default_send_coin_fee' })
+        .set({ value: send_coin_fee })
+        .fetch();
+
+      if (updateCoinFee) {
+        return res.json({ "status": 200, "message": "Coin Fee has been updated successfully" });
+      }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
