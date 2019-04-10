@@ -115,52 +115,94 @@ module.exports = {
   },
 
   updateEmail: async function (req, res) {
-    let oldEmail = req.body.oldEmail.toLowerCase();
-    let newEmail = req.body.newEmail.toLowerCase();
-    var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
-    var existedEmail = await Users.find({ email: newEmail });
+    try {
+      let newEmail = req.body.newEmail.toLowerCase();
+      var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
+      var existedEmail = await Users.find({ email: newEmail });
 
-    console.log('existedUser', existedEmail)
+      console.log('existedUser', existedEmail)
 
-    if (existedEmail && existedEmail.length > 0) {
-      return res.status(401).json({ status: 401, "err": 'Email address already exists' });
-    }
-
-    if (existedUser && existedUser.email == oldEmail) {
-      let email_verify_token = randomize('Aa0', 10);
-
-      var user = await Users
-        .update({ email: newEmail, deleted_at: null })
-        .set({ email_verify_token: email_verify_token });
-
-      if (user) {
-        sails
-          .hooks
-          .email
-          .send("signup", {
-            homelink: sails.config.urlconf.APP_URL,
-            recipientName: existedUser.first_name,
-            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-            tokenCode: email_verify_token,
-            senderName: "Faldax"
-          }, {
-              to: email,
-              subject: "Email Verification"
-            }, function (err) {
-              console.log(err);
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "email_verify_token": email_verify_token,
-                  "message": "Verification link sent to email successfully"
-                });
-              }
-            })
+      if (existedEmail && existedEmail.length > 0) {
+        return res.status(401).json({ status: 401, "err": 'Email address already exists' });
       }
 
+      if (existedUser) {
+        //console.log('idff', existedUser)
+        let new_email_token = randomize('0', 6);
 
-    } else {
-      return res.status(401).json({ status: 401, "err": 'Email address does not exists' });
+        var user = await Users
+          .update({ id: req.user.id, deleted_at: null })
+          .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token }).fetch();
+        console.log(' ex>>>>>>>>>>>>>>', user)
+        if (user) {
+          console.log(' existedUser.email', existedUser.email)
+          sails
+            .hooks
+            .email
+            .send("newEmailVerification", {
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: existedUser.first_name,
+              tokenCode: new_email_token,
+              senderName: "Faldax"
+            }, {
+                to: existedUser.email,
+                subject: "New Email Verification"
+              }, function (err) {
+                console.log(err);
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": new_email_token,
+                    "message": "Verification otp sent to email successfully"
+                  });
+                }
+              })
+        }
+      } else {
+        return res.status(401).json({ status: 401, "err": 'Email address does not exists' });
+      }
+    } catch (error) {
+      console.log('error>>>>>>>>>>', error)
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+    }
+  },
+
+  verifyNewEmail: async function (req, res) {
+    try {
+
+      if (req.body.new_email_token) {
+        let user = await Users.findOne({ new_email_token: req.body.new_email_token });
+        if (user) {
+          let hubspotcontact = await sails
+            .helpers
+            .hubspot
+            .contacts
+            .create(user.first_name, user.last_name, user.requested_email)
+            .tolerate("serverError", () => {
+              throw new Error("serverError");
+            });
+          await Users
+            .update({ id: user.id, deleted_at: null })
+            .set({ email: user.requested_email, is_verified: true, new_email_token: null, hubspot_id: hubspotcontact });
+          await KYC
+            .update({ user_id: user.id })
+            .set({ first_name: user.first_name, last_name: user.last_name });
+          // Create Receive Address
+          await sails
+            .helpers
+            .wallet
+            .receiveAddress(user);
+          return res.json({
+            "status": 200,
+            "message": sails.__('Verify User Email')
+          });
+        } else {
+          return res.status(400).json({ "status": 400, "err": sails.__('Invalid Token') });
+        }
+      }
+    } catch (error) {
+      console.log('VERIFY', error);
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -178,13 +220,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('error>>>>>>>>>>', err)
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -567,7 +603,11 @@ module.exports = {
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(email) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
       countQuery = query;

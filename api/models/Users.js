@@ -189,6 +189,16 @@ module.exports = {
       allowNull: true,
       columnName: 'new_ip'
     },
+    requested_email: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'requested_email'
+    },
+    new_email_token: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_email_token'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
