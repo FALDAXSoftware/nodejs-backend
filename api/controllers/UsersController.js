@@ -123,43 +123,34 @@ module.exports = {
       console.log('existedUser', existedEmail)
 
       if (existedEmail && existedEmail.length > 0) {
-        return res.status(401).json({ status: 401, "err": 'Email address already exists' });
+        return res.status(401).json({ status: 401, "err": 'This Email is already registered with us.' });
       }
 
-      if (existedUser) {
-        //console.log('idff', existedUser)
-        let new_email_token = randomize('0', 6);
+      let new_email_token = randomize('0', 6);
 
-        var user = await Users
-          .update({ id: req.user.id, deleted_at: null })
-          .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token }).fetch();
-        console.log(' ex>>>>>>>>>>>>>>', user)
-        if (user) {
-          console.log(' existedUser.email', existedUser.email)
-          sails
-            .hooks
-            .email
-            .send("newEmailVerification", {
-              homelink: sails.config.urlconf.APP_URL,
-              recipientName: existedUser.first_name,
-              tokenCode: new_email_token,
-              senderName: "Faldax"
-            }, {
-                to: existedUser.email,
-                subject: "New Email Verification"
-              }, function (err) {
-                console.log(err);
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": new_email_token,
-                    "message": "Verification otp sent to email successfully"
-                  });
-                }
-              })
-        }
-      } else {
-        return res.status(401).json({ status: 401, "err": 'Email address does not exists' });
+      var user = await Users
+        .update({ id: req.user.id, deleted_at: null })
+        .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token }).fetch();
+      if (user) {
+        sails
+          .hooks
+          .email
+          .send("newEmailVerification", {
+            homelink: sails.config.urlconf.APP_URL,
+            recipientName: existedUser.first_name,
+            tokenCode: new_email_token,
+            senderName: "Faldax"
+          }, {
+              to: existedUser.email,
+              subject: "New Email Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": "Verification OTP has been sent to your current email successfully."
+                });
+              }
+            })
       }
     } catch (error) {
       console.log('error>>>>>>>>>>', error)
@@ -169,39 +160,32 @@ module.exports = {
 
   verifyNewEmail: async function (req, res) {
     try {
-
       if (req.body.new_email_token) {
         let user = await Users.findOne({ new_email_token: req.body.new_email_token });
         if (user) {
-          let hubspotcontact = await sails
-            .helpers
-            .hubspot
-            .contacts
-            .create(user.first_name, user.last_name, user.requested_email)
-            .tolerate("serverError", () => {
-              throw new Error("serverError");
+          let requested_email = user.requested_email;
+          if (user["hubspot_id"] && user["hubspot_id"] != null) {
+            await sails
+              .helpers
+              .hubspot
+              .contacts
+              .updateEmail(user["hubspot_id"], requested_email);
+          }
+          let verifiedEmail = await Users
+            .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
+            .set({ email: requested_email, new_email_token: null, requested_email: null }).fetch();
+
+          if (verifiedEmail) {
+            return res.json({
+              "status": 200,
+              "message": sails.__('Verify User Email')
             });
-          await Users
-            .update({ id: user.id, deleted_at: null })
-            .set({ email: user.requested_email, is_verified: true, new_email_token: null, hubspot_id: hubspotcontact });
-          await KYC
-            .update({ user_id: user.id })
-            .set({ first_name: user.first_name, last_name: user.last_name });
-          // Create Receive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user);
-          return res.json({
-            "status": 200,
-            "message": sails.__('Verify User Email')
-          });
+          }
         } else {
-          return res.status(400).json({ "status": 400, "err": sails.__('Invalid Token') });
+          return res.status(400).json({ "status": 400, "err": 'Invalid OTP' });
         }
       }
     } catch (error) {
-      console.log('VERIFY', error);
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },

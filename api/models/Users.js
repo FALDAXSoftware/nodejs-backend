@@ -243,32 +243,24 @@ module.exports = {
       });
   },
   beforeUpdate: (values, next) => {
-    Users
-      .findOne({ 'email': values.email, 'deleted_at': null })
-      .exec(async function (err, found) {
-        values.updated_at = new Date()
-        if (found) {
-          if (values.password) {
-            bcrypt
-              .genSalt(10, function (err, salt) {
-                if (err)
-                  return next(err);
-                bcrypt
-                  .hash(values.password, salt, function (err, hash) {
-                    if (err)
-                      return next(err);
-                    values.password = hash;
-                    next();
-                  })
-              });
-          } else {
-            // delete values.email;
-            next();
-          }
-        } else {
-          next({ error: "Email address doesn't exists" });
-        }
-      });
+    values.updated_at = new Date()
+    if (values.password) {
+      bcrypt
+        .genSalt(10, function (err, salt) {
+          if (err)
+            return next(err);
+          bcrypt
+            .hash(values.password, salt, function (err, hash) {
+              if (err)
+                return next(err);
+              values.password = hash;
+              next();
+            })
+        });
+    } else {
+      // delete values.email;
+      next();
+    }
   },
   comparePassword: function (password, user, cb) {
     bcrypt
