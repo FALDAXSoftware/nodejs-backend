@@ -52,6 +52,7 @@ module.exports.routes = {
   'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
   'get /admin/get-user-details': 'Users.getAllUserDetails',
   'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
+  'get /admin/update-send-coin-fee/:send_coin_fee': 'Users.updateSendCoinFee',
 
   //coins
   'get /admin/getCoins': 'Coins.getCoins',
