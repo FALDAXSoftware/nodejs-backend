@@ -29,16 +29,14 @@ module.exports = {
       // required: true
       allowNull: true
     },
-    minLimit: {
+    min_limit: {
       type: 'number',
-      columnName: 'minLimit',
-      allowNull: true,
+      columnName: 'min_limit',
       defaultsTo: 0
     },
-    maxLimit: {
+    max_limit: {
       type: 'number',
-      columnName: 'maxLimit',
-      allowNull: true,
+      columnName: 'max_limit',
       defaultsTo: 0
     },
     deposit_method: {

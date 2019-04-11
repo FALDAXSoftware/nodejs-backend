@@ -241,8 +241,6 @@ module.exports = {
         "data": coins
       });
     } catch (error) {
-      console.log(error);
-
       res
         .status(500)
         .json({
@@ -252,6 +250,7 @@ module.exports = {
       return;
     }
   },
+
   getPairDetails: async function (req, res) {
     try {
       let room = req.query.room;
@@ -321,7 +320,7 @@ module.exports = {
         if (data && data != "" && data != null) {
           query = query + " LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query = query + " OR maxLimit=" + data + " OR minLimit=" + data;
+            query = query + " OR max_limit=" + data + " OR min_limit=" + data;
           }
         }
       }
@@ -347,13 +346,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -365,7 +358,7 @@ module.exports = {
           if (uploadedFiles.length > 0) {
             var uploadIcon = await UploadFiles.upload(uploadedFiles[0].fd, 'coin/' + req.body.coin_code);
 
-            if (req.body.coin_name && req.body.coin_code && req.body.minLimit) {
+            if (req.body.coin_name && req.body.coin_code && req.body.min_limit) {
               let existingCoin = await Coins.find({
                 deleted_at: null,
                 or: [
@@ -384,8 +377,8 @@ module.exports = {
                   coin_icon: 'faldax/coin/' + req.body.coin_code,
                   coin_name: req.body.coin_name,
                   coin_code: req.body.coin_code,
-                  minLimit: req.body.minLimit,
-                  maxLimit: req.body.maxLimit,
+                  min_limit: req.body.min_limit,
+                  max_limit: req.body.max_limit,
                   isERC: req.body.isERC,
                   //wallet_address: req.body.wallet_address,
                   created_at: new Date()
@@ -411,6 +404,7 @@ module.exports = {
 
   update: async function (req, res) {
     try {
+      console.log('req.body', req.body)
       const coin_details = await Coins.findOne({ id: req.body.coin_id });
       if (!coin_details) {
         return res
@@ -442,6 +436,7 @@ module.exports = {
       }
       return res.json({ "status": 200, "message": "Coin details updated successfully" });
     } catch (error) {
+      console.log('error', error)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
