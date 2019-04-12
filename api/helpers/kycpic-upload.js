@@ -29,7 +29,6 @@ module.exports = {
         });
 
         if (!kyc_details.ssn) {
-            kycUploadDetails.docType = kycDocType;
             await image2base64(sails.config.local.AWS_S3_URL + kyc_details.front_doc)
                 .then((response) => {
                     kycUploadDetails.scanData = response;
@@ -46,13 +45,14 @@ module.exports = {
                         console.log('error', error);
                     })
         }
+        // kycUploadDetails.docType = kycDocType;
 
         if (kyc_details.id_type == 1) {
-            kycDocType = 'PP';
+            kycUploadDetails.docType = 'PP';
         } else if (kyc_details.id_type == 2) {
-            kycDocType = 'DL';
+            kycUploadDetails.docType = 'DL';
         } else if (kyc_details.id_type == 3) {
-            kycDocType = 'ID';
+            kycUploadDetails.docType = 'ID';
         } else {
             kycUploadDetails.ssn = kyc_details.ssn;
         }
