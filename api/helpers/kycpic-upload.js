@@ -16,6 +16,7 @@ module.exports = {
 
     fn: async function (inputs, exits) {
         let kyc_details = await KYC.findOne({ id: inputs.params.id });
+        let user = await Users.findOne({ id: kyc_details.user_id });
         let kycUploadDetails = {};
 
         countryData.forEach(function (item) {
@@ -28,8 +29,7 @@ module.exports = {
         });
 
         if (!kyc_details.ssn) {
-            kycUploadDetails.docType = kycDocType;
-            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.front_doc)
+            await image2base64(sails.config.local.AWS_S3_URL + kyc_details.front_doc)
                 .then((response) => {
                     kycUploadDetails.scanData = response;
                 }).catch(
@@ -37,7 +37,7 @@ module.exports = {
                         console.log('error', error);
                     })
 
-            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.back_doc)
+            await image2base64(sails.config.local.AWS_S3_URL + kyc_details.back_doc)
                 .then((response) => {
                     kycUploadDetails.backsideImageData = response;
                 }).catch(
@@ -45,17 +45,18 @@ module.exports = {
                         console.log('error', error);
                     })
         }
+        // kycUploadDetails.docType = kycDocType;
 
         if (kyc_details.id_type == 1) {
-            kycDocType = 'PP';
+            kycUploadDetails.docType = 'PP';
         } else if (kyc_details.id_type == 2) {
-            kycDocType = 'DL';
+            kycUploadDetails.docType = 'DL';
         } else if (kyc_details.id_type == 3) {
-            kycDocType = 'ID';
+            kycUploadDetails.docType = 'ID';
         } else {
             kycUploadDetails.ssn = kyc_details.ssn;
         }
-        kycUploadDetails.man = kyc_details.first_name + ' ' + kyc_details.last_name;
+        kycUploadDetails.man = user.email;
         kycUploadDetails.bfn = kyc_details.first_name;
         kycUploadDetails.bln = kyc_details.last_name;
         kycUploadDetails.bln = kyc_details.last_name;

@@ -21,18 +21,28 @@ module.exports = {
       } = req.allParams();
 
       let query = " from news";
+
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
           query = query + " LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
           if (start_date) {
-            query = query + "created_at >=" + start_date;
+            query = query + "OR created_at >=" + start_date;
           }
           if (end_date) {
-            query = query + "created_at <=" + end_date;
+            query = query + " created_at <=" + end_date;
           }
         }
       }
+      if (filterVal && filterVal != "") {
+        console.log('filterValVal>>>>>>>>', query)
+        if (data && data != "" && data != null) {
+          query += "AND owner = '" + filterVal + "'";
+        } else {
+          query += " WHERE owner = '" + filterVal + "'";
+        }
+      }
+
       countQuery = query;
       if (sortCol && sortOrder) {
         let sortVal = (sortOrder == 'descend'
@@ -41,7 +51,7 @@ module.exports = {
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      console.log(query)
+      console.log('NEWS>>>>>>>>', query)
       let news = await sails.sendNativeQuery("Select *" + query, []);
       news = news.rows;
 

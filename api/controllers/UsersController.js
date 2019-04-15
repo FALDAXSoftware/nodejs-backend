@@ -13,11 +13,9 @@ var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 
 module.exports = {
-
   //------------------Web APi------------------------------------------------//
   create: async function (req, res) {
     try {
-
       var referred_id = null;
       let email = req
         .body
@@ -78,7 +76,6 @@ module.exports = {
                 to: user_detail.email,
                 subject: "Signup Verification"
               }, function (err) {
-                console.log(err);
                 if (!err) {
                   return res.json({
                     "status": 200,
@@ -90,10 +87,7 @@ module.exports = {
                 }
               })
         } else {
-          res
-            .status(401)
-            .json({ status: 401, "err": "Something went wrong" });
-          return;
+          return res.status(401).json({ status: 401, "err": "Something went wrong" });
         }
       } else {
         res
@@ -102,15 +96,7 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log('error>>>>>>>>>>', error)
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -119,8 +105,6 @@ module.exports = {
       let newEmail = req.body.newEmail.toLowerCase();
       var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
       var existedEmail = await Users.find({ email: newEmail });
-
-      console.log('existedUser', existedEmail)
 
       if (existedEmail && existedEmail.length > 0) {
         return res.status(401).json({ status: 401, "err": 'This Email is already registered with us.' });
@@ -135,30 +119,29 @@ module.exports = {
         sails
           .hooks
           .email
-          .send("newEmailVerification", {
+          .send("newEmailConfirmation", {
             homelink: sails.config.urlconf.APP_URL,
             recipientName: existedUser.first_name,
             tokenCode: new_email_token,
             senderName: "Faldax"
           }, {
               to: existedUser.email,
-              subject: "New Email Verification"
+              subject: "New Email Confirmation"
             }, function (err) {
               if (!err) {
                 return res.json({
                   "status": 200,
-                  "message": "Verification OTP has been sent to your current email successfully."
+                  "message": "Confirmation OTP has been sent to your current email successfully."
                 });
               }
             })
       }
     } catch (error) {
-      console.log('error>>>>>>>>>>', error)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
-  verifyNewEmail: async function (req, res) {
+  confirmNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_token) {
         let user = await Users.findOne({ new_email_token: req.body.new_email_token });
@@ -171,22 +154,77 @@ module.exports = {
               .contacts
               .updateEmail(user["hubspot_id"], requested_email);
           }
-          let verifiedEmail = await Users
-            .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
-            .set({ email: requested_email, new_email_token: null, requested_email: null }).fetch();
 
-          if (verifiedEmail) {
-            return res.json({
-              "status": 200,
-              "message": sails.__('Verify User Email')
-            });
-          }
+          let re_new_email_token = randomize('Aa0', 10);
+
+          await Users
+            .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
+            .set({
+              email: requested_email, new_email_token: null, email_verify_token: re_new_email_token,
+              requested_email: null, is_new_email_verified: false
+            }).fetch();
+
+          sails
+            .hooks
+            .email
+            .send("newEmailVerification", {
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: user.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?emailCode=' + re_new_email_token,
+              new_email_token: re_new_email_token,
+              senderName: "Faldax"
+            }, {
+                to: requested_email,
+                subject: "New Email Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": re_new_email_token,
+                    "message": "Email Verification link sent to email successfully"
+                  });
+                }
+              })
         } else {
           return res.status(400).json({ "status": 400, "err": 'Invalid OTP' });
         }
       }
     } catch (error) {
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+    }
+  },
+
+  verifyNewEmail: async function (req, res) {
+    try {
+      if (req.body.new_email_verify_token) {
+        let user = await Users.findOne({ email_verify_token: req.body.new_email_verify_token });
+        if (user) {
+
+          await Users
+            .update({ id: user.id, deleted_at: null })
+            .set({ email: user.email, is_new_email_verified: true, email_verify_token: null });
+
+          var token = await sails
+            .helpers
+            .jwtIssue(user.id);
+
+          return res.json({
+            "status": 200,
+            user,
+            token,
+            "message": "Welcome back, " + user.first_name + "!"
+          });
+        } else {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__('Invalid Token')
+            });
+        }
+      }
+    } catch (error) {
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -203,7 +241,6 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users Data", "data": usersData });
       }
     } catch (err) {
-      console.log('error>>>>>>>>>>', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
@@ -349,14 +386,7 @@ module.exports = {
           }
         });
     } catch (error) {
-      console.log('>>>>>>>>>>>>>>>error', error)
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -404,14 +434,8 @@ module.exports = {
           .json({ "status": 401, err: 'Something went wrong! Could not able to update the password' });
       }
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
-    return;
   },
 
   getReferred: async function (req, res) {
@@ -466,12 +490,7 @@ module.exports = {
         return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
       });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -504,12 +523,7 @@ module.exports = {
         .status(401)
         .json({ err: "Invalid OTP" });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -532,12 +546,7 @@ module.exports = {
         .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
       return res.json({ status: 200, message: "Two factor authentication has been disabled" });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -568,7 +577,6 @@ module.exports = {
 
   getUserTickets: async function (req, res) {
     try {
-      console.log("User ID ::: ", req.user.id);
       let tickets = await sails
         .helpers
         .hubspot
@@ -580,7 +588,7 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
-      console.log(err);
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
   //------------------CMS APi------------------------------------------------//
@@ -620,12 +628,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
       }
     } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -690,12 +693,7 @@ module.exports = {
         res.json({ status: 200, data: resData })
       })
       .catch(err => {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
+        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
       })
   },
 
@@ -758,13 +756,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
-      console.log('err', err)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 

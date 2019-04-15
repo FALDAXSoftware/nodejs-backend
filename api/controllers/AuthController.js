@@ -29,7 +29,7 @@ module.exports = {
           await KYC
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
-          // Create Recive Address
+          // Create Receive Address
           await sails
             .helpers
             .wallet
@@ -50,13 +50,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error);
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -79,6 +73,13 @@ module.exports = {
             return res
               .status(402)
               .json({ "status": 402, "err": "To login please activate your account" });
+          }
+          if (user_detail) {
+            if (user_detail.is_new_email_verified == false) {
+              return res
+                .status(405)
+                .json({ "status": 405, "err": "To continue, please verify your new email address." });
+            }
           }
           if (user_detail.is_active == false) {
             return res
@@ -208,17 +209,10 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log(error);
-
-      res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
+
   verifyNewIp: async function (req, res) {
     try {
       var ip;
@@ -263,14 +257,10 @@ module.exports = {
         .status(401)
         .json({ "status": 401, "err": "Invalid verification token" });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
+
   //   Send auth code in email
   sendOtpEmail: async function (req, res) {
     let { email } = req.allParams();
@@ -315,12 +305,7 @@ module.exports = {
           if (!err) {
             return res.json({ "status": 200, "message": "Authentication code sent to email successfully" });
           } else {
-            return res
-              .status(500)
-              .json({
-                "status": 500,
-                "err": sails.__("Something Wrong")
-              });
+            return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
           }
         })
   },
@@ -431,12 +416,7 @@ module.exports = {
           .json({ "status": 500, "err": "Reset Token or Password is not present." });
       }
     } catch (e) {
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -486,13 +466,7 @@ module.exports = {
             }
           })
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
 

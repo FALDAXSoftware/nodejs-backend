@@ -199,6 +199,11 @@ module.exports = {
       allowNull: true,
       columnName: 'new_email_token'
     },
+    is_new_email_verified: {
+      type: 'boolean',
+      columnName: "is_new_email_verified",
+      defaultsTo: false
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
