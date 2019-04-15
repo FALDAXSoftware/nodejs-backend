@@ -29,15 +29,15 @@ module.exports = {
       // required: true
       allowNull: true
     },
-    minLimit: {
+    min_limit: {
       type: 'number',
-      columnName: 'minLimit',
+      columnName: 'min_limit',
       allowNull: true,
       defaultsTo: 0
     },
-    maxLimit: {
+    max_limit: {
       type: 'number',
-      columnName: 'maxLimit',
+      columnName: 'max_limit',
       allowNull: true,
       defaultsTo: 0
     },

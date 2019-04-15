@@ -28,9 +28,10 @@ module.exports = {
 
     const key = 'YL4+gCHMerqCbiTHlKO6N3l8qaNib9JHvXPJhN+Fa3dZK1F4KUNFhxjw'; // API Key
     const secret = 'xfAlQbL6KvD3pWGqJ7uXzHSLykmn19bXoV5Oic5+QNCqx4/5ipth8uBCAMPtJUSmkF9iDf4gqMJeeHyN' +
-      'jMl4LQ=='; // API Private Key
+        'jMl4LQ=='; // API Private Key
 
     var kraken = new KrakenClient(key, secret);
+    console.log(kraken);
 
     const methods = {
       public: [
@@ -67,8 +68,16 @@ module.exports = {
       ]
     };
 
-    var data = await kraken.api('Balance')
-    console.log(data);
-    return exits.success(data);
+    try {
+      var data = await kraken.api('Withdraw', {
+        asset: 'ltc',
+        key: 'Litecoin_Wallet',
+        amount: '25'
+      })
+      console.log(data);
+      return exits.success(data);
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
