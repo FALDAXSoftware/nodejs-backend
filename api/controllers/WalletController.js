@@ -61,6 +61,8 @@ module.exports = {
             });
             if (last_price.length > 0) {
               price = last_price[0].fill_price
+            } else {
+              price = 0;
             }
             coin[currencyName] = price;
             var total = total + price;
