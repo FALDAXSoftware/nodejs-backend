@@ -37,6 +37,7 @@ module.exports = {
               ? req.body.test_key
               : "false");
           return res.json({
+            message: "Welcome back, " + user.first_name + "!",
             "status": 200,
             "message": sails.__('Verify User')
           });
@@ -50,6 +51,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      console.log('error', error)
       return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
