@@ -71,26 +71,7 @@ module.exports = {
         var user_detail = await Users.findOne({ email: query.email, deleted_at: null });
 
         if (user_detail) {
-          if (user_detail.is_verified == false) {
-            return res
-              .status(402)
-              .json({ "status": 402, "err": "To login please activate your account" });
-          }
-          if (user_detail) {
-            if (user_detail.is_new_email_verified == false) {
-              return res
-                .status(405)
-                .json({ "status": 405, "err": "To continue, please verify your new email address." });
-            }
-          }
-          if (user_detail.is_active == false) {
-            return res
-              .status(403)
-              .json({
-                "status": 403,
-                "err": sails.__("Contact Admin")
-              });
-          }
+
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
               if (err) {
@@ -198,6 +179,26 @@ module.exports = {
                 }
               }
             });
+          if (user_detail.is_verified == false) {
+            return res
+              .status(402)
+              .json({ "status": 402, "err": "To login please activate your account" });
+          }
+          if (user_detail) {
+            if (user_detail.is_new_email_verified == false) {
+              return res
+                .status(405)
+                .json({ "status": 405, "err": "To continue, please verify your new email address." });
+            }
+          }
+          if (user_detail.is_active == false) {
+            return res
+              .status(403)
+              .json({
+                "status": 403,
+                "err": sails.__("Contact Admin")
+              });
+          }
         } else {
           res
             .status(401)
