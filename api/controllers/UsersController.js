@@ -181,7 +181,7 @@ module.exports = {
                   return res.json({
                     "status": 200,
                     "new_email_token": re_new_email_token,
-                    "message": "Email Verification link sent to email successfully"
+                    "message": "Email Verification link has been sent to your email successfully."
                   });
                 }
               })

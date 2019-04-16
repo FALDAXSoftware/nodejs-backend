@@ -37,7 +37,7 @@ module.exports = {
               ? req.body.test_key
               : "false");
           return res.json({
-            message: "Welcome back, " + user.first_name + "!",
+            message: "Verification successfull.",
             "status": 200,
             "message": sails.__('Verify User')
           });
@@ -164,7 +164,7 @@ module.exports = {
                     message: "Welcome back, " + user_detail.first_name + "!"
                   });
                 } else {
-                  let verifyToken = randomize("Aa0", 30);
+                  let verifyToken = randomize("Aa0", 15);
                   await Users
                     .update({ id: user_detail["id"] })
                     .set({ email: user_detail["email"], new_ip_verification_token: verifyToken, new_ip: ip });
