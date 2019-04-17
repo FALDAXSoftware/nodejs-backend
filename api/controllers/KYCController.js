@@ -11,10 +11,10 @@ module.exports = {
     try {
       let user_id = req.user.id;
       req.body.user_id = user_id;
-      let kyc_details = await KYC.findOne({user_id});
+      let kyc_details = await KYC.findOne({ user_id });
       req.body.city = req.body.city_town;
 
-      console.log(kyc_details);
+      console.log('kyc_details', kyc_details);
       if (kyc_details) {
         if (kyc_details.steps == 3) {
           return res.json({
@@ -62,12 +62,12 @@ module.exports = {
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
           updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set(req.body)
             .fetch();
         } else {
           updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set(req.body)
             .fetch();
         }
@@ -160,7 +160,7 @@ module.exports = {
           if (data.ednaScoreCard.er) {
             if (data.ednaScoreCard.er.reportedRule) {
               let updated = await KYC
-                .update({mtid: data.mtid})
+                .update({ mtid: data.mtid })
                 .set({
                   kycDoc_details: data.ednaScoreCard.er.reportedRule.details
                     ? data.ednaScoreCard.er.reportedRule.details
@@ -174,8 +174,8 @@ module.exports = {
       } catch (err) {
         if (data.mtid) {
           let updated = await KYC
-            .update({mtid: data.mtid})
-            .set({kycDoc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW'})
+            .update({ mtid: data.mtid })
+            .set({ kycDoc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW' })
             .fetch();
         }
       }
@@ -186,16 +186,16 @@ module.exports = {
   getKYCDetails: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let KYCData = await KYC.findOne({user_id});
+      let KYCData = await KYC.findOne({ user_id });
       if (KYCData) {
         KYCData.city_town = KYCData.city;
         delete KYCData.city;
       }
       if (KYCData == undefined) {
         KYCData = [];
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
       } else if (KYCData) {
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
       } else {
         return res
           .status(500)
@@ -216,7 +216,7 @@ module.exports = {
 
   getAllKYCData: async function (req, res) {
     try {
-      let {page, limit, data, sortCol, sortOrder} = req.allParams();
+      let { page, limit, data, sortCol, sortOrder } = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
       if ((data && data != "")) {
         query += " WHERE"
@@ -262,21 +262,21 @@ module.exports = {
 
   approveDisapproveKYC: async function (req, res) {
     try {
-      let {id, isApprove} = req.body;
-      let kyc_details = await KYC.findOne({id});
+      let { id, isApprove } = req.body;
+      let kyc_details = await KYC.findOne({ id });
 
       if (kyc_details) {
         if (isApprove == true) {
           let updated_kyc = await KYC
-            .update({id: kyc_details.id})
-            .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date()})
+            .update({ id: kyc_details.id })
+            .set({ direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date() })
             .fetch();
           if (updated_kyc) {
-            return res.json({'status': 200, 'message': 'KYC application approved'})
+            return res.json({ 'status': 200, 'message': 'KYC application approved' })
           }
         } else {
           let updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set({
               isApprove: false,
               steps: 2,
@@ -288,13 +288,13 @@ module.exports = {
             })
             .fetch();
           if (updated_kyc) {
-            return res.json({'status': 200, 'message': 'KYC application rejected'})
+            return res.json({ 'status': 200, 'message': 'KYC application rejected' })
           }
         }
       } else {
         return res
           .status(500)
-          .json({status: 500, "err": "Details Not Found"});
+          .json({ status: 500, "err": "Details Not Found" });
       }
     } catch (e) {
       return res
@@ -308,11 +308,11 @@ module.exports = {
 
   getUserKYCDetails: async function (req, res) {
     try {
-      let {user_id} = req.allParams();
+      let { user_id } = req.allParams();
 
-      let KYCData = await KYC.findOne({user_id});
+      let KYCData = await KYC.findOne({ user_id });
       if (KYCData) {
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
       } else {
         return res
           .status(500)

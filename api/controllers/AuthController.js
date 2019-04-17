@@ -74,6 +74,7 @@ module.exports = {
 
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
+              console.log('err>>>>>>>>', err)
               if (err) {
                 return res.json(403, {
                   "status": 403,
@@ -81,7 +82,10 @@ module.exports = {
                 });
               }
 
+              console.log('valid', valid)
+
               if (!valid) {
+                console.log('if')
                 return res
                   .status(401)
                   .json({ "status": 401, "err": 'Invalid email or password' });
