@@ -68,7 +68,7 @@ module.exports = {
         kycUploadDetails.bz = kyc_details.zip;
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
-        console.log('kycUploadDetails', kycUploadDetails)
+        //console.log('kycUploadDetails', kycUploadDetails)
         // request.post({
         //     headers: {
         //         'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
