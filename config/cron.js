@@ -21,8 +21,9 @@ module.exports.cron = {
   KycUpdate: {
     schedule: '* * * * * *',
     onTick: async function () {
-      console.log('>>>>>>>>>>IF', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
-      if (process.env.CRONSTATUS == true) {
+      
+      if (process.env.CRONSTATUS == "true" || process.env.CRONSTATUS == true) {
+        console.log('>>>>>>>>>>IF', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
         var kycCron = await sails
           .helpers
           .kycCron();
