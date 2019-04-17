@@ -22,13 +22,13 @@ module.exports.cron = {
     schedule: '* * * * * *',
     onTick: async function () {
       console.log('>>>>>>>>>>IF', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
-      if (process.env.CRONSTATUS == "true") {
+      if (process.env.CRONSTATUS == true) {
         var kycCron = await sails
           .helpers
           .kycCron();
 
       } else {
-        console.log('>>>>>>>>>>ELSE', process.env.CRON_STATUS, sails.config.local.CRON_STATUS)
+        console.log('>>>>>>>>>>ELSE', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
       }
     }
   },
