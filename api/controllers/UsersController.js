@@ -728,23 +728,28 @@ module.exports = {
 
   getUserReferredAdmin: async function (req, res) {
     try {
-
       let { page, limit, data, id } = req.allParams();
+      console.log('query page, limit, data, id', page, limit, data, id)
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
-      query += " WHERE users.is_verified='true'";
+      query += " WHERE users.is_verified='true' ";
       if (id) {
-        query += "AND users.referred_id =" + id;
+        query += " AND users.referred_id =" + id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
-        if (data % 1 !== 0) {
-          query = query + "OR referral.amount=" + data;
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        if (!isNaN(data)) {
+          query += " OR referral.amount=" + data;
         }
       }
 
       countQuery = query;
-      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       // query += " ORDER BY referral.amount DESC";
+      console.log('query referral', query)
       let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
 
       usersData = usersData.rows;
@@ -756,6 +761,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
+      console.log('query err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
