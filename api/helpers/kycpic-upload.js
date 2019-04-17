@@ -68,33 +68,33 @@ module.exports = {
         kycUploadDetails.bz = kyc_details.zip;
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
-        //console.log('kycUploadDetails', kycUploadDetails)
-        // request.post({
-        //     headers: {
-        //         'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
-        //     },
-        //     url: 'https://staging.identitymind.com/im/account/consumer',
-        //     json: kycUploadDetails
-        // }, async function (error, response, body) {
-        //     try {
-        //         kyc_details.direct_response = response.body.res;
-        //         kyc_details.webhook_response = null;
-        //         await KYC.update({ id: kyc_details.id }).set({
-        //             direct_response: response.body.res,
-        //             webhook_response: null,
-        //             mtid: response.body.mtid,
-        //             comments: response.body.frd,
-        //             status: true,
-        //         });
-        //     } catch (error) {
-        //         console.log('error', error);
-        //         await KYC.update({ id: kyc_details.id }).set({
-        //             direct_response: "MANUAL_REVIEW",
-        //             webhook_response: "MANUAL_REVIEW",
-        //             comments: "Could Not Verify",
-        //             status: true,
-        //         });
-        //     }
-        // });
+        console.log('kycUploadDetails FINAL', kycUploadDetails)
+        request.post({
+            headers: {
+                'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
+            },
+            url: 'https://staging.identitymind.com/im/account/consumer',
+            json: kycUploadDetails
+        }, async function (error, response, body) {
+            try {
+                kyc_details.direct_response = response.body.res;
+                kyc_details.webhook_response = null;
+                await KYC.update({ id: kyc_details.id }).set({
+                    direct_response: response.body.res,
+                    webhook_response: null,
+                    mtid: response.body.mtid,
+                    comments: response.body.frd,
+                    status: true,
+                });
+            } catch (error) {
+                console.log('error', error);
+                await KYC.update({ id: kyc_details.id }).set({
+                    direct_response: "MANUAL_REVIEW",
+                    webhook_response: "MANUAL_REVIEW",
+                    comments: "Could Not Verify",
+                    status: true,
+                });
+            }
+        });
     }
 }
