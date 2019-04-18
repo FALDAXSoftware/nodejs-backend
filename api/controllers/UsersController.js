@@ -249,10 +249,13 @@ module.exports = {
     let id = req.user.id;
     let usersData = await Users.find({ id: id });
     let userKyc = await KYC.findOne({ user_id: id });
-    usersData[0].is_kyc_done = false;
+    usersData[0].is_kyc_done = 0;
     if (userKyc) {
       if (userKyc.steps == 3) {
-        usersData[0].is_kyc_done = true;
+        usersData[0].is_kyc_done = 1;
+        if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+          usersData[0].is_kyc_done = 2;
+        }
       }
     }
     var dataResponse = await sails

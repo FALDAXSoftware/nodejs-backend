@@ -13,42 +13,60 @@ module.exports = {
         page,
         limit,
         data,
-        filterVal,
+        filter_val,
         start_date,
         end_date,
-        sortCol,
-        sortOrder
+        sort_col,
+        sort_order
       } = req.allParams();
 
       let query = " from news";
-
+      let whereAppended = false;
       if ((data && data != "")) {
         query += " WHERE"
+        whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
+          query += " LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
           if (start_date) {
-            query = query + "OR created_at >=" + start_date;
+            query += "OR posted_at >= " + await sails.helpers.dateFormat(start_date);
           }
           if (end_date) {
-            query = query + " created_at <=" + end_date;
+            query += " AND posted_at <= " + await sails.helpers.dateFormat(end_date);
+          }
+
+          if (filter_val && filter_val != "") {
+            query += " AND owner = '" + filter_val + "'";
           }
         }
       }
-      if (filterVal && filterVal != "") {
-        console.log('filterValVal>>>>>>>>', query)
-        if (data && data != "" && data != null) {
-          query += "AND owner = '" + filterVal + "'";
+
+      if (filter_val && filter_val != "") {
+        if (whereAppended) {
+          query += " AND "
         } else {
-          query += " WHERE owner = '" + filterVal + "'";
+          query += " WHERE "
         }
+        whereAppended = true;
+        query += "owner = '" + filter_val + "'";
+      }
+
+      if (start_date && end_date) {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+
+        query += " posted_at >= '" + await sails.helpers.dateFormat(start_date) +
+          "' AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + "'";
       }
 
       countQuery = query;
-      if (sortCol && sortOrder) {
+      if (sort_col && sortOrder) {
         let sortVal = (sortOrder == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       console.log('NEWS>>>>>>>>', query)
