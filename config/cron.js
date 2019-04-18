@@ -19,7 +19,7 @@ module.exports.cron = {
     }
   },
   KycUpdate: {
-    schedule: '* * * * * *',
+    schedule: '0 */2 * * * *',
     onTick: async function () {
 
       if (sails.config.local.CRON_STATUS == "true") {
