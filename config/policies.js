@@ -23,6 +23,7 @@ module.exports.policies = {
     'create': true,
     'getCountries': true,
     'getCountriesData': true,
+    'verifyNewEmail': true
     // 'updateSendCoinFee': true,
     // 'updateUserDetails': true We dont need authorization here, allowing public
     // access,

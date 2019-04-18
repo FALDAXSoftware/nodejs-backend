@@ -119,19 +119,19 @@ module.exports = {
         sails
           .hooks
           .email
-          .send("newEmailVerification", {
+          .send("newEmailConfirmation", {
             homelink: sails.config.urlconf.APP_URL,
             recipientName: existedUser.first_name,
             tokenCode: new_email_token,
             senderName: "Faldax"
           }, {
               to: existedUser.email,
-              subject: "New Email Verification"
+              subject: "New Email Confirmation"
             }, function (err) {
               if (!err) {
                 return res.json({
                   "status": 200,
-                  "message": "Verification OTP has been sent to your current email successfully."
+                  "message": "Confirmation OTP has been sent to your current email successfully."
                 });
               }
             })
@@ -141,7 +141,7 @@ module.exports = {
     }
   },
 
-  verifyNewEmail: async function (req, res) {
+  confirmNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_token) {
         let user = await Users.findOne({ new_email_token: req.body.new_email_token });
@@ -154,21 +154,77 @@ module.exports = {
               .contacts
               .updateEmail(user["hubspot_id"], requested_email);
           }
-          let verifiedEmail = await Users
+
+          let re_new_email_token = randomize('Aa0', 10);
+
+          await Users
             .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
-            .set({ email: requested_email, new_email_token: null, requested_email: null }).fetch();
-          if (verifiedEmail) {
-            return res.json({
-              "status": 200,
-              "message": sails.__('Verify User Email')
-            });
-          }
+            .set({
+              email: requested_email, new_email_token: null, email_verify_token: re_new_email_token,
+              requested_email: null, is_new_email_verified: false
+            }).fetch();
+
+          sails
+            .hooks
+            .email
+            .send("newEmailVerification", {
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: user.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?emailCode=' + re_new_email_token,
+              new_email_token: re_new_email_token,
+              senderName: "Faldax"
+            }, {
+                to: requested_email,
+                subject: "New Email Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": re_new_email_token,
+                    "message": "Email Verification link has been sent to your email successfully."
+                  });
+                }
+              })
         } else {
           return res.status(400).json({ "status": 400, "err": 'Invalid OTP' });
         }
       }
     } catch (error) {
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+    }
+  },
+
+  verifyNewEmail: async function (req, res) {
+    try {
+      if (req.body.new_email_verify_token) {
+        let user = await Users.findOne({ email_verify_token: req.body.new_email_verify_token });
+        if (user) {
+
+          await Users
+            .update({ id: user.id, deleted_at: null })
+            .set({ email: user.email, is_new_email_verified: true, email_verify_token: null });
+
+          var token = await sails
+            .helpers
+            .jwtIssue(user.id);
+
+          return res.json({
+            "status": 200,
+            user,
+            token,
+            "message": "Welcome back, " + user.first_name + "!"
+          });
+        } else {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__('Invalid Token')
+            });
+        }
+      }
+    } catch (error) {
+      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -672,23 +728,28 @@ module.exports = {
 
   getUserReferredAdmin: async function (req, res) {
     try {
-
       let { page, limit, data, id } = req.allParams();
+      console.log('query page, limit, data, id', page, limit, data, id)
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
-      query += " WHERE users.is_verified='true'";
+      query += " WHERE users.is_verified='true' ";
       if (id) {
-        query += "AND users.referred_id =" + id;
+        query += " AND users.referred_id =" + id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
-        if (data % 1 !== 0) {
-          query = query + "OR referral.amount=" + data;
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
+          "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        if (!isNaN(data)) {
+          query += " OR referral.amount=" + data;
         }
       }
 
       countQuery = query;
-      query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       // query += " ORDER BY referral.amount DESC";
+      console.log('query referral', query)
       let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
 
       usersData = usersData.rows;
@@ -700,6 +761,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
+      console.log('query err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
