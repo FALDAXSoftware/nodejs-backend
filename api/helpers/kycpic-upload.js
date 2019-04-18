@@ -48,7 +48,7 @@ module.exports = {
         if (!kyc_details.ssn) {
             console.log('inside');
             kycUploadDetails.docCountry = kyc_details.country_code;
-            kycUploadDetails.bco = kyc_details.country;
+            kycUploadDetails.bco = kyc_details.country_code;
         }
 
         if (!kyc_details.ssn) {
@@ -101,6 +101,8 @@ module.exports = {
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
+                console.log("kyc res--------------------->>>>", response);
+
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
                 await KYC.update({ id: kyc_details.id }).set({

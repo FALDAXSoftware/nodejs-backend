@@ -154,6 +154,12 @@ module.exports = {
 
   callbackKYC: async function (req, res) {
     let data = req.body;
+    console.log("call back call ----->>", JSON.stringify(req.body));
+    let resultState = {
+      "A": "ACCEPT",
+      "D": "DENY",
+      "R": "REVIEW"
+    }
     if (data) {
       try {
         if (data.ednaScoreCard) {
@@ -165,7 +171,8 @@ module.exports = {
                   kycDoc_details: data.ednaScoreCard.er.reportedRule.details
                     ? data.ednaScoreCard.er.reportedRule.details
                     : '',
-                  webhook_response: data.ednaScoreCard.er.reportedRule.resultCode
+                  direct_response: resultState[data.state],
+                  webhook_response: resultState[data.state]
                 })
                 .fetch();
             }
