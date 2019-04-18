@@ -3,6 +3,12 @@
  *
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
+ * @routes      ::
+ * get /admin/announcement/getAnnouncementTemplate
+ * post /admin/announcement/create
+ * put /admin/announcement/update
+ * delete /admin/announcement/delete
+ * post /admin/email-send
  */
 
 module.exports = {

@@ -3,6 +3,19 @@
  *
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
+ * @routes      ::
+ * get /admin/all-blogs
+ * post /admin/create-blog
+ * put /admin/edit-blog
+ * delete /admin/delete-blog
+ * post /admin/set-featured-blog
+ * get /users/get-all-blogs
+ * post /users/get-blog-detail
+ * post /get-comments
+ * post /add-comments
+ * post /get-related-blog
+ * post /users/get-all-news
+ * post /create-comments
  */
 var UploadFiles = require('../services/UploadFiles');
 var request = require('request');
