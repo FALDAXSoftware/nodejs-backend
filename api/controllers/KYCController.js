@@ -154,6 +154,8 @@ module.exports = {
 
   callbackKYC: async function (req, res) {
     let data = req.body;
+    console.log("call back call ----->>", req.body);
+
     if (data) {
       try {
         if (data.ednaScoreCard) {
