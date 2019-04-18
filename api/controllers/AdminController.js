@@ -3,6 +3,22 @@
  *
  * @description :: Admin controller for CMS user actions.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
+ * @routes      ::
+ * post /admin/login
+ * post /admin/forgotPassword
+ * post /admin/create
+ * put /admin/update
+ * put /admin/resetPassword
+ * post /admin/add-employee
+ * get /admin/get-employees
+ * delete /admin/delete-employee
+ * put /admin/update-employee
+ * get /admin/get-employee-details
+ * post /admin/setup-two-factor
+ * post /admin/verify-two-factor
+ * post /admin/disable-two-factor
+ * get /admin/get-details
+ * post /admin/changePassword
  */
 var randomize = require('randomatic');
 var bcrypt = require('bcrypt');

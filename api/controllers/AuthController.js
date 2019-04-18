@@ -3,6 +3,15 @@
  *
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
+ * @routes      ::
+ * post /login
+ * post /users/verify-user
+ * post /users/verify-new-ip'
+ * post /users/send-verification-email
+ * post /users/forgotPassword
+ * put /users/resetPassword
+ * post /users/send-otp-email
+ * post /logout
  */
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');

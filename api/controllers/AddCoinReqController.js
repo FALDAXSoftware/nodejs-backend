@@ -3,6 +3,10 @@
  *
  * @description :: Manage All Add Coin requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
+ * @routes      ::
+ * get /admin/coin-requests
+ * post /users/add-coin-request
+ * 
  */
 var moment = require('moment');
 

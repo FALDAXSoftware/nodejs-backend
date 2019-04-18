@@ -101,6 +101,8 @@ module.exports = {
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
+                console.log("kyc res--------------------->>>>", response);
+
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
                 await KYC.update({ id: kyc_details.id }).set({
