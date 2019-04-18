@@ -23,13 +23,11 @@ module.exports.cron = {
     onTick: async function () {
       
       if (process.env.CRONSTATUS == "true" || process.env.CRONSTATUS == true) {
-        console.log('>>>>>>>>>>IF', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
         var kycCron = await sails
           .helpers
           .kycCron();
 
-      } else {
-        console.log('>>>>>>>>>>ELSE', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
+      } else {s
       }
     }
   },
