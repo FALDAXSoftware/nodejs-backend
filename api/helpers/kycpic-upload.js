@@ -48,7 +48,7 @@ module.exports = {
         if (!kyc_details.ssn) {
             console.log('inside');
             kycUploadDetails.docCountry = kyc_details.country_code;
-            kycUploadDetails.bco = kyc_details.country;
+            kycUploadDetails.bco = kyc_details.country_code;
         }
 
         if (!kyc_details.ssn) {
