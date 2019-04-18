@@ -4,7 +4,7 @@ module.exports = {
         try {
             let { id } = req.allParams();
 
-            let referredAmountData = await Referral.find({ user_id: id })
+            let referredAmountData = await referral.find({ user_id: id })
             let userData = await Users.find({ id: id })
             console.log(referredAmountData)
 

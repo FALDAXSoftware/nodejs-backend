@@ -15,18 +15,41 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
+
         let kyc_details = await KYC.findOne({ id: inputs.params.id });
         let user = await Users.findOne({ id: kyc_details.user_id });
         let kycUploadDetails = {};
+        console.log('inputs', kyc_details.ssn);
 
-        countryData.forEach(function (item) {
-            Object.keys(item).forEach(function (key) {
-                if (kyc_details.country == key && !kyc_details.ssn) {
-                    kycUploadDetails.docCountry = item[key];
-                    kycUploadDetails.bco = item[key];
-                }
-            });
-        });
+        // countryData.forEach(function (arrayItem) {
+        //     //var x = arrayItem.prop1 + 2;
+        //     console.log('arrayItem', arrayItem);
+        //     Object.keys(arrayItem).forEach(function (key) {
+        //         console.log('arrayItem 2', key);
+        //         if (kyc_details.country == key && !kyc_details.ssn) {
+        //             console.log('inside', item);
+        //             kycUploadDetails.docCountry = item[key];
+        //             kycUploadDetails.bco = item[key];
+        //         }
+        //     });
+        // });
+
+        // countryData.forEach((item) => {
+        //     console.log('TRY', item, kyc_details.country, key, kyc_details.ssn);
+        //     Object.keys(item).forEach(function (key) {
+        //         if (kyc_details.country == key && !kyc_details.ssn) {
+        //             console.log('inside', item);
+        //             kycUploadDetails.docCountry = item[key];
+        //             kycUploadDetails.bco = item[key];
+        //         }
+        //     });
+        // });
+
+        if (!kyc_details.ssn) {
+            console.log('inside');
+            kycUploadDetails.docCountry = kyc_details.country_code;
+            kycUploadDetails.bco = kyc_details.country;
+        }
 
         if (!kyc_details.ssn) {
             await image2base64(sails.config.local.AWS_S3_URL + kyc_details.front_doc)
@@ -66,9 +89,10 @@ module.exports = {
         }
         kycUploadDetails.bc = kyc_details.city;
         kycUploadDetails.bz = kyc_details.zip;
+        //kycUploadDetails.docCountry = 'US';
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
-        console.log('kycUploadDetails', kycUploadDetails)
+        console.log('kycUploadDetails FINAL', kycUploadDetails)
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='

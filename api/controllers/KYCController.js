@@ -191,6 +191,11 @@ module.exports = {
         KYCData.city_town = KYCData.city;
         delete KYCData.city;
       }
+
+      var kycCron = await sails
+        .helpers
+        .kycCron();
+
       if (KYCData == undefined) {
         KYCData = [];
         return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
