@@ -48,5 +48,13 @@
 	"You need to complete your KYC to trade in FALDAX": "You need to complete your KYC to trade in FALDAX",
 	"You are not allowed to trade in this regoin": "You are not allowed to trade in this regoin",
 	"History list": "History list",
-	"Verify User Email": "Email address has been updated successfully."
+	"Verify User Email": "Email address has been updated successfully.",
+	"Insufficient balance to place order": "Insufficient balance to place order",
+	"Order Place Success": "Order Place Success",
+	"Order Partially Fulfilled and Successfully added to sell book": "Order Partially Fulfilled and Successfully added to sell book",
+	"Order Partially Fulfilled and Successfully added to Buy book": "Order Partially Fulfilled and Successfully added to Buy book",
+	"Order Partially Fulfilled and Successfully added to Sell book": "Order Partially Fulfilled and Successfully added to Sell book",
+	"Order Filfilled Success": "Order Filfilled Success",
+	"Order Fulfilled Success": "Order Fulfilled Success",
+	"Order added Success": "Order added Success"
 }

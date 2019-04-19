@@ -153,7 +153,8 @@ module.exports = {
           sellLimitOrderData.activity_id = activity.id;
           var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
-            sellLimitOrderData.is_partially_fulfilled = true;
+            sellLimitOrderData.is_partially_fulfilled = false;
+            sellLimitOrderData.added = true;
             var addSellBook = await sails
               .helpers
               .tradding
@@ -163,9 +164,11 @@ module.exports = {
             await sails
               .helpers
               .sockets
-              .tradeEmit(crypto, currency, userIds);
+              .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
             return exits.success(addSellBook);
           } else {
+            console.log(total_price);
+            console.log(wallet.placed_balance);
             return exits.insufficientBalance();
           }
         }
@@ -173,7 +176,8 @@ module.exports = {
         sellLimitOrderData.activity_id = activity.id;
         var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
-          sellLimitOrderData.is_partially_fulfilled = true;
+          sellLimitOrderData.is_partially_fulfilled = false;
+          sellLimitOrderData.added = true;
           var addSellBook = await sails
             .helpers
             .tradding
@@ -183,7 +187,7 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency, userIds);
+            .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
           return exits.success(addSellBook);
         } else {
           return exits.insufficientBalance();

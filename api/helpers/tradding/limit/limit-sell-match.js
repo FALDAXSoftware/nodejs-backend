@@ -280,6 +280,8 @@ module.exports = {
             sellAddedData.maker_fee = fees.makerFee;
             sellAddedData.taker_fee = fees.takerFee;
             delete sellAddedData.id;
+            delete sellAddedData.side;
+            sellAddedData.side = "Sell";
             var addData = await sails
               .helpers
               .tradding
@@ -312,6 +314,8 @@ module.exports = {
           sellAddedData.maker_fee = fees.makerFee;
           sellAddedData.taker_fee = fees.takerFee;
           delete sellAddedData.id;
+          delete sellAddedData.side;
+          sellAddedData.side = "Sell";
           var addData = await sails
             .helpers
             .tradding
@@ -328,7 +332,7 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency, userIds);
+            .tradeEmit(sellAddedData.settle_currency, sellAddedData.currency, userIds);
           return exits.success(addSellBook);
         } else {
           //Not enough fund
