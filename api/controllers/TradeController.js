@@ -832,31 +832,59 @@ module.exports = {
         user_id,
         t_type,
         start_date,
-        end_date,
-        sortCol,
-        sortOrder
+        end_date, sortCol, sort_order
       } = req.allParams();
 
       let query = " from trade_history";
+      let whereAppended = false;
+
       if (user_id) {
         query += " LEFT JOIN users ON trade_history.user_id = users.id OR trade_history.requested_" +
             "user_id = users.id "
       }
-      query += " WHERE trade_history.deleted_at IS NULL";
-      if (t_type) {
-        query += " AND trade_history.side='" + t_type + "'";
-      }
+      //query += " trade_history.deleted_at IS NULL";
+
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query += " LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%'OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query += " WHERE"
+          whereAppended = true;
+          query += " LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'" +
+            "OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR fill_price=" + data + " OR quantity=" + data
             " OR fill_price=" + data + " OR quantity=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
           }
           if (start_date && end_date) {
-            query += " created_at >= " + start_date + " created_at <= " + start_date
+            query += "OR trade_history.created_at >= " + await sails.helpers.dateFormat(start_date);
+            +" AND trade_history.created_at <= " + await sails.helpers.dateFormat(end_date);
           }
         }
+      }
+
+      if (t_type) {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        query += "  trade_history.side='" + t_type + "'";
+      }
+
+      if (start_date && end_date) {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+
+        query += " trade_history.created_at >= '" + await sails.helpers.dateFormat(start_date) +
+          "' AND trade_history.created_at <= '" + await sails.helpers.dateFormat(end_date) + "'";
       }
 
       // query += " GROUP BY trade_history.id";
