@@ -153,13 +153,14 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(crypto, currency, userIds);
           return exits.success(limitMatchData);
         } else {
           buyLimitOrderData.activity_id = activity.id;
           var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
-            buyLimitOrderData.is_partially_fulfilled = true;
+            buyLimitOrderData.is_partially_fulfilled = false;
+            buyLimitOrderData.added = true;
             var addBuyBook = await sails
               .helpers
               .tradding
@@ -179,7 +180,8 @@ module.exports = {
         buyLimitOrderData.activity_id = activity.id;
         var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
-          buyLimitOrderData.is_partially_fulfilled = true;
+          buyLimitOrderData.is_partially_fulfilled = false;
+          buyLimitOrderData.added = true;
           var addBuyBook = await sails
             .helpers
             .tradding
