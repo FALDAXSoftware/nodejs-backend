@@ -292,6 +292,8 @@ module.exports = {
             buyAddedData.maker_fee = fees.makerFee;
             buyAddedData.taker_fee = fees.takerFee;
             delete buyAddedData.id;
+            delete buyAddedData.side;
+            buyAddedData.side = "Buy";
             var addData = await sails
               .helpers
               .tradding
@@ -324,6 +326,8 @@ module.exports = {
           buyAddedData.maker_fee = fees.makerFee;
           buyAddedData.taker_fee = fees.takerFee;
           delete buyAddedData.id;
+          delete buyAddedData.side;
+          buyAddedData.side = "Buy";
           var addData = await sails
             .helpers
             .tradding
@@ -336,7 +340,7 @@ module.exports = {
             .tradding
             .buy
             .addBuyOrder(buyAddedData);
-            
+
           await sails
             .helpers
             .sockets

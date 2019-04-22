@@ -48,31 +48,10 @@ module.exports = {
 
       var resultData;
 
-      // resultData = await sails   .helpers   .wallet
-      // .getFiatValue(request.currency, request.quantity);
-
       var now = moment().format();
       var yesterday = moment(now)
         .subtract(1, 'months')
         .format();
-
-      // var userTakerTradeData = await TradeHistory   .sum('usd_user_value')
-      // .find({     where: {       deleted_at: null,       user_id: request.user_id,
-      //      created_at: {         '>=': yesterday,         '<=': now       }     }
-      // }); if (isNaN(userTakerTradeData) || userTakerTradeData == undefined ||
-      // userTakerTradeData.length == 0) {   userTakerTradeData = 0; } var
-      // totalUserTrade = userTakerTradeData; var userMakerTradeData = await
-      // TradeHistory   .sum('usd_user_value')   .find({     where: {
-      // deleted_at: null,       user_id: request.requested_user_id,       created_at:
-      // {         '>=': yesterday,         '<=': now       }     }   }); if
-      // (isNaN(userMakerTradeData) || userMakerTradeData == undefined ||
-      // userMakerTradeData.length == 0) {   userMakerTradeData = 0; } var
-      // totalRequestedTrade = userMakerTradeData; var feeResultUser = await
-      // Pairs.find({   where: {     total_value: {       '>=': totalUserTrade,
-      // '<=': totalUserTrade     },     deleted_at: null,     is_active: true   } });
-      // var = await Pairs.find({   where: {     total_value: {       '>=':
-      // totalRequestedTrade,       '<=': totalRequestedTrade     },     deleted_at:
-      // null,     is_active: true   } });
 
       var user_usd;
 
