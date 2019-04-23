@@ -26,21 +26,22 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
-          if (start_date) {
-            query += "OR posted_at >= " + await sails.helpers.dateFormat(start_date);
-          }
-          if (end_date) {
-            query += " AND posted_at <= " + await sails.helpers.dateFormat(end_date);
-          }
+          query += " (LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
+          // if (start_date) {
+          //   query += "OR posted_at >= " + await sails.helpers.dateFormat(start_date) + " 00:00:00"
+          // }
+          // if (end_date) {
+          //   query += " AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + " 23:59:59'";
+          // }
 
           if (filter_val && filter_val != "") {
             query += " AND owner = '" + filter_val + "'";
           }
+          query += ")"
         }
       }
 
-      if (filter_val && filter_val != "") {
+      if (filter_val && filter_val != " ") {
         if (whereAppended) {
           query += " AND "
         } else {
@@ -57,13 +58,13 @@ module.exports = {
           query += " WHERE "
         }
 
-        query += " posted_at >= '" + await sails.helpers.dateFormat(start_date) +
-          "' AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + "'";
+        query += " posted_at >= '" + await sails.helpers.dateFormat(start_date) + " 00:00:00" +
+          "' AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
-      if (sort_col && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
