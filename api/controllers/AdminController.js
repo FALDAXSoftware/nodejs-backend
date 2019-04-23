@@ -79,7 +79,7 @@ module.exports = {
                                     // Token Issue
                                     var token = await sails
                                         .helpers
-                                        .jwtIssue(admin_details.id);
+                                        .jwtIssue(admin_details.id, true);
                                     res.json({ user: admin_details, token });
                                 }
                             });
