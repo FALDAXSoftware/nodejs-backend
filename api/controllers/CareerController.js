@@ -215,7 +215,7 @@ module.exports = {
 
     getJobApplications: async function (req, res) {
         try {
-            let { page, limit, data, sortCol, sortOrder, job_id } = req.allParams();
+            let { page, limit, data, sort_col, sort_order, job_id } = req.allParams();
             let query = " from job_applications WHERE deleted_at IS NULL AND job_id=" + job_id;
             if ((data && data != "")) {
                 if (data && data != "" && data != null) {
@@ -228,14 +228,14 @@ module.exports = {
                 }
             }
             countQuery = query;
-            if (sortCol && sortOrder) {
-                let sortVal = (sortOrder == 'descend'
+            if (sort_col && sort_order) {
+                let sortVal = (sort_order == 'descend'
                     ? 'DESC'
                     : 'ASC');
-                query += " ORDER BY " + sortCol + " " + sortVal;
+                query += " ORDER BY " + sort_col + " " + sortVal;
             }
             query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-            console.log(query)
+
             let applications = await sails.sendNativeQuery("Select *" + query, [])
 
             applications = applications.rows;
