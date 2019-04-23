@@ -44,6 +44,18 @@ module.exports.local = {
       'rpcuser': 'primecoinrpc',
       'rpcpassword': '2aVqjhV2qcdBM4TU2Ncy5Xkh3ZH1pTvq9mZhoUcwgrhn',
       'url': 'http://dev-primecoin-currency.faldax.com/'
+    },
+    'VIA': {
+      'coin_name': 'viacoin',
+      'rpcuser': 'kishan1',
+      'rpcpassword': 'admin1',
+      'url': 'http://dev-viacoin-currency.faldax.com/'
+    },
+    'VTC':{
+      'coin_name': 'vertcoin',
+      'rpcuser': 'kiddsddhan',
+      'rpcpassword': 'kisha34nff',
+      'url': 'http://dev-vertcoin-currency.faldax.com/'
     }
 
   },

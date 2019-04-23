@@ -1,7 +1,6 @@
-var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get new address',
+  friendlyName: 'Get transaction list',
 
   description: '',
 
@@ -17,13 +16,13 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'New address'
+      outputFriendlyName: 'Transaction list'
     }
   },
 
-  fn: async function (inputs, exits) {
+  fn: async function (inputs) {
 
-    var newAddress;
+    var listTransactions;
     var encodeData = await sails
       .helpers
       .type2Coins
@@ -32,7 +31,7 @@ module.exports = {
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '0',
-      'method': 'getinfo'
+      'method': 'listtransactions'
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
@@ -45,13 +44,12 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
-          newAddress = resData.result;
+          listTransactions = resData;
         })
       // TODO Send back the result through the success exit.
-      return exits.success(newAddress);
+      return exits.success(listTransactions);
     } catch (err) {
-      consol.log(err);
+      console.log(err);
     }
 
   }

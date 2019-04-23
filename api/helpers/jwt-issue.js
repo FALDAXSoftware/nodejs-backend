@@ -6,7 +6,7 @@
  */
 
 var jwt = require('jsonwebtoken'),
-tokenSecret = "secretissecet";
+  tokenSecret = "secretissecet";
 
 module.exports = {
 
@@ -19,6 +19,12 @@ module.exports = {
       type: 'number',
       description: 'The name of the person to greet.',
       required: true
+    },
+    setExpiry: {
+      type: 'boolean',
+      description: 'set expiration time of token or not',
+      required: false,
+      defaultsTo: false
     }
   },
 
@@ -27,11 +33,16 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+    let extraParams = {};
+    if (inputs.setExpiry) {
+      extraParams["expiresIn"] = 60 * 60;
+    }
     var result = jwt.sign(
       { id: inputs.id },
       tokenSecret, // Token Secret that we sign it with
       {
         // expiresIn : '1d' // Token Expire time
+        ...extraParams
       }
     );
     return exits.success(result);
