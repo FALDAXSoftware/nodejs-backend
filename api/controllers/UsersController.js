@@ -731,12 +731,11 @@ module.exports = {
 
   getUserReferredAdmin: async function (req, res) {
     try {
-      let { page, limit, data, id } = req.allParams();
-      console.log('query page, limit, data, id', page, limit, data, id)
+      let { page, limit, data, user_id, sort_col, sort_order } = req.allParams();
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
       query += " WHERE users.is_verified='true' ";
-      if (id) {
-        query += " AND users.referred_id =" + id;
+      if (user_id) {
+        query += " AND users.referred_id =" + user_id;
       }
       if ((data && data != "")) {
         query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
@@ -750,9 +749,13 @@ module.exports = {
       }
 
       countQuery = query;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      }
+
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      // query += " ORDER BY referral.amount DESC";
-      console.log('query referral', query)
       let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
 
       usersData = usersData.rows;
@@ -764,33 +767,49 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
-      console.log('query err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
   getUserloginHistoryAdmin: async function (req, res) {
-    let {
-      page,
-      limit,
-      data,
-      user_id,
-      start_date,
-      end_date
-    } = req.allParams();
-    let q = {
-      deleted_at: null,
-      user: user_id
-    }
-    if (start_date && end_date) {
-      q['created_at'] = {
-        '>=': start_date,
-        '<=': end_date
-      };
-    }
-    if (data) {
-      let allHistoryData = await LoginHistory
-        .find({
+    try {
+      let {
+        page,
+        limit,
+        data,
+        user_id,
+        start_date,
+        end_date
+      } = req.allParams();
+      let q = {
+        deleted_at: null,
+        user: user_id
+      }
+      if (start_date && end_date) {
+        q['created_at'] = {
+          '>=': await sails.helpers.dateFormat(start_date) + " 00:00:00"
+        };
+        q['updated_at'] = {
+          '<=': await sails.helpers.dateFormat(end_date) + " 23:59:59"
+        };
+      }
+      if (data) {
+        let allHistoryData = await LoginHistory
+          .find({
+            where: {
+              ...q,
+              or: [
+                {
+                  ip: {
+                    contains: data
+                  }
+                }
+              ]
+            }
+          })
+          .sort("created_at DESC")
+          .paginate(page - 1, parseInt(limit));
+        let allHistoryCount = await LoginHistory.count({
           where: {
             ...q,
             or: [
@@ -801,52 +820,42 @@ module.exports = {
               }
             ]
           }
-        })
-        .sort("created_at DESC")
-        .paginate(page - 1, parseInt(limit));
-      let allHistoryCount = await LoginHistory.count({
-        where: {
-          ...q,
-          or: [
-            {
-              ip: {
-                contains: data
-              }
-            }
-          ]
-        }
-      });
-      if (allHistoryData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Coin list"),
-          "data": allHistoryData,
-          allHistoryCount
         });
-      }
-    } else {
-      let allHistoryData = await LoginHistory
-        .find({
+        if (allHistoryData) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("History list"),
+            "data": allHistoryData,
+            allHistoryCount
+          });
+        }
+      } else {
+        let allHistoryData = await LoginHistory
+          .find({
+            where: {
+              ...q
+            }
+          })
+          .sort("created_at DESC")
+          .paginate(page - 1, parseInt(limit));
+
+        let allHistoryCount = await LoginHistory.count({
           where: {
             ...q
           }
-        })
-        .sort("created_at DESC")
-        .paginate(page - 1, parseInt(limit));
-
-      let allHistoryCount = await LoginHistory.count({
-        where: {
-          ...q
-        }
-      });
-      if (allHistoryData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("History list"),
-          "data": allHistoryData,
-          allHistoryCount
         });
+
+        if (allHistoryData) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("History list"),
+            "data": allHistoryData,
+            allHistoryCount
+          });
+        }
       }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }
 };
