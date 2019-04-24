@@ -83,7 +83,6 @@ module.exports = {
 
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
-              console.log('err>>>>>>>>', err)
               if (err) {
                 return res.json(403, {
                   "status": 403,
@@ -91,14 +90,24 @@ module.exports = {
                 });
               }
 
-              console.log('valid', valid)
-
               if (!valid) {
                 console.log('if')
                 return res
                   .status(401)
                   .json({ "status": 401, "err": 'Invalid email or password' });
               } else {
+                if (user_detail.is_verified == false) {
+                  return res
+                    .status(402)
+                    .json({ "status": 402, "err": "To login please activate your account" });
+                }
+                if (user_detail) {
+                  if (user_detail.is_new_email_verified == false) {
+                    return res
+                      .status(405)
+                      .json({ "status": 405, "err": "To continue, please verify your new email address." });
+                  }
+                }
                 if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                   if (!req.body.otp) {
                     return res
@@ -192,18 +201,18 @@ module.exports = {
                 }
               }
             });
-          if (user_detail.is_verified == false) {
-            return res
-              .status(402)
-              .json({ "status": 402, "err": "To login please activate your account" });
-          }
-          if (user_detail) {
-            if (user_detail.is_new_email_verified == false) {
-              return res
-                .status(405)
-                .json({ "status": 405, "err": "To continue, please verify your new email address." });
-            }
-          }
+          // if (user_detail.is_verified == false) {
+          //   return res
+          //     .status(402)
+          //     .json({ "status": 402, "err": "To login please activate your account" });
+          // }
+          // if (user_detail) {
+          //   if (user_detail.is_new_email_verified == false) {
+          //     return res
+          //       .status(405)
+          //       .json({ "status": 405, "err": "To continue, please verify your new email address." });
+          //   }
+          // }
           if (user_detail.is_active == false) {
             return res
               .status(403)

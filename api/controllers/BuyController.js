@@ -79,37 +79,42 @@ module.exports = {
 
     //-------------------------------CMS Api--------------------------
     getAllBuyOrders: async function (req, res) {
-        let { page, limit, data, sortCol, sortOrder } = req.allParams();
-        let query = " from buy_book";
-        if ((data && data != "")) {
-            query += " WHERE"
-            if (data && data != "" && data != null) {
-                query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
-                if (!isNaN(data)) {
-                    query = query + " OR fill_price=" + data + " OR quantity=" + data;
+        try {
+            let { page, limit, data, sort_col, sort_order } = req.allParams();
+            let query = " from buy_book";
+            if ((data && data != "")) {
+                query += " WHERE"
+                if (data && data != "" && data != null) {
+                    query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+                    if (!isNaN(data)) {
+                        query = query + " OR fill_price=" + data + " OR quantity=" + data;
+                    }
                 }
             }
-        }
-        countQuery = query;
-        if (sortCol && sortOrder) {
-            let sortVal = (sortOrder == 'descend' ? 'DESC' : 'ASC');
-            query += " ORDER BY " + sortCol + " " + sortVal;
-        }
+            countQuery = query;
+            if (sort_col && sort_order) {
+                let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
+                query += " ORDER BY " + sort_col + " " + sortVal;
+            }
 
-        query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
+            query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+            let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
 
-        buyBookData = buyBookData.rows;
+            buyBookData = buyBookData.rows;
 
-        let buyBookCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
-        buyBookCount = buyBookCount.rows[0].count;
+            let buyBookCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+            buyBookCount = buyBookCount.rows[0].count;
 
-        if (buyBookData) {
-            return res.json({
-                "status": 200,
-                "message": sails.__("Buy Order list"),
-                "data": buyBookData, buyBookCount
-            });
+            if (buyBookData) {
+                return res.json({
+                    "status": 200,
+                    "message": sails.__("Buy Order list"),
+                    "data": buyBookData, buyBookCount
+                });
+            }
+
+        } catch (err) {
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
 };

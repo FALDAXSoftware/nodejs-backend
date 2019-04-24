@@ -250,15 +250,11 @@ module.exports = {
         bitgoWallet
           .send(params)
           .then(async function (transaction) { });
-
       } else {
         console.log("insufficient funds");
-
       }
     } else {
-      a
       console.log("invalid pair");
-
     }
   }
 
