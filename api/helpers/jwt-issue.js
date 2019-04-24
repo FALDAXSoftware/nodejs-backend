@@ -31,7 +31,6 @@ module.exports = {
   exits: {
 
   },
-
   fn: async function (inputs, exits) {
     let extraParams = {};
     if (inputs.setExpiry) {

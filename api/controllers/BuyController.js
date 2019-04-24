@@ -80,10 +80,13 @@ module.exports = {
     //-------------------------------CMS Api--------------------------
     getAllBuyOrders: async function (req, res) {
         try {
-            let { page, limit, data, sort_col, sort_order } = req.allParams();
+            let { page, limit, data, sort_col, sort_order, user_id } = req.allParams();
             let query = " from buy_book";
+            let whereAppended = false;
+
             if ((data && data != "")) {
                 query += " WHERE"
+                whereAppended = true;
                 if (data && data != "" && data != null) {
                     query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
                     if (!isNaN(data)) {
@@ -91,13 +94,24 @@ module.exports = {
                     }
                 }
             }
+
+            if (user_id) {
+                if (whereAppended) {
+                    query += " AND "
+                } else {
+                    query += " WHERE "
+                }
+                whereAppended = true;
+                query += " user_id=" + user_id;
+            }
             countQuery = query;
             if (sort_col && sort_order) {
                 let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
                 query += " ORDER BY " + sort_col + " " + sortVal;
             }
 
-            query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+            query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+            console.log('query buy', query)
             let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
 
             buyBookData = buyBookData.rows;
