@@ -837,10 +837,6 @@ module.exports = {
 
       let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id=requested_user.id";
       let whereAppended = false;
-
-      // if (user_id) {
-      //   query += " LEFT JOIN users ON trade_history.user_id = users.id OR trade_history.requested_user_id = users.id "
-      // }
       //query += " trade_history.deleted_at IS NULL";
 
       if ((data && data != "")) {
@@ -868,6 +864,16 @@ module.exports = {
           //   +" AND trade_history.created_at <= " + await sails.helpers.dateFormat(end_date);
           // }
         }
+      }
+
+      if (user_id) {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += " trade_history.user_id=" + user_id
       }
 
       if (t_type) {

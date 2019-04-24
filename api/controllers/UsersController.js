@@ -598,7 +598,7 @@ module.exports = {
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let { page, limit, data, sort_col, sort_order } = req.allParams();
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
@@ -611,11 +611,11 @@ module.exports = {
         }
       }
       countQuery = query;
-      if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY " + sort_col + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -675,17 +675,21 @@ module.exports = {
   },
 
   userActivate: async function (req, res) {
-    let { user_id, email, is_active } = req.body;
+    try {
+      let { user_id, email, is_active } = req.body;
 
-    let usersData = await Users
-      .update({ id: user_id })
-      .set({ email: email, is_active: is_active })
-      .fetch();
+      let usersData = await Users
+        .update({ id: user_id })
+        .set({ email: email, is_active: is_active })
+        .fetch();
 
-    if (usersData && typeof usersData === 'object' && usersData.length > 0) {
-      return res.json({ "status": 200, "message": "User Status Updated" });
-    } else {
-      return res.json({ "status": 200, "message": "User(id) not found" });
+      if (usersData && typeof usersData === 'object' && usersData.length > 0) {
+        return res.json({ "status": 200, "message": "User Status Updated" });
+      } else {
+        return res.json({ "status": 401, "message": "User(id) not found" });
+      }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 

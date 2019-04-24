@@ -54,6 +54,8 @@ module.exports = async function (req, res, next) {
             next();
         }
     } catch (error) {
-        return res.status(403).json({ status: 403, err: 'Unauthorized Access' });
+        return res.status(403).json({
+            status: 403, err: 'Your session has been expired. Please Login again to continue.'
+        });
     }
 };
