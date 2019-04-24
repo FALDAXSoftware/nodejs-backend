@@ -51,11 +51,36 @@ module.exports.local = {
       'rpcpassword': 'admin1',
       'url': 'http://dev-viacoin-currency.faldax.com/'
     },
-    'VTC':{
+    'VTC': {
       'coin_name': 'vertcoin',
       'rpcuser': 'kiddsddhan',
       'rpcpassword': 'kisha34nff',
       'url': 'http://dev-vertcoin-currency.faldax.com/'
+    },
+    'VRC': {
+      'coin_name': 'vericoin',
+      'rpcuser': 'vericoinrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-vericoin-currency.faldax.com/'
+    },
+    'SYS': {
+      'coin_name': 'syscoin',
+      'rpcuser': 'syscoinrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-syscoin-currency.faldax.com/'
+    },
+    //Requires to be done but address is being created
+    'QTUM': {
+      'coin_name': 'qtum',
+      'rpcuser': 'qtumrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-qtum-currency.faldax.com/'
+    },
+    'NAV':{
+      'coin_name': 'navcoin',
+      'rpcuser': 'navcoinrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-navcoin-currency.faldax.com/'
     }
 
   },
