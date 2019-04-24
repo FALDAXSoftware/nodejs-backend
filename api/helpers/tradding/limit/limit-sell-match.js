@@ -282,12 +282,13 @@ module.exports = {
             delete sellAddedData.id;
             delete sellAddedData.side;
             sellAddedData.side = "Sell";
+            sellAddedData.is_partially_fulfilled = true;
             var addData = await sails
               .helpers
               .tradding
               .activity
               .add(sellAddedData);
-            sellAddedData.is_partially_fulfilled = true;
+
             sellAddedData.activity_id = addData.id;
             var addSellBook = await sails
               .helpers
@@ -315,13 +316,13 @@ module.exports = {
           sellAddedData.taker_fee = fees.takerFee;
           delete sellAddedData.id;
           delete sellAddedData.side;
+          sellAddedData.is_partially_fulfilled = true;
           sellAddedData.side = "Sell";
           var addData = await sails
             .helpers
             .tradding
             .activity
             .add(sellAddedData);
-          sellAddedData.is_partially_fulfilled = true;
           sellAddedData.activity_id = addData.id;
           var addSellBook = await sails
             .helpers

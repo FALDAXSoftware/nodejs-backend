@@ -153,7 +153,8 @@ module.exports = {
           sellLimitOrderData.activity_id = activity.id;
           var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
-            sellLimitOrderData.is_partially_fulfilled = false;
+            sellLimitOrderData.is_partially_fulfilled = true;
+            sellLimitOrderData.is_filled = false;
             sellLimitOrderData.added = true;
             var addSellBook = await sails
               .helpers
@@ -165,6 +166,7 @@ module.exports = {
               .helpers
               .sockets
               .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
+            addSellBook.added = true;
             return exits.success(addSellBook);
           } else {
             console.log(total_price);
@@ -176,7 +178,8 @@ module.exports = {
         sellLimitOrderData.activity_id = activity.id;
         var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
-          sellLimitOrderData.is_partially_fulfilled = false;
+          sellLimitOrderData.is_partially_fulfilled = true;
+          sellLimitOrderData.is_filled = false;
           sellLimitOrderData.added = true;
           var addSellBook = await sails
             .helpers
@@ -188,6 +191,7 @@ module.exports = {
             .helpers
             .sockets
             .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
+          addSellBook.added = true;
           return exits.success(addSellBook);
         } else {
           return exits.insufficientBalance();

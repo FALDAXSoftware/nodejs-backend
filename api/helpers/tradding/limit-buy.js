@@ -159,7 +159,8 @@ module.exports = {
           buyLimitOrderData.activity_id = activity.id;
           var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
-            buyLimitOrderData.is_partially_fulfilled = false;
+            buyLimitOrderData.is_partially_fulfilled = true;
+            buyLimitOrderData.is_filled = false;
             buyLimitOrderData.added = true;
             var addBuyBook = await sails
               .helpers
@@ -167,6 +168,7 @@ module.exports = {
               .buy
               .addBuyOrder(buyLimitOrderData);
             //Add Socket Here Emit
+            addBuyBook.added = true;
             await sails
               .helpers
               .sockets
@@ -180,7 +182,8 @@ module.exports = {
         buyLimitOrderData.activity_id = activity.id;
         var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
-          buyLimitOrderData.is_partially_fulfilled = false;
+          buyLimitOrderData.is_partially_fulfilled = true;
+          buyLimitOrderData.is_filled = false;
           buyLimitOrderData.added = true;
           var addBuyBook = await sails
             .helpers
@@ -194,6 +197,7 @@ module.exports = {
               return new Error("serverError");
             });
 
+          addBuyBook.added = true;
           //Add Socket Here Emit
           await sails
             .helpers

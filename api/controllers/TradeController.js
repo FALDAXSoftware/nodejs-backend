@@ -149,15 +149,15 @@ module.exports = {
           .tradding
           .limitSell(symbol, user_id, side, order_type, orderQuantity, limit_price);
         console.log(response);
-        if (response.side == "Sell" && response.is_partially_fulfilled == true) {
-          res.json({
-            "status": 200,
-            "message": sails.__("Order Partially Fulfilled and Successfully added to Sell book")
-          });
-        } else if (response.is_partially_fulfilled == false) {
+        if (response.side == "Sell" && response.is_partially_fulfilled == true && response.added == false) {
           return res.json({
             "status": 200,
             "message": sails.__("Order added Success")
+          });
+        } else if (response.side == "Sell" && response.is_partially_fulfilled == true) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Order Partially Fulfilled and Successfully added to Sell book")
           });
         } else {
           return res.json({
@@ -225,15 +225,15 @@ module.exports = {
             throw new Error("serverError");
           });;
         console.log(response);
-        if (response.side == "Buy" && response.is_partially_fulfilled == true) {
-          res.json({
-            "status": 200,
-            "message": sails.__("Order Partially Fulfilled and Successfully added to Buy book")
-          });
-        } else if (response.is_partially_fulfilled == false) {
+        if (response.side == "Buy" && response.is_partially_fulfilled == true && response.added == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order added Success")
+          });
+        } else if (response.side == "Buy" && response.is_partially_fulfilled == true) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Order Partially Fulfilled and Successfully added to Buy book")
           });
         } else {
           return res.json({
@@ -642,16 +642,18 @@ module.exports = {
     var user_id = req.user.id;
     var month = req.query.month;
     var filter_type = req.query.filter_type;
-    // console.log(req.query);
+    console.log("Query Parameters ::: ", req.query);
     try {
       if (req.isSocket) {
+        console.log("IF OF SOCKET")
         if (req.query.prevRoom) {
+          console.log("ISNIDE PREV ROOM :: ")
           let prevRoom = req.query.prevRoom;
           sails
             .sockets
             .leave(req.socket, prevRoom + '-' + user_id, async function (leaveErr) {
               if (leaveErr) {
-                // console.log('>>>leaveErr', leaveErr);
+                console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
                   .json({ status: 403, "message": "Error occured" });
@@ -660,7 +662,7 @@ module.exports = {
                   .sockets
                   .join(req.socket, room + '-' + user_id, async function (err) {
                     if (err) {
-                      // console.log('>>>err', err);
+                      console.log('>>>err', err);
                       return res
                         .status(403)
                         .json({ status: 403, "message": "Error occured" });
@@ -680,11 +682,13 @@ module.exports = {
                           .tradding
                           .getCompletedData(user_id, crypto, currency, month);
                       } else if (filter_type == 2) {
+                        console.log("INSIDE FILTER TYPE @")
                         userTradeDetails = await sails
                           .helpers
                           .tradding
                           .pending
                           .getTradePendingDetails(user_id, crypto, currency, month);
+                        console.log(userTradeDetails);
                       } else if (filter_type == 3) {
                         userTradeDetails = await sails
                           .helpers
@@ -703,7 +707,7 @@ module.exports = {
             .sockets
             .join(req.socket, room + '-' + user_id, async function (err) {
               if (err) {
-                // console.log('>>>err', err);
+                console.log('>>>err', err);
                 return res
                   .status(403)
                   .json({ status: 403, "message": "Error occured" });
@@ -724,6 +728,7 @@ module.exports = {
                     .tradding
                     .pending
                     .getTradePendingDetails(user_id, crypto, currency, month);
+                  console.log(userTradeDetails);
                 } else if (filter_type == 3) {
                   userTradeDetails = await sails
                     .helpers
@@ -832,10 +837,13 @@ module.exports = {
         user_id,
         t_type,
         start_date,
-        end_date, sort_col, sort_order
+        end_date,
+        sort_col,
+        sort_order
       } = req.allParams();
 
-      let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id=requested_user.id";
+      let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOI" +
+        "N users as requested_user ON trade_history.requested_user_id=requested_user.id";
       let whereAppended = false;
       //query += " trade_history.deleted_at IS NULL";
 
@@ -843,26 +851,14 @@ module.exports = {
         if (data && data != "" && data != null) {
           query += " WHERE"
           whereAppended = true;
-          query += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(requested_user.first_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(requested_user.last_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(requested_user.full_name) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%'" +
-            " OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query += " OR quantity=" + data + " OR fill_price=" + data +
-              " OR maker_fee=" + data + " OR taker_fee=" + data
+            query += " OR quantity=" + data + " OR fill_price=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
           }
           query += ")"
-          // if (start_date && end_date) {
-          //   query += "OR trade_history.created_at >= " + await sails.helpers.dateFormat(start_date);
-          //   +" AND trade_history.created_at <= " + await sails.helpers.dateFormat(end_date);
-          // }
+          // if (start_date && end_date) {   query += "OR trade_history.created_at >= " +
+          // await sails.helpers.dateFormat(start_date);   +" AND trade_history.created_at
+          // <= " + await sails.helpers.dateFormat(end_date); }
         }
       }
 
@@ -893,21 +889,29 @@ module.exports = {
           query += " WHERE "
         }
 
-        query += " trade_history.created_at >= '" + await sails.helpers.dateFormat(start_date) + " 00:00:00" +
-          "' AND trade_history.created_at <= '" + await sails.helpers.dateFormat(end_date) + " 23:59:59'";
+        query += " trade_history.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       // query += " GROUP BY trade_history.id";
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
       console.log('query trade', query)
-      let tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,trade_history.symbol,trade_history.side,trade_history.quantity,trade_history.fill_price, trade_history.maker_fee, trade_history.taker_fee, users.email, requested_user.email as reqested_user_email, trade_history.created_at" + query, [])
+      let tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
+        "ade_history.symbol,trade_history.side,trade_history.quantity,trade_history.fill_" +
+        "price, trade_history.maker_fee, trade_history.taker_fee, users.email, requested_" +
+        "user.email as reqested_user_email, trade_history.created_at" + query, [])
 
       tradeData = tradeData.rows;
 

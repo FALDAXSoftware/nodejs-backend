@@ -135,7 +135,6 @@ module.exports = {
           created_at: {
             '>=': yesterday
           },
-          user_id: inputs.user_id
         },
         sort: 'id DESC'
       });
