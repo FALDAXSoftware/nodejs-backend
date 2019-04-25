@@ -22,7 +22,6 @@ module.exports = {
                 query += " WHERE"
                 whereAppended = true;
                 query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
-                    " OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%'";
                 if (!isNaN(data)) {
@@ -71,10 +70,8 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log('query transaction', query)
 
         let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email " + query, [])
-
         transactionData = transactionData.rows;
 
         let transactionCount = await sails.sendNativeQuery("Select COUNT(wallet_history.id)" + countQuery, [])
@@ -90,7 +87,6 @@ module.exports = {
     },
 
     getUserTransactions: async function (req, res) {
-
         // req.setLocale('en')
         let { page, limit, data, t_type, start_date, end_date, user_id, sort_col, sort_order } = req.allParams();
 
@@ -102,7 +98,6 @@ module.exports = {
                 query += " WHERE"
                 whereAppended = true;
                 query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
-                    " OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%'";
                 if (!isNaN(data)) {
@@ -151,10 +146,8 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log('query transaction', query)
 
         let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email " + query, [])
-
         transactionData = transactionData.rows;
 
         let transactionCount = await sails.sendNativeQuery("Select COUNT(wallet_history.id)" + countQuery, [])
@@ -167,98 +160,5 @@ module.exports = {
                 "data": transactionData, transactionCount
             });
         }
-
-
-
-        // -----------------------
-        // let { page, limit, search, start_date, end_date, user_id, t_type } = req.allParams();
-
-        // if (search) {
-        //     let q = { deleted_at: null, user_id };
-        //     if (start_date && end_date) {
-        //         q['created_at'] = { '>=': start_date, '<=': end_date };
-        //     }
-        //     if (t_type) {
-        //         q['transaction_type'] = t_type
-        //     }
-        //     q['or'] = [
-        //         { source_address: { contains: search } },
-        //         { destination_address: { contains: search } },
-        //     ]
-
-        //     let userArray = await Users.find({ email: { 'contains': search } });
-
-        //     let idArray = [];
-        //     for (let index = 0; index < userArray.length; index++) {
-        //         idArray.push(userArray[index].id);
-        //     }
-        //     q['or'].push({ user_id: idArray });
-        //     let userTransactionData = await Transaction.find({
-        //         ...q
-        //     }).sort('id ASC').paginate(page, parseInt(limit));
-
-        //     for (let index = 0; index < userTransactionData.length; index++) {
-        //         if (userTransactionData[index].user_id) {
-        //             let user = await Users.findOne({ id: userTransactionData[index].user_id })
-        //             userTransactionData[index].email = user.email;
-        //         }
-        //     }
-
-        //     for (let index = 0; index < userTransactionData.length; index++) {
-        //         if (userTransactionData[index].coin_id) {
-        //             let user = await Coins.findOne({ id: transactionData[index].coin_id })
-        //             userTransactionData[index].coin_id = user.coin_code;
-        //         }
-        //     }
-
-        //     let transactionCount = await Transaction.count({
-        //         user_id: idArray,
-        //         ...q
-        //     });
-
-        //     if (userTransactionData) {
-        //         return res.json({
-        //             "status": 200,
-        //             "message": sails.__("Transaction list"),
-        //             "data": userTransactionData, transactionCount
-        //         });
-        //     }
-        // } else {
-        //     let q = { deleted_at: null, user_id };
-        //     if (t_type) {
-        //         q['transaction_type'] = t_type
-        //     }
-        //     if (start_date && end_date) {
-        //         q['created_at'] = { '>=': start_date, '<=': end_date };
-        //     }
-
-        //     let userTransactionData = await Transaction.find({
-        //         ...q
-        //     }).sort("id ASC").paginate(page, parseInt(limit));
-
-        //     for (let index = 0; index < userTransactionData.length; index++) {
-        //         if (userTransactionData[index].user_id) {
-        //             let user = await Users.findOne({ id: userTransactionData[index].user_id })
-        //             userTransactionData[index].email = user.email;
-        //         }
-        //     }
-
-        //     for (let index = 0; index < userTransactionData.length; index++) {
-        //         if (userTransactionData[index].coin_id) {
-        //             let user = await Coins.findOne({ id: userTransactionData[index].coin_id })
-        //             userTransactionData[index].coin_id = user.coin_code;
-        //         }
-        //     }
-
-        //     let transactionCount = await Transaction.count({ ...q });
-
-        //     if (userTransactionData) {
-        //         return res.json({
-        //             "status": 200,
-        //             "message": sails.__("Transaction list"),
-        //             "data": userTransactionData, transactionCount
-        //         });
-        //     }
-        // }
     },
 };
