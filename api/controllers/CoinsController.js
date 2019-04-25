@@ -313,7 +313,7 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let { page, limit, data, sort_col, sort_order } = req.allParams();
       let query = " from coins";
       if ((data && data != "")) {
         query += " WHERE"
@@ -325,11 +325,11 @@ module.exports = {
         }
       }
       countQuery = query;
-      if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
