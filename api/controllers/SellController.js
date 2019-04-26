@@ -93,16 +93,29 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllSellOrders: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let { page, limit, data, sort_col, sort_order, user_id } = req.allParams();
       let query = " from sell_book";
+      let whereAppended = false;
+
       if ((data && data != "")) {
         query += " WHERE"
+        whereAppended = true;
         if (data && data != "" && data != null) {
           query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query = query + " OR fill_price=" + data + " OR quantity=" + data;
           }
         }
+      }
+
+      if (user_id) {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += " user_id=" + user_id;
       }
 
       countQuery = query;

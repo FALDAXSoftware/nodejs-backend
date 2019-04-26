@@ -32,50 +32,55 @@ module.exports = {
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
+
   //-------------------------------CMS Api--------------------------
   getAllPairs: async function (req, res) {
-    let { page, limit, data, sortCol, sortOrder } = req.allParams();
-    let query = " from pairs";
-    if ((data && data != "")) {
-      query += " WHERE"
-      if (data && data != "" && data != null) {
-        query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
-        if (!isNaN(data)) {
-          query = query + " OR maker_fee=" + data + " OR taker_fee=" + data;
+    try {
+      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let query = " from pairs";
+      if ((data && data != "")) {
+        query += " WHERE"
+        if (data && data != "" && data != null) {
+          query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
+          if (!isNaN(data)) {
+            query = query + " OR maker_fee=" + data + " OR taker_fee=" + data;
+          }
         }
       }
-    }
-    countQuery = query;
-    if (sortCol && sortOrder) {
-      let sortVal = (sortOrder == 'descend'
-        ? 'DESC'
-        : 'ASC');
-      query += " ORDER BY " + sortCol + " " + sortVal;
-    }
-    query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-    let pairData = await sails.sendNativeQuery("Select *" + query, [])
+      countQuery = query;
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      }
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      let pairData = await sails.sendNativeQuery("Select *" + query, [])
 
-    pairData = pairData.rows;
+      pairData = pairData.rows;
 
-    let pairsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
-    pairsCount = pairsCount.rows[0].count;
+      let pairsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      pairsCount = pairsCount.rows[0].count;
 
-    let allCoins = await Coins.find({
-      where: {
-        is_active: true,
-        deleted_at: null
-      },
-      select: ['id', 'coin_name', 'coin_code']
-    });
-
-    if (pairData) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("Pair list"),
-        "data": pairData,
-        pairsCount,
-        allCoins
+      let allCoins = await Coins.find({
+        where: {
+          is_active: true,
+          deleted_at: null
+        },
+        select: ['id', 'coin_name', 'coin_code']
       });
+
+      if (pairData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Pair list"),
+          "data": pairData,
+          pairsCount,
+          allCoins
+        });
+      }
+    } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 

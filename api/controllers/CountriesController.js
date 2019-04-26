@@ -7,7 +7,7 @@
 module.exports = {
   getCountries: async function (req, res) {
     try {
-      let { page, limit, data, legality, sortCol, sortOrder } = req.allParams();
+      let { page, limit, data, legality, sort_col, sort_order } = req.allParams();
       let query = " from countries";
       if ((data && data != "") || (legality && legality != "")) {
         query += " WHERE"
@@ -25,11 +25,11 @@ module.exports = {
         }
       }
       countQuery = query;
-      if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY " + sort_col + " " + sortVal;
       }
       if (limit != null) {
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -50,6 +50,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount });
       }
     } catch (err) {
+      console.log(err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
