@@ -18,7 +18,7 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-  '*': ['isAuthorized'], // Everything resctricted here
+  '*': ['isAuthorized', 'isAdmin'], // Everything resctricted here
   'UsersController': {
     'create': true,
     'getCountries': true,

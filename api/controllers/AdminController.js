@@ -79,7 +79,7 @@ module.exports = {
                                     // Token Issue
                                     var token = await sails
                                         .helpers
-                                        .jwtIssue(admin_details.id, true);
+                                        .jwtIssue(admin_details.id, true, true);
                                     res.json({ user: admin_details, token });
                                 }
                             });
@@ -521,5 +521,10 @@ module.exports = {
             console.log('error', err)
             return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
+    },
+    test: function (req, res) {
+        return res.json({
+            message: "test message"
+        });
     }
 };

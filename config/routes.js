@@ -13,7 +13,9 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
+  // 'admin/*': { policy: 'isAdmin' },
   // Test Routes
+  'get /admin/test': 'Admin.test',
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
