@@ -851,7 +851,9 @@ module.exports = {
         if (data && data != "" && data != null) {
           query += " WHERE"
           whereAppended = true;
-          query += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR quantity=" + data + " OR fill_price=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
           }

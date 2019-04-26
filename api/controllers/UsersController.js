@@ -791,9 +791,7 @@ module.exports = {
       }
       if (start_date && end_date) {
         q['created_at'] = {
-          '>=': await sails.helpers.dateFormat(start_date) + " 00:00:00"
-        };
-        q['updated_at'] = {
+          '>=': await sails.helpers.dateFormat(start_date) + " 00:00:00",
           '<=': await sails.helpers.dateFormat(end_date) + " 23:59:59"
         };
       }
@@ -825,6 +823,7 @@ module.exports = {
             ]
           }
         });
+
         if (allHistoryData) {
           return res.json({
             "status": 200,
