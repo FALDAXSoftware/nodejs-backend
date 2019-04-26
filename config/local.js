@@ -65,8 +65,8 @@ module.exports.local = {
     },
     'SYS': {
       'coin_name': 'syscoin',
-      'rpcuser': 'syscoinrpc',
-      'rpcpassword': 'secret',
+      'rpcuser': 'user',
+      'rpcpassword': 'password',
       'url': 'http://dev-syscoin-currency.faldax.com/'
     },
     //Requires to be done but address is being created
@@ -76,13 +76,18 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-qtum-currency.faldax.com/'
     },
-    'NAV':{
+    'NAV': {
       'coin_name': 'navcoin',
       'rpcuser': 'navcoinrpc',
       'rpcpassword': 'secret',
       'url': 'http://dev-navcoin-currency.faldax.com/'
+    },
+    'DOGE': {
+      'coin_name': 'dogecoin',
+      'rpcuser': 'dogecoinrpc',
+      'rpcpassword': '2PfZxVnJZVATg9JWpcsE3hxP8jpRWnMA8KhgJRK4NdCe',
+      'url': 'http://dev-dogecoin-currency.faldax.com/'
     }
-
   },
   hubspot: {
     url: "https://api.hubapi.com",

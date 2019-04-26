@@ -20,7 +20,6 @@ module.exports = {
 
     fn: async function (inputs, exits) {
         var resultedDate = moment(inputs.date).startOf('d').format("YYYY-MM-DD");
-        console.log('resultedDate', resultedDate)
         return exits.success(resultedDate);
     }
 };
