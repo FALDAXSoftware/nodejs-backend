@@ -51,7 +51,7 @@ module.exports = {
       // TODO Send back the result through the success exit.
       return exits.success(newAddress);
     } catch (err) {
-      consol.log(err);
+      consol.log("Get Info error :: ", err);
     }
 
   }
