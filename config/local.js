@@ -88,7 +88,6 @@ module.exports.local = {
       'rpcpassword': '2PfZxVnJZVATg9JWpcsE3hxP8jpRWnMA8KhgJRK4NdCe',
       'url': 'http://dev-dogecoin-currency.faldax.com/'
     }
-
   },
   hubspot: {
     url: "https://api.hubapi.com",
