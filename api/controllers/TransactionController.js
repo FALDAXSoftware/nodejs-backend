@@ -23,6 +23,7 @@ module.exports = {
                 whereAppended = true;
                 query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%'" +
+                    " OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%'";
                 if (!isNaN(data)) {
                     query += " OR wallet_history.amount=" + data;
@@ -99,6 +100,7 @@ module.exports = {
                 whereAppended = true;
                 query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%'" +
+                    " OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%'" +
                     " OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%'";
                 if (!isNaN(data)) {
                     query += " OR wallet_history.amount=" + data;
