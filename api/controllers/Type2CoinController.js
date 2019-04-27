@@ -11,12 +11,19 @@ module.exports = {
   getCoinInfo: async function (req, res) {
     try {
       var {coin_code} = req.allParams();
-
-      var getInfo = await sails
-        .helpers
-        .type2Coins
-        .stratis
-        .getInfo(coin_code);
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 1) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .stratis
+          .getInfo(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 2) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .blackcoinGetInfo(coin_code);
+      }
 
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
@@ -29,13 +36,24 @@ module.exports = {
   getCoinNewAddress: async function (req, res) {
     try {
       var {coin_code} = req.allParams();
-
-      var getInfo = await sails
-        .helpers
-        .type2Coins
-        .stratis
-        .getNewAddress(coin_code);
-
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 1) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .stratis
+          .getNewAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 2) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .blackcoinGetNewAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 3) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .neoGetNewAddress(coin_code);
+      }
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
       console.log(err);
@@ -47,12 +65,14 @@ module.exports = {
   getTransactionList: async function (req, res) {
     try {
       var {coin_code} = req.allParams();
-
-      var getInfo = await sails
-        .helpers
-        .type2Coins
-        .stratis
-        .getInfo(coin_code);
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 1) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .stratis
+          .getTransactionList(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 2) {}
 
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
@@ -65,17 +85,47 @@ module.exports = {
   sendCoin: async function (req, res) {
     try {
       var {coin_code, to_address, amount, message} = req.body;
-
-      var getInfo = await sails
-        .helpers
-        .type2Coins
-        .stratis
-        .sendFunds(coin_code, to_address, amount, message);
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 1) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .stratis
+          .sendFunds(coin_code, to_address, amount, message);
+      } else if (sails.config.local.coinArray[coin_code].type == 2) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .stratis
+          .blackcoinSendCoin(coin_code, to_address, amount, message);
+      } else if (sails.config.local.coinArray[coin_code].type == 3) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .neoSendCoin(coin_code, to_address, amount, message);
+      }
 
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
       console.log(err);
     }
+  },
 
+  //List Addresses
+  listAddresses: async function (req, res) {
+    try {
+      var {coin_code} = req.allParams();
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 3) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .neoListAddress(coin_code);
+      }
+
+      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
