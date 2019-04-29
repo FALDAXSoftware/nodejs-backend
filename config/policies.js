@@ -18,7 +18,7 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-  '*': ['isAuthorized'], // Everything resctricted here
+  '*': ['isAuthorized', 'isAdmin'], // Everything resctricted here
   'UsersController': {
     'create': true,
     'getCountries': true,
@@ -104,7 +104,8 @@ module.exports.policies = {
     "getCoinInfo": true,
     "getCoinNewAddress": true,
     "getTransactionList": true,
-    "sendCoin": true
+    "sendCoin": true,
+    "listAddresses": true
   },
   "KrakenController": {
     "getOrderBookData": true,

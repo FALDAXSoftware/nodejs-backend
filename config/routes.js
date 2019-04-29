@@ -13,7 +13,9 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
+  // 'admin/*': { policy: 'isAdmin' },
   // Test Routes
+  'get /admin/test': 'Admin.test',
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
@@ -293,6 +295,7 @@ module.exports.routes = {
   'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
   'get /type2coin/gettransactionlist/:coin_code': 'Type2CoinController.getTransactionList',
   'post /type2coin/sendcoin': 'Type2CoinController.sendCoin',
+  'get /type2coin/listaddreses/:coin_code':'Type2CoinController.listAddresses',
   'get /call-helper': 'RootController.callKrakenAPI',
 
   'get /call-helper': 'RootController.callKrakenAPI',
