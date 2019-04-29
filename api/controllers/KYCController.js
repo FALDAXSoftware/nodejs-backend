@@ -233,7 +233,10 @@ module.exports = {
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query += " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(direct_response) LIKE '%" + data.toLowerCase() + "%'";
+          query += " LOWER(first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(direct_response) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
 
@@ -246,11 +249,12 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      let KYCData = await sails.sendNativeQuery("Select * kyc.*, users.email" + query, [])
+
+      let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email" + query, [])
 
       KYCData = KYCData.rows;
 
-      let KYCCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let KYCCount = await sails.sendNativeQuery("Select COUNT(kyc.id)" + countQuery, [])
       KYCCount = KYCCount.rows[0].count;
 
       if (KYCData) {
@@ -262,7 +266,6 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log('err', err)
       return res
         .status(500)
         .json({

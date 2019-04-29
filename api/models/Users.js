@@ -204,6 +204,10 @@ module.exports = {
       columnName: "is_new_email_verified",
       defaultsTo: true
     },
+    referal_percentage: {
+      type: 'number',
+      columnName: 'referal_percentage'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
