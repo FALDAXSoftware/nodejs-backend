@@ -26,6 +26,7 @@
     "kraken-api": "^1.0.0",
     "kraken-exchange": "^1.3.5",
     "moment": "^2.23.0",
+    "node-blackcoin": "^1.0.2",
     "node-fetch": "^2.3.0",
     "nodemon": "^1.18.10",
     "passport": "^0.4.0",

@@ -104,7 +104,8 @@ module.exports.policies = {
     "getCoinInfo": true,
     "getCoinNewAddress": true,
     "getTransactionList": true,
-    "sendCoin": true
+    "sendCoin": true,
+    "listAddresses": true
   },
   "KrakenController": {
     "getOrderBookData": true,
