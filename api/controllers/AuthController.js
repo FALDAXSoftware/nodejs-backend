@@ -148,7 +148,7 @@ module.exports = {
                 }
                 // Check For New Ip
                 let loginData = await LoginHistory.find({ user: user_detail.id, ip: ip });
-                if (loginData.length > 0 || req.body.test_key == sails.config.local.test_key) {
+                if (loginData.length > 0 || req.body.test_key == sails.config.local.test_key || req.body.device_type == 1 || req.body.device_type == 2) {
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
