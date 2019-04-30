@@ -26,14 +26,9 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " (LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
-          // if (start_date) {
-          //   query += "OR posted_at >= " + await sails.helpers.dateFormat(start_date) + " 00:00:00"
-          // }
-          // if (end_date) {
-          //   query += " AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + " 23:59:59'";
-          // }
-
+          query += " (LOWER(link) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(title) LIKE '%" + data.toLowerCase() +
+            "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
           if (filter_val && filter_val != "") {
             query += " AND owner = '" + filter_val + "'";
           }
@@ -70,7 +65,7 @@ module.exports = {
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      console.log('NEWS>>>>>>>>', query)
+
       let news = await sails.sendNativeQuery("Select *" + query, []);
       news = news.rows;
 
@@ -79,13 +74,7 @@ module.exports = {
 
       return res.json({ "status": 200, "message": "News retrived successfully", "data": news, newsCount });
     } catch (error) {
-      console.log('>>>>>>', error)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
   // Change News Status
@@ -97,13 +86,7 @@ module.exports = {
         .set({ is_active });
       return res.json({ "status": 200, "message": "News Status Updated" });
     } catch (error) {
-      console.log('error', error)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -118,14 +101,7 @@ module.exports = {
         return res.json({ "status": 400, "message": "No news found" });
       }
     } catch (error) {
-      console.log('error', error)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }
-
 };
