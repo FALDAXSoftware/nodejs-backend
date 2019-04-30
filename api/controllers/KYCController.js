@@ -14,7 +14,6 @@ module.exports = {
       let kyc_details = await KYC.findOne({ user_id });
       req.body.city = req.body.city_town;
 
-      console.log('kyc_details', kyc_details);
       if (kyc_details) {
         if (kyc_details.steps == 3) {
           return res.json({
@@ -54,9 +53,7 @@ module.exports = {
           req.body['status'] = false;
         }
         var updated_kyc;
-        console.log(req.body);
         if (req.body.test_key == sails.config.local.test_key) {
-          console.log("INSIDE THIS :: ")
           req.body.isApprove = true;
           req.body.direct_response = "ACCEPT";
           req.body.webhook_response = "ACCEPT";
@@ -113,13 +110,7 @@ module.exports = {
         }
       }
     } catch (e) {
-      console.log(e);
-      return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("Something Wrong")
-        })
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -128,20 +119,10 @@ module.exports = {
       .file('image')
       .upload(function (err, file) {
         if (err) {
-          return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Something Wrong")
-            })
+          return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") })
         } else {
           if (file.length <= 0) {
-            return res
-              .status(500)
-              .json({
-                "status": 500,
-                "err": sails.__("Something Wrong")
-              })
+            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
           }
           return res.json({
             'status': 200,
@@ -154,7 +135,7 @@ module.exports = {
 
   callbackKYC: async function (req, res) {
     let data = req.body;
-    console.log("call back call ----->>", JSON.stringify(req.body));
+
     let resultState = {
       "A": "ACCEPT",
       "D": "DENY",
@@ -217,12 +198,7 @@ module.exports = {
           });
       }
     } catch (e) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -233,10 +209,10 @@ module.exports = {
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query += " LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+          query += " LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() +
             "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(direct_response) LIKE '%" + data.toLowerCase() + "%'";
+            "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
 
@@ -266,12 +242,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -312,12 +283,7 @@ module.exports = {
           .json({ status: 500, "err": "Details Not Found" });
       }
     } catch (e) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
 
@@ -337,12 +303,7 @@ module.exports = {
           });
       }
     } catch (e) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }
 };
