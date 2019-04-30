@@ -6,7 +6,6 @@ module.exports = {
 
             let referredAmountData = await referral.find({ user_id: id })
             let userData = await Users.find({ id: id })
-            console.log(referredAmountData)
 
             if (referredAmountData) {
                 return res.json({
@@ -16,7 +15,6 @@ module.exports = {
                 });
             }
         } catch (err) {
-            console.log('err', err)
             return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },

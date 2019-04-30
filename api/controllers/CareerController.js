@@ -221,7 +221,10 @@ module.exports = {
                 if (data && data != "" && data != null) {
                     query = query + " AND LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'"
                         + " OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'"
-                        + " OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'";
+                        + " OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'"
+                        + " OR LOWER(location) LIKE '%" + data.toLowerCase() + "%'"
+                        + " OR LOWER(linkedin_profile) LIKE '%" + data.toLowerCase() + "%'"
+                        + " OR LOWER(website_url) LIKE '%" + data.toLowerCase() + "%'";
                     if (!isNaN(data)) {
                         query = query + " OR phone_number=" + data;
                     }
@@ -235,6 +238,7 @@ module.exports = {
                 query += " ORDER BY " + sort_col + " " + sortVal;
             }
             query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+            console.log('career query', query)
 
             let applications = await sails.sendNativeQuery("Select *" + query, [])
 

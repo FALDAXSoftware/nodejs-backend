@@ -640,17 +640,17 @@ module.exports = {
   },
 
   updateUserDetails: async function (req, res) {
-    let { user_id, email, referal_percentage } = req.body;
-
+    let { user_id, email, percentage } = req.allParams();
+    var updateUserData;
     if (user_id && email) {
-      var updateUserData = await Users
+      updateUserData = await Users
         .update({ id: user_id })
-        .set({ email: email, referal_percentage: referal_percentage })
+        .set({ email: email, referal_percentage: percentage })
         .fetch();
     } else {
       updateUserData = await AdminSetting
         .update({ slug: 'default_referral_percentage' })
-        .set({ value: referal_percentage })
+        .set({ value: percentage })
         .fetch();
     }
 

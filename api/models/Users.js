@@ -224,6 +224,10 @@ module.exports = {
       allowNull: true,
       columnName: 'country_code'
     },
+    referal_percentage: {
+      type: 'number',
+      columnName: 'referal_percentage'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
