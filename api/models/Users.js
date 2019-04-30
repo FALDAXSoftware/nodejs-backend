@@ -90,16 +90,16 @@ module.exports = {
       columnName: 'dob',
       allowNull: true
     },
-    country_id: {
-      type: 'string',
-      columnName: 'country_id',
-      allowNull: true
-    },
-    state_id: {
-      type: 'string',
-      columnName: 'state_id',
-      allowNull: true
-    },
+    // country_id: {
+    //   type: 'string',
+    //   columnName: 'country_id',
+    //   allowNull: true
+    // },
+    // state_id: {
+    //   type: 'string',
+    //   columnName: 'state_id',
+    //   allowNull: true
+    // },
     zip: {
       type: 'number',
       columnName: 'zip',
@@ -165,11 +165,13 @@ module.exports = {
     },
     diffrence_fiat: {
       type: 'number',
-      columnName: 'diffrence_fiat'
+      columnName: 'diffrence_fiat',
+      allowNull: true,
     },
     total_value: {
       type: 'number',
-      columnName: 'total_value'
+      columnName: 'total_value',
+      allowNull: true,
     },
     percent_wallet: {
       type: 'number',
@@ -202,7 +204,25 @@ module.exports = {
     is_new_email_verified: {
       type: 'boolean',
       columnName: "is_new_email_verified",
-      defaultsTo: true
+      defaultsTo: true,
+      allowNull: true,
+    },
+    account_tier: {
+      type: 'number',
+      columnName: 'account_tier',
+      allowNull: true,
+      defaultsTo: 1
+    },
+    account_class: {
+      type: 'number',
+      columnName: 'account_class',
+      allowNull: true,
+      defaultsTo: 3
+    },
+    country_code: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'country_code'
     },
     created_at: {
       type: 'ref',

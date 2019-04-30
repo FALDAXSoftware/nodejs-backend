@@ -51,6 +51,8 @@ module.exports = {
           created_at: new Date(),
           referred_id: referred_id,
           device_type: req.body.device_type,
+          account_tier: 1,
+          account_class: 3,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2)
             ? email_verify_code
             : email_verify_token
@@ -293,6 +295,8 @@ module.exports = {
   },
 
   update: async function (req, res) {
+    console.log("user object----", req.body);
+
     try {
       const user_details = await Users.findOne({ id: req.user.id });
       if (!user_details) {
