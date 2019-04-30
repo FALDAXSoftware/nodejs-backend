@@ -46,7 +46,7 @@ module.exports.routes = {
   'delete /admin/role/delete': 'RoleController.delete',
 
   //users
-  'post /admin/changePassword': "Admin.changePassword",
+  'post /admin/change-password': "Admin.changePassword",
   'get /admin/getUsers': 'Users.getUserPaginate',
   'get /admin/referredUsers': 'Users.getUserReferredAdmin',
   'post /admin/updateUserReferal': 'Users.updateUserDetails',
@@ -132,11 +132,12 @@ module.exports.routes = {
   'post /admin/add-job': 'CareerController.addJob',
   'put /admin/edit-job': 'CareerController.editJob',
   'delete /admin/delete-job': 'CareerController.deleteJob',
-  'get /job-applicants': 'CareerController.getJobApplications',
+  'get /admin/job-applicants': 'CareerController.getJobApplications',
   'get /admin/job-categories': 'CareerController.getAllJobCategories',
 
   //Fee route
   'get /get-all-fee': 'FeesController.getAllFees',
+  'get /admin/get-all-fee': 'FeesController.getAllFees',
   'put /admin/edit-fee': 'FeesController.editFees',
 
   // Contact Routes
@@ -212,7 +213,7 @@ module.exports.routes = {
   'get /users/static-page-json/:page': 'Statics.getStaticPageJson',
 
   // Contact Routes
-  'get /get-contact-details': 'RootController.getContactInfo',
+  'get /admin/get-contact-details': 'RootController.getContactInfo',
 
   //Coin Request routes
   'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest',
@@ -295,7 +296,7 @@ module.exports.routes = {
   'get /type2coin/getnewaddress/:coin_code': 'Type2CoinController.getCoinNewAddress',
   'get /type2coin/gettransactionlist/:coin_code': 'Type2CoinController.getTransactionList',
   'post /type2coin/sendcoin': 'Type2CoinController.sendCoin',
-  'get /type2coin/listaddreses/:coin_code':'Type2CoinController.listAddresses',
+  'get /type2coin/listaddreses/:coin_code': 'Type2CoinController.listAddresses',
   'get /call-helper': 'RootController.callKrakenAPI',
 
   'get /call-helper': 'RootController.callKrakenAPI',
