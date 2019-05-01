@@ -15,7 +15,6 @@ module.exports.routes = {
 
   // 'admin/*': { policy: 'isAdmin' },
   // Test Routes
-  'get /admin/test': 'Admin.test',
   'get /newstest': 'RootController.testnews',
   'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
@@ -25,10 +24,10 @@ module.exports.routes = {
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
-  'post /admin/forgotPassword': "Admin.forgotPassword",
+  'post /admin/forgot-password': "Admin.forgotPassword",
   'post /admin/create': "Admin.create",
   'put /admin/update': "Admin.update",
-  'put /admin/resetPassword': "Admin.resetPassword",
+  'put /admin/reset-password': "Admin.resetPassword",
   'post /admin/add-employee': "Admin.addEmployee",
   'get /admin/get-employees': "Admin.getAllEmployee",
   'delete /admin/delete-employee': "Admin.deleteEmployee",
@@ -47,29 +46,29 @@ module.exports.routes = {
 
   //users
   'post /admin/change-password': "Admin.changePassword",
-  'get /admin/getUsers': 'Users.getUserPaginate',
-  'get /admin/referredUsers': 'Users.getUserReferredAdmin',
-  'post /admin/updateUserReferal': 'Users.updateUserDetails',
-  'post /admin/userActivate': 'Users.userActivate',
-  'post /admin/getUserloginHistory': 'Users.getUserloginHistoryAdmin',
+  'get /admin/get-users': 'Users.getUserPaginate',
+  'get /admin/referred-users': 'Users.getUserReferredAdmin',
+  'post /admin/update-user-referal': 'Users.updateUserDetails',
+  'post /admin/user-activate': 'Users.userActivate',
+  'post /admin/get-user-login-history': 'Users.getUserloginHistoryAdmin',
   'get /admin/get-user-details': 'Users.getAllUserDetails',
   'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
   'post /admin/update-send-coin-fee': 'Users.updateSendCoinFee',
 
   //coins
-  'get /admin/getCoins': 'Coins.getCoins',
+  'get /admin/get-coins': 'Coins.getCoins',
   'post /admin/coins/create': 'Coins.create',
   'put /admin/coins/update': 'Coins.update',
   'delete /admin/coins/delete': 'Coins.delete',
 
   //static pages
-  'get /admin/static/getStaticPage': 'Statics.getStatic',
+  'get /admin/static/get-static-page': 'Statics.getStatic',
   'post /admin/static/create': 'Statics.create',
   'put /admin/static/update': 'Statics.update',
   'delete /admin/static/delete': 'Statics.delete',
 
   //Announcement
-  'get /admin/announcement/getAnnouncementTemplate': 'AnnouncementController.getAnnouncementTemplate',
+  'get /admin/announcement/getannouncement-template': 'AnnouncementController.getAnnouncementTemplate',
   'post /admin/announcement/create': 'AnnouncementController.create',
   'put /admin/announcement/update': 'AnnouncementController.update',
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
@@ -79,22 +78,16 @@ module.exports.routes = {
   'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
-  'get /admin/dashboard/getData': 'Dashboard.getAllCounts',
-  // 'put /admin/changePassword': "Admin.changePassword", countries
-  'get /admin/getCountriesData': 'Countries.getCountries',
-  'put /admin/countryActivate': 'Countries.countryActivate',
-  'put /admin/countryUpdate': 'Countries.countryUpdate',
-  'get /admin/getStateData': 'Countries.getStates',
-  'put /admin/stateActivate': 'Countries.stateActivate',
-  'put /admin/stateUpdate': 'Countries.stateUpdate',
+  'get /admin/dashboard/get-data': 'Dashboard.getAllCounts',
+  'get /admin/get-countries-data': 'Countries.getCountries',
+  'put /admin/country-activate': 'Countries.countryActivate',
+  'put /admin/country-update': 'Countries.countryUpdate',
+  'get /admin/get-state-data': 'Countries.getStates',
+  'put /admin/state-activate': 'Countries.stateActivate',
+  'put /admin/state-update': 'Countries.stateUpdate',
 
   // 'post /admin/insertCountries': 'Countries.insertCountries', 'post
   // /admin/insertState': 'Countries.insertState', Blogs routes
-  'get /admin/all-blogs': 'BlogsController.getAllBlogs',
-  'post /admin/create-blog': 'BlogsController.createBlog',
-  'put /admin/edit-blog': 'BlogsController.updateBlog',
-  'delete /admin/delete-blog': 'BlogsController.deleteBlog',
-  'post /admin/set-featured-blog': 'BlogsController.setFeaturedBlog',
 
   //Fees routes
   'get /admin/all-pairs': 'PairsController.getAllPairs',
@@ -163,20 +156,20 @@ module.exports.routes = {
   'post /users/verify-user': "AuthController.verifyUser",
   'post /users/verify-new-ip': "AuthController.verifyNewIp",
   'post /users/send-verification-email': "AuthController.sendVerificationCodeEmail",
-  'post /users/forgotPassword': "AuthController.forgotPassword",
-  'put /users/resetPassword': "AuthController.resetPassword",
-  'post /users/changePassword': "Users.changePassword",
-  'get /users/getUserDetails': "Users.getUserDetails",
-  'get /users/referredUsers': 'Users.getReferred',
+  'post /users/forgotPassword': "AuthController.forgotPassword", //1
+  'put /users/resetPassword': "AuthController.resetPassword", //2
+  'post /users/changePassword': "Users.changePassword", //3
+  'get /users/getUserDetails': "Users.getUserDetails", //4
+  'get /users/referredUsers': 'Users.getReferred', //5
   'get /users/countries': 'Users.getCountriesData',
-  'get /users/getMapCountries': 'Users.getCountries',
+  'get /users/getMapCountries': 'Users.getCountries', //6
   'get /users/login-history': 'Users.getLoginHistory',
   'post /users/setup-two-factor': 'Users.setupTwoFactor',
   'post /users/verify-two-factor': 'Users.verifyTwoFactor',
   'post /users/disable-two-factor': 'Users.disableTwoFactor',
   'post /users/send-otp-email': 'Auth.sendOtpEmail',
   'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
-  'delete /users/deleteAccount': 'Users.deleteUser',
+  'delete /users/deleteAccount': 'Users.deleteUser', //7
   'post /users/update-email': 'Users.updateEmail',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
@@ -297,8 +290,6 @@ module.exports.routes = {
   'get /type2coin/gettransactionlist/:coin_code': 'Type2CoinController.getTransactionList',
   'post /type2coin/sendcoin': 'Type2CoinController.sendCoin',
   'get /type2coin/listaddreses/:coin_code': 'Type2CoinController.listAddresses',
-  'get /call-helper': 'RootController.callKrakenAPI',
-
   'get /call-helper': 'RootController.callKrakenAPI',
 
   //Kraken API
