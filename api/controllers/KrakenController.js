@@ -202,7 +202,7 @@ module.exports = {
       includeFees
     } = req.allParams();
     let userId = req.user.id;
-    let pairDetails = await pairDetails.findOne({
+    let pairDetails = await Pairs.findOne({
       name: pair,
       deleted_at: null,
       is_active: true
@@ -224,32 +224,42 @@ module.exports = {
         .helpers
         .utilities
         .getCurrencies(pair);
-      let wallet = await sails
-        .helpers
-        .utilities
-        .getWalletBalance(crypto, currency, userId)
-        .intercept("coinNotFound", () => {
-          return new Error("coinNotFound");
-        })
-        .intercept("serverError", () => {
-          return new Error("serverError")
-        });
+      let wallet = null;
+      if (type == "buy") {
+        wallet = await sails
+          .helpers
+          .utilities
+          .getWalletBalance(crypto, currency, userId)
+          .tolerate("coinNotFound", () => {
+            throw new Error("coinNotFound");
+          })
+          .tolerate("serverError", () => {
+            throw new Error("serverError")
+          });
+      } else if (type == "sell") {
+        wallet = await sails
+          .helpers
+          .utilities
+          .getWalletBalance(currency, crypto, userId)
+          .tolerate("coinNotFound", () => {
+            throw new Error("coinNotFound");
+          })
+          .tolerate("serverError", () => {
+            throw new Error("serverError")
+          });
+      }
       if (currencyAmount <= wallet.placed_balance) {
-        let coinDetails = await Coins.findOne({ id: pairDetails.coin_code2 });
-        // Transfer Fund from user wallet to kraken
-        var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-        var bitgoWallet = await bitgo
-          .coin(pairDetails.coin_code2)
-          .wallets()
-          .get({ id: coinDetails.wallet_address });
-        let params = {
-          amount: amount * 1e8,
-          address: destination_address,
-          walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-        };
-        bitgoWallet
-          .send(params)
-          .then(async function (transaction) { });
+        var addedData = await sails
+          .helpers
+          .kraken
+          .addStandardOrder(pairDetails.kraken_pair, type, "market", volume).tolerate("orderError", () => {
+            throw new Error("orderError");
+          });
+        console.log("addedData-----", addedData);
+        // if (addedData && addedData.error) {
+
+        // }
+
       } else {
         console.log("insufficient funds");
       }
