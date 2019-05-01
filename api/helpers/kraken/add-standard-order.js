@@ -36,6 +36,9 @@ module.exports = {
 
     success: {
       description: 'All done.'
+    },
+    orderError: {
+      description: "Order Execution Failed"
     }
   },
 
@@ -86,6 +89,8 @@ module.exports = {
       timeout: 5000
     };
     try {
+      console.log("-------------", inputs.pair);
+
       status = await kraken.api('AddOrder', {
         pair: inputs.pair,
         type: inputs.type,
@@ -93,15 +98,16 @@ module.exports = {
         volume: inputs.volume,
         validate: true
       });
-      console.log(status['result'])
-      console.log(status['txid'])
+      // console.log(status['result'])
+      // console.log(status['txid'])
 
 
 
       return exits.success(status);
     } catch (err) {
-      console.log(err);
-      return exits.success(err);
+      // console.log("=------------", err);
+      // return exits.success(err);
+      return exits.orderError();
     }
   }
 
