@@ -100,11 +100,11 @@ module.exports = {
     //   columnName: 'state_id',
     //   allowNull: true
     // },
-    zip: {
-      type: 'number',
-      columnName: 'zip',
-      allowNull: true
-    },
+    // zip: {
+    //   type: 'number',
+    //   columnName: 'zip',
+    //   allowNull: true
+    // },
     referred_id: {
       type: 'number',
       columnName: 'referred_id',

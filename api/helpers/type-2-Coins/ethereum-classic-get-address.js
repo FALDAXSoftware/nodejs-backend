@@ -1,6 +1,6 @@
 var Tx = require('ethereumjs-tx');
-var Web3 = require('web3');
-var Accounts = require('web3-eth-accounts');
+//var Web3 = require('web3');
+//var Accounts = require('web3-eth-accounts');
 module.exports = {
 
   friendlyName: 'Ethereum classic get address',
