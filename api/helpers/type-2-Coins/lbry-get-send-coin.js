@@ -1,13 +1,14 @@
+var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Send funds',
+  friendlyName: 'Lbry get send coin',
 
   description: '',
 
   inputs: {
     coin_code: {
       type: 'string',
-      example: 'BTC',
+      example: 'ETC',
       description: 'coin code of coin',
       required: true
     },
@@ -27,7 +28,7 @@ module.exports = {
       type: 'string',
       example: 'donation',
       description: 'Reason for sending coin',
-      required: true
+      required: false
     }
   },
 
@@ -38,41 +39,37 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
-    //Send Coin Method
-    var sendedFundStatus;
+    var newAddress;
 
-    //Encode rpcuser and rpcpasword for authorization
-    var encodeData = await sails
-      .helpers
-      .type2Coins
-      .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
-    
-    //Body Data for sending funds
+    // Get new address.
     var bodyData = {
       'jsonrpc': '2.0',
-      'id': '0',
-      'method': 'sendtoaddress',
-      'params': '[' + inputs.address + ',' + inputs.amount + ',' + inputs.message + ']'
+      'id': '1',
+      'method': 'wallet_send',
+      "params": {
+        "amount": parseFloat(inputs.amount),
+        "address": inputs.address
+      }
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: JSON.stringify(bodyData),
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + encodeData
+            'Content-Type': 'application/json'
           }
         })
         .then(resData => resData.json())
         .then(resData => {
-          sendedFundStatus = resData;
+          console.log(resData);
+          newAddress = resData.result;
         })
       // TODO Send back the result through the success exit.
-      return exits.success(sendedFundStatus);
+      return exits.success(newAddress);
     } catch (err) {
-      console.log(err);
+      console.log("Address Generation error :: ", err);
     }
   }
 

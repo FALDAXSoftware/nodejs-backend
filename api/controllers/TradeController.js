@@ -149,7 +149,7 @@ module.exports = {
           .tradding
           .limitSell(symbol, user_id, side, order_type, orderQuantity, limit_price);
         console.log(response);
-        if (response.side == "Sell" && response.is_partially_fulfilled == true && response.added == false) {
+        if (response.side == "Sell" && response.is_partially_fulfilled == true && response.added == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order added Success")

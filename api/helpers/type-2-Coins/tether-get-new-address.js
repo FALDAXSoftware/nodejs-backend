@@ -1,6 +1,7 @@
+var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get transaction list',
+  friendlyName: 'Tether get new address',
 
   description: '',
 
@@ -16,26 +17,20 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'Transaction list'
+      description: 'All done.'
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
-    //list Transactions
-    var listTransactions;
-
-    //Encode rpcuser and rpcpasword for authorization
+    var newAddress;
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
-    
-    // Body Data for getting transaction
+    // Get new address.
     var bodyData = {
-      'jsonrpc': '2.0',
-      'id': '0',
-      'method': 'listtransactions'
+      "method": "getnewaddress"
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
@@ -48,14 +43,14 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          listTransactions = resData;
+          console.log(resData);
+          newAddress = resData.result;
         })
-      // TODO Send back the result through the success exit.
-      return exits.success(listTransactions);
-    } catch (err) {
-      console.log(err);
-    }
 
+      return exits.success(newAddress);
+    } catch (err) {
+      console.log("Get Info error :: ", err);
+    }
   }
 
 };

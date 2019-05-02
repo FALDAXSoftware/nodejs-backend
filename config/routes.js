@@ -290,6 +290,9 @@ module.exports.routes = {
   'get /type2coin/gettransactionlist/:coin_code': 'Type2CoinController.getTransactionList',
   'post /type2coin/sendcoin': 'Type2CoinController.sendCoin',
   'get /type2coin/listaddreses/:coin_code': 'Type2CoinController.listAddresses',
+  'post /type2coin/getwalletbalance': 'Type2CoinController.getAddressBalance',
+  'get /call-helper': 'RootController.callKrakenAPI',
+
   'get /call-helper': 'RootController.callKrakenAPI',
 
   //Kraken API
