@@ -51,6 +51,8 @@ module.exports = {
           created_at: new Date(),
           referred_id: referred_id,
           device_type: req.body.device_type,
+          account_tier: 1,
+          account_class: 3,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2)
             ? email_verify_code
             : email_verify_token
@@ -293,6 +295,8 @@ module.exports = {
   },
 
   update: async function (req, res) {
+    console.log("user object----", req.body);
+
     try {
       const user_details = await Users.findOne({ id: req.user.id });
       if (!user_details) {
@@ -636,17 +640,17 @@ module.exports = {
   },
 
   updateUserDetails: async function (req, res) {
-    let { user_id, email, referal_percentage } = req.body;
-
+    let { user_id, email, percentage } = req.allParams();
+    var updateUserData;
     if (user_id && email) {
-      var updateUserData = await Users
+      updateUserData = await Users
         .update({ id: user_id })
-        .set({ email: email, referal_percentage: referal_percentage })
+        .set({ email: email, referal_percentage: percentage })
         .fetch();
     } else {
       updateUserData = await AdminSetting
         .update({ slug: 'default_referral_percentage' })
-        .set({ value: referal_percentage })
+        .set({ value: percentage })
         .fetch();
     }
 

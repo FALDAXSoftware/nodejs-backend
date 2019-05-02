@@ -129,6 +129,11 @@ module.exports = {
       columnName: 'news',
       defaultsTo: false,
     },
+    add_user: {
+      type: "boolean",
+      columnName: 'add_user',
+      defaultsTo: false,
+    },
     is_referral: {
       type: "boolean",
       columnName: 'is_referral',
