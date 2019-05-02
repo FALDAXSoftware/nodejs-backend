@@ -22,12 +22,16 @@ module.exports = {
 
   fn: async function (inputs) {
 
+    //list Transactions
     var listTransactions;
+
+    //Encode rpcuser and rpcpasword for authorization
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
-    // Get new address.
+    
+    // Body Data for getting transaction
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '0',

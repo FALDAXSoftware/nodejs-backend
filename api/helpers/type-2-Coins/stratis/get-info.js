@@ -1,7 +1,7 @@
 var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get new address',
+  friendlyName: 'Get Info for coin',
 
   description: '',
 
@@ -23,12 +23,16 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    //Getting info for the coin
     var newAddress;
+
+    //Encode rpcuser and rpcpasword for authorization
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
-    // Get new address.
+    
+    //Body Data
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '0',
@@ -45,7 +49,6 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
           newAddress = resData.result;
         })
       // TODO Send back the result through the success exit.
