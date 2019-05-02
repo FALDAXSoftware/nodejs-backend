@@ -26,6 +26,8 @@ module.exports = {
     try {
       var batch = [];
       var userAddress;
+
+      //Blackcoin npm package connection
       var client = new blackcoin.Client({
         host: sails.config.local.coinArray[inputs.coin_code].url,
         port: 80,
@@ -34,16 +36,14 @@ module.exports = {
         timeout: 30000
       });
 
+      //Get New address method and parameters for unique identification
       batch.push({method: 'getnewaddress', params: ['myaccount']});
 
       await client.cmd(batch, function (err, address) {
         if (err) 
           return console.log(err);
-        console.log('Address:', address);
         return exits.success(address);
-        // userAddress = address;
       });
-      // console.log("Outside Address :: ", userAddress);
     } catch (err) {
       console.log(err);
     }

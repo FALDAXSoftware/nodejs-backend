@@ -116,9 +116,30 @@ module.exports.local = {
     },
     'NEO': {
       'coin_name': 'neo',
-      // 'rpcuser': 'clamrpc', 'rpcpassword': 'secret',
       'url': 'http://dev-neo-currency.faldax.com',
       'type': 3
+    },
+    'ETC': {
+      'coin_name': 'ethereum classic',
+      'url': 'https://ethereumclassic.network',
+      'type': 4
+    },
+    'MIOTA': {
+      'coin_name': 'iota',
+      'url': 'http://dev-iota-currency.faldax.com',
+      'type': 5
+    },
+    'LBC': {
+      'coin_name': 'lbry credits',
+      'url': 'http://dev-lbry-currency.faldax.com/',
+      'type': 6
+    },
+    'USDT': {
+      'coin_name': 'Tether',
+      'rpcuser': 'omnirpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-tether-currency.faldax.com/',
+      'type': 7
     }
   },
   hubspot: {
