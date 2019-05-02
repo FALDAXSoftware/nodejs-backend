@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Tether get new address',
 
-  description: '',
+  description: 'Tether coin get new address',
 
   inputs: {
     coin_code: {
@@ -24,10 +24,13 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     var newAddress;
+
+    //Encoding username and password for providing it in header
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
+
     // Get new address.
     var bodyData = {
       "method": "getnewaddress"
@@ -43,7 +46,6 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
           newAddress = resData.result;
         })
 

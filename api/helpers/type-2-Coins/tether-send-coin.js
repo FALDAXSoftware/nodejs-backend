@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Tether send coin',
 
-  description: '',
+  description: 'Tether coin send fund to another address',
 
   inputs: {
     coin_code: {
@@ -42,13 +42,17 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     var newAddress;
+
+    //Encoding username and password for providing it in header
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
+
     // Get new address. Fetch first paramater from database i.e. from address
     var property_id = 1;
-    console.log(inputs.address, property_id, inputs.amount);
+
+    //Body Data for sending omni coin
     var bodyData = {
       "method": "omni_send",
       "params": [
@@ -66,7 +70,6 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
           newAddress = resData;
         })
 

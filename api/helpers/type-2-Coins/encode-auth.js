@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Encode auth',
 
-  description: '',
+  description: 'For encoding username and password and providing in header',
 
   inputs: {
     coinuser: {
@@ -28,9 +28,11 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    // TODO
     try {
-      var rpccall = inputs.coinuser + ':' + inputs.coinpassword
+
+      var rpccall = inputs.coinuser + ':' + inputs.coinpassword;
+
+      //Base 64 conversion of username and password
       var encodedData = base64.encode(rpccall);
       return exits.success(encodedData);
     } catch (err) {
