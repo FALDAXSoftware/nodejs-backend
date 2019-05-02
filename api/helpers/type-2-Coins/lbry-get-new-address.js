@@ -1,7 +1,7 @@
 var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get new address',
+  friendlyName: 'Lbry get new address',
 
   description: '',
 
@@ -17,43 +17,37 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'New address'
+      description: 'All done.'
     }
   },
 
   fn: async function (inputs, exits) {
-
     var newAddress;
-    var encodeData = await sails
-      .helpers
-      .type2Coins
-      .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
+
     // Get new address.
     var bodyData = {
       'jsonrpc': '2.0',
-      'id': '0',
-      'method': 'getinfo'
+      'id': '1',
+      'method': 'wallet_new_address',
+      "params": []
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: JSON.stringify(bodyData),
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + encodeData
+            'Content-Type': 'application/json'
           }
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
           newAddress = resData.result;
         })
       // TODO Send back the result through the success exit.
       return exits.success(newAddress);
     } catch (err) {
-      console.log("Get Info error :: ", err);
+      console.log("Address Generation error :: ", err);
     }
-
   }
 
 };

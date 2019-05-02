@@ -1,46 +1,64 @@
 var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get new address',
+  friendlyName: 'Lbry get send coin',
 
   description: '',
 
   inputs: {
     coin_code: {
       type: 'string',
-      example: 'BTC',
+      example: 'ETC',
       description: 'coin code of coin',
       required: true
+    },
+    address: {
+      type: 'string',
+      example: 'VvKJ28dvb1Y2NpRNQz7kSvkoNbS4VQ32hb',
+      description: 'Address to which it needs to be send',
+      required: true
+    },
+    amount: {
+      type: 'number',
+      example: 0.1,
+      description: 'amount of coin',
+      required: true
+    },
+    message: {
+      type: 'string',
+      example: 'donation',
+      description: 'Reason for sending coin',
+      required: false
     }
   },
 
   exits: {
 
     success: {
-      outputFriendlyName: 'New address'
+      description: 'All done.'
     }
   },
 
   fn: async function (inputs, exits) {
 
     var newAddress;
-    var encodeData = await sails
-      .helpers
-      .type2Coins
-      .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
+
     // Get new address.
     var bodyData = {
       'jsonrpc': '2.0',
-      'id': '0',
-      'method': 'getinfo'
+      'id': '1',
+      'method': 'wallet_send',
+      "params": {
+        "amount": parseFloat(inputs.amount),
+        "address": inputs.address
+      }
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
         method: 'POST',
         body: JSON.stringify(bodyData),
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + encodeData
+            'Content-Type': 'application/json'
           }
         })
         .then(resData => resData.json())
@@ -51,9 +69,8 @@ module.exports = {
       // TODO Send back the result through the success exit.
       return exits.success(newAddress);
     } catch (err) {
-      console.log("Get Info error :: ", err);
+      console.log("Address Generation error :: ", err);
     }
-
   }
 
 };

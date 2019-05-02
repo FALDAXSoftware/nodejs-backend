@@ -1,7 +1,7 @@
 var fetch = require('node-fetch')
 module.exports = {
 
-  friendlyName: 'Get new address',
+  friendlyName: 'Tether get new address',
 
   description: '',
 
@@ -17,7 +17,7 @@ module.exports = {
   exits: {
 
     success: {
-      outputFriendlyName: 'New address'
+      description: 'All done.'
     }
   },
 
@@ -30,9 +30,7 @@ module.exports = {
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
     // Get new address.
     var bodyData = {
-      'jsonrpc': '2.0',
-      'id': '0',
-      'method': 'getinfo'
+      "method": "getnewaddress"
     }
     try {
       await fetch(sails.config.local.coinArray[inputs.coin_code].url, {
@@ -48,12 +46,11 @@ module.exports = {
           console.log(resData);
           newAddress = resData.result;
         })
-      // TODO Send back the result through the success exit.
+
       return exits.success(newAddress);
     } catch (err) {
       console.log("Get Info error :: ", err);
     }
-
   }
 
 };

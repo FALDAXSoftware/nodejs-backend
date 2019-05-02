@@ -23,6 +23,16 @@ module.exports = {
           .helpers
           .type2Coins
           .blackcoinGetInfo(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 5) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .iotaGetInfo(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 7) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .tetherGetInfo(coin_code);
       }
 
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
@@ -53,6 +63,26 @@ module.exports = {
           .helpers
           .type2Coins
           .neoGetNewAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 4) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .ethereumClassicGetAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 5) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .iotaGetNewAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 6) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .lbryGetNewAddress(coin_code);
+      } else if (sails.config.local.coinArray[coin_code].type == 7) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .tetherGetNewAddress(coin_code);
       }
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
@@ -103,6 +133,21 @@ module.exports = {
           .helpers
           .type2Coins
           .neoSendCoin(coin_code, to_address, amount, message);
+      } else if (sails.config.local.coinArray[coin_code].type == 4) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .ethereumClassicSendFunds(coin_code, to_address, amount, message);
+      } else if (sails.config.local.coinArray[coin_code].type == 6) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .lbryGetSendCoin(coin_code, to_address, amount, message);
+      } else if (sails.config.local.coinArray[coin_code].type == 7) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .tetherSendCoin(coin_code, to_address, amount, message);
       }
 
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
@@ -123,6 +168,28 @@ module.exports = {
           .neoListAddress(coin_code);
       }
 
+      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
+  //Get user Address balance
+  getAddressBalance: async function (req, res) {
+    try {
+      var {coin_code, address} = req.body;
+      var getInfo;
+      if (sails.config.local.coinArray[coin_code].type == 6) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .lbryGetWalletBalance(coin_code, address);
+      } else if (sails.config.local.coinArray[coin_code].type == 7) {
+        getInfo = await sails
+          .helpers
+          .type2Coins
+          .tetherGetWalletBalance(coin_code, address);
+      }
       return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
     } catch (err) {
       console.log(err);
