@@ -136,6 +136,7 @@ module.exports.routes = {
 
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
+  'get /admin/get-contact-details': 'RootController.getContactInfo',
 
   // KYC Routes
   'get /admin/get-all-kyc-data': 'KYCController.getAllKYCData',
@@ -207,7 +208,7 @@ module.exports.routes = {
   'get /users/static-page-json/:page': 'Statics.getStaticPageJson',
 
   // Contact Routes
-  'get /admin/get-contact-details': 'RootController.getContactInfo',
+  'get /get-contact-details': 'RootController.getContactInfo',
 
   //Coin Request routes
   'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest',

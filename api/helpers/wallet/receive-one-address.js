@@ -34,8 +34,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-
-    const coinData = await Coins.find({ deleted_at: null, is_active: true, coin_name: inputs.coin });
+    const coinData = await Coins.findOne({ deleted_at: null, is_active: true, coin: inputs.coin });
+    // console.log("Coin Data", coinData);
     bitgo
       .coin(coinData.coin_code)
       .wallets()
@@ -51,18 +51,15 @@ module.exports = {
           }, async function callback(err, address) {
             let obj = {
               walled_id: coinData.wallet_address,
-              coin_id: coinData.coin_code,
+              coin_id: coinData.id,
               recieve_address: address.address,
-              user_id: user.id,
+              user_id: inputs.user.id,
               balance: 0.0
             }
-            var create = await Wallet
-              .query()
-              .insert(obj);
-            resolve({ wallet: "Wallet created" });
+            var create = await Wallet.create(obj);
+            // resolve({ wallet: "Wallet created" });
+            exits.success();
           });
-
-        // exits.success();
       });
   }
 
