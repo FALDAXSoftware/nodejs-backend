@@ -614,6 +614,7 @@ module.exports = {
             "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
+
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend'
