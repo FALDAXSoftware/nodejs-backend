@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Iota get Info',
 
-  description: '',
+  description: 'Iota coin node information',
 
   inputs: {
     coin_code: {
@@ -23,8 +23,9 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var newAddress;
-    // Get new address.
+    var getInfo;
+
+    //Get node info
     var bodyData = {
       "command": "getNodeInfo"
     }
@@ -39,11 +40,10 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
-          newAddress = resData;
+          getInfo = resData;
         })
 
-      return exits.success(newAddress);
+      return exits.success(getInfo);
     } catch (err) {
       console.log("Get Info error :: ", err);
     }

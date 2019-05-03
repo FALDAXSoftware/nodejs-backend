@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Tether get wallet balance',
 
-  description: '',
+  description: 'Tether coin get wallet balance',
 
   inputs: {
     coin_code: {
@@ -29,13 +29,17 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var newAddress;
+    var sendFundResult;
+
+    //Encoding username and password for providing it in header
     var encodeData = await sails
       .helpers
       .type2Coins
       .encodeAuth(sails.config.local.coinArray[inputs.coin_code].rpcuser, sails.config.local.coinArray[inputs.coin_code].rpcpassword)
-    // Get new address.
+    
     var property_id = 1;
+    
+    //Get user wallet balance
     var bodyData = {
       "method": "omni_getbalance",
       "params": [inputs.address, property_id]
@@ -51,11 +55,10 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData.result);
-          newAddress = resData.result;
+          sendFundResult = resData.result;
         })
       // TODO Send back the result through the success exit.
-      return exits.success(newAddress);
+      return exits.success(sendFundResult);
     } catch (err) {
       console.log("Address Generation error :: ", err);
     }

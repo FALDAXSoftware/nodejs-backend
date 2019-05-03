@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Lbry get new address',
 
-  description: '',
+  description: 'LBRY Credits getting coin address',
 
   inputs: {
     coin_code: {
@@ -43,7 +43,6 @@ module.exports = {
         .then(resData => {
           newAddress = resData.result;
         })
-      // TODO Send back the result through the success exit.
       return exits.success(newAddress);
     } catch (err) {
       console.log("Address Generation error :: ", err);

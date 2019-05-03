@@ -5,7 +5,7 @@ module.exports = {
 
   friendlyName: 'Ethereum classic send funds',
 
-  description: '',
+  description: 'Ethereum Classic method for sending funds',
 
   inputs: {
     coin_code: {
@@ -45,29 +45,32 @@ module.exports = {
 
     try {
       var accounts = null;
-      // var web3 = null;
-      // var tokenContract = null;
-      // var gasPriceGwei = 41;
-      // var gasLimit = 52000;
-      // web3 = new Web3(new Web3.providers.HttpProvider(sails.config.local.coinArray[inputs.coin_code].url));
-      // // Fetching from address from database Converting amount of tokens in big number
-      // var tokens = web3
-      //   .utils
-      //   .toWei(inputs.amount.toString(), 'ether')
+      var web3 = null;
+      //Gas price value
+      var gasPriceGwei = 41;
 
-      // console.log(tokens);
+      //Maximum gas amount to be paid
+      var gasLimit = 52000;
 
-      // web3
-      //   .eth
-      //   .sendTransaction({ from: '0xFC8D2a662AEc4C2115506e19aE25473dCdc2fBa3', to: inputs.address, value: tokens })
-      //   .on('transactionHash', function (hash) {
-      //     console.log(hash)
-      //     return exits.success(hash);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //     return exits.success(err);
-      //   })
+      //Providing the web3 providers for ethereum classic
+      web3 = new Web3(new Web3.providers.HttpProvider(sails.config.local.coinArray[inputs.coin_code].url));
+
+      // Fetching from address from database Converting amount of tokens in big number
+      var tokens = web3
+        .utils
+        .toWei(inputs.amount.toString(), 'ether')
+
+      //Ethereum classic method for sending funds
+      web3
+        .eth
+        .sendTransaction({from: '0xFC8D2a662AEc4C2115506e19aE25473dCdc2fBa3', to: inputs.address, value: tokens})
+        .on('transactionHash', function (hash) {
+          return exits.success(hash);
+        })
+        .catch(err => {
+          console.log(err);
+          return exits.success(err);
+        })
 
     } catch (err) {
       console.log(err);

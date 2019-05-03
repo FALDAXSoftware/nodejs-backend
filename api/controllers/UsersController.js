@@ -614,6 +614,7 @@ module.exports = {
             "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
+
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend'
@@ -862,6 +863,56 @@ module.exports = {
         }
       }
     } catch (err) {
+      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+    }
+  },
+
+
+  addUser: async function (req, res) {
+    // console.log(req.allParams());
+    // return res.json({
+    //   status: 200,
+    //   message: "user created successfully"
+    // });
+    try {
+      let { create_hubspot_contact, generate_wallet_coins, kyc_done, ...user } = req.allParams();
+      let hubspotcontact = null
+      if (create_hubspot_contact == true) {
+        hubspotcontact = await sails
+          .helpers
+          .hubspot
+          .contacts
+          .create(user.first_name, user.last_name, user.email)
+          .tolerate("serverError", () => {
+            throw new Error("serverError");
+          });
+      }
+      let generatedUser = await User.create({
+        ...user,
+        hubspot_id: hubspotcontact,
+        is_active: true,
+        is_verified: true,
+        password: randomize('Aa0', 60)
+      }).fetch();
+      if (kyc_done == true) {
+        await KYC.create({
+          first_name: user.first_name,
+          last_name: user.last_name,
+          steps: 3,
+          status: true,
+          direct_response: "ACCEPT",
+          webhook_response: "ACCEPT",
+          user_id: generatedUser.id
+        });
+      }
+      if (generate_wallet_coins.length > 0) {
+        // create recive address
+      }
+      return res.json({
+        status: 200,
+        message: "user created successfully"
+      });
+    } catch (error) {
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   }

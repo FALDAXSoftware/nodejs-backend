@@ -43,6 +43,8 @@ module.exports = {
     try {
       var batch = [];
       var userAddress;
+      
+      //Blackcoin npm package connection
       var client = new blackcoin.Client({
         host: sails.config.local.coinArray[inputs.coin_code].url,
         port: 80,
@@ -51,6 +53,7 @@ module.exports = {
         timeout: 30000
       });
 
+      //Blackcoin for sending funds
       batch.push({
         method: 'sendtoaddress',
         params: [inputs.address, inputs.amount]
