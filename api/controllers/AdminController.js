@@ -409,6 +409,7 @@ module.exports = {
                 return res.status(400).json({ 'status': '400', 'err': 'Employee id is not sent.' })
             }
         } catch (error) {
+            console.log(error)
             return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
         }
     },
