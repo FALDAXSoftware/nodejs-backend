@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Neo send coin',
 
-  description: '',
+  description: 'Neo Coin sending funds to other address',
 
   inputs: {
     coin_code: {

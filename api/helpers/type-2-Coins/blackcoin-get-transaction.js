@@ -31,6 +31,8 @@ module.exports = {
     try {
       var batch = [];
       var userAddress;
+
+      //Blackcoin npm package connection
       var client = new blackcoin.Client({
         host: sails.config.local.coinArray[inputs.coin_code].url,
         port: 80,
@@ -39,6 +41,7 @@ module.exports = {
         timeout: 30000
       });
 
+      //Get Transaction for provided hash
       batch.push({
         method: 'gettransaction',
         params: [inputs.transaction_id]

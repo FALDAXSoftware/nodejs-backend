@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Neo list address',
 
-  description: '',
+  description: 'Neo Coin listing addresses generated',
 
   inputs: {
     coin_code: {
@@ -25,7 +25,7 @@ module.exports = {
 
     var listaddress;
 
-    // Get new address.
+    // Get list of address generated
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '1',

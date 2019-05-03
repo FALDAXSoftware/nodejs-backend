@@ -25,10 +25,16 @@ module.exports = {
 
     try {
       var newAddress;
+
+      //Providing IOTA provider with our node
       const iotaApi = new IOTA({provider: 'http://dev-iota-currency.faldax.com'});
       const iota = iotaApi.api;
+
+      //Seed value of 81 bytes
       var seed = 'WXVRGJANDRDWTVTWOTCWGH9ZTBDFRHXJLH9MYDHEHFOPUMMHRGJHVGEAUQTRCFTNIPSPJARARGCJAX9U' +
-          'X'
+          'X';
+
+      //IOTA method for getting new address
       iota.getNewAddress(seed, {
         index: 0,
         total: 1,
@@ -39,7 +45,6 @@ module.exports = {
         if (error) {
           console.info('error', error); // eslint-disable-line
         } else {
-          console.log("address", address);
           newAddress = address;
           return exits.success(address);
         }

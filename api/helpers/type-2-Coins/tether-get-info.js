@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Tether get info',
 
-  description: '',
+  description: 'Tether coin get information',
 
   inputs: {
     coin_code: {
@@ -23,7 +23,9 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var newAddress;
+    var getInfo;
+
+    //Encoding username and password and providing it in header
     var encodeData = await sails
       .helpers
       .type2Coins
@@ -43,11 +45,10 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData);
-          newAddress = resData;
+          getInfo = resData;
         })
 
-      return exits.success(newAddress);
+      return exits.success(getInfo);
     } catch (err) {
       console.log("Get Info error :: ", err);
     }

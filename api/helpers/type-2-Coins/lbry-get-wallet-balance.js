@@ -3,7 +3,7 @@ module.exports = {
 
   friendlyName: 'Lbry get wallet balance',
 
-  description: '',
+  description: 'LBRY Credits getting user wallet balance',
 
   inputs: {
     coin_code: {
@@ -29,9 +29,9 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var newAddress;
+    var userWalletBalance;
 
-    // Get new address.
+    // Getting user address balance
     var bodyData = {
       'jsonrpc': '2.0',
       'id': '1',
@@ -50,11 +50,10 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log(resData.result);
-          newAddress = resData.result;
+          userWalletBalance = resData.result;
         })
       // TODO Send back the result through the success exit.
-      return exits.success(newAddress);
+      return exits.success(userWalletBalance);
     } catch (err) {
       console.log("Address Generation error :: ", err);
     }
