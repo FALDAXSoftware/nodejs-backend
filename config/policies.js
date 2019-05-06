@@ -19,7 +19,7 @@ module.exports.policies = {
 
   // '*': true,
   '*': [
-    "checkReCaptcha", 'isAuthorized', 'isAdmin'
+    'isAuthorized', 'isAdmin'
   ], // Everything resctricted here
   'UsersController': {
     'create': true,

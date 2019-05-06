@@ -882,8 +882,8 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
-      let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
-      query += " WHERE users.is_verified='true' ";
+      let query = " from users LEFT JOIN referral ON users.id=referral.user_id LEFT JOIN users as referral_owner ON users.referred_id = referral_owner.id";
+      query += " WHERE users.is_verified='true'";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
       }
@@ -904,7 +904,7 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name, referral_owner.email as referral_by_email" + query, [])
 
       usersData = usersData.rows;
 
@@ -915,6 +915,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
+
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
