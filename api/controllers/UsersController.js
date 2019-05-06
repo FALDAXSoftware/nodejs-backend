@@ -14,6 +14,16 @@ var QRCode = require('qrcode');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
+
+  /**
+    * API for creating user
+    * Renders this api when user needs to be created
+    *
+    * @param <email , password, firstname, lastname>
+    *
+    * @return <Coin node Info or error data>
+   */
+
   create: async function (req, res) {
     try {
       var referred_id = null;
@@ -89,7 +99,9 @@ module.exports = {
                 }
               })
         } else {
-          return res.status(401).json({ status: 401, "err": "Something went wrong" });
+          return res
+            .status(401)
+            .json({ status: 401, "err": "Something went wrong" });
         }
       } else {
         res
@@ -98,25 +110,45 @@ module.exports = {
         return;
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
+  /**
+    * API for updating use email id
+    * Renders this api when user needs to be update email
+    *
+    * @param <new email , old email>
+    *
+    * @return <Coin node Info or error data>
+   */
+
   updateEmail: async function (req, res) {
     try {
-      let newEmail = req.body.newEmail.toLowerCase();
+      let newEmail = req
+        .body
+        .newEmail
+        .toLowerCase();
       var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
       var existedEmail = await Users.find({ email: newEmail });
 
       if (existedEmail && existedEmail.length > 0) {
-        return res.status(401).json({ status: 401, "err": 'This Email is already registered with us.' });
+        return res
+          .status(401)
+          .json({ status: 401, "err": 'This Email is already registered with us.' });
       }
 
       let new_email_token = randomize('0', 6);
 
       var user = await Users
         .update({ id: req.user.id, deleted_at: null })
-        .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token }).fetch();
+        .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token })
+        .fetch();
       if (user) {
         sails
           .hooks
@@ -131,17 +163,28 @@ module.exports = {
               subject: "New Email Confirmation"
             }, function (err) {
               if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": "Confirmation OTP has been sent to your current email successfully."
-                });
+                return res.json({ "status": 200, "message": "Confirmation OTP has been sent to your current email successfully." });
               }
             })
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+    * API for confirming new email
+    * Renders this api when user needs to confirm new email
+    *
+    * @param <new email token>
+    *
+    * @return <Coin node Info or error data>
+   */
 
   confirmNewEmail: async function (req, res) {
     try {
@@ -161,10 +204,8 @@ module.exports = {
 
           await Users
             .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
-            .set({
-              email: requested_email, new_email_token: null, email_verify_token: re_new_email_token,
-              requested_email: null, is_new_email_verified: false
-            }).fetch();
+            .set({ email: requested_email, new_email_token: null, email_verify_token: re_new_email_token, requested_email: null, is_new_email_verified: false })
+            .fetch();
 
           sails
             .hooks
@@ -180,21 +221,33 @@ module.exports = {
                 subject: "New Email Verification"
               }, function (err) {
                 if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": re_new_email_token,
-                    "message": "Email Verification link has been sent to your email successfully."
-                  });
+                  return res.json({ "status": 200, "new_email_token": re_new_email_token, "message": "Email Verification link has been sent to your email successfully." });
                 }
               })
         } else {
-          return res.status(400).json({ "status": 400, "err": 'Invalid OTP' });
+          return res
+            .status(400)
+            .json({ "status": 400, "err": 'Invalid OTP' });
         }
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+    * API for verifying the email
+    * Renders this api when user's email need to verified
+    *
+    * @param <email verify token>
+    *
+    * @return <Coin node Info or error data>
+   */
 
   verifyNewEmail: async function (req, res) {
     try {
@@ -226,9 +279,23 @@ module.exports = {
         }
       }
     } catch (error) {
-      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+   * API for getting particular users details
+   * Renders this api when user details needs to be fetched
+   *
+   * @param <email , password, firstname, lastname>
+   *
+   * @return <Coin node Info or error data>
+  */
 
   getAllUserDetails: async function (req, res) {
     let { user_id } = req.allParams();
@@ -243,7 +310,12 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users Data", "data": usersData });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -393,7 +465,12 @@ module.exports = {
           }
         });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -441,7 +518,12 @@ module.exports = {
           .json({ "status": 401, err: 'Something went wrong! Could not able to update the password' });
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -497,7 +579,12 @@ module.exports = {
         return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
       });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -530,7 +617,12 @@ module.exports = {
         .status(401)
         .json({ err: "Invalid OTP" });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -553,7 +645,12 @@ module.exports = {
         .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
       return res.json({ status: 200, message: "Two factor authentication has been disabled" });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -595,24 +692,42 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let { page, limit, data, sort_col, sort_order, country } = req.allParams();
+      let whereAppended = false;
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
+        whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(email) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
+        query += ")"
+      }
+
+      if (country && country != "") {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += "  country='" + country + "'";
       }
 
       countQuery = query;
@@ -624,7 +739,6 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let usersData = await sails.sendNativeQuery("Select *" + query, [])
 
       usersData = usersData.rows;
@@ -636,7 +750,12 @@ module.exports = {
         return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -675,7 +794,12 @@ module.exports = {
         return res.json({ "status": 200, "message": "Coin Fee has been updated successfully" });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -694,7 +818,12 @@ module.exports = {
         return res.json({ "status": 401, "message": "User(id) not found" });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -705,7 +834,12 @@ module.exports = {
         res.json({ status: 200, data: resData })
       })
       .catch(err => {
-        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
       })
   },
 
@@ -740,18 +874,21 @@ module.exports = {
 
   getUserReferredAdmin: async function (req, res) {
     try {
-      let { page, limit, data, user_id, sort_col, sort_order } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        user_id,
+        sort_col,
+        sort_order
+      } = req.allParams();
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
       query += " WHERE users.is_verified='true' ";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
           query += " OR referral.amount=" + data;
         }
@@ -760,7 +897,9 @@ module.exports = {
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
 
@@ -796,8 +935,12 @@ module.exports = {
       }
       if (start_date && end_date) {
         q['created_at'] = {
-          '>=': await sails.helpers.dateFormat(start_date) + " 00:00:00",
-          '<=': await sails.helpers.dateFormat(end_date) + " 23:59:59"
+          '>=': await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00",
+          '<=': await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59"
         };
       }
       if (data) {
@@ -863,17 +1006,18 @@ module.exports = {
         }
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
-
   addUser: async function (req, res) {
-    // console.log(req.allParams());
-    // return res.json({
-    //   status: 200,
-    //   message: "user created successfully"
-    // });
+    // console.log(req.allParams()); return res.json({   status: 200,   message:
+    // "user created successfully" });
     try {
       let { create_hubspot_contact, generate_wallet_coins, kyc_done, ...user } = req.allParams();
       let existedUser = await Users.findOne({
