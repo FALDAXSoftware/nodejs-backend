@@ -67,7 +67,7 @@ module.exports = {
           is_active: true,
           deleted_at: null
         },
-        select: ['id', 'coin_name', 'coin_code']
+        select: ['id', 'coin_name', 'coin_code', 'coin']
       });
 
       if (pairData) {

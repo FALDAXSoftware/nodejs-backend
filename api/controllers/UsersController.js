@@ -602,17 +602,30 @@ module.exports = {
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let { page, limit, data, sort_col, sort_order, country } = req.allParams();
+      let whereAppended = false;
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
+        whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(email) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
+        query += ")"
+      }
+
+      if (country && country != "") {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += "  country='" + country + "'";
       }
 
       countQuery = query;
@@ -624,7 +637,6 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let usersData = await sails.sendNativeQuery("Select *" + query, [])
 
       usersData = usersData.rows;
@@ -776,6 +788,7 @@ module.exports = {
         return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
       }
     } catch (err) {
+      console.log('>>err', err)
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
