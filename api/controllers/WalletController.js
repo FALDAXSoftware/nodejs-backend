@@ -7,6 +7,15 @@
 const BitGoJS = require('bitgo');
 
 module.exports = {
+
+  /**
+    * Get wallet coin Data
+    * Renders page for user when wallet screen is opened
+    *
+    * @param <currency>
+    *
+    * @return <Success message for successfully fetched data or error>
+   */
   getCoinBalanceForWallet: async function (req, res) {
     try {
       let {currency} = req.body;
@@ -120,6 +129,14 @@ module.exports = {
     }
   },
 
+  /**
+    * API for sending coin to another address
+    * Renders page for user wants to send coin
+    *
+    * @param <amount, destination_address, coin_code>
+    *
+    * @return <Success message for successfully send coin or error>
+   */
   sendCoin: async function (req, res) {
     try {
       let {amount, destination_address, coin_code} = req.allParams();
@@ -210,7 +227,14 @@ module.exports = {
     }
   },
 
-  //receive coin
+  /**
+    * API for getting receiving address
+    * Renders page for user wants to receive coin
+    *
+    * @param <coin>
+    *
+    * @return <Success message for successfully fetched coin address or error>
+   */
   getReceiveCoin: async function (req, res) {
     try {
       var {coin} = req.allParams();
@@ -231,6 +255,15 @@ module.exports = {
         });
     }
   },
+
+  /**
+    * API for getting wallet transaction history
+    * Renders page for user when wallet details page is fetched
+    *
+    * @param <coin name>
+    *
+    * @return <Success message for successfully fetched wallet history or error>
+   */
 
   getWalletTransactionHistory: async function (req, res) {
     try {

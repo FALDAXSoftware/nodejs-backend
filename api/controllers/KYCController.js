@@ -7,11 +7,21 @@
 var UploadFiles = require('../services/UploadFiles');
 
 module.exports = {
+
+  /**
+    * API for updating kyc information
+    * Renders this api when kyc info needs to be updated
+    *
+    * @param <kyc related all information>
+    *
+    * @return <KYC update success message or error data>
+   */
+
   updateKYCInfo: async function (req, res) {
     try {
       let user_id = req.user.id;
       req.body.user_id = user_id;
-      let kyc_details = await KYC.findOne({ user_id });
+      let kyc_details = await KYC.findOne({user_id});
       req.body.city = req.body.city_town;
 
       if (kyc_details) {
@@ -59,12 +69,12 @@ module.exports = {
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
           updated_kyc = await KYC
-            .update({ id: kyc_details.id })
+            .update({id: kyc_details.id})
             .set(req.body)
             .fetch();
         } else {
           updated_kyc = await KYC
-            .update({ id: kyc_details.id })
+            .update({id: kyc_details.id})
             .set(req.body)
             .fetch();
         }
@@ -110,19 +120,43 @@ module.exports = {
         }
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+    * API for uploading kyc documents
+    * Renders this api when kyc documents needs to be uploaded
+    *
+    * @param <frontimage and backimage>
+    *
+    * @return <document uploaded success message or error data>
+   */
 
   uploadKYCDoc: async function (req, res) {
     req
       .file('image')
       .upload(function (err, file) {
         if (err) {
-          return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") })
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Something Wrong")
+            })
         } else {
           if (file.length <= 0) {
-            return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
           }
           return res.json({
             'status': 200,
@@ -147,7 +181,7 @@ module.exports = {
           if (data.ednaScoreCard.er) {
             if (data.ednaScoreCard.er.reportedRule) {
               let updated = await KYC
-                .update({ mtid: data.mtid })
+                .update({mtid: data.mtid})
                 .set({
                   kycDoc_details: data.ednaScoreCard.er.reportedRule.details
                     ? data.ednaScoreCard.er.reportedRule.details
@@ -162,8 +196,8 @@ module.exports = {
       } catch (err) {
         if (data.mtid) {
           let updated = await KYC
-            .update({ mtid: data.mtid })
-            .set({ kycDoc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW' })
+            .update({mtid: data.mtid})
+            .set({kycDoc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW'})
             .fetch();
         }
       }
@@ -171,10 +205,19 @@ module.exports = {
     res.end();
   },
 
+  /**
+    * API for getting user kyc details
+    * Renders this api when user kyc data need to be egt
+    *
+    * @param <>
+    *
+    * @return <User KYC data or error data>
+   */
+
   getKYCDetails: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let KYCData = await KYC.findOne({ user_id });
+      let KYCData = await KYC.findOne({user_id});
       if (KYCData) {
         KYCData.city_town = KYCData.city;
         delete KYCData.city;
@@ -186,9 +229,9 @@ module.exports = {
 
       if (KYCData == undefined) {
         KYCData = [];
-        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
+        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
       } else if (KYCData) {
-        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
+        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
       } else {
         return res
           .status(500)
@@ -198,21 +241,23 @@ module.exports = {
           });
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getAllKYCData: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let {page, limit, data, sortCol, sortOrder} = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query += " LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%'";
+          query += " LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
 
@@ -242,27 +287,32 @@ module.exports = {
         });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   approveDisapproveKYC: async function (req, res) {
     try {
-      let { id, isApprove } = req.body;
-      let kyc_details = await KYC.findOne({ id });
+      let {id, isApprove} = req.body;
+      let kyc_details = await KYC.findOne({id});
 
       if (kyc_details) {
         if (isApprove == true) {
           let updated_kyc = await KYC
-            .update({ id: kyc_details.id })
-            .set({ direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date() })
+            .update({id: kyc_details.id})
+            .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date()})
             .fetch();
           if (updated_kyc) {
-            return res.json({ 'status': 200, 'message': 'KYC application approved' })
+            return res.json({'status': 200, 'message': 'KYC application approved'})
           }
         } else {
           let updated_kyc = await KYC
-            .update({ id: kyc_details.id })
+            .update({id: kyc_details.id})
             .set({
               isApprove: false,
               steps: 2,
@@ -274,26 +324,31 @@ module.exports = {
             })
             .fetch();
           if (updated_kyc) {
-            return res.json({ 'status': 200, 'message': 'KYC application rejected' })
+            return res.json({'status': 200, 'message': 'KYC application rejected'})
           }
         }
       } else {
         return res
           .status(500)
-          .json({ status: 500, "err": "Details Not Found" });
+          .json({status: 500, "err": "Details Not Found"});
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getUserKYCDetails: async function (req, res) {
     try {
-      let { user_id } = req.allParams();
+      let {user_id} = req.allParams();
 
-      let KYCData = await KYC.findOne({ user_id });
+      let KYCData = await KYC.findOne({user_id});
       if (KYCData) {
-        return res.json({ "status": 200, "message": "KYC Data", "data": KYCData });
+        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
       } else {
         return res
           .status(500)
@@ -303,7 +358,12 @@ module.exports = {
           });
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };

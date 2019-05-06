@@ -6,90 +6,136 @@
  * @routes      ::
  * get /admin/coin-requests
  * post /users/add-coin-request
- * 
+ *
  */
 var moment = require('moment');
 
 module.exports = {
-    //---------------------------Web Api------------------------------
+  // ---------------------------Web Api------------------------------ Add Coin
+  // Request
+  addCoinRequest: async function (req, res) {
+    let {
+      message,
+      url,
+      email,
+      coin_name,
+      elevator_pitch,
+      coin_symbol,
+      target_date,
+      other_site,
+      ref_site,
+      phone,
+      skype,
+      country,
+      title,
+      last_name,
+      first_name,
+      is_secure
+    } = req.body;
+    let addReqData = await AddCoinRequest.create({
+      other_site,
+      ref_site,
+      phone,
+      skype,
+      country,
+      title,
+      last_name,
+      first_name,
+      message,
+      url,
+      email,
+      coin_name,
+      elevator_pitch,
+      coin_symbol,
+      is_secure,
+      target_date: moment(target_date, 'DD-MM-YYYY').format(),
+      created_at: new Date()
+    }).fetch();
+    if (addReqData) {
+      return res.json({"status": 200, "message": "Coin requested successfully"});
+    } else {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 
-    // Add Coin Request 
-    addCoinRequest: async function (req, res) {
-        let { message, url, email, coin_name, elevator_pitch, coin_symbol, target_date,
-            other_site, ref_site, phone, skype, country, title, last_name, first_name,
-            is_secure
-        } = req.body;
-        let addReqData = await AddCoinRequest.create({
-            other_site, ref_site, phone, skype, country, title, last_name, first_name,
-            message, url, email, coin_name, elevator_pitch, coin_symbol, is_secure,
-            target_date: moment(target_date, 'DD-MM-YYYY').format(),
-            created_at: new Date()
-        }).fetch();
-        if (addReqData) {
-            return res.json({
-                "status": 200,
-                "message": "Coin requested successfully"
-            });
-        } else {
-            return res.status(500).json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-            });
+  // -------------------------------CMS Api-------------------------- Get Coin
+  // Request
+  getCoinRequests: async function (req, res) {
+    let {page, limit, data, start_date, end_date} = req.allParams();
+
+    if (data) {
+      let q = {
+        deleted_at: null
+      }
+      q['or'] = [
+        {
+          coin_name: {
+            contains: data
+          }
+        }, {
+          email: {
+            contains: data
+          }
         }
-    },
-
-    //-------------------------------CMS Api--------------------------
-
-    // Get Coin Request
-    getCoinRequests: async function (req, res) {
-        let { page, limit, data, start_date, end_date } = req.allParams();
-
-        if (data) {
-            let q = {
-                deleted_at: null
-            }
-            q['or'] = [
-                { coin_name: { contains: data } },
-                { email: { contains: data } }
-            ]
-            if (start_date && end_date) {
-                q['target_date'] = { '>=': start_date, '<=': end_date };
-            }
-            let coinReqData = await AddCoinRequest.find({ where: { ...q } }).sort('id ASC').paginate(page - 1, parseInt(limit));
-            let coinReqCount = await AddCoinRequest.count({
-                where: { ...q }
-            });
-            if (coinReqData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Coin requests retrived successfully",
-                    "data": coinReqData, coinReqCount
-                });
-            }
-        } else {
-            let q = {
-                deleted_at: null
-            }
-            if (start_date && end_date) {
-                q['target_date'] = { '>=': start_date, '<=': end_date };
-            }
-
-            let coinReqData = await AddCoinRequest.find({
-                where: { ...q }
-            }).paginate(page - 1, parseInt(limit));
-            let coinReqCount = await AddCoinRequest.count({ ...q });
-            if (coinReqData) {
-                return res.json({
-                    "status": 200,
-                    "message": "Coin requests retrived successfully",
-                    "data": coinReqData, coinReqCount
-                });
-            } else {
-                return res.status(500).json({
-                    status: 500,
-                    "err": sails.__("Something Wrong")
-                });
-            }
+      ]
+      if (start_date && end_date) {
+        q['target_date'] = {
+          '>=': start_date,
+          '<=': end_date
+        };
+      }
+      let coinReqData = await AddCoinRequest
+        .find({
+        where: {
+          ...q
         }
-    },
+      })
+        .sort('id ASC')
+        .paginate(page - 1, parseInt(limit));
+      let coinReqCount = await AddCoinRequest.count({
+        where: {
+          ...q
+        }
+      });
+      if (coinReqData) {
+        return res.json({"status": 200, "message": "Coin requests retrived successfully", "data": coinReqData, coinReqCount});
+      }
+    } else {
+      let q = {
+        deleted_at: null
+      }
+      if (start_date && end_date) {
+        q['target_date'] = {
+          '>=': start_date,
+          '<=': end_date
+        };
+      }
+
+      let coinReqData = await AddCoinRequest
+        .find({
+        where: {
+          ...q
+        }
+      })
+        .paginate(page - 1, parseInt(limit));
+      let coinReqCount = await AddCoinRequest.count({
+        ...q
+      });
+      if (coinReqData) {
+        return res.json({"status": 200, "message": "Coin requests retrived successfully", "data": coinReqData, coinReqCount});
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    }
+  }
 };

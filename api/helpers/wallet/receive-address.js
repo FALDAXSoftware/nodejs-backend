@@ -33,12 +33,18 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+
+    //Configuring bitgo API with access token
     var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+
+    //Fetching coin list
     const coinData = await Coins.find({deleted_at: null, is_active: true});
+
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
       if (coin.coin_name == inputs.user.fiat) {
 
+        //For USD and EURO
         var obj = {
           wallet_id: "wallet",
           coin_id: parseInt(coin.id),
@@ -50,6 +56,8 @@ module.exports = {
           .create(obj)
           .fetch()
       } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR' && coin.coin !== 'ETH' && coin.wallet_address) {
+
+        //For all the coins accept USD EURO and ETH
         var wallet = await bitgo
           .coin(coin.coin_code)
           .wallets()
@@ -57,6 +65,7 @@ module.exports = {
 
         if (wallet) {
 
+          //Here chain =0 means testnet Generating wallet address
           var address = await wallet.createAddress({"chain": 0});
           if (inputs.test_key == sails.config.local.test_key) {
             var obj = {

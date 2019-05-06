@@ -14,6 +14,16 @@ var QRCode = require('qrcode');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
+
+  /**
+    * API for creating user
+    * Renders this api when user needs to be created
+    *
+    * @param <email , password, firstname, lastname>
+    *
+    * @return <Coin node Info or error data>
+   */
+
   create: async function (req, res) {
     try {
       var referred_id = null;
@@ -22,18 +32,18 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({ email, deleted_at: null, is_active: true });
+      var existedUser = await Users.findOne({email, deleted_at: null, is_active: true});
       if (existedUser) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Email address already exists' });
+          .json({status: 401, "err": 'Email address already exists'});
       }
       if (req.body.referral_code) {
-        var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
+        var referredUser = await Users.findOne({referral_code: req.body.referral_code});
         if (!referredUser) {
           return res
             .status(401)
-            .json({ status: 401, "err": 'Invalid referral code.' });
+            .json({status: 401, "err": 'Invalid referral code.'});
         } else {
           referred_id = parseInt(referredUser.id);
         }
@@ -67,56 +77,78 @@ module.exports = {
             .send((req.body.device_type == 1 || req.body.device_type == 2)
               ? "signupCode"
               : "signup", {
-                homelink: sails.config.urlconf.APP_URL,
-                recipientName: user_detail.first_name,
-                token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-                tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
-                  ? email_verify_code
-                  : email_verify_token,
-                senderName: "Faldax"
-              }, {
-                to: user_detail.email,
-                subject: "Signup Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "email_verify_token": email_verify_token,
-                    "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                      ? "Verification code sent to email successfully"
-                      : "Verification link sent to email successfully"
-                  });
-                }
-              })
+              homelink: sails.config.urlconf.APP_URL,
+              recipientName: user_detail.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
+                ? email_verify_code
+                : email_verify_token,
+              senderName: "Faldax"
+            }, {
+              to: user_detail.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "email_verify_token": email_verify_token,
+                  "message": (req.body.device_type == 1 || req.body.device_type == 2)
+                    ? "Verification code sent to email successfully"
+                    : "Verification link sent to email successfully"
+                });
+              }
+            })
         } else {
-          return res.status(401).json({ status: 401, "err": "Something went wrong" });
+          return res
+            .status(401)
+            .json({status: 401, "err": "Something went wrong"});
         }
       } else {
         res
           .status(401)
-          .json({ status: 401, "err": "email or password or phone_number is not sent" });
+          .json({status: 401, "err": "email or password or phone_number is not sent"});
         return;
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
+  /**
+    * API for updating use email id
+    * Renders this api when user needs to be update email
+    *
+    * @param <new email , old email>
+    *
+    * @return <Coin node Info or error data>
+   */
+
   updateEmail: async function (req, res) {
     try {
-      let newEmail = req.body.newEmail.toLowerCase();
-      var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
-      var existedEmail = await Users.find({ email: newEmail });
+      let newEmail = req
+        .body
+        .newEmail
+        .toLowerCase();
+      var existedUser = await Users.findOne({id: req.user.id, is_active: true, deleted_at: null});
+      var existedEmail = await Users.find({email: newEmail});
 
       if (existedEmail && existedEmail.length > 0) {
-        return res.status(401).json({ status: 401, "err": 'This Email is already registered with us.' });
+        return res
+          .status(401)
+          .json({status: 401, "err": 'This Email is already registered with us.'});
       }
 
       let new_email_token = randomize('0', 6);
 
       var user = await Users
-        .update({ id: req.user.id, deleted_at: null })
-        .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token }).fetch();
+        .update({id: req.user.id, deleted_at: null})
+        .set({requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token})
+        .fetch();
       if (user) {
         sails
           .hooks
@@ -127,26 +159,37 @@ module.exports = {
             tokenCode: new_email_token,
             senderName: "Faldax"
           }, {
-              to: existedUser.email,
-              subject: "New Email Confirmation"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": "Confirmation OTP has been sent to your current email successfully."
-                });
-              }
-            })
+            to: existedUser.email,
+            subject: "New Email Confirmation"
+          }, function (err) {
+            if (!err) {
+              return res.json({"status": 200, "message": "Confirmation OTP has been sent to your current email successfully."});
+            }
+          })
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+    * API for confirming new email
+    * Renders this api when user needs to confirm new email
+    *
+    * @param <new email token>
+    *
+    * @return <Coin node Info or error data>
+   */
 
   confirmNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_token) {
-        let user = await Users.findOne({ new_email_token: req.body.new_email_token });
+        let user = await Users.findOne({new_email_token: req.body.new_email_token});
         if (user) {
           let requested_email = user.requested_email;
           if (user["hubspot_id"] && user["hubspot_id"] != null) {
@@ -160,11 +203,9 @@ module.exports = {
           let re_new_email_token = randomize('Aa0', 10);
 
           await Users
-            .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
-            .set({
-              email: requested_email, new_email_token: null, email_verify_token: re_new_email_token,
-              requested_email: null, is_new_email_verified: false
-            }).fetch();
+            .update({id: user.id, new_email_token: req.body.new_email_token, deleted_at: null})
+            .set({email: requested_email, new_email_token: null, email_verify_token: re_new_email_token, requested_email: null, is_new_email_verified: false})
+            .fetch();
 
           sails
             .hooks
@@ -176,35 +217,47 @@ module.exports = {
               new_email_token: re_new_email_token,
               senderName: "Faldax"
             }, {
-                to: requested_email,
-                subject: "New Email Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": re_new_email_token,
-                    "message": "Email Verification link has been sent to your email successfully."
-                  });
-                }
-              })
+              to: requested_email,
+              subject: "New Email Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({"status": 200, "new_email_token": re_new_email_token, "message": "Email Verification link has been sent to your email successfully."});
+              }
+            })
         } else {
-          return res.status(400).json({ "status": 400, "err": 'Invalid OTP' });
+          return res
+            .status(400)
+            .json({"status": 400, "err": 'Invalid OTP'});
         }
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
+
+  /**
+    * API for verifying the email
+    * Renders this api when user's email need to verified
+    *
+    * @param <email verify token>
+    *
+    * @return <Coin node Info or error data>
+   */
 
   verifyNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_verify_token) {
-        let user = await Users.findOne({ email_verify_token: req.body.new_email_verify_token });
+        let user = await Users.findOne({email_verify_token: req.body.new_email_verify_token});
         if (user) {
 
           await Users
-            .update({ id: user.id, deleted_at: null })
-            .set({ email: user.email, is_new_email_verified: true, email_verify_token: null });
+            .update({id: user.id, deleted_at: null})
+            .set({email: user.email, is_new_email_verified: true, email_verify_token: null});
 
           var token = await sails
             .helpers
@@ -226,12 +279,26 @@ module.exports = {
         }
       }
     } catch (error) {
-      return res.status(500).json({ "status": 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
+   /**
+    * API for getting particular users details
+    * Renders this api when user details needs to be fetched
+    *
+    * @param <email , password, firstname, lastname>
+    *
+    * @return <Coin node Info or error data>
+   */
+
   getAllUserDetails: async function (req, res) {
-    let { user_id } = req.allParams();
+    let {user_id} = req.allParams();
     try {
       let usersData = await Users.find({
         where: {
@@ -240,17 +307,22 @@ module.exports = {
         }
       });
       if (usersData) {
-        return res.json({ "status": 200, "message": "Users Data", "data": usersData });
+        return res.json({"status": 200, "message": "Users Data", "data": usersData});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getUserDetails: async function (req, res) {
     let id = req.user.id;
-    let usersData = await Users.find({ id: id });
-    let userKyc = await KYC.findOne({ user_id: id });
+    let usersData = await Users.find({id: id});
+    let userKyc = await KYC.findOne({user_id: id});
     usersData[0].is_kyc_done = 0;
     if (userKyc) {
       if (userKyc.steps == 3) {
@@ -265,12 +337,12 @@ module.exports = {
       .userTradeChecking(usersData[0].id);
     usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
-      return res.json({ "status": 200, "message": "Users Data", "data": usersData });
+      return res.json({"status": 200, "message": "Users Data", "data": usersData});
     }
   },
 
   getReferred: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {page, limit} = req.allParams();
 
     let id = req.user.id;
     let usersData = await Users.find({
@@ -281,28 +353,28 @@ module.exports = {
     }).paginate(parseInt(page) - 1, parseInt(limit));
 
     if (usersData) {
-      return res.json({ "status": 200, "message": "User referred Data", "data": usersData });
+      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
     }
   },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({user: req.user.id})
       .sort('created_at DESC')
       .limit(10);
-    return res.json({ "status": 200, "message": "Users Login History", "data": history });
+    return res.json({"status": 200, "message": "Users Login History", "data": history});
   },
 
   update: async function (req, res) {
     console.log("user object----", req.body);
 
     try {
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({id: req.user.id});
       if (!user_details) {
         return res
           .status(401)
-          .json({ "status": 401, "err": 'Invalid email' });
+          .json({"status": 401, "err": 'Invalid email'});
       }
       var user = req.body;
       user['email'] = user_details['email'];
@@ -338,15 +410,15 @@ module.exports = {
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
                       ? ", " + user.street_address_2
                       : ''), user.country
-                        ? user.country
-                        : user_details["country"], user.state
-                        ? user.state
-                        : user_details["state"], user.city_town
-                        ? user.city_town
-                        : user_details["city_town"], user.postal_code);
+                      ? user.country
+                      : user_details["country"], user.state
+                      ? user.state
+                      : user_details["state"], user.city_town
+                      ? user.city_town
+                      : user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
-                  .update({ email: user.email, deleted_at: null })
+                  .update({email: user.email, deleted_at: null})
                   .set(user)
                   .fetch();
                 delete updatedUsers.password
@@ -359,8 +431,8 @@ module.exports = {
               if (user.remove_pic == 'true') {
                 delete user.remove_pic;
                 await Users
-                  .update({ email: user.email })
-                  .set({ email: user.email, profile_pic: null });
+                  .update({email: user.email})
+                  .set({email: user.email, profile_pic: null});
               }
               if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
                 await sails
@@ -370,16 +442,16 @@ module.exports = {
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
                     ? ", " + user.street_address_2
                     : ''), user.country
-                      ? user.country
-                      : user_details["country"], user.state
-                      ? user.state
-                      : user_details["state"], user.city_town
-                      ? user.city_town
-                      : user_details["city_town"], user.postal_code);
+                    ? user.country
+                    : user_details["country"], user.state
+                    ? user.state
+                    : user_details["state"], user.city_town
+                    ? user.city_town
+                    : user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
-                .update({ email: user.email, deleted_at: null })
+                .update({email: user.email, deleted_at: null})
                 .set(user);
 
               return res.json({
@@ -393,7 +465,12 @@ module.exports = {
           }
         });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -402,46 +479,51 @@ module.exports = {
       if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Please provide current password, new password, confirm password' });
+          .json({status: 401, "err": 'Please provide current password, new password, confirm password'});
       }
       if (req.body.new_password != req.body.confirm_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'New and confirm password should match' });
+          .json({status: 401, "err": 'New and confirm password should match'});
       }
       if (req.body.current_password == req.body.new_password) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'Current and new password should not be same.' });
+          .json({status: 401, "err": 'Current and new password should not be same.'});
       }
 
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({id: req.user.id});
       if (!user_details) {
         return res
           .status(401)
-          .json({ status: 401, "err": 'User not found' });
+          .json({status: 401, "err": 'User not found'});
       }
       let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
       if (!compareCurrent) {
         return res
           .status(401)
-          .json({ status: 401, "err": "Old password is incorrect" });
+          .json({status: 401, "err": "Old password is incorrect"});
       }
 
       var updatedUsers = await Users
-        .update({ id: req.user.id })
-        .set({ email: user_details.email, password: req.body.new_password })
+        .update({id: req.user.id})
+        .set({email: user_details.email, password: req.body.new_password})
         .fetch();
 
       if (updatedUsers) {
-        return res.json({ "status": 200, "message": "Password changed successfully" });
+        return res.json({"status": 200, "message": "Password changed successfully"});
       } else {
         return res
           .status(401)
-          .json({ "status": 401, err: 'Something went wrong! Could not able to update the password' });
+          .json({"status": 401, err: 'Something went wrong! Could not able to update the password'});
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -455,15 +537,15 @@ module.exports = {
     });
 
     if (usersData) {
-      return res.json({ "status": 200, "message": "User referred Data", "data": usersData });
+      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
     }
   },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {page, limit} = req.allParams();
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({user: req.user.id})
       .sort('created_at DESC')
       .paginate(page - 1, parseInt(limit));
 
@@ -473,87 +555,102 @@ module.exports = {
       }
     });
 
-    return res.json({ "status": 200, "message": "Users Login History", "data": history, historyCount });
+    return res.json({"status": 200, "message": "Users Login History", "data": history, historyCount});
   },
 
   setupTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
-      const secret = speakeasy.generateSecret({ length: 10 });
+      const secret = speakeasy.generateSecret({length: 10});
       await Users
-        .update({ id: user.id })
-        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+        .update({id: user.id})
+        .set({"email": user.email, "twofactor_secret": secret.base32});
       let url = speakeasy.otpauthURL({
         secret: secret.ascii,
         label: 'FALDAX( ' + user.email + ')'
       });
       QRCode.toDataURL(encodeURI(url), function (err, data_url) {
-        return res.json({ status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url })
+        return res.json({status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url})
       });
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   verifyTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let { otp } = req.allParams();
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let {otp} = req.allParams();
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
       if (user.is_twofactor == true) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "Two factor authentication is already enabled" });
+          .json({"status": 401, "err": "Two factor authentication is already enabled"});
       }
 
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+        .verify({secret: user.twofactor_secret, encoding: "base32", token: otp});
       if (verified) {
         await Users
-          .update({ id: user.id })
-          .set({ email: user.email, is_twofactor: true });
-        return res.json({ status: 200, message: "Two factor authentication has been enabled" });
+          .update({id: user.id})
+          .set({email: user.email, is_twofactor: true});
+        return res.json({status: 200, message: "Two factor authentication has been enabled"});
       }
       return res
         .status(401)
-        .json({ err: "Invalid OTP" });
+        .json({err: "Invalid OTP"});
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({id: user_id, is_active: true, is_verified: true, deleted_at: null});
       if (!user) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "User not found or it's not active" });
+          .json({"status": 401, "err": "User not found or it's not active"});
       }
       if (user.is_twofactor == false) {
         return res
           .status(401)
-          .json({ "status": 401, "err": "Two factor authentication is already disabled" });
+          .json({"status": 401, "err": "Two factor authentication is already disabled"});
       }
       await Users
-        .update({ id: user.id, deleted_at: null })
-        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
-      return res.json({ status: 200, message: "Two factor authentication has been disabled" });
+        .update({id: user.id, deleted_at: null})
+        .set({email: user.email, is_twofactor: false, twofactor_secret: null});
+      return res.json({status: 200, message: "Two factor authentication has been disabled"});
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -561,7 +658,7 @@ module.exports = {
     let user_id = req.user.id;
     let userEmail = req.email;
 
-    let user = await Users.findOne({ id: user_id, email: userEmail, deleted_at: null });
+    let user = await Users.findOne({id: user_id, email: userEmail, deleted_at: null});
 
     if (!user) {
       res
@@ -573,8 +670,8 @@ module.exports = {
     }
 
     await Users
-      .update({ id: user.id })
-      .set({ email: user.email, deleted_at: new Date() });
+      .update({id: user.id})
+      .set({email: user.email, deleted_at: new Date()});
 
     res.json({
       status: 200,
@@ -595,23 +692,24 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let {page, limit, data, sort_col, sort_order} = req.allParams();
       let query = " from users";
       if ((data && data != "")) {
         query += " WHERE"
         if (data && data != "" && data != null) {
-          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(email) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
       }
       countQuery = query;
@@ -632,86 +730,106 @@ module.exports = {
       userCount = userCount.rows[0].count;
 
       if (usersData) {
-        return res.json({ "status": 200, "message": "Users list", "data": usersData, userCount });
+        return res.json({"status": 200, "message": "Users list", "data": usersData, userCount});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   updateUserDetails: async function (req, res) {
-    let { user_id, email, percentage } = req.allParams();
+    let {user_id, email, percentage} = req.allParams();
     var updateUserData;
     if (user_id && email) {
       updateUserData = await Users
-        .update({ id: user_id })
-        .set({ email: email, referal_percentage: percentage })
+        .update({id: user_id})
+        .set({email: email, referal_percentage: percentage})
         .fetch();
     } else {
       updateUserData = await AdminSetting
-        .update({ slug: 'default_referral_percentage' })
-        .set({ value: percentage })
+        .update({slug: 'default_referral_percentage'})
+        .set({value: percentage})
         .fetch();
     }
 
     if (updateUserData) {
-      return res.json({ "status": 200, "message": "User Referral Percentage Updated." });
+      return res.json({"status": 200, "message": "User Referral Percentage Updated."});
     } else {
-      return res.json({ "status": 200, "message": "User(id) not found" });
+      return res.json({"status": 200, "message": "User(id) not found"});
     }
   },
 
   updateSendCoinFee: async function (req, res) {
     try {
-      let { send_coin_fee } = req.body;
+      let {send_coin_fee} = req.body;
 
       updateCoinFee = await AdminSetting
-        .update({ slug: 'default_send_coin_fee' })
-        .set({ value: send_coin_fee })
+        .update({slug: 'default_send_coin_fee'})
+        .set({value: send_coin_fee})
         .fetch();
 
       if (updateCoinFee) {
-        return res.json({ "status": 200, "message": "Coin Fee has been updated successfully" });
+        return res.json({"status": 200, "message": "Coin Fee has been updated successfully"});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   userActivate: async function (req, res) {
     try {
-      let { user_id, email, is_active } = req.body;
+      let {user_id, email, is_active} = req.body;
 
       let usersData = await Users
-        .update({ id: user_id })
-        .set({ email: email, is_active: is_active })
+        .update({id: user_id})
+        .set({email: email, is_active: is_active})
         .fetch();
 
       if (usersData && typeof usersData === 'object' && usersData.length > 0) {
-        return res.json({ "status": 200, "message": "User Status Updated" });
+        return res.json({"status": 200, "message": "User Status Updated"});
       } else {
-        return res.json({ "status": 401, "message": "User(id) not found" });
+        return res.json({"status": 401, "message": "User(id) not found"});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getCountriesData: async function (req, res) {
-    fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
+    fetch(' https://restcountries.eu/rest/v2/all', {method: "GET"})
       .then(resData => resData.json())
       .then(resData => {
-        res.json({ status: 200, data: resData })
+        res.json({status: 200, data: resData})
       })
       .catch(err => {
-        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
       })
   },
 
   getCountries: async function (req, res) {
     let countriesResponse = [];
     let countries = await Countries
-      .find({ is_active: true })
+      .find({is_active: true})
       .populate('state');
     countries.forEach(country => {
       let temp = {
@@ -734,23 +852,26 @@ module.exports = {
           }
         });
     });
-    res.json({ state: 200, message: "Countries retirved successfully", countries: countriesResponse });
+    res.json({state: 200, message: "Countries retirved successfully", countries: countriesResponse});
   },
 
   getUserReferredAdmin: async function (req, res) {
     try {
-      let { page, limit, data, user_id, sort_col, sort_order } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        user_id,
+        sort_col,
+        sort_order
+      } = req.allParams();
       let query = " from users LEFT JOIN referral ON users.id=referral.user_id";
       query += " WHERE users.is_verified='true' ";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
-          "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
           query += " OR referral.amount=" + data;
         }
@@ -759,7 +880,9 @@ module.exports = {
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend' ? 'DESC' : 'ASC');
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
 
@@ -772,10 +895,15 @@ module.exports = {
       referralCount = referralCount.rows[0].count;
 
       if (usersData) {
-        return res.json({ "status": 200, "message": "Referral Users Data", "data": usersData, referralCount });
+        return res.json({"status": 200, "message": "Referral Users Data", "data": usersData, referralCount});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -795,24 +923,28 @@ module.exports = {
       }
       if (start_date && end_date) {
         q['created_at'] = {
-          '>=': await sails.helpers.dateFormat(start_date) + " 00:00:00",
-          '<=': await sails.helpers.dateFormat(end_date) + " 23:59:59"
+          '>=': await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00",
+          '<=': await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59"
         };
       }
       if (data) {
         let allHistoryData = await LoginHistory
           .find({
-            where: {
-              ...q,
-              or: [
-                {
-                  ip: {
-                    contains: data
-                  }
+          where: {
+            ...q,
+            or: [
+              {
+                ip: {
+                  contains: data
                 }
-              ]
-            }
-          })
+              }
+            ]
+          }
+        })
           .sort("created_at DESC")
           .paginate(page - 1, parseInt(limit));
         let allHistoryCount = await LoginHistory.count({
@@ -839,10 +971,10 @@ module.exports = {
       } else {
         let allHistoryData = await LoginHistory
           .find({
-            where: {
-              ...q
-            }
-          })
+          where: {
+            ...q
+          }
+        })
           .sort("created_at DESC")
           .paginate(page - 1, parseInt(limit));
 
@@ -862,19 +994,25 @@ module.exports = {
         }
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
-
   addUser: async function (req, res) {
-    // console.log(req.allParams());
-    // return res.json({
-    //   status: 200,
-    //   message: "user created successfully"
-    // });
+    // console.log(req.allParams()); return res.json({   status: 200,   message:
+    // "user created successfully" });
     try {
-      let { create_hubspot_contact, generate_wallet_coins, kyc_done, ...user } = req.allParams();
+      let {
+        create_hubspot_contact,
+        generate_wallet_coins,
+        kyc_done,
+        ...user
+      } = req.allParams();
       let hubspotcontact = null
       if (create_hubspot_contact == true) {
         hubspotcontact = await sails
@@ -886,13 +1024,15 @@ module.exports = {
             throw new Error("serverError");
           });
       }
-      let generatedUser = await User.create({
+      let generatedUser = await User
+        .create({
         ...user,
         hubspot_id: hubspotcontact,
         is_active: true,
         is_verified: true,
         password: randomize('Aa0', 60)
-      }).fetch();
+      })
+        .fetch();
       if (kyc_done == true) {
         await KYC.create({
           first_name: user.first_name,
@@ -907,12 +1047,14 @@ module.exports = {
       if (generate_wallet_coins.length > 0) {
         // create recive address
       }
-      return res.json({
-        status: 200,
-        message: "user created successfully"
-      });
+      return res.json({status: 200, message: "user created successfully"});
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };
