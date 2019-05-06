@@ -7,7 +7,14 @@
 module.exports = {
   getCountries: async function (req, res) {
     try {
-      let { page, limit, data, legality, sort_col, sort_order } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        legality,
+        sort_col,
+        sort_order
+      } = req.allParams();
       let query = " from countries";
       if ((data && data != "") || (legality && legality != "")) {
         query += " WHERE"
@@ -39,7 +46,7 @@ module.exports = {
       countryData = countryData.rows;
 
       for (let i = 0; i < countryData.length; i++) {
-        let stateCount = await State.count({ country_id: countryData[i].id });
+        let stateCount = await State.count({country_id: countryData[i].id});
         countryData[i].stateCount = stateCount;
       }
 
@@ -47,17 +54,22 @@ module.exports = {
       CountriesCount = CountriesCount.rows[0].count;
 
       if (countryData) {
-        return res.json({ "status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount });
+        return res.json({"status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount});
       }
     } catch (err) {
       console.log(err)
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   getStates: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let {page, limit, data, sortCol, sortOrder} = req.allParams();
       let query = " from states";
       if ((data && data != "")) {
         query += " WHERE"
@@ -82,7 +94,7 @@ module.exports = {
 
       stateData = stateData.rows;
       for (let i = 0; i < stateData.length; i++) {
-        let stateCount = await State.count({ country_id: stateData[i].id });
+        let stateCount = await State.count({country_id: stateData[i].id});
         stateData[i].stateCount = stateCount;
       }
 
@@ -90,81 +102,106 @@ module.exports = {
       stateCount = stateCount.rows[0].count;
 
       if (stateData) {
-        return res.json({ "status": 200, "message": "State list", "data": stateData, stateCount });
+        return res.json({"status": 200, "message": "State list", "data": stateData, stateCount});
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   countryActivate: async function (req, res) {
     try {
-      let { id, is_active } = req.body;
+      let {id, is_active} = req.body;
 
       let countriesData = await Countries
-        .update({ id: id })
-        .set({ is_active: is_active })
+        .update({id: id})
+        .set({is_active: is_active})
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({ "status": 200, "message": "Country Status Updated" });
+        return res.json({"status": 200, "message": "Country Status Updated"});
       } else {
         throw "Country(id) not found."
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   stateActivate: async function (req, res) {
     try {
-      let { id, is_active } = req.body;
+      let {id, is_active} = req.body;
       let stateData = await State
-        .update({ id: id })
-        .set({ is_active: is_active })
+        .update({id: id})
+        .set({is_active: is_active})
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({ "status": 200, "message": "State Status Updated" });
+        return res.json({"status": 200, "message": "State Status Updated"});
       } else {
         throw "State(id) not found."
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   countryUpdate: async function (req, res) {
     try {
       let countriesData = await Countries
-        .update({ id: req.body.id })
+        .update({id: req.body.id})
         .set(req.body)
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({ "status": 200, "message": "Country Updated" });
+        return res.json({"status": 200, "message": "Country Updated"});
       } else {
         throw "Country(id) not found."
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   stateUpdate: async function (req, res) {
     try {
       let stateData = await State
-        .update({ id: req.body.id })
+        .update({id: req.body.id})
         .set(req.body)
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({ "status": 200, "message": "State Updated" });
+        return res.json({"status": 200, "message": "State Updated"});
       } else {
         throw "State(id) not found."
       }
     } catch (e) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -1339,7 +1376,7 @@ module.exports = {
     let s = await State
       .createEach(states)
       .fetch();
-    res.json({ status: 200 });
+    res.json({status: 200});
   }
 
 };
