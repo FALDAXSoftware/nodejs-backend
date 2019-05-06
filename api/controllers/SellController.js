@@ -7,6 +7,16 @@
 
 module.exports = {
   //---------------------------Web Api------------------------------
+
+  /**
+    * API for getting sell book details
+    * Renders this api when sell book details need to be fetched
+    *
+    * @param <socket, room>
+    *
+    * @return <Sell book value or error>
+   */
+
   getSellBookDetails: async function (req, res) {
     let room = req.query.room;
     try {
@@ -19,7 +29,7 @@ module.exports = {
               if (leaveErr) {
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
                 sails
                   .sockets
@@ -27,9 +37,9 @@ module.exports = {
                     if (err) {
                       return res
                         .status(403)
-                        .json({ status: 403, "message": "Error occured" });
+                        .json({status: 403, "message": "Error occured"});
                     } else {
-                      let { crypto, currency } = await sails
+                      let {crypto, currency} = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -40,7 +50,7 @@ module.exports = {
                         .getSellBookOrders(crypto, currency);
 
                       if (sellBookDetails) {
-                        return res.json({ status: 200, data: sellBookDetails, "message": "Sell data retrived successfully." });
+                        return res.json({status: 200, data: sellBookDetails, "message": "Sell data retrived successfully."});
                       }
                     }
                   });
@@ -53,9 +63,9 @@ module.exports = {
               if (err) {
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({status: 403, "message": "Error occured"});
               } else {
-                let { crypto, currency } = await sails
+                let {crypto, currency} = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -66,13 +76,15 @@ module.exports = {
                   .getSellBookOrders(crypto, currency);
 
                 if (sellBookDetails) {
-                  return res.json({ status: 200, data: sellBookDetails, "message": "Sell data retrived successfully." });
+                  return res.json({status: 200, data: sellBookDetails, "message": "Sell data retrived successfully."});
                 }
               }
             });
         }
       } else {
-        return res.status(403).json({ status: 403, "message": "Error occured" });
+        return res
+          .status(403)
+          .json({status: 403, "message": "Error occured"});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -83,7 +95,7 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', { 'message': 'blahhhh' });
+        .broadcast('test', {'message': 'blahhhh'});
 
     } catch (err) {
       console.log('>getData>>', err)
@@ -93,7 +105,14 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllSellOrders: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order, user_id } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        user_id
+      } = req.allParams();
       let query = " from sell_book";
       let whereAppended = false;
 
@@ -143,7 +162,12 @@ module.exports = {
         });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };

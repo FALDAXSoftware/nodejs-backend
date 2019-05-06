@@ -26,9 +26,7 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " (LOWER(link) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(title) LIKE '%" + data.toLowerCase() +
-            "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(link) LIKE '%" + data.toLowerCase() + "%'OR LOWER(title) LIKE '%" + data.toLowerCase() + "%'OR LOWER(description) LIKE '%" + data.toLowerCase() + "%'";
           if (filter_val && filter_val != "") {
             query += " AND owner = '" + filter_val + "'";
           }
@@ -53,8 +51,11 @@ module.exports = {
           query += " WHERE "
         }
 
-        query += " posted_at >= '" + await sails.helpers.dateFormat(start_date) + " 00:00:00" +
-          "' AND posted_at <= '" + await sails.helpers.dateFormat(end_date) + " 23:59:59'";
+        query += " posted_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND posted_at <= '" + await sails
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -72,36 +73,51 @@ module.exports = {
       let newsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       newsCount = newsCount.rows[0].count;
 
-      return res.json({ "status": 200, "message": "News retrived successfully", "data": news, newsCount });
+      return res.json({"status": 200, "message": "News retrived successfully", "data": news, newsCount});
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
   // Change News Status
   changeNewsStatus: async function (req, res) {
     try {
-      let { id, is_active } = req.body;
+      let {id, is_active} = req.body;
       await News
-        .update({ id: id })
-        .set({ is_active });
-      return res.json({ "status": 200, "message": "News Status Updated" });
+        .update({id: id})
+        .set({is_active});
+      return res.json({"status": 200, "message": "News Status Updated"});
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   // get news details
   getNewsDetails: async function (req, res) {
     try {
-      let { news_id } = req.allParams();
-      let newsDetails = await News.findOne({ id: news_id });
+      let {news_id} = req.allParams();
+      let newsDetails = await News.findOne({id: news_id});
       if (newsDetails) {
-        return res.json({ "status": 200, "message": "News data Updated", data: newsDetails });
+        return res.json({"status": 200, "message": "News data Updated", data: newsDetails});
       } else {
-        return res.json({ "status": 400, "message": "No news found" });
+        return res.json({"status": 400, "message": "No news found"});
       }
     } catch (error) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };

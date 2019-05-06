@@ -21,11 +21,16 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
 
-      var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-      var requestedCoin = await Coins.find({ deleted_at: null, is_active: true, is_fiat: false })
+      //Configuring bitgo API with access token
+      var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+
+      //Fetching coin list
+      var requestedCoin = await Coins.find({deleted_at: null, is_active: true, is_fiat: false})
 
       for (let index = 0; index < requestedCoin.length; index++) {
         const coin = requestedCoin[index];
+
+        //Generating wallet id for all coin
         bitgo
           .coin(coin.coin_code)
           .wallets()
@@ -36,7 +41,7 @@ module.exports = {
           })
           .then(async newWallet => {
             await Coins
-              .update({ id: coin.id })
+              .update({id: coin.id})
               .set({
                 'wallet_address': newWallet
                   .wallet
@@ -50,7 +55,7 @@ module.exports = {
       console.log(error);
 
       return exits.serverError({
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong")
       });
     }
   }

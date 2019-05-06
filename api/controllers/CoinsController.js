@@ -6,6 +6,16 @@
  */
 
 module.exports = {
+
+  /**
+    * API for getting coin list
+    * Renders this api when coin list needs to be fetched
+    *
+    * @param <>
+    *
+    * @return <Coin List and coins count or error data>
+   */
+
   getAllCoinList: async function (req, res) {
     try {
       let allCoins = await Coins
@@ -26,7 +36,12 @@ module.exports = {
         }
       });
       if (allCoins) {
-        return res.json({ "status": 200, "message": sails.__("Coin list"), "data": allCoins, allCoinsCount });
+        return res.json({
+          "status": 200,
+          "message": sails.__("Coin list"),
+          "data": allCoins,
+          allCoinsCount
+        });
       }
     } catch (err) {
       console.log(err);
@@ -144,11 +159,21 @@ module.exports = {
         });
 
         if (balanceRes) {
-          return res.json({ "status": 200, "message": sails.__("Coin list"), "data": balanceRes, allCoinsCount });
+          return res.json({
+            "status": 200,
+            "message": sails.__("Coin list"),
+            "data": balanceRes,
+            allCoinsCount
+          });
         }
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -177,9 +202,16 @@ module.exports = {
       return res.json({ "status": 200, "message": "wallet created" });
     } catch (error) {
       if (error.raw) {
-        return res.status(500).json({ status: 500, "err": error.raw.err });
+        return res
+          .status(500)
+          .json({ status: 500, "err": error.raw.err });
       } else {
-        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
       }
     }
   },
@@ -187,14 +219,18 @@ module.exports = {
   // Get Coin list for conversion screen
   getCoinsForConversion: async function (req, res) {
     try {
-      let coins = await Coins.find({
-        where: {
-          deleted_at: null,
-          is_active: true,
-          is_fiat: false,
-          kraken_coin_name: { '!=': null }
-        }
-      }).select(["coin_icon", "coin_name", "coin"]);
+      let coins = await Coins
+        .find({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            is_fiat: false,
+            kraken_coin_name: {
+              '!=': null
+            }
+          }
+        })
+        .select(["coin_icon", "coin_name", "coin"]);
       return res.json({
         "status": 200,
         "message": sails.__("Coin list"),
@@ -215,9 +251,11 @@ module.exports = {
   getCurrencyForConversion: async function (req, res) {
     try {
       let pair = await Pairs.find({
-        name: { startsWith: req.query.crypto + '-' },
+        name: {
+          startsWith: req.query.crypto + '-'
+        },
         deleted_at: null,
-        is_active: true,
+        is_active: true
       });
       console.log("pair", req.query.crypto, pair);
 
@@ -231,8 +269,12 @@ module.exports = {
           deleted_at: null,
           is_active: true,
           is_fiat: false,
-          kraken_coin_name: { '!=': null },
-          id: { in: coinIds }
+          kraken_coin_name: {
+            '!=': null
+          },
+          id: {
+            in: coinIds
+          }
         }
       }).select(["coin_icon", "coin_name", "coin"]);
       return res.json({
@@ -257,49 +299,47 @@ module.exports = {
       if (req.isSocket) {
         if (req.query.prevRoom) {
           let prevRoom = req.query.prevRoom;
-          sails.sockets.leave(req.socket, prevRoom, function (err) {
-            if (err) {
-              return res.status(403).json({ status: 403, "message": "Error occured" });
-            } else {
-              sails.sockets.join(req.socket, room, async function (err) {
-                if (err) {
-                  return res.status(403).json({ status: 403, "message": "Error occured" });
-                } else {
+          sails
+            .sockets
+            .leave(req.socket, prevRoom, function (err) {
+              if (err) {
+                return res
+                  .status(403)
+                  .json({ status: 403, "message": "Error occured" });
+              } else {
+                sails
+                  .sockets
+                  .join(req.socket, room, async function (err) {
+                    if (err) {
+                      return res
+                        .status(403)
+                        .json({ status: 403, "message": "Error occured" });
+                    } else {
 
-                  let pair = await Pairs.findOne({
-                    name: room,
-                    is_active: true,
-                    deleted_at: null
+                      let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
+                      return res.json({ status: 200, data: pair, "message": "Pair retrived successfully" });
+                    }
                   });
-                  return res.json({
-                    status: 200,
-                    data: pair,
-                    "message": "Pair retrived successfully"
-                  });
-                }
-              });
-            }
-          });
+              }
+            });
         } else {
-          sails.sockets.join(req.socket, room, async function (err) {
-            if (err) {
-              return res.status(403).json({ status: 403, "message": "Error occured" });
-            } else {
-              let pair = await Pairs.findOne({
-                name: room,
-                is_active: true,
-                deleted_at: null
-              });
-              return res.json({
-                status: 200,
-                data: pair,
-                "message": "Pair retrived successfully"
-              });
-            }
-          });
+          sails
+            .sockets
+            .join(req.socket, room, async function (err) {
+              if (err) {
+                return res
+                  .status(403)
+                  .json({ status: 403, "message": "Error occured" });
+              } else {
+                let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
+                return res.json({ status: 200, data: pair, "message": "Pair retrived successfully" });
+              }
+            });
         }
       } else {
-        return res.status(403).json({ status: 403, "message": "Error occured" });
+        return res
+          .status(403)
+          .json({ status: 403, "message": "Error occured" });
       }
     } catch (error) {
       return res
@@ -342,11 +382,19 @@ module.exports = {
 
       if (coinData) {
         return res.json({
-          "status": 200, "message": sails.__("Coin list"), "data": coinData, CoinsCount
+          "status": 200,
+          "message": sails.__("Coin list"),
+          "data": coinData,
+          CoinsCount
         });
       }
     } catch (err) {
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -370,7 +418,9 @@ module.exports = {
                 ]
               });
               if (existingCoin.length > 0) {
-                return res.status(400).json({ "status": 400, "err": "Coin name or code already in use." });
+                return res
+                  .status(400)
+                  .json({ "status": 400, "err": "Asset name or code already in use." });
               }
               var coins_detail = await Coins
                 .create({
@@ -385,19 +435,30 @@ module.exports = {
                 })
                 .fetch();
               if (coins_detail) {
-                res.json({ "status": 200, "message": "Coin created successfully." });
+                res.json({ "status": 200, "message": "Asset created successfully." });
                 return;
               } else {
-                return res.status(400).json({ "status": 400, "err": "Something went wrong" });
+                return res
+                  .status(400)
+                  .json({ "status": 400, "err": "Something went wrong" });
               }
             } else {
-              return res.status(400).json({ "status": 400, "err": "coin id is not sent" });
+              return res
+                .status(400)
+                .json({ "status": 400, "err": "Asset id is not sent" });
             }
           } else {
-            return res.status(400).json({ "status": 400, "err": "coin icon is not sent" });
+            return res
+              .status(400)
+              .json({ "status": 400, "err": "Asset icon is not sent" });
           }
         } catch (error) {
-          return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Something Wrong")
+            });
         }
       });
   },
@@ -420,7 +481,9 @@ module.exports = {
           coin_name: req.body.coin_name
         });
         if (existingCoin.length > 0) {
-          return res.status(400).json({ "status": 400, "err": "Coin name or code already in use." });
+          return res
+            .status(400)
+            .json({ "status": 400, "err": "Asset name or code already in use." });
         }
       }
       var coinData = {
@@ -432,26 +495,35 @@ module.exports = {
         .set(req.body)
         .fetch();
       if (!updatedCoin) {
-        return res.json({ "status": 200, "message": "Something went wrong! could not able to update coin details" });
+        return res.json({ "status": 200, "message": "Something went wrong! could not able to update Asset details" });
       }
-      return res.json({ "status": 200, "message": "Coin details updated successfully" });
+      return res.json({ "status": 200, "message": "Asset details updated successfully" });
     } catch (error) {
       console.log('error', error)
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   delete: async function (req, res) {
     let { id } = req.allParams();
     if (!id) {
-      return res.status(500).json({ "status": 500, "err": "Coin id is not sent" });
+      return res
+        .status(500)
+        .json({ "status": 500, "err": "Asset id is not sent" });
     }
     let coinData = await Coins
       .update({ id: id })
       .set({ deleted_at: new Date() })
       .fetch();
     if (coinData) {
-      return res.status(200).json({ "status": 200, "message": "Coin deleted successfully" });
+      return res
+        .status(200)
+        .json({ "status": 200, "message": "Asset deleted successfully" });
     }
   }
 };
