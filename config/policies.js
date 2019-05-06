@@ -19,7 +19,7 @@ module.exports.policies = {
 
   // '*': true,
   '*': [
-    'isAuthorized', 'isAdmin'
+    "checkReCaptcha", 'isAuthorized', 'isAdmin'
   ], // Everything resctricted here
   'UsersController': {
     'create': true,
@@ -74,7 +74,8 @@ module.exports.policies = {
     "addCoinRequest": true
   },
   'CareerController': {
-    "*": true
+    "applyJob": "checkReCaptcha",
+    "*": true,
   },
   "KYCController": {
     "callbackKYC": true
@@ -120,5 +121,5 @@ module.exports.policies = {
     "getRecentWithdrawlStatus": true,
     "withdrwalCancellationStatus": true,
     "queryTradeInformation": true
-  }
+  },
 };
