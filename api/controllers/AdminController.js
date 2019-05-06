@@ -29,194 +29,141 @@ module.exports = {
   // CMS Login
   login: async function (req, res) {
     try {
-      // Parameter Existence
-      if (req.body.email && req.body.password) {
-        let query = {
-          email: req.body.email,
-          password: req.body.password
-        }
-        var admin_details = await Admin.findOne({email: query.email, deleted_at: null});
-
-        // Admin Existence
-        if (admin_details) {
-
-          // Admin Active
-          if (admin_details.is_active) {
-            let role = await Role.findOne({id: admin_details.role_id})
-            admin_details.roles = role;
-
-            // Role Not Active
-            if (!role.is_active) {
-              res
-                .status(400)
-                .json({
-                  "status": 400,
-                  "err": sails.__("Contact Admin")
-                });
-              return;
+        // Parameter Existence
+        if (req.body.email && req.body.password) {
+            let query = {
+                email: req.body.email,
+                password: req.body.password
             }
+            var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
 
-            if (admin_details.is_twofactor) {
-              if (!req.body.otp) {
-                return res
-                  .status(201)
-                  .json({"status": 201, "err": 'Please enter OTP to continue'});
-              }
-              let verified = speakeasy
-                .totp
-                .verify({secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2});
-              if (!verified) {
-                return res
-                  .status(402)
-                  .json({"status": 402, "err": 'Invalid OTP'});
-              }
-            }
+            // Admin Existence
+            if (admin_details) {
 
-            // Credentials Check (Password Compare)
-            Admin
-              .comparePassword(query.password, admin_details, async function (err, valid) {
-                if (err) {
-                  return res
-                    .status(403)
-                    .json({"status": 403, "err": 'Forbidden'});
-                }
+                // Admin Active
+                if (admin_details.is_active) {
+                    let role = await Role.findOne({ id: admin_details.role_id })
+                    admin_details.roles = role;
 
-                if (!valid) {
-                  return res
-                    .status(401)
-                    .json({"status": 401, "err": 'Invalid email or password'});
+                    // Role Not Active
+                    if (!role.is_active) {
+                        res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") }); return;
+                    }
+
+                    if (admin_details.is_twofactor) {
+                        if (!req.body.otp) {
+                            return res.status(201).json({ "status": 201, "err": 'Please enter OTP to continue' });
+                        }
+                        let verified = speakeasy
+                            .totp
+                            .verify({ secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2 });
+                        if (!verified) {
+                            return res.status(402).json({ "status": 402, "err": 'Invalid OTP' });
+                        }
+                    }
+
+                    // Credentials Check (Password Compare)
+                    Admin
+                        .comparePassword(query.password, admin_details, async function (err, valid) {
+                            if (err) {
+                                return res.status(403).json({ "status": 403, "err": 'Forbidden' });
+                            }
+
+                            if (!valid) {
+                                return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
+                            } else {
+                                if (admin_details.is_twofactor) {
+                                }
+
+                                delete admin_details.password;
+                                // Token Issue
+                                var token = await sails
+                                    .helpers
+                                    .jwtIssue(admin_details.id, true, true);
+                                res.json({ user: admin_details, token });
+                            }
+                        });
                 } else {
-                  if (admin_details.is_twofactor) {}
-
-                  delete admin_details.password;
-                  // Token Issue
-                  var token = await sails
-                    .helpers
-                    .jwtIssue(admin_details.id, true, true);
-                  res.json({user: admin_details, token});
+                    return res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") });
                 }
-              });
-          } else {
-            return res
-              .status(400)
-              .json({
-                "status": 400,
-                "err": sails.__("Contact Admin")
-              });
-          }
+            } else {
+                return res.status(400).json({ "status": 400, "err": "Invalid email or password" });
+            }
         } else {
-          return res
-            .status(400)
-            .json({"status": 400, "err": "Invalid email or password"});
+            return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
         }
-      } else {
-        return res
-          .status(400)
-          .json({"status": 400, "err": "Email or password is not sent"});
-      }
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
-  },
+},
 
-  // Create Admin
-  create: async function (req, res) {
+// Create Admin
+create: async function (req, res) {
     try {
-      // Parameter Existence
-      if (req.body.email && req.body.password) {
-        // Create Admin
-        var user_detail = await Admin
-          .create({email: req.body.email, password: req.body.password})
-          .fetch();
+        // Parameter Existence
+        if (req.body.email && req.body.password) {
+            // Create Admin
+            var user_detail = await Admin
+                .create({ email: req.body.email, password: req.body.password })
+                .fetch();
 
-        // Token Issue
-        var token = await sails
-          .helpers
-          .jwtIssue(user_detail.id);
-        if (user_detail) {
-          return res.json({"status": 200, "message": "listed", "data": user_detail, token});
+            // Token Issue
+            var token = await sails
+                .helpers
+                .jwtIssue(user_detail.id);
+            if (user_detail) {
+                return res.json({ "status": 200, "message": "listed", "data": user_detail, token });
+            } else {
+                return res.status(400).json({ "status": 400, "err": "Something went wrong" });
+            }
         } else {
-          return res
-            .status(400)
-            .json({"status": 400, "err": "Something went wrong"});
+            return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
         }
-      } else {
-        return res
-          .status(400)
-          .json({"status": 400, "err": "Email or password is not sent"});
-      }
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
+        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
-  },
+},
 
-  // Change Password Admin
-  changePassword: async function (req, res) {
+// Change Password Admin
+changePassword: async function (req, res) {
     try {
-      if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
-        return res
-          .status(401)
-          .json({err: 'Please provide email, current password, new password, confirm password'});
-      }
+        if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
+            return res.status(401).json({ err: 'Please provide email, current password, new password, confirm password' });
+        }
 
-      if (req.body.new_password !== req.body.confirm_password) {
-        return res
-          .status(401)
-          .json({"status": 401, err: 'New and confirm password should match'});
-      }
+        if (req.body.new_password !== req.body.confirm_password) {
+            return res.status(401).json({ "status": 401, err: 'New and confirm password should match' });
+        }
 
-      if (req.body.current_password === req.body.new_password) {
-        return res
-          .status(401)
-          .json({"status": 401, err: 'Current and new password should not be match'});
-      }
+        if (req.body.current_password === req.body.new_password) {
+            return res.status(401).json({ "status": 401, err: 'Current and new password should not be match' });
+        }
 
-      const user_details = await Admin.findOne({email: req.body.email});
-      if (!user_details) {
-        return res
-          .status(401)
-          .json({"status": 401, err: 'Email address not found'});
-      }
+        const user_details = await Admin.findOne({ email: req.body.email });
+        if (!user_details) {
+            return res.status(401).json({ "status": 401, err: 'Email address not found' });
+        }
 
-      let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
-      if (!compareCurrent) {
-        return res
-          .status(401)
-          .json({"status": 401, err: "Current password mismatch"});
-      }
-      // Update New Password
-      var adminUpdates = await Admin
-        .update({email: req.body.email})
-        .set({email: req.body.email, password: req.body.new_password})
-        .fetch();
+        let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
+        if (!compareCurrent) {
+            return res.status(401).json({ "status": 401, err: "Current password mismatch" });
+        }
+        // Update New Password
+        var adminUpdates = await Admin
+            .update({ email: req.body.email })
+            .set({ email: req.body.email, password: req.body.new_password })
+            .fetch();
 
-      if (adminUpdates) {
-        return res.json({"status": 200, "message": "Password changed successfully", "data": adminUpdates});
-      } else {
-        return res
-          .status(401)
-          .json({err: 'Something went wrong! Could not able to update the password'});
-      }
+        if (adminUpdates) {
+            return res.json({ "status": 200, "message": "Password changed successfully", "data": adminUpdates });
+        } else {
+            return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
+        }
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+        res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+        return;
     }
-  },
+},
 
   // Update Profile Details Admin
   update: async function (req, res) {
