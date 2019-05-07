@@ -17,7 +17,12 @@ module.exports = {
     let feesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
     feesCount = feesCount.rows[0].count;
     if (allTradingFees) {
-      return res.json({"status": 200, "message": "All fees retrived successfully", "data": allTradingFees, feesCount});
+      return res.json({
+        "status": 200,
+        "message": sails.__("All fees retrived success"),
+        "data": allTradingFees,
+        feesCount
+      });
     } else {
       return res
         .status(500)
@@ -36,7 +41,10 @@ module.exports = {
         .set({taker_fee: req.body.taker_fee, maker_fee: req.body.maker_fee})
         .fetch();
       if (updatedFee) {
-        return res.json({"status": 200, "message": "Fees updated successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Fees updated success")
+        });
       } else {
         return res
           .status(500)
@@ -48,7 +56,10 @@ module.exports = {
     } else {
       return res
         .status(400)
-        .json({status: 400, "err": "data not found"});
+        .json({
+          status: 400,
+          "err": sails.__("No Data")
+        });
     }
   }
 };

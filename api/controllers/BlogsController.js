@@ -76,15 +76,15 @@ module.exports = {
     // console.log("---------body--->", body); }) https.request(apiConfig, { form },
     // function (response) {     var responseData = '';
     // response.setEncoding('utf8');     response.on('data', function (chunk) {
-    //    responseData += chunk;     });     response.once('error', function (err) {
-    //         // Some error handling here, e.g.:         res.serverError(err);
-    // });     response.on('end', function () {         try {
-    // console.log('SUCCESSss', responseData)             // response available as
-    // `responseData` in `yourview`             return res.json({
-    // "status": 200,                 "message": sails.__("Blog list"),
-    //    "data": JSON.parse(responseData)             });         } catch (e) {
-    //         sails.log.warn('Could not parse response from options.hostname: ' +
-    // e);         }         res.view('yourview');     }); }).end()
+    // responseData += chunk;     });     response.once('error', function (err) {
+    //      // Some error handling here, e.g.:         res.serverError(err); });
+    // response.on('end', function () {         try { console.log('SUCCESSss',
+    // responseData)             // response available as `responseData` in
+    // `yourview`             return res.json({ "status": 200,
+    // "message": sails.__("Blog list"),    "data": JSON.parse(responseData)
+    //     });         } catch (e) {         sails.log.warn('Could not parse
+    // response from options.hostname: ' + e);         }
+    // res.view('yourview');     }); }).end()
   },
 
   getAllBlogList: async function (req, res) {
@@ -129,36 +129,35 @@ module.exports = {
     }).end()
 
     // req.setLocale('en') let { page, limit, data } = req.allParams(); if (data) {
-    //    data = data.toLowerCase();     let blogData = await Blogs.find({
-    // where: {             deleted_at: null,             or: [{
-    // search_keywords: { contains: data }             }]         }     }).sort("id
-    // ASC").paginate(page - 1, parseInt(limit));     let BlogCount = await
-    // Blogs.count({         where: {             deleted_at: null,             or:
-    // [{                 search_keywords: { contains: data }             }]
-    // }     });     let featuredBlog = {}; let featuredBlogArray = await
-    // Blogs.find({ is_featured: true, deleted_at: null }); if (page == 1 &&
-    // featuredBlogArray.length > 0) {     featuredBlog = featuredBlogArray[0];
-    // let admin = await Admin.findOne({ id: featuredBlog.admin_id });
-    // featuredBlog.admin_name = admin.name }     if (blogData) {         return
-    // res.json({             "status": 200,             "message": sails.__("Blog
-    // list"),             "data": blogData, BlogCount, featuredBlog         });
-    // } } else {     let blogData = await Blogs.find({         deleted_at: null
-    // }).sort("id ASC").paginate(page - 1, parseInt(limit));     for (let index =
-    // 0; index < blogData.length; index++) {         if (blogData[index].admin_id)
-    // {             let admin = await Admin.findOne({ id: blogData[index].admin_id
-    // })             blogData[index].admin_name = admin.name         }         let
-    // BlogCommentCount = await BlogComment.count({             where: {
-    //     deleted_at: null,                 blog: blogData[index].id             }
-    //        });         blogData[index].comment_count = BlogCommentCount;     }
-    //  let BlogCount = await Blogs.count({         where: {             deleted_at:
-    // null,         }     });     let featuredBlog = {};     let featuredBlogArray
-    // = await Blogs.find({ is_featured: true, deleted_at: null });     if (page ==
-    // 1 && featuredBlogArray.length > 0) {         featuredBlog =
-    // featuredBlogArray[0];         let admin = await Admin.findOne({ id:
-    // featuredBlog.admin_id });         featuredBlog.admin_name = admin.name     }
-    //    if (blogData) {         return res.json({             "status": 200,
-    //       "message": sails.__("Blog list"),             "data": blogData,
-    // BlogCount, featuredBlog         });     } }
+    //   data = data.toLowerCase();     let blogData = await Blogs.find({ where: {
+    //           deleted_at: null,             or: [{ search_keywords: { contains:
+    // data }             }]         }     }).sort("id ASC").paginate(page - 1,
+    // parseInt(limit));     let BlogCount = await Blogs.count({         where: {
+    //          deleted_at: null,             or: [{
+    // search_keywords: { contains: data }             }] }     });     let
+    // featuredBlog = {}; let featuredBlogArray = await Blogs.find({ is_featured:
+    // true, deleted_at: null }); if (page == 1 && featuredBlogArray.length > 0) {
+    //   featuredBlog = featuredBlogArray[0]; let admin = await Admin.findOne({ id:
+    // featuredBlog.admin_id }); featuredBlog.admin_name = admin.name }     if
+    // (blogData) {         return res.json({             "status": 200,
+    // "message": sails.__("Blog list"),             "data": blogData, BlogCount,
+    // featuredBlog         }); } } else {     let blogData = await Blogs.find({
+    //     deleted_at: null }).sort("id ASC").paginate(page - 1, parseInt(limit));
+    //   for (let index = 0; index < blogData.length; index++) {         if
+    // (blogData[index].admin_id) {             let admin = await Admin.findOne({
+    // id: blogData[index].admin_id })             blogData[index].admin_name =
+    // admin.name         }         let BlogCommentCount = await BlogComment.count({
+    //             where: {     deleted_at: null,                 blog:
+    // blogData[index].id             }        });
+    // blogData[index].comment_count = BlogCommentCount;     }  let BlogCount =
+    // await Blogs.count({         where: {             deleted_at: null,         }
+    //    });     let featuredBlog = {};     let featuredBlogArray = await
+    // Blogs.find({ is_featured: true, deleted_at: null });     if (page == 1 &&
+    // featuredBlogArray.length > 0) {         featuredBlog = featuredBlogArray[0];
+    //        let admin = await Admin.findOne({ id: featuredBlog.admin_id });
+    //  featuredBlog.admin_name = admin.name     }    if (blogData) {         return
+    // res.json({             "status": 200,       "message": sails.__("Blog list"),
+    //             "data": blogData, BlogCount, featuredBlog         });     } }
   },
 
   getBlogDetails: async function (req, res) {
@@ -166,11 +165,11 @@ module.exports = {
     // let blog = await Blogs.findOne({ id: req.body.id, deleted_at: null }); if
     // (blog) {     let adminData = await Admin.findOne({ id: blog.admin_id });
     // blog.admin_name = adminData.name;     let BlogCommentCount = await
-    // BlogComment.count({         where: {             deleted_at: null,
-    //  blog: blog.id         }     });     blog.comment_count = BlogCommentCount;
-    //   return res.json({         "status": 200, "message": sails.__('Blog
-    // Details'), data: blog     }) } else {     return res.status(400).json({
-    //   "status": 400,         "err": "Blog not found",     }); }
+    // BlogComment.count({         where: {             deleted_at: null,  blog:
+    // blog.id         }     });     blog.comment_count = BlogCommentCount;   return
+    // res.json({         "status": 200, "message": sails.__('Blog Details'), data:
+    // blog     }) } else {     return res.status(400).json({   "status": 400,
+    //   "err": "Blog not found",     }); }
     request('https://api.hubapi.com/content/api/v2/blog-posts/' + req.body.id + '?hapikey=e2032f87-8de8-4e18-8f16-f4210e714245', function (error, response, body) {
       if (response) {
         return res.json({
@@ -181,7 +180,10 @@ module.exports = {
       } else {
         return res
           .status(400)
-          .json({"status": 400, "err": "Blog not found"});
+          .json({
+            "status": 400,
+            "err": sails.__("Blog not found")
+          });
       }
     });
   },
@@ -263,7 +265,10 @@ module.exports = {
       if (!blog) {
         return res
           .status(400)
-          .json({"status": 400, "err": "Blog not found"});
+          .json({
+            "status": 400,
+            "err": sails.__("Blog not found")
+          });
       }
       let tags = blog.tags != undefined
         ? blog
@@ -428,19 +433,28 @@ module.exports = {
               } else {
                 res
                   .status(400)
-                  .json({"status": 400, "error": "Something went wrong"});
+                  .json({
+                    "status": 400,
+                    "error": sails.__("Something Wrong")
+                  });
                 return;
               }
             } else {
               res
                 .status(400)
-                .json({"status": 400, "err": "blog title or description or image is not sent"});
+                .json({
+                  "status": 400,
+                  "err": sails.__("blog title or description or image is not sent")
+                });
               return;
             }
           } else {
             res
               .status(400)
-              .json({"status": 400, "err": "blog title or description or image is not sent"});
+              .json({
+                "status": 400,
+                "err": sails.__("blog title or description or image is not sent")
+              });
             return;
           }
         } catch (e) {
@@ -520,7 +534,10 @@ module.exports = {
       } else {
         return res
           .status(400)
-          .json({'status': 400, 'message': 'blog id is not sent.'})
+          .json({
+            'status': 400,
+            'message': sails.__("blog id is not sent.")
+          })
       }
     } catch (error) {
       res
@@ -538,7 +555,10 @@ module.exports = {
     if (!id) {
       res
         .status(500)
-        .json({"status": 500, "err": "Blog id is not sent"});
+        .json({
+          "status": 500,
+          "err": sails.__("blog id is not sent.")
+        });
       return;
     }
     let blogData = await Blogs

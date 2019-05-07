@@ -34,7 +34,6 @@ module.exports = {
     var secret = sails.config.local.KRAKEN_API_SIGN;
     var key = sails.config.local.KEY_NAME;
     var kraken = new KrakenClient(key, secret);
-    console.log("Kraken :::: ", kraken);
     const methods = {
       public: [
         'Time',

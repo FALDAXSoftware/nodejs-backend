@@ -44,7 +44,11 @@ module.exports = {
           .tetherGetInfo(coin_code);
       }
 
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({
+        "status": 200,
+        "message": sails.__("node info retrieval success"),
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
     }
@@ -102,7 +106,11 @@ module.exports = {
           .tetherGetNewAddress(coin_code);
       }
 
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({
+        "status": 200,
+        "message": sails.__("address create success"),
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
     }
@@ -130,7 +138,11 @@ module.exports = {
           .getTransactionList(coin_code);
       } else if (sails.config.local.coinArray[coin_code].type == 2) {}
 
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({
+        "status": 200,
+        "message": sails.__("transaction list success"),
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
     }
@@ -184,7 +196,11 @@ module.exports = {
           .tetherSendCoin(coin_code, to_address, amount, message);
       }
 
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({
+        "status": 200,
+        "message": sails.__("send coin success"),
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
     }
@@ -210,7 +226,7 @@ module.exports = {
           .neoListAddress(coin_code);
       }
 
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({"status": 200, "message": sails.__("list address success"), "data": getInfo});
     } catch (err) {
       console.log(err);
     }
@@ -240,7 +256,7 @@ module.exports = {
           .type2Coins
           .tetherGetWalletBalance(coin_code, address);
       }
-      return res.json({"status": 200, "message": 'Information retrieved successfully', "data": getInfo});
+      return res.json({"status": 200, "message": sails.__("user address balance success"), "data": getInfo});
     } catch (err) {
       console.log(err);
     }

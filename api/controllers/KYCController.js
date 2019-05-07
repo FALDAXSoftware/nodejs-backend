@@ -229,9 +229,17 @@ module.exports = {
 
       if (KYCData == undefined) {
         KYCData = [];
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({
+          "status": 200,
+          "message": sails.__("KYC Data success"),
+          "data": KYCData
+        });
       } else if (KYCData) {
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({
+          "status": 200,
+          "message": sails.__("KYC Data success"),
+          "data": KYCData
+        });
       } else {
         return res
           .status(500)
@@ -308,7 +316,10 @@ module.exports = {
             .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date()})
             .fetch();
           if (updated_kyc) {
-            return res.json({'status': 200, 'message': 'KYC application approved'})
+            return res.json({
+              'status': 200,
+              'message': sails.__("KYC application approved'")
+            })
           }
         } else {
           let updated_kyc = await KYC
@@ -324,13 +335,19 @@ module.exports = {
             })
             .fetch();
           if (updated_kyc) {
-            return res.json({'status': 200, 'message': 'KYC application rejected'})
+            return res.json({
+              'status': 200,
+              'message': sails.__("KYC application rejected")
+            })
           }
         }
       } else {
         return res
           .status(500)
-          .json({status: 500, "err": "Details Not Found"});
+          .json({
+            status: 500,
+            "err": sails.__("Details Not Found")
+          });
       }
     } catch (e) {
       return res
@@ -348,7 +365,11 @@ module.exports = {
 
       let KYCData = await KYC.findOne({user_id});
       if (KYCData) {
-        return res.json({"status": 200, "message": "KYC Data", "data": KYCData});
+        return res.json({
+          "status": 200,
+          "message": sails.__("KYC Data success"),
+          "data": KYCData
+        });
       } else {
         return res
           .status(500)

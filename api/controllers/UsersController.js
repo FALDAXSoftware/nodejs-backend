@@ -36,14 +36,20 @@ module.exports = {
       if (existedUser) {
         return res
           .status(401)
-          .json({status: 401, "err": 'Email address already exists'});
+          .json({
+            status: 401,
+            "err": sails.__("email exits")
+          });
       }
       if (req.body.referral_code) {
         var referredUser = await Users.findOne({referral_code: req.body.referral_code});
         if (!referredUser) {
           return res
             .status(401)
-            .json({status: 401, "err": 'Invalid referral code.'});
+            .json({
+              status: 401,
+              "err": sails.__("invalid referal")
+            });
         } else {
           referred_id = parseInt(referredUser.id);
         }
@@ -93,20 +99,26 @@ module.exports = {
                   "status": 200,
                   "email_verify_token": email_verify_token,
                   "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                    ? "Verification code sent to email successfully"
-                    : "Verification link sent to email successfully"
+                    ? sails.__("verification code")
+                    : sails.__("verification link")
                 });
               }
             })
         } else {
           return res
             .status(401)
-            .json({status: 401, "err": "Something went wrong"});
+            .json({
+              status: 401,
+              "err": sails.__("Something Wrong")
+            });
         }
       } else {
         res
           .status(401)
-          .json({status: 401, "err": "email or password or phone_number is not sent"});
+          .json({
+            status: 401,
+            "err": sails.__("email password not sent")
+          });
         return;
       }
     } catch (error) {
@@ -140,7 +152,10 @@ module.exports = {
       if (existedEmail && existedEmail.length > 0) {
         return res
           .status(401)
-          .json({status: 401, "err": 'This Email is already registered with us.'});
+          .json({
+            status: 401,
+            "err": sails.__("email already registered")
+          });
       }
 
       let new_email_token = randomize('0', 6);
@@ -163,7 +178,10 @@ module.exports = {
             subject: "New Email Confirmation"
           }, function (err) {
             if (!err) {
-              return res.json({"status": 200, "message": "Confirmation OTP has been sent to your current email successfully."});
+              return res.json({
+                "status": 200,
+                "message": sails.__("confirm otp")
+              });
             }
           })
       }
@@ -221,13 +239,20 @@ module.exports = {
               subject: "New Email Verification"
             }, function (err) {
               if (!err) {
-                return res.json({"status": 200, "new_email_token": re_new_email_token, "message": "Email Verification link has been sent to your email successfully."});
+                return res.json({
+                  "status": 200,
+                  "new_email_token": re_new_email_token,
+                  "message": sails.__("verification link")
+                });
               }
             })
         } else {
           return res
             .status(400)
-            .json({"status": 400, "err": 'Invalid OTP'});
+            .json({
+              "status": 400,
+              "err": sails.__("invalid otp")
+            });
         }
       }
     } catch (error) {
@@ -288,7 +313,7 @@ module.exports = {
     }
   },
 
-   /**
+  /**
     * API for getting particular users details
     * Renders this api when user details needs to be fetched
     *
@@ -307,7 +332,11 @@ module.exports = {
         }
       });
       if (usersData) {
-        return res.json({"status": 200, "message": "Users Data", "data": usersData});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Users Data"),
+          "data": usersData
+        });
       }
     } catch (err) {
       return res
@@ -337,7 +366,11 @@ module.exports = {
       .userTradeChecking(usersData[0].id);
     usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
-      return res.json({"status": 200, "message": "Users Data", "data": usersData});
+      return res.json({
+        "status": 200,
+        "message": sails.__("Users Data"),
+        "data": usersData
+      });
     }
   },
 
@@ -353,7 +386,11 @@ module.exports = {
     }).paginate(parseInt(page) - 1, parseInt(limit));
 
     if (usersData) {
-      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
+      return res.json({
+        "status": 200,
+        "message": sails.__("User referred Data"),
+        "data": usersData
+      });
     }
   },
 
@@ -363,7 +400,11 @@ module.exports = {
       .find({user: req.user.id})
       .sort('created_at DESC')
       .limit(10);
-    return res.json({"status": 200, "message": "Users Login History", "data": history});
+    return res.json({
+      "status": 200,
+      "message": sails.__("Users Login History"),
+      "data": history
+    });
   },
 
   update: async function (req, res) {
@@ -479,30 +520,45 @@ module.exports = {
       if (!req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
         return res
           .status(401)
-          .json({status: 401, "err": 'Please provide current password, new password, confirm password'});
+          .json({
+            status: 401,
+            "err": sails.__("password provide")
+          });
       }
       if (req.body.new_password != req.body.confirm_password) {
         return res
           .status(401)
-          .json({status: 401, "err": 'New and confirm password should match'});
+          .json({
+            status: 401,
+            "err": sails.__("password must match")
+          });
       }
       if (req.body.current_password == req.body.new_password) {
         return res
           .status(401)
-          .json({status: 401, "err": 'Current and new password should not be same.'});
+          .json({
+            status: 401,
+            "err": sails.__("current new must not be same")
+          });
       }
 
       const user_details = await Users.findOne({id: req.user.id});
       if (!user_details) {
         return res
           .status(401)
-          .json({status: 401, "err": 'User not found'});
+          .json({
+            status: 401,
+            "err": sails.__("User not found")
+          });
       }
       let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
       if (!compareCurrent) {
         return res
           .status(401)
-          .json({status: 401, "err": "Old password is incorrect"});
+          .json({
+            status: 401,
+            "err": sails.__("Old password not correct")
+          });
       }
 
       var updatedUsers = await Users
@@ -511,11 +567,17 @@ module.exports = {
         .fetch();
 
       if (updatedUsers) {
-        return res.json({"status": 200, "message": "Password changed successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("password change success")
+        });
       } else {
         return res
           .status(401)
-          .json({"status": 401, err: 'Something went wrong! Could not able to update the password'});
+          .json({
+            "status": 401,
+            err: sails.__("Something Wrong")
+          });
       }
     } catch (error) {
       return res
@@ -537,7 +599,11 @@ module.exports = {
     });
 
     if (usersData) {
-      return res.json({"status": 200, "message": "User referred Data", "data": usersData});
+      return res.json({
+        "status": 200,
+        "message": sails.__("User referred Data"),
+        "data": usersData
+      });
     }
   },
 
@@ -555,7 +621,12 @@ module.exports = {
       }
     });
 
-    return res.json({"status": 200, "message": "Users Login History", "data": history, historyCount});
+    return res.json({
+      "status": 200,
+      "message": sails.__("Users Login History"),
+      "data": history,
+      historyCount
+    });
   },
 
   setupTwoFactor: async function (req, res) {
@@ -565,7 +636,10 @@ module.exports = {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "User not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("user inactive")
+          });
       }
       const secret = speakeasy.generateSecret({length: 10});
       await Users
@@ -576,7 +650,13 @@ module.exports = {
         label: 'FALDAX( ' + user.email + ')'
       });
       QRCode.toDataURL(encodeURI(url), function (err, data_url) {
-        return res.json({status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url})
+        return res.json({
+          status: 200,
+          message: sails.__("Qr code sent"),
+          tempSecret: secret.base32,
+          dataURL: data_url,
+          otpauthURL: secret.otpauth_url
+        })
       });
     } catch (error) {
       return res
@@ -596,12 +676,18 @@ module.exports = {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "User not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("user inactive")
+          });
       }
       if (user.is_twofactor == true) {
         return res
           .status(401)
-          .json({"status": 401, "err": "Two factor authentication is already enabled"});
+          .json({
+            "status": 401,
+            "err": sails.__("2 factor already enabled")
+          });
       }
 
       let verified = speakeasy
@@ -611,11 +697,16 @@ module.exports = {
         await Users
           .update({id: user.id})
           .set({email: user.email, is_twofactor: true});
-        return res.json({status: 200, message: "Two factor authentication has been enabled"});
+        return res.json({
+          status: 200,
+          message: sails.__("2 factor enabled")
+        });
       }
       return res
         .status(401)
-        .json({err: "Invalid OTP"});
+        .json({
+          err: sails.__("invalid otp")
+        });
     } catch (error) {
       return res
         .status(500)
@@ -633,17 +724,26 @@ module.exports = {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "User not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("user inactive")
+          });
       }
       if (user.is_twofactor == false) {
         return res
           .status(401)
-          .json({"status": 401, "err": "Two factor authentication is already disabled"});
+          .json({
+            "status": 401,
+            "err": sails.__("2 factor already disabled")
+          });
       }
       await Users
         .update({id: user.id, deleted_at: null})
         .set({email: user.email, is_twofactor: false, twofactor_secret: null});
-      return res.json({status: 200, message: "Two factor authentication has been disabled"});
+      return res.json({
+        status: 200,
+        message: sails.__("2 factor disabled")
+      });
     } catch (error) {
       return res
         .status(500)
@@ -731,7 +831,12 @@ module.exports = {
       userCount = userCount.rows[0].count;
 
       if (usersData) {
-        return res.json({"status": 200, "message": "Users list", "data": usersData, userCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Users list"),
+          "data": usersData,
+          userCount
+        });
       }
     } catch (err) {
       return res
@@ -759,9 +864,15 @@ module.exports = {
     }
 
     if (updateUserData) {
-      return res.json({"status": 200, "message": "User Referral Percentage Updated."});
+      return res.json({
+        "status": 200,
+        "message": sails.__("user referral updated")
+      });
     } else {
-      return res.json({"status": 200, "message": "User(id) not found"});
+      return res.json({
+        "status": 200,
+        "message": sails.__("User not found")
+      });
     }
   },
 
@@ -775,7 +886,10 @@ module.exports = {
         .fetch();
 
       if (updateCoinFee) {
-        return res.json({"status": 200, "message": "Coin Fee has been updated successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("coin fee update success")
+        });
       }
     } catch (err) {
       return res
@@ -797,9 +911,15 @@ module.exports = {
         .fetch();
 
       if (usersData && typeof usersData === 'object' && usersData.length > 0) {
-        return res.json({"status": 200, "message": "User Status Updated"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("User Status Updated")
+        });
       } else {
-        return res.json({"status": 401, "message": "User(id) not found"});
+        return res.json({
+          "status": 401,
+          "message": sails.__("User not found")
+        });
       }
     } catch (err) {
       return res
@@ -853,7 +973,11 @@ module.exports = {
           }
         });
     });
-    res.json({state: 200, message: "Countries retirved successfully", countries: countriesResponse});
+    res.json({
+      state: 200,
+      message: sails.__("Countries retirved success"),
+      countries: countriesResponse
+    });
   },
 
   getUserReferredAdmin: async function (req, res) {
@@ -896,7 +1020,12 @@ module.exports = {
       referralCount = referralCount.rows[0].count;
 
       if (usersData) {
-        return res.json({"status": 200, "message": "Referral Users Data", "data": usersData, referralCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Referral Users Data"),
+          "data": usersData,
+          referralCount
+        });
       }
     } catch (err) {
       return res
@@ -1008,11 +1137,13 @@ module.exports = {
     // console.log(req.allParams()); return res.json({   status: 200,   message:
     // "user created successfully" });
     try {
-      let { create_hubspot_contact, generate_wallet_coins, kyc_done, ...user } = req.allParams();
-      let existedUser = await Users.findOne({
-        deleted_at: null,
-        email: user.email
-      });
+      let {
+        create_hubspot_contact,
+        generate_wallet_coins,
+        kyc_done,
+        ...user
+      } = req.allParams();
+      let existedUser = await Users.findOne({deleted_at: null, email: user.email});
       if (existedUser == undefined) {
         let hubspotcontact = null
         if (create_hubspot_contact == true) {
@@ -1025,13 +1156,15 @@ module.exports = {
               throw new Error("serverError");
             });
         }
-        let generatedUser = await Users.create({
+        let generatedUser = await Users
+          .create({
           ...user,
           hubspot_id: hubspotcontact,
           is_active: true,
           is_verified: true,
           password: randomize('Aa0', 60)
-        }).fetch();
+        })
+          .fetch();
         if (kyc_done == true) {
           await KYC.create({
             first_name: user.first_name,
@@ -1048,19 +1181,32 @@ module.exports = {
           for (let index = 0; index < generate_wallet_coins.length; index++) {
             const element = generate_wallet_coins[index];
             console.log("element", element);
-            await sails.helpers.wallet.receiveOneAddress(element, generatedUser);
+            await sails
+              .helpers
+              .wallet
+              .receiveOneAddress(element, generatedUser);
           }
         }
         return res.json({
           status: 200,
-          message: "user created successfully"
+          message: sails.__("user created success")
         });
       } else {
-        return res.status(500).json({ status: 500, "err": "Email Id already exist." });
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("email already registered")
+          });
       }
     } catch (error) {
       console.log("log", error);
-      return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };

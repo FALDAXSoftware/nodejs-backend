@@ -169,8 +169,6 @@ module.exports = {
             addSellBook.added = true;
             return exits.success(addSellBook);
           } else {
-            console.log(total_price);
-            console.log(wallet.placed_balance);
             return exits.insufficientBalance();
           }
         }
