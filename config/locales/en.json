@@ -3,7 +3,7 @@
 	"Forbidden":"Forbidden",
 	"No Data":"No data found.",
 	"A brand new app.": "A brand new app.",
-	"Coin list": "Coin Retrived Success",
+	"Coin list": "Assets Retrived Success",
 	"User not found": "User not found",
 	"user_delete_success": "Account Deleted Successfully",
 	"Employee list": "Employees Retrieved Successfully",
@@ -218,5 +218,8 @@
 	"Employee Details":"Employee Details",
 	"Employee id is required":"Employee id is required",
 	"Admin not found or it's not active":"Admin not found or it's not active",
-	"Admin Details":"Admin Details"
+	"Admin Details":"Admin Details",
+	"Order Filfilled Success": "Order Filfilled Success",
+	"Order Fulfilled Success": "Order Fulfilled Success",
+	"It looks like Robot !": "It looks like Robot !"
 }

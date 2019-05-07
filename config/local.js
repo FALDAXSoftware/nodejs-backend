@@ -13,6 +13,7 @@ module.exports.local = {
   "KRAKEN_API_SIGN": process.env.API_SIGN,
   "KEY_NAME": process.env.KEY_NAME,
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
+  "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
   "coinArray": {
     'STRAT': {
