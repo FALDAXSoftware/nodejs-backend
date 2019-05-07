@@ -83,27 +83,27 @@ module.exports = {
             .send((req.body.device_type == 1 || req.body.device_type == 2)
               ? "signupCode"
               : "signup", {
-              homelink: sails.config.urlconf.APP_URL,
-              recipientName: user_detail.first_name,
-              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
-                ? email_verify_code
-                : email_verify_token,
-              senderName: "Faldax"
-            }, {
-              to: user_detail.email,
-              subject: "Signup Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "email_verify_token": email_verify_token,
-                  "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                    ? sails.__("verification code")
-                    : sails.__("verification link")
-                });
-              }
-            })
+                homelink: sails.config.urlconf.APP_URL,
+                recipientName: user_detail.first_name,
+                token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+                tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
+                  ? email_verify_code
+                  : email_verify_token,
+                senderName: "Faldax"
+              }, {
+                to: user_detail.email,
+                subject: "Signup Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "email_verify_token": email_verify_token,
+                    "message": (req.body.device_type == 1 || req.body.device_type == 2)
+                      ? sails.__("verification code")
+                      : sails.__("verification link")
+                  });
+                }
+              })
         } else {
           return res
             .status(401)
@@ -174,16 +174,16 @@ module.exports = {
             tokenCode: new_email_token,
             senderName: "Faldax"
           }, {
-            to: existedUser.email,
-            subject: "New Email Confirmation"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("confirm otp")
-              });
-            }
-          })
+              to: existedUser.email,
+              subject: "New Email Confirmation"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("confirm otp")
+                });
+              }
+            })
       }
     } catch (error) {
       return res
@@ -235,17 +235,17 @@ module.exports = {
               new_email_token: re_new_email_token,
               senderName: "Faldax"
             }, {
-              to: requested_email,
-              subject: "New Email Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "new_email_token": re_new_email_token,
-                  "message": sails.__("verification link")
-                });
-              }
-            })
+                to: requested_email,
+                subject: "New Email Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": re_new_email_token,
+                    "message": sails.__("verification link")
+                  });
+                }
+              })
         } else {
           return res
             .status(400)
@@ -695,8 +695,8 @@ module.exports = {
         .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
       if (verified) {
         await Users
-          .update({id: user.id})
-          .set({email: user.email, is_twofactor: true});
+          .update({ id: user.id })
+          .set({ email: user.email, is_twofactor: true });
         return res.json({
           status: 200,
           message: sails.__("2 factor enabled")
@@ -738,8 +738,8 @@ module.exports = {
           });
       }
       await Users
-        .update({id: user.id, deleted_at: null})
-        .set({email: user.email, is_twofactor: false, twofactor_secret: null});
+        .update({ id: user.id, deleted_at: null })
+        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
       return res.json({
         status: 200,
         message: sails.__("2 factor disabled")
@@ -800,22 +800,30 @@ module.exports = {
         });
     }
   },
+
+
+
+
+
+
+
+
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
     try {
       let { page, limit, data, sort_col, sort_order, country } = req.allParams();
       let whereAppended = false;
-      let query = " from users";
+      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM users GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
       if ((data && data != "")) {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(email) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
         }
         query += ")"
       }
@@ -827,7 +835,7 @@ module.exports = {
           query += " WHERE "
         }
         whereAppended = true;
-        query += "  country='" + country + "'";
+        query += "  users.country='" + country + "'";
       }
 
       countQuery = query;
@@ -835,11 +843,12 @@ module.exports = {
         let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sort_col + " " + sortVal;
+        query += " ORDER BY users." + sort_col + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select *" + query, [])
+
+      let usersData = await sails.sendNativeQuery("Select users.*, reffral.no_of_referrals" + query, [])
 
       usersData = usersData.rows;
 
@@ -1149,27 +1158,21 @@ module.exports = {
     // console.log(req.allParams()); return res.json({   status: 200,   message:
     // "user created successfully" });
     try {
-      let {
-        create_hubspot_contact,
-        generate_wallet_coins,
-        kyc_done,
-        ...user
-      } = req.allParams();
-      let existedUser = await Users.findOne({deleted_at: null, email: user.email});
+      let { generate_wallet_coins, kyc_done, ...user } = req.allParams();
+      let existedUser = await Users.findOne({
+        deleted_at: null,
+        email: user.email
+      });
       if (existedUser == undefined) {
-        let hubspotcontact = null
-        if (create_hubspot_contact == true) {
-          hubspotcontact = await sails
-            .helpers
-            .hubspot
-            .contacts
-            .create(user.first_name, user.last_name, user.email)
-            .tolerate("serverError", () => {
-              throw new Error("serverError");
-            });
-        }
-        let generatedUser = await Users
-          .create({
+        let hubspotcontact = await sails
+          .helpers
+          .hubspot
+          .contacts
+          .create(user.first_name, user.last_name, user.email)
+          .tolerate("serverError", () => {
+            throw new Error("serverError");
+          });
+        let generatedUser = await Users.create({
           ...user,
           hubspot_id: hubspotcontact,
           is_active: true,
@@ -1213,6 +1216,27 @@ module.exports = {
       }
     } catch (error) {
       console.log("log", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+  getTicketsAdmin: async function (req, res) {
+    try {
+      let tickets = await sails
+        .helpers
+        .hubspot
+        .tickets
+        .getUsersTickets(req.query.user_id);
+      res.json({
+        status: 200,
+        tickets: tickets.reverse(),
+        message: "Ticket"
+      });
+    } catch (err) {
       return res
         .status(500)
         .json({
