@@ -32,7 +32,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    let updatedbook = await buyBook.update({ id: inputs.id }).set(inputs.data).fetch();
+    let updatedbook = await BuyBook.update({ id: inputs.id }).set(inputs.data).fetch();
     return exits.success(updatedbook);
   }
 

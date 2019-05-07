@@ -58,7 +58,10 @@ module.exports = {
                         created_at: new Date()
                       }).fetch();
                       if (jobDetails) {
-                        return res.json({status: 200, message: "job applied successfully."})
+                        return res.json({
+                          status: 200,
+                          message: sails.__("job applied success")
+                        })
                       } else {
                         return res
                           .status(500)
@@ -73,14 +76,20 @@ module.exports = {
                   })
               }
             } else {
-              return res.json({"status": 400, "message": "Resume is not present."});
+              return res.json({
+                "status": 400,
+                "message": sails.__("Resume is not present.")
+              });
             }
           } catch (e) {
             throw e;
           }
         });
     } else {
-      return res.json({"status": 400, "message": "Job id is not valid."});
+      return res.json({
+        "status": 400,
+        "message": sails.__("Job id is not valid.")
+      });
     }
   },
 
@@ -95,7 +104,12 @@ module.exports = {
       });
     let careerDesc = await Statics.findOne({slug: 'career'});
     if (allJobCategories) {
-      return res.json({"status": 200, "message": "All jobs retrived successfully", "data": allJobCategories, careerDesc});
+      return res.json({
+        "status": 200,
+        "message": sails.__("All jobs retrived success"),
+        "data": allJobCategories,
+        careerDesc
+      });
     } else {
       return res
         .status(500)
@@ -109,7 +123,11 @@ module.exports = {
   getAllJobCategories: async function (req, res) {
     let allJobCategories = await JobCategory.find({deleted_at: null});
     if (allJobCategories) {
-      return res.json({"status": 200, "message": "All job categories retrived successfully", "data": allJobCategories});
+      return res.json({
+        "status": 200,
+        "message": sails.__("All job categories retrived success"),
+        "data": allJobCategories
+      });
     } else {
       return res
         .status(500)
@@ -144,7 +162,12 @@ module.exports = {
       let allJobsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       allJobsCount = allJobsCount.rows[0].count;
       if (allJobs) {
-        return res.json({"status": 200, "message": "All jobs retrived successfully", "data": allJobs, allJobsCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("All jobs retrived success"),
+          "data": allJobs,
+          allJobsCount
+        });
       }
     } catch (err) {
       return res
@@ -161,11 +184,18 @@ module.exports = {
       let {id} = req.allParams();
       let jobDetail = await Jobs.findOne({id});
       if (jobDetail) {
-        return res.json({"status": 200, "message": "Job details retrived successfully", "data": jobDetail});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Job details retrived success"),
+          "data": jobDetail
+        });
       } else {
         return res
           .status(400)
-          .json({status: 400, "err": "Job does not exists"});
+          .json({
+            status: 400,
+            "err": sails.__("Job does not exists")
+          });
       }
     } catch (err) {
       return res
@@ -182,7 +212,10 @@ module.exports = {
       .create({position: req.body.position, short_desc: req.body.short_desc, job_desc: req.body.job_desc, location: req.body.location, category: req.body.category})
       .fetch();
     if (addedJob) {
-      return res.json({"status": 200, "message": "Job added successfully"});
+      return res.json({
+        "status": 200,
+        "message": sails.__("Job added success")
+      });
     } else {
       return res
         .status(500)
@@ -201,7 +234,10 @@ module.exports = {
         .set(req.body)
         .fetch();
       if (updatedJob) {
-        return res.json({"status": 200, "message": "Job updated successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Job updated success")
+        });
       } else {
         return res
           .status(500)
@@ -213,7 +249,10 @@ module.exports = {
     } else {
       return res
         .status(400)
-        .json({status: 400, "err": "Job not found"});
+        .json({
+          status: 400,
+          "err": sails.__("Job not found")
+        });
     }
   },
 
@@ -223,14 +262,20 @@ module.exports = {
       if (!job_id) {
         return res
           .status(500)
-          .json({"status": 500, "err": "Job id is not sent"});
+          .json({
+            "status": 500,
+            "err": sails.__("Job id is not sent")
+          });
       }
       let deletedJob = await Jobs
         .update({id: job_id})
         .set({deleted_at: new Date()})
         .fetch();
       if (deletedJob) {
-        return res.json({"status": 200, "message": "Job removed successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Job removed success")
+        });
       } else {
         return res
           .status(500)
@@ -285,7 +330,12 @@ module.exports = {
       let applicationCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       applicationCount = applicationCount.rows[0].count;
       if (applications) {
-        return res.json({"status": 200, "message": "All job applications retrived successfully", "data": applications, applicationCount});
+        return res.json({
+          "status": 200,
+          "message": sails._("All jobs retrived success"),
+          "data": applications,
+          applicationCount
+        });
       }
     } catch (err) {
       console.log(err)

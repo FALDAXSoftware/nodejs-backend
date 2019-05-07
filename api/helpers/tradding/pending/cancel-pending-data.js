@@ -49,7 +49,7 @@ module.exports = {
       var currency;
       var userIds = [];
       if (inputs.type == "Limit" && inputs.side == "Buy") {
-        var pendingBookDetailsBuy = await buyBook.findOne({
+        var pendingBookDetailsBuy = await BuyBook.findOne({
           where: {
             deleted_at: null,
             id: inputs.id
@@ -93,13 +93,13 @@ module.exports = {
           .update({id: pendingBookDetailsBuy.activity_id})
           .set({is_cancel: true});
 
-        deletePending = await buyBook
+        deletePending = await BuyBook
           .update({id: inputs.id})
           .set({deleted_at: now})
           .fetch();
 
       } else if (inputs.type == "Limit" && inputs.side == "Sell") {
-        var pendingBookDetailsSell = await sellBook.findOne({
+        var pendingBookDetailsSell = await SellBook.findOne({
           where: {
             deleted_at: null,
             id: inputs.id
@@ -146,7 +146,7 @@ module.exports = {
           .update({id: pendingBookDetailsSell.activity_id})
           .set({is_cancel: true});
 
-        deletePending = await sellBook
+        deletePending = await SellBook
           .update({id: inputs.id})
           .set({deleted_at: now})
           .fetch();

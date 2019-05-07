@@ -32,7 +32,6 @@ module.exports = {
     const secret = 'xfAlQbL6KvD3pWGqJ7uXzHSLykmn19bXoV5Oic5+QNCqx4/5ipth8uBCAMPtJUSmkF9iDf4gqMJee Hy' +
         'NjMl4LQ == '; // API Private Key
     var kraken = new KrakenClient(key, secret);
-    console.log(kraken);
     const methods = {
       public: [
         'Time',
@@ -75,7 +74,6 @@ module.exports = {
         volume: '40',
         validate:true
       })
-      console.log(data);
       return exits.success(data);
     } catch (err) {
       console.log(err);

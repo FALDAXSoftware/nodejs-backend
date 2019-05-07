@@ -14,12 +14,12 @@ module.exports = {
     },
 
     fn: async function (inputs) {
-        let allSellBookData = await sellBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
-        let allbuyBookData = await buyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
+        let allSellBookData = await SellBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
+        let allbuyBookData = await BuyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
         let allPendingBookData = await PendingBook.find({ deleted_at: null });
 
         let finalUserList = [];
-        finalUserList = allSellBookData.concat(allbuyBookData);
+        finalUserList = allSellBookData.concat(allBuyBookData);
         finalUserList = allSellBookData.concat(allPendingBookData);
 
         let allUsers = [];

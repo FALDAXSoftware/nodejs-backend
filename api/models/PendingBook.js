@@ -12,36 +12,36 @@ module.exports = {
     maximum_time: {
       type: 'ref',
       columnType: 'datetime',
-      columnName: 'maximum_time',
+      columnName: 'maximum_time'
     },
     fill_price: {
       type: 'number',
-      columnName: 'fill_price',
+      columnName: 'fill_price'
     },
     limit_price: {
       type: 'number',
-      columnName: 'limit_price',
+      columnName: 'limit_price'
     },
     stop_price: {
       type: 'number',
-      columnName: 'stop_price',
+      columnName: 'stop_price'
     },
     price: {
       type: 'number',
-      columnName: 'price',
+      columnName: 'price'
     },
     quantity: {
       type: 'number',
-      columnName: 'quantity',
+      columnName: 'quantity'
     },
     user_id: {
       type: 'string',
       columnName: 'user_id',
-      required: true,
+      required: true
     },
     avg_price: {
       type: 'number',
-      columnName: 'avg_price',
+      columnName: 'avg_price'
     },
     currency: {
       type: 'string',
@@ -67,7 +67,7 @@ module.exports = {
     time: {
       type: 'ref',
       columnType: 'datetime',
-      columnName: 'time',
+      columnName: 'time'
     },
     side: {
       type: 'string',
@@ -88,11 +88,11 @@ module.exports = {
     },
     maker_fee: {
       type: 'number',
-      columnName: 'maker_fee',
+      columnName: 'maker_fee'
     },
     taker_fee: {
       type: 'number',
-      columnName: 'taker_fee',
+      columnName: 'taker_fee'
     },
     activity_id: {
       type: 'number',
@@ -123,7 +123,5 @@ module.exports = {
   beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
-  },
-
+  }
 };
-

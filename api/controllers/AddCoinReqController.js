@@ -52,7 +52,10 @@ module.exports = {
       created_at: new Date()
     }).fetch();
     if (addReqData) {
-      return res.json({"status": 200, "message": "Coin requested successfully"});
+      return res.json({
+        "status": 200,
+        "message": sails.__("Coin requested success")
+      });
     } else {
       return res
         .status(500)
@@ -103,7 +106,12 @@ module.exports = {
         }
       });
       if (coinReqData) {
-        return res.json({"status": 200, "message": "Coin requests retrived successfully", "data": coinReqData, coinReqCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Coin requests retrived success"),
+          "data": coinReqData,
+          coinReqCount
+        });
       }
     } else {
       let q = {
@@ -127,7 +135,12 @@ module.exports = {
         ...q
       });
       if (coinReqData) {
-        return res.json({"status": 200, "message": "Coin requests retrived successfully", "data": coinReqData, coinReqCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Coin requests retrived success"),
+          "data": coinReqData,
+          coinReqCount
+        });
       } else {
         return res
           .status(500)

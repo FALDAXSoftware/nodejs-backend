@@ -31,7 +31,7 @@ module.exports = {
 
     // Get buy book orders.
     var buyBookOrders;
-    buyBookOrders = await buyBook.find({
+    buyBookOrders = await BuyBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,

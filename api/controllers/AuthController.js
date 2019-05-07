@@ -117,25 +117,37 @@ module.exports = {
                 console.log('if')
                 return res
                   .status(401)
-                  .json({"status": 401, "err": 'Invalid email or password'});
+                  .json({
+                    "status": 401,
+                    "err": sails.__("Invalid email or password")
+                  });
               } else {
                 if (user_detail.is_verified == false) {
                   return res
                     .status(402)
-                    .json({"status": 402, "err": "To login please activate your account"});
+                    .json({
+                      "status": 402,
+                      "err": sails.__("To login please activate your account")
+                    });
                 }
                 if (user_detail) {
                   if (user_detail.is_new_email_verified == false) {
                     return res
                       .status(405)
-                      .json({"status": 405, "err": "To continue, please verify your new email address."});
+                      .json({
+                        "status": 405,
+                        "err": sails.__("To continue, please verify your new email address.")
+                      });
                   }
                 }
                 if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                   if (!req.body.otp) {
                     return res
                       .status(201)
-                      .json({"status": 201, "err": 'Please enter OTP to continue'});
+                      .json({
+                        "status": 201,
+                        "err": sails.__("Please enter OTP to continue")
+                      });
                   }
                   let verified = speakeasy
                     .totp
@@ -143,7 +155,10 @@ module.exports = {
                   if (!verified) {
                     return res
                       .status(402)
-                      .json({"status": 402, "err": 'Invalid OTP'});
+                      .json({
+                        "status": 402,
+                        "err": sails.__("invalid otp")
+                      });
                   }
                 }
 
@@ -210,7 +225,10 @@ module.exports = {
                       if (!err) {
                         return res
                           .status(401)
-                          .json({"status": 401, "err": "New device confirmation email sent to your email."});
+                          .json({
+                            "status": 401,
+                            "err": sails.__("New device confirmation email sent to your email.")
+                          });
                       } else {
                         console.log(err);
                         return res
@@ -240,13 +258,19 @@ module.exports = {
         } else {
           res
             .status(401)
-            .json({"status": 401, "err": "Invalid email or password"});
+            .json({
+              "status": 401,
+              "err": sails.__("Invalid email or password")
+            });
           return;
         }
       } else {
         res
           .status(401)
-          .json({"status": 401, "err": "Email or password is not sent"});
+          .json({
+            "status": 401,
+            "err": sails.__("Email or password is not sent")
+          });
         return;
       }
     } catch (error) {
@@ -310,7 +334,10 @@ module.exports = {
       }
       return res
         .status(401)
-        .json({"status": 401, "err": "Invalid verification token"});
+        .json({
+          "status": 401,
+          "err": sails.__("Invalid verification token")
+        });
     } catch (error) {
       return res
         .status(500)
@@ -371,7 +398,10 @@ module.exports = {
         subject: "Authentication Code"
       }, function (err) {
         if (!err) {
-          return res.json({"status": 200, "message": "Authentication code sent to email successfully"});
+          return res.json({
+            "status": 200,
+            "message": sails.__("Authentication code sent to email successfully")
+          });
         } else {
           return res
             .status(500)
@@ -422,7 +452,10 @@ module.exports = {
     if (user.twofactor_secret != otp) {
       return res
         .status(401)
-        .json({"status": 401, "err": "Invalid OTP"});
+        .json({
+          "status": 401,
+          "err": sails.__("invalid otp")
+        });
     }
     await User
       .update({id: user.id})
@@ -430,7 +463,12 @@ module.exports = {
     var token = await sails
       .helpers
       .jwtIssue(user_detail.id);
-    return res.json({status: 200, user: user, token, message: "Login successfull."});
+    return res.json({
+      status: 200,
+      user: user,
+      token,
+      message: sails.__("Login successfull.")
+    });
   },
 
   sendVerificationCodeEmail: async function (req, res) {
@@ -455,18 +493,27 @@ module.exports = {
             subject: "Signup Verification"
           }, function (err) {
             if (!err) {
-              return res.json({"status": 200, "message": "Verification code sent to email successfully"});
+              return res.json({
+                "status": 200,
+                "message": sails.__("verification code")
+              });
             }
           })
       } else {
         return res
           .status(401)
-          .json({"status": 401, "err": "This email id is not registered with us."});
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
       }
     } else {
       return res
         .status(500)
-        .json({"status": 500, "err": "Email is required."});
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
     }
   },
 
@@ -480,14 +527,20 @@ module.exports = {
         if (user_details == undefined) {
           return res
             .status(400)
-            .json({"status": 400, "err": "Reset Token expired."});
+            .json({
+              "status": 400,
+              "err": sails.__("Reset Token expired.")
+            });
         } else {
           let updateUsers = await Users
             .update({email: user_details.email, deleted_at: null})
             .set({email: user_details.email, password: req.body.password, reset_token: null, reset_token_expire: null})
             .fetch();
           if (updateUsers) {
-            return res.json({"status": 200, "message": "Password updated Successfully"});
+            return res.json({
+              "status": 200,
+              "message": sails.__("Password updated Successfully")
+            });
           } else {
             throw "Update password Error"
           }
@@ -495,7 +548,10 @@ module.exports = {
       } else {
         return res
           .status(500)
-          .json({"status": 500, "err": "Reset Token or Password is not present."});
+          .json({
+            "status": 500,
+            "err": sails.__("Reset Token or Password is not present.")
+          });
       }
     } catch (e) {
       return res
@@ -513,7 +569,10 @@ module.exports = {
       if (!user_details) {
         return res
           .status(401)
-          .json({"status": 401, err: 'This email is not registered with us.'});
+          .json({
+            "status": 401,
+            err: sails.__("This email id is not registered with us.")
+          });
       }
       if (user_details.is_active == false) {
         return res
@@ -549,7 +608,10 @@ module.exports = {
           subject: "Forgot Password"
         }, function (err) {
           if (!err) {
-            return res.json({"status": 200, "message": "Reset password link sent to your email successfully."});
+            return res.json({
+              "status": 200,
+              "message": sails.__("Reset password link sent to your email successfully.")
+            });
           }
         })
     } catch (error) {
@@ -571,7 +633,10 @@ module.exports = {
         if (logged_user.length <= 0) {
           return res
             .status(200)
-            .json({status: 200, message: "User Log out successfully."});
+            .json({
+              status: 200,
+              message: sails.__("User Log out success")
+            });
         }
       }
 
@@ -583,11 +648,17 @@ module.exports = {
         .fetch();
 
       if (logged_user) {
-        return res.json({status: 200, message: "User Log out successfully."});
+        return res.json({
+          status: 200,
+          message: sails.__("User Log out successfully.")
+        });
       } else {
         return res
           .status(200)
-          .json({status: 200, message: "User Log out successfully."});
+          .json({
+            status: 200,
+            message: sails.__("User Log out successfully.")
+          });
       }
     } catch (e) {
       console.log(e);

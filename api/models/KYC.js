@@ -102,9 +102,9 @@ module.exports = {
       columnName: 'comments',
       allowNull: true
     },
-    kycDoc_details: {
+    kyc_doc_details: {
       type: 'string',
-      columnName: 'kycDoc_details',
+      columnName: 'kyc_doc_details',
       allowNull: true
     },
     country_code: {
@@ -112,9 +112,9 @@ module.exports = {
       columnName: 'country_code',
       allowNull: true
     },
-    isApprove: {
+    is_approve: {
       type: 'boolean',
-      columnName: 'isApprove',
+      columnName: 'is_approve',
       defaultsTo: false
     },
     created_at: {

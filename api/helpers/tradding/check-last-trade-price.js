@@ -51,7 +51,7 @@ module.exports = {
         .sell
         .getSellBookOrders(inputs.crypto, inputs.currency);
 
-      var sellBookData = sellBook[0].fill_price || 0;
+      var sellBookData = SellBook[0].fill_price || 0;
       lastTradePrice = ((buyBookData + sellBookData) / 2);
 
     } else {

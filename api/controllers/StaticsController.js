@@ -19,7 +19,11 @@ module.exports = {
   getStaticPageJson: async function (req, res) {
     let staticData = await Statics.findOne({slug: req.params.page, is_active: true});
     if (staticData) {
-      return res.json({"status": 200, "message": "Static Page retrived successfully", "data": staticData})
+      return res.json({
+        "status": 200,
+        "message": sails.__("Static Page retrived success"),
+        "data": staticData
+      })
     } else {
       return res.notFound();
     }
@@ -31,7 +35,12 @@ module.exports = {
       let staticData = await Statics.find({is_active: true, deleted_at: null});
       let staticCount = await Statics.count({is_active: true, deleted_at: null});
       if (staticData) {
-        return res.json({"status": 200, "message": "Static Pages retrived successfully", "data": staticData, staticCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Static Page retrived success"),
+          "data": staticData,
+          staticCount
+        });
       }
     } catch (err) {
       return res
@@ -64,18 +73,27 @@ module.exports = {
         }).fetch();
         if (static_details) {
           //Send verification email in before create
-          res.json({"status": 200, "message": "Static page created successfully."});
+          res.json({
+            "status": 200,
+            "message": sails.__("Static Page retrived success")
+          });
           return;
         } else {
           res
             .status(400)
-            .json({"status": 400, "err": "not listed"});
+            .json({
+              "status": 400,
+              "err": sails.__("not listed")
+            });
           return;
         }
       } else {
         res
           .status(400)
-          .json({"status": 400, "err": "not listed"});
+          .json({
+            "status": 400,
+            "err": sails.__("not listed")
+          });
         return;
       }
     } catch (error) {
@@ -106,10 +124,16 @@ module.exports = {
         .set(staticData)
         .fetch();
       if (!updateStatic) {
-        return res.json({"status": 200, "message": "Something went wrong! could not able to update static page details"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("static page update not success")
+        });
       }
 
-      return res.json({"status": 200, "message": "Static page details updated successfully."});
+      return res.json({
+        "status": 200,
+        "message": sails.__("Static page details updated success")
+      });
 
     } catch (error) {
       res
@@ -127,7 +151,10 @@ module.exports = {
     if (!id) {
       res
         .status(500)
-        .json({status: 500, "err": "Static page id is not sent"});
+        .json({
+          status: 500,
+          "err": sails.__("Static page id is not sent")
+        });
       return;
     }
     let staticData = await Statics
@@ -137,7 +164,10 @@ module.exports = {
     if (staticData) {
       return res
         .status(200)
-        .json({"status": 200, "message": "Static Page deleted successfully."});
+        .json({
+          "status": 200,
+          "message": sails.__("Static Page deleted successfully.")
+        });
     }
   }
 };

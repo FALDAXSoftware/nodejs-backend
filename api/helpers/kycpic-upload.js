@@ -19,7 +19,6 @@ module.exports = {
         let kyc_details = await KYC.findOne({ id: inputs.params.id });
         let user = await Users.findOne({ id: kyc_details.user_id });
         let kycUploadDetails = {};
-        console.log('inputs', kyc_details.ssn);
 
         // countryData.forEach(function (arrayItem) {
         //     //var x = arrayItem.prop1 + 2;
@@ -46,7 +45,6 @@ module.exports = {
         // });
 
         if (!kyc_details.ssn) {
-            console.log('inside');
             kycUploadDetails.docCountry = kyc_details.country_code;
             kycUploadDetails.bco = kyc_details.country_code;
         }
@@ -92,7 +90,6 @@ module.exports = {
         //kycUploadDetails.docCountry = 'US';
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
-        console.log('kycUploadDetails FINAL', kycUploadDetails)
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
@@ -100,8 +97,7 @@ module.exports = {
             url: 'https://staging.identitymind.com/im/account/consumer',
             json: kycUploadDetails
         }, async function (error, response, body) {
-            try {
-                console.log("kyc res--------------------->>>>", response);
+            try {;
 
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;

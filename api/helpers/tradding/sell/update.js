@@ -26,7 +26,7 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    let updatedbook = await sellBook
+    let updatedbook = await SellBook
       .update({id: inputs.id})
       .set(inputs.data)
       .fetch();

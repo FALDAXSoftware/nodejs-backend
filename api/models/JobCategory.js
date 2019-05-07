@@ -6,38 +6,38 @@
  */
 
 module.exports = {
-    tableName: 'job_category',
-    attributes: {
-        category: {
-            type: 'string',
-            columnName: 'category'
-        },
-        created_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'created_at'
-        },
-        updated_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'updated_at'
-        },
-        deleted_at: {
-            type: 'ref',
-            columnType: 'datetime',
-            columnName: 'deleted_at'
-        },
-        jobs: {
-            collection: 'jobs',
-            via: 'category_id'
-        }
+  tableName: 'job_category',
+  attributes: {
+    category: {
+      type: 'string',
+      columnName: 'category'
     },
-    beforeCreate: function (val, next) {
-        val.created_at = new Date();
-        next();
+    created_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
     },
-    beforeUpdate: function (val, next) {
-        val.updated_at = new Date();
-        next();
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at'
+    },
+    deleted_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'deleted_at'
+    },
+    jobs: {
+      collection: 'jobs',
+      via: 'category_id'
     }
+  },
+  beforeCreate: function (val, next) {
+    val.created_at = new Date();
+    next();
+  },
+  beforeUpdate: function (val, next) {
+    val.updated_at = new Date();
+    next();
+  }
 };

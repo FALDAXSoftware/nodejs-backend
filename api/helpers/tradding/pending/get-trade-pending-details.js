@@ -56,7 +56,7 @@ module.exports = {
         sort: 'id DESC'
       });
 
-      var buyBookDetails = await buyBook.find({
+      var buyBookDetails = await BuyBook.find({
         where: {
           deleted_at: null,
           settle_currency: inputs.crypto,
@@ -69,7 +69,7 @@ module.exports = {
 
       var pendingDetailsBuy = pendingOrderDetails.concat(buyBookDetails);
 
-      var sellBookDetails = await sellBook.find({
+      var sellBookDetails = await SellBook.find({
         select: [
           'id',
           'fix_quantity',
@@ -113,7 +113,7 @@ module.exports = {
         sort: 'id DESC'
       });
 
-      var buyBookDetails = await buyBook.find({
+      var buyBookDetails = await BuyBook.find({
         select: [
           'id',
           'fix_quantity',
@@ -141,7 +141,7 @@ module.exports = {
 
       var pendingDetailsBuy = pendingOrderDetails.concat(buyBookDetails);
 
-      var sellBookDetails = await sellBook.find({
+      var sellBookDetails = await SellBook.find({
         select: [
           'id',
           'fix_quantity',

@@ -32,7 +32,7 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true,
-      allowNull: true,
+      allowNull: true
     },
     created_at: {
       type: 'ref',
@@ -52,19 +52,18 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
-    Statics.findOne({ 'slug': values.slug })
+    Statics
+      .findOne({'slug': values.slug})
       .exec(function (err, found) {
         if (!found) {
           next();
         } else {
-          next({ error: 'Page already exists' });
+          next({error: 'Page already exists'});
         }
       });
   },
   beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
-  },
-
+  }
 };
-

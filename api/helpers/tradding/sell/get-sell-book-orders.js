@@ -29,7 +29,7 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     var sellBookOrders;
-    sellBookOrders = await sellBook.find({
+    sellBookOrders = await SellBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,

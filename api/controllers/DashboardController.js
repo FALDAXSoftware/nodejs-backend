@@ -25,7 +25,11 @@ module.exports = {
         .helpers
         .dashboard
         .getActivity(user_id);
-      res.json({"status": 200, "message": "Activity retrived successfully.", data: activity});
+      res.json({
+        "status": 200,
+        "message": sails.__("Activity retrived success"),
+        data: activity
+      });
     } catch (error) {
       return res
         .status(500)
@@ -56,7 +60,11 @@ module.exports = {
         .helpers
         .dashboard
         .getRisingFallingData(currency);
-      res.json({"status": 200, "message": "Rising Falling data retrived successfully.", data: risingFalling});
+      res.json({
+        "status": 200,
+        "message": sails.__("Rising Falling data retrived success"),
+        data: risingFalling
+      });
     } catch (error) {
       return res
         .status(500)
@@ -83,7 +91,11 @@ module.exports = {
         .helpers
         .dashboard
         .getPortfolio(user_id);
-      res.json({"status": 200, "message": "Portfolio retrived successfully.", data: portfolio});
+      res.json({
+        "status": 200,
+        "message": sails.__("Portfolio retrived success"),
+        data: portfolio
+      });
     } catch (error) {
       return res
         .status(500)
@@ -115,7 +127,10 @@ module.exports = {
               if (leaveErr) {
                 return res
                   .status(403)
-                  .json({status: 403, "message": "Error occured"});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -123,13 +138,20 @@ module.exports = {
                     if (err) {
                       return res
                         .status(403)
-                        .json({status: 403, "message": "Error occured"});
+                        .json({
+                          status: 403,
+                          "message": sails.__("error")
+                        });
                     } else {
                       let cardDate = await sails
                         .helpers
                         .dashboard
                         .getCardData(room);
-                      return res.json({status: 200, data: cardDate, "message": "Card data retrived successfully."});
+                      return res.json({
+                        status: 200,
+                        data: cardDate,
+                        "message": sails.__("Card data retrived success")
+                      });
                     }
                   });
               }
@@ -150,14 +172,21 @@ module.exports = {
                   .helpers
                   .dashboard
                   .getCardData(room);
-                return res.json({status: 200, data: cardDate, "message": "Card data retrived successfully."});
+                return res.json({
+                  status: 200,
+                  data: cardDate,
+                  "message": sails.__("Card data retrived success")
+                });
               }
             });
         }
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": "Error occured"});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (error) {
       return res
@@ -191,10 +220,10 @@ module.exports = {
             .format()
         }
       });
-      let kyc_approved = await KYC.count({isApprove: true, deleted_at: null, webhook_response: 'ACCEPT'})
+      let kyc_approved = await KYC.count({is_approve: true, deleted_at: null, webhook_response: 'ACCEPT'})
       let total_kyc = await KYC.count({deleted_at: null})
-      let kyc_disapproved = await KYC.count({isApprove: false, deleted_at: null})
-      let kyc_pending = await KYC.count({deleted_at: null, webhook_response: null, isApprove: true})
+      let kyc_disapproved = await KYC.count({is_approve: false, deleted_at: null})
+      let kyc_pending = await KYC.count({deleted_at: null, webhook_response: null, is_approve: true})
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
@@ -208,7 +237,7 @@ module.exports = {
       })
       return res.json({
         "status": 200,
-        "message": "Dashboard Data",
+        "message": sails.__("Dashboard Data retrieved success"),
         activeCoins,
         InactiveCoins,
         activeUsers,

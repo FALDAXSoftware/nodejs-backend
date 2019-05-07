@@ -151,7 +151,6 @@ module.exports = {
         var userFee = (request.quantity * request.fill_price * (inputs.takerFee / 100));
         user_usd = (request.quantity * request.fill_price) * (resultData);
       }
-      console.log(userFee, requestedFee);
       return exits.success({'userFee': userFee, 'requestedFee': requestedFee})
     } catch (err) {
       console.log("fees Error", err);
