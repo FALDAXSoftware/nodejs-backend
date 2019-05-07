@@ -700,22 +700,30 @@ module.exports = {
         });
     }
   },
+
+
+
+
+
+
+
+
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
     try {
       let { page, limit, data, sort_col, sort_order, country } = req.allParams();
       let whereAppended = false;
-      let query = " from users";
+      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM users GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
       if ((data && data != "")) {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(email) LIKE '%" + data.toLowerCase() +
-            "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() +
+            "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
         }
         query += ")"
       }
@@ -727,7 +735,7 @@ module.exports = {
           query += " WHERE "
         }
         whereAppended = true;
-        query += "  country='" + country + "'";
+        query += "  users.country='" + country + "'";
       }
 
       countQuery = query;
@@ -735,11 +743,12 @@ module.exports = {
         let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sort_col + " " + sortVal;
+        query += " ORDER BY users." + sort_col + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select *" + query, [])
+
+      let usersData = await sails.sendNativeQuery("Select users.*, reffral.no_of_referrals" + query, [])
 
       usersData = usersData.rows;
 
