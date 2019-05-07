@@ -44,10 +44,10 @@ module.exports = {
       defaultsTo: false,
       columnName: 'countries',
     },
-    coins: {
+    assets: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'coins',
+      columnName: 'assets',
     },
     pairs: {
       type: "boolean",
