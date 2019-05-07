@@ -29,7 +29,10 @@ module.exports = {
               if (leaveErr) {
                 return res
                   .status(403)
-                  .json({status: 403, "message": "Error occured"});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -37,7 +40,10 @@ module.exports = {
                     if (err) {
                       return res
                         .status(403)
-                        .json({status: 403, "message": "Error occured"});
+                        .json({
+                          status: 403,
+                          "message": sails.__("error")
+                        });
                     } else {
                       let {crypto, currency} = await sails
                         .helpers
@@ -50,7 +56,11 @@ module.exports = {
                         .getSellBookOrders(crypto, currency);
 
                       if (sellBookDetails) {
-                        return res.json({status: 200, data: sellBookDetails, "message": "Sell data retrived successfully."});
+                        return res.json({
+                          status: 200,
+                          data: sellBookDetails,
+                          "message": sails.__("Sell data retrived success")
+                        });
                       }
                     }
                   });
@@ -63,7 +73,10 @@ module.exports = {
               if (err) {
                 return res
                   .status(403)
-                  .json({status: 403, "message": "Error occured"});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 let {crypto, currency} = await sails
                   .helpers
@@ -76,7 +89,11 @@ module.exports = {
                   .getSellBookOrders(crypto, currency);
 
                 if (sellBookDetails) {
-                  return res.json({status: 200, data: sellBookDetails, "message": "Sell data retrived successfully."});
+                  return res.json({
+                    status: 200,
+                    data: sellBookDetails,
+                    "message": sails.__("Sell data retrived success")
+                  });
                 }
               }
             });
@@ -84,7 +101,10 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": "Error occured"});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (err) {
       console.log('>>>', err)

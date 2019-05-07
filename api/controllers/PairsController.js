@@ -27,7 +27,10 @@ module.exports = {
             if (err) {
               return res
                 .status(403)
-                .json({status: 403, "message": "Error occured"});
+                .json({
+                  status: 403,
+                  "message": sails.__("error")
+                });
             } else {
               var response = await sails
                 .helpers
@@ -36,13 +39,20 @@ module.exports = {
 
               return res
                 .status(200)
-                .json({status: 200, "message": "", data: response});
+                .json({
+                  status: 200,
+                  "message": sails.__("instruments data retireve success"),
+                  data: response
+                });
             }
           });
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": "Error occured"});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (error) {
       return res
@@ -135,12 +145,18 @@ module.exports = {
         } else {
           return res
             .status(400)
-            .json({"status": 400, "err": "not listed"});
+            .json({
+              "status": 400,
+              "err": sails.__("not listed")
+            });
         }
       } else {
         return res
           .status(400)
-          .json({"status": 400, "err": "Pair Name & coin is not sent"});
+          .json({
+            "status": 400,
+            "err": sails.__("Pair Name & coin is not sent")
+          });
       }
     } catch (error) {
       return res
@@ -159,7 +175,10 @@ module.exports = {
         if (!pair_details) {
           return res
             .status(401)
-            .json({"status": 401, err: 'invalid coin'});
+            .json({
+              "status": 401,
+              err: sails.__('invalid coin')
+            });
         }
         var updatedPair = await Pairs
           .update({id: req.body.id})
@@ -180,7 +199,10 @@ module.exports = {
       } else {
         return res
           .status(400)
-          .json({'status': 400, 'err': 'pair id is not sent.'})
+          .json({
+            'status': 400,
+            'err': sails.__('pair id is not sent.')
+          })
       }
     } catch (error) {
       return res

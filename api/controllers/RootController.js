@@ -29,12 +29,18 @@ module.exports = {
               subject: "Panic Button"
             }, function (err) {
               if (!err) {
-                return res.json({"status": 200, "message": "Email sent successfully."});
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("Email sent success")
+                });
               }
             })
         });
       }
-      return res.json({"status": 200, "message": "Email sent successfully."});
+      return res.json({
+        "status": 200,
+        "message": sails.__("Email sent success")
+      });
     } catch (error) {
       console.log('error>>>>>>>>>>>>>>>>', error)
       return res
@@ -71,7 +77,11 @@ module.exports = {
     adminSettingDetails.forEach(element => {
       contacts[element.slug] = element.value;
     });
-    return res.json({status: 200, message: "contact details retrived successfully.", data: contacts})
+    return res.json({
+      status: 200,
+      message: sails.__("contact details retrived success"),
+      data: contacts
+    })
   },
 
   updateContactInfo: async function (req, res) {
@@ -86,7 +96,10 @@ module.exports = {
             .fetch();
         });
       if (contactDetails) {
-        return res.json({status: 200, message: "Contact details updated successfully."})
+        return res.json({
+          status: 200,
+          message: sails.__("Contact details updated success")
+        })
       } else {
         return res
           .status(500)
@@ -105,7 +118,10 @@ module.exports = {
       .create({first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date()})
       .fetch();
     if (inquiryDetails) {
-      return res.json({status: 200, message: "Inquiry sent successfully."})
+      return res.json({
+        status: 200,
+        message: sails.__("Inquiry sent success")
+      })
     } else {
       return res
         .status(500)
@@ -149,7 +165,12 @@ module.exports = {
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Inquiries retrived success"),
+          "data": inquiryData,
+          inquiryCount
+        });
       }
     } else {
       let q = {
@@ -166,7 +187,12 @@ module.exports = {
         ...q
       });
       if (inquiryData) {
-        return res.json({"status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Inquiries retrived success"),
+          "data": inquiryData,
+          inquiryCount
+        });
       } else {
         return res
           .status(500)
@@ -184,7 +210,10 @@ module.exports = {
       if (!inquiry_id) {
         res
           .status(500)
-          .json({"status": 500, "err": "Inquiry id is not sent"});
+          .json({
+            "status": 500,
+            "err": sails.__("Inquiry id is not sent")
+          });
         return;
       }
       let deleteInquiry = await Inquiry
@@ -192,7 +221,10 @@ module.exports = {
         .set({deleted_at: new Date()})
         .fetch();
       if (deleteInquiry) {
-        return res.json({"status": 200, "message": "Inquiry removed successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Inquiry removed success")
+        });
       } else {
         return res
           .status(500)

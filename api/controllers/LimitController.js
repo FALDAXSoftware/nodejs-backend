@@ -34,14 +34,20 @@ module.exports = {
         if (!limit_details) {
           return res
             .status(401)
-            .json({'status': 401, err: 'Invalid limit'});
+            .json({
+              'status': 401,
+              err: sails.__("Invalid limit")
+            });
         }
         var updatedLimit = await Limit
           .update({id: req.body.id})
           .set(req.body)
           .fetch();
         if (!updatedLimit) {
-          return res.json({"status": 200, "message": "Something went wrong!"});
+          return res.json({
+            "status": 200,
+            "message": sails.__("Something Wrong")
+          });
         }
         return res.json({
           "status": 200,
@@ -50,7 +56,10 @@ module.exports = {
       } else {
         return res
           .status(400)
-          .json({'status': 400, 'message': 'limit id is not sent.'})
+          .json({
+            'status': 400,
+            'message': sails._("limit id is not sent.")
+          })
       }
     } catch (error) {
       res

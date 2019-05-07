@@ -185,7 +185,10 @@ module.exports = {
       .helpers
       .wallet
       .create(requestedCoin.coin_code);
-    return res.json({ "status": 200, "message": "wallet created" });
+    return res.json({
+      "status": 200,
+      "message": sails.__("wallet created success")
+    });
   },
 
   // create all wallet
@@ -199,7 +202,10 @@ module.exports = {
           throw err;
         });
 
-      return res.json({ "status": 200, "message": "wallet created" });
+      return res.json({
+        "status": 200,
+        "message": sails.__("wallet created success")
+      });
     } catch (error) {
       if (error.raw) {
         return res
@@ -305,7 +311,10 @@ module.exports = {
               if (err) {
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -313,11 +322,18 @@ module.exports = {
                     if (err) {
                       return res
                         .status(403)
-                        .json({ status: 403, "message": "Error occured" });
+                        .json({
+                          status: 403,
+                          "message": sails.__("error")
+                        });
                     } else {
 
-                      let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
-                      return res.json({ status: 200, data: pair, "message": "Pair retrived successfully" });
+                      let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                      return res.json({
+                        status: 200,
+                        data: pair,
+                        "message": sails.__("Pair retrived success")
+                      });
                     }
                   });
               }
@@ -329,17 +345,27 @@ module.exports = {
               if (err) {
                 return res
                   .status(403)
-                  .json({ status: 403, "message": "Error occured" });
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
-                let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
-                return res.json({ status: 200, data: pair, "message": "Pair retrived successfully" });
+                let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                return res.json({
+                  status: 200,
+                  data: pair,
+                  "message": sails.__("Pair retrived success")
+                });
               }
             });
         }
       } else {
         return res
           .status(403)
-          .json({ status: 403, "message": "Error occured" });
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (error) {
       return res
@@ -420,7 +446,10 @@ module.exports = {
               if (existingCoin.length > 0) {
                 return res
                   .status(400)
-                  .json({ "status": 400, "err": "Asset name or code already in use." });
+                  .json({
+                    "status": 400,
+                    "err": sails.__("Coin name or code already in use.")
+                  });
               }
               var coins_detail = await Coins
                 .create({
@@ -435,22 +464,34 @@ module.exports = {
                 })
                 .fetch();
               if (coins_detail) {
-                res.json({ "status": 200, "message": "Asset created successfully." });
+                res.json({
+                  "status": 200,
+                  "message": sails.__("Coin created success")
+                });
                 return;
               } else {
                 return res
                   .status(400)
-                  .json({ "status": 400, "err": "Something went wrong" });
+                  .json({
+                    "status": 400,
+                    "err": sails.__("Something Wrong")
+                  });
               }
             } else {
               return res
                 .status(400)
-                .json({ "status": 400, "err": "Asset id is not sent" });
+                .json({
+                  "status": 400,
+                  "err": sails.__("coin id is not sent")
+                });
             }
           } else {
             return res
               .status(400)
-              .json({ "status": 400, "err": "Asset icon is not sent" });
+              .json({
+                "status": 400,
+                "err": sails.__("coin icon is not sent")
+              });
           }
         } catch (error) {
           return res
@@ -470,7 +511,10 @@ module.exports = {
       if (!coin_details) {
         return res
           .status(401)
-          .json({ status: 401, err: 'Invalid coin' });
+          .json({
+            status: 401,
+            err: sails.__("Invalid coin")
+          });
       }
       if (req.body.coin_name) {
         let existingCoin = await Coins.find({
@@ -483,7 +527,10 @@ module.exports = {
         if (existingCoin.length > 0) {
           return res
             .status(400)
-            .json({ "status": 400, "err": "Asset name or code already in use." });
+            .json({
+              "status": 400,
+              "err": sails.__("Coin name or code already in use.")
+            });
         }
       }
       var coinData = {
@@ -495,9 +542,15 @@ module.exports = {
         .set(req.body)
         .fetch();
       if (!updatedCoin) {
-        return res.json({ "status": 200, "message": "Something went wrong! could not able to update Asset details" });
+        return res.json({
+          "status": 200,
+          "message": sails.__("Something went wrong! could not able to update coin details")
+        });
       }
-      return res.json({ "status": 200, "message": "Asset details updated successfully" });
+      return res.json({
+        "status": 200,
+        "message": sails.__("Coin details updated success")
+      });
     } catch (error) {
       console.log('error', error)
       return res
@@ -514,7 +567,10 @@ module.exports = {
     if (!id) {
       return res
         .status(500)
-        .json({ "status": 500, "err": "Asset id is not sent" });
+        .json({
+          "status": 500,
+          "err": sails.__("coin id is not sent")
+        });
     }
     let coinData = await Coins
       .update({ id: id })
@@ -523,7 +579,10 @@ module.exports = {
     if (coinData) {
       return res
         .status(200)
-        .json({ "status": 200, "message": "Asset deleted successfully" });
+        .json({
+          "status": 200,
+          "message": sails.__("Coin deleted success")
+        });
     }
   }
 };

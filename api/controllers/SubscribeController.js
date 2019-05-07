@@ -33,7 +33,10 @@ module.exports = {
           subject: "Subscription"
         }, function (err) {
           if (!err) {
-            return res.json({"status": 200, "message": "Verification link sent to email successfully"});
+            return res.json({
+              "status": 200,
+              "message": sails.__("verification link")
+            });
           }
           throw(err)
         })
@@ -131,7 +134,10 @@ module.exports = {
       if (!subscriber_id) {
         res
           .status(500)
-          .json({"status": 500, "err": "Subscriber id is not sent"});
+          .json({
+            "status": 500,
+            "err": sails.__("Subscriber id is not sent")
+          });
         return;
       }
       let deleteSubscriber = await Subscribe
@@ -139,7 +145,10 @@ module.exports = {
         .set({deleted_at: new Date()})
         .fetch();
       if (deleteSubscriber) {
-        return res.json({"status": 200, "message": "Subscriber removed successfully"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Subscriber removed success")
+        });
       } else {
         return res
           .status(500)

@@ -54,7 +54,12 @@ module.exports = {
       CountriesCount = CountriesCount.rows[0].count;
 
       if (countryData) {
-        return res.json({"status": 200, "message": "Country list", "data": countryData, CountryCount: CountriesCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country list success"),
+          "data": countryData,
+          CountryCount: CountriesCount
+        });
       }
     } catch (err) {
       console.log(err)
@@ -102,7 +107,12 @@ module.exports = {
       stateCount = stateCount.rows[0].count;
 
       if (stateData) {
-        return res.json({"status": 200, "message": "State list", "data": stateData, stateCount});
+        return res.json({
+          "status": 200,
+          "message": sails.__("State list success"),
+          "data": stateData,
+          stateCount
+        });
       }
     } catch (err) {
       return res
@@ -124,7 +134,10 @@ module.exports = {
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({"status": 200, "message": "Country Status Updated"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country Status Updated")
+        });
       } else {
         throw "Country(id) not found."
       }
@@ -147,7 +160,10 @@ module.exports = {
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({"status": 200, "message": "State Status Updated"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("State Status Updated")
+        });
       } else {
         throw "State(id) not found."
       }
@@ -169,7 +185,10 @@ module.exports = {
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({"status": 200, "message": "Country Updated"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country Updated")
+        });
       } else {
         throw "Country(id) not found."
       }
@@ -191,7 +210,10 @@ module.exports = {
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({"status": 200, "message": "State Updated"});
+        return res.json({
+          "status": 200,
+          "message": sails.__("State Updated")
+        });
       } else {
         throw "State(id) not found."
       }

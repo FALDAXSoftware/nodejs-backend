@@ -73,7 +73,12 @@ module.exports = {
       let newsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       newsCount = newsCount.rows[0].count;
 
-      return res.json({"status": 200, "message": "News retrived successfully", "data": news, newsCount});
+      return res.json({
+        "status": 200,
+        "message": sails.__("News retrived success"),
+        "data": news,
+        newsCount
+      });
     } catch (error) {
       return res
         .status(500)
@@ -90,7 +95,10 @@ module.exports = {
       await News
         .update({id: id})
         .set({is_active});
-      return res.json({"status": 200, "message": "News Status Updated"});
+      return res.json({
+        "status": 200,
+        "message": sails.__("News Status Update success")
+      });
     } catch (error) {
       return res
         .status(500)
@@ -107,9 +115,16 @@ module.exports = {
       let {news_id} = req.allParams();
       let newsDetails = await News.findOne({id: news_id});
       if (newsDetails) {
-        return res.json({"status": 200, "message": "News data Updated", data: newsDetails});
+        return res.json({
+          "status": 200,
+          "message": sails.__("News Status Update success"),
+          data: newsDetails
+        });
       } else {
-        return res.json({"status": 400, "message": "No news found"});
+        return res.json({
+          "status": 400,
+          "message": sails.__("No news found")
+        });
       }
     } catch (error) {
       return res

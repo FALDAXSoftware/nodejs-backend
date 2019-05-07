@@ -21,7 +21,10 @@ module.exports = {
             err: sails.__("Something Wrong")
           });
       }
-      return res.json({status: 200, message: "Role added successfully"})
+      return res.json({
+        status: 200,
+        message: sails.__("Role added success")
+      })
     } catch (error) {
       return res
         .status(500)
@@ -45,7 +48,11 @@ module.exports = {
       let roles = await sails.sendNativeQuery("Select *" + query, [])
 
       roles = roles.rows;
-      return res.json({status: 200, message: "Role retrived successfully", roles})
+      return res.json({
+        status: 200,
+        message: sails.__("Role retrived success"),
+        roles
+      })
     } catch (error) {
       return res
         .status(500)
@@ -62,12 +69,18 @@ module.exports = {
       if (!role) {
         return res
           .status(500)
-          .json({status: 500, err: "Invalid Role Id."});
+          .json({
+            status: 500,
+            err: sails.__("Invalid Role Id.")
+          });
       }
       await Role
         .update({id: role.id})
         .set(req.body);
-      return res.json({status: 200, message: "Role Updated successfully"})
+      return res.json({
+        status: 200,
+        message: sails.__("Role Updated success")
+      })
     } catch (error) {
       return res
         .status(500)
@@ -84,12 +97,18 @@ module.exports = {
       if (!role) {
         return res
           .status(500)
-          .json({status: 500, err: "Invalid Role Id."});
+          .json({
+            status: 500,
+            err: sails.__("Invalid Role Id.")
+          });
       } else {
         await Role
           .update({id: role.id})
           .set({deleted_at: new Date()});
-        return res.json({status: 200, message: "Role Deleted successfully"})
+        return res.json({
+          status: 200,
+          message: sails.__("Role Deleted success")
+        })
       }
     } catch (error) {
       return res

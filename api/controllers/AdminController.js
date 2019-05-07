@@ -29,141 +29,243 @@ module.exports = {
   // CMS Login
   login: async function (req, res) {
     try {
-        // Parameter Existence
-        if (req.body.email && req.body.password) {
-            let query = {
-                email: req.body.email,
-                password: req.body.password
+      // Parameter Existence
+      if (req.body.email && req.body.password) {
+        let query = {
+          email: req.body.email,
+          password: req.body.password
+        }
+        var admin_details = await Admin.findOne({email: query.email, deleted_at: null});
+
+        // Admin Existence
+        if (admin_details) {
+
+          // Admin Active
+          if (admin_details.is_active) {
+            let role = await Role.findOne({id: admin_details.role_id})
+            admin_details.roles = role;
+
+            // Role Not Active
+            if (!role.is_active) {
+              res
+                .status(400)
+                .json({
+                  "status": 400,
+                  "err": sails.__("Contact Admin")
+                });
+              return;
             }
-            var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
 
-            // Admin Existence
-            if (admin_details) {
+            if (admin_details.is_twofactor) {
+              if (!req.body.otp) {
+                return res
+                  .status(201)
+                  .json({
+                    "status": 201,
+                    "err": sails.__("Please enter OTP to continue")
+                  });
+              }
+              let verified = speakeasy
+                .totp
+                .verify({secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2});
+              if (!verified) {
+                return res
+                  .status(402)
+                  .json({
+                    "status": 402,
+                    "err": sails.__("invalid otp")
+                  });
+              }
+            }
 
-                // Admin Active
-                if (admin_details.is_active) {
-                    let role = await Role.findOne({ id: admin_details.role_id })
-                    admin_details.roles = role;
-
-                    // Role Not Active
-                    if (!role.is_active) {
-                        res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") }); return;
-                    }
-
-                    if (admin_details.is_twofactor) {
-                        if (!req.body.otp) {
-                            return res.status(201).json({ "status": 201, "err": 'Please enter OTP to continue' });
-                        }
-                        let verified = speakeasy
-                            .totp
-                            .verify({ secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2 });
-                        if (!verified) {
-                            return res.status(402).json({ "status": 402, "err": 'Invalid OTP' });
-                        }
-                    }
-
-                    // Credentials Check (Password Compare)
-                    Admin
-                        .comparePassword(query.password, admin_details, async function (err, valid) {
-                            if (err) {
-                                return res.status(403).json({ "status": 403, "err": 'Forbidden' });
-                            }
-
-                            if (!valid) {
-                                return res.status(401).json({ "status": 401, "err": 'Invalid email or password' });
-                            } else {
-                                if (admin_details.is_twofactor) {
-                                }
-
-                                delete admin_details.password;
-                                // Token Issue
-                                var token = await sails
-                                    .helpers
-                                    .jwtIssue(admin_details.id, true, true);
-                                res.json({ user: admin_details, token });
-                            }
-                        });
-                } else {
-                    return res.status(400).json({ "status": 400, "err": sails.__("Contact Admin") });
+            // Credentials Check (Password Compare)
+            Admin
+              .comparePassword(query.password, admin_details, async function (err, valid) {
+                if (err) {
+                  return res
+                    .status(403)
+                    .json({
+                      "status": 403,
+                      "err": sails.__("Forbidden")
+                    });
                 }
-            } else {
-                return res.status(400).json({ "status": 400, "err": "Invalid email or password" });
-            }
-        } else {
-            return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
-        }
-    } catch (error) {
-        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
-    }
-},
 
-// Create Admin
-create: async function (req, res) {
+                if (!valid) {
+                  return res
+                    .status(401)
+                    .json({
+                      "status": 401,
+                      "err": sails.__("Invalid email or password")
+                    });
+                } else {
+                  if (admin_details.is_twofactor) {}
+
+                  delete admin_details.password;
+                  // Token Issue
+                  var token = await sails
+                    .helpers
+                    .jwtIssue(admin_details.id, true, true);
+                  res.json({user: admin_details, token});
+                }
+              });
+          } else {
+            return res
+              .status(400)
+              .json({
+                "status": 400,
+                "err": sails.__("Contact Admin")
+              });
+          }
+        } else {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__("Invalid email or password")
+            });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Email or password is not sent")
+          });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Create Admin
+  create: async function (req, res) {
     try {
-        // Parameter Existence
-        if (req.body.email && req.body.password) {
-            // Create Admin
-            var user_detail = await Admin
-                .create({ email: req.body.email, password: req.body.password })
-                .fetch();
+      // Parameter Existence
+      if (req.body.email && req.body.password) {
+        // Create Admin
+        var user_detail = await Admin
+          .create({email: req.body.email, password: req.body.password})
+          .fetch();
 
-            // Token Issue
-            var token = await sails
-                .helpers
-                .jwtIssue(user_detail.id);
-            if (user_detail) {
-                return res.json({ "status": 200, "message": "listed", "data": user_detail, token });
-            } else {
-                return res.status(400).json({ "status": 400, "err": "Something went wrong" });
-            }
+        // Token Issue
+        var token = await sails
+          .helpers
+          .jwtIssue(user_detail.id);
+        if (user_detail) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("listed"),
+            "data": user_detail,
+            token
+          });
         } else {
-            return res.status(400).json({ "status": 400, "err": "Email or password is not sent" });
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__("Something Wrong")
+            });
         }
+      } else {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Email or password is not sent")
+          });
+      }
     } catch (error) {
-        return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
-},
+  },
 
-// Change Password Admin
-changePassword: async function (req, res) {
+  // Change Password Admin
+  changePassword: async function (req, res) {
     try {
-        if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
-            return res.status(401).json({ err: 'Please provide email, current password, new password, confirm password' });
-        }
+      if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
+        return res
+          .status(401)
+          .json({
+            err: sails.__("Please provide email, current password, new password, confirm password")
+          });
+      }
 
-        if (req.body.new_password !== req.body.confirm_password) {
-            return res.status(401).json({ "status": 401, err: 'New and confirm password should match' });
-        }
+      if (req.body.new_password !== req.body.confirm_password) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("password must match")
+          });
+      }
 
-        if (req.body.current_password === req.body.new_password) {
-            return res.status(401).json({ "status": 401, err: 'Current and new password should not be match' });
-        }
+      if (req.body.current_password === req.body.new_password) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("current new must not be same")
+          });
+      }
 
-        const user_details = await Admin.findOne({ email: req.body.email });
-        if (!user_details) {
-            return res.status(401).json({ "status": 401, err: 'Email address not found' });
-        }
+      const user_details = await Admin.findOne({email: req.body.email});
+      if (!user_details) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("Email address not found")
+          });
+      }
 
-        let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
-        if (!compareCurrent) {
-            return res.status(401).json({ "status": 401, err: "Current password mismatch" });
-        }
-        // Update New Password
-        var adminUpdates = await Admin
-            .update({ email: req.body.email })
-            .set({ email: req.body.email, password: req.body.new_password })
-            .fetch();
+      let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
+      if (!compareCurrent) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("Current password mismatch")
+          });
+      }
+      // Update New Password
+      var adminUpdates = await Admin
+        .update({email: req.body.email})
+        .set({email: req.body.email, password: req.body.new_password})
+        .fetch();
 
-        if (adminUpdates) {
-            return res.json({ "status": 200, "message": "Password changed successfully", "data": adminUpdates });
-        } else {
-            return res.status(401).json({ err: 'Something went wrong! Could not able to update the password' });
-        }
+      if (adminUpdates) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("password change success"),
+          "data": adminUpdates
+        });
+      } else {
+        return res
+          .status(401)
+          .json({
+            err: sails.__("Something went wrong! Could not able to update the password")
+          });
+      }
     } catch (error) {
-        res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
-        return;
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
     }
-},
+  },
 
   // Update Profile Details Admin
   update: async function (req, res) {
@@ -172,7 +274,10 @@ changePassword: async function (req, res) {
       if (!admin_details) {
         return res
           .status(401)
-          .json({status: '401', err: 'Invalid email'});
+          .json({
+            status: '401',
+            err: sails.__("Invalid email")
+          });
       }
       var updatedAdmin = await Admin
         .update({email: req.body.email})
@@ -182,7 +287,11 @@ changePassword: async function (req, res) {
         .fetch();
       delete updatedAdmin.password
 
-      return res.json({"status": 200, "message": "User details updated successfully", data: updatedAdmin});
+      return res.json({
+        "status": 200,
+        "message": sails.__("User Update"),
+        data: updatedAdmin
+      });
 
     } catch (error) {
       return res
@@ -206,14 +315,23 @@ changePassword: async function (req, res) {
           .set({email: admin_details.email, password: req.body.password, reset_token: null})
           .fetch();
         if (updateAdmin) {
-          return res.json({"status": 200, "message": "Password updated Successfully"});
+          return res.json({
+            "status": 200,
+            "message": sails.__("Password updated Successfully")
+          });
         } else {
-          return res.json({"status": 400, "message": "Update password Error"});
+          return res.json({
+            "status": 400,
+            "message": sails.__("Update password Error")
+          });
         }
       } else {
         return res
           .status(400)
-          .json({status: 400, "message": "Reset Password link has been expired."});
+          .json({
+            status: 400,
+            "message": sails.__("Reset Password link has been expired.")
+          });
       }
     } catch (e) {
       res
@@ -255,13 +373,18 @@ changePassword: async function (req, res) {
             subject: "Forgot Password"
           }, function (err) {
             if (!err) {
-              return res.json({"status": 200, "message": "Reset password link sent to your email successfully."});
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
             }
           })
       } else {
         return res
           .status(401)
-          .json({err: 'This email id is not registered with us.'});
+          .json({
+            err: sails.__("This email id is not registered with us.")
+          });
       }
     } catch (error) {
       res
@@ -338,7 +461,10 @@ changePassword: async function (req, res) {
         if (existedEmployee) {
           return res
             .status(401)
-            .json({status: 401, "message": 'Email address already exists'});
+            .json({
+              status: 401,
+              "message": sails.__("email exits")
+            });
         }
 
         var employee_detail = await Admin.create({
@@ -365,7 +491,10 @@ changePassword: async function (req, res) {
       } else {
         return res
           .status(400)
-          .json({'message': 'Email & roles is required.', 'status': 400})
+          .json({
+            'message': sails.__("Email & roles is required."),
+            'status': 400
+          })
       }
     } catch (error) {
       return res
@@ -398,12 +527,18 @@ changePassword: async function (req, res) {
         } else {
           return res
             .status(400)
-            .json({status: 400, 'err': 'Employee not found'})
+            .json({
+              status: 400,
+              'err': sails._("Employee not found")
+            })
         }
       } else {
         return res
           .status(400)
-          .json({status: 400, 'err': 'Employee id is not sent.'})
+          .json({
+            status: 400,
+            'err': sails.__("Employee id is not sent.")
+          })
       }
     } catch (error) {
       return res
@@ -446,12 +581,18 @@ changePassword: async function (req, res) {
         } else {
           return res
             .status(400)
-            .json({'status': '400', 'err': 'Employee not found.'})
+            .json({
+              'status': '400',
+              'err': sails.__("Employee not found")
+            })
         }
       } else {
         return res
           .status(400)
-          .json({'status': '400', 'err': 'Employee id is not sent.'})
+          .json({
+            'status': '400',
+            'err': sails.__("Employee id is not sent.")
+          })
       }
     } catch (error) {
       return res
@@ -469,9 +610,16 @@ changePassword: async function (req, res) {
       if (emp_id) {
         let employee = await Admin.find({id: emp_id})
 
-        return res.json({"status": 200, "message": "Employee Details", "data": employee});
+        return res.json({
+          "status": 200,
+          "message": sails.__("Employee Details"),
+          "data": employee
+        });
       } else {
-        return res.json({"status": 400, "message": "Employee id is required"});
+        return res.json({
+          "status": 400,
+          "message": sails.__("Employee id is required")
+        });
       }
     } catch (err) {
       return res
@@ -491,7 +639,10 @@ changePassword: async function (req, res) {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "Admin not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("Admin not found or it's not active")
+          });
       }
       const secret = speakeasy.generateSecret({length: 10});
       await Admin
@@ -502,7 +653,13 @@ changePassword: async function (req, res) {
         label: 'FALDAX( ' + user.email + ')'
       });
       QRCode.toDataURL(url, function (err, data_url) {
-        return res.json({status: 200, message: "Qr code sent", tempSecret: secret.base32, dataURL: data_url, otpauthURL: secret.otpauth_url})
+        return res.json({
+          status: 200,
+          message: sails.__("Qr code sent"),
+          tempSecret: secret.base32,
+          dataURL: data_url,
+          otpauthURL: secret.otpauth_url
+        })
       });
     } catch (error) {
       return res
@@ -522,12 +679,18 @@ changePassword: async function (req, res) {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "User not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("user inactive")
+          });
       }
       if (user.is_twofactor == true) {
         return res
           .status(401)
-          .json({"status": 401, "err": "Two factor authentication is already enabled"});
+          .json({
+            "status": 401,
+            "err": sails.__("2 factor already enabled")
+          });
       }
 
       let verified = speakeasy
@@ -537,11 +700,17 @@ changePassword: async function (req, res) {
         await Admin
           .update({id: user.id})
           .set({email: user.email, is_twofactor: true});
-        return res.json({status: 200, message: "Two factor authentication has been enabled"});
+        return res.json({
+          status: 200,
+          message: sails.__("2 factor enabled")
+        });
       }
       return res
         .status(401)
-        .json({status: 401, err: "Invalid OTP"});
+        .json({
+          status: 401,
+          err: sails.__("invalid otp")
+        });
     } catch (error) {
       console.log('>>>>>>>>>err', error)
       return res
@@ -561,17 +730,26 @@ changePassword: async function (req, res) {
       if (!user) {
         return res
           .status(401)
-          .json({"status": 401, "err": "User not found or it's not active"});
+          .json({
+            "status": 401,
+            "err": sails.__("user inactive")
+          });
       }
       if (user.is_twofactor == false) {
         return res
           .status(401)
-          .json({"status": 401, "err": "Two factor authentication is already disabled"});
+          .json({
+            "status": 401,
+            "err": sails.__("2 factor already disabled")
+          });
       }
       await Admin
         .update({id: user.id, deleted_at: null})
         .set({email: user.email, is_twofactor: false, twofactor_secret: null});
-      return res.json({status: 200, message: "Two factor authentication has been disabled"});
+      return res.json({
+        status: 200,
+        message: sails.__("2 factor disabled")
+      });
     } catch (error) {
       console.log('error', error)
       return res
@@ -588,7 +766,11 @@ changePassword: async function (req, res) {
       const {admin_id} = req.allParams();
       let adminDetails = await Admin.findOne({is_active: true, id: admin_id, deleted_at: null})
 
-      return res.json({status: 200, message: "Admin Details", data: adminDetails});
+      return res.json({
+        status: 200,
+        message: sails.__("Admin Details"),
+        data: adminDetails
+      });
     } catch (err) {
       console.log('error', err)
       return res

@@ -115,7 +115,12 @@ module.exports = {
         "flag": flag
       }
 
-      return res.json({status: 200, message: "Wallet balance retrived successfully.", balanceData, data});
+      return res.json({
+        status: 200,
+        message: sails.__("Balance retrieved success"),
+        balanceData,
+        data
+      });
 
     } catch (error) {
       console.log(error);
@@ -190,30 +195,45 @@ module.exports = {
                       balance: wallet.balance - amount,
                       placed_balance: wallet.placed_balance - amount
                     });
-                  return res.json({status: 200, message: "Token send successfully"});
+                  return res.json({
+                    status: 200,
+                    message: sails.__("Token send success")
+                  });
                 })
                 .catch(error => {
                   return res
                     .status(500)
-                    .json({status: 500, message: "Insufficient Balance"});
+                    .json({
+                      status: 500,
+                      message: sails._("Insufficent balance")
+                    });
                 });
             }
           } else {
             return res
               .status(400)
-              .json({status: 400, message: "Insufficient coin balance in wallet"});
+              .json({
+                status: 400,
+                message: sails.__("Insufficent balance")
+              });
 
           }
         } else {
           return res
             .status(400)
-            .json({status: 400, message: "Insufficient coin balance in wallet"});
+            .json({
+              status: 400,
+              message: sails.__("Insufficent balance")
+            });
 
         }
       } else {
         return res
           .status(400)
-          .json({status: 400, message: "Coin or token not available"});
+          .json({
+            status: 400,
+            message: sails.__("Coin not found")
+          });
 
       }
     } catch (error) {
@@ -244,7 +264,11 @@ module.exports = {
         .wallet
         .receiveCoin(coin, user_id);
 
-      return res.json({status: 200, message: "Receive address retrieved successfuly", receiveCoin});
+      return res.json({
+        status: 200,
+        message: sails.__("receive address success"),
+        receiveCoin
+      });
     } catch (err) {
       console.log(err);
       return res
@@ -296,14 +320,17 @@ module.exports = {
       if (walletTransData) {
         return res.json({
           status: 200,
-          message: "Wallet data retrived successfully.",
+          message: sails.__("wallet data retrieved success"),
           walletTransData,
           walletTransCount,
           walletUserData,
           coinFee
         });
       } else {
-        return res.json({status: 200, message: "No data found."})
+        return res.json({
+          status: 200,
+          message: sails.__("No Data")
+        })
       }
     } catch (err) {
       console.log('err', err)

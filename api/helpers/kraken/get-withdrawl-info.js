@@ -34,7 +34,6 @@ module.exports = {
     var secret = sails.config.local.KRAKEN_API_SIGN;
     var key_name = sails.config.local.KEY_NAME;
     var kraken = new KrakenClient(key, secret);
-    console.log("Kraken :::: ", kraken);
     const methods = {
       public: [
         'Time',
@@ -83,7 +82,6 @@ module.exports = {
         new: true,
         validate: true
       });
-      console.log(status);
       return exits.success(status);
     } catch (err) {
       console.log(err);

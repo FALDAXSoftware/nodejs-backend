@@ -98,15 +98,11 @@ module.exports = {
         volume: inputs.volume,
         validate: true
       });
-      // console.log(status['result'])
-      // console.log(status['txid'])
 
 
 
       return exits.success(status);
     } catch (err) {
-      // console.log("=------------", err);
-      // return exits.success(err);
       return exits.orderError();
     }
   }
