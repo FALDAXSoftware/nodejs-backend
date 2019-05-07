@@ -46,6 +46,5 @@ module.exports = {
   beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
-  },
+  }
 };
-

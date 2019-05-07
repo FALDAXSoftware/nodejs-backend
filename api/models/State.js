@@ -11,7 +11,7 @@ module.exports = {
   attributes: {
     name: {
       type: 'string',
-      columnName: 'name',
+      columnName: 'name'
     },
     country_id: {
       model: 'countries',
@@ -20,16 +20,16 @@ module.exports = {
     legality: {
       type: 'number',
       columnName: 'legality',
-      defaultsTo: 1,
+      defaultsTo: 1
     },
     color: {
       type: "string",
-      columnName: 'color',
+      columnName: 'color'
     },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      defaultsTo: true,
+      defaultsTo: true
     },
     created_at: {
       type: 'ref',
@@ -59,4 +59,3 @@ module.exports = {
   }
 
 };
-

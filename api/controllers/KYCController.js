@@ -64,7 +64,7 @@ module.exports = {
         }
         var updated_kyc;
         if (req.body.test_key == sails.config.local.test_key) {
-          req.body.isApprove = true;
+          req.body.is_approve = true;
           req.body.direct_response = "ACCEPT";
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
@@ -97,7 +97,7 @@ module.exports = {
         }
       } else {
         if (req.body.test_key == sails.config.local.test_key) {
-          req.body.isApprove = true;
+          req.body.is_approve = true;
           req.body.direct_response = "ACCEPT";
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
@@ -183,7 +183,7 @@ module.exports = {
               let updated = await KYC
                 .update({mtid: data.mtid})
                 .set({
-                  kycDoc_details: data.ednaScoreCard.er.reportedRule.details
+                  kyc_doc_details: data.ednaScoreCard.er.reportedRule.details
                     ? data.ednaScoreCard.er.reportedRule.details
                     : '',
                   direct_response: resultState[data.state],
@@ -197,7 +197,7 @@ module.exports = {
         if (data.mtid) {
           let updated = await KYC
             .update({mtid: data.mtid})
-            .set({kycDoc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW'})
+            .set({kyc_doc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW'})
             .fetch();
         }
       }
@@ -313,7 +313,7 @@ module.exports = {
         if (isApprove == true) {
           let updated_kyc = await KYC
             .update({id: kyc_details.id})
-            .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', isApprove: true, updated_at: new Date()})
+            .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', is_approve: true, updated_at: new Date()})
             .fetch();
           if (updated_kyc) {
             return res.json({
@@ -325,12 +325,12 @@ module.exports = {
           let updated_kyc = await KYC
             .update({id: kyc_details.id})
             .set({
-              isApprove: false,
+              is_approve: false,
               steps: 2,
               direct_response: null,
               webhook_response: null,
               mtid: null,
-              kycDoc_details: null,
+              kyc_doc_details: null,
               updated_at: new Date()
             })
             .fetch();

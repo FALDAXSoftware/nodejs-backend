@@ -90,21 +90,6 @@ module.exports = {
       columnName: 'dob',
       allowNull: true
     },
-    // country_id: {
-    //   type: 'string',
-    //   columnName: 'country_id',
-    //   allowNull: true
-    // },
-    // state_id: {
-    //   type: 'string',
-    //   columnName: 'state_id',
-    //   allowNull: true
-    // },
-    // zip: {
-    //   type: 'number',
-    //   columnName: 'zip',
-    //   allowNull: true
-    // },
     referred_id: {
       type: 'number',
       columnName: 'referred_id',
@@ -166,12 +151,12 @@ module.exports = {
     diffrence_fiat: {
       type: 'number',
       columnName: 'diffrence_fiat',
-      allowNull: true,
+      allowNull: true
     },
     total_value: {
       type: 'number',
       columnName: 'total_value',
-      allowNull: true,
+      allowNull: true
     },
     percent_wallet: {
       type: 'number',
@@ -205,7 +190,7 @@ module.exports = {
       type: 'boolean',
       columnName: "is_new_email_verified",
       defaultsTo: true,
-      allowNull: true,
+      allowNull: true
     },
     account_tier: {
       type: 'number',
@@ -250,24 +235,24 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     Users
-      .findOne({ 'email': values.email, 'deleted_at': null })
+      .findOne({'email': values.email, 'deleted_at': null})
       .exec(function (err, found) {
         values.created_at = new Date()
         if (!found) {
           bcrypt
             .genSalt(10, function (err, salt) {
-              if (err)
+              if (err) 
                 return next(err);
               bcrypt
                 .hash(values.password, salt, function (err, hash) {
-                  if (err)
+                  if (err) 
                     return next(err);
                   values.password = hash;
                   next();
                 })
             });
         } else {
-          next({ error: 'Email address already exists' });
+          next({error: 'Email address already exists'});
         }
       });
   },
@@ -276,11 +261,11 @@ module.exports = {
     if (values.password) {
       bcrypt
         .genSalt(10, function (err, salt) {
-          if (err)
+          if (err) 
             return next(err);
           bcrypt
             .hash(values.password, salt, function (err, hash) {
-              if (err)
+              if (err) 
                 return next(err);
               values.password = hash;
               next();
@@ -294,7 +279,7 @@ module.exports = {
   comparePassword: function (password, user, cb) {
     bcrypt
       .compare(password, user.password, function (err, match) {
-        if (err)
+        if (err) 
           cb(err);
         if (match) {
           cb(null, true);

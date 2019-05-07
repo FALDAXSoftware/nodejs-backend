@@ -32,7 +32,7 @@ module.exports = {
       var currency = orderData.currency;
       var crypto = orderData.settle_currency;
       var total_price = orderData.limit_price * orderData.quantity;
-      let buyAdded = await buyBook
+      let buyAdded = await BuyBook
         .create(orderData)
         .fetch();
 

@@ -220,10 +220,10 @@ module.exports = {
             .format()
         }
       });
-      let kyc_approved = await KYC.count({isApprove: true, deleted_at: null, webhook_response: 'ACCEPT'})
+      let kyc_approved = await KYC.count({is_approve: true, deleted_at: null, webhook_response: 'ACCEPT'})
       let total_kyc = await KYC.count({deleted_at: null})
-      let kyc_disapproved = await KYC.count({isApprove: false, deleted_at: null})
-      let kyc_pending = await KYC.count({deleted_at: null, webhook_response: null, isApprove: true})
+      let kyc_disapproved = await KYC.count({is_approve: false, deleted_at: null})
+      let kyc_pending = await KYC.count({deleted_at: null, webhook_response: null, is_approve: true})
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)

@@ -240,7 +240,7 @@ module.exports = {
       if (error.code == "invalidQuantity") {
         return res
           .status(500)
-          .json({status: 500, "err": sails__("Invalid Quantity")});
+          .json({status: 500, "err": sails.__("Invalid Quantity")});
       }
 
       return res
@@ -330,7 +330,7 @@ module.exports = {
       if (error.code == "invalidQuantity") {
         return res
           .status(500)
-          .json({status: 500, "err": sails__("Invalid Quantity")});
+          .json({status: 500, "err": sails.__("Invalid Quantity")});
       }
 
       return res
@@ -547,7 +547,7 @@ module.exports = {
       if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
-          .json({status: 500, "err": sails__("No Pending order")});
+          .json({status: 500, "err": sails.__("No Pending order")});
       }
 
       return res
@@ -636,7 +636,7 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({status: 403, "message": sails__("error")});
+                .json({status: 403, "message": sails.__("error")});
             } else {
               let {crypto, currency} = await sails
                 .helpers
@@ -649,14 +649,14 @@ module.exports = {
                 .getUserWalletBalance(user_id, currency, crypto);
 
               if (userBalanceDetails) {
-                return res.json({status: 200, data: userBalanceDetails, "message": sails__("User Balance Success")});
+                return res.json({status: 200, data: userBalanceDetails, "message": sails.__("User Balance Success")});
               }
             }
           });
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails__("error")});
+          .json({status: 403, "message": sails.__("error")});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -687,7 +687,7 @@ module.exports = {
                 // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails__("error")});
+                  .json({status: 403, "message": sails.__("error")});
               } else {
                 sails
                   .sockets
@@ -696,7 +696,7 @@ module.exports = {
                       // console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({status: 403, "message": sails__("error")});
+                        .json({status: 403, "message": sails.__("error")});
                     } else {
                       let {crypto, currency} = await sails
                         .helpers
@@ -726,7 +726,7 @@ module.exports = {
                 console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails__("error")});
+                  .json({status: 403, "message": sails.__("error")});
               } else {
                 let {crypto, currency} = await sails
                   .helpers
@@ -742,7 +742,7 @@ module.exports = {
                 // console.log("Trade Details :: ", tradeDetails);
 
                 if (tradeDetails) {
-                  return res.json({status: 200, data: tradeDetails, "message": sails__("Trade retrieve success")});
+                  return res.json({status: 200, data: tradeDetails, "message": sails.__("Trade retrieve success")});
                 }
               }
             });
@@ -750,7 +750,7 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails__("error")});
+          .json({status: 403, "message": sails.__("error")});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -785,7 +785,7 @@ module.exports = {
                 console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails__("error")});
+                  .json({status: 403, "message": sails.__("error")});
               } else {
                 sails
                   .sockets
@@ -794,7 +794,7 @@ module.exports = {
                       console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({status: 403, "message": sails__("error")});
+                        .json({status: 403, "message": sails.__("error")});
                     } else {
                       if (month == undefined) {
                         month = 0;
@@ -823,7 +823,7 @@ module.exports = {
                           .getCancelDetails(user_id, crypto, currency, month);
                       }
                       if (userTradeDetails) {
-                        return res.json({status: 200, data: userTradeDetails, "message": sails__("User Trade Success")});
+                        return res.json({status: 200, data: userTradeDetails, "message": sails.__("User Trade Success")});
                       }
                     }
                   });
@@ -837,7 +837,7 @@ module.exports = {
                 console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails__("error")});
+                  .json({status: 403, "message": sails.__("error")});
               } else {
                 let {crypto, currency} = await sails
                   .helpers
@@ -864,7 +864,7 @@ module.exports = {
                 }
 
                 if (userTradeDetails) {
-                  return res.json({status: 200, data: userTradeDetails, "message": sails__("User Trade Success")});
+                  return res.json({status: 200, data: userTradeDetails, "message": sails.__("User Trade Success")});
                 }
               }
             });
@@ -872,7 +872,7 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails__("error")});
+          .json({status: 403, "message": sails.__("error")});
       }
     } catch (err) {
       console.log('>>>', err)
@@ -902,7 +902,7 @@ module.exports = {
                 console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails__("error")});
+                  .json({status: 403, "message": sails.__("error")});
               } else {
                 sails
                   .sockets
@@ -923,7 +923,7 @@ module.exports = {
                         .helpers
                         .chart
                         .getDepthChartDetail(crypto, currency);
-                      return res.json({status: 200, data: data, "message": sails__("Depth Chart retrieved success")});
+                      return res.json({status: 200, data: data, "message": sails.__("Depth Chart retrieved success")});
                     }
                   });
               }
@@ -948,7 +948,7 @@ module.exports = {
                   .helpers
                   .chart
                   .getDepthChartDetail(crypto, currency);
-                return res.json({status: 200, data: data, "message": sails__("Depth Chart retrieved success")});
+                return res.json({status: 200, data: data, "message": sails.__("Depth Chart retrieved success")});
               }
             });
         }

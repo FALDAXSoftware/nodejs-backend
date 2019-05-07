@@ -32,7 +32,7 @@ module.exports = {
     var depthChartDetail;
     // TODO
 
-    var buyDetails = await buyBook.find({
+    var buyDetails = await BuyBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,
@@ -41,7 +41,7 @@ module.exports = {
       sort: 'price DESC'
     })
 
-    var sellDetails = await sellBook.find({
+    var sellDetails = await SellBook.find({
       where: {
         deleted_at: null,
         settle_currency: inputs.crypto,

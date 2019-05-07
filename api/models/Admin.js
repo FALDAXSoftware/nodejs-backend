@@ -73,38 +73,39 @@ module.exports = {
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      defaultsTo: true,
+      defaultsTo: true
     },
     role_id: {
       columnName: 'role_id',
-      model: 'role',
+      model: 'role'
     }
   },
   beforeCreate: (values, next) => {
     Admin
-      .findOne({ 'email': values.email })
+      .findOne({'email': values.email})
       .exec(function (err, found) {
         if (!found) {
           bcrypt
             .genSalt(10, function (err, salt) {
-              if (err)
+              if (err) 
                 return next(err);
               bcrypt
                 .hash(values.password, salt, function (err, hash) {
-                  if (err)
+                  if (err) 
                     return next(err);
                   values.password = hash;
                   next();
                 })
             });
         } else {
-          next({ error: 'Email address already exists' });
+          next({error: 'Email address already exists'});
         }
       });
   },
   beforeUpdate: (values, next) => {
 
-    Admin.findOne({ 'email': values.email })
+    Admin
+      .findOne({'email': values.email})
       .exec(async function (err, found) {
         if (err) {
           console.log("SDf", err)
@@ -112,31 +113,37 @@ module.exports = {
         }
         if (found) {
           if (values.password) {
-            bcrypt.genSalt(10, function (err, salt) {
-              if (err) return next(err);
-              bcrypt.hash(values.password, salt, function (err, hash) {
-                if (err) return next(err);
-                values.password = hash;
-                next();
-              })
-            });
+            bcrypt
+              .genSalt(10, function (err, salt) {
+                if (err) 
+                  return next(err);
+                bcrypt
+                  .hash(values.password, salt, function (err, hash) {
+                    if (err) 
+                      return next(err);
+                    values.password = hash;
+                    next();
+                  })
+              });
           } else {
             next();
           }
         } else {
-          next({ error: "Email address doesn't exists" });
+          next({error: "Email address doesn't exists"});
         }
       });
   },
   comparePassword: function (password, user, cb) {
-    bcrypt.compare(password, user.password, function (err, match) {
-      if (err) cb(err);
-      if (match) {
-        cb(null, true);
-      } else {
-        cb(err);
-      }
-    })
+    bcrypt
+      .compare(password, user.password, function (err, match) {
+        if (err) 
+          cb(err);
+        if (match) {
+          cb(null, true);
+        } else {
+          cb(err);
+        }
+      })
   }
 
 };

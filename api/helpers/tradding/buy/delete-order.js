@@ -22,7 +22,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     let now = new Date();
-    await buyBook
+    await BuyBook
       .update({id: inputs.id})
       .set({deleted_at: now});
     return exits.success();
