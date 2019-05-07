@@ -1020,23 +1020,20 @@ module.exports = {
     // console.log(req.allParams()); return res.json({   status: 200,   message:
     // "user created successfully" });
     try {
-      let { create_hubspot_contact, generate_wallet_coins, kyc_done, ...user } = req.allParams();
+      let { generate_wallet_coins, kyc_done, ...user } = req.allParams();
       let existedUser = await Users.findOne({
         deleted_at: null,
         email: user.email
       });
       if (existedUser == undefined) {
-        let hubspotcontact = null
-        if (create_hubspot_contact == true) {
-          hubspotcontact = await sails
-            .helpers
-            .hubspot
-            .contacts
-            .create(user.first_name, user.last_name, user.email)
-            .tolerate("serverError", () => {
-              throw new Error("serverError");
-            });
-        }
+        let hubspotcontact = await sails
+          .helpers
+          .hubspot
+          .contacts
+          .create(user.first_name, user.last_name, user.email)
+          .tolerate("serverError", () => {
+            throw new Error("serverError");
+          });
         let generatedUser = await Users.create({
           ...user,
           hubspot_id: hubspotcontact,
@@ -1073,6 +1070,27 @@ module.exports = {
     } catch (error) {
       console.log("log", error);
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
+    }
+  },
+  getTicketsAdmin: async function (req, res) {
+    try {
+      let tickets = await sails
+        .helpers
+        .hubspot
+        .tickets
+        .getUsersTickets(req.query.user_id);
+      res.json({
+        status: 200,
+        tickets: tickets.reverse(),
+        message: "Ticket"
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 };
