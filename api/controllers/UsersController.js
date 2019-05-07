@@ -1224,19 +1224,22 @@ module.exports = {
         });
     }
   },
+
   getTicketsAdmin: async function (req, res) {
+    const { user_id } = req.allParams();
     try {
       let tickets = await sails
         .helpers
         .hubspot
         .tickets
-        .getUsersTickets(req.query.user_id);
+        .getUsersTickets(user_id);
       res.json({
         status: 200,
         tickets: tickets.reverse(),
         message: "Ticket"
       });
     } catch (err) {
+      console.log('err tickets', err)
       return res
         .status(500)
         .json({
