@@ -22,11 +22,11 @@ module.exports = {
       let {symbol, side, order_type, orderQuantity} = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let market_sell_response = await sails
           .helpers
           .tradding
           .marketSell(symbol, user_id, side, order_type, orderQuantity)
@@ -49,7 +49,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -109,11 +109,11 @@ module.exports = {
     try {
       let {symbol, side, order_type, orderQuantity} = req.allParams();
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let market_buy_response = await sails
           .helpers
           .tradding
           .marketBuy(symbol, user_id, side, order_type, orderQuantity)
@@ -136,7 +136,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -187,21 +187,20 @@ module.exports = {
     try {
       let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let limit_sell_response = await sails
           .helpers
           .tradding
           .limitSell(symbol, user_id, side, order_type, orderQuantity, limit_price);
-        console.log(response);
-        if (response.side == "Sell" && response.is_partially_fulfilled == true && response.added == true) {
+        if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true && limit_sell_response.added == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order added Success")
           });
-        } else if (response.side == "Sell" && response.is_partially_fulfilled == true) {
+        } else if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order Partially Fulfilled and Successfully added to Sell book")
@@ -215,7 +214,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -240,7 +239,10 @@ module.exports = {
       if (error.code == "invalidQuantity") {
         return res
           .status(500)
-          .json({status: 500, "err": sails.__("Invalid Quantity")});
+          .json({
+            status: 500,
+            "err": sails.__("Invalid Quantity")
+          });
       }
 
       return res
@@ -265,12 +267,12 @@ module.exports = {
     try {
       let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
 
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let limit_buy_response = await sails
           .helpers
           .tradding
           .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price)
@@ -286,13 +288,12 @@ module.exports = {
           .tolerate('serverError', () => {
             throw new Error("serverError");
           });;
-        console.log(response);
-        if (response.side == "Buy" && response.is_partially_fulfilled == true && response.added == true) {
+        if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true && limit_buy_response.added == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order added Success")
           });
-        } else if (response.side == "Buy" && response.is_partially_fulfilled == true) {
+        } else if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true) {
           return res.json({
             "status": 200,
             "message": sails.__("Order Partially Fulfilled and Successfully added to Buy book")
@@ -306,7 +307,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -330,7 +331,10 @@ module.exports = {
       if (error.code == "invalidQuantity") {
         return res
           .status(500)
-          .json({status: 500, "err": sails.__("Invalid Quantity")});
+          .json({
+            status: 500,
+            "err": sails.__("Invalid Quantity")
+          });
       }
 
       return res
@@ -363,11 +367,11 @@ module.exports = {
         stop_price
       } = req.allParams();
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let stop_limit_buy_response = await sails
           .helpers
           .tradding
           .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
@@ -387,7 +391,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -439,11 +443,11 @@ module.exports = {
         stop_price
       } = req.allParams();
       let user_id = req.user.id;
-      var dataResponse = await sails
+      var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      if (dataResponse.response == true) {
-        let response = await sails
+      if (geo_fencing_data.response == true) {
+        let stop_limit_sell_response = await sails
           .helpers
           .tradding
           .stopLimitSellAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
@@ -463,7 +467,7 @@ module.exports = {
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(dataResponse.msg)
+          "message": sails.__(geo_fencing_data.msg)
         });
       }
     } catch (error) {
@@ -526,7 +530,7 @@ module.exports = {
     try {
       let {side, id, order_type} = req.allParams();
       let user_id = req.user.id;
-      let response = await sails
+      let cancel_pending_data = await sails
         .helpers
         .tradding
         .pending
@@ -547,7 +551,10 @@ module.exports = {
       if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
-          .json({status: 500, "err": sails.__("No Pending order")});
+          .json({
+            status: 500,
+            "err": sails.__("No Pending order")
+          });
       }
 
       return res
@@ -574,14 +581,14 @@ module.exports = {
       var data = req.allParams();
       let user_id = req.user.id;
       data.user_id = user_id;
-      let response = await sails
+      let user_history_data = await sails
         .helpers
         .tradding
         .getUserTradeHistory(data);
       res.json({
         "status": 200,
         "message": sails.__("Order Success"),
-        "data": response
+        "data": user_history_data
       });
     } catch (error) {
       console.log("tradeController", error);
@@ -636,7 +643,10 @@ module.exports = {
               console.log('>>>err', err);
               return res
                 .status(403)
-                .json({status: 403, "message": sails.__("error")});
+                .json({
+                  status: 403,
+                  "message": sails.__("error")
+                });
             } else {
               let {crypto, currency} = await sails
                 .helpers
@@ -649,14 +659,21 @@ module.exports = {
                 .getUserWalletBalance(user_id, currency, crypto);
 
               if (userBalanceDetails) {
-                return res.json({status: 200, data: userBalanceDetails, "message": sails.__("User Balance Success")});
+                return res.json({
+                  status: 200,
+                  data: userBalanceDetails,
+                  "message": sails.__("User Balance Success")
+                });
               }
             }
           });
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails.__("error")});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (err) {
       console.log('>>>', err)
@@ -687,7 +704,10 @@ module.exports = {
                 // console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails.__("error")});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -696,7 +716,10 @@ module.exports = {
                       // console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({status: 403, "message": sails.__("error")});
+                        .json({
+                          status: 403,
+                          "message": sails.__("error")
+                        });
                     } else {
                       let {crypto, currency} = await sails
                         .helpers
@@ -726,7 +749,10 @@ module.exports = {
                 console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails.__("error")});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 let {crypto, currency} = await sails
                   .helpers
@@ -742,7 +768,11 @@ module.exports = {
                 // console.log("Trade Details :: ", tradeDetails);
 
                 if (tradeDetails) {
-                  return res.json({status: 200, data: tradeDetails, "message": sails.__("Trade retrieve success")});
+                  return res.json({
+                    status: 200,
+                    data: tradeDetails,
+                    "message": sails.__("Trade retrieve success")
+                  });
                 }
               }
             });
@@ -750,7 +780,10 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails.__("error")});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (err) {
       console.log('>>>', err)
@@ -785,7 +818,10 @@ module.exports = {
                 console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails.__("error")});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -794,7 +830,10 @@ module.exports = {
                       console.log('>>>err', err);
                       return res
                         .status(403)
-                        .json({status: 403, "message": sails.__("error")});
+                        .json({
+                          status: 403,
+                          "message": sails.__("error")
+                        });
                     } else {
                       if (month == undefined) {
                         month = 0;
@@ -823,7 +862,11 @@ module.exports = {
                           .getCancelDetails(user_id, crypto, currency, month);
                       }
                       if (userTradeDetails) {
-                        return res.json({status: 200, data: userTradeDetails, "message": sails.__("User Trade Success")});
+                        return res.json({
+                          status: 200,
+                          data: userTradeDetails,
+                          "message": sails.__("User Trade Success")
+                        });
                       }
                     }
                   });
@@ -837,7 +880,10 @@ module.exports = {
                 console.log('>>>err', err);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails.__("error")});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 let {crypto, currency} = await sails
                   .helpers
@@ -864,7 +910,11 @@ module.exports = {
                 }
 
                 if (userTradeDetails) {
-                  return res.json({status: 200, data: userTradeDetails, "message": sails.__("User Trade Success")});
+                  return res.json({
+                    status: 200,
+                    data: userTradeDetails,
+                    "message": sails.__("User Trade Success")
+                  });
                 }
               }
             });
@@ -872,7 +922,10 @@ module.exports = {
       } else {
         return res
           .status(403)
-          .json({status: 403, "message": sails.__("error")});
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
       }
     } catch (err) {
       console.log('>>>', err)
@@ -902,7 +955,10 @@ module.exports = {
                 console.log('>>>leaveErr', leaveErr);
                 return res
                   .status(403)
-                  .json({status: 403, "message": sails.__("error")});
+                  .json({
+                    status: 403,
+                    "message": sails.__("error")
+                  });
               } else {
                 sails
                   .sockets
@@ -923,7 +979,11 @@ module.exports = {
                         .helpers
                         .chart
                         .getDepthChartDetail(crypto, currency);
-                      return res.json({status: 200, data: data, "message": sails.__("Depth Chart retrieved success")});
+                      return res.json({
+                        status: 200,
+                        data: data,
+                        "message": sails.__("Depth Chart retrieved success")
+                      });
                     }
                   });
               }
@@ -948,7 +1008,11 @@ module.exports = {
                   .helpers
                   .chart
                   .getDepthChartDetail(crypto, currency);
-                return res.json({status: 200, data: data, "message": sails.__("Depth Chart retrieved success")});
+                return res.json({
+                  status: 200,
+                  data: data,
+                  "message": sails.__("Depth Chart retrieved success")
+                });
               }
             });
         }
@@ -994,8 +1058,8 @@ module.exports = {
           }
           query += ")"
           // if (start_date && end_date) {   query += "OR trade_history.created_at >= " +
-          // await sails.helpers.dateFormat(start_date);   +" AND trade_history.created_at
-          // <= " + await sails.helpers.dateFormat(end_date); }
+          // await sails.helpers.dateFormat(start_date);   +" AND
+          // trade_history.created_at <= " + await sails.helpers.dateFormat(end_date); }
         }
       }
 

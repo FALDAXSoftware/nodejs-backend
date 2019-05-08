@@ -22,7 +22,7 @@ module.exports.policies = {
     'isAuthorized', 'isAdmin'
   ], // Everything resctricted here
   'UsersController': {
-    'create': true,
+    'create': 'checkReCaptcha',
     'getCountries': true,
     'getCountriesData': true,
     'verifyNewEmail': true
@@ -43,6 +43,8 @@ module.exports.policies = {
   },
 
   'AuthController': {
+    "login": 'checkReCaptcha',
+    "forgotPassword": "checkReCaptcha",
     '*': true // We dont need authorization here, allowing public access
   },
   'BlogsController': {
