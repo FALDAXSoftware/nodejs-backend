@@ -35,27 +35,18 @@ module.exports = {
       }
 
       if (filter_val && filter_val != " ") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+        query += whereAppended ? " AND " : " WHERE ";
         whereAppended = true;
         query += "owner = '" + filter_val + "'";
       }
 
       if (start_date && end_date) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
-
+        query += whereAppended ? " AND " : " WHERE ";
         query += " posted_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND posted_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -91,10 +82,10 @@ module.exports = {
   // Change News Status
   changeNewsStatus: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
       await News
-        .update({id: id})
-        .set({is_active});
+        .update({ id: id })
+        .set({ is_active });
       return res.json({
         "status": 200,
         "message": sails.__("News Status Update success")
@@ -112,8 +103,8 @@ module.exports = {
   // get news details
   getNewsDetails: async function (req, res) {
     try {
-      let {news_id} = req.allParams();
-      let newsDetails = await News.findOne({id: news_id});
+      let { news_id } = req.allParams();
+      let newsDetails = await News.findOne({ id: news_id });
       if (newsDetails) {
         return res.json({
           "status": 200,

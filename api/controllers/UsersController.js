@@ -928,12 +928,19 @@ module.exports = {
 
   userActivate: async function (req, res) {
     try {
-      let { user_id, email, is_active } = req.body;
+      let { user_id, email, is_active, is_verified } = req.body;
 
-      let usersData = await Users
-        .update({ id: user_id })
-        .set({ email: email, is_active: is_active })
-        .fetch();
+      if (is_active) {
+        let usersData = await Users
+          .update({ id: user_id })
+          .set({ email: email, is_active })
+          .fetch();
+      } else {
+        usersData = await Users
+          .update({ id: user_id })
+          .set({ email: email, is_verified })
+          .fetch();
+      }
 
       if (usersData && typeof usersData === 'object' && usersData.length > 0) {
         return res.json({
