@@ -281,7 +281,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-      let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email" + query, [])
+      let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email, users.account_tier" + query, [])
 
       KYCData = KYCData.rows;
 
