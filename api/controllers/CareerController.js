@@ -9,7 +9,7 @@ var UploadFiles = require('../services/UploadFiles');
 module.exports = {
   applyJob: async function (req, res) {
 
-    let jobDetail = await Jobs.findOne({id: req.body.job_id});
+    let jobDetail = await Jobs.findOne({ id: req.body.job_id });
     if (jobDetail) {
       req
         .file('resume')
@@ -95,14 +95,14 @@ module.exports = {
 
   getAllJobs: async function (req, res) {
     let allJobCategories = await JobCategory
-      .find({deleted_at: null})
+      .find({ deleted_at: null })
       .populate('jobs', {
         where: {
           is_active: true,
           deleted_at: null
         }
       });
-    let careerDesc = await Statics.findOne({slug: 'career'});
+    let careerDesc = await Statics.findOne({ slug: 'career' });
     if (allJobCategories) {
       return res.json({
         "status": 200,
@@ -121,7 +121,7 @@ module.exports = {
   },
 
   getAllJobCategories: async function (req, res) {
-    let allJobCategories = await JobCategory.find({deleted_at: null});
+    let allJobCategories = await JobCategory.find({ deleted_at: null });
     if (allJobCategories) {
       return res.json({
         "status": 200,
@@ -140,7 +140,7 @@ module.exports = {
 
   getAllJobsCMS: async function (req, res) {
     try {
-      let {page, limit, data, sortCol, sortOrder} = req.allParams();
+      let { page, limit, data, sortCol, sortOrder } = req.allParams();
       let query = " from jobs WHERE deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
@@ -181,8 +181,8 @@ module.exports = {
 
   getJobDetail: async function (req, res) {
     try {
-      let {id} = req.allParams();
-      let jobDetail = await Jobs.findOne({id});
+      let { id } = req.allParams();
+      let jobDetail = await Jobs.findOne({ id });
       if (jobDetail) {
         return res.json({
           "status": 200,
@@ -209,7 +209,7 @@ module.exports = {
 
   addJob: async function (req, res) {
     let addedJob = await Jobs
-      .create({position: req.body.position, short_desc: req.body.short_desc, job_desc: req.body.job_desc, location: req.body.location, category: req.body.category})
+      .create({ position: req.body.position, short_desc: req.body.short_desc, job_desc: req.body.job_desc, location: req.body.location, category: req.body.category })
       .fetch();
     if (addedJob) {
       return res.json({
@@ -227,10 +227,10 @@ module.exports = {
   },
 
   editJob: async function (req, res) {
-    let job = await Jobs.findOne({id: req.body.job_id})
+    let job = await Jobs.findOne({ id: req.body.job_id })
     if (job) {
       let updatedJob = await Jobs
-        .update({id: req.body.job_id})
+        .update({ id: req.body.job_id })
         .set(req.body)
         .fetch();
       if (updatedJob) {
@@ -258,7 +258,7 @@ module.exports = {
 
   deleteJob: async function (req, res) {
     try {
-      let {job_id} = req.allParams();
+      let { job_id } = req.allParams();
       if (!job_id) {
         return res
           .status(500)
@@ -268,8 +268,8 @@ module.exports = {
           });
       }
       let deletedJob = await Jobs
-        .update({id: job_id})
-        .set({deleted_at: new Date()})
+        .update({ id: job_id })
+        .set({ deleted_at: new Date() })
         .fetch();
       if (deletedJob) {
         return res.json({
@@ -321,7 +321,6 @@ module.exports = {
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      console.log('career query', query)
 
       let applications = await sails.sendNativeQuery("Select *" + query, [])
 
@@ -332,13 +331,12 @@ module.exports = {
       if (applications) {
         return res.json({
           "status": 200,
-          "message": sails._("All jobs retrived success"),
+          "message": sails.__("All jobs retrived success"),
           "data": applications,
           applicationCount
         });
       }
     } catch (err) {
-      console.log(err)
       return res
         .status(500)
         .json({
