@@ -1071,7 +1071,7 @@ module.exports = {
 
       tradeData = tradeData.rows;
 
-      let tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
+      let tradeCount = await sails.sendNativeQuery("Select COUNT( .id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
 
       if (tradeData) {

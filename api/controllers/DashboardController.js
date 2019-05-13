@@ -51,8 +51,6 @@ module.exports = {
 
   getRisingFalling: async function (req, res) {
     try {
-      // if (req.isSocket) {   if (req.query.currency) {     currency =
-      // req.query.currency;   } else {     currency = 'USD';   }
 
       var currency = 'USD'
 
