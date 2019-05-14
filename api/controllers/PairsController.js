@@ -83,7 +83,7 @@ module.exports = {
       if (filter_val) {
         query += whereAppended ? " AND " : " WHERE ";
         whereAppended = true;
-        query += " coin_code1=" + filter_val + " OR coin_code2=" + filter_val;
+        query += " coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "'";
       }
       countQuery = query;
       if (sort_col && sort_order) {
@@ -93,7 +93,6 @@ module.exports = {
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      console.log('>>>query', query)
       let pairData = await sails.sendNativeQuery("Select *" + query, [])
 
       pairData = pairData.rows;
