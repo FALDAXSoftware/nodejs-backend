@@ -37,7 +37,7 @@ module.exports = {
 
   get: async function (req, res) {
     try {
-      let {sortCol, sortOrder} = req.allParams();
+      let { sortCol, sortOrder } = req.allParams();
       let query = " from roles";
       if (sortCol && sortOrder) {
         let sortVal = (sortOrder == 'descend'
@@ -45,13 +45,18 @@ module.exports = {
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
-      let roles = await sails.sendNativeQuery("Select *" + query, [])
+      let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
+        "pairs, limit_management, transaction_history, trade_history, withdraw_requests," +
+        "dashboard, inquiries, jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
+      let roleName = await sails.sendNativeQuery("Select name, is_active" + query, [])
 
+      roleName = roleName.rows;
       roles = roles.rows;
       return res.json({
         status: 200,
         message: sails.__("Role retrived success"),
-        roles
+        roles,
+        roleName
       })
     } catch (error) {
       return res
@@ -65,7 +70,7 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      let role = await Role.findOne({id: req.body.id});
+      let role = await Role.findOne({ id: req.body.id });
       if (!role) {
         return res
           .status(500)
@@ -75,7 +80,7 @@ module.exports = {
           });
       }
       await Role
-        .update({id: role.id})
+        .update({ id: role.id })
         .set(req.body);
       return res.json({
         status: 200,
@@ -93,7 +98,7 @@ module.exports = {
 
   delete: async function (req, res) {
     try {
-      let role = await Role.findOne({id: req.body.id});
+      let role = await Role.findOne({ id: req.body.id });
       if (!role) {
         return res
           .status(500)
@@ -103,8 +108,8 @@ module.exports = {
           });
       } else {
         await Role
-          .update({id: role.id})
-          .set({deleted_at: new Date()});
+          .update({ id: role.id })
+          .set({ deleted_at: new Date() });
         return res.json({
           status: 200,
           message: sails.__("Role Deleted success")
