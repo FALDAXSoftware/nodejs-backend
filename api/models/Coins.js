@@ -54,6 +54,26 @@ module.exports = {
       columnName: 'isERC',
       defaultsTo: false
     },
+    is_address_created_signup: {
+      type: 'boolean',
+      columnName: 'is_address_created_signup',
+      defaultsTo: false
+    },
+    hot_send_wallet_address: {
+      type: 'string',
+      columnName: 'hot_send_wallet_address',
+      allowNull: true
+    },
+    hot_receive_wallet_address: {
+      type: 'string',
+      columnName: 'hot_receive_wallet_address',
+      allowNull: true
+    },
+    warm_wallet_address: {
+      type: 'string',
+      columnName: 'warm_wallet_address',
+      allowNull: true
+    },
     // description: {   type: 'string',   columnName: 'description',   required:
     // true },
     is_active: {

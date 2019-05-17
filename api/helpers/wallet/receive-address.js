@@ -38,7 +38,7 @@ module.exports = {
     var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
 
     //Fetching coin list
-    const coinData = await Coins.find({deleted_at: null, is_active: true});
+    const coinData = await Coins.find({deleted_at: null, is_active: true, is_address_created_signup: true});
 
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
@@ -55,18 +55,18 @@ module.exports = {
         var create = await Wallet
           .create(obj)
           .fetch()
-      } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR' && coin.coin !== 'ETH' && coin.wallet_address) {
+      } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR' && coin.coin !== 'ETH' && coin.hot_receive_wallet_address) {
 
         //For all the coins accept USD EURO and ETH
         var wallet = await bitgo
           .coin(coin.coin_code)
           .wallets()
-          .get({id: coin.wallet_address});
+          .get({id: coin.hot_receive_wallet_address});
 
         if (wallet) {
 
           //Here chain =0 means testnet Generating wallet address
-          var address = await wallet.createAddress({"chain": 0});
+          var address = await wallet.createAddress({"chain": sails.config.local.chain});
           if (inputs.test_key == sails.config.local.test_key) {
             var obj = {
               wallet_id: "wallet",
@@ -84,7 +84,8 @@ module.exports = {
               receive_address: address.address,
               user_id: parseInt(inputs.user.id),
               balance: 0.0,
-              placed_balance: 0.0
+              placed_balance: 0.0,
+              // label: inputs.user.id
             }
 
           }
