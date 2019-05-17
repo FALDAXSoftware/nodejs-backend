@@ -308,4 +308,9 @@ module.exports.routes = {
   'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus',
   'get /query-trade-information/:txid': 'KrakenController.queryTradeInformation',
   // 'post /perform-conversion': 'KrakenController.performConversion',
+
+  //Account Class API
+  'get /admin/get-all-account-classes': 'AccountClassController.getAllAccountClasses',
+  'post /admin/add-account-class': 'AccountClassController.addAccountClass',
+  'post /admin/update-account-class': 'AccountClassController.updateAccountClass'
 };

@@ -222,5 +222,8 @@
 	"Order Filfilled Success": "Order Filfilled Success",
 	"Order Fulfilled Success": "Order Fulfilled Success",
 	"It looks like Robot !": "It looks like Robot !",
-	"User Log out successfully.": "User Log out successfully."
+	"User Log out successfully.": "User Log out successfully.",
+	"Account Class Data": "Account Class data fetched successfully.",
+	"Class added success": "Account Class added Successfully.",
+	"Class Update Success": "Account Class Updated Successfully."
 }
