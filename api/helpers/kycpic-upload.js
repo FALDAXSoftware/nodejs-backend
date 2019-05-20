@@ -90,6 +90,8 @@ module.exports = {
         //kycUploadDetails.docCountry = 'US';
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
+        //production url : https://edna.identitymind.com/merchantedna/
+        //user:password base64 
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
@@ -97,7 +99,8 @@ module.exports = {
             url: 'https://staging.identitymind.com/im/account/consumer',
             json: kycUploadDetails
         }, async function (error, response, body) {
-            try {;
+            try {
+                ;
 
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;

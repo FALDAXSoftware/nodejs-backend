@@ -213,6 +213,11 @@ module.exports = {
       type: 'number',
       columnName: 'referal_percentage'
     },
+    gender: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'gender'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
@@ -235,24 +240,24 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     Users
-      .findOne({'email': values.email, 'deleted_at': null})
+      .findOne({ 'email': values.email, 'deleted_at': null })
       .exec(function (err, found) {
         values.created_at = new Date()
         if (!found) {
           bcrypt
             .genSalt(10, function (err, salt) {
-              if (err) 
+              if (err)
                 return next(err);
               bcrypt
                 .hash(values.password, salt, function (err, hash) {
-                  if (err) 
+                  if (err)
                     return next(err);
                   values.password = hash;
                   next();
                 })
             });
         } else {
-          next({error: 'Email address already exists'});
+          next({ error: 'Email address already exists' });
         }
       });
   },
@@ -261,11 +266,11 @@ module.exports = {
     if (values.password) {
       bcrypt
         .genSalt(10, function (err, salt) {
-          if (err) 
+          if (err)
             return next(err);
           bcrypt
             .hash(values.password, salt, function (err, hash) {
-              if (err) 
+              if (err)
                 return next(err);
               values.password = hash;
               next();
@@ -279,7 +284,7 @@ module.exports = {
   comparePassword: function (password, user, cb) {
     bcrypt
       .compare(password, user.password, function (err, match) {
-        if (err) 
+        if (err)
           cb(err);
         if (match) {
           cb(null, true);
