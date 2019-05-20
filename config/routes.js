@@ -312,5 +312,6 @@ module.exports.routes = {
   //Account Class API
   'get /admin/get-all-account-classes': 'AccountClassController.getAllAccountClasses',
   'post /admin/add-account-class': 'AccountClassController.addAccountClass',
-  'post /admin/update-account-class': 'AccountClassController.updateAccountClass'
+  'post /admin/update-account-class': 'AccountClassController.updateAccountClass',
+  'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass'
 };

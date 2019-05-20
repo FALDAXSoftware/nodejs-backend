@@ -325,12 +325,11 @@ module.exports = {
   getAllUserDetails: async function (req, res) {
     let { user_id } = req.allParams();
     try {
-      let usersData = await Users.find({
-        where: {
-          id: user_id,
-          deleted_at: null
-        }
-      });
+      let query = " from users WHERE id=" + user_id;
+
+      let usersData = await sails.sendNativeQuery("Select *, CONCAT(account_class, '-', id) as UUID " + query, [])
+
+      usersData = usersData.rows;
       if (usersData) {
         return res.json({
           "status": 200,
@@ -408,8 +407,6 @@ module.exports = {
   },
 
   update: async function (req, res) {
-    console.log("user object----", req.body);
-
     try {
       const user_details = await Users.findOne({ id: req.user.id });
       if (!user_details) {
@@ -501,7 +498,6 @@ module.exports = {
               });
             }
           } catch (e) {
-            console.log('>>>>>>>>>>>>>>>error>>>>>>', e)
             throw e;
           }
         });
@@ -801,13 +797,6 @@ module.exports = {
     }
   },
 
-
-
-
-
-
-
-
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
@@ -848,7 +837,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, reffral.no_of_referrals" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_of_referrals" + query, [])
 
       usersData = usersData.rows;
 
@@ -1161,8 +1150,6 @@ module.exports = {
   },
 
   addUser: async function (req, res) {
-    // console.log(req.allParams()); return res.json({   status: 200,   message:
-    // "user created successfully" });
     try {
       let { generate_wallet_coins, kyc_done, ...user } = req.allParams();
       let existedUser = await Users.findOne({
@@ -1198,10 +1185,9 @@ module.exports = {
           });
         }
         if (generate_wallet_coins.length > 0) {
-          // create recive address
+          // create receive address
           for (let index = 0; index < generate_wallet_coins.length; index++) {
             const element = generate_wallet_coins[index];
-            console.log("element", element);
             await sails
               .helpers
               .wallet
@@ -1221,7 +1207,6 @@ module.exports = {
           });
       }
     } catch (error) {
-      console.log("log", error);
       return res
         .status(500)
         .json({
@@ -1245,7 +1230,6 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
-      console.log('err tickets', err)
       return res
         .status(500)
         .json({

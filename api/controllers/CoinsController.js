@@ -328,7 +328,7 @@ module.exports = {
                         });
                     } else {
 
-                      let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                      let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
                       return res.json({
                         status: 200,
                         data: pair,
@@ -350,7 +350,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
                 return res.json({
                   status: 200,
                   data: pair,
@@ -506,7 +506,6 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      console.log('req.body', req.body)
       const coin_details = await Coins.findOne({ id: req.body.coin_id });
       if (!coin_details) {
         return res

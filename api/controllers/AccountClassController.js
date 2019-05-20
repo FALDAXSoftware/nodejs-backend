@@ -16,8 +16,7 @@ module.exports = {
     // CMS all class api
     getAllAccountClasses: async function (req, res) {
         try {
-            let allClasses = await AccountClass.find();
-            console.log('>>>>allClasses', allClasses)
+            let allClasses = await AccountClass.find({ deleted_at: null });
 
             return res.json({
                 "status": 200,
@@ -25,7 +24,6 @@ module.exports = {
                 allClasses
             });
         } catch (e) {
-            console.log('>>>>>>>>e', e)
             return res
                 .status(500)
                 .json({
@@ -37,10 +35,9 @@ module.exports = {
 
     addAccountClass: async function (req, res) {
         let params = req.body.class_name;
-        console.log('params', params)
         try {
             let accountClass = await AccountClass
-                .create(params)
+                .create({ class_name: params })
                 .fetch();
             if (!accountClass) {
                 return res
@@ -55,7 +52,6 @@ module.exports = {
                 message: sails.__("Class added success")
             })
         } catch (error) {
-            console.log('error', error)
             return res
                 .status(500)
                 .json({
@@ -67,16 +63,13 @@ module.exports = {
 
     updateAccountClass: async function (req, res) {
         let { id, class_name } = req.body;
-        console.log('params update', id)
         try {
             let accountClass = await AccountClass.findOne({ id }).fetch();
-            console.log('accountClass', accountClass)
             if (accountClass) {
                 var updatedClass = await AccountClass
                     .update({ id })
                     .set(class_name)
                     .fetch();
-                console.log('updatedClass if', updatedClass)
                 return res.json({
                     status: 200,
                     message: sails.__("Class Update Success")
@@ -90,7 +83,6 @@ module.exports = {
                     });
             }
         } catch (error) {
-            console.log('error', error)
             return res
                 .status(500)
                 .json({
@@ -99,4 +91,28 @@ module.exports = {
                 })
         }
     },
+
+    deleteAccountClass: async function (req, res) {
+        let { class_id } = req.allParams();
+        if (!class_id) {
+            return res
+                .status(500)
+                .json({
+                    "status": 500,
+                    "err": sails.__("Class id is not sent")
+                });
+        }
+        let classData = await AccountClass
+            .update({ id: class_id })
+            .set({ deleted_at: new Date() })
+            .fetch();
+        if (classData) {
+            return res
+                .status(200)
+                .json({
+                    "status": 200,
+                    "message": sails.__("Class deleted success")
+                });
+        }
+    }
 };
