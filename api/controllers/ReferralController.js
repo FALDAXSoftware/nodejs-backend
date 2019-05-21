@@ -1,10 +1,10 @@
 module.exports = {
   getUserReferredAmounts: async function (req, res) {
     try {
-      let {id} = req.allParams();
+      let { id } = req.allParams();
 
-      let referredAmountData = await Referral.find({user_id: id})
-      let userData = await Users.find({id: id})
+      let referredAmountData = await referral.find({ user_id: id })
+      let userData = await Users.find({ id: id })
 
       if (referredAmountData) {
         return res.json({
@@ -15,6 +15,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log('>>>err', err)
       return res
         .status(500)
         .json({

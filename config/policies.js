@@ -97,9 +97,6 @@ module.exports.policies = {
   "TradeController": {
     "stopLimitExecute": true
   },
-  "DashboardController": {
-    "getRisingFalling": true
-  },
   "TradingViewController": {
     "*": true
   },

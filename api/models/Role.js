@@ -109,6 +109,11 @@ module.exports = {
       columnName: 'is_referral',
       defaultsTo: false,
     },
+    account_class: {
+      type: "boolean",
+      columnName: 'account_class',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

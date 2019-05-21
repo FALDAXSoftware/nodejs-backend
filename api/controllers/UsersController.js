@@ -325,12 +325,11 @@ module.exports = {
   getAllUserDetails: async function (req, res) {
     let { user_id } = req.allParams();
     try {
-      let usersData = await Users.find({
-        where: {
-          id: user_id,
-          deleted_at: null
-        }
-      });
+      let query = " from users WHERE id=" + user_id;
+
+      let usersData = await sails.sendNativeQuery("Select *, CONCAT(account_class, '-', id) as UUID " + query, [])
+
+      usersData = usersData.rows;
       if (usersData) {
         return res.json({
           "status": 200,
@@ -408,8 +407,6 @@ module.exports = {
   },
 
   update: async function (req, res) {
-    console.log("user object----", req.body);
-
     try {
       const user_details = await Users.findOne({ id: req.user.id });
       if (!user_details) {
@@ -501,7 +498,6 @@ module.exports = {
               });
             }
           } catch (e) {
-            console.log('>>>>>>>>>>>>>>>error>>>>>>', e)
             throw e;
           }
         });
@@ -801,13 +797,6 @@ module.exports = {
     }
   },
 
-
-
-
-
-
-
-
   //------------------CMS APi------------------------------------------------//
 
   getUserPaginate: async function (req, res) {
@@ -848,7 +837,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, reffral.no_of_referrals" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_of_referrals" + query, [])
 
       usersData = usersData.rows;
 
@@ -928,12 +917,19 @@ module.exports = {
 
   userActivate: async function (req, res) {
     try {
-      let { user_id, email, is_active } = req.body;
+      let { user_id, email, is_active, is_verified } = req.body;
 
-      let usersData = await Users
-        .update({ id: user_id })
-        .set({ email: email, is_active: is_active })
-        .fetch();
+      if (is_active) {
+        let usersData = await Users
+          .update({ id: user_id })
+          .set({ email: email, is_active })
+          .fetch();
+      } else {
+        usersData = await Users
+          .update({ id: user_id })
+          .set({ email: email, is_verified })
+          .fetch();
+      }
 
       if (usersData && typeof usersData === 'object' && usersData.length > 0) {
         return res.json({
@@ -1015,13 +1011,13 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
-      let query = " from users LEFT JOIN referral ON users.id=referral.user_id LEFT JOIN users as referral_owner ON users.referred_id = referral_owner.id";
+      let query = " from users LEFT JOIN (SELECT COUNT(id) as total_referal, referred_id FROM users GROUP BY referred_id) reffered_data ON users.id = reffered_data.referred_id";
       query += " WHERE users.is_verified='true'";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
       }
       if ((data && data != "")) {
-        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.coin_name) LIKE '%" + data.toLowerCase() + "%'";
+        query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
           query += " OR referral.amount=" + data;
         }
@@ -1037,7 +1033,7 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select users.*, referral.amount, referral.coin_name, referral_owner.email as referral_by_email" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*,reffered_data.total_referal" + query, [])
 
       usersData = usersData.rows;
 
@@ -1053,7 +1049,6 @@ module.exports = {
         });
       }
     } catch (err) {
-
       return res.status(500).json({ status: 500, "err": sails.__("Something Wrong") });
     }
   },
@@ -1155,8 +1150,6 @@ module.exports = {
   },
 
   addUser: async function (req, res) {
-    // console.log(req.allParams()); return res.json({   status: 200,   message:
-    // "user created successfully" });
     try {
       let { generate_wallet_coins, kyc_done, ...user } = req.allParams();
       let existedUser = await Users.findOne({
@@ -1192,10 +1185,9 @@ module.exports = {
           });
         }
         if (generate_wallet_coins.length > 0) {
-          // create recive address
+          // create receive address
           for (let index = 0; index < generate_wallet_coins.length; index++) {
             const element = generate_wallet_coins[index];
-            console.log("element", element);
             await sails
               .helpers
               .wallet
@@ -1215,7 +1207,6 @@ module.exports = {
           });
       }
     } catch (error) {
-      console.log("log", error);
       return res
         .status(500)
         .json({
@@ -1239,7 +1230,6 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
-      console.log('err tickets', err)
       return res
         .status(500)
         .json({

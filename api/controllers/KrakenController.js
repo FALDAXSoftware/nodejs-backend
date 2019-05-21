@@ -210,30 +210,28 @@ module.exports = {
         .helpers
         .utilities
         .getCurrencies(pair);
-      let wallet = null;
-      if (type == "buy") {
-        wallet = await sails
-          .helpers
-          .utilities
-          .getWalletBalance(crypto, currency, userId)
-          .tolerate("coinNotFound", () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate("serverError", () => {
-            throw new Error("serverError")
-          });
-      } else if (type == "sell") {
-        wallet = await sails
-          .helpers
-          .utilities
-          .getWalletBalance(currency, crypto, userId)
-          .tolerate("coinNotFound", () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate("serverError", () => {
-            throw new Error("serverError")
-          });
-      }
+      let walletCurrencyBalance = null;
+      let walletCryptoBalance = null;
+      walletCurrencyBalance = await sails
+        .helpers
+        .utilities
+        .getWalletBalance(crypto, currency, userId)
+        .tolerate("coinNotFound", () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate("serverError", () => {
+          throw new Error("serverError")
+        });
+      walletCryptoBalance = await sails
+        .helpers
+        .utilities
+        .getWalletBalance(currency, crypto, userId)
+        .tolerate("coinNotFound", () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate("serverError", () => {
+          throw new Error("serverError")
+        });
       if (currencyAmount <= wallet.placed_balance) {
         var addedData = await sails
           .helpers
@@ -244,12 +242,87 @@ module.exports = {
           });
         console.log("addedData-----", addedData);
         if (addedData) {
-          if (addedData.error && addedData.error.length <= 0) {
-            if (addedData.txid && addedData.txid <= 0) {
-
-            }
+          if (addedData.error && addedData.error.length > 0) {
+            // Error
           } else {
-            throw new Error("orderError");
+            if (addedData.result) {
+              if (addedData.result.txid && addedData.result.txid.length > 0) {
+                let now = new Date();
+                let transactionId = addedData.result.txid[0];
+                let tradeInfoData = await sails
+                  .helpers
+                  .kraken
+                  .queryTradeInfo(transactionId);
+                let tradeHistoryData = {
+                  order_type: tradeInfoData.result[0].ordertype,
+                  fill_price: tradeInfoData.result[0].price,
+                  quantity: tradeInfoData.result[0].vol,
+                  side: tradeInfoData.result[0].type,
+                  created_at: now,
+                  updated_at: now,
+                  user_id: inputs.user_id,
+                  maximum_time: now,
+                  limit_price: 0,
+                  stop_price: 0,
+                  price: 0,
+                  order_status: tradeInfoData.result[0].posstatus,
+                  currency: currency,
+                  settle_currency: crypto,
+                  symbol: pair
+                }
+                var resultData = {
+                  ...tradeHistoryData
+                }
+                resultData.is_market = true;
+                resultData.fix_quantity = volume;
+                resultData.maker_fee = 0.0;
+                resultData.taker_fee = tradeInfoData.result[0].fee + (faldaxFees);
+
+                let activity = await sails
+                  .helpers
+                  .tradding
+                  .activity
+                  .add(resultData);
+
+                let tradeHistory = await sails
+                  .helpers
+                  .tradding
+                  .trade
+                  .add(resultData);
+
+                if (tradeInfoData.result[0].type == "buy") {
+                  await wallet
+                    .update({ id: walletCurrencyBalance.id })
+                    .set({
+                      balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].cost),
+                      placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].cost)
+                    });
+
+                  walletCryptoBalance
+                    .update({ id: walletCryptoBalance.id })
+                    .set({
+                      balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].vol - (tradeInfoData.result[0].vol * (faldaxFees / 100)))),
+                      placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].vol - (tradeInfoData.result[0].vol * (faldaxFees / 100))))
+                    });
+
+                } else if (tradeInfoData.result[0].type == "sell") {
+                  walletCurrencyBalance
+                    .update({ id: walletCurrencyBalance.id })
+                    .set({
+                      balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].cost - (tradeInfoData.result[0].cost * (faldaxFees / 100)))),
+                      placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].cost - (tradeInfoData.result[0].cost * (faldaxFees / 100))))
+                    });
+
+                  walletCryptoBalance
+                    .update({ id: walletCryptoBalance.id })
+                    .set({
+                      balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].vol),
+                      placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].vol)
+                    });
+                }
+
+              }
+            }
           }
         }
 

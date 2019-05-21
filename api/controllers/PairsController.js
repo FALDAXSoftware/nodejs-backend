@@ -67,16 +67,23 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllPairs: async function (req, res) {
     try {
-      let {page, limit, data, sort_col, sort_order} = req.allParams();
+      let { page, limit, data, sort_col, sort_order, filter_val } = req.allParams();
       let query = " from pairs";
+      let whereAppended = false;
       if ((data && data != "")) {
         query += " WHERE"
+        whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
+          query += " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query = query + " OR maker_fee=" + data + " OR taker_fee=" + data;
+            query += " OR maker_fee=" + data + " OR taker_fee=" + data;
           }
         }
+      }
+      if (filter_val) {
+        query += whereAppended ? " AND " : " WHERE ";
+        whereAppended = true;
+        query += " coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "'";
       }
       countQuery = query;
       if (sort_col && sort_order) {
@@ -124,18 +131,18 @@ module.exports = {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code1) {
 
-        let coinID_1 = await Coins.findOne({coin_code: req.body.coin_code1});
-        let coinID_2 = await Coins.findOne({coin_code: req.body.coin_code1});
+        let coinID_1 = await Coins.findOne({ coin_code: req.body.coin_code1 });
+        let coinID_2 = await Coins.findOne({ coin_code: req.body.coin_code1 });
 
         var pair_details = await Pairs
           .create({
-          name: req.body.name,
-          coin_code1: coinID_1.id,
-          coin_code2: coinID_2.id,
-          maker_fee: req.body.maker_fee,
-          taker_fee: req.body.taker_fee,
-          created_at: new Date()
-        })
+            name: req.body.name,
+            coin_code1: coinID_1.id,
+            coin_code2: coinID_2.id,
+            maker_fee: req.body.maker_fee,
+            taker_fee: req.body.taker_fee,
+            created_at: new Date()
+          })
           .fetch();
         if (pair_details) {
           return res.json({
@@ -171,7 +178,7 @@ module.exports = {
   updatePair: async function (req, res) {
     try {
       if (req.body.id) {
-        const pair_details = await Pairs.findOne({id: req.body.id});
+        const pair_details = await Pairs.findOne({ id: req.body.id });
         if (!pair_details) {
           return res
             .status(401)
@@ -181,7 +188,7 @@ module.exports = {
             });
         }
         var updatedPair = await Pairs
-          .update({id: req.body.id})
+          .update({ id: req.body.id })
           .set(req.body)
           .fetch();
         if (!updatedPair) {
