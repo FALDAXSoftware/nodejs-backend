@@ -8,16 +8,16 @@
 module.exports = {
   //---------------------------Web Api------------------------------
   getStaticPage: async function (req, res) {
-    let staticData = await Statics.findOne({slug: req.params.page, is_active: true});
+    let staticData = await Statics.findOne({ slug: req.params.page, is_active: true });
     if (staticData) {
-
-      return res.view('pages/staticPage', {page: staticData});
+      return res.view('pages/staticPage', { page: staticData });
     } else {
       return res.notFound();
     }
   },
+
   getStaticPageJson: async function (req, res) {
-    let staticData = await Statics.findOne({slug: req.params.page, is_active: true});
+    let staticData = await Statics.findOne({ slug: req.params.page, is_active: true });
     if (staticData) {
       return res.json({
         "status": 200,
@@ -32,8 +32,8 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getStatic: async function (req, res) {
     try {
-      let staticData = await Statics.find({is_active: true, deleted_at: null});
-      let staticCount = await Statics.count({is_active: true, deleted_at: null});
+      let staticData = await Statics.find({ is_active: true, deleted_at: null });
+      let staticCount = await Statics.count({ is_active: true, deleted_at: null });
       if (staticData) {
         return res.json({
           "status": 200,
@@ -51,123 +51,4 @@ module.exports = {
         });
     }
   },
-
-  create: async function (req, res) {
-    try {
-      if (req.body.title && req.body.name && req.body.content) {
-        var static_details = await Statics.create({
-          name: req.body.name,
-          slug: req
-            .body
-            .name
-            .indexOf(' ') >= 0
-            ? req
-              .body
-              .name
-              .split(' ')
-              .join('_')
-            : req.body.name,
-          content: req.body.content,
-          title: req.body.title,
-          created_at: new Date()
-        }).fetch();
-        if (static_details) {
-          //Send verification email in before create
-          res.json({
-            "status": 200,
-            "message": sails.__("Static Page retrived success")
-          });
-          return;
-        } else {
-          res
-            .status(400)
-            .json({
-              "status": 400,
-              "err": sails.__("not listed")
-            });
-          return;
-        }
-      } else {
-        res
-          .status(400)
-          .json({
-            "status": 400,
-            "err": sails.__("not listed")
-          });
-        return;
-      }
-    } catch (error) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
-    }
-  },
-
-  update: async function (req, res) {
-    try {
-      const static_details = await Statics.findOne({id: req.body.id});
-      if (!static_details) {
-        return res
-          .status(401)
-          .json({err: 'Invalid Static page Id'});
-      }
-      var staticData = {
-        ...req.body
-      };
-      delete staticData.id
-      var updateStatic = await Statics
-        .update({id: req.body.id})
-        .set(staticData)
-        .fetch();
-      if (!updateStatic) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("static page update not success")
-        });
-      }
-
-      return res.json({
-        "status": 200,
-        "message": sails.__("Static page details updated success")
-      });
-
-    } catch (error) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
-    }
-  },
-
-  delete: async function (req, res) {
-    let {id} = req.allParams();
-    if (!id) {
-      res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Static page id is not sent")
-        });
-      return;
-    }
-    let staticData = await Statics
-      .update({id: id})
-      .set({deleted_at: new Date()})
-      .fetch();
-    if (staticData) {
-      return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": sails.__("Static Page deleted successfully.")
-        });
-    }
-  }
 };

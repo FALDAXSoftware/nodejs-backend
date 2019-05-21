@@ -39,6 +39,11 @@ module.exports = {
       columnName: 'first_name',
       allowNull: true
     },
+    middle_name: {
+      type: 'string',
+      columnName: 'middle_name',
+      allowNull: true
+    },
     last_name: {
       type: 'string',
       columnName: 'last_name',
