@@ -21,6 +21,7 @@ module.exports.routes = {
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /panic-button': 'RootController.panicBtn',
+  'get /test-bitgo': 'RootController.bitgoTest',
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",

@@ -70,7 +70,8 @@ module.exports.policies = {
     "createAllWallet": true,
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
-    "callKrakenAPI": true
+    "callKrakenAPI": true,
+    "bitgoTest": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true

@@ -2,6 +2,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   'test_key': 'nikita',
+  'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
+  'EMAIL_USER': process.env.EMAIL_USER,
+  'EMAIL_HOST': process.env.EMAIL_HOST,
+  'EMAIL_PORT': process.env.EMAIL_PORT,
+  'EMAIL_PASSWORD': process.env.EMAIL_PASSWORD,
   'BITGO_ACCESS_TOKEN': process.env.BITGO_ACCESS_TOKEN,
   'BITGO_ENV_MODE': process.env.BITGO_ENV_MODE,
   'chain': process.env.CHAIN,
