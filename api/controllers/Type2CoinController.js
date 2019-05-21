@@ -19,7 +19,7 @@ module.exports = {
 
   getCoinInfo: async function (req, res) {
     try {
-      var {coin_code} = req.allParams();
+      var { coin_code } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -66,7 +66,7 @@ module.exports = {
 
   getCoinNewAddress: async function (req, res) {
     try {
-      var {coin_code} = req.allParams();
+      var { coin_code } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -128,7 +128,7 @@ module.exports = {
 
   getTransactionList: async function (req, res) {
     try {
-      var {coin_code} = req.allParams();
+      var { coin_code } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -136,7 +136,7 @@ module.exports = {
           .type2Coins
           .stratis
           .getTransactionList(coin_code);
-      } else if (sails.config.local.coinArray[coin_code].type == 2) {}
+      } else if (sails.config.local.coinArray[coin_code].type == 2) { }
 
       return res.json({
         "status": 200,
@@ -160,7 +160,7 @@ module.exports = {
 
   sendCoin: async function (req, res) {
     try {
-      var {coin_code, to_address, amount, message} = req.body;
+      var { coin_code, to_address, amount, message } = req.body;
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -217,7 +217,7 @@ module.exports = {
 
   listAddresses: async function (req, res) {
     try {
-      var {coin_code} = req.allParams();
+      var { coin_code } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 3) {
         getInfo = await sails
@@ -226,7 +226,7 @@ module.exports = {
           .neoListAddress(coin_code);
       }
 
-      return res.json({"status": 200, "message": sails.__("list address success"), "data": getInfo});
+      return res.json({ "status": 200, "message": sails.__("list address success"), "data": getInfo });
     } catch (err) {
       console.log(err);
     }
@@ -243,7 +243,7 @@ module.exports = {
 
   getAddressBalance: async function (req, res) {
     try {
-      var {coin_code, address} = req.body;
+      var { coin_code, address } = req.body;
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 6) {
         getInfo = await sails
@@ -256,7 +256,7 @@ module.exports = {
           .type2Coins
           .tetherGetWalletBalance(coin_code, address);
       }
-      return res.json({"status": 200, "message": sails.__("user address balance success"), "data": getInfo});
+      return res.json({ "status": 200, "message": sails.__("user address balance success"), "data": getInfo });
     } catch (err) {
       console.log(err);
     }

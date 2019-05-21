@@ -15,8 +15,6 @@ module.exports.routes = {
 
   // 'admin/*': { policy: 'isAdmin' },
   // Test Routes
-  'get /newstest': 'RootController.testnews',
-  'post /csv-to-json': 'RootController.csvToJson',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
@@ -64,9 +62,6 @@ module.exports.routes = {
 
   //static pages
   'get /admin/static/get-static-page': 'Statics.getStatic',
-  'post /admin/static/create': 'Statics.create',
-  'put /admin/static/update': 'Statics.update',
-  'delete /admin/static/delete': 'Statics.delete',
 
   //Announcement
   'get /admin/announcement/getannouncement-template': 'AnnouncementController.getAnnouncementTemplate',
@@ -74,9 +69,6 @@ module.exports.routes = {
   'put /admin/announcement/update': 'AnnouncementController.update',
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
   'post /admin/email-send': 'AnnouncementController.sendemail',
-
-  //Coin Requests
-  'get /admin/coin-requests': 'AddCoinReqController.getCoinRequests',
 
   //DashBoard
   'get /admin/dashboard/get-data': 'Dashboard.getAllCounts',
@@ -87,10 +79,10 @@ module.exports.routes = {
   'put /admin/state-activate': 'Countries.stateActivate',
   'put /admin/state-update': 'Countries.stateUpdate',
 
-  // 'post /admin/insertCountries': 'Countries.insertCountries', 'post
-  // /admin/insertState': 'Countries.insertState', Blogs routes
+  // 'post /admin/insertCountries': 'Countries.insertCountries',
+  // 'post /admin/insertState': 'Countries.insertState',
 
-  //Fees routes
+  //Pairs routes
   'get /admin/all-pairs': 'PairsController.getAllPairs',
   'post /admin/add-pair': 'PairsController.createPair',
   'put /admin/edit-pair': 'PairsController.updatePair',
@@ -112,10 +104,6 @@ module.exports.routes = {
   //Order routes
   'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
   'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
-
-  //Send Inquiry routes
-  'get /admin/get-all-inquiry': 'RootController.getAllInquiries',
-  'delete /admin/delete-inquiry': 'RootController.deleteInquiry',
 
   //Subscriber routes
   'get /admin/get-all-subscribers': 'Subscribe.getAllSubscribers',
@@ -210,12 +198,6 @@ module.exports.routes = {
   // Contact Routes
   'get /get-contact-details': 'RootController.getContactInfo',
 
-  //Coin Request routes
-  'post /users/add-coin-request': 'AddCoinReqController.addCoinRequest',
-
-  //Send Inquiry routes
-  'post /send-inquiry': 'RootController.sendInquiry',
-
   //career routes
   'get /all-jobs': 'CareerController.getAllJobs',
   'get /jobs/get-job-detail': 'CareerController.getJobDetail',
@@ -253,6 +235,7 @@ module.exports.routes = {
   'get /coin-list': 'Coins.getAllCoinList',
   'get /coin-list-converison': 'Coins.getCoinsForConversion',
   'get /coin-currency-list-conversion': 'Coins.getCurrencyForConversion',
+
   // Socket Routes
   'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
   'get /socket/get-sell-book': 'SellController.getSellBookDetails',
@@ -261,10 +244,10 @@ module.exports.routes = {
   'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
   'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
   'get /socket/get-pair-details': 'Coins.getPairDetails',
+
   //Get Instrument
   'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
   'get /socket/get-user-balance': 'TradeController.getUserWallet',
-
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
