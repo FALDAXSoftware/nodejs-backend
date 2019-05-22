@@ -49,11 +49,6 @@ module.exports = {
       columnName: 'employee',
       defaultsTo: false,
     },
-    inquiries: {
-      type: "boolean",
-      columnName: 'inquiries',
-      defaultsTo: false,
-    },
     jobs: {
       type: "boolean",
       columnName: 'jobs',

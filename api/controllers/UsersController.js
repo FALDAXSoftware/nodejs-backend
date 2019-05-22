@@ -327,9 +327,10 @@ module.exports = {
     try {
       let query = " from users WHERE id=" + user_id;
 
-      let usersData = await sails.sendNativeQuery("Select *, CONCAT(account_class, '-', id) as UUID " + query, [])
+      let usersData = await sails.sendNativeQuery("Select * " + query, [])
 
       usersData = usersData.rows;
+      usersData[0].UUID = usersData[0].account_class + '-' + usersData[0].account_tier + '-' + usersData[0].id;
       if (usersData) {
         return res.json({
           "status": 200,
@@ -1207,6 +1208,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log('error', error)
       return res
         .status(500)
         .json({

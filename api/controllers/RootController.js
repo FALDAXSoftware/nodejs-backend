@@ -6,7 +6,6 @@
  */
 const BitGoJS = require('bitgo');
 
-var request = require('request');
 module.exports = {
   panicBtn: async function (req, res) {
     try {
@@ -42,7 +41,6 @@ module.exports = {
         "message": sails.__("Email sent success")
       });
     } catch (error) {
-      console.log('error>>>>>>>>>>>>>>>>', error)
       return res
         .status(500)
         .json({
@@ -113,154 +111,6 @@ module.exports = {
     }
   },
 
-  sendInquiry: async function (req, res) {
-    let inquiryDetails = await Inquiry
-      .create({ first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date() })
-      .fetch();
-    if (inquiryDetails) {
-      return res.json({
-        status: 200,
-        message: sails.__("Inquiry sent success")
-      })
-    } else {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-    }
-  },
-
-  getAllInquiries: async function (req, res) {
-    let { page, limit, data } = req.allParams();
-
-    if (data) {
-      let q = {
-        deleted_at: null
-      }
-      q['or'] = [
-        {
-          first_name: {
-            contains: data
-          }
-        }, {
-          last_name: {
-            contains: data
-          }
-        }, {
-          email: {
-            contains: data
-          }
-        }
-      ]
-
-      let inquiryData = await Inquiry
-        .find({
-          ...q
-        })
-        .sort('created_at DESC')
-        .paginate(page - 1, parseInt(limit));
-      let inquiryCount = await Inquiry.count({
-        ...q
-      });
-      if (inquiryData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Inquiries retrived success"),
-          "data": inquiryData,
-          inquiryCount
-        });
-      }
-    } else {
-      let q = {
-        deleted_at: null
-      }
-
-      let inquiryData = await Inquiry
-        .find({
-          ...q
-        })
-        .sort('created_at DESC')
-        .paginate(page - 1, parseInt(limit));
-      let inquiryCount = await Inquiry.count({
-        ...q
-      });
-      if (inquiryData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Inquiries retrived success"),
-          "data": inquiryData,
-          inquiryCount
-        });
-      } else {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
-    }
-  },
-
-  deleteInquiry: async function (req, res) {
-    try {
-      let { inquiry_id } = req.allParams();
-      if (!inquiry_id) {
-        res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Inquiry id is not sent")
-          });
-        return;
-      }
-      let deleteInquiry = await Inquiry
-        .update({ id: inquiry_id })
-        .set({ deleted_at: new Date() })
-        .fetch();
-      if (deleteInquiry) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Inquiry removed success")
-        });
-      } else {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
-    } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-    }
-  },
-
-  testnews: async function (req, res) {
-    // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
-    // greeting); res.end(); var greeting = await sails   .helpers   .tradding
-    // .marketSell(); var stopExecution = await sails   .helpers   .tradding
-    // .executeStopLimit(); res.json();
-  },
-
-  csvToJson: function (req, res) {
-    request('https://restcountries.eu/rest/v2/all', function (error, response, body) {
-      jsonObj = JSON.parse(body);
-      var countryArray = {};
-      jsonObj.forEach(row => {
-        countryArray[row['name']] = row['alpha2Code']
-      });
-      res.json(countryArray)
-    });
-  },
-
   webhookOnReciveBitgo: async function (req, res) {
     if (req.body.state == "confirmed") {
       var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
@@ -307,7 +157,6 @@ module.exports = {
             }
           }
         });
-
     }
     res.end();
   },
@@ -329,7 +178,6 @@ module.exports = {
   },
 
   enableWebSocket: async function (req, res) {
-
     try {
       return res
         .status(101)
@@ -337,8 +185,8 @@ module.exports = {
     } catch (err) {
       console.log("error :: ", err);
     }
-
   },
+
   createAllWallet: async function (req, res) {
     await sails
       .helpers
