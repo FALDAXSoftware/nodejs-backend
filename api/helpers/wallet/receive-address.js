@@ -1,4 +1,4 @@
-var {map} = require('lodash');
+var { map } = require('lodash');
 const BitGoJS = require('bitgo');
 
 module.exports = {
@@ -35,10 +35,12 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     //Configuring bitgo API with access token
-    var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+    var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
     //Fetching coin list
-    const coinData = await Coins.find({deleted_at: null, is_active: true, is_address_created_signup: true});
+    const coinData = await Coins.find({ deleted_at: null, is_active: true, is_address_created_signup: true });
+
+    let walletArray = [];
 
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
@@ -52,80 +54,58 @@ module.exports = {
           user_id: parseInt(inputs.user.id),
           balance: 0.0
         }
-        var create = await Wallet
-          .create(obj)
-          .fetch()
-      } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR' && coin.coin !== 'ETH' && coin.hot_receive_wallet_address) {
+        walletArray.push(obj)
+
+      } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR') {
 
         //For all the coins accept USD EURO and ETH
-        var wallet = await bitgo
-          .coin(coin.coin_code)
-          .wallets()
-          .get({id: coin.hot_receive_wallet_address});
+        if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
+          // For all type 1 (bitgo) coins
 
-        if (wallet) {
+          let walletCoinCode = coin.coin_code;
+          let address_label = inputs.user.id.toString();
 
-          //Here chain =0 means testnet Generating wallet address
-          var address = await wallet.createAddress({"chain": sails.config.local.chain});
-          if (inputs.test_key == sails.config.local.test_key) {
-            var obj = {
-              wallet_id: "wallet",
-              coin_id: parseInt(coin.id),
-              receive_address: address.address,
-              user_id: parseInt(inputs.user.id),
-              balance: 100000.0,
-              placed_balance: 100000.0
-            }
+          // Address Labeling and coin name for erc20 token
+          if (coin.isERC) {
+            walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
+            address_label = coin.coin_code + '-' + address_label;
+          }
 
-          } else {
-            var obj = {
+          var wallet = await bitgo
+            .coin(walletCoinCode)
+            .wallets()
+            .get({ id: coin.hot_receive_wallet_address });
+
+          if (wallet) {
+            //Here chain =0 means testnet Generating wallet address
+            // Create bitgo wallet address
+            let address = await wallet.createAddress({ "chain": parseInt(sails.config.local.chain), "label": address_label });
+            let obj = {
               wallet_id: "wallet",
               coin_id: parseInt(coin.id),
               receive_address: address.address,
               user_id: parseInt(inputs.user.id),
               balance: 0.0,
               placed_balance: 0.0,
-              // label: inputs.user.id
+              address_label: address_label
             }
-
-          }
-          var create = await Wallet
-            .create(obj)
-            .fetch();
-
-          if (!address.address) {
-
-            var interval = setInterval(async() => {
-              try {
-                bitgo
-                  .coin(coin.coin_code)
-                  .wallets()
-                  .get({id: coin.wallet_address})
-                  .then(async(walletResponse) => {
-
-                    if (typeof walletResponse._wallet.receiveAddress != 'undefined') {
-                      let obj = {
-                        wallet_id: coin.wallet_address,
-                        coin_id: parseInt(coin.id),
-                        receive_address: walletResponse._wallet.receiveAddress.address,
-                        user_id: parseInt(inputs.user.id),
-                        balance: 0.0
-                      }
-
-                      await Wallet
-                        .update({id: create.id})
-                        .update(obj);
-
-                      clearInterval(interval);
-                    }
-                  })
-              } catch (err) {
-                console.log(err);
+            // For Perfomance testing Add Balance to wallet
+            if (inputs.test_key == sails.config.local.test_key) {
+              obj = {
+                ...obj,
+                balance: 100000.0,
+                placed_balance: 100000.0,
               }
-            }, 1000);
+            }
+            walletArray.push({ ...obj });
           }
         }
       }
+    }
+
+    // Insert all wallet addresses to Database
+    if (walletArray.length > 0) {
+      await Wallet.createEach([...walletArray]);
     }
     return exits.success();
   }

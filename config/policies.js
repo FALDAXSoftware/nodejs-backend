@@ -60,8 +60,6 @@ module.exports.policies = {
   },
   'RootController': {
     'getContactInfo': true,
-    'testnews': true,
-    "csvToJson": true,
     "webhookOnReciveBitgo": true,
     "queryTest": true,
     "sendOpenTicketForm": true,
@@ -69,10 +67,10 @@ module.exports.policies = {
     "createAllWallet": true,
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
-    "callKrakenAPI": true
-  },
-  'AddCoinReqController': {
-    "addCoinRequest": true
+    "callKrakenAPI": true,
+    "bitgoTest": true,
+    "setAddressWebhook": true,
+    "webhookOnAddress": true
   },
   'CareerController': {
     "applyJob": "checkReCaptcha",

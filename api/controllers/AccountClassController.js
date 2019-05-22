@@ -16,7 +16,7 @@ module.exports = {
     // CMS all class api
     getAllAccountClasses: async function (req, res) {
         try {
-            let allClasses = await AccountClass.find({ deleted_at: null });
+            let allClasses = await AccountClass.find({ deleted_at: null }).sort('id ASC');
 
             return res.json({
                 "status": 200,
@@ -64,11 +64,11 @@ module.exports = {
     updateAccountClass: async function (req, res) {
         let { id, class_name } = req.body;
         try {
-            let accountClass = await AccountClass.findOne({ id }).fetch();
+            let accountClass = await AccountClass.findOne({ id, deleted_at: null });
             if (accountClass) {
                 var updatedClass = await AccountClass
                     .update({ id })
-                    .set(class_name)
+                    .set({ class_name })
                     .fetch();
                 return res.json({
                     status: 200,

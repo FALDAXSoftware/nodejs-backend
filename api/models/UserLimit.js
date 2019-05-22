@@ -1,16 +1,16 @@
 /**
  * Limit.js
  *
- * @description :: Represents a database table limit.
+ * @description :: Represents a database table user_limit.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'tier_limit',
+  tableName: 'user_limit',
   attributes: {
-    tier_step: {
+    user_id: {
       type: 'number',
-      columnName: 'tier_step'
+      columnName: 'user_id'
     },
     coin_id: {
       type: 'number',

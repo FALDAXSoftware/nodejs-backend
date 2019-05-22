@@ -18,6 +18,11 @@ module.exports = {
       columnName: 'coin_name',
       required: true
     },
+    min_thresold: {
+      type: 'number',
+      columnName: 'min_thresold',
+      defaultsTo: 0
+    },
     coin_code: {
       type: 'string',
       columnName: 'coin_code',

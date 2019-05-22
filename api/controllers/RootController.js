@@ -193,5 +193,71 @@ module.exports = {
       .wallet
       .createAll();
     return res.end();
+  },
+
+  bitgoTest: async function (req, res) {
+    console.log(sails.config.local.BITGO_ACCESS_TOKEN);
+
+    let bitgo = new BitGoJS.BitGo({ env: 'prod', accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var wallet = await bitgo
+      .coin("rep")
+      .wallets()
+      .get({ id: "5cb784fc414b361707ef9658a7d738cc" });
+    let webhook = await wallet.removeWebhook({
+      url: "http://04d6a0de.ngrok.io/webhook-on-address",
+      type: "address_confirmation"
+    });
+
+  },
+  setAddressWebhook: async function (req, res) {
+    let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var wallet = await bitgo
+      .coin("teth")
+      .wallets()
+      .get({ id: "5ce30d1da30fec890365c2a10c8ccba0" });
+
+    let walletWebHok = await wallet.addWebhook({
+      url: "http://f9fd6ad1.ngrok.io/webhook-on-address",
+      type: "address_confirmation",
+      allToken: true
+    });
+    console.log(walletWebHok);
+    res.json({ success: true });
+
+  },
+
+
+
+  // Webhook for address confiramtion
+  webhookOnAddress: async function (req, res) {
+    let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    if (req.body.address && req.body.walletId) {
+      let wallet = await bitgo
+        .coin("teth")
+        .wallets()
+        .get({ id: req.body.walletId });
+      let address = await wallet.getAddress({ address: req.body.address });
+      let addressLable = address.label;
+      let coin = address.coin;
+      if (addressLable.includes("-")) {
+        coin = addressLable.split("-")[0];
+      }
+      let coinObject = await Coins.findOne({
+        coin_code: coin,
+        deleted_at: null,
+        is_active: true
+      });
+      if (coinObject) {
+        await Wallet.update({
+          coin_id: coinObject.id,
+          address_label: addressLable
+        }).set({
+          receive_address: address.address
+        });
+      }
+
+      return res.json({ success: true })
+
+    }
   }
 };
