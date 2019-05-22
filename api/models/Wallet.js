@@ -20,6 +20,11 @@ module.exports = {
       type: "string",
       columnName: "receive_address"
     },
+    address_label: {
+      type: "string",
+      columnName: "address_label",
+      allowNull: true
+    },
     user_id: {
       columnName: "user_id",
       model: "users"

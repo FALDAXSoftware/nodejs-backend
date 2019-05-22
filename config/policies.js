@@ -69,7 +69,10 @@ module.exports.policies = {
     "createAllWallet": true,
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
-    "callKrakenAPI": true
+    "callKrakenAPI": true,
+    "bitgoTest": true,
+    "setAddressWebhook": true,
+    "webhookOnAddress": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true
