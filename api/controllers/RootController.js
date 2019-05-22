@@ -250,7 +250,7 @@ module.exports = {
       if (coinObject) {
         await Wallet.update({
           coin_id: coinObject.id,
-          label: addressLable
+          address_label: addressLable
         }).set({
           receive_address: address.address
         });
