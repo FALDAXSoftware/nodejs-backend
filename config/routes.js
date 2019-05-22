@@ -15,6 +15,7 @@ module.exports.routes = {
 
   // 'admin/*': { policy: 'isAdmin' },
   // Test Routes
+  'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
