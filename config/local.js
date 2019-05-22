@@ -2,6 +2,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   'test_key': 'nikita',
+  'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
+  'EMAIL_USER': process.env.EMAIL_USER,
+  'EMAIL_HOST': process.env.EMAIL_HOST,
+  'EMAIL_PORT': process.env.EMAIL_PORT,
+  'EMAIL_PASSWORD': process.env.EMAIL_PASSWORD,
   'BITGO_ACCESS_TOKEN': process.env.BITGO_ACCESS_TOKEN,
   'BITGO_ENV_MODE': process.env.BITGO_ENV_MODE,
   'chain': process.env.CHAIN,
@@ -15,6 +20,7 @@ module.exports.local = {
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
+  "COIN_TYPE_BITGO": 1,
   "coinArray": {
     'STRAT': {
       'coin_name': 'stratis',

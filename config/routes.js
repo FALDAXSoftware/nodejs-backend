@@ -20,7 +20,9 @@ module.exports.routes = {
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /panic-button': 'RootController.panicBtn',
-
+  'get /test-bitgo': 'RootController.bitgoTest',
+  'get /set-address-webhook': 'RootController.setAddressWebhook',
+  'post /webhook-on-address': 'RootController.webhookOnAddress',
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
   'post /admin/forgot-password': "Admin.forgotPassword",
