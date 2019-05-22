@@ -71,7 +71,9 @@ module.exports.policies = {
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
     "callKrakenAPI": true,
-    "bitgoTest": true
+    "bitgoTest": true,
+    "setAddressWebhook": true,
+    "webhookOnAddress": true
   },
   'AddCoinReqController': {
     "addCoinRequest": true

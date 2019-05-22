@@ -20,6 +20,7 @@ module.exports.local = {
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
+  "COIN_TYPE_BITGO": 1,
   "coinArray": {
     'STRAT': {
       'coin_name': 'stratis',

@@ -352,17 +352,49 @@ module.exports = {
 
     let bitgo = new BitGoJS.BitGo({ env: 'prod', accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
     var wallet = await bitgo
-      .coin("btc")
+      .coin("rep")
       .wallets()
-      .get({ id: "5cb78a7ff276c96007c2d0ebc74eb24c" });
-    wallet.send({
-      amount: 0.01 * 1e8,
-      address: "3FZW7AWrXU5Zq6foKUSxvdyufpDwvEJMuW",
-      walletPassphrase: "339rtAa$x^&a#DSUl00Js@nBH*mgF#7xMWSo*1FsSrL3OZ@Kf7jxdLdVPlRR"
-    }).then(function (transaction) {
-      console.log(transaction);
-
+      .get({ id: "5cb784fc414b361707ef9658a7d738cc" });
+    let webhook = await wallet.removeWebhook({
+      url: "http://04d6a0de.ngrok.io/webhook-on-address",
+      type: "address_confirmation"
     });
-  }
+    console.log(webhook);
 
+  },
+  setAddressWebhook: async function (req, res) {
+    let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var wallet = await bitgo
+      .coin("teth")
+      .wallets()
+      .get({ id: "5ce30d1da30fec890365c2a10c8ccba0" });
+
+    let walletWebHok = await wallet.addWebhook({
+      url: "http://f9fd6ad1.ngrok.io/webhook-on-address",
+      type: "address_confirmation",
+      allToken: true
+    });
+    console.log(walletWebHok);
+    res.json({ success: true });
+
+  },
+  webhookOnAddress: async function (req, res) {
+    console.log("webhook call", req.body);
+    let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    if (req.body.address && req.body.walletId) {
+      // let coin = await Coins.findOne({
+      //   hot_receive_wallet_address: req.body.walletId,
+      //   is_active: true,
+      //   deleted_at: null
+      // });
+      let wallet = await bitgo
+        .coin("teth")
+        .wallets()
+        .get({ id: req.body.walletId });
+      let address = await wallet.getAddress({ address: req.body.address });
+      // let wallet = await bitgo.coin("eth").wallets().getWalletByAddress({ address: req.body.address });
+      console.log(address);
+
+    }
+  }
 };
