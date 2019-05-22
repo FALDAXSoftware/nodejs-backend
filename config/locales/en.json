@@ -223,5 +223,6 @@
 	"Class added success": "Account Class added Successfully.",
 	"Class Update Success": "Account Class Updated Successfully.",
 	"Class id is not sent": "Account Class Id is not provided",
-	"Class deleted success": "Account Class deleted Successfully."
+	"Class deleted success": "Account Class deleted Successfully.",
+	"Wallet Not Found":"User Wallet has not been found"
 }

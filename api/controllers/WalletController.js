@@ -223,9 +223,8 @@ module.exports = {
             .status(400)
             .json({
               status: 400,
-              message: sails.__("Insufficent balance")
+              message: sails.__("Wallet Not Found")
             });
-
         }
       } else {
         return res
