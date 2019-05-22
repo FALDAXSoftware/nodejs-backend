@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const BitGoJS = require('bitgo');
+var moment = require('moment');
 
 module.exports = {
 
@@ -146,67 +147,162 @@ module.exports = {
     try {
       let {amount, destination_address, coin_code} = req.allParams();
       let user_id = req.user.id;
-      let coin = await Coins.findOne({
-        deleted_at: null,
-        is_active: true,
-        or: [
-          {
-            coin_code: coin_code
-          }, {
-            coin: coin_code
-          }
-        ]
-      });
+
+      var today = moment().format();
+      var yesterday = moment()
+        .startOf('day')
+        .format();
+
+      var limitAmount;
+
+      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin_code: coin_code});
+
+      let warmWalletData = await sails
+        .helpers
+        .wallet
+        .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+
+      //If coin is found
       if (coin) {
-        let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
-        if (wallet) {
-          if (wallet.placed_balance >= parseInt(amount)) {
-            if (coin.type == 1) {
-              var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
-              var bitgoWallet = await bitgo
-                .coin(coin.coin_code)
-                .wallets()
-                .get({id: coin.wallet_address});
-              let params = {
-                amount: amount * 1e8,
-                address: destination_address,
-                walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-              };
-              bitgoWallet
-                .send(params)
-                .then(async function (transaction) {
-                  let walletHistory = {
-                    coin_id: wallet.coin_id,
-                    source_address: wallet.receive_address,
+
+        //Fetching value for limit according to user wise limit
+        let userTierData = await UserLimit.find({deleted_at: null, user_id: user_id, coin_id: coin.id})
+        if (userTierData.length == 0 || userTierData == undefined) {
+
+          //If user wise limit is not found than search according to tier wise
+          let userData = await KYC.findOne({deleted_at: null, user_id: user_id});
+          let limitTierData = await Limit.findOne({deleted_at: null, tier_step: userData.steps, coin_id: coin.id});
+          limitAmount = limitTierData.daily_withdraw_crypto;
+        } else {
+          limitAmount = userTierData[0].daily_withdraw_crypto;
+        }
+
+        //Getting total value of daily withdraw
+        let walletHistoryData = await WalletHistory
+          .sum('amount')
+          .where({
+            user_id: user_id,
+            deleted_at: null,
+            coin_id: coin.id,
+            transaction_type: 'send',
+            created_at: {
+              '>=': yesterday,
+              '<=': today
+            }
+          });
+
+        //Limited amount is greater than the total sum
+        if (limitAmount >= walletHistoryData) {
+
+          //If total amount + amount to be send is less than limited amount
+          if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount) {
+            let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
+            if (wallet) {
+              if (wallet.placed_balance >= parseInt(amount)) {
+                if (coin.type == 1) {
+                  if (!req.body.confirm_for_wait) {
+                    //Check for warm wallet minimum thresold
+                    if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
+                      //Execute Transaction
+                      var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+                      var bitgoWallet = await bitgo
+                        .coin(coin.coin_code)
+                        .wallets()
+                        .get({id: coin.wallet_address});
+                      let params = {
+                        amount: amount * 1e8,
+                        address: destination_address,
+                        walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                      };
+
+                      // Send to hot warm wallet and make entry in diffrent table for both warn to
+                      // receive and receive to destination
+                      bitgoWallet
+                        .send(params)
+                        .then(async function (transaction) {
+                          //Here remainning ebtry as well as address change
+                          let walletHistory = {
+                            coin_id: wallet.coin_id,
+                            source_address: wallet.receive_address,
+                            destination_address: destination_address,
+                            user_id: user_id,
+                            amount: amount,
+                            transaction_type: 'send',
+                            transaction_id: transaction.id
+                          }
+
+                          // Make changes in code for receive webhook and then send to receive address
+                          // Entry in wallet history
+                          await WalletHistory.create({
+                            ...walletHistory
+                          });
+                          // update wallet balance
+                          await Wallet
+                            .update({id: wallet.id})
+                            .set({
+                              balance: wallet.balance - amount,
+                              placed_balance: wallet.placed_balance - amount
+                            });
+                          return res.json({
+                            status: 200,
+                            message: sails.__("Token send success")
+                          });
+                        })
+                        .catch(error => {
+                          return res
+                            .status(500)
+                            .json({
+                              status: 500,
+                              message: sails._("Insufficent balance")
+                            });
+                        });
+                    }
+                  } else {
+                    return res
+                      .status(201)
+                      .json({
+                        status: 201,
+                        message: sails.__('withdraw request confirm')
+                      })
+                  }
+                } else {
+                  //Insert request in withdraw request
+                  var requestObject = {
+                    source_address: warmWalletData.receiveAddress.address,
                     destination_address: destination_address,
                     user_id: user_id,
                     amount: amount,
                     transaction_type: 'send',
-                    transaction_id: transaction.id
+                    is_approve: false,
+                    coin_id: coin.id,
+                    is_executed: false
                   }
-                  // Entry in wallet history
-                  await WalletHistory.create({
-                    ...walletHistory
+
+                  await WithdrawRequest.create({
+                    ...requestObject
                   });
-                  // update wallet balance
-                  await Wallet
-                    .update({id: wallet.id})
-                    .set({
-                      balance: wallet.balance - amount,
-                      placed_balance: wallet.placed_balance - amount
-                    });
+
                   return res.json({
                     status: 200,
-                    message: sails.__("Token send success")
+                    message: sails.__("Request sumbit success")
                   });
-                })
-                .catch(error => {
-                  return res
-                    .status(500)
-                    .json({
-                      status: 500,
-                      message: sails._("Insufficent balance")
-                    });
+
+                }
+              } else {
+                return res
+                  .status(400)
+                  .json({
+                    status: 400,
+                    message: sails.__("Insufficent balance")
+                  });
+
+              }
+            } else {
+              return res
+                .status(400)
+                .json({
+                  status: 400,
+                  message: sails.__("Wallet Not Found")
                 });
             }
           } else {
@@ -214,18 +310,18 @@ module.exports = {
               .status(400)
               .json({
                 status: 400,
-                message: sails.__("Insufficent balance")
-              });
-
+                message: sails.__("Daily Limit Exceeded Using Amount")
+              })
           }
         } else {
           return res
             .status(400)
             .json({
               status: 400,
-              message: sails.__("Wallet Not Found")
-            });
+              message: sails.__("Daily Limit Exceeded")
+            })
         }
+
       } else {
         return res
           .status(400)

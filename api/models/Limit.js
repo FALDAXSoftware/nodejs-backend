@@ -8,9 +8,13 @@
 module.exports = {
   tableName: 'tier_limit',
   attributes: {
-    user: {
-      type: 'string',
-      columnName: 'user'
+    tier_step: {
+      type: 'number',
+      columnName: 'tier_step'
+    },
+    coin_id: {
+      type: 'number',
+      columnName: 'coin_id'
     },
     daily_withdraw_crypto: {
       type: 'number',

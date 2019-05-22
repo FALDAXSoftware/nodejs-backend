@@ -8,9 +8,13 @@
 module.exports = {
   tableName: 'user_limit',
   attributes: {
-    user: {
-      type: 'string',
-      columnName: 'user'
+    user_id: {
+      type: 'number',
+      columnName: 'user_id'
+    },
+    coin_id: {
+      type: 'number',
+      columnName: 'coin_id'
     },
     daily_withdraw_crypto: {
       type: 'number',
