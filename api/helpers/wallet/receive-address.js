@@ -39,8 +39,8 @@ module.exports = {
 
     //Fetching coin list
     const coinData = await Coins.find({ deleted_at: null, is_active: true, is_address_created_signup: true });
+
     let walletArray = [];
-    console.log(coinData);
 
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
@@ -55,18 +55,28 @@ module.exports = {
           balance: 0.0
         }
         walletArray.push(obj)
+
       } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR') {
+
         //For all the coins accept USD EURO and ETH
         if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
           // For all type 1 (bitgo) coins
+
+          let walletCoinCode = coin.coin_code;
+          let address_label = inputs.user.id.toString();
+
+          // Address Labeling and coin name for erc20 token
+          if (coin.isERC) {
+            walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
+            address_label = coin.coin_code + '-' + address_label;
+          }
+
           var wallet = await bitgo
-            .coin(coin.coin_code)
+            .coin(walletCoinCode)
             .wallets()
             .get({ id: coin.hot_receive_wallet_address });
 
           if (wallet) {
-            // Address Labeling
-            let address_label = inputs.user.id.toString();
             //Here chain =0 means testnet Generating wallet address
             // Create bitgo wallet address
             let address = await wallet.createAddress({ "chain": parseInt(sails.config.local.chain), "label": address_label });
@@ -92,7 +102,6 @@ module.exports = {
         }
       }
     }
-    console.log("wa", walletArray);
 
     // Insert all wallet addresses to Database
     if (walletArray.length > 0) {

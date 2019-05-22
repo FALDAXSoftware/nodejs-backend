@@ -207,7 +207,6 @@ module.exports = {
       url: "http://04d6a0de.ngrok.io/webhook-on-address",
       type: "address_confirmation"
     });
-    console.log(webhook);
 
   },
   setAddressWebhook: async function (req, res) {
@@ -226,22 +225,38 @@ module.exports = {
     res.json({ success: true });
 
   },
+
+
+
+  // Webhook for address confiramtion
   webhookOnAddress: async function (req, res) {
-    console.log("webhook call", req.body);
     let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
     if (req.body.address && req.body.walletId) {
-      // let coin = await Coins.findOne({
-      //   hot_receive_wallet_address: req.body.walletId,
-      //   is_active: true,
-      //   deleted_at: null
-      // });
       let wallet = await bitgo
         .coin("teth")
         .wallets()
         .get({ id: req.body.walletId });
       let address = await wallet.getAddress({ address: req.body.address });
-      // let wallet = await bitgo.coin("eth").wallets().getWalletByAddress({ address: req.body.address });
-      console.log(address);
+      let addressLable = address.label;
+      let coin = address.coin;
+      if (addressLable.includes("-")) {
+        coin = addressLable.split("-")[0];
+      }
+      let coinObject = await Coins.findOne({
+        coin_code: coin,
+        deleted_at: null,
+        is_active: true
+      });
+      if (coinObject) {
+        await Wallet.update({
+          coin_id: coinObject.id,
+          label: addressLable
+        }).set({
+          receive_address: address.address
+        });
+      }
+
+      return res.json({ success: true })
 
     }
   }

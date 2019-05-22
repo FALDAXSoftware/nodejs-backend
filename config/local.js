@@ -19,6 +19,7 @@ module.exports.local = {
   "KEY_NAME": process.env.KEY_NAME,
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
+  "COIN_CODE_FOR_ERC_20_WALLET_BITGO": "teth",
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
   "COIN_TYPE_BITGO": 1,
   "coinArray": {

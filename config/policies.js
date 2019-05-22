@@ -60,8 +60,6 @@ module.exports.policies = {
   },
   'RootController': {
     'getContactInfo': true,
-    'testnews': true,
-    "csvToJson": true,
     "webhookOnReciveBitgo": true,
     "queryTest": true,
     "sendOpenTicketForm": true,
@@ -73,9 +71,6 @@ module.exports.policies = {
     "bitgoTest": true,
     "setAddressWebhook": true,
     "webhookOnAddress": true
-  },
-  'AddCoinReqController': {
-    "addCoinRequest": true
   },
   'CareerController': {
     "applyJob": "checkReCaptcha",
