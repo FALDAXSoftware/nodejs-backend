@@ -72,6 +72,9 @@ module.exports.policies = {
     "setAddressWebhook": true,
     "webhookOnAddress": true
   },
+  // 'WalletController':{
+  //   "getCoinBalanceForWallet":true
+  // },
   'CareerController': {
     "applyJob": "checkReCaptcha",
     "*": true,
