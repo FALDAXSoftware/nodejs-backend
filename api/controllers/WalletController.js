@@ -16,22 +16,34 @@ module.exports = {
       .getCurrencyConversion();
     console.log('>>>>>>>>currencyData', currencyData);
 
-    // for loop for res.data insert in table
+    let coins = await Coins.find({deleted_at: null, is_active: true});
+    let coinArray = [];
+    for (let index = 0; index < coins.length; index++) {
+      const element = coins[index];
+      coinArray.push(element.coin)
+    }
+    // console.log("coin Array" , coinArray); for loop for res.data insert in table
     if (currencyData.data) {
-      for (var i = 0; i <= currencyData.data.length; i++) {
-        let coins = await Coins.findOne({coin: currencyData.data[i].symbol, deleted_at: null, is_active: true});
-        console.log('>>>>>>>coins', coins)
-        if (coins) {
+      for (var i = 0; i < currencyData.data.length; i++) {
+        // console.log('>>>>>>>coins', coins)
+        if (coinArray.includes(currencyData.data[i].symbol)) {
           let existCurrencyData = await CurrencyConversion.findOne({deleted_at: null, symbol: currencyData.data[i].symbol})
           console.log('>>>>>>existCurrencyData', existCurrencyData)
           if (existCurrencyData) {
             var currency_data = await CurrencyConversion
-              .update({coin_id: coins.id})
+              .update({
+              coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id
+            })
               .set({quote: currencyData.data[i].quote})
               .fetch();
           } else {
             var currency_data = await CurrencyConversion
-              .create({coin_id: coins.id, quote: currencyData.data[i].quote, symbol: currencyData.data[i].symbol, created_at: new Date()})
+              .create({
+              coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id,
+              quote: currencyData.data[i].quote,
+              symbol: currencyData.data[i].symbol,
+              created_at: new Date()
+            })
               .fetch();
           }
         } else {
@@ -51,29 +63,33 @@ module.exports = {
       * @return <Success message for successfully fetched data or error>
      */
   getCoinBalanceForWallet: async function (req, res) {
+    // console.log("req",req);
+
     try {
-      let {currency} = req.body;
-      var balanceCoin = [];
-      var nonBalanceCoin = [];
-      var total = 0;
-      var flag = false;
+      let query = `SELECT 
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, 
+                    coins.coin, wallets.balance, wallets.placed_balance,  currency_conversion.quote 
+                    FROM coins 
+                    INNER JOIN wallets ON coins.id = wallets.coin_id 
+                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
+                    WHERE wallets.user_id = ${req.user.id} AND coins.is_active=true AND coins.deleted_at IS NULL`
+      let nonWalletQuery = `SELECT 
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, 
+                    coins.coin,currency_conversion.quote 
+                    FROM coins 
+                    LEFT JOIN wallets ON coins.id = wallets.coin_id 
+                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
+                    WHERE coins.is_active=true AND coins.deleted_at IS NULL AND wallets.id IS NULL`
 
-      let query = `select * from coins JOIN wallets ON coins.id = wallets.coin_id WHERE wallets.user_id = ${req.user.id} AND coins.is_active=true AND coins.deleted_at IS NULL`
-
-      let walletData = await sails.sendNativeQuery(query, [])
-      //conversion using coin market cap is remaining
-
-      console.log('>>>>>>>>walletData', walletData)
-      // if (currency == "USD") {     currency = "USD,USD,USD"; } else if (currency ==
-      // "INR") {     currency = "INR,INR,INR"; } else if (currency == "EUR") {
-      // currency = "EUR,EUR,EUR"; } let currencyArray = currency.split(","); let
-      // coins = await Coins     .find({         deleted_at: null, "wallet_address": {
-      //             "!": null         }     })     .sort('id', 'DESC');
+      let balanceWalletData = await sails.sendNativeQuery(query, []);
+      let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
 
       return res.json({
         status: 200,
         message: sails.__("Balance retrieved success"),
-        //balanceData, data
+        balanceData: balanceWalletData.rows,
+        nonBalanceData: nonBalanceWalletData.rows,
+        currency_list: sails.config.local.CURRENCY_LIST
       });
 
     } catch (error) {
@@ -202,10 +218,8 @@ module.exports = {
                               placed_balance: wallet.placed_balance - amount
                             });
 
-                          // Adding the transaction details in transaction table 
-
-                          
-                          // This is entry for sending from warm wallet to hot send wallet
+                          // Adding the transaction details in transaction table This is entry for sending
+                          // from warm wallet to hot send wallet
                           let addObject = {
                             coin_id: coin.id,
                             source_address: warmWalletData.receiveAddress.address,
@@ -380,6 +394,7 @@ module.exports = {
     try {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({coin: coinReceive, deleted_at: null});
+      console.log(coinData);
       let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
       let coinFee = await AdminSetting.find({
         where: {
@@ -387,6 +402,8 @@ module.exports = {
           deleted_at: null
         }
       });
+
+      var currencyConversionData = await CurrencyConversion.findOne({coin_id: coinData.id, deleted_at: null})
 
       if (walletTransData.length > 0) {
         walletTransData[0]['coin_code'] = coinData.coin_code;
@@ -411,7 +428,8 @@ module.exports = {
           walletTransData,
           walletTransCount,
           walletUserData,
-          coinFee
+          coinFee,
+          currencyConversionData
         });
       } else {
         return res.json({

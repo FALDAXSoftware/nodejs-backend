@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   'test_key': 'nikita',
+  'CURRENCY_LIST':process.env.CURRENCY,
   'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
   'EMAIL_USER': process.env.EMAIL_USER,
   'EMAIL_HOST': process.env.EMAIL_HOST,
@@ -20,6 +21,7 @@ module.exports.local = {
   "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
   "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
   "COIN_CODE_FOR_ERC_20_WALLET_BITGO": "teth",
+  "JWT_TOKEN_SECRET":process.env.JWT_TOKEN_SECRET,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
   "COIN_TYPE_BITGO": 1,
   "coinArray": {

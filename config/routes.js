@@ -224,7 +224,7 @@ module.exports.routes = {
   'post /stop/limit/buy': 'TradeController.stopLimitBuy',
 
   // 'post /get-all-history': 'TradeController.getAllTradeHistory', Wallet Routes
-  'post /wallet/balance': 'WalletController.getCoinBalanceForWallet',
+  'get /wallet/balance': 'WalletController.getCoinBalanceForWallet',
   'post /wallet-details': 'WalletController.getWalletTransactionHistory',
 
   //receive coin route

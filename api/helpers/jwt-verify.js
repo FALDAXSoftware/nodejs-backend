@@ -1,6 +1,6 @@
 
 var jwt = require('jsonwebtoken'),
-tokenSecret = "secretissecet";
+tokenSecret = sails.config.local.JWT_TOKEN_SECRET;
 
 module.exports = {
 
