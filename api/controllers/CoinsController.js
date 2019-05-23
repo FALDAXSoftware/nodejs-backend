@@ -590,7 +590,7 @@ module.exports = {
     try {
       let { id } = req.allParams();
 
-      let coin = Coins.findOne({ id: id });
+      let coin = await Coins.findOne({ id: id });
       if (coin) {
         return res
           .status(200)
