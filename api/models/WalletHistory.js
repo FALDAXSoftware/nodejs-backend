@@ -16,6 +16,10 @@ module.exports = {
       type: "string",
       columnName: "source_address"
     },
+    is_executed: {
+      type: "boolean",
+      columnName: "is_executed"
+    },
     destination_address: {
       type: "string",
       columnName: "destination_address"
