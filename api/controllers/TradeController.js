@@ -19,7 +19,7 @@ module.exports = {
    */
   marketSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
       var geo_fencing_data = await sails
@@ -105,7 +105,7 @@ module.exports = {
 
   marketBuy: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity} = req.allParams();
+      let { symbol, side, order_type, orderQuantity } = req.allParams();
       let user_id = req.user.id;
       var geo_fencing_data = await sails
         .helpers
@@ -183,7 +183,7 @@ module.exports = {
 
   limitSell: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       var geo_fencing_data = await sails
         .helpers
@@ -261,7 +261,7 @@ module.exports = {
 
   limitBuy: async function (req, res) {
     try {
-      let {symbol, side, order_type, orderQuantity, limit_price} = req.allParams();
+      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
       let user_id = req.user.id;
       var geo_fencing_data = await sails
         .helpers
@@ -519,7 +519,7 @@ module.exports = {
 
   cancelPendingOrder: async function (req, res) {
     try {
-      let {side, id, order_type} = req.allParams();
+      let { side, id, order_type } = req.allParams();
       let user_id = req.user.id;
       let cancel_pending_data = await sails
         .helpers
@@ -632,7 +632,7 @@ module.exports = {
                   "message": sails.__("error")
                 });
             } else {
-              let {crypto, currency} = await sails
+              let { crypto, currency } = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
@@ -704,7 +704,7 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -716,7 +716,7 @@ module.exports = {
                         .getTradeDetails(crypto, currency, 100);
 
                       if (tradeDetails) {
-                        return res.json({status: 200, data: tradeDetails, "message": "Trade data retrived successfully."});
+                        return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
                       }
                     }
                   });
@@ -734,7 +734,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -813,7 +813,7 @@ module.exports = {
                       if (month == undefined) {
                         month = 0;
                       }
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -859,7 +859,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -943,7 +943,7 @@ module.exports = {
                           "err": sails.__("Something Wrong")
                         });
                     } else {
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -972,7 +972,7 @@ module.exports = {
                     "err": sails.__("Something Wrong")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -988,7 +988,7 @@ module.exports = {
               }
             });
         }
-      } else {}
+      } else { }
     } catch (error) {
       return res
         .status(500)
@@ -1014,8 +1014,7 @@ module.exports = {
         sort_order
       } = req.allParams();
 
-      let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOI" +
-          "N users as requested_user ON trade_history.requested_user_id=requested_user.id";
+      let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
       let whereAppended = false;
 
       if ((data && data != "")) {
@@ -1055,8 +1054,8 @@ module.exports = {
         query += " trade_history.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -1071,14 +1070,14 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
       let tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
-          "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
-          "story.side,trade_history.quantity,trade_history.fill_price, trade_history.maker_" +
-          "fee, trade_history.taker_fee, users.email, requested_user.email as reqested_user" +
-          "_email, trade_history.created_at" + query, [])
+        "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
+        "story.side,trade_history.quantity,trade_history.fill_price, trade_history.maker_" +
+        "fee, trade_history.taker_fee, users.email, requested_user.email as reqested_user" +
+        "_email, trade_history.created_at" + query, [])
 
       tradeData = tradeData.rows;
 
-      let tradeCount = await sails.sendNativeQuery("Select COUNT( .id)" + countQuery, [])
+      let tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
 
       if (tradeData) {
