@@ -10,18 +10,26 @@ module.exports = {
   // -------------------------------CMS Api--------------------------
   getAllLimit: async function (req, res) {
     // req.setLocale('en')
+    let {coin_id} = req.allParams();
     let limitData = await Limit
       .find({
       where: {
-        deleted_at: null
+        deleted_at: null,
+        coin_id: coin_id
       }
     })
       .sort("id ASC");
 
-    if (limitData) {
+    if (limitData.length > 0) {
       return res.json({
         "status": 200,
         "message": sails.__("Limit list"),
+        "data": limitData
+      });
+    } else {
+      return res.json({
+        "status": 200,
+        "message": sails.__("No Limit Data List"),
         "data": limitData
       });
     }
@@ -62,6 +70,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      console.log(error);
       res
         .status(500)
         .json({

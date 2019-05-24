@@ -13,8 +13,7 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
-  // 'admin/*': { policy: 'isAdmin' },
-  // Test Routes
+  // 'admin/*': { policy: 'isAdmin' }, Test Routes
   'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
@@ -83,16 +82,14 @@ module.exports.routes = {
   'put /admin/state-activate': 'Countries.stateActivate',
   'put /admin/state-update': 'Countries.stateUpdate',
 
-  // 'post /admin/insertCountries': 'Countries.insertCountries',
-  // 'post /admin/insertState': 'Countries.insertState',
-
-  //Pairs routes
+  // 'post /admin/insertCountries': 'Countries.insertCountries', 'post
+  // /admin/insertState': 'Countries.insertState', Pairs routes
   'get /admin/all-pairs': 'PairsController.getAllPairs',
   'post /admin/add-pair': 'PairsController.createPair',
   'put /admin/edit-pair': 'PairsController.updatePair',
 
   //Limit routes
-  'get /admin/all-limits': 'LimitController.getAllLimit',
+  'get /admin/all-limits/:coin_id': 'LimitController.getAllLimit',
   'put /admin/edit-limit': 'LimitController.updateLimit',
 
   //Transaction routes
@@ -294,11 +291,13 @@ module.exports.routes = {
   'get /recent-withdrawl-status/:asset': 'KrakenController.getRecentWithdrawlStatus',
   'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus',
   'get /query-trade-information/:txid': 'KrakenController.queryTradeInformation',
-  // 'post /perform-conversion': 'KrakenController.performConversion',
-
-  //Account Class API
+  // 'post /perform-conversion': 'KrakenController.performConversion', Account
+  // Class API
   'get /admin/get-all-account-classes': 'AccountClassController.getAllAccountClasses',
   'post /admin/add-account-class': 'AccountClassController.addAccountClass',
   'post /admin/update-account-class': 'AccountClassController.updateAccountClass',
-  'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass'
+  'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass',
+
+  //Create One Address for user
+  'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin'
 };

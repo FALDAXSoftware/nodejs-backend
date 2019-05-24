@@ -224,10 +224,16 @@
 	"Class Update Success": "Account Class Updated Successfully.",
 	"Class id is not sent": "Account Class Id is not provided",
 	"Class deleted success": "Account Class deleted Successfully.",
-	"Wallet Not Found":"User Wallet has not been found",
-	"Daily Limit Exceeded":"The amount you wish to withdraw exceeds limit. Increase your account limits by following the steps on this page",
-	"Daily Limit Exceeded Using Amount":"You exceed you daily limit by this amount",
-	"withdraw request confirm":"Your Withdrawl request may take 24-28 hours to processdue to its size. Do you wish to proceed?",
-	"Request sumbit success":"Your withdraw request has been submitted successfully. We will update you soon.",
-	"Insufficent balance wallet":"Your account balance is lower than the amount you wish to withdraw. If you believe this is incorrect, please contact support immediately. Otherwise please try again"
+	"Wallet Not Found": "User Wallet has not been found",
+	"Daily Limit Exceeded": "The amount you wish to withdraw exceeds daily limit. Increase your account limits by following the steps on this page",
+	"Daily Limit Exceeded Using Amount": "You exceed you daily limit by sending this amount",
+	"withdraw request confirm": "Your Withdrawl request may take 24-28 hours to processdue to its size. Do you wish to proceed?",
+	"Request sumbit success": "Your withdraw request has been submitted successfully. We will update you soon.",
+	"Insufficent balance wallet": "Your account balance is lower than the amount you wish to withdraw. If you believe this is incorrect, please contact support immediately. Otherwise please try again",
+	"Monthly Limit Exceeded Using Amount": "You exceed you monthly limit by sending this amount",
+	"Monthly Limit Exceeded": "The amount you wish to withdraw exceeds monthly limit. Increase your account limits by following the steps on this page",
+	"No Limit Data List": "No Limit Data has been found for this coin.",
+	"Address Create Success": "Address has been created Successfully",
+	"Address Not Create Success": "Address has not been created",
+	"Address already Create Success":"Address has already been created"
 }
