@@ -16,6 +16,14 @@ module.exports = {
       type: 'number',
       columnName: 'coin_id'
     },
+    monthly_withdraw_crypto: {
+      type: 'number',
+      columnName: 'monthly_withdraw_crypto'
+    },
+    monthly_withdraw_fiat: {
+      type: 'number',
+      columnName: 'monthly_withdraw_fiat'
+    },
     daily_withdraw_crypto: {
       type: 'number',
       columnName: 'daily_withdraw_crypto'
