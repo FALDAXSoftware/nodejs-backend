@@ -62,6 +62,7 @@ module.exports.routes = {
   'post /admin/coins/create': 'Coins.create',
   'put /admin/coins/update': 'Coins.update',
   'delete /admin/coins/delete': 'Coins.delete',
+  'get /admin/coin/get-coin-details': "Coins.getCoinDetails",
 
   //static pages
   'get /admin/static/get-static-page': 'Statics.getStatic',

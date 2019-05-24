@@ -583,5 +583,37 @@ module.exports = {
           "message": sails.__("Coin deleted success")
         });
     }
+  },
+
+
+  getCoinDetails: async function (req, res) {
+    try {
+      let { id } = req.allParams();
+
+      let coin = await Coins.findOne({ id: id });
+      if (coin) {
+        return res
+          .status(200)
+          .json({
+            "coin": coin,
+            "status": 200,
+            "message": sails.__("Coin list")
+          });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
 };
