@@ -69,8 +69,8 @@ module.exports.policies = {
     "sendListTokenForm": true,
     "callKrakenAPI": true,
     "bitgoTest": true,
-    "setAddressWebhook": true,
-    "webhookOnAddress": true
+    // "setAddressWebhook": true,
+    // "webhookOnAddress": true
   },
   // 'WalletController':{
   //   "getCoinBalanceForWallet":true
@@ -121,4 +121,7 @@ module.exports.policies = {
     "withdrwalCancellationStatus": true,
     "queryTradeInformation": true
   },
+  "WebhookController": {
+    "*": true
+  }
 };

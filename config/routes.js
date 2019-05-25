@@ -21,8 +21,17 @@ module.exports.routes = {
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /panic-button': 'RootController.panicBtn',
   'get /test-bitgo': 'RootController.bitgoTest',
-  'get /set-address-webhook': 'RootController.setAddressWebhook',
-  'post /webhook-on-address': 'RootController.webhookOnAddress',
+
+
+
+  // Webhook  routes
+  'get /set-address-webhook': 'WebhookController.setAddressWebhook',
+  'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
+  'post /webhook-on-address': 'WebhookController.webhookOnAddress',
+  'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
+
+
+
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
   'post /admin/forgot-password': "Admin.forgotPassword",
