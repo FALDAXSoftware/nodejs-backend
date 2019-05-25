@@ -198,12 +198,17 @@ module.exports = {
   bitgoTest: async function (req, res) {
     console.log(sails.config.local.BITGO_ACCESS_TOKEN);
 
-    let bitgo = new BitGoJS.BitGo({ env: 'prod', accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    let bitgo = new BitGoJS.BitGo({ env: 'test', accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
     var wallet = await bitgo
-      .coin("rep")
+      .coin("tbtc")
       .wallets()
-      .get({ id: "5cb784fc414b361707ef9658a7d738cc" });
-    let webhook = await wallet.removeWebhook({ url: "http://04d6a0de.ngrok.io/webhook-on-address", type: "address_confirmation" });
+      .get({ id: "5ce2deb441a6330d04e59f9b799a182a" });
+    let send = await wallet.send({
+      "amount": 1000000,
+      "address": "2N6c4b6NYho82mfVww1M5gG3ZxyNYd9etpP",
+      "walletPassphrase": "F@LD@xt3stpkey"
+    });
+    console.log(send);
 
   },
 

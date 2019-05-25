@@ -7,7 +7,7 @@
 const BitGoJS = require('bitgo');
 
 module.exports = {
-
+    // set on recive webhook
     setReceiveWebhook: async function (req, res) {
         let coins = await Coins.find({
             deleted_at: null,
@@ -108,10 +108,38 @@ module.exports = {
                         .coin(req.body.coin)
                         .wallets()
                         .get({ id: coin.warm_wallet_address });
-                    // check for warm wallet balance 
-                    // if (warmWallet.confirmedBalance >= ) {
+                    let custodialWallet = await bitgo.coin(req.body.coin).wallets().get({ id: coin.custody_wallet_address });
+                    // check for wallet exist or not
+                    if (warmWallet.id && custodialWallet.id) {
+                        // check for warm wallet balance 
+                        let warmWalletAmount = 0;
+                        let custodialWalletAmount = 0;
+                        if (warmWallet.confirmedBalance >= coin.min_thresold) {
+                            // send 10% to warm wallet and 90% to custodial wallet
+                            warmWalletAmount = (dest.value * 10) / 100;
+                            custodialWalletAmount = (dest.value * 90) / 100;
 
-                    // }
+                        } else {
+                            // send 50% to warm wallet and 50% to custodial wallet
+                            warmWalletAmount = (dest.value * 50) / 100;
+                            custodialWalletAmount = (dest.value * 50) / 100;
+                        }
+                        // transaction table insert remaining
+
+                        // send amount to warm wallet
+                        await wallet.send({
+                            amount: warmWalletAmount,
+                            address: warmWallet.receiveAddress.address,
+                            walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                        });
+
+                        // send amount to custodial wallet
+                        await wallet.send({
+                            amount: custodialWalletAmount,
+                            address: custodialWallet.receiveAddress.address,
+                            walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                        });
+                    }
                 }
             }
         }

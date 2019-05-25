@@ -79,6 +79,11 @@ module.exports = {
       columnName: 'warm_wallet_address',
       allowNull: true
     },
+    custody_wallet_address: {
+      type: 'string',
+      columnName: 'custody_wallet_address',
+      allowNull: true
+    },
     // description: {   type: 'string',   columnName: 'description',   required:
     // true },
     is_active: {
