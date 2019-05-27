@@ -235,5 +235,6 @@
 	"No Limit Data List": "No Limit Data has been found for this coin.",
 	"Address Create Success": "Address has been created Successfully",
 	"Address Not Create Success": "Address has not been created",
-	"Address already Create Success":"Address has already been created"
+	"Address already Create Success":"Address has already been created",
+	"limit id added sucess":"Tier Limit has been addedd successfully"
 }

@@ -68,11 +68,13 @@ module.exports = {
           "message": sails.__('Update Limit')
         });
       } else {
+        var updatedLimit = await Limit
+            .create(req.body);
         return res
-          .status(400)
+          .status(200)
           .json({
-            'status': 400,
-            'message': sails._("limit id is not sent.")
+            'status': 200,
+            'message': sails._("limit id added sucess")
           })
       }
     } catch (error) {
