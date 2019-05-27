@@ -47,10 +47,16 @@ module.exports = {
               err: sails.__("Invalid limit")
             });
         }
-        var updatedLimit = await Limit
+        var updatedLimit;
+        if(limit_details == undefined || limit_details == null || !limit_details){
+          updatedLimit = await Limit
+            .create(req.body);
+        }else{
+          updatedLimit = await Limit
           .update({id: req.body.id})
           .set(req.body)
           .fetch();
+        }
         if (!updatedLimit) {
           return res.json({
             "status": 200,
