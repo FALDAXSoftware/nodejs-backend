@@ -16,21 +16,35 @@ module.exports = {
       type: 'number',
       columnName: 'coin_id'
     },
+    monthly_withdraw_crypto: {
+      type: 'number',
+      columnName: 'monthly_withdraw_crypto',
+      allowNull: true
+    },
+    monthly_withdraw_fiat: {
+      type: 'number',
+      columnName: 'monthly_withdraw_fiat',
+      allowNull: true
+    },
     daily_withdraw_crypto: {
       type: 'number',
-      columnName: 'daily_withdraw_crypto'
+      columnName: 'daily_withdraw_crypto',
+      allowNull: true
     },
     daily_withdraw_fiat: {
       type: 'number',
-      columnName: 'daily_withdraw_fiat'
+      columnName: 'daily_withdraw_fiat',
+      allowNull: true
     },
     min_withdrawl_crypto: {
       type: 'number',
-      columnName: 'min_withdrawl_crypto'
+      columnName: 'min_withdrawl_crypto',
+      allowNull: true
     },
     min_withdrawl_fiat: {
       type: 'number',
-      columnName: 'min_withdrawl_fiat'
+      columnName: 'min_withdrawl_fiat',
+      allowNull: true
     },
     created_at: {
       type: 'ref',
