@@ -236,5 +236,8 @@
 	"Address Create Success": "Address has been created Successfully",
 	"Address Not Create Success": "Address has not been created",
 	"Address already Create Success": "Address has already been created",
-	"limit id added sucess": "Tier Limit has been addedd successfully"
+	"limit id added sucess": "Tier Limit has been addedd successfully",
+	"No User Limit Data List": "No User Limit Data has been found",
+	"User Limit list": "User limit data has been listed successfully.",
+	"Delete Limit": "Limit has been deleted successfully"
 }

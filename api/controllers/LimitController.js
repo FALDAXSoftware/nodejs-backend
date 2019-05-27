@@ -43,7 +43,7 @@ module.exports = {
   updateLimit: async function (req, res) {
     try {
       if (req.body.id) {
-        const limit_details = await Limit.findOne({ id: req.body.id });
+        const limit_details = await Limit.findOne({ id: req.body.id, deleted_at: null });
         if (!limit_details) {
           return res
             .status(401)
