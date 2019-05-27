@@ -98,7 +98,7 @@ module.exports.routes = {
   'put /admin/edit-pair': 'PairsController.updatePair',
 
   //Limit routes
-  'get /admin/all-limits/:coin_id': 'LimitController.getAllLimit',
+  'get /admin/all-limits': 'LimitController.getAllLimit',
   'put /admin/edit-limit': 'LimitController.updateLimit',
 
   //Transaction routes
