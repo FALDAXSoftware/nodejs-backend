@@ -109,6 +109,11 @@ module.exports = {
       columnName: 'account_class',
       defaultsTo: false,
     },
+    email_templates: {
+      type: "boolean",
+      columnName: 'email_templates',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
