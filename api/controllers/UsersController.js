@@ -77,33 +77,42 @@ module.exports = {
         if (user_detail) {
           //   Create Recive Address await sails   .helpers   .wallet
           // .receiveAddress(user_detail);
-          sails
-            .hooks
-            .email
-            .send((req.body.device_type == 1 || req.body.device_type == 2)
-              ? "signupCode"
-              : "signup", {
-                homelink: sails.config.urlconf.APP_URL,
-                recipientName: user_detail.first_name,
-                token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-                tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
-                  ? email_verify_code
-                  : email_verify_token,
-                senderName: "Faldax"
+          let slug = "";
+          if (req.body.device_type == 1 || req.body.device_type == 2) {
+            slug = "signup_for_mobile"
+          } else {
+            slug = "signup_for_web"
+          }
+          let template = await EmailTemplate.findOne({ slug });
+          let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+            recipientName: user_detail.first_name,
+            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+            tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
+              ? email_verify_code
+              : email_verify_token,
+          })
+          if (template) {
+            sails
+              .hooks
+              .email.send("general-email", {
+                content: emailContent
               }, {
-                to: user_detail.email,
-                subject: "Signup Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "email_verify_token": email_verify_token,
-                    "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                      ? sails.__("verification code")
-                      : sails.__("verification link")
-                  });
-                }
-              })
+                  to: user_detail.email,
+                  subject: "Signup Verification"
+                }, function (err) {
+                  console.log("email error", err);
+
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": (req.body.device_type == 1 || req.body.device_type == 2)
+                        ? sails.__("verification code")
+                        : sails.__("verification link")
+                    });
+                  }
+                });
+          }
+
         } else {
           return res
             .status(401)
@@ -122,6 +131,8 @@ module.exports = {
         return;
       }
     } catch (error) {
+      console.log(error);
+
       return res
         .status(500)
         .json({

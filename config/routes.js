@@ -82,6 +82,10 @@ module.exports.routes = {
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
   'post /admin/email-send': 'AnnouncementController.sendemail',
 
+  // Email Templates
+  'get /admin/emailTemplate/get': 'EmailTemplateController.get',
+  'put /admin/emailTemplate/update': 'EmailTemplateController.update',
+
   //DashBoard
   'get /admin/dashboard/get-data': 'Dashboard.getAllCounts',
   'get /admin/get-countries-data': 'Countries.getCountries',
@@ -100,6 +104,14 @@ module.exports.routes = {
   //Limit routes
   'get /admin/all-limits': 'LimitController.getAllLimit',
   'put /admin/edit-limit': 'LimitController.updateLimit',
+
+  //User Limit routes
+  'get /admin/all-user-limits': 'UserLimitController.getAllUserLimit',
+  'put /admin/edit-user-limit': 'UserLimitController.updateUserLimit',
+
+  //News Source routes
+  'get /admin/all-new-source': 'NewsSourceController.getAllActiveNewsSource',
+  'put /admin/edit-news-source': 'NewsSourceController.updateNewsSourceStatus',
 
   //Transaction routes
   'get /admin/all-transactions': 'TransactionController.getAllTransactions',
