@@ -10,8 +10,9 @@ module.exports = {
     // -------------------------------CMS Api--------------------------
     getAllUserLimit: async function (req, res) {
       // req.setLocale('en')
-      let {user_id} = req.allParams();
-      let query = "FROM coins LEFT JOIN user_limit ON coins.id=user_limit.coin_id"
+      let query = `FROM coins LEFT JOIN user_limit ON coins.id=user_limit.coin_id 
+                  WHERE user_limit.user_id = ${req.user.id} AND user_limit.deleted_at = NULL 
+                  AND coins.deleted_at = NULL AND coins.is_active = true`
 
       let limitData = await sails.sendNativeQuery("Select *" + query, [])
   
@@ -19,7 +20,7 @@ module.exports = {
         return res.json({
           "status": 200,
           "message": sails.__("User Limit list"),
-          "data": limitData
+          "data": limitData.rows
         });
       } else {
         return res.json({
