@@ -240,8 +240,10 @@
 	"No User Limit Data List": "No User Limit Data has been found",
 	"User Limit list": "User limit data has been listed successfully.",
 	"Delete Limit": "Limit has been deleted successfully",
-	"Update User Limit":"User Limit has been updated successfully.",
-	"Delete User Limit":"User Limit has been deleted successfully.",
-	"User Id and Coin ID necessary":"USer ID and Coin Id is necessary to provide.",
-	"Create User Limit":"User Limit has been created succesfully."
+	"Update User Limit": "User Limit has been updated successfully.",
+	"Delete User Limit": "User Limit has been deleted successfully.",
+	"User Id and Coin ID necessary": "USer ID and Coin Id is necessary to provide.",
+	"Create User Limit": "User Limit has been created succesfully.",
+	"Email template retrive success": "Email Template Retrive Succesfully",
+	"Email template update success": "Email Template updated Succesfully"
 }

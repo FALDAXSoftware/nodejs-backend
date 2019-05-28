@@ -82,6 +82,10 @@ module.exports.routes = {
   'delete /admin/announcement/delete': 'AnnouncementController.delete',
   'post /admin/email-send': 'AnnouncementController.sendemail',
 
+  // Email Templates
+  'get /admin/emailTemplate/get': 'EmailTemplateController.get',
+  'put /admin/emailTemplate/update': 'EmailTemplateController.update',
+
   //DashBoard
   'get /admin/dashboard/get-data': 'Dashboard.getAllCounts',
   'get /admin/get-countries-data': 'Countries.getCountries',
