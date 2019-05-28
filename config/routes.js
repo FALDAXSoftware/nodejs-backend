@@ -105,6 +105,10 @@ module.exports.routes = {
   'get /admin/all-user-limits': 'UserLimitController.getAllUserLimit',
   'put /admin/edit-user-limit': 'UserLimitController.updateUserLimit',
 
+  //News Source routes
+  'get /admin/all-new-source': 'NewsSourceController.getAllActiveNewsSource',
+  'put /admin/edit-news-source': 'NewsSourceController.updateNewsSourceStatus',
+
   //Transaction routes
   'get /admin/all-transactions': 'TransactionController.getAllTransactions',
   'get /admin/user-transactions': 'TransactionController.getUserTransactions',

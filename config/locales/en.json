@@ -243,5 +243,11 @@
 	"Update User Limit":"User Limit has been updated successfully.",
 	"Delete User Limit":"User Limit has been deleted successfully.",
 	"User Id and Coin ID necessary":"USer ID and Coin Id is necessary to provide.",
-	"Create User Limit":"User Limit has been created succesfully."
+	"Create User Limit":"User Limit has been created succesfully.",
+	"New Source list success":"News Source has been listed successfully.",
+	"No News Source List":"No News Source list has been found.",
+	"No news source found":"No News Source ID has been provided.",
+	"No source found":"No News source has been found.",
+	"News Source update success":"News Source has been updated successfully.",
+	"New Source update fail.":"News source updated has been failed."
 }
