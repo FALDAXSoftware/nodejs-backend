@@ -11,14 +11,9 @@ module.exports = {
     getAllUserLimit: async function (req, res) {
       // req.setLocale('en')
       let {user_id} = req.allParams();
-      let userLimitData = await UserLimit
-        .find({
-        where: {
-          deleted_at: null,
-          user_id: user_id
-        }
-      })
-        .sort("id ASC");
+      let query = "FROM coins LEFT JOIN user_limit ON coins.id=user_limit.coin_id"
+
+      let limitData = await sails.sendNativeQuery("Select *" + query, [])
   
       if (limitData.length > 0) {
         return res.json({
@@ -37,54 +32,62 @@ module.exports = {
   
     updateUserLimit: async function (req, res) {
       try {
-        if (req.body.id) {
-          const limit_details = await UserLimit.findOne({id: req.body.id, deleted_at : null});
+        if (req.body.user_id && req.body.coin_id) {
+          const limit_details = await UserLimit.findOne({user_id: req.body.user_id, coin_id: req.body.coin_id , deleted_at : null});
           var updatedLimit;
           if(limit_details == undefined || limit_details == null || !limit_details){
+            if(req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
             updatedLimit = await UserLimit
               .create(req.body);
-          }else{
+            
+              if (!updatedLimit) {
+                return res.json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong")
+                });
+              }
+              return res.json({
+                "status": 200,
+                "message": sails.__('Create User Limit')
+              });
+            }else{
             if(req.body.monthly_withdraw_crypto == null && req.body.monthly_withdraw_fiat == null && req.body.daily_withdraw_crypto == null && req.body.daily_withdraw_fiat == null)  {
               updatedLimit = await UserLimit
-                .update({id: req.body.id})
+                .update({user_id: req.body.user_id, coin_id: req.body.coin_id})
                 .set({deleted_at : Date.now()})
                 .fetch();
                 if (!updatedLimit) {
                   return res.json({
-                    "status": 200,
+                    "status": 500,
                     "message": sails.__("Something Wrong")
                   });
                 }
                 return res.json({
                   "status": 200,
-                  "message": sails.__('Delete Limit')
+                  "message": sails.__('Delete User Limit')
                 });
               }else{
-              updatedLimit = await Limit
-                .update({id: req.body.id})
+              updatedLimit = await UserLimit
+                .update({user_id: req.body.user_id, coin_id : req.body.coin_id})
                 .set(req.body)
                 .fetch();
                 if (!updatedLimit) {
                   return res.json({
-                    "status": 200,
+                    "status": 500,
                     "message": sails.__("Something Wrong")
                   });
                 }
                 return res.json({
                   "status": 200,
-                  "message": sails.__('Update Limit')
+                  "message": sails.__('Update User Limit')
                 });
             }
           }
         } else {
-          var updatedLimit = await Limit
-              .create(req.body);
-          return res
-            .status(200)
-            .json({
-              'status': 200,
-              'message': sails._("limit id added sucess")
-            })
+          return res.json({
+            "status" : 500,
+            "message": sails.__("User Id and Coin ID necessary")
+          })
         }
       } catch (error) {
         console.log(error);

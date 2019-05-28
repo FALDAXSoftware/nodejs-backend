@@ -239,5 +239,9 @@
 	"limit id added sucess": "Tier Limit has been addedd successfully",
 	"No User Limit Data List": "No User Limit Data has been found",
 	"User Limit list": "User limit data has been listed successfully.",
-	"Delete Limit": "Limit has been deleted successfully"
+	"Delete Limit": "Limit has been deleted successfully",
+	"Update User Limit":"User Limit has been updated successfully.",
+	"Delete User Limit":"User Limit has been deleted successfully.",
+	"User Id and Coin ID necessary":"USer ID and Coin Id is necessary to provide.",
+	"Create User Limit":"User Limit has been created succesfully."
 }
