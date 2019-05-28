@@ -101,6 +101,10 @@ module.exports.routes = {
   'get /admin/all-limits': 'LimitController.getAllLimit',
   'put /admin/edit-limit': 'LimitController.updateLimit',
 
+  //User Limit routes
+  'get /admin/all-user-limits': 'UserLimitController.getAllUserLimit',
+  'put /admin/edit-user-limit': 'UserLimitController.updateUserLimit',
+
   //Transaction routes
   'get /admin/all-transactions': 'TransactionController.getAllTransactions',
   'get /admin/user-transactions': 'TransactionController.getUserTransactions',
