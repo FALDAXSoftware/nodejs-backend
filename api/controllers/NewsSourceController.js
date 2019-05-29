@@ -20,21 +20,21 @@ module.exports = {
                 "data": newsSourceData
             });
         } else {
-            return res.json({
-                "status": 500,
-                "message": sails.__("No News Source List")
-            });
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
         }
     },
 
     updateNewsSourceStatus: async function (req, res) {
         try {
-
             let { id, status } = req.body;
 
             if (id || id !== null || id !== undefined) {
                 var newSourceDaa = await NewsSource.findOne({ deleted_at: null, id: id });
-
                 if (!newSourceDaa || newSourceDaa === null || newSourceDaa === undefined) {
                     return res.json({ status: 500, "message": sails.__("No source found") })
                 } else {
@@ -54,12 +54,12 @@ module.exports = {
             }
 
         } catch (err) {
-            console.log("err");
-            return res.json({
-                "status": 500,
-                "message": sails.__("Something Wrong")
-            });
-
+            return res
+                .status(500)
+                .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                });
         }
     }
 };

@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var moment = require('moment');
 module.exports = {
   // ---------------------------Web Api------------------------------
   // -------------------------------CMS Api--------------------------
@@ -13,9 +13,7 @@ module.exports = {
       const { user_id } = req.allParams();
 
       if (user_id) {
-        let query = 'FROM coins LEFT JOIN user_limit ON coins.id = user_limit.coin_id ' +
-          'WHERE user_limit.user_id = ' + user_id + ' AND user_limit.deleted_at IS NULL ' +
-          'AND coins.deleted_at IS NULL AND coins.is_active = true'
+        let query = 'FROM coins LEFT JOIN (SELECT * FROM user_limit WHERE user_id = ' + user_id + ' AND deleted_at IS NULL) AS specific_user_limit ON coins.id = specific_user_limit.coin_id WHERE coins.deleted_at IS NULL AND coins.is_active = true';
 
         let limitData = await sails.sendNativeQuery("Select *" + query, [])
 
@@ -77,7 +75,7 @@ module.exports = {
           if (req.body.monthly_withdraw_crypto == null && req.body.monthly_withdraw_fiat == null && req.body.daily_withdraw_crypto == null && req.body.daily_withdraw_fiat == null) {
             updatedLimit = await UserLimit
               .update({ user_id: req.body.user_id, coin_id: req.body.coin_id })
-              .set({ deleted_at: Date.now() })
+              .set({ deleted_at: moment().format() })
               .fetch();
             if (!updatedLimit) {
               return res.json({
@@ -113,7 +111,6 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json({
