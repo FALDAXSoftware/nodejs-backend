@@ -54,7 +54,7 @@ module.exports = {
         query += " WHERE "
       }
       whereAppended = true;
-      query += " withdraw_request.transaction_type=" + t_type;
+      query += " withdraw_request.is_approve=" + t_type;
     }
 
     if (start_date && end_date) {
@@ -67,8 +67,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -81,7 +81,6 @@ module.exports = {
     }
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    console.log('query', query)
 
     let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email " + query, [])
     withdrawReqData = withdrawReqData.rows;
