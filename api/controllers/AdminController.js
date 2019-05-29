@@ -360,14 +360,16 @@ module.exports = {
           .set(new_admin)
           .fetch();
 
+        let slug = "forgot_password"
+        let template = await EmailTemplate.findOne({ slug });
+        let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+          recipientName: admin_details.name,
+          token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
+        })
         sails
           .hooks
-          .email
-          .send("forgotPassword", {
-            homelink: sails.config.urlconf.CMS_URL,
-            recipientName: admin_details.name,
-            token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
-            senderName: "Faldax"
+          .email.send("general-email", {
+            content: emailContent
           }, {
               to: admin_details.email,
               subject: "Forgot Password"
