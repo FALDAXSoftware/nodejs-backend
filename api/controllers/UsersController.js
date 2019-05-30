@@ -263,6 +263,13 @@ module.exports = {
               "err": sails.__("invalid otp")
             });
         }
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Invalid Params"
+          });
       }
     } catch (error) {
       return res
