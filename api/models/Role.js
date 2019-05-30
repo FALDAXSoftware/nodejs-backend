@@ -114,6 +114,11 @@ module.exports = {
       columnName: 'email_templates',
       defaultsTo: false,
     },
+    news_source: {
+      type: "boolean",
+      columnName: 'news_source',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

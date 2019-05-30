@@ -28,7 +28,7 @@ module.exports.routes = {
   'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
   'post /webhook-on-address': 'WebhookController.webhookOnAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
-
+  'post /webhook-on-send': 'WebhookController.webhookOnSend',
 
 
   // CMS Routes/////////////////////////////////////////// Admin

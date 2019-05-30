@@ -225,7 +225,7 @@ module.exports = {
                           var bitgoWallet = await bitgo
                             .coin(coin.coin_code)
                             .wallets()
-                            .get({ id: coin.wallet_address });
+                            .get({ id: coin.warm_wallet_address });
                           let params = {
                             amount: amount * 1e8,
                             address: sendWalletData.receiveAddress.address,
@@ -234,78 +234,54 @@ module.exports = {
 
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
-                          bitgoWallet
-                            .send(params)
-                            .then(async function (transaction) {
-                              //Here remainning ebtry as well as address change
-                              let walletHistory = {
-                                coin_id: wallet.coin_id,
-                                source_address: sendWalletData.receiveAddress.address,
-                                destination_address: destination_address,
-                                user_id: user_id,
-                                amount: amount,
-                                transaction_type: 'send',
-                                transaction_id: transaction.id,
-                                is_executed: false
-                              }
+                          let transaction = await bitgoWallet.send(params);
+                          //Here remainning ebtry as well as address change
+                          let walletHistory = {
+                            coin_id: wallet.coin_id,
+                            source_address: sendWalletData.receiveAddress.address,
+                            destination_address: destination_address,
+                            user_id: user_id,
+                            amount: amount,
+                            transaction_type: 'send',
+                            transaction_id: transaction.txid,
+                            is_executed: false
+                          }
 
-                              // Make changes in code for receive webhook and then send to receive address
-                              // Entry in wallet history
-                              await WalletHistory.create({
-                                ...walletHistory
-                              });
-                              // update wallet balance
-                              await Wallet
-                                .update({ id: wallet.id })
-                                .set({
-                                  balance: wallet.balance - amount,
-                                  placed_balance: wallet.placed_balance - amount
-                                });
-
-                              // Adding the transaction details in transaction table This is entry for sending
-                              // from warm wallet to hot send wallet
-                              let addObject = {
-                                coin_id: coin.id,
-                                source_address: warmWalletData.receiveAddress.address,
-                                destination_address: sendWalletData.receiveAddress.address,
-                                user_id: user_id,
-                                amount: amount,
-                                transaction_type: 'send',
-                                is_executed: true
-                              }
-
-                              await TransactionTable.create({
-                                ...addObject
-                              });
-
-                              //This is for sending from hot send wallet to destination address
-                              let addObjectSendData = {
-                                coin_id: coin.id,
-                                source_address: sendWalletData.receiveAddress.address,
-                                destination_address: destination_address,
-                                user_id: user_id,
-                                amount: amount,
-                                transaction_type: 'send',
-                                is_executed: false
-                              }
-
-                              await TransactionTable.create({
-                                ...addObjectSendData
-                              });
-
-                              return res.json({
-                                status: 200,
-                                message: sails.__("Token send success")
-                              });
-                            })
-                            .catch(error => {
-                              return res
-                                .status(500)
-                                .json({
-                                  status: 500,
-                                  message: sails._("Insufficent balance")
-                                });
+                          // Make changes in code for receive webhook and then send to receive address
+                          // Entry in wallet history
+                          await WalletHistory.create({
+                            ...walletHistory
+                          });
+                          // update wallet balance
+                          await Wallet
+                            .update({ id: wallet.id })
+                            .set({
+                              balance: wallet.balance - amount,
+                              placed_balance: wallet.placed_balance - amount
                             });
+
+                          // Adding the transaction details in transaction table This is entry for sending
+                          // from warm wallet to hot send wallet
+                          let addObject = {
+                            coin_id: coin.id,
+                            source_address: warmWalletData.receiveAddress.address,
+                            destination_address: sendWalletData.receiveAddress.address,
+                            user_id: user_id,
+                            amount: amount,
+                            transaction_type: 'send',
+                            is_executed: true
+                          }
+
+                          await TransactionTable.create({
+                            ...addObject
+                          });
+
+
+
+                          return res.json({
+                            status: 200,
+                            message: sails.__("Token send success")
+                          });
                         }
                       } else {
                         if (req.body.confirm_for_wait == true) {

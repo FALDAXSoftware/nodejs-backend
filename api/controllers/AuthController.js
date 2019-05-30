@@ -114,7 +114,6 @@ module.exports = {
               }
 
               if (!valid) {
-                console.log('if')
                 return res
                   .status(401)
                   .json({
@@ -168,7 +167,7 @@ module.exports = {
                 user_detail.is_allowed = dataResponse;
 
                 delete user_detail.password;
-                // Create Recive Address await sails.helpers.wallet.receiveAddress(user_detail);
+                // Create Receive Address await sails.helpers.wallet.receiveAddress(user_detail);
                 // Generating JWT Token
                 var token = await sails
                   .helpers
@@ -209,15 +208,19 @@ module.exports = {
                   await Users
                     .update({ id: user_detail["id"] })
                     .set({ email: user_detail["email"], new_ip_verification_token: verifyToken, new_ip: ip });
+
+                  let slug = "new_ip_verification"
+                  let template = await EmailTemplate.findOne({ slug });
+                  let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+                    homeLink: sails.config.urlconf.APP_URL,
+                    recipientName: user_detail.first_name,
+                    token: verifyToken,
+                    ip: ip
+                  })
                   sails
                     .hooks
-                    .email
-                    .send("NewIpVerification", {
-                      homelink: sails.config.urlconf.APP_URL,
-                      recipientName: user_detail.first_name,
-                      token: verifyToken,
-                      ip: ip,
-                      senderName: "Faldax"
+                    .email.send("general-email", {
+                      content: emailContent
                     }, {
                         to: user_detail["email"],
                         subject: "New Device Confirmation"
@@ -230,7 +233,6 @@ module.exports = {
                               "err": sails.__("New device confirmation email sent to your email.")
                             });
                         } else {
-                          console.log(err);
                           return res
                             .status(500)
                             .json({
@@ -238,7 +240,7 @@ module.exports = {
                               "err": sails.__("Something Wrong")
                             });
                         }
-                      })
+                      });
                 }
               }
             });
@@ -595,14 +597,16 @@ module.exports = {
         .set(new_user)
         .fetch();
 
+      let slug = "forgot_password"
+      let template = await EmailTemplate.findOne({ slug });
+      let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+        recipientName: admin_details.name,
+        token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token,
+      })
       sails
         .hooks
-        .email
-        .send("forgotPassword", {
-          homelink: sails.config.urlconf.APP_URL,
-          recipientName: user_details.first_name,
-          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token,
-          senderName: "Faldax"
+        .email.send("general-email", {
+          content: emailContent
         }, {
             to: user_details.email,
             subject: "Forgot Password"

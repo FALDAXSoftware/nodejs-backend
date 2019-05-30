@@ -100,8 +100,6 @@ module.exports = {
                   to: user_detail.email,
                   subject: "Signup Verification"
                 }, function (err) {
-                  console.log("email error", err);
-
                   if (!err) {
                     return res.json({
                       "status": 200,
@@ -146,7 +144,7 @@ module.exports = {
     * API for updating use email id
     * Renders this api when user needs to be update email
     *
-    * @param <new email , old email>
+    * @param <new_email>
     *
     * @return <Coin node Info or error data>
    */
@@ -155,7 +153,7 @@ module.exports = {
     try {
       let newEmail = req
         .body
-        .newEmail
+        .new_email
         .toLowerCase();
       var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
       var existedEmail = await Users.find({ email: newEmail });
@@ -265,6 +263,13 @@ module.exports = {
               "err": sails.__("invalid otp")
             });
         }
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Invalid Params"
+          });
       }
     } catch (error) {
       return res
