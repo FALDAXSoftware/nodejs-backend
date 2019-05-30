@@ -11,7 +11,7 @@ module.exports = {
     getAllActiveNewsSource: async function (req, res) {
         // req.setLocale('en')
 
-        let newsSourceData = await NewsSource.find({ deleted_at: null, is_active: true })
+        let newsSourceData = await NewsSource.find({ deleted_at: null }).sort('id ASC');
 
         if (newsSourceData.length > 0) {
             return res.json({
@@ -34,7 +34,7 @@ module.exports = {
             let { id, status } = req.body;
 
             if (id || id !== null || id !== undefined) {
-                var newSourceDaa = await NewsSource.findOne({ deleted_at: null, id: id });
+                var newSourceDaa = await NewsSource.findOne({ deleted_at: null, id });
                 if (!newSourceDaa || newSourceDaa === null || newSourceDaa === undefined) {
                     return res.json({ status: 500, "message": sails.__("No source found") })
                 } else {
@@ -52,7 +52,6 @@ module.exports = {
             } else {
                 return res.json({ status: 500, "message": sails.__("No news source found") })
             }
-
         } catch (err) {
             return res
                 .status(500)
