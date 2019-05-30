@@ -320,5 +320,8 @@ module.exports.routes = {
   'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass',
 
   //Create One Address for user
-  'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin'
+  'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
+
+  //API for approving and disappoving withdraw request
+  'post /admin/approve-disapprove-withdraw-request':'WithdrawReqController.approveDisapproveRequest'
 };
