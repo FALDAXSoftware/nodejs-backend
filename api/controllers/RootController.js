@@ -206,12 +206,14 @@ module.exports = {
       .coin("tbtc")
       .wallets()
       .get({ id: "5ce2deb441a6330d04e59f9b799a182a" });
-    let send = await wallet.send({
-      "amount": 1000000,
-      "address": "2N6c4b6NYho82mfVww1M5gG3ZxyNYd9etpP",
-      "walletPassphrase": "F@LD@xt3stpkey"
-    });
-    console.log(send);
+    // let send = await wallet.send({
+    //   "amount": 1000000,
+    //   "address": "2N6c4b6NYho82mfVww1M5gG3ZxyNYd9etpP",
+    //   "walletPassphrase": "F@LD@xt3stpkey"
+    // });
+
+    let transfer = await wallet.getTransfer({ id: "5ce7ac5251cb11c103a8e077a6f72fcd" });
+    console.log(transfer);
 
   },
 

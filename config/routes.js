@@ -28,7 +28,7 @@ module.exports.routes = {
   'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
   'post /webhook-on-address': 'WebhookController.webhookOnAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
-
+  'post /webhook-on-send': 'WebhookController.webhookOnSend',
 
 
   // CMS Routes/////////////////////////////////////////// Admin
@@ -196,7 +196,6 @@ module.exports.routes = {
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
   'post /users/get-blog-detail': 'BlogsController.getBlogDetails',
   'post /get-comments': 'BlogsController.getComment',
-  'post /add-comments': 'BlogsController.addComment',
   'post /get-related-blog': 'BlogsController.getRelatedPost',
   'post /users/get-all-news': 'BlogsController.getAllNews',
   'post /create-comments': 'BlogsController.CreateComment',
@@ -320,5 +319,8 @@ module.exports.routes = {
   'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass',
 
   //Create One Address for user
-  'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin'
+  'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
+
+  //API for approving and disappoving withdraw request
+  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest'
 };

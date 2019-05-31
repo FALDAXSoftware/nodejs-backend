@@ -263,6 +263,13 @@ module.exports = {
               "err": sails.__("invalid otp")
             });
         }
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": "Invalid Params"
+          });
       }
     } catch (error) {
       return res
@@ -912,7 +919,7 @@ module.exports = {
       if (updateCoinFee) {
         return res.json({
           "status": 200,
-          "message": sails.__("coin fee update success")
+          "message": sails.__("Withdrawal fee update success")
         });
       }
     } catch (err) {

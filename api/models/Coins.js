@@ -37,12 +37,14 @@ module.exports = {
     min_limit: {
       type: 'number',
       columnName: 'min_limit',
-      defaultsTo: 0
+      defaultsTo: 0,
+      allowNull: true
     },
     max_limit: {
       type: 'number',
       columnName: 'max_limit',
-      defaultsTo: 0
+      defaultsTo: 0,
+      allowNull: true
     },
     deposit_method: {
       type: 'string',
