@@ -51,6 +51,8 @@ module.exports = {
 
       //Maker and Taker fee according to trades executed by user
 
+      var now = moment().format();
+
       var getCurrencyPriceData = await CurrencyConversion.findOne({coin_id: currencyData.id, deleted_at: null});
       var getCryptoPriceData = await CurrencyConversion.findOne({coin_id: cryptoData.id, deleted_at: null});
 
@@ -62,7 +64,41 @@ module.exports = {
         .sum('amount')
         .find({user_id: requested_user_id, deleted_at: null, settle_currency: cryptoData.coin});
 
-        // var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[]
+      var userData = await User.findOne({deleted_at: null, is_active: true, id: user_id});
+      var requestData = await User.findOne({deleted_at: null, is_active: true, id: requested_user_id});
+
+      var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[userData.fiat].price;
+      var totalCryptoAmount = cryptoAmount * getCurrencyPriceData.qoute[requestData.fiat].price;
+
+      var currencyMakerFee = await Fees.findOne({
+        where: {
+          deleted_at: null,
+          min_trade_volune: {
+            '<=': totalCurrencyAmount
+          },
+          max_trade_volume: {
+            '>=': totalCurrencyAmount
+          },
+          created_at: {
+            '<=': now
+          }
+        }
+      });
+
+      var cryptoTakerFee = await Fees.findOne({
+        where: {
+          deleted_at: null,
+          min_trade_volune: {
+            '<=': totalCryptoAmount
+          },
+          max_trade_volume: {
+            '>=': totalCryptoAmount
+          },
+          created_at: {
+            '<=': now
+          }
+        }
+      });
 
       var resultData;
 

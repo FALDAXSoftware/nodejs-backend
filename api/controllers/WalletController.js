@@ -21,7 +21,7 @@ module.exports = {
       const element = coins[index];
       coinArray.push(element.coin)
     }
-  //  for loop for res.data insert in table
+    //  for loop for res.data insert in table
     if (currencyData.data) {
       for (var i = 0; i < currencyData.data.length; i++) {
         if (coinArray.includes(currencyData.data[i].symbol)) {
@@ -187,7 +187,6 @@ module.exports = {
             }
           })
 
-
         // Limited amount is greater than the total sum of day
         if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
@@ -214,7 +213,7 @@ module.exports = {
 
                       // If after all condition user has accepted to wait for 2 days then request need
                       // to be added in the withdraw request table
-                      if (req.body.confirm_for_wait !== undefined) {
+                      if (req.body.confirm_for_wait === undefined) {
 
                         //Check for warm wallet minimum thresold
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
@@ -280,15 +279,24 @@ module.exports = {
                             message: sails.__("Token send success")
                           });
                         } else {
-                          return res
-                            .status(500)
-                            .json({
-                              status: 500,
-                              "err": sails.__("Something Wrong")
-                            });
+                          if (req.body.confirm_for_wait === undefined) {
+                            return res
+                              .status(201)
+                              .json({
+                                status: 201,
+                                message: sails.__('withdraw request confirm')
+                              })
+                          } else {
+                            return res
+                              .status(200)
+                              .json({
+                                status: 200,
+                                "err": sails.__("Transfer could not happen")
+                              });
+                          }
                         }
                       } else {
-                        if (req.body.confirm_for_wait == true) {
+                        if (req.body.confirm_for_wait == true || req.body.confirm_for_wait === "true") {
                           //Insert request in withdraw request
                           var requestObject = {
                             source_address: warmWalletData.receiveAddress.address,
