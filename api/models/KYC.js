@@ -58,7 +58,7 @@ module.exports = {
       allowNull: true
     },
     id_type: {
-      type: 'string',
+      type: 'number',
       columnName: 'id_type'
     },
     front_doc: {
