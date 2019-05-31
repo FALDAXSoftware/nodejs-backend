@@ -46,6 +46,24 @@ module.exports = {
       var user_id = parseInt(request.user_id);
       var requested_user_id = parseInt(request.requested_user_id);
 
+      var currencyData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.currency});
+      var cryptoData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.settle_currency});
+
+      //Maker and Taker fee according to trades executed by user
+
+      var getCurrencyPriceData = await CurrencyConversion.findOne({coin_id: currencyData.id, deleted_at: null});
+      var getCryptoPriceData = await CurrencyConversion.findOne({coin_id: cryptoData.id, deleted_at: null});
+
+      var currencyAmount = await TradeHistory
+        .sum('amount')
+        .find({user_id: user_id, deleted_at: null, currency: currencyData.coin});
+
+      var cryptoAmount = await TradeHistory
+        .sum('amount')
+        .find({user_id: requested_user_id, deleted_at: null, settle_currency: cryptoData.coin});
+
+        // var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[]
+
       var resultData;
 
       var now = moment().format();
@@ -55,8 +73,6 @@ module.exports = {
 
       var user_usd;
 
-      var currencyData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.currency});
-      var cryptoData = await Coins.findOne({deleted_at: null, is_active: true, coin: request.settle_currency});
       var currencyWalletUser = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.user_id});
       var cryptoWalletRequested = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: cryptoData.id, user_id: request.requested_user_id});
       var currencyWalletRequested = await Wallet.findOne({deleted_at: null, is_active: true, coin_id: currencyData.id, user_id: request.requested_user_id});
