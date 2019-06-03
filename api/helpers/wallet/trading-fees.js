@@ -73,7 +73,7 @@ module.exports = {
       var currencyMakerFee = await Fees.findOne({
         where: {
           deleted_at: null,
-          min_trade_volune: {
+          min_trade_volume: {
             '<=': totalCurrencyAmount
           },
           max_trade_volume: {
@@ -88,7 +88,7 @@ module.exports = {
       var cryptoTakerFee = await Fees.findOne({
         where: {
           deleted_at: null,
-          min_trade_volune: {
+          min_trade_volume: {
             '<=': totalCryptoAmount
           },
           max_trade_volume: {
@@ -101,8 +101,6 @@ module.exports = {
       });
 
       var resultData;
-
-      var now = moment().format();
       var yesterday = moment(now)
         .subtract(1, 'months')
         .format();
