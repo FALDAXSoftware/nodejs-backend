@@ -174,14 +174,16 @@ module.exports = {
         .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token })
         .fetch();
       if (user) {
+        let slug = "new_email_confirmation"
+        let template = await EmailTemplate.findOne({ slug });
+        let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+          recipientName: existedUser.first_name,
+          tokenCode: new_email_token,
+        });
         sails
           .hooks
-          .email
-          .send("newEmailConfirmation", {
-            homelink: sails.config.urlconf.APP_URL,
-            recipientName: existedUser.first_name,
-            tokenCode: new_email_token,
-            senderName: "Faldax"
+          .email.send("general-email", {
+            content: emailContent
           }, {
               to: existedUser.email,
               subject: "New Email Confirmation"
@@ -234,15 +236,16 @@ module.exports = {
             .set({ email: requested_email, new_email_token: null, email_verify_token: re_new_email_token, requested_email: null, is_new_email_verified: false })
             .fetch();
 
+          let slug = "new_email_verification"
+          let template = await EmailTemplate.findOne({ slug });
+          let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+            recipientName: user.first_name,
+            token: sails.config.urlconf.APP_URL + '/login?emailCode=' + re_new_email_token,
+          });
           sails
             .hooks
-            .email
-            .send("newEmailVerification", {
-              homelink: sails.config.urlconf.APP_URL,
-              recipientName: user.first_name,
-              token: sails.config.urlconf.APP_URL + '/login?emailCode=' + re_new_email_token,
-              new_email_token: re_new_email_token,
-              senderName: "Faldax"
+            .email.send("general-email", {
+              content: emailContent
             }, {
                 to: requested_email,
                 subject: "New Email Verification"
@@ -448,6 +451,8 @@ module.exports = {
         .upload(async function (err, uploadedFiles) {
           try {
             if (uploadedFiles.length > 0) {
+              console.log("------------", uploadedFiles);
+
               let filename = uploadedFiles[0].filename;
               var name = filename.substring(filename.indexOf("."));
               let timestamp = new Date()
