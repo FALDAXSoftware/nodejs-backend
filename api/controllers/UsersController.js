@@ -924,7 +924,7 @@ module.exports = {
       if (updateCoinFee) {
         return res.json({
           "status": 200,
-          "message": sails.__("coin fee update success")
+          "message": sails.__("Withdrawal fee update success")
         });
       }
     } catch (err) {

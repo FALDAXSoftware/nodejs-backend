@@ -58,8 +58,9 @@ module.exports = {
       allowNull: true
     },
     id_type: {
-      type: 'string',
-      columnName: 'id_type'
+      type: 'number',
+      columnName: 'id_type',
+      allowNull: true
     },
     front_doc: {
       type: 'string',
@@ -143,6 +144,7 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
+    console.log(values)
     values.created_at = new Date();
     next();
   },

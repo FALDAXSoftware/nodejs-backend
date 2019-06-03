@@ -21,6 +21,14 @@ module.exports = {
       type: "number",
       columnName: "taker_fee"
     },
+    min_trade_volume: {
+      type: "number",
+      columnName: "min_trade_volume"
+    },
+    max_trade_volume: {
+      type: "number",
+      columnName: "max_trade_volume"
+    },
     referral_amt: {
       type: 'number',
       columnName: 'referral_amt'
