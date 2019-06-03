@@ -1,10 +1,18 @@
 module.exports = {
+
+  //Get Referred user amount
+  collectReferral: async function (req, res) {
+    try {} catch (err) {
+      console.log("Error in referral :: ", err);
+    }
+  },
+
   getUserReferredAmounts: async function (req, res) {
     try {
-      let { id } = req.allParams();
+      let {id} = req.allParams();
 
-      let referredAmountData = await referral.find({ user_id: id })
-      let userData = await Users.find({ id: id })
+      let referredAmountData = await referral.find({user_id: id})
+      let userData = await Users.find({id: id})
 
       if (referredAmountData) {
         return res.json({
