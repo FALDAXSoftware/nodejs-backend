@@ -386,15 +386,20 @@ module.exports = {
         auth_code: randomize('0', 6)
       });
 
+
+
     // send code in email
+
+    let slug = "verification_code"
+    let template = await EmailTemplate.findOne({ slug });
+    let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+      recipientName: admin_details.name,
+      code: user.auth_code,
+    });
     sails
       .hooks
-      .email
-      .send("verificationCode", {
-        homelink: sails.config.urlconf.APP_URL,
-        recipientName: user.first_name,
-        code: user.auth_code,
-        senderName: "Faldax"
+      .email.send("general-email", {
+        content: emailContent
       }, {
           to: user.email,
           subject: "Authentication Code"
@@ -482,14 +487,18 @@ module.exports = {
         await Users
           .update({ email: user.email })
           .set({ email: user.email, email_verify_token: email_verify_code });
+
+
+        let slug = "signup_for_mobile"
+        let template = await EmailTemplate.findOne({ slug });
+        let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+          recipientName: user.first_name,
+          tokenCode: email_verify_code,
+        });
         sails
           .hooks
-          .email
-          .send("signupCode", {
-            homelink: sails.config.urlconf.APP_URL,
-            recipientName: user.first_name,
-            tokenCode: email_verify_code,
-            senderName: "Faldax"
+          .email.send("general-email", {
+            content: emailContent
           }, {
               to: req.body.email,
               subject: "Signup Verification"

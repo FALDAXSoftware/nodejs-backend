@@ -69,8 +69,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -108,26 +108,26 @@ module.exports = {
         id,
         amount,
         destination_address,
-        coin_code,
+        coin_id,
         user_id
       } = req.body;
 
       if (status == true) {
 
-        var coin = await Coins.findOne({deleted_at: null, coin_code: coin_code, is_active: true})
+        var coin = await Coins.findOne({ deleted_at: null, id: coin_id, is_active: true })
 
         let warmWalletData = await sails
           .helpers
           .wallet
-          .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
+          .getWalletAddressBalance(coin.warm_wallet_address, coin.coin_code);
 
         let sendWalletData = await sails
           .helpers
           .wallet
-          .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+          .getWalletAddressBalance(coin.hot_send_wallet_address, coin.coin_code);
 
         if (coin) {
-          var wallet = await Wallets.findOne({deleted_at: null, user_id: user_id, coin_id: coin.id, is_active: true});
+          var wallet = await Wallets.findOne({ deleted_at: null, user_id: user_id, coin_id: coin.id, is_active: true });
 
           //Checking if wallet data is found or not
           if (wallet) {
@@ -141,11 +141,11 @@ module.exports = {
                 //Check for warm wallet minimum thresold
                 if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
                   //Execute Transaction
-                  var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+                  var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
                   var bitgoWallet = await bitgo
                     .coin(coin.coin_code)
                     .wallets()
-                    .get({id: coin.wallet_address});
+                    .get({ id: coin.wallet_address });
                   let params = {
                     amount: amount * 1e8,
                     address: sendWalletData.receiveAddress.address,
@@ -166,7 +166,8 @@ module.exports = {
                         amount: amount,
                         transaction_type: 'send',
                         transaction_id: transaction.id,
-                        is_executed: false
+                        is_executed: false,
+                        is_approve: true
                       }
 
                       // Make changes in code for receive webhook and then send to receive address
@@ -176,7 +177,7 @@ module.exports = {
                       });
                       // update wallet balance
                       await Wallet
-                        .update({id: wallet.id})
+                        .update({ id: wallet.id })
                         .set({
                           balance: wallet.balance - amount,
                           placed_balance: wallet.placed_balance - amount
@@ -255,9 +256,9 @@ module.exports = {
 
       } else if (status == false) {
         var withdrawLimitData = await WithdrawRequest
-          .update({id: id})
+          .update({ id: id })
           .set({
-            deleted_at: moment().format()
+            is_approve: false
           })
           .fetch();
 

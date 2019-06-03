@@ -196,7 +196,6 @@ module.exports.routes = {
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
   'post /users/get-blog-detail': 'BlogsController.getBlogDetails',
   'post /get-comments': 'BlogsController.getComment',
-  'post /add-comments': 'BlogsController.addComment',
   'post /get-related-blog': 'BlogsController.getRelatedPost',
   'post /users/get-all-news': 'BlogsController.getAllNews',
   'post /create-comments': 'BlogsController.CreateComment',
@@ -323,5 +322,5 @@ module.exports.routes = {
   'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
 
   //API for approving and disappoving withdraw request
-  'post /admin/approve-disapprove-withdraw-request':'WithdrawReqController.approveDisapproveRequest'
+  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest'
 };

@@ -96,6 +96,7 @@
 	"Users list": "Users list retrieved successfully",
 	"user referral updated": "User Referral Percentage Updated.",
 	"coin fee update success": "Asset Fee has been updated successfully",
+	"Withdrawal fee update success": "Withdrawal Fee has been updated successfully",
 	"User Status Updated": "User Status Updated successfully",
 	"Countries retirved success": "Countries retirved successfully",
 	"Referral Users Data": "Referral Users Data retrieved successfully",
@@ -252,7 +253,7 @@
 	"No source found": "No News source has been found.",
 	"News Source update success": "News Source has been updated successfully.",
 	"New Source update fail.": "News source updated has been failed.",
-	"Withdraw Request Cancel":"Withdraw Request has been disapproved successfully.",
-	"Insufficent balance wallet user":"Insufficient wallet balance in user",
-	"Transfer could not happen":"Transfer could not happen"
+	"Withdraw Request Cancel": "Withdraw Request has been disapproved successfully.",
+	"Insufficent balance wallet user": "Insufficient wallet balance in user",
+	"Transfer could not happen": "Transfer could not happen"
 }
