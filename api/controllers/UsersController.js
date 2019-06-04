@@ -619,7 +619,7 @@ module.exports = {
   getReferred: async function (req, res) {
     let id = req.user.id;
     let usersData = await Users.find({
-      select: ['email'],
+      select: ['email','full_name'],
       where: {
         referred_id: id
       }
