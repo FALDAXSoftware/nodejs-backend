@@ -167,8 +167,8 @@ module.exports = {
                 user_detail.is_allowed = dataResponse;
 
                 delete user_detail.password;
-                // Create Receive Address await sails.helpers.wallet.receiveAddress(user_detail);
-                // Generating JWT Token
+                // Create Receive Address await
+                // sails.helpers.wallet.receiveAddress(user_detail); Generating JWT Token
                 var token = await sails
                   .helpers
                   .jwtIssue(user_detail.id);
@@ -220,7 +220,8 @@ module.exports = {
 
                   sails
                     .hooks
-                    .email.send("general-email", {
+                    .email
+                    .send("general-email", {
                       content: emailContent
                     }, {
                         to: user_detail["email"],
@@ -387,19 +388,21 @@ module.exports = {
         auth_code: randomize('0', 6)
       });
 
-
-
     // send code in email
 
     let slug = "verification_code"
     let template = await EmailTemplate.findOne({ slug });
-    let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-      recipientName: admin_details.name,
-      code: user.auth_code,
-    });
+    let emailContent = await sails
+      .helpers
+      .utilities
+      .formatEmail(template.content, {
+        recipientName: admin_details.name,
+        code: user.auth_code
+      });
     sails
       .hooks
-      .email.send("general-email", {
+      .email
+      .send("general-email", {
         content: emailContent
       }, {
           to: user.email,
@@ -489,16 +492,19 @@ module.exports = {
           .update({ email: user.email })
           .set({ email: user.email, email_verify_token: email_verify_code });
 
-
         let slug = "signup_for_mobile"
         let template = await EmailTemplate.findOne({ slug });
-        let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-          recipientName: user.first_name,
-          tokenCode: email_verify_code,
-        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+            tokenCode: email_verify_code
+          });
         sails
           .hooks
-          .email.send("general-email", {
+          .email
+          .send("general-email", {
             content: emailContent
           }, {
               to: req.body.email,
@@ -607,15 +613,21 @@ module.exports = {
         .set(new_user)
         .fetch();
 
+      console.log(updatedUser);
+
       let slug = "forgot_password"
       let template = await EmailTemplate.findOne({ slug });
-      let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-        recipientName: admin_details.name,
-        token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token,
-      })
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: updatedUser.first_name,
+          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
+        })
       sails
         .hooks
-        .email.send("general-email", {
+        .email
+        .send("general-email", {
           content: emailContent
         }, {
             to: user_details.email,
@@ -629,6 +641,7 @@ module.exports = {
             }
           })
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
