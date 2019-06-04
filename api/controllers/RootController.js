@@ -16,13 +16,15 @@ module.exports = {
       if (btnCall.length > 0) {
         btnCall.forEach(async (element) => {
           let userDetails = await Users.find({ id: element });
+          let slug = "panic_email"
+          let template = await EmailTemplate.findOne({ slug });
+          let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+            recipientName: userDetails[0].first_name,
+          })
           sails
             .hooks
-            .email
-            .send("panicButton", {
-              homelink: sails.config.urlconf.APP_URL,
-              recipientName: userDetails[0].first_name,
-              senderName: "Faldax"
+            .email.send("general-email", {
+              content: emailContent
             }, {
                 to: "krina.soni@openxcellinc.com",
                 subject: "Panic Button"
