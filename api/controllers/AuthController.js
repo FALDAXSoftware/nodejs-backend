@@ -217,6 +217,7 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
+
                   sails
                     .hooks
                     .email.send("general-email", {
