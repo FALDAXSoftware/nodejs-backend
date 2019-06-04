@@ -218,5 +218,20 @@ module.exports = {
     console.log(transfer);
 
   },
-
+  testemail: function (req, res) {
+    sails
+      .hooks
+      .email.send("testemail", {
+      }, {
+          to: "ankit.morker@openxcellinc.com",
+          subject: "test email"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": "dkhsd"
+            });
+          }
+        });
+  }
 };

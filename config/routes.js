@@ -20,7 +20,7 @@ module.exports.routes = {
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /panic-button': 'RootController.panicBtn',
   'get /test-bitgo': 'RootController.bitgoTest',
-
+  'get /testemail': 'RootController.testemail',
 
 
   // Webhook  routes
@@ -311,7 +311,7 @@ module.exports.routes = {
   'get /recent-withdrawl-status/:asset': 'KrakenController.getRecentWithdrawlStatus',
   'post /get-withdraw-cancel-status': 'KrakenController.withdrwalCancellationStatus',
   'get /query-trade-information/:txid': 'KrakenController.queryTradeInformation',
-  // 'post /perform-conversion': 'KrakenController.performConversion', Account
+  'post /perform-conversion': 'KrakenController.performConversion',
   // Class API
   'get /admin/get-all-account-classes': 'AccountClassController.getAllAccountClasses',
   'post /admin/add-account-class': 'AccountClassController.addAccountClass',

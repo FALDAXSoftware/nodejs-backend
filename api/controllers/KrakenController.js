@@ -18,7 +18,7 @@ module.exports = {
         .kraken
         .getOrderBook(pair, pair_value);
 
-      return res.json({ status: 200, "data": 1 })
+      return res.json({ status: 200, "data": 1 });
     } catch (err) {
       console.log(err);
       return res.json({
@@ -190,147 +190,173 @@ module.exports = {
   },
 
   performConversion: async function (req, res) {
-    let { pair, type, volume, includeFees } = req.allParams();
-    let userId = req.user.id;
-    let pairDetails = await Pairs.findOne({ name: pair, deleted_at: null, is_active: true });
-    let krakenFees = 0.2;
-    let faldaxFees = 0.3;
-    if (pairDetails) {
-      let currencyAmount = 0;
-      if (type == "buy") {
-        currencyAmount = volume * pairDetails.ask_price;
-      } else if (type == "sell") {
-        currencyAmount = volume * pairDetails.bid_price;
-      }
-      if (includeFees == "false") {
-        currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);
-        currencyAmount = currencyAmount + ((currencyAmount * faldaxFees) / 100);
-      }
-      let { crypto, currency } = await sails
-        .helpers
-        .utilities
-        .getCurrencies(pair);
-      let walletCurrencyBalance = null;
-      let walletCryptoBalance = null;
-      walletCurrencyBalance = await sails
-        .helpers
-        .utilities
-        .getWalletBalance(crypto, currency, userId)
-        .tolerate("coinNotFound", () => {
-          throw new Error("coinNotFound");
-        })
-        .tolerate("serverError", () => {
-          throw new Error("serverError")
-        });
-      walletCryptoBalance = await sails
-        .helpers
-        .utilities
-        .getWalletBalance(currency, crypto, userId)
-        .tolerate("coinNotFound", () => {
-          throw new Error("coinNotFound");
-        })
-        .tolerate("serverError", () => {
-          throw new Error("serverError")
-        });
-      if (currencyAmount <= wallet.placed_balance) {
-        var addedData = await sails
+    try {
+      let { pair, type, volume, includeFees } = req.allParams();
+      let userId = req.user.id;
+      let pairDetails = await Pairs.findOne({ name: pair, deleted_at: null, is_active: true });
+      let krakenFees = 0.2;
+      let faldaxFees = 0.3;
+      if (pairDetails) {
+        let currencyAmount = 0;
+        if (type == "buy") {
+          currencyAmount = volume * pairDetails.ask_price;
+        } else if (type == "sell") {
+          currencyAmount = volume * pairDetails.bid_price;
+        }
+        if (includeFees == "false") {
+          currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);
+          currencyAmount = currencyAmount + ((currencyAmount * faldaxFees) / 100);
+        }
+        let { crypto, currency } = await sails
           .helpers
-          .kraken
-          .addStandardOrder(pairDetails.kraken_pair, type, "market", volume)
-          .tolerate("orderError", () => {
-            throw new Error("orderError");
+          .utilities
+          .getCurrencies(pair);
+        let walletCurrencyBalance = null;
+        let walletCryptoBalance = null;
+        walletCurrencyBalance = await sails
+          .helpers
+          .utilities
+          .getWalletBalance(crypto, currency, userId)
+          .tolerate("coinNotFound", () => {
+            throw new Error("coinNotFound");
+          })
+          .tolerate("serverError", () => {
+            throw new Error("serverError")
           });
-        console.log("addedData-----", addedData);
-        if (addedData) {
-          if (addedData.error && addedData.error.length > 0) {
-            // Error
-          } else {
-            if (addedData.result) {
-              if (addedData.result.txid && addedData.result.txid.length > 0) {
-                let now = new Date();
-                let transactionId = addedData.result.txid[0];
-                let tradeInfoData = await sails
-                  .helpers
-                  .kraken
-                  .queryTradeInfo(transactionId);
-                let tradeHistoryData = {
-                  order_type: tradeInfoData.result[0].ordertype,
-                  fill_price: tradeInfoData.result[0].price,
-                  quantity: tradeInfoData.result[0].vol,
-                  side: tradeInfoData.result[0].type,
-                  created_at: now,
-                  updated_at: now,
-                  user_id: inputs.user_id,
-                  maximum_time: now,
-                  limit_price: 0,
-                  stop_price: 0,
-                  price: 0,
-                  order_status: tradeInfoData.result[0].posstatus,
-                  currency: currency,
-                  settle_currency: crypto,
-                  symbol: pair
+        walletCryptoBalance = await sails
+          .helpers
+          .utilities
+          .getWalletBalance(currency, crypto, userId)
+          .tolerate("coinNotFound", () => {
+            throw new Error("coinNotFound");
+          })
+          .tolerate("serverError", () => {
+            throw new Error("serverError")
+          });
+        if ((type == "buy" && currencyAmount <= walletCurrencyBalance.placed_balance) || (type == "sell" && volume <= walletCryptoBalance.placed_balance)) {
+          var addedData = await sails
+            .helpers
+            .kraken
+            .addStandardOrder(pairDetails.kraken_pair, type, "market", volume)
+            .tolerate("orderError", () => {
+              throw new Error("orderError");
+            });
+          if (addedData) {
+            if (addedData.error && addedData.error.length > 0) {
+              // Error
+              throw new Error("serverError")
+            } else {
+              if (addedData.result) {
+                if (addedData.result.txid && addedData.result.txid.length > 0) {
+                  let now = new Date();
+                  let transactionId = addedData.result.txid[0];
+
+                  let tradeInfoData = await sails
+                    .helpers
+                    .kraken
+                    .queryTradeInfo(transactionId);
+
+                  let tradeHistoryData = {
+                    order_type: "Market",
+                    fill_price: tradeInfoData.result[transactionId].price,
+                    quantity: tradeInfoData.result[transactionId].vol,
+                    side: type == "buy" ? "Buy" : "Sell",
+                    created_at: now,
+                    updated_at: now,
+                    user_id: req.user.id,
+                    maximum_time: now,
+                    limit_price: 0,
+                    stop_price: 0,
+                    price: 0,
+                    order_status: "filled",
+                    currency: currency,
+                    settle_currency: crypto,
+                    symbol: pair
+                  }
+                  var resultData = {
+                    ...tradeHistoryData
+                  }
+                  resultData.is_market = true;
+                  resultData.fix_quantity = volume;
+                  resultData.maker_fee = 0.0;
+                  resultData.taker_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+
+                  let activity = await sails
+                    .helpers
+                    .tradding
+                    .activity
+                    .add(resultData);
+
+                  let tradeHistory = await sails
+                    .helpers
+                    .tradding
+                    .trade
+                    .add(resultData);
+
+                  if (tradeInfoData.result[transactionId].type == "buy") {
+                    await Wallet
+                      .update({ id: walletCurrencyBalance.id })
+                      .set({
+                        balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].cost),
+                        placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].cost)
+                      });
+
+                    await Wallet
+                      .update({ id: walletCryptoBalance.id })
+                      .set({
+                        balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100)))),
+                        placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100))))
+                      });
+
+                  } else if (tradeInfoData.result[transactionId].type == "sell") {
+                    await Wallet
+                      .update({ id: walletCurrencyBalance.id })
+                      .set({
+                        balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].cost - (tradeInfoData.result[transactionId].cost * (faldaxFees / 100)))),
+                        placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].cost - (tradeInfoData.result[transactionId].cost * (faldaxFees / 100))))
+                      });
+
+                    await Wallet
+                      .update({ id: walletCryptoBalance.id })
+                      .set({
+                        balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].vol),
+                        placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].vol)
+                      });
+                  }
+
+                  return res.json({
+                    status: 200,
+                    message: sails.__("Order Success")
+                  });
                 }
-                var resultData = {
-                  ...tradeHistoryData
-                }
-                resultData.is_market = true;
-                resultData.fix_quantity = volume;
-                resultData.maker_fee = 0.0;
-                resultData.taker_fee = tradeInfoData.result[0].fee + (faldaxFees);
-
-                let activity = await sails
-                  .helpers
-                  .tradding
-                  .activity
-                  .add(resultData);
-
-                let tradeHistory = await sails
-                  .helpers
-                  .tradding
-                  .trade
-                  .add(resultData);
-
-                if (tradeInfoData.result[0].type == "buy") {
-                  await wallet
-                    .update({ id: walletCurrencyBalance.id })
-                    .set({
-                      balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].cost),
-                      placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].cost)
-                    });
-
-                  walletCryptoBalance
-                    .update({ id: walletCryptoBalance.id })
-                    .set({
-                      balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].vol - (tradeInfoData.result[0].vol * (faldaxFees / 100)))),
-                      placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].vol - (tradeInfoData.result[0].vol * (faldaxFees / 100))))
-                    });
-
-                } else if (tradeInfoData.result[0].type == "sell") {
-                  walletCurrencyBalance
-                    .update({ id: walletCurrencyBalance.id })
-                    .set({
-                      balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].cost - (tradeInfoData.result[0].cost * (faldaxFees / 100)))),
-                      placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[0].cost - (tradeInfoData.result[0].cost * (faldaxFees / 100))))
-                    });
-
-                  walletCryptoBalance
-                    .update({ id: walletCryptoBalance.id })
-                    .set({
-                      balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].vol),
-                      placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[0].vol)
-                    });
-                }
-
               }
             }
           }
-        }
 
+        } else {
+          return res.status(500).json({
+            status: 500,
+            message: sails.__("Insufficient balance to place order")
+          });
+        }
       } else {
-        console.log("insufficient funds");
+        console.log("invalid pair");
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
       }
-    } else {
-      console.log("invalid pair");
+    } catch (error) {
+      console.log("error", error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   }
 

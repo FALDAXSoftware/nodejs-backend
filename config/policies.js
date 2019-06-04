@@ -69,6 +69,7 @@ module.exports.policies = {
     "sendListTokenForm": true,
     "callKrakenAPI": true,
     "bitgoTest": true,
+    "testemail": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
