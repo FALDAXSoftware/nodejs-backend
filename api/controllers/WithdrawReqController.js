@@ -5,7 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-var moment = require('moment');
+var BitGoJS = require('bitgo');
 
 module.exports = {
   // ---------------------------Web Api------------------------------
@@ -24,7 +24,8 @@ module.exports = {
       sort_order
     } = req.allParams();
 
-    let query = " from withdraw_request LEFT JOIN users ON withdraw_request.user_id = users.id";
+    let query = " from withdraw_request LEFT JOIN users ON withdraw_request.user_id = users.id LE" +
+        "FT JOIN coins ON withdraw_request.coin_id = coins.id";
     let whereAppended = false;
 
     if ((data && data != "")) {
@@ -69,8 +70,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+        .helpers
+        .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -84,7 +85,7 @@ module.exports = {
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email " + query, [])
+    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email, coins.coin_name " + query, [])
     withdrawReqData = withdrawReqData.rows;
 
     let withdrawReqCount = await sails.sendNativeQuery("Select COUNT(withdraw_request.id)" + countQuery, [])
@@ -102,7 +103,6 @@ module.exports = {
 
   approveDisapproveRequest: async function (req, res) {
     try {
-
       var {
         status,
         id,
@@ -113,8 +113,7 @@ module.exports = {
       } = req.body;
 
       if (status == true) {
-
-        var coin = await Coins.findOne({ deleted_at: null, id: coin_id, is_active: true })
+        var coin = await Coins.findOne({deleted_at: null, id: coin_id, is_active: true})
 
         let warmWalletData = await sails
           .helpers
@@ -127,7 +126,7 @@ module.exports = {
           .getWalletAddressBalance(coin.hot_send_wallet_address, coin.coin_code);
 
         if (coin) {
-          var wallet = await Wallets.findOne({ deleted_at: null, user_id: user_id, coin_id: coin.id, is_active: true });
+          var wallet = await Wallet.findOne({deleted_at: null, user_id: user_id, coin_id: coin.id, is_active: true});
 
           //Checking if wallet data is found or not
           if (wallet) {
@@ -141,11 +140,13 @@ module.exports = {
                 //Check for warm wallet minimum thresold
                 if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
                   //Execute Transaction
-                  var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+                  var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+
                   var bitgoWallet = await bitgo
                     .coin(coin.coin_code)
                     .wallets()
-                    .get({ id: coin.wallet_address });
+                    .get({id: coin.warm_wallet_address});
+
                   let params = {
                     amount: amount * 1e8,
                     address: sendWalletData.receiveAddress.address,
@@ -177,7 +178,7 @@ module.exports = {
                       });
                       // update wallet balance
                       await Wallet
-                        .update({ id: wallet.id })
+                        .update({id: wallet.id})
                         .set({
                           balance: wallet.balance - amount,
                           placed_balance: wallet.placed_balance - amount
@@ -199,32 +200,26 @@ module.exports = {
                         ...addObject
                       });
 
-                      //This is for sending from hot send wallet to destination address
-                      let addObjectSendData = {
-                        coin_id: coin.id,
-                        source_address: sendWalletData.receiveAddress.address,
-                        destination_address: destination_address,
-                        user_id: user_id,
-                        amount: amount,
-                        transaction_type: 'send',
-                        is_executed: false
-                      }
+                      // //This is for sending from hot send wallet to destination address let
+                      // addObjectSendData = {   coin_id: coin.id,   source_address:
+                      // sendWalletData.receiveAddress.address,   destination_address:
+                      // destination_address,   user_id: user_id,   amount: amount,
+                      // transaction_type: 'send',   is_executed: false } await
+                      // TransactionTable.create({   ...addObjectSendData });
 
-                      await TransactionTable.create({
-                        ...addObjectSendData
-                      });
-
-                      return res.json({
-                        status: 200,
-                        message: sails.__("Token send success")
-                      });
+                      return res
+                        .json
+                        .status(200)({
+                          status: 200,
+                          message: sails.__("Token send success")
+                        });
                     })
                     .catch(error => {
                       return res
                         .status(500)
                         .json({
                           status: 500,
-                          message: sails._("Insufficent balance")
+                          message: sails.__("Insufficent balance")
                         });
                     });
                 }
@@ -253,13 +248,10 @@ module.exports = {
               message: sails.__("Coin not found")
             });
         }
-
       } else if (status == false) {
         var withdrawLimitData = await WithdrawRequest
-          .update({ id: id })
-          .set({
-            is_approve: false
-          })
+          .update({id: id})
+          .set({is_approve: false})
           .fetch();
 
         if (!withdrawLimitData) {
@@ -277,9 +269,7 @@ module.exports = {
             "message": sails.__("Withdraw Request Cancel")
           })
       }
-
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({

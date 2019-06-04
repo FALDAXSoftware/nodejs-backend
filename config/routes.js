@@ -30,7 +30,6 @@ module.exports.routes = {
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
   'post /webhook-on-send': 'WebhookController.webhookOnSend',
 
-
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
   'post /admin/forgot-password': "Admin.forgotPassword",
@@ -322,5 +321,8 @@ module.exports.routes = {
   'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
 
   //API for approving and disappoving withdraw request
-  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest'
+  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest',
+
+  //Referral Collection
+  'get /collect-referral': 'ReferralController.collectReferral'
 };
