@@ -26,6 +26,7 @@ module.exports = {
 
                 if (records.length == 0) {
                     await News.create({
+                        owner_id: 2,
                         title: element.title,
                         search_keywords: element.title.toLowerCase(),
                         link: element.link,

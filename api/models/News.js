@@ -32,6 +32,10 @@ module.exports = {
       type: 'string',
       columnName: 'link'
     },
+    // owner_id: {
+    //   model: 'news_source',
+    //   columnName: 'owner_id'
+    // },
     posted_at: {
       type: 'ref',
       columnType: 'datetime',

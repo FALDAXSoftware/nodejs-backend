@@ -33,21 +33,25 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     //Getting receive address for all coins
-    var coinData = await Coins.findOne({deleted_at: null, coin: inputs.coin})
+    var coinData = await Coins.findOne({deleted_at: null, coin_code: inputs.coin})
 
-    //Getting wallet address for particular user and particular wallet
-    var walletData = await Wallet.find({coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null});
-    walletData = walletData[0];
+    if (coinData !== undefined) {
+      //Getting wallet address for particular user and particular wallet
+      var walletData = await Wallet.find({coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null});
+      walletData = walletData[0];
 
-    //Converting qrcode to data url
-    QRCode.toDataURL(walletData.receive_address, function (err, url) {
-      if (err) {
-        console.log(err);
+      //Converting qrcode to data url
+      QRCode.toDataURL(walletData.receive_address, function (err, url) {
+        if (err) {
+          console.log(err);
 
-        return exits.error(err);
-      } else {
-        return exits.success({'url': url, 'receive_address': walletData.receive_address});
-      }
-    })
+          return exits.error(err);
+        } else {
+          return exits.success({'url': url, 'receive_address': walletData.receive_address});
+        }
+      })
+    } else {
+      return exits.success(1);
+    }
   }
 };
