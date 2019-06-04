@@ -413,11 +413,20 @@ module.exports = {
         .wallet
         .receiveCoin(coin, user_id);
 
-      return res.json({
-        status: 200,
-        message: sails.__("receive address success"),
-        receiveCoin
-      });
+      if (receiveCoin !== 1) {
+        return res.json({
+          status: 200,
+          message: sails.__("receive address success"),
+          receiveCoin
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
     } catch (err) {
       console.log(err);
       return res

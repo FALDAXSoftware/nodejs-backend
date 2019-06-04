@@ -255,5 +255,8 @@
 	"New Source update fail.": "News source updated has been failed.",
 	"Withdraw Request Cancel": "Withdraw Request has been disapproved successfully.",
 	"Insufficent balance wallet user": "Insufficient wallet balance in user",
-	"Transfer could not happen": "Transfer could not happen"
+	"Transfer could not happen": "Transfer could not happen",
+	"Referral amount collect":"Referral amount has been collected successfully.",
+	"No Users Amount collected":"No User Amount has been collected till now.",
+	"User Referred amount success":"Your referred amount has been listed successfully"
 }

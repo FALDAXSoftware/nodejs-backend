@@ -21,15 +21,12 @@ module.exports.routes = {
   'get /panic-button': 'RootController.panicBtn',
   'get /test-bitgo': 'RootController.bitgoTest',
 
-
-
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
   'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
   'post /webhook-on-address': 'WebhookController.webhookOnAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
   'post /webhook-on-send': 'WebhookController.webhookOnSend',
-
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': "Admin.login",
@@ -322,5 +319,8 @@ module.exports.routes = {
   'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
 
   //API for approving and disappoving withdraw request
-  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest'
+  'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest',
+
+  //Referral Collection
+  'get /collect-referral': 'ReferralController.collectReferral'
 };
