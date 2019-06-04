@@ -68,7 +68,8 @@ module.exports = {
       timeout: 5000
     };
     try {
-      status = await kraken.api('QueryTrades', {txid: inputs.txid});
+      // status = await kraken.api('QueryTrades', { txid: inputs.txid });
+      status = { "error": [], "result": { "O3JQ5B-NWDT7-BIJX5O": { "ordertxid": "O25XKV-LOB2R-4IHRRL", "postxid": "TKH2SE-M7IF5-CFI7LT", "posstatus": "open", "pair": "XXBTZUSD", "time": 1556004008.5228, "type": "buy", "ordertype": "market", "price": "5530.00000", "cost": "11.06000", "fee": "0.02986", "vol": "0.00200000", "margin": "2.21200", "misc": "" } } }
       return exits.success(status);
     } catch (err) {
       console.log(err);
