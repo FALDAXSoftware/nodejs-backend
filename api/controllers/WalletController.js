@@ -143,10 +143,17 @@ module.exports = {
         if (userTierData.length == 0 || userTierData == undefined) {
 
           let userData = await Users.findOne({deleted_at: null, id: user_id, is_active: true});
-          //If user wise limit is not found than search according to tier wise
-          let limitTierData = await Limit.findOne({deleted_at: null, tier_step: userData.account_tier, coin_id: coin.id});
-          limitAmount = limitTierData.daily_withdraw_crypto;
-          limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
+          if (userData != undefined) {
+            //If user wise limit is not found than search according to tier wise
+            let limitTierData = await Limit.findOne({deleted_at: null, tier_step: userData.account_tier, coin_id: coin.id});
+            if (limitTierData != undefined) {
+              limitAmount = limitTierData.daily_withdraw_crypto;
+              limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
+            } else {
+              limitAmount = null;
+              limitAmountMonthly = null;
+            }
+          }
         } else if (userTierData.length > 0) {
           limitAmount = userTierData[0].daily_withdraw_crypto;
           limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
@@ -448,7 +455,7 @@ module.exports = {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name","coin"
+          "id", "coin_code", "coin_icon", "coin_name", "coin"
         ],
         where: {
           coin_code: coinReceive,
@@ -458,7 +465,9 @@ module.exports = {
       // Explicitly call toJson of Model
       coinData = JSON.parse(JSON.stringify(coinData));
 
-      let walletTransData = await WalletHistory.find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null});
+      let walletTransData = await WalletHistory
+        .find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null})
+        .sort('id DESC');
       let coinFee = await AdminSetting.findOne({
         where: {
           slug: 'default_send_coin_fee',

@@ -7,7 +7,8 @@ module.exports = {
       var user_id = req.user.id;
       var referralData = await Referral.find({deleted_at: null, is_collected: false, user_id: user_id});
 
-      if (referralData != undefined) {
+      console.log(referralData.length);
+      if (referralData != undefined && referralData != null && referralData.length > 0) {
         for (var i = 0; i < referralData.length; i++) {
           var walletUserData = await Wallet.findOne({deleted_at: null, user_id: referralData[i].user_id, coin_id: referralData[i].coin_id})
           var walletData = await Wallet
@@ -25,6 +26,7 @@ module.exports = {
           "message": sails.__("Referral amount collect")
         });
       } else {
+        console.log("Inside else ::: ");
         return res.json({
           "status": 400,
           "message": sails.__("No Referral Data found")
