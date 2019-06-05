@@ -27,8 +27,7 @@ module.exports = {
     },
     is_approve: {
       type: 'boolean',
-      columnName: 'is_approve',
-      defaultsTo: false
+      columnName: 'is_approve'
     },
     transaction_type: {
       type: 'string',
