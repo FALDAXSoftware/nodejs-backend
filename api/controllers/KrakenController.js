@@ -296,6 +296,12 @@ module.exports = {
                     .trade
                     .add(resultData);
 
+                  //Adding Data in referral table
+                  let referredData = await sails
+                    .helpers
+                    .tradding
+                    .getRefferedAmount(tradeHistory, req.user.id, transactionId);
+
                   if (tradeInfoData.result[transactionId].type == "buy") {
                     await Wallet
                       .update({id: walletCurrencyBalance.id})

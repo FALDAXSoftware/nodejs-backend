@@ -258,5 +258,6 @@
 	"Transfer could not happen": "Transfer could not happen",
 	"Referral amount collect":"Referral amount has been collected successfully.",
 	"No Users Amount collected":"No User Amount has been collected till now.",
-	"User Referred amount success":"Your referred amount has been listed successfully"
+	"User Referred amount success":"Your referred amount has been listed successfully",
+	"No Referral Data found":"No Reffered User has performed transactions yet."
 }

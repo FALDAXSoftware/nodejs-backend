@@ -13,6 +13,20 @@ module.exports = {
       columnName: 'coin_name',
       allowNull: true
     },
+    is_collected: {
+      type: 'boolean',
+      columnName: 'is_collected',
+      defaultsTo : false
+    },
+    referred_user_id: {
+      model: 'users',
+      columnName: 'referred_user_id'
+    },
+    txid :{
+      type: 'string',
+      columnName: 'txid',
+      allowNull: true
+    },
     amount: {
       type: 'number',
       columnName: 'amount'
