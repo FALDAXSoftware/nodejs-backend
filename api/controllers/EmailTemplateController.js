@@ -44,6 +44,25 @@ module.exports = {
                     "err": sails.__("Something Wrong")
                 });
         }
+    },
+
+    getById: async function (req, res) {
+        try {
+            let { id } = req.allParams();
+            let template = await EmailTemplate.findOne({ id });
+            return res.json({
+                status: 200,
+                message: sails.__("Email template retrive success"),
+                template
+            });
+        } catch (error) {
+            return res
+                .status(500)
+                .json({
+                    "status": 500,
+                    "err": sails.__("Something Wrong")
+                });
+        }
     }
 
 };
