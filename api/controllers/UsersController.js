@@ -633,30 +633,24 @@ module.exports = {
 
     var currencyData = await CurrencyConversion.find({deleted_at: null})
 
-
-    var sum = 0;
+    var m = 0;
+    sum = [];
     for (var i = 0; i < referredData.length; i++) {
       for (var j = 0; j < currencyData.length; j++) {
         if (referredData[i].coin_id == currencyData[j].coin_id) {
-         
-          sum = sum + (referredData[i].amount * currencyData[j].quote[users.fiat].price);
           referredData[i].quote = currencyData[j].quote;
         }
       }
     }
-    referredData.sum = sum;
 
     var sumValue = 0;
     for (var i = 0; i < leftReferredData.length; i++) {
       for (var j = 0; j < currencyData.length; j++) {
         if (leftReferredData[i].coin_id == currencyData[j].coin_id) {
-          
-          sumValue = sumValue + (leftReferredData[i].amount * currencyData[j].quote[users.fiat].price);
           leftReferredData[i].quote = currencyData[j].quote;
         }
       }
     }
-    leftReferredData.sum = sumValue;
 
     if (usersData) {
       return res.json({
