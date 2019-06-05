@@ -238,12 +238,21 @@ module.exports = {
   getAllNews: async function (req, res) {
     // req.setLocale('en')
     let { page, limit, data } = req.allParams();
+
+    var newsSources = await NewsSource.find({ is_active: true })
+    var allNewsSouceIds = [];
+    for (let index = 0; index < newsSources.length; index++) {
+      const element = newsSources[index];
+      allNewsSouceIds.push(element.id);
+    }
+
     if (data && data.trim() != "") {
       let newsData = await News
         .find({
           where: {
             deleted_at: null,
             is_active: true,
+            owner_id: { in: allNewsSouceIds },
             or: [
               {
                 search_keywords: {
@@ -260,6 +269,7 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
+          owner_id: { in: allNewsSouceIds },
           or: [
             {
               search_keywords: {
@@ -279,14 +289,15 @@ module.exports = {
       }
     } else {
       let newsData = await News
-        .find({ deleted_at: null, is_active: true })
+        .find({ deleted_at: null, is_active: true, owner_id: { in: allNewsSouceIds }, })
         .sort("posted_at DESC")
         .paginate(page - 1, parseInt(limit));
 
       let NewsCount = await News.count({
         where: {
           deleted_at: null,
-          is_active: true
+          is_active: true,
+          owner_id: { in: allNewsSouceIds },
         }
       });
       return res.json({

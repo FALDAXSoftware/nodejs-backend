@@ -70,13 +70,9 @@ module.exports = {
                     INNER JOIN wallets ON coins.id = wallets.coin_id 
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
                     WHERE wallets.user_id = ${req.user.id} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
-      let nonWalletQuery = `SELECT 
-                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, 
-                    coins.coin,currency_conversion.quote 
-                    FROM coins 
-                    LEFT JOIN wallets ON coins.id = wallets.coin_id 
-                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
-                    WHERE coins.is_active=true AND coins.deleted_at IS NULL AND (wallets.id IS NULL OR (length(wallets.receive_address) = 0 AND wallets.user_id = ${req.user.id}) )`
+      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
+
+      console.log(nonWalletQuery);
 
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
@@ -452,7 +448,7 @@ module.exports = {
       let {coinReceive} = req.body;
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name"
+          "id", "coin_code", "coin_icon", "coin_name","coin"
         ],
         where: {
           coin_code: coinReceive,
@@ -479,14 +475,17 @@ module.exports = {
         } else {
           walletUserData['flag'] = 0;
         }
-        walletUserData['coin_code'] = coinData.coin_code;
-        walletUserData['coin_icon'] = coinData.coin_icon;
-        walletUserData['coin'] = coinData.coin;
-        walletUserData['coin_name'] = coinData.coin_name;
-      } else {
-        walletUserData.push({"flag": 2});
-      }
 
+      } else {
+        walletUserData = {};
+        walletUserData["flag"] = 2;
+      }
+      console.log(coinData);
+      walletUserData['coin_code'] = coinData.coin_code;
+      walletUserData['coin_icon'] = coinData.coin_icon;
+      walletUserData['coin'] = coinData.coin;
+      walletUserData['coin_name'] = coinData.coin_name;
+      console.log(walletUserData);
       // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
       // coin_id: coinData.id, deleted_at: null });
       if (walletTransData) {
@@ -496,7 +495,7 @@ module.exports = {
           walletTransData,
           // walletTransCount,
           walletUserData,
-          'default_send_Coin_fee': coinFee.value,
+          'default_send_Coin_fee': parseFloat(coinFee.value),
           currencyConversionData
         });
       } else {

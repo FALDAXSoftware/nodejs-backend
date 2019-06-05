@@ -32,7 +32,7 @@ module.exports = {
     try {
 
       if (req.body.email_verify_token) {
-        let user = await Users.findOne({email_verify_token: req.body.email_verify_token});
+        let user = await Users.findOne({ email_verify_token: req.body.email_verify_token });
         if (user) {
           let hubspotcontact = await sails
             .helpers
@@ -43,11 +43,11 @@ module.exports = {
               throw new Error("serverError");
             });
           await Users
-            .update({id: user.id, deleted_at: null})
-            .set({email: user.email, is_verified: true, email_verify_token: null, hubspot_id: hubspotcontact});
+            .update({ id: user.id, deleted_at: null })
+            .set({ email: user.email, is_verified: true, email_verify_token: null, hubspot_id: hubspotcontact });
           await KYC
-            .update({user_id: user.id})
-            .set({first_name: user.first_name, last_name: user.last_name});
+            .update({ user_id: user.id })
+            .set({ first_name: user.first_name, last_name: user.last_name });
           // Create Receive Address
           await sails
             .helpers
@@ -100,7 +100,7 @@ module.exports = {
           password: req.body.password
         }
 
-        var user_detail = await Users.findOne({email: query.email, deleted_at: null});
+        var user_detail = await Users.findOne({ email: query.email, deleted_at: null });
 
         if (user_detail) {
 
@@ -150,7 +150,7 @@ module.exports = {
                   }
                   let verified = speakeasy
                     .totp
-                    .verify({secret: user_detail.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2});
+                    .verify({ secret: user_detail.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2 });
                   if (!verified) {
                     return res
                       .status(402)
@@ -184,7 +184,7 @@ module.exports = {
                   ip = req.ip;
                 }
                 // Check For New Ip
-                let loginData = await LoginHistory.find({user: user_detail.id, ip: ip});
+                let loginData = await LoginHistory.find({ user: user_detail.id, ip: ip });
                 if (loginData.length > 0 || req.body.test_key == sails.config.local.test_key || req.body.device_type == 1 || req.body.device_type == 2) {
                   await LoginHistory.create({
                     user: user_detail.id,
@@ -206,45 +206,43 @@ module.exports = {
                 } else {
                   let verifyToken = randomize("Aa0", 15);
                   await Users
-                    .update({id: user_detail["id"]})
-                    .set({email: user_detail["email"], new_ip_verification_token: verifyToken, new_ip: ip});
+                    .update({ id: user_detail["id"] })
+                    .set({ email: user_detail["email"], new_ip_verification_token: verifyToken, new_ip: ip });
 
                   let slug = "new_ip_verification"
-                  let template = await EmailTemplate.findOne({slug});
-                  let emailContent = await sails
-                    .helpers
-                    .utilities
-                    .formatEmail(template.content, {
-                      homeLink: sails.config.urlconf.APP_URL,
-                      recipientName: user_detail.first_name,
-                      token: verifyToken,
-                      ip: ip
-                    })
+                  let template = await EmailTemplate.findOne({ slug });
+                  let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+                    homeLink: sails.config.urlconf.APP_URL,
+                    recipientName: user_detail.first_name,
+                    token: verifyToken,
+                    ip: ip
+                  })
+
                   sails
                     .hooks
                     .email
                     .send("general-email", {
                       content: emailContent
                     }, {
-                      to: user_detail["email"],
-                      subject: "New Device Confirmation"
-                    }, function (err) {
-                      if (!err) {
-                        return res
-                          .status(401)
-                          .json({
-                            "status": 401,
-                            "err": sails.__("New device confirmation email sent to your email.")
-                          });
-                      } else {
-                        return res
-                          .status(500)
-                          .json({
-                            "status": 500,
-                            "err": sails.__("Something Wrong")
-                          });
-                      }
-                    });
+                        to: user_detail["email"],
+                        subject: "New Device Confirmation"
+                      }, function (err) {
+                        if (!err) {
+                          return res
+                            .status(401)
+                            .json({
+                              "status": 401,
+                              "err": sails.__("New device confirmation email sent to your email.")
+                            });
+                        } else {
+                          return res
+                            .status(500)
+                            .json({
+                              "status": 500,
+                              "err": sails.__("Something Wrong")
+                            });
+                        }
+                      });
                 }
               }
             });
@@ -312,7 +310,7 @@ module.exports = {
       }
       if (req.body.token) {
 
-        let user_detail = await Users.findOne({new_ip: ip, new_ip_verification_token: req.body.token});
+        let user_detail = await Users.findOne({ new_ip: ip, new_ip_verification_token: req.body.token });
 
         if (user_detail) {
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
@@ -364,8 +362,8 @@ module.exports = {
    */
 
   sendOtpEmail: async function (req, res) {
-    let {email} = req.allParams();
-    let user = await Users.findOne({email: email, deleted_at: null});
+    let { email } = req.allParams();
+    let user = await Users.findOne({ email: email, deleted_at: null });
     if (!user) {
       return res
         .status(401)
@@ -384,7 +382,7 @@ module.exports = {
     }
 
     await Users
-      .update({id: user.id})
+      .update({ id: user.id })
       .set({
         email: user.email,
         auth_code: randomize('0', 6)
@@ -393,7 +391,7 @@ module.exports = {
     // send code in email
 
     let slug = "verification_code"
-    let template = await EmailTemplate.findOne({slug});
+    let template = await EmailTemplate.findOne({ slug });
     let emailContent = await sails
       .helpers
       .utilities
@@ -407,23 +405,23 @@ module.exports = {
       .send("general-email", {
         content: emailContent
       }, {
-        to: user.email,
-        subject: "Authentication Code"
-      }, function (err) {
-        if (!err) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Authentication code sent to email successfully")
-          });
-        } else {
-          return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Something Wrong")
+          to: user.email,
+          subject: "Authentication Code"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Authentication code sent to email successfully")
             });
-        }
-      })
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
   },
 
   /**
@@ -436,8 +434,8 @@ module.exports = {
    */
 
   verifyEmailOtp: async function (req, res) {
-    let {email, otp} = req.allParams();
-    let user = await Users.findOne({email: email, deleted_at: null});
+    let { email, otp } = req.allParams();
+    let user = await Users.findOne({ email: email, deleted_at: null });
     if (!user) {
       return res
         .status(401)
@@ -471,8 +469,8 @@ module.exports = {
         });
     }
     await User
-      .update({id: user.id})
-      .set({is_twofactor: true, twofactor_secret: null, email: user.email, auth_code: null});
+      .update({ id: user.id })
+      .set({ is_twofactor: true, twofactor_secret: null, email: user.email, auth_code: null });
     var token = await sails
       .helpers
       .jwtIssue(user_detail.id);
@@ -486,16 +484,16 @@ module.exports = {
 
   sendVerificationCodeEmail: async function (req, res) {
     if (req.body.email) {
-      let user = await Users.findOne({email: req.body.email, is_active: true});
+      let user = await Users.findOne({ email: req.body.email, is_active: true });
       if (user) {
         delete user.email_verify_token;
         let email_verify_code = randomize('0', 6);
         await Users
-          .update({email: user.email})
-          .set({email: user.email, email_verify_token: email_verify_code});
+          .update({ email: user.email })
+          .set({ email: user.email, email_verify_token: email_verify_code });
 
         let slug = "signup_for_mobile"
-        let template = await EmailTemplate.findOne({slug});
+        let template = await EmailTemplate.findOne({ slug });
         let emailContent = await sails
           .helpers
           .utilities
@@ -509,16 +507,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: req.body.email,
-            subject: "Signup Verification"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("verification code")
-              });
-            }
-          })
+              to: req.body.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("verification code")
+                });
+              }
+            })
       } else {
         return res
           .status(401)
@@ -543,7 +541,7 @@ module.exports = {
 
         var reset_token = req.body.reset_token;
 
-        let user_details = await Users.findOne({reset_token});
+        let user_details = await Users.findOne({ reset_token });
         if (user_details == undefined) {
           return res
             .status(400)
@@ -553,8 +551,8 @@ module.exports = {
             });
         } else {
           let updateUsers = await Users
-            .update({email: user_details.email, deleted_at: null})
-            .set({email: user_details.email, password: req.body.password, reset_token: null, reset_token_expire: null})
+            .update({ email: user_details.email, deleted_at: null })
+            .set({ email: user_details.email, password: req.body.password, reset_token: null, reset_token_expire: null })
             .fetch();
           if (updateUsers) {
             return res.json({
@@ -585,7 +583,7 @@ module.exports = {
 
   forgotPassword: async function (req, res) {
     try {
-      const user_details = await Users.findOne({email: req.body.email, deleted_at: null, is_active: true});
+      const user_details = await Users.findOne({ email: req.body.email, deleted_at: null, is_active: true });
       if (!user_details) {
         return res
           .status(401)
@@ -611,14 +609,14 @@ module.exports = {
         reset_token_expire
       }
       var updatedUser = await Users
-        .update({email: req.body.email, deleted_at: null})
+        .update({ email: req.body.email, deleted_at: null })
         .set(new_user)
         .fetch();
 
       console.log(updatedUser);
 
       let slug = "forgot_password"
-      let template = await EmailTemplate.findOne({slug});
+      let template = await EmailTemplate.findOne({ slug });
       let emailContent = await sails
         .helpers
         .utilities
@@ -632,16 +630,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: user_details.email,
-          subject: "Forgot Password"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Reset password link sent to your email successfully.")
-            });
-          }
-        })
+            to: user_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
     } catch (error) {
       console.log(error);
       return res
@@ -655,10 +653,10 @@ module.exports = {
 
   logOut: async function (req, res) {
     try {
-      let {jwt_token, user_id} = req.allParams();
+      let { jwt_token, user_id } = req.allParams();
 
       if (jwt_token && user_id) {
-        let logged_user = await LoginHistory.find({jwt_token, user: user_id})
+        let logged_user = await LoginHistory.find({ jwt_token, user: user_id })
         if (logged_user.length <= 0) {
           return res
             .status(200)
@@ -669,11 +667,11 @@ module.exports = {
         }
       }
 
-      let user = await LoginHistory.find({device_token: req.body.device_token});
+      let user = await LoginHistory.find({ device_token: req.body.device_token });
 
       let logged_user = await LoginHistory
-        .update({device_token: req.body.device_token, jwt_token})
-        .set({is_logged_in: false, device_token: null, jwt_token: null, updated_at: new Date()})
+        .update({ device_token: req.body.device_token, jwt_token })
+        .set({ is_logged_in: false, device_token: null, jwt_token: null, updated_at: new Date() })
         .fetch();
 
       if (logged_user) {
@@ -693,7 +691,7 @@ module.exports = {
       console.log(e);
       res
         .status(500)
-        .json({"status": 500, "err": e});
+        .json({ "status": 500, "err": e });
       return;
     }
   }

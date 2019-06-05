@@ -199,17 +199,17 @@ module.exports = {
   // CMS all count api
   getAllCounts: async function (req, res) {
     try {
-      let activeUsers = await Users.count({is_verified: true, is_active: true});
-      let inactiveUsers = await Users.count({is_verified: true, is_active: false});
-      let activeCoins = await Coins.count({deleted_at: null, is_active: true});
-      let InactiveCoins = await Coins.count({deleted_at: null, is_active: false});
-      let activePairs = await Pairs.count({deleted_at: null, is_active: true});
-      let InactivePairs = await Pairs.count({deleted_at: null, is_active: false});
-      let legalCountries = await Countries.count({legality: 1});
-      let illegalCountries = await Countries.count({legality: 2});
-      let neutralCountries = await Countries.count({legality: 3});
-      let employeeCount = await Admin.count({is_active: true, deleted_at: null});
-      let jobsCount = await Jobs.count({is_active: true, deleted_at: null});
+      let activeUsers = await Users.count({ is_verified: true, is_active: true });
+      let inactiveUsers = await Users.count({ is_verified: true, is_active: false });
+      let activeCoins = await Coins.count({ deleted_at: null, is_active: true });
+      let InactiveCoins = await Coins.count({ deleted_at: null, is_active: false });
+      let activePairs = await Pairs.count({ deleted_at: null, is_active: true });
+      let InactivePairs = await Pairs.count({ deleted_at: null, is_active: false });
+      let legalCountries = await Countries.count({ legality: 1 });
+      let illegalCountries = await Countries.count({ legality: 2 });
+      let neutralCountries = await Countries.count({ legality: 3 });
+      let employeeCount = await Admin.count({ is_active: true, deleted_at: null });
+      let jobsCount = await Jobs.count({ is_active: true, deleted_at: null });
       let withdrawReqCount = await WithdrawRequest.count({
         deleted_at: null,
         created_at: {
@@ -218,10 +218,19 @@ module.exports = {
             .format()
         }
       });
-      let kyc_approved = await KYC.count({is_approve: true, deleted_at: null, webhook_response: 'ACCEPT'})
-      let total_kyc = await KYC.count({deleted_at: null})
-      let kyc_disapproved = await KYC.count({is_approve: false, deleted_at: null})
-      let kyc_pending = await KYC.count({deleted_at: null, webhook_response: null, is_approve: true})
+      let q = {}
+      if (req.query.kyc_start_date && req.query.kyc_end_date) {
+        q = {
+          updated_at: {
+            ">=": req.query.kyc_start_date,
+            "<=": req.query.kyc_end_date
+          }
+        }
+      }
+      let kyc_approved = await KYC.count({ is_approve: true, deleted_at: null, webhook_response: 'ACCEPT', ...q })
+      let total_kyc = await KYC.count({ deleted_at: null, ...q })
+      let kyc_disapproved = await KYC.count({ is_approve: false, deleted_at: null, ...q })
+      let kyc_pending = await KYC.count({ deleted_at: null, webhook_response: null, is_approve: true, ...q })
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)
