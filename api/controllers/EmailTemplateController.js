@@ -27,6 +27,7 @@ module.exports = {
     update: async function (req, res) {
         try {
             let { id, content } = req.allParams();
+
             await EmailTemplate.update({
                 id
             }).set({
