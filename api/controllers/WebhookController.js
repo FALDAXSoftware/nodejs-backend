@@ -41,11 +41,14 @@ module.exports = {
                 }
             }
             // Create new webhook
-            await wallet.addWebhook({
+            let reciveWebhookParams = {
                 url: `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-receive`,
                 type: "transfer",
-                allToken: true
-            });
+            };
+            if (coin.coin == "ETH") {
+                reciveWebhookParams["allToken"] = true
+            }
+            await wallet.addWebhook(reciveWebhookParams);
 
             // Send Webhooks on Hot send wallets
             let sendWallet = await bitgo
@@ -65,11 +68,14 @@ module.exports = {
                 }
             }
             // Create new webhook
-            await sendWallet.addWebhook({
+            let sendWebhookParams = {
                 url: `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-send`,
-                type: "transfer",
-                allToken: true
-            });
+                type: "transfer"
+            };
+            if (coin.coin == "ETH") {
+                sendWebhookParams["allToken"] = true
+            }
+            await sendWallet.addWebhook(sendWebhookParams);
         }
         return res.json({ success: true });
     },

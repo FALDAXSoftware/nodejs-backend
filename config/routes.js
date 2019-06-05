@@ -83,6 +83,7 @@ module.exports.routes = {
 
   // Email Templates
   'get /admin/emailTemplate/get': 'EmailTemplateController.get',
+  'get /admin/emailTemplate/get-by-id': 'EmailTemplateController.getById',
   'put /admin/emailTemplate/update': 'EmailTemplateController.update',
 
   //DashBoard
