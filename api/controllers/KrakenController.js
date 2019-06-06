@@ -235,7 +235,7 @@ module.exports = {
           .tolerate("serverError", () => {
             throw new Error("serverError")
           });
-        console.log("Wallet Crypto Balance :: ", walletCryptoBalance);
+        console.log("Wallet Crypto Balance :: ", currencyAmount);
         if (walletCurrencyBalance != undefined && walletCryptoBalance != undefined) {
           if ((type == "buy" && currencyAmount <= walletCurrencyBalance.placed_balance) || (type == "sell" && volume <= walletCryptoBalance.placed_balance)) {
             var addedData = await sails
@@ -259,6 +259,8 @@ module.exports = {
                       .helpers
                       .kraken
                       .queryTradeInfo(transactionId);
+
+                    console.log(tradeInfoData);
 
                     let tradeHistoryData = {
                       order_type: "Market",
@@ -286,6 +288,8 @@ module.exports = {
                     resultData.fix_quantity = volume;
                     resultData.maker_fee = 0.0;
                     resultData.taker_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+                    resultData.user_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+                    resultData.requested_fee = 0.0;
 
                     let activity = await sails
                       .helpers
