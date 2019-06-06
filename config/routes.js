@@ -328,6 +328,6 @@ module.exports.routes = {
   'get /collect-referral': 'ReferralController.collectReferral',
 
   //Job Category API
-  'post /add-job-category':'CareerController.addJobCategory',
-  'post /update-job-category':'CareerController.updateJobCategory'
+  'post /admin/add-job-category': 'CareerController.addJobCategory',
+  'put /admin/update-job-category': 'CareerController.updateJobCategory'
 };
