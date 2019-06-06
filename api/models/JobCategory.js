@@ -27,10 +27,11 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    jobs: {
-      collection: 'jobs',
-      via: 'category_id'
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active'
     }
+    // jobs: {   collection: 'jobs',   via: 'category_id' }
   },
   beforeCreate: function (val, next) {
     val.created_at = new Date();

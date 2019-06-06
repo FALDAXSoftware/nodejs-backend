@@ -325,5 +325,9 @@ module.exports.routes = {
   'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest',
 
   //Referral Collection
-  'get /collect-referral': 'ReferralController.collectReferral'
+  'get /collect-referral': 'ReferralController.collectReferral',
+
+  //Job Category API
+  'post /add-job-category':'CareerController.addJobCategory',
+  'post /update-job-category':'CareerController.updateJobCategory'
 };

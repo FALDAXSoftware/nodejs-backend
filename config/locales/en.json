@@ -68,7 +68,7 @@
 	"User Trade Success": "User Trade data retrived successfully.",
 	"Depth Chart retrieved success": "Depth Chart Data has been retrieved successfully",
 	"Balance retrieved success": "Wallet balance retrived successfully.",
-	"Token send success": "Token sent successfully",
+	"Token send success": "Asset sent successfully",
 	"receive address success": "Receive address retrieved successfully",
 	"wallet data retrieved success": "Wallet data retrived successfully.",
 	"email exits": "Email address already exists",
@@ -259,5 +259,7 @@
 	"Referral amount collect": "Referral amount has been collected successfully.",
 	"No Users Amount collected": "No User Amount has been collected till now.",
 	"User Referred amount success": "Your referred amount has been listed successfully",
-	"No Referral Data found": "No Referral amount to be collected."
+	"No Referral Data found": "No Referral amount to be collected.",
+	"Job Category added success":"Job category has been added successfully.",
+	"Job Category updated success":"Job Category has been updated successfully."
 }
