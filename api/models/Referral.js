@@ -1,9 +1,9 @@
 /**
- * referral.js
- *
- * @description :: A model definition.  Represents a database of referral.
- * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
- */
+* referral.js
+*
+* @description :: A model definition. Represents a database of referral.
+* @docs :: https://sailsjs.com/docs/concepts/models-and-orm/models
+*/
 
 module.exports = {
   tableName: 'referral',
@@ -16,13 +16,13 @@ module.exports = {
     is_collected: {
       type: 'boolean',
       columnName: 'is_collected',
-      defaultsTo : false
+      defaultsTo: false
     },
     referred_user_id: {
       model: 'users',
       columnName: 'referred_user_id'
     },
-    txid :{
+    txid: {
       type: 'string',
       columnName: 'txid',
       allowNull: true
