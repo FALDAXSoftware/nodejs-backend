@@ -197,7 +197,7 @@ module.exports = {
       let feesDetails = await AdminSetting.find({deleted_at: null})
       let krakenFees = parseFloat(feesDetails[6].value);
       let faldaxFees = parseFloat(feesDetails[7].value);
-      console.log(pairDetails);
+
       if (pairDetails) {
         let currencyAmount = 0;
         if (type == "buy") {
@@ -227,7 +227,7 @@ module.exports = {
           .tolerate("serverError", () => {
             throw new Error("serverError")
           });
-        console.log("Wallet Currency Balance :: ", walletCurrencyBalance);
+
         walletCryptoBalance = await sails
           .helpers
           .utilities
@@ -238,7 +238,7 @@ module.exports = {
           .tolerate("serverError", () => {
             throw new Error("serverError")
           });
-        console.log("Wallet Crypto Balance :: ", currencyAmount);
+
         if (walletCurrencyBalance != undefined && walletCryptoBalance != undefined) {
           if ((type == "buy" && currencyAmount <= walletCurrencyBalance.placed_balance) || (type == "sell" && volume <= walletCryptoBalance.placed_balance)) {
             var addedData = await sails
@@ -262,8 +262,6 @@ module.exports = {
                       .helpers
                       .kraken
                       .queryTradeInfo(transactionId);
-
-                    console.log(tradeInfoData);
 
                     let tradeHistoryData = {
                       order_type: "Market",
