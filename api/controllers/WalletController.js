@@ -15,7 +15,7 @@ module.exports = {
       .dashboard
       .getCurrencyConversion();
 
-    let coins = await Coins.find({deleted_at: null, is_active: true});
+    let coins = await Coins.find({ deleted_at: null, is_active: true });
     let coinArray = [];
     for (let index = 0; index < coins.length; index++) {
       const element = coins[index];
@@ -25,22 +25,22 @@ module.exports = {
     if (currencyData.data) {
       for (var i = 0; i < currencyData.data.length; i++) {
         if (coinArray.includes(currencyData.data[i].symbol)) {
-          let existCurrencyData = await CurrencyConversion.findOne({deleted_at: null, symbol: currencyData.data[i].symbol})
+          let existCurrencyData = await CurrencyConversion.findOne({ deleted_at: null, symbol: currencyData.data[i].symbol })
           if (existCurrencyData) {
             var currency_data = await CurrencyConversion
               .update({
-              coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id
-            })
-              .set({quote: currencyData.data[i].quote})
+                coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id
+              })
+              .set({ quote: currencyData.data[i].quote })
               .fetch();
           } else {
             var currency_data = await CurrencyConversion
               .create({
-              coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id,
-              quote: currencyData.data[i].quote,
-              symbol: currencyData.data[i].symbol,
-              created_at: new Date()
-            })
+                coin_id: coins[coinArray.indexOf(currencyData.data[i].symbol)].id,
+                quote: currencyData.data[i].quote,
+                symbol: currencyData.data[i].symbol,
+                created_at: new Date()
+              })
               .fetch();
           }
         } else {
@@ -107,7 +107,7 @@ module.exports = {
    */
   sendCoin: async function (req, res) {
     try {
-      let {amount, destination_address, coin_code} = req.allParams();
+      let { amount, destination_address, coin_code } = req.allParams();
       let user_id = req.user.id;
 
       var today = moment().format();
@@ -123,7 +123,7 @@ module.exports = {
       var limitAmount;
       var limitAmountMonthly;
 
-      let coin = await Coins.findOne({deleted_at: null, is_active: true, coin_code: coin_code});
+      let coin = await Coins.findOne({ deleted_at: null, is_active: true, coin_code: coin_code });
 
       let warmWalletData = await sails
         .helpers
@@ -139,13 +139,13 @@ module.exports = {
       if (coin) {
 
         //Fetching value for limit according to user wise limit
-        let userTierData = await UserLimit.find({deleted_at: null, user_id: user_id, coin_id: coin.id})
+        let userTierData = await UserLimit.find({ deleted_at: null, user_id: user_id, coin_id: coin.id })
         if (userTierData.length == 0 || userTierData == undefined) {
 
-          let userData = await Users.findOne({deleted_at: null, id: user_id, is_active: true});
+          let userData = await Users.findOne({ deleted_at: null, id: user_id, is_active: true });
           if (userData != undefined) {
             //If user wise limit is not found than search according to tier wise
-            let limitTierData = await Limit.findOne({deleted_at: null, tier_step: userData.account_tier, coin_id: coin.id});
+            let limitTierData = await Limit.findOne({ deleted_at: null, tier_step: userData.account_tier, coin_id: coin.id });
             if (limitTierData != undefined) {
               limitAmount = limitTierData.daily_withdraw_crypto;
               limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
@@ -203,7 +203,7 @@ module.exports = {
               // month
               if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
-                let wallet = await Wallet.findOne({deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id});
+                let wallet = await Wallet.findOne({ deleted_at: null, coin_id: coin.id, is_active: true, user_id: user_id });
 
                 //Checking if wallet is found or not
                 if (wallet) {
@@ -221,11 +221,11 @@ module.exports = {
                         //Check for warm wallet minimum thresold
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
-                          var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+                          var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
                           var bitgoWallet = await bitgo
                             .coin(coin.coin_code)
                             .wallets()
-                            .get({id: coin.warm_wallet_address});
+                            .get({ id: coin.warm_wallet_address });
                           let params = {
                             amount: amount * 1e8,
                             address: sendWalletData.receiveAddress.address,
@@ -255,7 +255,7 @@ module.exports = {
                           });
                           // update wallet balance
                           await Wallet
-                            .update({id: wallet.id})
+                            .update({ id: wallet.id })
                             .set({
                               balance: wallet.balance - amount,
                               placed_balance: wallet.placed_balance - amount
@@ -409,7 +409,7 @@ module.exports = {
      */
   getReceiveCoin: async function (req, res) {
     try {
-      var {coin} = req.allParams();
+      var { coin } = req.allParams();
       var user_id = req.user.id;
       var receiveCoin = await sails
         .helpers
@@ -452,7 +452,7 @@ module.exports = {
 
   getWalletTransactionHistory: async function (req, res) {
     try {
-      let {coinReceive} = req.body;
+      let { coinReceive } = req.body;
       let coinData = await Coins.findOne({
         select: [
           "id", "coin_code", "coin_icon", "coin_name", "coin"
@@ -466,7 +466,7 @@ module.exports = {
       coinData = JSON.parse(JSON.stringify(coinData));
 
       let walletTransData = await WalletHistory
-        .find({user_id: req.user.id, coin_id: coinData.id, deleted_at: null})
+        .find({ user_id: req.user.id, coin_id: coinData.id, deleted_at: null })
         .sort('id DESC');
       let coinFee = await AdminSetting.findOne({
         where: {
@@ -475,9 +475,9 @@ module.exports = {
         }
       });
 
-      var currencyConversionData = await CurrencyConversion.findOne({coin_id: coinData.id, deleted_at: null})
+      var currencyConversionData = await CurrencyConversion.findOne({ coin_id: coinData.id, deleted_at: null })
 
-      let walletUserData = await Wallet.findOne({user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true})
+      let walletUserData = await Wallet.findOne({ user_id: req.user.id, coin_id: coinData.id, deleted_at: null, is_active: true })
       if (walletUserData) {
         if (walletUserData.receive_address === '') {
           walletUserData['flag'] = 1;
@@ -534,9 +534,9 @@ module.exports = {
      */
   createReceiveAddressCoin: async function (req, res) {
     try {
-      var {coin_code} = req.allParams();
+      var { coin_code } = req.allParams();
       var user_id = req.user.id;
-      var userData = await Users.findOne({deleted_at: null, is_active: true, id: user_id});
+      var userData = await Users.findOne({ deleted_at: null, is_active: true, id: user_id });
       var walletDataCreate = await sails
         .helpers
         .wallet

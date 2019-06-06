@@ -82,7 +82,7 @@ module.exports = {
 
     // webhook on receive
     webhookOnReceive: async function (req, res) {
-        // console.log("webhook", req.body);
+        console.log("webhook", req.body);
         // res.end();
 
         if (req.body.state == "confirmed") {
@@ -94,104 +94,122 @@ module.exports = {
             let transferId = req.body.transfer;
             let transfer = await wallet.getTransfer({ id: transferId })
             if (transfer.state == "confirmed") {
-                // Object Of receiver
-                let dest = transfer.outputs[0];
-                // Object of sender
-                let source = transfer.outputs[1];
-                // receiver wallet
-                let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
-                // transaction amount
-                let amount = (dest.value / 100000000);
-                // user wallet exitence check
-                if (userWallet) {
-                    // Set wallet history params
-                    let walletHistory = {
-                        coin_id: userWallet.coin_id,
-                        source_address: source.address,
-                        destination_address: dest.address,
-                        user_id: userWallet.user_id,
-                        amount: amount,
-                        transaction_type: 'receive',
-                        transaction_id: req.body.hash
+                let alreadyWalletHistory = await WalletHistory.find({ transaction_type: "receive", transaction_id: req.body.hash });
+                console.log(alreadyWalletHistory);
+
+                if (alreadyWalletHistory.length == 0) {
+                    // Object Of receiver
+                    let dest = transfer.outputs[0];
+                    // Object of sender
+                    let source = transfer.outputs[1];
+                    // receiver wallet
+                    let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
+                    if (userWallet == undefined) {
+                        userWallet = await Wallet.findOne({ receive_address: source.address, deleted_at: null, is_active: true });
+                        if (userWallet) {
+                            let temp = dest;
+                            dest = source;
+                            source = temp;
+                        }
                     }
-                    // Entry in wallet history
-                    await WalletHistory.create({
-                        ...walletHistory
-                    });
-                    // update wallet balance
-                    await Wallet
-                        .update({ id: userWallet.id })
-                        .set({
-                            balance: userWallet.balance + amount,
-                            placed_balance: userWallet.placed_balance + amount
-                        });
 
-
-                    // Send fund to Warm and custody wallet
-                    let coin = await Coins.findOne({ id: userWallet.coin_id });
-                    let warmWallet = await bitgo
-                        .coin(req.body.coin)
-                        .wallets()
-                        .get({ id: coin.warm_wallet_address });
-                    let custodialWallet = await bitgo.coin(req.body.coin).wallets().get({ id: coin.custody_wallet_address });
-                    // check for wallet exist or not
-                    if (warmWallet.id && custodialWallet.id) {
-                        // check for warm wallet balance 
-                        let warmWalletAmount = 0;
-                        let custodialWalletAmount = 0;
-                        if (warmWallet.confirmedBalance >= coin.min_thresold) {
-                            // send 10% to warm wallet and 90% to custodial wallet
-                            warmWalletAmount = (dest.value * 10) / 100;
-                            custodialWalletAmount = (dest.value * 90) / 100;
-
-                        } else {
-                            // send 50% to warm wallet and 50% to custodial wallet
-                            warmWalletAmount = (dest.value * 50) / 100;
-                            custodialWalletAmount = (dest.value * 50) / 100;
+                    // transaction amount
+                    let amount = (dest.value / 100000000);
+                    // user wallet exitence check
+                    if (userWallet) {
+                        // Set wallet history params
+                        let walletHistory = {
+                            coin_id: userWallet.coin_id,
+                            source_address: source.address,
+                            destination_address: dest.address,
+                            user_id: userWallet.user_id,
+                            amount: amount,
+                            transaction_type: 'receive',
+                            transaction_id: req.body.hash
                         }
 
-                        // send amount to warm wallet
-                        await wallet.send({
-                            amount: warmWalletAmount,
-                            address: warmWallet.receiveAddress.address,
-                            walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                        // Entry in wallet history
+                        await WalletHistory.create({
+                            ...walletHistory
                         });
-
-                        let transactionLog = [];
-                        // Log Transafer in transaction table
-                        transactionLog.push({
-                            source_address: userWallet.receive_address,
-                            destination_address: warmWallet.receiveAddress.address,
-                            amount: warmWalletAmount,
-                            user_id: userWallet.user_id,
-                            transaction_type: "receive",
-                            coin_id: coin.id,
-                            is_executed: true,
-                        });
+                        // update wallet balance
+                        await Wallet
+                            .update({ id: userWallet.id })
+                            .set({
+                                balance: userWallet.balance + amount,
+                                placed_balance: userWallet.placed_balance + amount
+                            });
 
 
-                        // send amount to custodial wallet
-                        await wallet.send({
-                            amount: custodialWalletAmount,
-                            address: custodialWallet.receiveAddress.address,
-                            walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-                        });
+                        // Send fund to Warm and custody wallet
+                        let coin = await Coins.findOne({ id: userWallet.coin_id });
+                        let warmWallet = await bitgo
+                            .coin(req.body.coin)
+                            .wallets()
+                            .get({ id: coin.warm_wallet_address });
+                        // console.log("warm wallet", warmWallet.receiveAddress());
 
-                        // Log Transafer in transaction table
-                        transactionLog.push({
-                            source_address: userWallet.receive_address,
-                            destination_address: custodialWallet.receiveAddress.address,
-                            amount: custodialWalletAmount,
-                            user_id: userWallet.user_id,
-                            transaction_type: "receive",
-                            coin_id: coin.id,
-                            is_executed: true,
-                        });
+                        let custodialWallet = await bitgo.coin(req.body.coin).wallets().get({ id: coin.custody_wallet_address });
+                        // check for wallet exist or not
+                        if (warmWallet.id && custodialWallet.id) {
+                            // check for warm wallet balance 
+                            let warmWalletAmount = 0;
+                            let custodialWalletAmount = 0;
+                            if (warmWallet.confirmedBalance >= coin.min_thresold) {
+                                // send 10% to warm wallet and 90% to custodial wallet
+                                warmWalletAmount = (dest.value * 10) / 100;
+                                custodialWalletAmount = (dest.value * 90) / 100;
 
-                        // Insert logs in taransaction table
-                        await TransactionTable.createEach([...transactionLog]);
+                            } else {
+                                // send 50% to warm wallet and 50% to custodial wallet
+                                warmWalletAmount = (dest.value * 50) / 100;
+                                custodialWalletAmount = (dest.value * 50) / 100;
+                            }
+
+                            // send amount to warm wallet
+                            await wallet.send({
+                                amount: warmWalletAmount,
+                                address: warmWallet.receiveAddress(),
+                                walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                            });
+
+                            let transactionLog = [];
+                            // Log Transafer in transaction table
+                            transactionLog.push({
+                                source_address: userWallet.receive_address,
+                                destination_address: warmWallet.receiveAddress(),
+                                amount: warmWalletAmount,
+                                user_id: userWallet.user_id,
+                                transaction_type: "receive",
+                                coin_id: coin.id,
+                                is_executed: true,
+                            });
+
+
+                            // send amount to custodial wallet
+                            await wallet.send({
+                                amount: custodialWalletAmount,
+                                address: custodialWallet.receiveAddress(),
+                                walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+                            });
+
+                            // Log Transafer in transaction table
+                            transactionLog.push({
+                                source_address: userWallet.receive_address,
+                                destination_address: custodialWallet.receiveAddress(),
+                                amount: custodialWalletAmount,
+                                user_id: userWallet.user_id,
+                                transaction_type: "receive",
+                                coin_id: coin.id,
+                                is_executed: true,
+                            });
+
+                            // Insert logs in taransaction table
+                            await TransactionTable.createEach([...transactionLog]);
+                        }
                     }
                 }
+
             }
         }
         res.end();
@@ -246,6 +264,7 @@ module.exports = {
 
 
     webhookOnSend: async function (req, res) {
+
         // Check Status of Transaction
         if (req.body.state == "confirmed") {
             // Connect Bitgo Wallet
@@ -268,7 +287,7 @@ module.exports = {
 
                     // Send To user's destination address
                     let sendTransfer = await wallet.send({
-                        amount: walletHistory.amount,
+                        amount: walletHistory.amount * 1e8,
                         address: walletHistory.destination_address,
                         walletPassphrase: sails.config.local.BITGO_PASSPHRASE
                     });
@@ -284,7 +303,7 @@ module.exports = {
                     // Log transaction in transaction table
                     await TransactionTable.create({
                         coin_id: walletHistory.coin_id,
-                        source_address: wallet.receiveAddress.address,
+                        source_address: wallet.receiveAddress(),
                         destination_address: walletHistory.destination_address,
                         user_id: walletHistory.user_id,
                         amount: walletHistory.amount,
