@@ -197,14 +197,17 @@ module.exports = {
       let feesDetails = await AdminSetting.find({deleted_at: null})
       let krakenFees = parseFloat(feesDetails[6].value);
       let faldaxFees = parseFloat(feesDetails[7].value);
+
       if (pairDetails) {
         let currencyAmount = 0;
         if (type == "buy") {
-          currencyAmount = volume * pairDetails.ask_price;
+          // currencyAmount = volume * pairDetails.ask_price
+          currencyAmount = 0.02 * '5530.00000';
         } else if (type == "sell") {
-          currencyAmount = volume * pairDetails.bid_price;
+          // currencyAmount = volume * pairDetails.bid_price;
+          currencyAmount = 0.02 * '5530.00000';
         }
-        if (includeFees == "false") {
+        if (includeFees == "false" || includeFees == false) {
           currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);
           currencyAmount = currencyAmount + ((currencyAmount * faldaxFees) / 100);
         }
@@ -224,7 +227,7 @@ module.exports = {
           .tolerate("serverError", () => {
             throw new Error("serverError")
           });
-        console.log("Wallet Currency Balance :: ", walletCurrencyBalance);
+
         walletCryptoBalance = await sails
           .helpers
           .utilities
@@ -235,7 +238,7 @@ module.exports = {
           .tolerate("serverError", () => {
             throw new Error("serverError")
           });
-        console.log("Wallet Crypto Balance :: ", walletCryptoBalance);
+
         if (walletCurrencyBalance != undefined && walletCryptoBalance != undefined) {
           if ((type == "buy" && currencyAmount <= walletCurrencyBalance.placed_balance) || (type == "sell" && volume <= walletCryptoBalance.placed_balance)) {
             var addedData = await sails
@@ -286,6 +289,8 @@ module.exports = {
                     resultData.fix_quantity = volume;
                     resultData.maker_fee = 0.0;
                     resultData.taker_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+                    resultData.user_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+                    resultData.requested_fee = 0.0;
 
                     let activity = await sails
                       .helpers
@@ -310,14 +315,14 @@ module.exports = {
                         .update({id: walletCurrencyBalance.id})
                         .set({
                           balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].cost),
-                          placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].cost)
+                          placed_balance: (walletCurrencyBalance.placed_balance - tradeInfoData.result[transactionId].cost)
                         });
 
                       await Wallet
                         .update({id: walletCryptoBalance.id})
                         .set({
-                          balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100)))),
-                          placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100))))
+                          balance: (walletCryptoBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100)))),
+                          placed_balance: (walletCryptoBalance.placed_balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100))))
                         });
 
                     } else if (tradeInfoData.result[transactionId].type == "sell") {
@@ -325,14 +330,14 @@ module.exports = {
                         .update({id: walletCurrencyBalance.id})
                         .set({
                           balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].cost - (tradeInfoData.result[transactionId].cost * (faldaxFees / 100)))),
-                          placed_balance: (walletCurrencyBalance.balance + (tradeInfoData.result[transactionId].cost - (tradeInfoData.result[transactionId].cost * (faldaxFees / 100))))
+                          placed_balance: (walletCurrencyBalance.placed_balance + (tradeInfoData.result[transactionId].cost - (tradeInfoData.result[transactionId].cost * (faldaxFees / 100))))
                         });
 
                       await Wallet
                         .update({id: walletCryptoBalance.id})
                         .set({
-                          balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].vol),
-                          placed_balance: (walletCurrencyBalance.balance - tradeInfoData.result[transactionId].vol)
+                          balance: (walletCryptoBalance.balance - tradeInfoData.result[transactionId].vol),
+                          placed_balance: (walletCryptoBalance.placed_balance - tradeInfoData.result[transactionId].vol)
                         });
                     }
 

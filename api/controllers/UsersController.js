@@ -64,6 +64,7 @@ module.exports = {
           first_name: req.body.first_name,
           last_name: req.body.last_name,
           referral_code: randomize('Aa0', 10),
+          date_format: 'DD/MM/YYYY',
           created_at: new Date(),
           referred_id: referred_id,
           device_type: req.body.device_type,

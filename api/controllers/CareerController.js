@@ -121,7 +121,7 @@ module.exports = {
   },
 
   getAllJobCategories: async function (req, res) {
-    let allJobCategories = await JobCategory.find({ deleted_at: null });
+    let allJobCategories = await JobCategory.find({ deleted_at: null }).sort('id ASC');
     if (allJobCategories) {
       return res.json({
         "status": 200,
@@ -337,6 +337,84 @@ module.exports = {
         });
       }
     } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  addJobCategory: async function (req, res) {
+    try {
+
+      if (req.body) {
+        req.body.is_active = true;
+        var addCategoryData = await JobCategory
+          .create(req.body)
+          .fetch();
+
+        if (addCategoryData) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Job Category added success"),
+            "data": addCategoryData
+          });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Something Wrong")
+            });
+        }
+
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  updateJobCategory: async function (req, res) {
+    try {
+      var { id, is_active, category } = req.body;
+
+      var updatedJobData = await JobCategory
+        .update({ id })
+        .set({ is_active, category })
+        .fetch();
+
+      if (updatedJobData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Job Category updated success"),
+          "data": updatedJobData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      console.log(err);
       return res
         .status(500)
         .json({
