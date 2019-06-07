@@ -369,7 +369,6 @@ module.exports = {
               "err": sails.__("Something Wrong")
             });
         }
-
       } else {
         return res
           .status(500)
@@ -378,9 +377,7 @@ module.exports = {
             "err": sails.__("Something Wrong")
           });
       }
-
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
@@ -414,7 +411,6 @@ module.exports = {
           });
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
