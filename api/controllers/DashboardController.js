@@ -214,17 +214,15 @@ module.exports = {
             let neutralCountries = await Countries.count({ legality: 3 });
             let employeeCount = await Admin.count({ is_active: true, deleted_at: null });
             let jobsCount = await Jobs.count({ is_active: true, deleted_at: null });
-            let tradeHistoryData = await TradeHistory
-                .count()
-                .where({
+            let tradeHistoryData = await TradeHistory.count({
+                where: {
                     deleted_at: null,
-                    created_at: {
-                        '<=': dataBefore
-                    },
-                    created_at: {
-                        '>=': today
-                    }
-                });
+                    created_at: [
+                        { '>=': dataBefore },
+                        { '<=': today }
+                    ]
+                }
+            })
             let withdrawReqCount = await WithdrawRequest.count({
                 deleted_at: null,
                 created_at: {
