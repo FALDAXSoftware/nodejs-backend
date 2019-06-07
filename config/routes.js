@@ -13,6 +13,8 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
+  'get /send': 'Dashboard.sendSMS',
+
   // 'admin/*': { policy: 'isAdmin' }, Test Routes
   'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
