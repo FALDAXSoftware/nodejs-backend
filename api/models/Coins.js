@@ -18,6 +18,11 @@ module.exports = {
       columnName: 'coin_name',
       required: true
     },
+    min_thresold: {
+      type: 'number',
+      columnName: 'min_thresold',
+      defaultsTo: 0
+    },
     coin_code: {
       type: 'string',
       columnName: 'coin_code',
@@ -29,11 +34,57 @@ module.exports = {
       // required: true
       allowNull: true
     },
-    limit: {
+    min_limit: {
       type: 'number',
-      columnName: 'limit',
-      allowNull: true,
-      defaultsTo: 0
+      columnName: 'min_limit',
+      defaultsTo: 0,
+      allowNull: true
+    },
+    max_limit: {
+      type: 'number',
+      columnName: 'max_limit',
+      defaultsTo: 0,
+      allowNull: true
+    },
+    deposit_method: {
+      type: 'string',
+      columnName: 'deposit_method',
+      required: true
+    },
+    kraken_coin_name: {
+      type: 'string',
+      columnName: 'kraken_coin_name',
+      required: true
+    },
+    isERC: {
+      type: 'boolean',
+      columnName: 'isERC',
+      defaultsTo: false
+    },
+    is_address_created_signup: {
+      type: 'boolean',
+      columnName: 'is_address_created_signup',
+      defaultsTo: false
+    },
+    hot_send_wallet_address: {
+      type: 'string',
+      columnName: 'hot_send_wallet_address',
+      allowNull: true
+    },
+    hot_receive_wallet_address: {
+      type: 'string',
+      columnName: 'hot_receive_wallet_address',
+      allowNull: true
+    },
+    warm_wallet_address: {
+      type: 'string',
+      columnName: 'warm_wallet_address',
+      allowNull: true
+    },
+    custody_wallet_address: {
+      type: 'string',
+      columnName: 'custody_wallet_address',
+      allowNull: true
     },
     // description: {   type: 'string',   columnName: 'description',   required:
     // true },
@@ -73,9 +124,9 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    userWallets:{
-      collection:"wallet",
-      via:'coin_id'
+    userWallets: {
+      collection: "wallet",
+      via: 'coin_id'
     }
   },
   beforeCreate: (values, next) => {

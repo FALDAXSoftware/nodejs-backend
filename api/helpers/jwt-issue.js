@@ -6,7 +6,7 @@
  */
 
 var jwt = require('jsonwebtoken'),
-tokenSecret = "secretissecet";
+  tokenSecret = sails.config.local.JWT_TOKEN_SECRET;
 
 module.exports = {
 
@@ -19,19 +19,41 @@ module.exports = {
       type: 'number',
       description: 'The name of the person to greet.',
       required: true
+    },
+    isAdmin: {
+      type: 'boolean',
+      description: 'User has admin access or not',
+      required: false,
+      defaultsTo: false
+    },
+    setExpiry: {
+      type: 'boolean',
+      description: 'set expiration time of token or not',
+      required: false,
+      defaultsTo: false
     }
   },
 
   exits: {
 
   },
-
   fn: async function (inputs, exits) {
+    let extraParams = {};
+    let params = {
+      id: inputs.id
+    }
+    if (inputs.setExpiry) {
+      extraParams["expiresIn"] = 60 * 60;
+    }
+    if (inputs.isAdmin) {
+      params["isAdmin"] = true
+    }
     var result = jwt.sign(
-      { id: inputs.id },
+      { ...params },
       tokenSecret, // Token Secret that we sign it with
       {
         // expiresIn : '1d' // Token Expire time
+        ...extraParams
       }
     );
     return exits.success(result);

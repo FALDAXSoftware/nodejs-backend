@@ -79,8 +79,6 @@ module.exports = {
       .utilities
       .getMakerTakerFees(inputs.crypto, inputs.currency);
 
-    console.log(inputs.crypto, inputs.currency);
-
     let sellBook = await sails
       .helpers
       .tradding

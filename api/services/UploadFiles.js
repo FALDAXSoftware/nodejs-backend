@@ -15,30 +15,32 @@ function UploadFiles() {
   function _upload(filePath, uploadFileName) {
     return new Promise((resolve, reject) => {
 
-      gm(filePath).noProfile().stream(function (err, stdout, stderr) {
-        var buf = new Buffer('');
+      gm(filePath)
+        .noProfile()
+        .stream(function (err, stdout, stderr) {
+          var buf = new Buffer('');
 
-        stdout.on('data', function (data) {
-          buf = Buffer.concat([buf, data]);
-        });
+          stdout.on('data', function (data) {
+            buf = Buffer.concat([buf, data]);
+          });
 
-        stdout.on('end', function (data) {
-          var profile = {
-            Bucket: S3BucketName,
-            Key: uploadFileName,
-            ACL: 'public-read',
-            Body: buf,
-            ContentType: mime.lookup(uploadFileName)
-          };
-          s3.putObject(profile, function (err, rese) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(rese)
-            }
+          stdout.on('end', function (data) {
+            var profile = {
+              Bucket: S3BucketName,
+              Key: uploadFileName,
+              ACL: 'public-read',
+              Body: buf,
+              ContentType: mime.lookup(uploadFileName)
+            };
+            s3.putObject(profile, function (err, rese) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(rese)
+              }
+            });
           });
         });
-      });
     })
   }
 }

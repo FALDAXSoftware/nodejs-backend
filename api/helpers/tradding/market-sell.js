@@ -58,7 +58,9 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     try {
-      let {crypto, currency} = await sails
+      let userIds = [];
+      userIds.push(inputs.user_id);
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -119,7 +121,6 @@ module.exports = {
           .add(resultData);
 
         if (inputs.orderQuantity <= availableQty) {
-          console.log("Current Buy Book Details ::  ", (currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance);
           if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
             var trade_history_data = {
               ...orderData
@@ -135,6 +136,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentBuyBookDetails.activity_id, trade_history_data);
+            userIds.push(parseInt(trade_history_data.requested_user_id));
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
               user_id: inputs.user_id,
@@ -153,7 +155,6 @@ module.exports = {
                 return new Error("serverError")
               });
 
-            console.log("Trading Fees ::: ", tradingFees);
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;
@@ -171,7 +172,7 @@ module.exports = {
                 .helpers
                 .tradding
                 .buy
-                .update(currentBuyBookDetails.id, {quantity: remainigQuantity});
+                .update(currentBuyBookDetails.id, { quantity: remainigQuantity });
             } else {
               await sails
                 .helpers
@@ -201,7 +202,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentBuyBookDetails.activity_id, trade_history_data);
-
+            userIds.push(parseInt(trade_history_data.requested_user_id));
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
               user_id: inputs.user_id,
@@ -266,7 +267,7 @@ module.exports = {
       await sails
         .helpers
         .sockets
-        .tradeEmit(crypto, currency);
+        .tradeEmit(crypto, currency, userIds);
       return exits.success();
 
     } catch (error) {

@@ -58,6 +58,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      var userIds = [];
+      userIds.push(inputs.user_id);
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -136,6 +138,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentSellBookDetails.activity_id, trade_history_data);
+            userIds.push(parseInt(trade_history_data.requested_user_id));
 
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
@@ -153,6 +156,11 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
+
+            // Adding USD value in database trade_history_data.usd_value =
+            // tradingFees.user_usd;
+
+            var usd_value = resultData * (request.fill_price * request.quantity);
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;
@@ -199,6 +207,7 @@ module.exports = {
               .tradding
               .activity
               .update(currentSellBookDetails.activity_id, trade_history_data);
+            userIds.push(parseInt(trade_history_data.requested_user_id));
             var request = {
               requested_user_id: trade_history_data.requested_user_id,
               user_id: inputs.user_id,
@@ -215,6 +224,8 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
+            // Adding USD value in database trade_history_data.usd_value =
+            // tradingFees.user_usd;
             trade_history_data.user_fee = tradingFees.userFee;
             trade_history_data.requested_fee = tradingFees.requestedFee;
             trade_history_data.user_coin = crypto;
@@ -262,7 +273,7 @@ module.exports = {
       await sails
         .helpers
         .sockets
-        .tradeEmit(crypto, currency);
+        .tradeEmit(crypto, currency, userIds);
       return exits.success();
     } catch (error) {
       console.log(error);

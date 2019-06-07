@@ -1,11 +1,8 @@
 module.exports = {
 
-
   friendlyName: 'Get activity',
 
-
   description: '',
-
 
   inputs: {
     user_id: {
@@ -16,15 +13,12 @@ module.exports = {
     }
   },
 
-
   exits: {
 
     success: {
-      outputFriendlyName: 'Activity',
-    },
-
+      outputFriendlyName: 'Activity'
+    }
   },
-
 
   fn: async function (inputs) {
 
@@ -45,6 +39,4 @@ module.exports = {
 
   }
 
-
 };
-

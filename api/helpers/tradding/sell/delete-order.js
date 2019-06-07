@@ -28,7 +28,7 @@ module.exports = {
 
   fn: async function (inputs,exits) {
     let now = new Date();
-    var details = await sellBook.update({ id: inputs.id }).set({ deleted_at: now }).fetch();
+    var details = await SellBook.update({ id: inputs.id }).set({ deleted_at: now }).fetch();
     return exits.success(details);
   }
 

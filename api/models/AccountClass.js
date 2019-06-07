@@ -1,29 +1,16 @@
 /**
- * Inquiry.js
+ * AccountClass.js
  *
- * @description :: Represents a database table inquiries.
+ * @description :: Represents a database table account_class.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-
 module.exports = {
-    tableName: 'inquiries',
+    tableName: 'account_class',
+    primaryKey: 'id',
     attributes: {
-        first_name: {
+        class_name: {
             type: 'string',
-            columnName: 'first_name',
-        },
-        last_name: {
-            type: 'string',
-            columnName: 'last_name'
-        },
-        email: {
-            type: 'string',
-            columnName: 'email',
-            allowNull: true
-        },
-        message: {
-            type: 'string',
-            columnName: 'message',
+            columnName: 'class_name',
             allowNull: true
         },
         created_at: {
@@ -40,7 +27,7 @@ module.exports = {
             type: 'ref',
             columnType: 'datetime',
             columnName: 'deleted_at'
-        }
+        },
     },
     beforeCreate: (values, next) => {
         values.created_at = new Date();

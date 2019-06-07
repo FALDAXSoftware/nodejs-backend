@@ -39,9 +39,19 @@ module.exports = {
       columnName: 'first_name',
       allowNull: true
     },
+    middle_name: {
+      type: 'string',
+      columnName: 'middle_name',
+      allowNull: true
+    },
     last_name: {
       type: 'string',
       columnName: 'last_name',
+      allowNull: true
+    },
+    hubspot_id: {
+      type: 'string',
+      columnName: 'hubspot_id',
       allowNull: true
     },
     country: {
@@ -83,21 +93,6 @@ module.exports = {
     dob: {
       type: 'string',
       columnName: 'dob',
-      allowNull: true
-    },
-    country_id: {
-      type: 'string',
-      columnName: 'country_id',
-      allowNull: true
-    },
-    state_id: {
-      type: 'string',
-      columnName: 'state_id',
-      allowNull: true
-    },
-    zip: {
-      type: 'number',
-      columnName: 'zip',
       allowNull: true
     },
     referred_id: {
@@ -160,15 +155,73 @@ module.exports = {
     },
     diffrence_fiat: {
       type: 'number',
-      columnName: 'diffrence_fiat'
+      columnName: 'diffrence_fiat',
+      allowNull: true
     },
     total_value: {
       type: 'number',
-      columnName: 'total_value'
+      columnName: 'total_value',
+      allowNull: true
     },
     percent_wallet: {
       type: 'number',
       columnName: 'percent_wallet'
+    },
+    date_format: {
+      type: 'string',
+      columnName: 'date_format'
+    },
+    new_ip_verification_token: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_ip_verification_token'
+    },
+    new_ip: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_ip'
+    },
+    requested_email: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'requested_email'
+    },
+    new_email_token: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'new_email_token'
+    },
+    is_new_email_verified: {
+      type: 'boolean',
+      columnName: "is_new_email_verified",
+      defaultsTo: true,
+      allowNull: true
+    },
+    account_tier: {
+      type: 'number',
+      columnName: 'account_tier',
+      allowNull: true,
+      defaultsTo: 1
+    },
+    account_class: {
+      type: 'number',
+      columnName: 'account_class',
+      allowNull: true,
+      defaultsTo: 3
+    },
+    country_code: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'country_code'
+    },
+    referal_percentage: {
+      type: 'number',
+      columnName: 'referal_percentage'
+    },
+    gender: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'gender'
     },
     created_at: {
       type: 'ref',
@@ -214,32 +267,24 @@ module.exports = {
       });
   },
   beforeUpdate: (values, next) => {
-    Users
-      .findOne({ 'email': values.email, 'deleted_at': null })
-      .exec(async function (err, found) {
-        values.updated_at = new Date()
-        if (found) {
-          if (values.password) {
-            bcrypt
-              .genSalt(10, function (err, salt) {
-                if (err)
-                  return next(err);
-                bcrypt
-                  .hash(values.password, salt, function (err, hash) {
-                    if (err)
-                      return next(err);
-                    values.password = hash;
-                    next();
-                  })
-              });
-          } else {
-            // delete values.email;
-            next();
-          }
-        } else {
-          next({ error: "Email address doesn't exists" });
-        }
-      });
+    values.updated_at = new Date()
+    if (values.password) {
+      bcrypt
+        .genSalt(10, function (err, salt) {
+          if (err)
+            return next(err);
+          bcrypt
+            .hash(values.password, salt, function (err, hash) {
+              if (err)
+                return next(err);
+              values.password = hash;
+              next();
+            })
+        });
+    } else {
+      // delete values.email;
+      next();
+    }
   },
   comparePassword: function (password, user, cb) {
     bcrypt

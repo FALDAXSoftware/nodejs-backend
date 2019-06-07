@@ -28,7 +28,7 @@ module.exports = {
     var crypto = orderData.settle_currency;
     var total_price =orderData.quantity;
 
-    let sellAdded = await sellBook
+    let sellAdded = await SellBook
       .create(orderData)
       .fetch();
 

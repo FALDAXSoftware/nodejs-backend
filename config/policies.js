@@ -18,18 +18,22 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
-  '*': ['isAuthorized'], // Everything resctricted here
+  '*': [
+    'isAuthorized', 'isAdmin'
+  ], // Everything resctricted here
   'UsersController': {
-    'create': true,
+    'create': 'checkReCaptcha',
     'getCountries': true,
-    'getCountriesData': true
-    // We dont need authorization here, allowing public access,
+    'getCountriesData': true,
+    'verifyNewEmail': true
+    // 'updateSendCoinFee': true, 'updateUserDetails': true We dont need
+    // authorization here, allowing public access,
   },
   'AdminController': {
     'create': true,
     "login": true,
     "forgotPassword": true,
-    "resetPassword": true // We dont need authorization here, allowing public access,
+    "resetPassword": true, // We dont need authorization here, allowing public access,
   },
   'CountriesController': {
     '*': true
@@ -39,6 +43,8 @@ module.exports.policies = {
   },
 
   'AuthController': {
+    "login": 'checkReCaptcha',
+    "forgotPassword": "checkReCaptcha",
     '*': true // We dont need authorization here, allowing public access
   },
   'BlogsController': {
@@ -54,23 +60,28 @@ module.exports.policies = {
   },
   'RootController': {
     'getContactInfo': true,
-    'sendInquiry': true,
-    'testnews': true,
-    "csvToJson": true,
     "webhookOnReciveBitgo": true,
     "queryTest": true,
     "sendOpenTicketForm": true,
     "enableWebSocket": true,
     "createAllWallet": true,
+    "sendSubscriberForm": true,
+    "sendListTokenForm": true,
+    "callKrakenAPI": true,
+    "bitgoTest": true,
+    "testemail": true
+    // "setAddressWebhook": true,
+    // "webhookOnAddress": true
   },
-  'AddCoinReqController': {
-    "addCoinRequest": true
-  },
+  // 'WalletController':{
+  //   "getCoinBalanceForWallet":true
+  // },
   'CareerController': {
-    "*": true
+    "applyJob": "checkReCaptcha",
+    "*": true,
   },
   "KYCController": {
-    "callbackKYC": true,
+    "callbackKYC": true
   },
   "BuyController": {
     // "getBuyBookDetails": true,
@@ -85,5 +96,33 @@ module.exports.policies = {
   },
   "TradeController": {
     "stopLimitExecute": true
+  },
+  "TradingViewController": {
+    "*": true
+  },
+  "FeesController": {
+    "getAllFees": true
+  },
+  "Type2CoinController": {
+    "getCoinInfo": true,
+    "getCoinNewAddress": true,
+    "getTransactionList": true,
+    "sendCoin": true,
+    "listAddresses": true,
+    "getAddressBalance": true
+  },
+  "KrakenController": {
+    "getOrderBookData": true,
+    "addOrder": true,
+    "depositAddress": true,
+    "getDepositStatus": true,
+    "getWithdrawlInformation": true,
+    "getWithdrawlFunds": true,
+    "getRecentWithdrawlStatus": true,
+    "withdrwalCancellationStatus": true,
+    "queryTradeInformation": true
+  },
+  "WebhookController": {
+    "*": true
   }
 };

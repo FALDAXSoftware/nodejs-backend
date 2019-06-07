@@ -6,19 +6,82 @@
  */
 const BitGoJS = require('bitgo');
 
-var request = require('request');
 module.exports = {
+  panicBtn: async function (req, res) {
+    try {
+      let btnCall = await sails
+        .helpers
+        .panicButton();
+
+      if (btnCall.length > 0) {
+        btnCall.forEach(async (element) => {
+          let userDetails = await Users.find({ id: element });
+          let slug = "panic_email"
+          let template = await EmailTemplate.findOne({ slug });
+          let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+            recipientName: userDetails[0].first_name,
+          })
+          sails
+            .hooks
+            .email.send("general-email", {
+              content: emailContent
+            }, {
+                to: "krina.soni@openxcellinc.com",
+                subject: "Panic Button"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("Email sent success")
+                  });
+                }
+              })
+        });
+      }
+      return res.json({
+        "status": 200,
+        "message": sails.__("Email sent success")
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  callKrakenAPI: async function (req, res) {
+    var data = await sails
+      .helpers
+      .krakenApi('1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX');
+    return res.json({ status: 200, "data": data });
+  },
+
   sendOpenTicketForm: async function (req, res) {
     return res.view('pages/openTicket');
   },
 
+  sendSubscriberForm: async function (req, res) {
+    return res.view('pages/subscriber');
+  },
+
+  sendListTokenForm: async function (req, res) {
+    return res.view('pages/listYourToken');
+  },
+
   getContactInfo: async function (req, res) {
-    let contactDetails = await AdminSetting.find({ type: "contact" });
+    let adminSettingDetails = await AdminSetting.find();
     let contacts = {};
-    contactDetails.forEach(element => {
+    adminSettingDetails.forEach(element => {
       contacts[element.slug] = element.value;
     });
-    return res.json({ status: 200, message: "contact details retrived successfully.", data: contacts })
+    return res.json({
+      status: 200,
+      message: sails.__("contact details retrived success"),
+      data: contacts
+    })
   },
 
   updateContactInfo: async function (req, res) {
@@ -33,7 +96,10 @@ module.exports = {
             .fetch();
         });
       if (contactDetails) {
-        return res.json({ status: 200, message: "Contact details updated successfully." })
+        return res.json({
+          status: 200,
+          message: sails.__("Contact details updated success")
+        })
       } else {
         return res
           .status(500)
@@ -47,143 +113,8 @@ module.exports = {
     }
   },
 
-  sendInquiry: async function (req, res) {
-    let inquiryDetails = await Inquiry
-      .create({ first_name: req.body.first_name, last_name: req.body.last_name, email: req.body.email, message: req.body.message, created_at: new Date() })
-      .fetch();
-    if (inquiryDetails) {
-      return res.json({ status: 200, message: "Inquiry sent successfully." })
-    } else {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-    }
-  },
-
-  getAllInquiries: async function (req, res) {
-    let { page, limit, data } = req.allParams();
-
-    if (data) {
-      let q = {
-        deleted_at: null
-      }
-      q['or'] = [
-        {
-          first_name: {
-            contains: data
-          }
-        }, {
-          last_name: {
-            contains: data
-          }
-        }, {
-          email: {
-            contains: data
-          }
-        }
-      ]
-
-      let inquiryData = await Inquiry
-        .find({
-          ...q
-        })
-        .sort('created_at DESC')
-        .paginate(page - 1, parseInt(limit));
-      let inquiryCount = await Inquiry.count({
-        ...q
-      });
-      if (inquiryData) {
-        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
-      }
-    } else {
-      let q = {
-        deleted_at: null
-      }
-
-      let inquiryData = await Inquiry
-        .find({
-          ...q
-        })
-        .sort('created_at DESC')
-        .paginate(page - 1, parseInt(limit));
-      let inquiryCount = await Inquiry.count({
-        ...q
-      });
-      if (inquiryData) {
-        return res.json({ "status": 200, "message": "Inquiries retrived successfully", "data": inquiryData, inquiryCount });
-      } else {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
-    }
-  },
-
-  deleteInquiry: async function (req, res) {
-    try {
-      let { inquiry_id } = req.allParams();
-      if (!inquiry_id) {
-        res.status(500).json({
-          "status": 500,
-          "err": "Inquiry id is not sent"
-        });
-        return;
-      }
-      let deleteInquiry = await Inquiry.update({ id: inquiry_id }).set({ deleted_at: new Date() }).fetch();
-      if (deleteInquiry) {
-        return res.json({
-          "status": 200,
-          "message": "Inquiry removed successfully",
-        });
-      } else {
-        return res.status(500).json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      }
-    } catch (err) {
-      return res.status(500).json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
-    }
-  },
-
-  testnews: async function (req, res) {
-    // var greeting = await sails.helpers.kycpicUpload(); console.log('greeting',
-    // greeting); res.end();
-    // var greeting = await sails
-    //   .helpers
-    //   .tradding
-    //   .marketSell();
-    var stopExecution = await sails
-      .helpers
-      .tradding
-      .executeStopLimit();
-    res.json();
-  },
-
-  csvToJson: function (req, res) {
-    request('https://restcountries.eu/rest/v2/all', function (error, response, body) {
-      jsonObj = JSON.parse(body);
-      var countryArray = {};
-      jsonObj.forEach(row => {
-        countryArray[row['name']] = row['alpha2Code']
-      });
-      res.json(countryArray)
-    });
-  },
-
   webhookOnReciveBitgo: async function (req, res) {
-    console.log("Webnhook Req body", req.body);
     if (req.body.state == "confirmed") {
-      console.log("Confirmed status");
       var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
       var wallet = await bitgo
         .coin(req.body.coin)
@@ -193,7 +124,6 @@ module.exports = {
       wallet
         .getTransfer({ id: transferId })
         .then(async function (transfer) {
-          console.log("Trsnafer success");
           if (transfer.state == "confirmed") {
             // Object Of receiver
             let dest = transfer.outputs[0];
@@ -205,7 +135,6 @@ module.exports = {
             let amount = (dest.value / 100000000);
             // user wallet exitence check
             if (userWallet) {
-              console.log("USer WAllet ::: ", userWallet);
               // Set wallet history params
               let walletHistory = {
                 coin_id: userWallet.coin_id,
@@ -216,7 +145,6 @@ module.exports = {
                 transaction_type: 'receive',
                 transaction_id: req.body.hash
               }
-              console.log("Wallet History :: ", walletHistory);
               // Entry in wallet history
               await WalletHistory.create({
                 ...walletHistory
@@ -231,45 +159,79 @@ module.exports = {
             }
           }
         });
-
     }
     res.end();
   },
 
   queryTest: async function (req, res) {
-    var bitcoinistNews = await sails
-      .helpers
-      .bitcoinistNewsUpdate();
-    var bitcoinNews = await sails
-      .helpers
-      .bitcoinNews();
-    var ccnPodcast = await sails
-      .helpers
-      .ccnPodcast();
-    var coinTelegraph = await sails
-      .helpers
-      .coinTelegraph();
-    res.end();
+    // var bitcoinistNews = await sails
+    //   .helpers
+    //   .bitcoinistNewsUpdate();
+    // var bitcoinNews = await sails
+    //   .helpers
+    //   .bitcoinNews();
+    // var ccnPodcast = await sails
+    //   .helpers
+    //   .ccnPodcast();
+    // var coinTelegraph = await sails
+    //   .helpers
+    //   .coinTelegraph();
+    let formatedEmail = await sails.helpers.utilities.formatEmail("{{test1}} Lorem ipsum dolor sit amet, consectetur {{test2}} adipiscing elit. Vestibulum nec mauris eu velit ultricies tristique non vel metus. ", { test1: "qwertyuiop", test2: "asdfghjkl" });
+    res.json({
+      formatedEmail
+    });
   },
 
   enableWebSocket: async function (req, res) {
-
     try {
-      console.log("Enable Web Socket :: ", req);
       return res
         .status(101)
         .json({ status: 101 });
     } catch (err) {
       console.log("error :: ", err);
     }
-
   },
+
   createAllWallet: async function (req, res) {
     await sails
       .helpers
       .wallet
       .createAll();
     return res.end();
-  }
+  },
 
+  bitgoTest: async function (req, res) {
+    console.log(sails.config.local.BITGO_ACCESS_TOKEN);
+
+    let bitgo = new BitGoJS.BitGo({ env: 'test', accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var wallet = await bitgo
+      .coin("tbtc")
+      .wallets()
+      .get({ id: "5ce2deb441a6330d04e59f9b799a182a" });
+    // let send = await wallet.send({
+    //   "amount": 1000000,
+    //   "address": "2N6c4b6NYho82mfVww1M5gG3ZxyNYd9etpP",
+    //   "walletPassphrase": "F@LD@xt3stpkey"
+    // });
+
+    let transfer = await wallet.getTransfer({ id: "5ce7ac5251cb11c103a8e077a6f72fcd" });
+    console.log(transfer);
+
+  },
+  testemail: function (req, res) {
+    sails
+      .hooks
+      .email.send("testemail", {
+      }, {
+          to: "ankit.morker@openxcellinc.com",
+          subject: "test email"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": "dkhsd"
+            });
+          }
+        });
+  }
 };

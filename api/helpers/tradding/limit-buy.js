@@ -67,7 +67,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
-
+      var userIds = [];
+      userIds.push(inputs.user_id);
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -152,23 +153,26 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(crypto, currency, userIds);
           return exits.success(limitMatchData);
         } else {
           buyLimitOrderData.activity_id = activity.id;
           var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
             buyLimitOrderData.is_partially_fulfilled = true;
+            buyLimitOrderData.is_filled = false;
+            buyLimitOrderData.added = true;
             var addBuyBook = await sails
               .helpers
               .tradding
               .buy
               .addBuyOrder(buyLimitOrderData);
             //Add Socket Here Emit
+            addBuyBook.added = true;
             await sails
               .helpers
               .sockets
-              .tradeEmit(crypto, currency);
+              .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
             return exits.success(addBuyBook);
           } else {
             return exits.insufficientBalance();
@@ -179,6 +183,8 @@ module.exports = {
         var total_price = buyLimitOrderData.quantity * buyLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
           buyLimitOrderData.is_partially_fulfilled = true;
+          buyLimitOrderData.is_filled = false;
+          buyLimitOrderData.added = true;
           var addBuyBook = await sails
             .helpers
             .tradding
@@ -189,12 +195,14 @@ module.exports = {
             })
             .intercept("serverError", () => {
               return new Error("serverError");
-            });;
+            });
+
+          addBuyBook.added = true;
           //Add Socket Here Emit
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
           return exits.success(addBuyBook);
         } else {
           return exits.insufficientBalance();

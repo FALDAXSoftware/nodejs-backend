@@ -15,21 +15,42 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
+
         let kyc_details = await KYC.findOne({ id: inputs.params.id });
+        let user = await Users.findOne({ id: kyc_details.user_id });
         let kycUploadDetails = {};
 
-        countryData.forEach(function (item) {
-            Object.keys(item).forEach(function (key) {
-                if (kyc_details.country == key && !kyc_details.ssn) {
-                    kycUploadDetails.docCountry = item[key];
-                    kycUploadDetails.bco = item[key];
-                }
-            });
-        });
+        // countryData.forEach(function (arrayItem) {
+        //     //var x = arrayItem.prop1 + 2;
+        //     console.log('arrayItem', arrayItem);
+        //     Object.keys(arrayItem).forEach(function (key) {
+        //         console.log('arrayItem 2', key);
+        //         if (kyc_details.country == key && !kyc_details.ssn) {
+        //             console.log('inside', item);
+        //             kycUploadDetails.docCountry = item[key];
+        //             kycUploadDetails.bco = item[key];
+        //         }
+        //     });
+        // });
+
+        // countryData.forEach((item) => {
+        //     console.log('TRY', item, kyc_details.country, key, kyc_details.ssn);
+        //     Object.keys(item).forEach(function (key) {
+        //         if (kyc_details.country == key && !kyc_details.ssn) {
+        //             console.log('inside', item);
+        //             kycUploadDetails.docCountry = item[key];
+        //             kycUploadDetails.bco = item[key];
+        //         }
+        //     });
+        // });
 
         if (!kyc_details.ssn) {
-            kycUploadDetails.docType = kycDocType;
-            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.front_doc)
+            kycUploadDetails.docCountry = kyc_details.country_code;
+            kycUploadDetails.bco = kyc_details.country_code;
+        }
+
+        if (!kyc_details.ssn) {
+            await image2base64(sails.config.local.AWS_S3_URL + kyc_details.front_doc)
                 .then((response) => {
                     kycUploadDetails.scanData = response;
                 }).catch(
@@ -37,7 +58,7 @@ module.exports = {
                         console.log('error', error);
                     })
 
-            await image2base64('https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/' + kyc_details.back_doc)
+            await image2base64(sails.config.local.AWS_S3_URL + kyc_details.back_doc)
                 .then((response) => {
                     kycUploadDetails.backsideImageData = response;
                 }).catch(
@@ -45,17 +66,18 @@ module.exports = {
                         console.log('error', error);
                     })
         }
+        // kycUploadDetails.docType = kycDocType;
 
         if (kyc_details.id_type == 1) {
-            kycDocType = 'PP';
+            kycUploadDetails.docType = 'PP';
         } else if (kyc_details.id_type == 2) {
-            kycDocType = 'DL';
+            kycUploadDetails.docType = 'DL';
         } else if (kyc_details.id_type == 3) {
-            kycDocType = 'ID';
+            kycUploadDetails.docType = 'ID';
         } else {
             kycUploadDetails.ssn = kyc_details.ssn;
         }
-        kycUploadDetails.man = kyc_details.first_name + ' ' + kyc_details.last_name;
+        kycUploadDetails.man = user.email;
         kycUploadDetails.bfn = kyc_details.first_name;
         kycUploadDetails.bln = kyc_details.last_name;
         kycUploadDetails.bln = kyc_details.last_name;
@@ -65,7 +87,11 @@ module.exports = {
         }
         kycUploadDetails.bc = kyc_details.city;
         kycUploadDetails.bz = kyc_details.zip;
+        //kycUploadDetails.docCountry = 'US';
         kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
+
+        //production url : https://edna.identitymind.com/merchantedna/
+        //user:password base64 
         request.post({
             headers: {
                 'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
@@ -74,6 +100,8 @@ module.exports = {
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
+                ;
+
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;
                 await KYC.update({ id: kyc_details.id }).set({

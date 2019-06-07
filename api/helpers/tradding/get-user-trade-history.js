@@ -83,6 +83,8 @@ module.exports = {
     })
       .sort("id DESC");
 
+    // console.log(userTradeHistory);
+
     // TODO Send back the result through the success exit.
     return exits.success(userTradeHistory);
 

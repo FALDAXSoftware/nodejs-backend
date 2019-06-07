@@ -68,6 +68,8 @@ module.exports = {
   fn: async function (inputs, exits) {
     // TODO
     try {
+      var userIds = [];
+      userIds.push(inputs.user_id);
       let {crypto, currency} = await sails
         .helpers
         .utilities
@@ -146,16 +148,14 @@ module.exports = {
             .intercept('serverError', () => {
               return new Error("serverError");
             });
-          await sails
-            .helpers
-            .sockets
-            .tradeEmit(crypto, currency);
           return exits.success(limitMatchData);
         } else {
           sellLimitOrderData.activity_id = activity.id;
           var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
           if (total_price <= wallet.placed_balance) {
             sellLimitOrderData.is_partially_fulfilled = true;
+            sellLimitOrderData.is_filled = false;
+            sellLimitOrderData.added = true;
             var addSellBook = await sails
               .helpers
               .tradding
@@ -165,7 +165,8 @@ module.exports = {
             await sails
               .helpers
               .sockets
-              .tradeEmit(crypto, currency);
+              .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
+            addSellBook.added = true;
             return exits.success(addSellBook);
           } else {
             return exits.insufficientBalance();
@@ -176,6 +177,8 @@ module.exports = {
         var total_price = sellLimitOrderData.quantity * sellLimitOrderData.limit_price;
         if (total_price <= wallet.placed_balance) {
           sellLimitOrderData.is_partially_fulfilled = true;
+          sellLimitOrderData.is_filled = false;
+          sellLimitOrderData.added = true;
           var addSellBook = await sails
             .helpers
             .tradding
@@ -185,7 +188,8 @@ module.exports = {
           await sails
             .helpers
             .sockets
-            .tradeEmit(crypto, currency);
+            .tradeEmit(sellLimitOrderData.settle_currency, sellLimitOrderData.currency, userIds);
+          addSellBook.added = true;
           return exits.success(addSellBook);
         } else {
           return exits.insufficientBalance();

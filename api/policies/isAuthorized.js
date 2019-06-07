@@ -10,6 +10,7 @@ module.exports = async function (req, res, next) {
     var token;
 
     try {
+        // console.log('RWEQ LOG??????????????????????????', req);
         if (req.headers && req.headers.authorization) {
             var parts = req.headers.authorization.split(' ');
             if (parts.length == 2) {
@@ -27,7 +28,6 @@ module.exports = async function (req, res, next) {
             // We delete the token from param to not mess with blueprints
             delete req.query.token;
         } else if (req.isSocket) {
-            console.log("Socket connected");
             if (req.socket.handshake.headers.authorization) {
                 var parts = req.socket.handshake.headers.authorization.split(' ');
                 if (parts.length == 2) {
@@ -49,11 +49,13 @@ module.exports = async function (req, res, next) {
         }
 
         var verifyData = await sails.helpers.jwtVerify(token);
-        if (verifyData) {
+        if (verifyData) {            
             req.user = verifyData;
             next();
         }
     } catch (error) {
-        return res.status(403).json({ status: 403, err: 'Unauthorized Access' });
+        return res.status(403).json({
+            status: 403, err: 'Your session has been expired. Please Login again to continue.'
+        });
     }
 };

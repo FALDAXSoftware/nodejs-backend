@@ -18,7 +18,12 @@ module.exports = {
     },
     receive_address: {
       type: "string",
-      columnName: "receive_address",
+      columnName: "receive_address"
+    },
+    address_label: {
+      type: "string",
+      columnName: "address_label",
+      allowNull: true
     },
     user_id: {
       columnName: "user_id",
@@ -27,7 +32,7 @@ module.exports = {
     balance: {
       type: "number",
       columnName: "balance",
-      defaultsTo: 0,
+      defaultsTo: 0
     },
     placed_balance: {
       type: "number",
@@ -36,7 +41,7 @@ module.exports = {
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
-      defaultsTo: true,
+      defaultsTo: true
     },
     created_at: {
       type: 'ref',
@@ -52,8 +57,7 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
-    },
-    
+    }
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
@@ -62,6 +66,5 @@ module.exports = {
   beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
-  },
+  }
 };
-

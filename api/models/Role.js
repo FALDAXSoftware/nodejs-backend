@@ -24,30 +24,15 @@ module.exports = {
       defaultsTo: false,
       columnName: 'users',
     },
-    announcement: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'announcement',
-    },
-    static_page: {
-      type: "boolean",
-      defaultsTo: false,
-      columnName: 'static_page',
-    },
-    // blogs: {
-    //   type: "boolean",
-    //   defaultsTo: false,
-    //   columnName: 'blogs',
-    // },
     countries: {
       type: "boolean",
       defaultsTo: false,
       columnName: 'countries',
     },
-    coins: {
+    assets: {
       type: "boolean",
       defaultsTo: false,
-      columnName: 'coins',
+      columnName: 'assets',
     },
     pairs: {
       type: "boolean",
@@ -62,11 +47,6 @@ module.exports = {
     employee: {
       type: "boolean",
       columnName: 'employee',
-      defaultsTo: false,
-    },
-    inquiries: {
-      type: "boolean",
-      columnName: 'inquiries',
       defaultsTo: false,
     },
     jobs: {
@@ -94,24 +74,49 @@ module.exports = {
       columnName: 'withdraw_requests',
       defaultsTo: false,
     },
-    coin_requests: {
-      type: "boolean",
-      columnName: 'coin_requests',
-      defaultsTo: false,
-    },
-    contact_setting: {
-      type: "boolean",
-      columnName: 'contact_setting',
-      defaultsTo: false,
-    },
-    subscribe: {
-      type: "boolean",
-      columnName: 'subscribe',
-      defaultsTo: false,
-    },
     kyc: {
       type: "boolean",
       columnName: 'kyc',
+      defaultsTo: false,
+    },
+    fees: {
+      type: "boolean",
+      columnName: 'fees',
+      defaultsTo: false,
+    },
+    panic_button: {
+      type: "boolean",
+      columnName: 'panic_button',
+      defaultsTo: false,
+    },
+    news: {
+      type: "boolean",
+      columnName: 'news',
+      defaultsTo: false,
+    },
+    add_user: {
+      type: "boolean",
+      columnName: 'add_user',
+      defaultsTo: false,
+    },
+    is_referral: {
+      type: "boolean",
+      columnName: 'is_referral',
+      defaultsTo: false,
+    },
+    account_class: {
+      type: "boolean",
+      columnName: 'account_class',
+      defaultsTo: false,
+    },
+    email_templates: {
+      type: "boolean",
+      columnName: 'email_templates',
+      defaultsTo: false,
+    },
+    news_source: {
+      type: "boolean",
+      columnName: 'news_source',
       defaultsTo: false,
     },
     is_active: {

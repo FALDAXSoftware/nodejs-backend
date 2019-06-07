@@ -9,9 +9,9 @@ module.exports.cron = {
         var bitcoinNews = await sails
           .helpers
           .bitcoinNews();
-        var ccnPodcast = await sails
-          .helpers
-          .ccnPodcast();
+        // var ccnPodcast = await sails
+        //   .helpers
+        //   .ccnPodcast();
         var coinTelegraph = await sails
           .helpers
           .coinTelegraph();
@@ -21,10 +21,15 @@ module.exports.cron = {
   KycUpdate: {
     schedule: '0 */2 * * * *',
     onTick: async function () {
+
       if (sails.config.local.CRON_STATUS == "true") {
+        console.log('>>>>>>>>>>IF', sails.config.local.CRON_STATUS)
         var kycCron = await sails
           .helpers
           .kycCron();
+
+      } else {
+        //  console.log('>>>>>>>>>>ELSE', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
       }
     }
   },
