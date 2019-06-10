@@ -20,12 +20,12 @@ module.exports = {
     try {
       let allCoins = await Coins
         .find({
-        where: {
-          deleted_at: null,
-          is_active: true,
-          is_fiat: false
-        }
-      })
+          where: {
+            deleted_at: null,
+            is_active: true,
+            is_fiat: false
+          }
+        })
         .select(['coin_name', 'coin_code', 'coin']);
 
       let allCoinsCount = await Coins.count({
@@ -58,7 +58,7 @@ module.exports = {
   //---------------------------Web Api------------------------------
   getAllCoins: async function (req, res) {
     try {
-      let {page, limit, data} = req.allParams();
+      let { page, limit, data } = req.allParams();
       var user_id = req.user.id;
 
       if (data) {
@@ -78,11 +78,11 @@ module.exports = {
                 contains: data
               }
             }, {
-                coin_code: {
-                  contains: data
-                }
+              coin_code: {
+                contains: data
               }
-            ]
+            }
+          ]
         })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
@@ -96,7 +96,7 @@ module.exports = {
           const element = balanceRes[index];
           if (element.userWallets.length > 0) {
             element["balance"] = element.userWallets[0].balance,
-            element["placed_balance"] = element.userWallets[0].placed_balance
+              element["placed_balance"] = element.userWallets[0].placed_balance
             delete element.userWallets;
             balanceRes[index] = element
           }
@@ -133,7 +133,7 @@ module.exports = {
         // coins.is_active = true AND coins.deleted_at IS NULL AND wallets.deleted_at IS
         // NULL ORDER BY wallets.balance DESC LIMIT ${limit} OFFSET ${page} `);
         let balanceRes = await Coins
-          .find({deleted_at: null, is_active: true})
+          .find({ deleted_at: null, is_active: true })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -146,7 +146,7 @@ module.exports = {
           const element = balanceRes[index];
           if (element.userWallets.length > 0) {
             element["balance"] = element.userWallets[0].balance,
-            element["placed_balance"] = element.userWallets[0].placed_balance
+              element["placed_balance"] = element.userWallets[0].placed_balance
             delete element.userWallets;
             balanceRes[index] = element
           }
@@ -179,8 +179,8 @@ module.exports = {
 
   //Create Wallet
   createWallet: async function (req, res) {
-    let {coin_id} = req.allParams();
-    var requestedCoin = await Coins.find({id: coin_id, deleted_at: null, is_active: true});
+    let { coin_id } = req.allParams();
+    var requestedCoin = await Coins.find({ id: coin_id, deleted_at: null, is_active: true });
     await sails
       .helpers
       .wallet
@@ -210,7 +210,7 @@ module.exports = {
       if (error.raw) {
         return res
           .status(500)
-          .json({status: 500, "err": error.raw.err});
+          .json({ status: 500, "err": error.raw.err });
       } else {
         return res
           .status(500)
@@ -227,18 +227,18 @@ module.exports = {
     try {
       let coins = await Coins
         .find({
-        where: {
-          deleted_at: null,
-          is_active: true,
-          is_fiat: false,
-          kraken_coin_name: {
-            '!=': null
+          where: {
+            deleted_at: null,
+            is_active: true,
+            is_fiat: false,
+            kraken_coin_name: {
+              '!=': null
+            }
           }
-        }
-      })
+        })
         .select(["coin_icon", "coin_name", "coin"]);
 
-      let feesDetails = await AdminSetting.find({deleted_at: null})
+      let feesDetails = await AdminSetting.find({ deleted_at: null })
       let krakenFees = parseFloat(feesDetails[6].value);
       let faldaxFees = parseFloat(feesDetails[7].value);
 
@@ -285,7 +285,8 @@ module.exports = {
           kraken_coin_name: {
             '!=': null
           },
-          id: { in: coinIds
+          id: {
+            in: coinIds
           }
         }
       }).select(["coin_icon", "coin_name", "coin"]);
@@ -334,7 +335,7 @@ module.exports = {
                         });
                     } else {
 
-                      let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                      let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
                       return res.json({
                         status: 200,
                         data: pair,
@@ -356,7 +357,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let pair = await Pairs.findOne({name: room, is_active: true, deleted_at: null});
+                let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
                 return res.json({
                   status: 200,
                   data: pair,
@@ -385,12 +386,11 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     try {
-      let {page, limit, data, sort_col, sort_order} = req.allParams();
-      let query = " from coins";
+      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let query = " from coins WHERE deleted_at IS NULL ";
       if ((data && data != "")) {
-        query += " WHERE"
         if (data && data != "" && data != null) {
-          query = query + " LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + "AND LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query = query + " OR max_limit=" + data + " OR min_limit=" + data;
           }
@@ -461,15 +461,17 @@ module.exports = {
               }
               var coins_detail = await Coins
                 .create({
-                coin_icon: 'faldax/coin/' + req.body.coin_code,
-                coin_name: req.body.coin_name,
-                coin_code: req.body.coin_code,
-                min_limit: req.body.min_limit,
-                max_limit: req.body.max_limit,
-                isERC: req.body.isERC,
-                //wallet_address: req.body.wallet_address,
-                created_at: new Date()
-              })
+                  coin_icon: 'faldax/coin/' + req.body.coin_code,
+                  coin_name: req.body.coin_name,
+                  coin_code: req.body.coin_code,
+                  min_limit: req.body.min_limit,
+                  max_limit: req.body.max_limit,
+                  deposit_method: req.body.deposit_method,
+                  kraken_coin_name: req.body.kraken_coin_name,
+                  isERC: req.body.isERC,
+                  //wallet_address: req.body.wallet_address,
+                  created_at: new Date()
+                })
                 .fetch();
               if (coins_detail) {
                 res.json({
@@ -514,7 +516,7 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      const coin_details = await Coins.findOne({id: req.body.coin_id});
+      const coin_details = await Coins.findOne({ id: req.body.coin_id });
       if (!coin_details) {
         return res
           .status(401)
@@ -545,7 +547,7 @@ module.exports = {
         ...req.body
       }
       var updatedCoin = await Coins
-        .update({id: req.body.coin_id})
+        .update({ id: req.body.coin_id })
         .set(req.body)
         .fetch();
       if (!updatedCoin) {
@@ -570,7 +572,7 @@ module.exports = {
   },
 
   delete: async function (req, res) {
-    let {id} = req.allParams();
+    let { id } = req.allParams();
     if (!id) {
       return res
         .status(500)
@@ -580,8 +582,8 @@ module.exports = {
         });
     }
     let coinData = await Coins
-      .update({id: id})
-      .set({deleted_at: new Date()})
+      .update({ id: id })
+      .set({ deleted_at: new Date() })
       .fetch();
     if (coinData) {
       return res
@@ -595,9 +597,9 @@ module.exports = {
 
   getCoinDetails: async function (req, res) {
     try {
-      let {id} = req.allParams();
+      let { id } = req.allParams();
 
-      let coin = await Coins.findOne({id: id});
+      let coin = await Coins.findOne({ id: id });
       if (coin) {
         return res
           .status(200)
