@@ -141,10 +141,10 @@ module.exports = {
   getAllJobsCMS: async function (req, res) {
     try {
       let { page, limit, data, sortCol, sortOrder } = req.allParams();
-      let query = " from jobs WHERE deleted_at IS NULL ";
+      let query = " from jobs LEFT JOIN job_category ON jobs.category_id = job_category.id WHERE jobs.deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND LOWER(position) LIKE '%" + data.toLowerCase() + "%' OR LOWER(location) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " AND (LOWER(position) LIKE '%" + data.toLowerCase() + "%' OR LOWER(location) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
       countQuery = query;
@@ -153,13 +153,15 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY jobs.id ASC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let allJobs = await sails.sendNativeQuery("Select *" + query, [])
 
       allJobs = allJobs.rows;
 
-      let allJobsCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let allJobsCount = await sails.sendNativeQuery("Select COUNT(jobs.id)" + countQuery, [])
       allJobsCount = allJobsCount.rows[0].count;
       if (allJobs) {
         return res.json({
@@ -170,6 +172,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log('err', err)
       return res
         .status(500)
         .json({
