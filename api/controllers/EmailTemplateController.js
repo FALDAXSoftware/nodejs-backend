@@ -9,7 +9,7 @@ module.exports = {
 
     get: async function (req, res) {
         try {
-            let templates = await EmailTemplate.find();
+            let templates = await EmailTemplate.find().sort('id ASC');
             return res.json({
                 status: 200,
                 message: sails.__("Email template retrive success"),
