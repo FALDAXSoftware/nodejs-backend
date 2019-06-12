@@ -121,14 +121,29 @@ module.exports = {
   },
 
   getAllJobCategories: async function (req, res) {
-    let allJobCategories = await JobCategory.find({ deleted_at: null }).sort('id ASC');
-    if (allJobCategories) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("All job categories retrived success"),
-        "data": allJobCategories
-      });
-    } else {
+    try {
+      let { active } = req.allParams();
+      if (active == 'true') {
+        var allJobCategories = await JobCategory.find({ deleted_at: null, is_active: true }).sort('id ASC');
+      } else {
+        var allJobCategories = await JobCategory.find({ deleted_at: null }).sort('id ASC');
+      }
+
+      if (allJobCategories) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("All job categories retrived success"),
+          "data": allJobCategories
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
       return res
         .status(500)
         .json({
@@ -144,7 +159,7 @@ module.exports = {
       let query = " from jobs LEFT JOIN job_category ON jobs.category_id = job_category.id WHERE jobs.deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (LOWER(position) LIKE '%" + data.toLowerCase() + "%' OR LOWER(location) LIKE '%" + data.toLowerCase() + "%')";
+          query = query + " AND (LOWER(jobs.position) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jobs.location) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
       countQuery = query;
@@ -157,7 +172,7 @@ module.exports = {
         query += " ORDER BY jobs.id ASC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let allJobs = await sails.sendNativeQuery("Select *" + query, [])
+      let allJobs = await sails.sendNativeQuery("Select jobs.*, job_category.category" + query, [])
 
       allJobs = allJobs.rows;
 
@@ -172,7 +187,6 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log('err', err)
       return res
         .status(500)
         .json({
@@ -211,15 +225,31 @@ module.exports = {
   },
 
   addJob: async function (req, res) {
-    let addedJob = await Jobs
-      .create({ position: req.body.position, short_desc: req.body.short_desc, job_desc: req.body.job_desc, location: req.body.location, category: req.body.category })
-      .fetch();
-    if (addedJob) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("Job added success")
-      });
-    } else {
+    try {
+      let addedJob = await Jobs
+        .create({
+          position: req.body.position,
+          short_desc: req.body.short_desc,
+          job_desc: req.body.job_desc,
+          location: req.body.location,
+          category_id: req.body.category,
+          is_active: req.body.is_active
+        })
+        .fetch();
+      if (addedJob) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Job added success")
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
       return res
         .status(500)
         .json({
@@ -230,26 +260,35 @@ module.exports = {
   },
 
   editJob: async function (req, res) {
-    let job = await Jobs.findOne({ id: req.body.job_id })
-    if (job) {
-      let updatedJob = await Jobs
-        .update({ id: req.body.job_id })
-        .set(req.body)
-        .fetch();
-      if (updatedJob) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Job updated success")
-        });
+    try {
+      let job = await Jobs.findOne({ id: req.body.job_id })
+      if (job) {
+        let updatedJob = await Jobs
+          .update({ id: req.body.job_id })
+          .set(req.body)
+          .fetch();
+        if (updatedJob) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Job updated success")
+          });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Something Wrong")
+            });
+        }
       } else {
         return res
-          .status(500)
+          .status(400)
           .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
+            status: 400,
+            "err": sails.__("Job not found")
           });
       }
-    } else {
+    } catch (err) {
       return res
         .status(400)
         .json({
