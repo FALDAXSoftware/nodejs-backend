@@ -11,15 +11,22 @@ module.exports = {
       if (referralData != undefined && referralData != null && referralData.length > 0) {
         for (var i = 0; i < referralData.length; i++) {
           var walletUserData = await Wallet.findOne({deleted_at: null, user_id: referralData[i].user_id, coin_id: referralData[i].coin_id})
-          var walletData = await Wallet
-            .update({user_id: referralData[i].user_id, coin_id: referralData[i].coin_id, deleted_at: null})
-            .set({
-              'balance': parseFloat(walletUserData.balance + referralData[i].amount),
-              'placed_balance': parseFloat(walletUserData.balance + referralData[i].amount)
-            });
-          await Referral
-            .update({"id": referralData[i].id})
-            .set({is_collected: true});
+          console.log(walletUserData)
+          if (walletUserData != undefined) {
+            var walletUserData = await Wallet
+              .update({user_id: referralData[i].user_id, coin_id: referralData[i].coin_id, deleted_at: null})
+              .set({
+                'balance': parseFloat(walletUserData.balance + referralData[i].amount),
+                'placed_balance': parseFloat(walletUserData.balance + referralData[i].amount)
+              });
+            await Referral
+              .update({"id": referralData[i].id})
+              .set({is_collected: true});
+          } else {
+            await Referral
+              .update({"id": referralData[i].id})
+              .set({is_collected: false});
+          }
         }
         return res.json({
           "status": 200,

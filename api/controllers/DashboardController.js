@@ -219,10 +219,10 @@ module.exports = {
                 .where({
                     deleted_at: null,
                     created_at: {
-                        '<=': dataBefore
+                        '>=': dataBefore
                     },
                     created_at: {
-                        '>=': today
+                        '<=': today
                     }
                 });
             let withdrawReqCount = await WithdrawRequest.count({
