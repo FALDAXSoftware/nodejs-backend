@@ -47,8 +47,8 @@ module.exports = {
       }
       let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
         "pairs, limit_management, transaction_history, trade_history, withdraw_requests," +
-        "dashboard,  jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
-      let roleName = await sails.sendNativeQuery("Select name, is_active" + query, [])
+        "dashboard, jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
+      let roleName = await sails.sendNativeQuery("Select id, name, is_active" + query, [])
 
       roleName = roleName.rows;
       roles = roles.rows;

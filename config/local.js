@@ -14,6 +14,7 @@ module.exports.local = {
   'chain': process.env.CHAIN,
   'BITGO_PASSPHRASE': process.env.BITGO_PASSPHRASE,
   "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
+  "BITGO_PROXY_URL": process.env.BITGO_PROXY_URL,
   "TEST": process.env.TESTDEMO,
   "CRON_STATUS": process.env.CRON_STATUS,
   "KRAKEN_API_KEY": process.env.API_KEY,

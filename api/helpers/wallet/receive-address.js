@@ -16,7 +16,7 @@ module.exports = {
     },
     test_key: {
       type: 'string',
-      example: 'hjkghbg',
+      example: 'test_key',
       description: 'Testing key',
       required: false,
       defaultsTo: "false"
@@ -70,16 +70,11 @@ module.exports = {
             walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
             address_label = coin.coin_code + '-' + address_label;
           }
-
-          var wallet = await bitgo
-            .coin(walletCoinCode)
-            .wallets()
-            .get({ id: coin.hot_receive_wallet_address });
-
+          var wallet = await sails.helpers.bitgo.getWallet(walletCoinCode, coin.hot_receive_wallet_address);
           if (wallet) {
             //Here chain =0 means testnet Generating wallet address
             // Create bitgo wallet address
-            let address = await wallet.createAddress({ "chain": parseInt(sails.config.local.chain), "label": address_label });
+            let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
             let obj = {
               wallet_id: "wallet",
               coin_id: parseInt(coin.id),

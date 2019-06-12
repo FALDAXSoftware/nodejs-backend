@@ -91,6 +91,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id ASC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let pairData = await sails.sendNativeQuery("Select *" + query, [])
@@ -131,8 +133,8 @@ module.exports = {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code1) {
 
-        let coinID_1 = await Coins.findOne({ coin_code: req.body.coin_code1 });
-        let coinID_2 = await Coins.findOne({ coin_code: req.body.coin_code1 });
+        let coinID_1 = await Coins.findOne({ coin: req.body.coin_code1 });
+        let coinID_2 = await Coins.findOne({ coin: req.body.coin_code1 });
 
         var pair_details = await Pairs
           .create({
@@ -166,6 +168,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log('error', error)
       return res
         .status(500)
         .json({

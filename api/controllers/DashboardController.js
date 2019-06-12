@@ -5,8 +5,24 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var moment = require('moment');
+var twilio = require('twilio');
 
 module.exports = {
+
+    sendSMS: async function (req, res) {
+        var accountSid = 'ACc4a225cca20e133fb09056a937e81876'; // Your Account SID from www.twilio.com/console
+        var authToken = '3737ee85c8b7dd4fbccc9bfe532bf99f';   // Your Auth Token from www.twilio.com/console
+
+        var client = new twilio(accountSid, authToken);
+
+        client.messages.create({
+            body: 'Hello from Node',
+            to: '+919727331128',  // Text this number
+            from: '+13522689310' // From a valid Twilio number
+        })
+            .then((message) => console.log('?>>>>>>>>>>>>', message));
+    },
+
     // Web Apis
 
     /**
@@ -18,7 +34,7 @@ module.exports = {
       * @return <User acticity data>
      */
 
-    getActivity: async function(req, res) {
+    getActivity: async function (req, res) {
         try {
             let user_id = req.user.id;
             let activity = await sails
@@ -49,7 +65,7 @@ module.exports = {
       * @return <rising falling data or error>
      */
 
-    getRisingFalling: async function(req, res) {
+    getRisingFalling: async function (req, res) {
         try {
 
             var currency = 'USD'
@@ -82,7 +98,7 @@ module.exports = {
       * @return <User portfolio data or error data>
      */
 
-    getPortfolio: async function(req, res) {
+    getPortfolio: async function (req, res) {
         try {
             let user_id = req.user.id;
             let portfolio = await sails
@@ -113,7 +129,7 @@ module.exports = {
       * @return <Card Data or error data>
      */
 
-    getCardData: async function(req, res) {
+    getCardData: async function (req, res) {
         try {
             let room = req.query.room;
             if (req.isSocket) {
@@ -121,7 +137,7 @@ module.exports = {
                     let prevRoom = req.query.prevRoom;
                     sails
                         .sockets
-                        .leave(req.socket, prevRoom, async function(leaveErr) {
+                        .leave(req.socket, prevRoom, async function (leaveErr) {
                             if (leaveErr) {
                                 return res
                                     .status(403)
@@ -132,7 +148,7 @@ module.exports = {
                             } else {
                                 sails
                                     .sockets
-                                    .join(req.socket, room, async function(err) {
+                                    .join(req.socket, room, async function (err) {
                                         if (err) {
                                             return res
                                                 .status(403)
@@ -157,7 +173,7 @@ module.exports = {
                 } else {
                     sails
                         .sockets
-                        .join(req.socket, room, async function(err) {
+                        .join(req.socket, room, async function (err) {
                             if (err) {
                                 return res
                                     .status(500)
@@ -197,7 +213,7 @@ module.exports = {
     },
 
     // CMS all count api
-    getAllCounts: async function(req, res) {
+    getAllCounts: async function (req, res) {
         try {
             let today = moment().format();
             let dataBefore = moment()
@@ -214,17 +230,15 @@ module.exports = {
             let neutralCountries = await Countries.count({ legality: 3 });
             let employeeCount = await Admin.count({ is_active: true, deleted_at: null });
             let jobsCount = await Jobs.count({ is_active: true, deleted_at: null });
-            let tradeHistoryData = await TradeHistory
-                .count()
-                .where({
+            let tradeHistoryData = await TradeHistory.count({
+                where: {
                     deleted_at: null,
-                    created_at: {
-                        '>=': dataBefore
-                    },
-                    created_at: {
-                        '<=': today
-                    }
-                });
+                    created_at: [
+                        { '>=': dataBefore },
+                        { '<=': today }
+                    ]
+                }
+            })
             let withdrawReqCount = await WithdrawRequest.count({
                 deleted_at: null,
                 created_at: {

@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const BitGoJS = require('bitgo');
 
 module.exports = {
     // set on recive webhook
@@ -18,64 +17,45 @@ module.exports = {
         });
         console.log("----------", coins);
 
-        let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
         for (let index = 0; index < coins.length; index++) {
             const coin = coins[index];
 
-
-            // Receive Webhook on Hot receive wallets
-            let wallet = await bitgo
-                .coin(coin.coin_code)
-                .wallets()
-                .get({ id: coin.hot_receive_wallet_address });
             // remove Existing webhooks
-            let webhookres = await wallet.listWebhooks();
+            let webhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_receive_wallet_address);
+
+            console.log(webhookres["webhooks"]);
             let webhooks = webhookres.webhooks
             for (let webhookIndex = 0; webhookIndex < webhooks.length; webhookIndex++) {
                 const webhook = webhooks[webhookIndex];
                 if (webhook.type == "transfer") {
-                    await wallet.removeWebhook({
-                        url: webhook.url,
-                        type: "transfer",
-                    });
+                    await sails.helpers.bitgo.removeWebhook(coin.coin_code, coin.hot_receive_wallet_address, webhook.url, "transfer");
                 }
             }
             // Create new webhook
-            let reciveWebhookParams = {
-                url: `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-receive`,
-                type: "transfer",
-            };
+            let allToken = false;
             if (coin.coin == "ETH") {
-                reciveWebhookParams["allToken"] = true
+                allToken = true
             }
-            await wallet.addWebhook(reciveWebhookParams);
-
+            await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_receive_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-receive`, "transfer", allToken);
             // Send Webhooks on Hot send wallets
-            let sendWallet = await bitgo
-                .coin(coin.coin_code)
-                .wallets()
-                .get({ id: coin.hot_send_wallet_address });
             // remove Existing webhooks
-            let sendwebhookres = await sendWallet.listWebhooks();
+            let sendwebhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_send_wallet_address);
             let sendwebhooks = sendwebhookres.webhooks
             for (let sendwebhookIndex = 0; sendwebhookIndex < sendwebhooks.length; sendwebhookIndex++) {
                 const webhook = sendwebhooks[sendwebhookIndex];
                 if (webhook.type == "transfer") {
-                    await sendWallet.removeWebhook({
-                        url: webhook.url,
-                        type: "transfer",
-                    });
+                    await sails.helpers.bitgo.removeWebhook(coin.coin_code, coin.hot_send_wallet_address, webhook.url, "transfer");
+
                 }
             }
+
             // Create new webhook
-            let sendWebhookParams = {
-                url: `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-send`,
-                type: "transfer"
-            };
+            allToken = false;
             if (coin.coin == "ETH") {
-                sendWebhookParams["allToken"] = true
+                allToken = true
             }
-            await sendWallet.addWebhook(sendWebhookParams);
+            await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_send_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-send`, "transfer", allToken);
+
         }
         return res.json({ success: true });
     },
@@ -86,13 +66,8 @@ module.exports = {
         // res.end();
 
         if (req.body.state == "confirmed") {
-            var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-            var wallet = await bitgo
-                .coin(req.body.coin)
-                .wallets()
-                .get({ id: req.body.wallet });
             let transferId = req.body.transfer;
-            let transfer = await wallet.getTransfer({ id: transferId })
+            let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
             if (transfer.state == "confirmed") {
                 let alreadyWalletHistory = await WalletHistory.find({ transaction_type: "receive", transaction_id: req.body.hash });
                 console.log(alreadyWalletHistory);
@@ -143,13 +118,10 @@ module.exports = {
 
                         // Send fund to Warm and custody wallet
                         let coin = await Coins.findOne({ id: userWallet.coin_id });
-                        let warmWallet = await bitgo
-                            .coin(req.body.coin)
-                            .wallets()
-                            .get({ id: coin.warm_wallet_address });
-                        // console.log("warm wallet", warmWallet.receiveAddress());
+                        let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
+                        // console.log("warm wallet", warmWallet.receiveAddress.address);
 
-                        let custodialWallet = await bitgo.coin(req.body.coin).wallets().get({ id: coin.custody_wallet_address });
+                        let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
                         // check for wallet exist or not
                         if (warmWallet.id && custodialWallet.id) {
                             // check for warm wallet balance 
@@ -167,17 +139,12 @@ module.exports = {
                             }
 
                             // send amount to warm wallet
-                            await wallet.send({
-                                amount: warmWalletAmount,
-                                address: warmWallet.receiveAddress(),
-                                walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-                            });
-
+                            await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
                             let transactionLog = [];
                             // Log Transafer in transaction table
                             transactionLog.push({
                                 source_address: userWallet.receive_address,
-                                destination_address: warmWallet.receiveAddress(),
+                                destination_address: warmWallet.receiveAddress.address,
                                 amount: warmWalletAmount,
                                 user_id: userWallet.user_id,
                                 transaction_type: "receive",
@@ -187,16 +154,12 @@ module.exports = {
 
 
                             // send amount to custodial wallet
-                            await wallet.send({
-                                amount: custodialWalletAmount,
-                                address: custodialWallet.receiveAddress(),
-                                walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-                            });
+                            await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, custodialWalletAmount)
 
                             // Log Transafer in transaction table
                             transactionLog.push({
                                 source_address: userWallet.receive_address,
-                                destination_address: custodialWallet.receiveAddress(),
+                                destination_address: custodialWallet.receiveAddress.address,
                                 amount: custodialWalletAmount,
                                 user_id: userWallet.user_id,
                                 transaction_type: "receive",
@@ -217,20 +180,31 @@ module.exports = {
 
     // Set webhook of address_confirmation for ethereum wallet
     setAddressWebhook: async function (req, res) {
-        let etheriumCoin = await Coins.findOne({
+        let coin = await Coins.findOne({
             coin: "ETH",
             deleted_at: null,
             is_active: true
         });
-        if (etheriumCoin) {
-            let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-            var wallet = await bitgo
-                .coin(etheriumCoin.coin_code)
-                .wallets()
-                .get({ id: etheriumCoin.hot_receive_wallet_address });
+        if (coin) {
+            // remove Existing webhooks
+            let webhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_receive_wallet_address);
 
-            let walletWebHok = await wallet.addWebhook({ url: `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, type: "address_confirmation", allToken: true });
-            console.log(walletWebHok);
+            console.log(webhookres["webhooks"]);
+            let webhooks = webhookres.webhooks
+            for (let webhookIndex = 0; webhookIndex < webhooks.length; webhookIndex++) {
+                const webhook = webhooks[webhookIndex];
+                if (webhook.type == "address_confirmation") {
+                    await sails.helpers.bitgo.removeWebhook(coin.coin_code, coin.hot_receive_wallet_address, webhook.url, "address_confirmation");
+                }
+            }
+            // Create new webhook
+            let allToken = false;
+            if (coin.coin == "ETH") {
+                allToken = true
+            }
+            console.log("address webhook wallet", coin.hot_receive_wallet_address);
+
+            await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_receive_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, "address_confirmation", allToken);
         }
         res.json({ success: true });
 
@@ -238,13 +212,8 @@ module.exports = {
 
     // Webhook for address confiramtion
     webhookOnAddress: async function (req, res) {
-        let bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
         if (req.body.address && req.body.walletId) {
-            let wallet = await bitgo
-                .coin("teth")
-                .wallets()
-                .get({ id: req.body.walletId });
-            let address = await wallet.getAddress({ address: req.body.address });
+            let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
             let addressLable = address.label;
             let coin = address.coin;
             if (addressLable.includes("-")) {
@@ -267,16 +236,9 @@ module.exports = {
 
         // Check Status of Transaction
         if (req.body.state == "confirmed") {
-            // Connect Bitgo Wallet
-            var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-            // get Wallet Bitgo
-            var wallet = await bitgo
-                .coin(req.body.coin)
-                .wallets()
-                .get({ id: req.body.wallet });
             let transferId = req.body.transfer;
             // get transaction details
-            let transfer = await wallet.getTransfer({ id: transferId })
+            let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
             // check status of transaction in transaction details
             if (transfer.state == "confirmed") {
                 let walletHistory = await WalletHistory.findOne({
@@ -286,12 +248,7 @@ module.exports = {
                 if (walletHistory) {
 
                     // Send To user's destination address
-                    let sendTransfer = await wallet.send({
-                        amount: walletHistory.amount * 1e8,
-                        address: walletHistory.destination_address,
-                        walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-                    });
-
+                    let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, walletHistory.amount * 1e8)
                     // Update in wallet history
                     await WalletHistory.update({
                         id: walletHistory.id
@@ -303,7 +260,7 @@ module.exports = {
                     // Log transaction in transaction table
                     await TransactionTable.create({
                         coin_id: walletHistory.coin_id,
-                        source_address: wallet.receiveAddress(),
+                        source_address: wallet.receiveAddress.address,
                         destination_address: walletHistory.destination_address,
                         user_id: walletHistory.user_id,
                         amount: walletHistory.amount,

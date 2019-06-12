@@ -42,22 +42,22 @@ module.exports = {
     symbol: {
       type: 'string',
       columnName: 'symbol',
-      required: true
+      // required: true
     },
     kraken_pair: {
       type: 'string',
       columnName: 'kraken_pair',
-      required: true
+      // required: true
     },
     ask_price: {
       type: 'number',
       columnName: 'ask_price',
-      required: true
+      // required: true
     },
     bid_price: {
       type: 'number',
       columnName: 'bid_price',
-      required: true
+      // required: true
     },
     created_at: {
       type: 'ref',
