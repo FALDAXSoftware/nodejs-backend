@@ -32,12 +32,12 @@ module.exports = {
     try {
       var walletAddressData;
 
-      fetch('https://test.bitgo.com/api/v2/' + inputs.coin_code + '/wallet/' + inputs.wallet_address, {
-          method: "GET",
-          headers: {
-            Authorization: 'Bearer ' + sails.config.local.BITGO_ACCESS_TOKEN
-          }
-        })
+      fetch(sails.config.local.BITGO_PROXY_URL + '/' + inputs.coin_code + '/wallet/' + inputs.wallet_address, {
+        method: "GET",
+        headers: {
+          Authorization: 'Bearer ' + sails.config.local.BITGO_ACCESS_TOKEN
+        }
+      })
         .then(resData => resData.json())
         .then(resData => {
           walletAddressData = resData;

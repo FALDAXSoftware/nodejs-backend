@@ -221,20 +221,10 @@ module.exports = {
                         //Check for warm wallet minimum thresold
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
-                          var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
-                          var bitgoWallet = await bitgo
-                            .coin(coin.coin_code)
-                            .wallets()
-                            .get({ id: coin.warm_wallet_address });
-                          let params = {
-                            amount: amount * 1e8,
-                            address: sendWalletData.receiveAddress.address,
-                            walletPassphrase: sails.config.local.BITGO_PASSPHRASE
-                          };
 
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
-                          let transaction = await bitgoWallet.send(params);
+                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8);
 
                           //Here remainning ebtry as well as address change
                           let walletHistory = {

@@ -34,13 +34,11 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     //Configuring bitgo
-    var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+    var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
     //Fetching coin list
-    const coin = await Coins.findOne({deleted_at: null, is_active: true, coin: inputs.coin});
+    const coin = await Coins.findOne({ deleted_at: null, is_active: true, coin: inputs.coin });
 
-    console.log("CoinValueb ::::: ", coin)
-    console.log("Receive Address Value ::: ", coin.hot_receive_wallet_address)
 
     var walletData = await Wallet.findOne({
       deleted_at: null,
@@ -63,20 +61,14 @@ module.exports = {
         address_label = coin.coin_code + '-' + address_label;
       }
 
-      var wallet = await bitgo
-        .coin(walletCoinCode)
-        .wallets()
-        .get({id: coin.hot_receive_wallet_address});
+      var wallet = await sails.helpers.bitgo.getWallet(walletCoinCode, coin.hot_receive_wallet_address);
+
 
       if (!walletData) {
-        console.log("Inside if loop")
         if (wallet) {
           // Here chain =0 means testnet Generating wallet address Create bitgo wallet
           // address
-          let address = await wallet.createAddress({
-            "chain": parseInt(sails.config.local.chain),
-            "label": address_label
-          });
+          let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
           let obj = {
             wallet_id: "wallet",
             coin_id: parseInt(coin.id),
@@ -89,14 +81,13 @@ module.exports = {
           // walletArray.push({ ...obj });
           var data = await Wallet
             .create({
-            ...obj
-          })
+              ...obj
+            })
             .fetch();
 
           return exits.success(data);
         }
       } else {
-        console.log("Inside else loop")
         return exits.success(1);
       }
     }
