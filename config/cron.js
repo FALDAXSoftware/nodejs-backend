@@ -43,5 +43,13 @@ module.exports.cron = {
           .executeStopLimit();
       }
     }
+  },
+  updateCurrencyConversion: {
+    schedule: '0 0 * * * *',
+    onTick: async function () {
+      if (sails.config.local.CRON_STATUS == "true") {
+        await sails.helpers.utilities.updateCurrencyConversionData();
+      }
+    }
   }
 };
