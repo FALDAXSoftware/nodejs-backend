@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-
   tableName: 'states',
   attributes: {
     name: {
@@ -47,15 +46,12 @@ module.exports = {
       columnName: 'deleted_at'
     }
   },
-
   beforeCreate: function (values, next) {
     values.created_at = new Date();
     next();
   },
-
   beforeUpdate: function (values, next) {
     values.updated_at = new Date();
     next();
   }
-
 };

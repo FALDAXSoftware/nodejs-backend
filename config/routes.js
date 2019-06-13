@@ -318,7 +318,7 @@ module.exports.routes = {
   'get /admin/get-all-account-classes': 'AccountClassController.getAllAccountClasses',
   'post /admin/add-account-class': 'AccountClassController.addAccountClass',
   'post /admin/update-account-class': 'AccountClassController.updateAccountClass',
-  'delete /admin/delete-account-class': 'AccountClassController.deleteAccountClass',
+  'post /admin/delete-account-class': 'AccountClassController.deleteAccountClass',
 
   //Create One Address for user
   'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',

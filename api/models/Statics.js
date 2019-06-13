@@ -53,12 +53,12 @@ module.exports = {
   beforeCreate: (values, next) => {
     values.created_at = new Date();
     Statics
-      .findOne({'slug': values.slug})
+      .findOne({ 'slug': values.slug })
       .exec(function (err, found) {
         if (!found) {
           next();
         } else {
-          next({error: 'Page already exists'});
+          next({ error: 'Page already exists' });
         }
       });
   },

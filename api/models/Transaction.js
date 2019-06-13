@@ -43,6 +43,10 @@ module.exports = {
       columnName: 'coin_id',
       required: true
     },
+    is_executed: {
+      type: 'boolean',
+      columnName: 'is_executed'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
