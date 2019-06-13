@@ -180,7 +180,7 @@
 	"To login please activate your account": "To login please activate your account",
 	"To continue, please verify your new email address.": "To continue, please verify your new email address.",
 	"Please enter OTP to continue": "Please enter OTP to continue",
-	"New device confirmation email sent to your email.": "New device confirmation email sent to your email.Invalid email or password",
+	"New device confirmation email sent to your email.": "New device confirmation email sent to your email.",
 	"Email or password is not sent": "Email or password is not sent",
 	"Invalid verification token": "Invalid verification token",
 	"Authentication code sent to email successfully": "Authentication code sent to email successfully",
@@ -260,6 +260,6 @@
 	"No Users Amount collected": "No User Amount has been collected till now.",
 	"User Referred amount success": "Your referred amount has been listed successfully",
 	"No Referral Data found": "No Referral amount to be collected.",
-	"Job Category added success":"Job category has been added successfully.",
-	"Job Category updated success":"Job Category has been updated successfully."
+	"Job Category added success": "Job category has been added successfully.",
+	"Job Category updated success": "Job Category has been updated successfully."
 }
