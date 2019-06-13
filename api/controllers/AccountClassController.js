@@ -4,6 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var speakeasy = require('speakeasy');
+
 module.exports = {
     /**
       * API for getting activity data
@@ -93,25 +95,49 @@ module.exports = {
     },
 
     deleteAccountClass: async function (req, res) {
-        let { class_id } = req.allParams();
-        if (!class_id) {
+        let user_id = req.user.id;
+        let { class_id, otp } = req.allParams();
+
+        let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+        if (!user) {
+            return res
+                .status(401)
+                .json({
+                    "status": 401,
+                    "err": sails.__("user inactive")
+                });
+        }
+
+        let verified = speakeasy
+            .totp
+            .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+        if (verified) {
+            if (!class_id) {
+                return res
+                    .status(500)
+                    .json({
+                        "status": 500,
+                        "err": sails.__("Class id is not sent")
+                    });
+            }
+            let classData = await AccountClass
+                .update({ id: class_id })
+                .set({ deleted_at: new Date() })
+                .fetch();
+            if (classData) {
+                return res
+                    .status(200)
+                    .json({
+                        "status": 200,
+                        "message": sails.__("Class deleted success")
+                    });
+            }
+        } else {
             return res
                 .status(500)
                 .json({
                     "status": 500,
-                    "err": sails.__("Class id is not sent")
-                });
-        }
-        let classData = await AccountClass
-            .update({ id: class_id })
-            .set({ deleted_at: new Date() })
-            .fetch();
-        if (classData) {
-            return res
-                .status(200)
-                .json({
-                    "status": 200,
-                    "message": sails.__("Class deleted success")
+                    "err": "OTP is wrong!!"
                 });
         }
     }
