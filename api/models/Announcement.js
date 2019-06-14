@@ -1,7 +1,7 @@
 /**
  * Announcement.js
  *
- * @description :: Represents a database table announcments.
+ * @description :: Represents a database table announcements.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
@@ -53,12 +53,12 @@ module.exports = {
   beforeCreate: (values, next) => {
     values.created_at = new Date();
     Announcement
-      .findOne({'slug': values.slug})
+      .findOne({ 'slug': values.slug })
       .exec(function (err, found) {
         if (!found) {
           next();
         } else {
-          next({error: 'Page already exists'});
+          next({ error: 'Page already exists' });
         }
       });
   },

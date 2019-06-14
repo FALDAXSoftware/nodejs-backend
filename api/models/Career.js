@@ -7,6 +7,7 @@
 
 module.exports = {
   tableName: 'job_applications',
+  primaryKey: 'id',
   attributes: {
     first_name: {
       type: 'string',
@@ -45,10 +46,10 @@ module.exports = {
       allowNull: true,
       defaultsTo: ''
     },
-    job_id: {
-      columnName: 'job_id',
-      type: 'number'
-    },
+    // job_id: {
+    //   columnName: 'job_id',
+    //   type: 'number'
+    // },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
