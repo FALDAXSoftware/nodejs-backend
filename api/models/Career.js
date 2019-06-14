@@ -46,10 +46,10 @@ module.exports = {
       allowNull: true,
       defaultsTo: ''
     },
-    job_id: {
-      columnName: 'job_id',
-      type: 'number'
-    },
+    // job_id: {
+    //   columnName: 'job_id',
+    //   type: 'number'
+    // },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
