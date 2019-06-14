@@ -13,9 +13,9 @@ module.exports = {
         is_news_feed: true,
         created_at: new Date()
       }
-      let getData = await Subscribe.find({email: req.body.email});
+      let getData = await Subscribe.find({ email: req.body.email });
       if (getData.length > 0) {
-        throw("You have subscribed to news feeds already.")
+        throw ("You have subscribed to news feeds already.")
       }
       let add = await Subscribe
         .create(obj)
@@ -29,17 +29,17 @@ module.exports = {
           recipientName: req.body.email,
           senderName: "Faldax"
         }, {
-          to: req.body.email,
-          subject: "Subscription"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("verification link")
-            });
-          }
-          throw(err)
-        })
+            to: req.body.email,
+            subject: "Subscription"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("verification link")
+              });
+            }
+            throw (err)
+          })
     } catch (e) {
       return res
         .status(500)
@@ -51,7 +51,7 @@ module.exports = {
   },
 
   getAllSubscribers: async function (req, res) {
-    let {page, limit, data, start_date, end_date} = req.allParams();
+    let { page, limit, data, start_date, end_date } = req.allParams();
     if (data) {
       let q = {
         deleted_at: null
@@ -72,10 +72,10 @@ module.exports = {
 
       let subscriberData = await Subscribe
         .find({
-        where: {
-          ...q
-        }
-      })
+          where: {
+            ...q
+          }
+        })
         .sort("id ASC")
         .paginate(page - 1, parseInt(limit));
       let subscriberCount = await Subscribe.count({
@@ -104,10 +104,10 @@ module.exports = {
 
       let subscriberData = await Subscribe
         .find({
-        where: {
-          ...q
-        }
-      })
+          where: {
+            ...q
+          }
+        })
         .sort("id ASC")
         .paginate(page - 1, parseInt(limit));
 
@@ -130,7 +130,7 @@ module.exports = {
 
   deleteSubscriber: async function (req, res) {
     try {
-      let {subscriber_id} = req.allParams();
+      let { subscriber_id } = req.allParams();
       if (!subscriber_id) {
         res
           .status(500)
@@ -141,8 +141,8 @@ module.exports = {
         return;
       }
       let deleteSubscriber = await Subscribe
-        .update({id: subscriber_id})
-        .set({deleted_at: new Date()})
+        .update({ id: subscriber_id })
+        .set({ deleted_at: new Date() })
         .fetch();
       if (deleteSubscriber) {
         return res.json({
