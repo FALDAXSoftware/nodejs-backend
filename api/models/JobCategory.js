@@ -30,6 +30,10 @@ module.exports = {
     is_active: {
       type: 'boolean',
       columnName: 'is_active'
+    },
+    jobs: {
+      collection: 'jobs',
+      via: 'category_id'
     }
   },
   beforeCreate: function (val, next) {
