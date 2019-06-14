@@ -7,5 +7,7 @@ module.exports.urlconf = {
     //    'https://dev.faldax.com',
     BUCKET_URL: "https://s3.us-east-2.amazonaws.com/production-static-asset/",
     //"https://s3.ap-south-1.amazonaws.com/varshalteamprivatebucket/faldax/",
-    BUCKET_NAME: "production-static-asset"
+    BUCKET_NAME: "production-static-asset",
+
+    SITE_HOME_PAGE: "https://www.faldax.com"
 };

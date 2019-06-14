@@ -16,7 +16,7 @@ module.exports = {
       * @return <User acticity data>
      */
     // CMS all class api
-    getAllAccountClasses: async function (req, res) {
+    getAllAccountClasses: async function(req, res) {
         try {
             let allClasses = await AccountClass.find({ deleted_at: null }).sort('id ASC');
 
@@ -35,7 +35,7 @@ module.exports = {
         }
     },
 
-    addAccountClass: async function (req, res) {
+    addAccountClass: async function(req, res) {
         let params = req.body.class_name;
         try {
             let accountClass = await AccountClass
@@ -63,7 +63,7 @@ module.exports = {
         }
     },
 
-    updateAccountClass: async function (req, res) {
+    updateAccountClass: async function(req, res) {
         let { id, class_name } = req.body;
         try {
             let accountClass = await AccountClass.findOne({ id, deleted_at: null });
@@ -94,51 +94,59 @@ module.exports = {
         }
     },
 
-    deleteAccountClass: async function (req, res) {
-        let user_id = req.user.id;
-        let { class_id, otp } = req.allParams();
+    deleteAccountClass: async function(req, res) {
+        try {
+            let { class_id, otp, admin_id } = req.allParams();
 
-        let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
-        if (!user) {
-            return res
-                .status(401)
-                .json({
-                    "status": 401,
-                    "err": sails.__("user inactive")
-                });
-        }
+            let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+            if (!user) {
+                return res
+                    .status(401)
+                    .json({
+                        "status": 401,
+                        "message": sails.__("user inactive")
+                    });
+            }
 
-        let verified = speakeasy
-            .totp
-            .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
-        if (verified) {
-            if (!class_id) {
+            let verified = speakeasy
+                .totp
+                .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+            if (verified) {
+                if (!class_id) {
+                    return res
+                        .status(500)
+                        .json({
+                            "status": 500,
+                            "message": sails.__("Class id is not sent")
+                        });
+                }
+                let classData = await AccountClass
+                    .update({ id: class_id })
+                    .set({ deleted_at: new Date() })
+                    .fetch();
+                if (classData) {
+                    return res
+                        .status(200)
+                        .json({
+                            "status": 200,
+                            "message": sails.__("Class deleted success")
+                        });
+                }
+            } else {
                 return res
                     .status(500)
                     .json({
                         "status": 500,
-                        "err": sails.__("Class id is not sent")
+                        "message": "OTP is wrong!!"
                     });
             }
-            let classData = await AccountClass
-                .update({ id: class_id })
-                .set({ deleted_at: new Date() })
-                .fetch();
-            if (classData) {
-                return res
-                    .status(200)
-                    .json({
-                        "status": 200,
-                        "message": sails.__("Class deleted success")
-                    });
-            }
-        } else {
+        } catch (err) {
             return res
                 .status(500)
                 .json({
-                    "status": 500,
-                    "err": "OTP is wrong!!"
-                });
+                    status: 500,
+                    err: sails.__("Something Wrong")
+                })
         }
     }
 };
