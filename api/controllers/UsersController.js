@@ -69,7 +69,7 @@ module.exports = {
           referred_id: referred_id,
           device_type: req.body.device_type,
           account_tier: 1,
-          account_class: 3,
+          account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2)
             ? email_verify_code
             : email_verify_token
@@ -115,7 +115,6 @@ module.exports = {
                   }
                 });
           }
-
         } else {
           return res
             .status(401)
@@ -134,8 +133,6 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log(error);
-
       return res
         .status(500)
         .json({

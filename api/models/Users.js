@@ -207,7 +207,6 @@ module.exports = {
       type: 'number',
       columnName: 'account_class',
       allowNull: true,
-      defaultsTo: 3
     },
     country_code: {
       type: 'string',
