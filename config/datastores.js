@@ -16,44 +16,44 @@
 module.exports.datastores = {
 
 
-  /***************************************************************************
-  *                                                                          *
-  * Your app's default datastore.                                            *
-  *                                                                          *
-  * Sails apps read and write to local disk by default, using a built-in     *
-  * database adapter called `sails-disk`.  This feature is purely for        *
-  * convenience during development; since `sails-disk` is not designed for   *
-  * use in a production environment.                                         *
-  *                                                                          *
-  * To use a different db _in development_, follow the directions below.     *
-  * Otherwise, just leave the default datastore as-is, with no `adapter`.    *
-  *                                                                          *
-  * (For production configuration, see `config/env/production.js`.)          *
-  *                                                                          *
-  ***************************************************************************/
-
-  default: {
-
     /***************************************************************************
     *                                                                          *
-    * Want to use a different database during development?                     *
+    * Your app's default datastore.                                            *
     *                                                                          *
-    * 1. Choose an adapter:                                                    *
-    *    https://sailsjs.com/plugins/databases                                 *
+    * Sails apps read and write to local disk by default, using a built-in     *
+    * database adapter called `sails-disk`.  This feature is purely for        *
+    * convenience during development; since `sails-disk` is not designed for   *
+    * use in a production environment.                                         *
     *                                                                          *
-    * 2. Install it as a dependency of your Sails app.                         *
-    *    (For example:  npm install sails-mysql --save)                        *
+    * To use a different db _in development_, follow the directions below.     *
+    * Otherwise, just leave the default datastore as-is, with no `adapter`.    *
     *                                                                          *
-    * 3. Then pass it in, along with a connection URL.                         *
-    *    (See https://sailsjs.com/config/datastores for help.)                 *
+    * (For production configuration, see `config/env/production.js`.)          *
     *                                                                          *
     ***************************************************************************/
-    adapter: 'sails-postgresql',
-    //url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
-    //url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
-    url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
-    //url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
-    ssl: false,
-    // pool: false
-  },
+
+    default: {
+
+        /***************************************************************************
+        *                                                                          *
+        * Want to use a different database during development?                     *
+        *                                                                          *
+        * 1. Choose an adapter:                                                    *
+        *    https://sailsjs.com/plugins/databases                                 *
+        *                                                                          *
+        * 2. Install it as a dependency of your Sails app.                         *
+        *    (For example:  npm install sails-mysql --save)                        *
+        *                                                                          *
+        * 3. Then pass it in, along with a connection URL.                         *
+        *    (See https://sailsjs.com/config/datastores for help.)                 *
+        *                                                                          *
+        ***************************************************************************/
+        adapter: 'sails-postgresql',
+        //url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
+        url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+        //url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+        //url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+        ssl: false,
+        // pool: false
+    },
 };
