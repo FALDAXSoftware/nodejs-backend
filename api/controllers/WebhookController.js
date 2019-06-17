@@ -212,8 +212,10 @@ module.exports = {
 
     // Webhook for address confiramtion
     webhookOnAddress: async function (req, res) {
+
         if (req.body.address && req.body.walletId) {
             let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+            console.log("-=-=-=-=-=-", address);
             let addressLable = address.label;
             let coin = address.coin;
             if (addressLable.includes("-")) {
