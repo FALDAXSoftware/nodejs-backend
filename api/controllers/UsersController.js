@@ -11,7 +11,7 @@ var fetch = require('node-fetch');
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
-
+var csc = require('country-state-city');
 module.exports = {
   //------------------Web APi------------------------------------------------//
 
@@ -375,8 +375,33 @@ module.exports = {
   },
 
   getUserDetails: async function (req, res) {
+
     let id = req.user.id;
     let usersData = await Users.find({ id: id });
+    if (usersData.length > 0) {
+
+      if (usersData[0].country) {
+        let AllCountries = csc.getAllCountries();
+        usersData[0]["countryJsonId"] = null;
+        for (let index = 0; index < AllCountries.length; index++) {
+          const element = AllCountries[index];
+          if (element.name == usersData[0].country) {
+            usersData[0]["countryJsonId"] = element.id
+          }
+        }
+
+        if (usersData[0].state) {
+          let allStates = csc.getStatesOfCountry(usersData[0]["countryJsonId"]);
+          usersData[0]["stateJsonId"] = null;
+          for (let index = 0; index < allStates.length; index++) {
+            const element = allStates[index];
+            if (element.name == usersData[0].state) {
+              usersData[0]["stateJsonId"] = element.id
+            }
+          }
+        }
+      }
+    }
     let userKyc = await KYC.findOne({ user_id: id });
     usersData[0].is_kyc_done = 0;
     if (userKyc) {

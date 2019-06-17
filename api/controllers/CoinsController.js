@@ -390,10 +390,11 @@ module.exports = {
       let query = " from coins WHERE deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + "AND LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + "AND (LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query = query + " OR max_limit=" + data + " OR min_limit=" + data;
           }
+          query += ")"
         }
       }
       countQuery = query;
@@ -473,6 +474,15 @@ module.exports = {
                   created_at: new Date()
                 })
                 .fetch();
+              var assetTierLimits = [];
+              let numberOfTiers = 4
+              for (let index = 0; index < numberOfTiers; index++) {
+                assetTierLimits.push({
+                  tier_step: index + 1,
+                  coin_id: coins_detail.id
+                });
+              }
+              await Limit.createEach(assetTierLimits);
               if (coins_detail) {
                 res.json({
                   "status": 200,
