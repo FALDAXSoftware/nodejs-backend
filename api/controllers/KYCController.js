@@ -21,7 +21,7 @@ module.exports = {
     try {
       let user_id = req.user.id;
       req.body.user_id = user_id;
-      let kyc_details = await KYC.findOne({user_id});
+      let kyc_details = await KYC.findOne({ user_id });
       req.body.city = req.body.city_town;
 
       if (kyc_details) {
@@ -69,12 +69,12 @@ module.exports = {
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
           updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set(req.body)
             .fetch();
         } else {
           updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set(req.body)
             .fetch();
         }
@@ -182,7 +182,7 @@ module.exports = {
           if (data.ednaScoreCard.er) {
             if (data.ednaScoreCard.er.reportedRule) {
               let updated = await KYC
-                .update({mtid: data.mtid})
+                .update({ mtid: data.mtid })
                 .set({
                   kyc_doc_details: data.ednaScoreCard.er.reportedRule.details
                     ? data.ednaScoreCard.er.reportedRule.details
@@ -197,8 +197,8 @@ module.exports = {
       } catch (err) {
         if (data.mtid) {
           let updated = await KYC
-            .update({mtid: data.mtid})
-            .set({kyc_doc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW'})
+            .update({ mtid: data.mtid })
+            .set({ kyc_doc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW' })
             .fetch();
         }
       }
@@ -218,10 +218,34 @@ module.exports = {
   getKYCDetails: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let KYCData = await KYC.findOne({user_id});
+      let KYCData = await KYC.findOne({ user_id });
       if (KYCData) {
         KYCData.city_town = KYCData.city;
         delete KYCData.city;
+
+        if (KYCData.country) {
+          let AllCountries = csc.getAllCountries();
+          KYCData["countryJsonId"] = null;
+          for (let index = 0; index < AllCountries.length; index++) {
+            const element = AllCountries[index];
+            if (element.name == KYCData.country) {
+              KYCData["countryJsonId"] = element.id
+            }
+          }
+
+          if (KYCData.state) {
+            let allStates = csc.getStatesOfCountry(KYCData["countryJsonId"]);
+            KYCData["stateJsonId"] = null;
+            for (let index = 0; index < allStates.length; index++) {
+              const element = allStates[index];
+              if (element.name == KYCData.state) {
+                KYCData["stateJsonId"] = element.id
+              }
+            }
+          }
+        }
+
+
       }
 
       var kycCron = await sails
@@ -323,14 +347,14 @@ module.exports = {
 
   approveDisapproveKYC: async function (req, res) {
     try {
-      let {id, isApprove} = req.body;
-      let kyc_details = await KYC.findOne({id});
+      let { id, isApprove } = req.body;
+      let kyc_details = await KYC.findOne({ id });
 
       if (kyc_details) {
         if (isApprove == true) {
           let updated_kyc = await KYC
-            .update({id: kyc_details.id})
-            .set({direct_response: 'ACCEPT', webhook_response: 'ACCEPT', is_approve: true, updated_at: new Date()})
+            .update({ id: kyc_details.id })
+            .set({ direct_response: 'ACCEPT', webhook_response: 'ACCEPT', is_approve: true, updated_at: new Date() })
             .fetch();
           if (updated_kyc) {
             return res.json({
@@ -340,7 +364,7 @@ module.exports = {
           }
         } else {
           let updated_kyc = await KYC
-            .update({id: kyc_details.id})
+            .update({ id: kyc_details.id })
             .set({
               is_approve: false,
               steps: 2,
@@ -378,9 +402,9 @@ module.exports = {
 
   getUserKYCDetails: async function (req, res) {
     try {
-      let {user_id} = req.allParams();
+      let { user_id } = req.allParams();
 
-      let KYCData = await KYC.findOne({user_id});
+      let KYCData = await KYC.findOne({ user_id });
       if (KYCData) {
         return res.json({
           "status": 200,
