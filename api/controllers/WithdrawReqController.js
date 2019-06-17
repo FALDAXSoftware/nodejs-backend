@@ -24,8 +24,7 @@ module.exports = {
             sort_order
         } = req.allParams();
 
-        let query = " from withdraw_request LEFT JOIN users ON withdraw_request.user_id = users.id LE" +
-            "FT JOIN coins ON withdraw_request.coin_id = coins.id";
+        let query = " from withdraw_request LEFT JOIN users ON withdraw_request.user_id = users.id LEFT JOIN coins ON withdraw_request.coin_id = coins.id";
         let whereAppended = false;
 
         if ((data && data != "")) {
@@ -57,7 +56,11 @@ module.exports = {
                 query += " WHERE "
             }
             whereAppended = true;
-            query += " withdraw_request.is_approve=" + t_type;
+            if (t_type == "null") {
+                query += " withdraw_request.is_approve IS NULL";
+            } else {
+                query += " withdraw_request.is_approve=" + t_type;
+            }
         }
 
         if (start_date && end_date) {
@@ -84,6 +87,7 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        console.log("withdraw request", query);
 
         let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email, coins.coin_name " + query, [])
         withdrawReqData = withdrawReqData.rows;
