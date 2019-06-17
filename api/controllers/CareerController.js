@@ -349,10 +349,7 @@ module.exports = {
       let query = " from job_applications WHERE deleted_at IS NULL AND job_id=" + job_id;
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(location) LIKE '%" + data.toLowerCase() + "%' OR LOWER(linkedin_profile) LIKE '%" + data.toLowerCase() + "%' OR LOWER(website_url) LIKE '%" + data.toLowerCase() + "%'";
-          if (!isNaN(data)) {
-            query = query + " OR phone_number=" + data;
-          }
+          query = query + " AND LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(location) LIKE '%" + data.toLowerCase() + "%' OR LOWER(linkedin_profile) LIKE '%" + data.toLowerCase() + "%' OR LOWER(website_url) LIKE '%" + data.toLowerCase() + "%' OR phone_number='" + data.toLowerCase() + "'";
         }
       }
       countQuery = query;
@@ -363,11 +360,8 @@ module.exports = {
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let applications = await sails.sendNativeQuery("Select *" + query, [])
-
       applications = applications.rows;
-
       let applicationCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       applicationCount = applicationCount.rows[0].count;
       if (applications) {

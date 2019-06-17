@@ -87,7 +87,6 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log("withdraw request", query);
 
         let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email, coins.coin_name " + query, [])
         withdrawReqData = withdrawReqData.rows;
