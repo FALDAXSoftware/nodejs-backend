@@ -31,31 +31,31 @@ module.exports = {
       type: 'string',
       example: 'Doe',
       description: 'Address',
-      required: true
+      defaultsTo: ''
     },
     country: {
       type: 'string',
       example: 'Doe',
       description: 'Country',
-      required: true
+      defaultsTo: ''
     },
     state: {
       type: 'string',
       example: 'Doe',
       description: 'State',
-      required: true
+      defaultsTo: ''
     },
     city: {
       type: 'string',
       example: 'Doe',
       description: 'City',
-      required: true
+      defaultsTo: ''
     },
     zip: {
       type: 'string',
       example: 'Doe',
       description: 'zip',
-      required: true
+      defaultsTo: ''
     },
   },
 
@@ -70,40 +70,51 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
+    let properties = [
+      {
+        "property": "firstname",
+        "value": inputs.firstname
+      },
+      {
+        "property": "lastname",
+        "value": inputs.lastname
+      }
+    ];
+    if (inputs.address != "") {
+      properties.push({
+        "property": "address",
+        "value": inputs.address
+      });
+    }
+    if (inputs.country != "") {
+      properties.push({
+        "property": "country",
+        "value": inputs.country
+      });
+    }
+    if (inputs.city != "") {
+      properties.push({
+        "property": "city",
+        "value": inputs.city
+      });
+    }
+    if (inputs.state != "") {
+      properties.push({
+        "property": "state",
+        "value": inputs.state
+      });
+    }
+    if (inputs.zip != "") {
+      properties.push({
+        "property": "zip",
+        "value": inputs.zip
+      });
+    }
     fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.update.replace(":vid", inputs.vid) + "?hapikey=" + sails.config.local.hubspot.apiKey,
       {
         method: "POST",
         body: JSON.stringify({
-          "properties": [
-            {
-              "property": "firstname",
-              "value": inputs.firstname
-            },
-            {
-              "property": "lastname",
-              "value": inputs.lastname
-            },
-            {
-              "property": "address",
-              "value": inputs.address
-            },
-            {
-              "property": "country",
-              "value": inputs.country
-            },
-            {
-              "property": "city",
-              "value": inputs.city
-            },
-            {
-              "property": "state",
-              "value": inputs.state
-            },
-            {
-              "property": "zip",
-              "value": inputs.zip
-            },
-          ]
+          "properties": properties
         })
       })
       // .then(createResData => createResData.json())
