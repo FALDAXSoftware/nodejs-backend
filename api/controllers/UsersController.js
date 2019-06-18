@@ -1100,7 +1100,7 @@ module.exports = {
         sort_order
       } = req.allParams();
       let query = " from users LEFT JOIN (SELECT COUNT(id) as total_referal, referred_id FROM users" +
-        " GROUP BY referred_id) reffered_data ON users.id = reffered_data.referred_id";
+        " GROUP BY referred_id) reffered_data ON users.id = reffered_data.referred_id LEFT JOIN users as refered_by_user ON refered_by_user.id = users.referred_id";
       query += " WHERE users.is_verified='true'";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
@@ -1122,7 +1122,7 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select users.*,reffered_data.total_referal" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*,reffered_data.total_referal,refered_by_user.email as refered_by" + query, [])
 
       usersData = usersData.rows;
 
