@@ -74,7 +74,7 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " ( LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
+          query += " ( LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR maker_fee=" + data + " OR taker_fee=" + data;
           }
