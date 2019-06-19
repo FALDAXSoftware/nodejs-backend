@@ -1007,8 +1007,8 @@ module.exports = {
     try {
       let { user_id, email, is_active, is_verified } = req.body;
 
-      if (is_active) {
-        let usersData = await Users
+      if (typeof is_active == 'boolean') {
+        var usersData = await Users
           .update({ id: user_id })
           .set({ email: email, is_active })
           .fetch();
