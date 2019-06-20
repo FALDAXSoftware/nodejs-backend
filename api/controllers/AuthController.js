@@ -229,9 +229,9 @@ module.exports = {
                       }, function (err) {
                         if (!err) {
                           return res
-                            .status(401)
+                            .status(202)
                             .json({
-                              "status": 401,
+                              "status": 202,
                               "err": sails.__("New device confirmation email sent to your email.")
                             });
                         } else {
