@@ -920,6 +920,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY users." + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY users.created_at DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));

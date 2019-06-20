@@ -417,6 +417,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
       let allEmployees = await sails.sendNativeQuery("Select *" + query, [])
 
