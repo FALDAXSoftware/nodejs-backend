@@ -14,21 +14,22 @@ module.exports = {
     },
 
     fn: async function (inputs) {
-        let allSellBookData = await SellBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
-        let allbuyBookData = await BuyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
-        let allPendingBookData = await PendingBook.find({ deleted_at: null });
+        // let allSellBookData = await SellBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
+        // let allbuyBookData = await BuyBook.find({ deleted_at: null, is_partially_fulfilled: true, order_type: 'Limit' });
+        // let allPendingBookData = await PendingBook.find({ deleted_at: null });
 
-        let finalUserList = [];
-        finalUserList = allSellBookData.concat(allBuyBookData);
-        finalUserList = allSellBookData.concat(allPendingBookData);
+        // let finalUserList = [];
+        // finalUserList = allSellBookData.concat(allBuyBookData);
+        // finalUserList = allSellBookData.concat(allPendingBookData);
 
-        let allUsers = [];
-        for (let index = 0; index < finalUserList.length; index++) {
-            const temp = finalUserList[index].user_id;
-            if (allUsers.indexOf(temp) === -1) {
-                allUsers.push(temp);
-            }
-        }
-        return allUsers;
+        // let allUsers = [];
+        // for (let index = 0; index < finalUserList.length; index++) {
+        //     const temp = finalUserList[index].user_id;
+        //     if (allUsers.indexOf(temp) === -1) {
+        //         allUsers.push(temp);
+        //     }
+        // }
+        // return allUsers;
+        return [];
     }
 };

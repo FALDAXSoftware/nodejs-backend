@@ -48,7 +48,7 @@ module.exports = {
         method: "GET",
       })
         .then(resData => resData.json())
-        .then(resData => {
+        .then(async resData => {
           if (resData.status == "error") {
             fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.create + "?hapikey=" + sails.config.local.hubspot.apiKey,
               {
@@ -84,6 +84,11 @@ module.exports = {
 
               })
           } else {
+            await sails
+              .helpers
+              .hubspot
+              .contacts
+              .update(resData.vid, inputs.firstname, inputs.lastname);
             return exits.success(resData.vid);
           }
 

@@ -74,16 +74,17 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " LOWER(name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code1) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code2) LIKE '%" + data.toLowerCase() + "%'";
+          query += " ( LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR maker_fee=" + data + " OR taker_fee=" + data;
           }
+          query += " )"
         }
       }
       if (filter_val) {
         query += whereAppended ? " AND " : " WHERE ";
         whereAppended = true;
-        query += " coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "'";
+        query += "( coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "' )";
       }
       countQuery = query;
       if (sort_col && sort_order) {
@@ -131,10 +132,20 @@ module.exports = {
 
   createPair: async function (req, res) {
     try {
-      if (req.body.name && req.body.coin_code1 && req.body.coin_code1) {
-
+      if (req.body.name && req.body.coin_code1 && req.body.coin_code2) {
         let coinID_1 = await Coins.findOne({ coin: req.body.coin_code1 });
-        let coinID_2 = await Coins.findOne({ coin: req.body.coin_code1 });
+        let coinID_2 = await Coins.findOne({ coin: req.body.coin_code2 });
+        let existingPair = await Pairs.find({
+          coin_code1: coinID_1.id,
+          coin_code2: coinID_2.id,
+          deleted_at: null
+        });
+        if (existingPair.length > 0) {
+          return res.status(500).json({
+            "status": 500,
+            "err": sails.__("pair already exist")
+          });
+        }
 
         var pair_details = await Pairs
           .create({

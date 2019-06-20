@@ -11,7 +11,7 @@ var fetch = require('node-fetch');
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
-
+var csc = require('country-state-city');
 module.exports = {
   //------------------Web APi------------------------------------------------//
 
@@ -69,7 +69,7 @@ module.exports = {
           referred_id: referred_id,
           device_type: req.body.device_type,
           account_tier: 1,
-          account_class: 3,
+          account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2)
             ? email_verify_code
             : email_verify_token
@@ -115,7 +115,6 @@ module.exports = {
                   }
                 });
           }
-
         } else {
           return res
             .status(401)
@@ -134,8 +133,6 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log(error);
-
       return res
         .status(500)
         .json({
@@ -378,8 +375,33 @@ module.exports = {
   },
 
   getUserDetails: async function (req, res) {
+
     let id = req.user.id;
     let usersData = await Users.find({ id: id });
+    if (usersData.length > 0) {
+
+      if (usersData[0].country) {
+        let AllCountries = csc.getAllCountries();
+        usersData[0]["countryJsonId"] = null;
+        for (let index = 0; index < AllCountries.length; index++) {
+          const element = AllCountries[index];
+          if (element.name == usersData[0].country) {
+            usersData[0]["countryJsonId"] = element.id
+          }
+        }
+
+        if (usersData[0].state) {
+          let allStates = csc.getStatesOfCountry(usersData[0]["countryJsonId"]);
+          usersData[0]["stateJsonId"] = null;
+          for (let index = 0; index < allStates.length; index++) {
+            const element = allStates[index];
+            if (element.name == usersData[0].state) {
+              usersData[0]["stateJsonId"] = element.id
+            }
+          }
+        }
+      }
+    }
     let userKyc = await KYC.findOne({ user_id: id });
     usersData[0].is_kyc_done = 0;
     if (userKyc) {
@@ -985,8 +1007,8 @@ module.exports = {
     try {
       let { user_id, email, is_active, is_verified } = req.body;
 
-      if (is_active) {
-        let usersData = await Users
+      if (typeof is_active == 'boolean') {
+        var usersData = await Users
           .update({ id: user_id })
           .set({ email: email, is_active })
           .fetch();
@@ -1078,7 +1100,7 @@ module.exports = {
         sort_order
       } = req.allParams();
       let query = " from users LEFT JOIN (SELECT COUNT(id) as total_referal, referred_id FROM users" +
-        " GROUP BY referred_id) reffered_data ON users.id = reffered_data.referred_id";
+        " GROUP BY referred_id) reffered_data ON users.id = reffered_data.referred_id LEFT JOIN users as refered_by_user ON refered_by_user.id = users.referred_id";
       query += " WHERE users.is_verified='true'";
       if (user_id) {
         query += " AND users.referred_id =" + user_id;
@@ -1100,7 +1122,7 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select users.*,reffered_data.total_referal" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*,reffered_data.total_referal,refered_by_user.email as refered_by" + query, [])
 
       usersData = usersData.rows;
 

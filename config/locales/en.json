@@ -261,5 +261,7 @@
 	"User Referred amount success": "Your referred amount has been listed successfully",
 	"No Referral Data found": "No Referral amount to be collected.",
 	"Job Category added success": "Job category has been added successfully.",
-	"Job Category updated success": "Job Category has been updated successfully."
+	"Job Category updated success": "Job Category has been updated successfully.",
+	"pair already exist": "Pair Already Exist.",
+	"Panic Status": "Panic status retrived successfully"
 }

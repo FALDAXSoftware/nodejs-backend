@@ -20,7 +20,8 @@ module.exports.routes = {
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
   'get /create-all-wallet': 'RootController.createAllWallet',
-  'get /panic-button': 'RootController.panicBtn',
+  'post /toggle-panic-status': 'RootController.panicBtn',
+  'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
   'get /testemail': 'RootController.testemail',
 

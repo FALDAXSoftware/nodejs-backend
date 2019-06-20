@@ -15,6 +15,7 @@
     "base-64": "^0.1.0",
     "bcrypt": "^3.0.6",
     "bcrypt-nodejs": "0.0.3",
+    "country-state-city": "0.0.5",
     "bitgo": "^4.42.0",
     "clean-css": "^4.2.1",
     "dom-parser": "^0.1.5",
