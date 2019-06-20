@@ -84,6 +84,20 @@ module.exports.local = {
       'url': 'http://dev-vericoin-currency.faldax.com/',
       'type': 1
     },
+    'XBC': {
+      'coin_name': 'bitcoin-plus',
+      'rpcuser': 'bitcoinplusrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-bitcoinplus-currency.faldax.com/',
+      'type': 1
+    },
+    'FLO': {
+      'coin_name': 'florincoin',
+      'rpcuser': 'florincoinrpc',
+      'rpcpassword': 'secret',
+      'url': 'http://dev-florin-currency.faldax.com/',
+      'type': 1
+    },
     'SYS': {
       'coin_name': 'syscoin',
       'rpcuser': 'user',
