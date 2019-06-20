@@ -45,7 +45,7 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -78,7 +78,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -115,7 +115,7 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', {'message': 'blahhhh'});
+        .broadcast('test', { 'message': 'blahhhh' });
 
     } catch (err) {
       console.log('>getData>>', err)
@@ -163,6 +163,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
 
       query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))

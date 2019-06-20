@@ -84,6 +84,8 @@ module.exports = {
                 ? 'DESC'
                 : 'ASC');
             query += " ORDER BY " + sort_col + " " + sortVal;
+        } else {
+            query += " ORDER BY withdraw_request.id DESC";
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))

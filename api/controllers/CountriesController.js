@@ -37,6 +37,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
       if (limit != null) {
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -46,7 +48,7 @@ module.exports = {
       countryData = countryData.rows;
 
       for (let i = 0; i < countryData.length; i++) {
-        let stateCount = await State.count({country_id: countryData[i].id});
+        let stateCount = await State.count({ country_id: countryData[i].id });
         countryData[i].stateCount = stateCount;
       }
 
@@ -74,7 +76,7 @@ module.exports = {
 
   getStates: async function (req, res) {
     try {
-      let {page, limit, data, sortCol, sortOrder} = req.allParams();
+      let { page, limit, data, sortCol, sortOrder } = req.allParams();
       let query = " from states";
       if ((data && data != "")) {
         query += " WHERE"
@@ -89,6 +91,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
 
       if (limit != null) {
@@ -99,7 +103,7 @@ module.exports = {
 
       stateData = stateData.rows;
       for (let i = 0; i < stateData.length; i++) {
-        let stateCount = await State.count({country_id: stateData[i].id});
+        let stateCount = await State.count({ country_id: stateData[i].id });
         stateData[i].stateCount = stateCount;
       }
 
@@ -126,11 +130,11 @@ module.exports = {
 
   countryActivate: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
 
       let countriesData = await Countries
-        .update({id: id})
-        .set({is_active: is_active})
+        .update({ id: id })
+        .set({ is_active: is_active })
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
@@ -153,10 +157,10 @@ module.exports = {
 
   stateActivate: async function (req, res) {
     try {
-      let {id, is_active} = req.body;
+      let { id, is_active } = req.body;
       let stateData = await State
-        .update({id: id})
-        .set({is_active: is_active})
+        .update({ id: id })
+        .set({ is_active: is_active })
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
@@ -180,7 +184,7 @@ module.exports = {
   countryUpdate: async function (req, res) {
     try {
       let countriesData = await Countries
-        .update({id: req.body.id})
+        .update({ id: req.body.id })
         .set(req.body)
         .fetch();
 
@@ -205,7 +209,7 @@ module.exports = {
   stateUpdate: async function (req, res) {
     try {
       let stateData = await State
-        .update({id: req.body.id})
+        .update({ id: req.body.id })
         .set(req.body)
         .fetch();
 
@@ -1398,7 +1402,7 @@ module.exports = {
     let s = await State
       .createEach(states)
       .fetch();
-    res.json({status: 200});
+    res.json({ status: 200 });
   }
 
 };

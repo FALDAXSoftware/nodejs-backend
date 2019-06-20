@@ -49,12 +49,12 @@ module.exports = {
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
           // Create Receive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user, req.body.test_key
-              ? req.body.test_key
-              : "false");
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user, req.body.test_key
+          //     ? req.body.test_key
+          //     : "false");
           return res.json({
             message: "Verification successfull.",
             "status": 200,
@@ -229,9 +229,9 @@ module.exports = {
                       }, function (err) {
                         if (!err) {
                           return res
-                            .status(401)
+                            .status(202)
                             .json({
-                              "status": 401,
+                              "status": 202,
                               "err": sails.__("New device confirmation email sent to your email.")
                             });
                         } else {

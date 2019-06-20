@@ -1,3 +1,4 @@
+var fetch = require('node-fetch')
 module.exports = {
 
   friendlyName: 'Send funds',
@@ -38,7 +39,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
     //Send Coin Method
     var sendedFundStatus;
