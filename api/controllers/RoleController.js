@@ -44,6 +44,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
       let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
         "pairs, limit_management, transaction_history, trade_history, withdraw_requests," +

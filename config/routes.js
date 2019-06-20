@@ -74,15 +74,6 @@ module.exports.routes = {
   'delete /admin/coins/delete': 'Coins.delete',
   'get /admin/coin/get-coin-details': "Coins.getCoinDetails",
 
-  //static pages
-  'get /admin/static/get-static-page': 'Statics.getStatic',
-
-  //Announcement
-  'get /admin/announcement/getannouncement-template': 'AnnouncementController.getAnnouncementTemplate',
-  'post /admin/announcement/create': 'AnnouncementController.create',
-  'put /admin/announcement/update': 'AnnouncementController.update',
-  'delete /admin/announcement/delete': 'AnnouncementController.delete',
-  'post /admin/email-send': 'AnnouncementController.sendemail',
 
   // Email Templates
   'get /admin/emailTemplate/get': 'EmailTemplateController.get',
@@ -130,9 +121,6 @@ module.exports.routes = {
   'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
   'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
 
-  //Subscriber routes
-  'get /admin/get-all-subscribers': 'Subscribe.getAllSubscribers',
-  'delete /admin/delete-subscriber': 'Subscribe.deleteSubscriber',
 
   //Add Job route
   'get /admin/all-jobs': 'CareerController.getAllJobsCMS',

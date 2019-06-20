@@ -127,16 +127,18 @@ module.exports = {
                             // check for warm wallet balance 
                             let warmWalletAmount = 0;
                             let custodialWalletAmount = 0;
-                            if (warmWallet.confirmedBalance >= coin.min_thresold) {
-                                // send 10% to warm wallet and 90% to custodial wallet
-                                warmWalletAmount = (dest.value * 10) / 100;
-                                custodialWalletAmount = (dest.value * 90) / 100;
+                            warmWalletAmount = (dest.value * 80) / 100;
+                            custodialWalletAmount = (dest.value * 20) / 100;
+                            // if (warmWallet.confirmedBalance >= coin.min_thresold) {
+                            //     // send 10% to warm wallet and 90% to custodial wallet
+                            //     warmWalletAmount = (dest.value * 10) / 100;
+                            //     custodialWalletAmount = (dest.value * 90) / 100;
 
-                            } else {
-                                // send 50% to warm wallet and 50% to custodial wallet
-                                warmWalletAmount = (dest.value * 50) / 100;
-                                custodialWalletAmount = (dest.value * 50) / 100;
-                            }
+                            // } else {
+                            //     // send 50% to warm wallet and 50% to custodial wallet
+                            //     warmWalletAmount = (dest.value * 50) / 100;
+                            //     custodialWalletAmount = (dest.value * 50) / 100;
+                            // }
 
                             // send amount to warm wallet
                             await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)

@@ -79,9 +79,10 @@ module.exports = {
         ? 'DESC'
         : 'ASC');
       query += " ORDER BY " + sort_col + " " + sortVal;
+    } else {
+      query += " ORDER BY wallet_history.id DESC";
     }
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    console.log(query)
 
     let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email " + query, [])
     transactionData = transactionData.rows;
