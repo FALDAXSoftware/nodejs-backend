@@ -1,3 +1,4 @@
+var fetch = require('node-fetch')
 module.exports = {
 
   friendlyName: 'Get transaction list',
@@ -20,7 +21,7 @@ module.exports = {
     }
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
     //list Transactions
     var listTransactions;
