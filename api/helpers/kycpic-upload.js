@@ -94,13 +94,12 @@ module.exports = {
         //user:password base64 
         request.post({
             headers: {
-                'Authorization': 'Basic ZmFsZGF4OjcxN2MzNGQ5NmRkNzA2N2JkYTAwMDFlMjlmZDk2MTlkYTMzYTk5ODM='
+                'Authorization': 'Basic ' + sails.config.local.IDM_TOKEN
             },
-            url: 'https://staging.identitymind.com/im/account/consumer',
+            url: sails.config.local.IDM_URL,
             json: kycUploadDetails
         }, async function (error, response, body) {
             try {
-                ;
 
                 kyc_details.direct_response = response.body.res;
                 kyc_details.webhook_response = null;

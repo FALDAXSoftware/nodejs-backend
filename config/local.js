@@ -25,6 +25,8 @@ module.exports.local = {
   "COIN_CODE_FOR_ERC_20_WALLET_BITGO": "teth",
   "JWT_TOKEN_SECRET": process.env.JWT_TOKEN_SECRET,
   "WEBHOOK_BASE_URL": process.env.WEBHOOK_BASE_URL,
+  "IDM_URL": process.env.IDM_URL,
+  "IDM_TOKEN": process.env.IDM_TOKEN,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
   "COIN_TYPE_BITGO": 1,
   "coinArray": {
