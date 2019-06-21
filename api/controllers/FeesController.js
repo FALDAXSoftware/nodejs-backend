@@ -7,9 +7,9 @@
 
 module.exports = {
   getAllFees: async function (req, res) {
-    let query = " from fees ORDER BY id DESC";
+    let query = " from fees ";
     countQuery = query;
-
+    query += "ORDER BY id DESC";
     let allTradingFees = await sails.sendNativeQuery("Select *" + query, []);
 
     allTradingFees = allTradingFees.rows;

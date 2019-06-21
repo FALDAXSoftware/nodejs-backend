@@ -49,12 +49,12 @@ module.exports = {
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
           // Create Receive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user, req.body.test_key
-              ? req.body.test_key
-              : "false");
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user, req.body.test_key
+          //     ? req.body.test_key
+          //     : "false");
           return res.json({
             message: "Verification successfull.",
             "status": 200,
@@ -70,7 +70,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -126,7 +125,7 @@ module.exports = {
                     .status(402)
                     .json({
                       "status": 402,
-                      "err": sails.__("To login please activate your account")
+                      "err": sails.__("Account_Not_Verified")
                     });
                 }
                 if (user_detail) {

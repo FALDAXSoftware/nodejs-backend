@@ -1282,16 +1282,16 @@ module.exports = {
             user_id: generatedUser.id
           });
         }
-        if (generate_wallet_coins.length > 0) {
-          // create receive address
-          for (let index = 0; index < generate_wallet_coins.length; index++) {
-            const element = generate_wallet_coins[index];
-            await sails
-              .helpers
-              .wallet
-              .receiveOneAddress(element, generatedUser);
-          }
-        }
+        // if (generate_wallet_coins.length > 0) {
+        //   // create receive address
+        //   for (let index = 0; index < generate_wallet_coins.length; index++) {
+        //     const element = generate_wallet_coins[index];
+        //     await sails
+        //       .helpers
+        //       .wallet
+        //       .receiveOneAddress(element, generatedUser);
+        //   }
+        // }
         return res.json({
           status: 200,
           message: sails.__("user created success")
