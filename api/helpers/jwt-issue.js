@@ -43,7 +43,7 @@ module.exports = {
       id: inputs.id
     }
     if (inputs.setExpiry) {
-      extraParams["expiresIn"] = 60 * 60;
+      extraParams["expiresIn"] = 15 * 60;
     }
     if (inputs.isAdmin) {
       params["isAdmin"] = true

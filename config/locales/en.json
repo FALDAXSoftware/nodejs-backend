@@ -178,6 +178,7 @@
 	"blog id is not sent.": "blog id is not sent.",
 	"Invalid email or password": "Invalid email or password",
 	"To login please activate your account": "To login please activate your account",
+	"Account_Not_Verified": "To login please activate your account",
 	"To continue, please verify your new email address.": "To continue, please verify your new email address.",
 	"Please enter OTP to continue": "Please enter OTP to continue",
 	"New device confirmation email sent to your email.": "New device confirmation email sent to your email.",
