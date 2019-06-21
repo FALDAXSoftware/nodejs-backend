@@ -70,7 +70,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -126,7 +125,7 @@ module.exports = {
                     .status(402)
                     .json({
                       "status": 402,
-                      "err": sails.__("To login please activate your account")
+                      "err": sails.__("Account_Not_Verified")
                     });
                 }
                 if (user_detail) {
