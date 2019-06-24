@@ -140,10 +140,11 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query = query + " OR fill_price=" + data + " OR quantity=" + data;
+            query += " OR fill_price=" + data + " OR quantity=" + data;
           }
+          query += ")"
         }
       }
 
@@ -169,6 +170,7 @@ module.exports = {
 
       query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
       let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
+      console.log('>query>>', query)
 
       sellBookData = sellBookData.rows;
 
@@ -184,6 +186,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log('>err>>', err)
       return res
         .status(500)
         .json({

@@ -612,8 +612,6 @@ module.exports = {
         .set(new_user)
         .fetch();
 
-      console.log(updatedUser);
-
       let slug = "forgot_password"
       let template = await EmailTemplate.findOne({ slug });
       let emailContent = await sails
@@ -640,7 +638,6 @@ module.exports = {
             }
           })
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json({
@@ -687,7 +684,6 @@ module.exports = {
           });
       }
     } catch (e) {
-      console.log(e);
       res
         .status(500)
         .json({ "status": 500, "err": e });
