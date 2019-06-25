@@ -9,10 +9,23 @@ module.exports = {
   // Add New Role
   create: async function (req, res) {
     let params = req.body;
+
     try {
+      let existingRole = await Role.findOne({ name: req.body.name, deleted_at: null });
+
+      if (existingRole) {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            err: "Role name exists"
+          });
+      }
+
       let role = await Role
         .create(params)
         .fetch();
+
       if (!role) {
         return res
           .status(500)
@@ -38,7 +51,7 @@ module.exports = {
   get: async function (req, res) {
     try {
       let { sortCol, sortOrder } = req.allParams();
-      let query = " from roles";
+      let query = " from roles WHERE deleted_at IS NULL ";
       if (sortCol && sortOrder) {
         let sortVal = (sortOrder == 'descend'
           ? 'DESC'
@@ -47,8 +60,9 @@ module.exports = {
       } else {
         query += " ORDER BY id DESC";
       }
+
       let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
-        "pairs, limit_management, transaction_history, trade_history, withdraw_requests," +
+        "pairs, transaction_history, trade_history, withdraw_requests," +
         "dashboard, jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
       let roleName = await sails.sendNativeQuery("Select id, name, is_active" + query, [])
 

@@ -123,7 +123,6 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true,
-      allowNull: true,
     },
     created_at: {
       type: 'ref',
