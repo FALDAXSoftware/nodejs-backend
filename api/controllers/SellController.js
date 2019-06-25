@@ -115,7 +115,7 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', { 'message': 'blahhhh' });
+        .broadcast('test', { 'message': 'test' });
 
     } catch (err) {
       console.log('>getData>>', err)
@@ -157,7 +157,6 @@ module.exports = {
         whereAppended = true;
         query += " user_id=" + user_id;
       }
-
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend'
@@ -170,7 +169,6 @@ module.exports = {
 
       query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
       let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
-      console.log('>query>>', query)
 
       sellBookData = sellBookData.rows;
 
