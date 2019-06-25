@@ -12,7 +12,6 @@ module.exports = {
     try {
       // req.setLocale('en')
       let { coin_id } = req.allParams();
-      console.log(coin_id)
       let limitData = await Limit
         .find({
           where: {
@@ -83,7 +82,6 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log(error);
       res
         .status(500)
         .json({

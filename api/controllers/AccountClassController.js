@@ -16,16 +16,20 @@ module.exports = {
       * @return <User acticity data>
      */
     // CMS all class api
-    getAllAccountClasses: async function(req, res) {
+    getAllAccountClasses: async function (req, res) {
         try {
-            let allClasses = await AccountClass.find({ deleted_at: null }).sort('id ASC');
+            let { sort_col, sort_order } = req.allParams();
+            let sortVal = (sort_order == 'descend'
+                ? 'DESC'
+                : 'ASC');
+            let allClasses = await AccountClass.find({ deleted_at: null }).sort(`${sort_col} ${sortVal}`);
 
             return res.json({
                 "status": 200,
                 "message": sails.__("Account Class Data"),
                 allClasses
             });
-        } catch (e) {
+        } catch (err) {
             return res
                 .status(500)
                 .json({
@@ -35,7 +39,7 @@ module.exports = {
         }
     },
 
-    addAccountClass: async function(req, res) {
+    addAccountClass: async function (req, res) {
         let params = req.body.class_name;
         try {
             let accountClass = await AccountClass
@@ -63,7 +67,7 @@ module.exports = {
         }
     },
 
-    updateAccountClass: async function(req, res) {
+    updateAccountClass: async function (req, res) {
         let { id, class_name } = req.body;
         try {
             let accountClass = await AccountClass.findOne({ id, deleted_at: null });
@@ -94,7 +98,7 @@ module.exports = {
         }
     },
 
-    deleteAccountClass: async function(req, res) {
+    deleteAccountClass: async function (req, res) {
         try {
             let { class_id, otp, admin_id } = req.allParams();
 

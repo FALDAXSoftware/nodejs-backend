@@ -403,11 +403,11 @@ module.exports = {
   getAllEmployee: async function (req, res) {
     try {
       let { sortCol, sortOrder, data } = req.allParams();
-      let query = " from admin";
+      let query = " from admin WHERE deleted_at IS NULL ";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " WHERE LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " AND (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
       countQuery = query;
@@ -445,7 +445,6 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log(error)
       return res
         .status(500)
         .json({
@@ -716,7 +715,6 @@ module.exports = {
           err: sails.__("invalid otp")
         });
     } catch (error) {
-      console.log('>>>>>>>>>err', error)
       return res
         .status(500)
         .json({
@@ -755,7 +753,6 @@ module.exports = {
         message: sails.__("2 factor disabled")
       });
     } catch (error) {
-      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -776,7 +773,6 @@ module.exports = {
         data: adminDetails
       });
     } catch (err) {
-      console.log('error', err)
       return res
         .status(500)
         .json({
