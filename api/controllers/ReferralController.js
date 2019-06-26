@@ -63,6 +63,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log('err', err)
       return res
         .status(500)
         .json({
