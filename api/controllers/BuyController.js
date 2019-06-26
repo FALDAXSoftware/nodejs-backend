@@ -45,7 +45,7 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -77,7 +77,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -106,10 +106,9 @@ module.exports = {
           });
       }
     } catch (err) {
-      console.log('>>>', err);
       return res
         .status(500)
-        .json({"status": 500, "err": err});
+        .json({ "status": 500, "err": err });
     }
   },
 
@@ -131,10 +130,11 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query = query + " OR fill_price=" + data + " OR quantity=" + data;
+            query += " OR fill_price=" + data + " OR quantity=" + data;
           }
+          query += ")"
         }
       }
 
@@ -153,10 +153,11 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      console.log('query buy', query)
       let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
 
       buyBookData = buyBookData.rows;
@@ -172,7 +173,6 @@ module.exports = {
           buyBookCount
         });
       }
-
     } catch (err) {
       return res
         .status(500)

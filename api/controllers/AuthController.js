@@ -70,7 +70,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log('error', error)
       return res
         .status(500)
         .json({
@@ -126,7 +125,7 @@ module.exports = {
                     .status(402)
                     .json({
                       "status": 402,
-                      "err": sails.__("To login please activate your account")
+                      "err": sails.__("Account_Not_Verified")
                     });
                 }
                 if (user_detail) {
@@ -229,9 +228,9 @@ module.exports = {
                       }, function (err) {
                         if (!err) {
                           return res
-                            .status(401)
+                            .status(202)
                             .json({
-                              "status": 401,
+                              "status": 202,
                               "err": sails.__("New device confirmation email sent to your email.")
                             });
                         } else {
@@ -615,8 +614,6 @@ module.exports = {
         .set(new_user)
         .fetch();
 
-      console.log(updatedUser);
-
       let slug = "forgot_password"
       let template = await EmailTemplate.findOne({ slug });
       let emailContent = await sails
@@ -643,7 +640,6 @@ module.exports = {
             }
           })
     } catch (error) {
-      console.log(error);
       return res
         .status(500)
         .json({
@@ -690,7 +686,6 @@ module.exports = {
           });
       }
     } catch (e) {
-      console.log(e);
       res
         .status(500)
         .json({ "status": 500, "err": e });

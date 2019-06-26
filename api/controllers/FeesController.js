@@ -7,9 +7,9 @@
 
 module.exports = {
   getAllFees: async function (req, res) {
-    let query = " from fees";
+    let query = " from fees ";
     countQuery = query;
-
+    query += "ORDER BY id DESC";
     let allTradingFees = await sails.sendNativeQuery("Select *" + query, []);
 
     allTradingFees = allTradingFees.rows;
@@ -34,11 +34,11 @@ module.exports = {
   },
 
   editFees: async function (req, res) {
-    let fees = await Fees.findOne({id: req.body.fee_id, deleted_at: null})
+    let fees = await Fees.findOne({ id: req.body.fee_id, deleted_at: null })
     if (fees) {
       let updatedFee = await Fees
-        .update({id: req.body.fee_id})
-        .set({taker_fee: req.body.taker_fee, maker_fee: req.body.maker_fee})
+        .update({ id: req.body.fee_id })
+        .set({ taker_fee: req.body.taker_fee, maker_fee: req.body.maker_fee })
         .fetch();
       if (updatedFee) {
         return res.json({

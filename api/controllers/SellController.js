@@ -45,7 +45,7 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let {crypto, currency} = await sails
+                      let { crypto, currency } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -78,7 +78,7 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let {crypto, currency} = await sails
+                let { crypto, currency } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -115,7 +115,7 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', {'message': 'blahhhh'});
+        .broadcast('test', { 'message': 'test' });
 
     } catch (err) {
       console.log('>getData>>', err)
@@ -140,10 +140,11 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
-            query = query + " OR fill_price=" + data + " OR quantity=" + data;
+            query += " OR fill_price=" + data + " OR quantity=" + data;
           }
+          query += ")"
         }
       }
 
@@ -156,13 +157,14 @@ module.exports = {
         whereAppended = true;
         query += " user_id=" + user_id;
       }
-
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend'
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id DESC";
       }
 
       query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
@@ -182,6 +184,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log('>err>>', err)
       return res
         .status(500)
         .json({

@@ -920,6 +920,8 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY users." + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY users.created_at DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -1250,58 +1252,59 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
-      let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
-      if (existedUser == undefined) {
-        let hubspotcontact = await sails
-          .helpers
-          .hubspot
-          .contacts
-          .create(user.first_name, user.last_name, user.email)
-          .tolerate("serverError", () => {
-            throw new Error("serverError");
-          });
-        let generatedUser = await Users
-          .create({
-            ...user,
-            hubspot_id: hubspotcontact,
-            is_active: true,
-            is_verified: true,
-            password: randomize('Aa0', 60)
-          })
-          .fetch();
-        if (kyc_done == true) {
-          await KYC.create({
-            first_name: user.first_name,
-            last_name: user.last_name,
-            steps: 3,
-            status: true,
-            direct_response: "ACCEPT",
-            webhook_response: "ACCEPT",
-            user_id: generatedUser.id
-          });
-        }
-        if (generate_wallet_coins.length > 0) {
-          // create receive address
-          for (let index = 0; index < generate_wallet_coins.length; index++) {
-            const element = generate_wallet_coins[index];
-            await sails
-              .helpers
-              .wallet
-              .receiveOneAddress(element, generatedUser);
-          }
-        }
-        return res.json({
-          status: 200,
-          message: sails.__("user created success")
-        });
-      } else {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("email already registered")
-          });
-      }
+      console.log('...user', ...user)
+      // let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
+      // if (existedUser == undefined) {
+      //   let hubspotcontact = await sails
+      //     .helpers
+      //     .hubspot
+      //     .contacts
+      //     .create(user.first_name, user.last_name, user.email)
+      //     .tolerate("serverError", () => {
+      //       throw new Error("serverError");
+      //     });
+      //   let generatedUser = await Users
+      //     .create({
+      //       ...user,
+      //       hubspot_id: hubspotcontact,
+      //       is_active: true,
+      //       is_verified: true,
+      //       password: randomize('Aa0', 60)
+      //     })
+      //     .fetch();
+      //   if (kyc_done == true) {
+      //     await KYC.create({
+      //       first_name: user.first_name,
+      //       last_name: user.last_name,
+      //       steps: 3,
+      //       status: true,
+      //       direct_response: "ACCEPT",
+      //       webhook_response: "ACCEPT",
+      //       user_id: generatedUser.id
+      //     });
+      //   }
+      //   // if (generate_wallet_coins.length > 0) {
+      //   //   // create receive address
+      //   //   for (let index = 0; index < generate_wallet_coins.length; index++) {
+      //   //     const element = generate_wallet_coins[index];
+      //   //     await sails
+      //   //       .helpers
+      //   //       .wallet
+      //   //       .receiveOneAddress(element, generatedUser);
+      //   //   }
+      //   // }
+      //   return res.json({
+      //     status: 200,
+      //     message: sails.__("user created success")
+      //   });
+      // } else {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       status: 500,
+      //       "err": sails.__("email already registered")
+      //     });
+      // }
     } catch (error) {
       console.log('error', error)
       return res

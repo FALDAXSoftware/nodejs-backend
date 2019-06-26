@@ -54,11 +54,11 @@ module.exports = {
       columnName: 'jobs',
       defaultsTo: false,
     },
-    limit_management: {
-      type: "boolean",
-      columnName: 'limit_management',
-      defaultsTo: false,
-    },
+    // limit_management: {
+    //   type: "boolean",
+    //   columnName: 'limit_management',
+    //   defaultsTo: false,
+    // },
     transaction_history: {
       type: "boolean",
       columnName: 'transaction_history',
@@ -123,7 +123,6 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true,
-      allowNull: true,
     },
     created_at: {
       type: 'ref',
