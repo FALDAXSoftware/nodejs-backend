@@ -49,12 +49,12 @@ module.exports = {
             .update({ user_id: user.id })
             .set({ first_name: user.first_name, last_name: user.last_name });
           // Create Receive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user, req.body.test_key
-              ? req.body.test_key
-              : "false");
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user, req.body.test_key
+          //     ? req.body.test_key
+          //     : "false");
           return res.json({
             message: "Verification successfull.",
             "status": 200,
@@ -362,7 +362,9 @@ module.exports = {
 
   sendOtpEmail: async function (req, res) {
     let { email } = req.allParams();
+    console.log(email)
     let user = await Users.findOne({ email: email, deleted_at: null });
+    console.log(user)
     if (!user) {
       return res
         .status(401)
