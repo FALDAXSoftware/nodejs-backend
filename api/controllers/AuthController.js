@@ -363,7 +363,9 @@ module.exports = {
 
   sendOtpEmail: async function (req, res) {
     let { email } = req.allParams();
+    console.log(email)
     let user = await Users.findOne({ email: email, deleted_at: null });
+    console.log(user)
     if (!user) {
       return res
         .status(401)
