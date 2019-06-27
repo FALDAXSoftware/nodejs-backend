@@ -617,6 +617,8 @@ module.exports = {
   getUserWallet: async function (req, res) {
 
     var room = req.query.room;
+    console.log("------------------------------------------------>", room);
+
     try {
       var user_id = parseInt(req.query.userId);
 

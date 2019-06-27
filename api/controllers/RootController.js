@@ -214,7 +214,7 @@ module.exports = {
   },
 
   queryTest: async function (req, res) {
-    await sails.helpers.notification.send.text();
+    await sails.helpers.notification.send.text("+917990841590", "test form twillio");
     console.log("done");
     return res.json({
       success: true
