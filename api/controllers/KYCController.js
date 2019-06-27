@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var UploadFiles = require('../services/UploadFiles');
+var csc = require('country-state-city');
 
 module.exports = {
 
@@ -274,6 +275,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      console.log(e);
       return res
         .status(500)
         .json({

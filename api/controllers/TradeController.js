@@ -1015,7 +1015,6 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
-      console.log("data", req.allParams(), page, data);
 
       let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
       let whereAppended = false;
@@ -1070,16 +1069,11 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      console.log("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
-        "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
-        "story.side,trade_history.quantity,trade_history.fill_price, trade_history.maker_" +
-        "fee, trade_history.taker_fee, users.email, requested_user.email as reqested_user" +
-        "_email, trade_history.created_at" + query);
 
       let tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
         "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
-        "story.side,trade_history.quantity,trade_history.fill_price, trade_history.maker_" +
-        "fee, trade_history.taker_fee, users.email, requested_user.email as reqested_user" +
+        "story.side,trade_history.quantity,trade_history.fill_price, trade_history.price, trade_history.maker_" +
+        "fee, trade_history.taker_fee, trade_history.stop_price, trade_history.limit_price, users.email, requested_user.email as reqested_user" +
         "_email, trade_history.created_at" + query, [])
 
       tradeData = tradeData.rows;
