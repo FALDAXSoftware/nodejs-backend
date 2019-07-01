@@ -61,7 +61,6 @@ module.exports.policies = {
   'RootController': {
     'getContactInfo': true,
     "webhookOnReciveBitgo": true,
-    "queryTest": true,
     "sendOpenTicketForm": true,
     "enableWebSocket": true,
     "createAllWallet": true,

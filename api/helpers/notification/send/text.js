@@ -1,13 +1,9 @@
 var twilio = require('twilio');
 
 module.exports = {
-
-
   friendlyName: 'Text',
 
-
   description: 'Text send.',
-
 
   inputs: {
     to: {
@@ -24,15 +20,11 @@ module.exports = {
     }
   },
 
-
   exits: {
-
     success: {
       description: 'All done.',
     },
-
   },
-
 
   fn: async function (inputs, exits) {
     var accountSid = sails.config.local.TWILLIO_ACCOUNT_SID; // Your Account SID from www.twilio.com/console
@@ -49,7 +41,5 @@ module.exports = {
     }
     )
   }
-
-
 };
 
