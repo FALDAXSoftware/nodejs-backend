@@ -214,21 +214,13 @@ module.exports = {
   },
 
   queryTest: async function (req, res) {
-    // var bitcoinistNews = await sails
-    //   .helpers
-    //   .bitcoinistNewsUpdate();
-    // var bitcoinNews = await sails
-    //   .helpers
-    //   .bitcoinNews();
-    // var ccnPodcast = await sails
-    //   .helpers
-    //   .ccnPodcast();
-    // var coinTelegraph = await sails
-    //   .helpers
-    //   .coinTelegraph();
-    let formatedEmail = await sails.helpers.utilities.formatEmail("{{test1}} Lorem ipsum dolor sit amet, consectetur {{test2}} adipiscing elit. Vestibulum nec mauris eu velit ultricies tristique non vel metus. ", { test1: "qwertyuiop", test2: "asdfghjkl" });
-    res.json({
-      formatedEmail
+    console.log(req.user)
+    let data = await sails.helpers.notification.notify(req.user.id);
+    console.log('data', data)
+    //  await sails.helpers.notification.send.text("+917990841590", "test form twillio");
+    // console.log("done", user);
+    return res.json({
+      success: true
     });
   },
 

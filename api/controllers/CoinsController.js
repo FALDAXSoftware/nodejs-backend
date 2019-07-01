@@ -307,6 +307,7 @@ module.exports = {
   },
 
   getPairDetails: async function (req, res) {
+
     try {
       let room = req.query.room;
       if (req.isSocket) {
@@ -336,6 +337,7 @@ module.exports = {
                     } else {
 
                       let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
+
                       return res.json({
                         status: 200,
                         data: pair,
@@ -358,6 +360,7 @@ module.exports = {
                   });
               } else {
                 let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
+                console.log("------", pair);
                 return res.json({
                   status: 200,
                   data: pair,

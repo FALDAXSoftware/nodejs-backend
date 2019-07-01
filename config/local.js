@@ -27,6 +27,9 @@ module.exports.local = {
   "WEBHOOK_BASE_URL": process.env.WEBHOOK_BASE_URL,
   "IDM_URL": process.env.IDM_URL,
   "IDM_TOKEN": process.env.IDM_TOKEN,
+  "TWILLIO_ACCOUNT_SID": process.env.TWILLIO_ACCOUNT_SID,
+  "TWILLIO_ACCOUNT_AUTH_TOKEN": process.env.TWILLIO_ACCOUNT_AUTH_TOKEN,
+  "TWILLIO_ACCOUNT_FROM_NUMBER": process.env.TWILLIO_ACCOUNT_FROM_NUMBER,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
   "COIN_TYPE_BITGO": 1,
   "coinArray": {
@@ -185,5 +188,8 @@ module.exports.local = {
         getTicketsById: "/crm-objects/v1/objects/tickets/batch-read"
       }
     }
+  },
+  notifications: {
+
   }
 }

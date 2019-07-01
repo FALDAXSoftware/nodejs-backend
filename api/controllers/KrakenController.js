@@ -190,6 +190,8 @@ module.exports = {
 
   performConversion: async function (req, res) {
     try {
+      console.log("Request params", req.body);
+
       let { pair, type, volume, includeFees } = req.allParams();
       let userId = req.user.id;
       let pairDetails = await Pairs.findOne({ name: pair, deleted_at: null, is_active: true });
@@ -200,11 +202,11 @@ module.exports = {
       if (pairDetails) {
         let currencyAmount = 0;
         if (type == "buy") {
-          // currencyAmount = volume * pairDetails.ask_price
-          currencyAmount = 0.02 * '5530.00000';
+          currencyAmount = volume * pairDetails.ask_price
+          // currencyAmount = 0.002 * '5530.00000';
         } else if (type == "sell") {
-          // currencyAmount = volume * pairDetails.bid_price;
-          currencyAmount = 0.02 * '5530.00000';
+          currencyAmount = volume * pairDetails.bid_price;
+          // currencyAmount = 0.002 * '5530.00000';
         }
         if (includeFees == "false" || includeFees == false) {
           currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);

@@ -47,7 +47,7 @@ module.exports = {
           deleted_at: null
         }
       });
-      let coins = await Coins.find({is_active: true, deleted_at: null});
+      let coins = await Coins.find({ is_active: true, deleted_at: null });
       let coinList = {};
       for (let index = 0; index < coins.length; index++) {
         const element = coins[index];
@@ -111,10 +111,12 @@ module.exports = {
         }
         pairData.push(instrument_data);
       }
+      console.log("-===============>>>>", pairData);
+
       // Send back the result through the success exit.
       return exits.success(pairData);
     } catch (err) {
-      console.log(err);
+      console.log("----->>>>>>>>>>>>>>>>>", err);
     }
 
   }
