@@ -249,20 +249,26 @@ module.exports = {
               .tolerate("orderError", () => {
                 throw new Error("orderError");
               });
+            console.log("addeddd data", addedData);
+
             if (addedData) {
               if (addedData.error && addedData.error.length > 0) {
                 // Error
                 throw new Error("serverError")
               } else {
                 if (addedData.result) {
+
                   if (addedData.result.txid && addedData.result.txid.length > 0) {
                     let now = new Date();
+                    console.log("--------------->", addedData.result.txid[0]);
+
                     let transactionId = addedData.result.txid[0];
 
                     let tradeInfoData = await sails
                       .helpers
                       .kraken
                       .queryTradeInfo(transactionId);
+                    console.log("tradeInfoData", tradeInfoData, tradeInfoData.result[transactionId].descr);
 
                     let tradeHistoryData = {
                       order_type: "Market",
@@ -311,7 +317,7 @@ module.exports = {
                       .tradding
                       .getRefferedAmount(tradeHistory, req.user.id, transactionId);
 
-                    if (tradeInfoData.result[transactionId].type == "buy") {
+                    if (type == "buy") {
                       await Wallet
                         .update({ id: walletCurrencyBalance.id })
                         .set({
@@ -326,7 +332,7 @@ module.exports = {
                           placed_balance: (walletCryptoBalance.placed_balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100))))
                         });
 
-                    } else if (tradeInfoData.result[transactionId].type == "sell") {
+                    } else if (type == "sell") {
                       await Wallet
                         .update({ id: walletCurrencyBalance.id })
                         .set({

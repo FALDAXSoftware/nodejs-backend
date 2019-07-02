@@ -181,6 +181,11 @@ module.exports = {
       allowNull: true,
       columnName: 'new_ip'
     },
+    whitelist_ip: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'whitelist_ip'
+    },
     requested_email: {
       type: 'string',
       allowNull: true,

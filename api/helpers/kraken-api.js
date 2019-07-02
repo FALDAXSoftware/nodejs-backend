@@ -11,12 +11,12 @@ module.exports = {
   description: '',
 
   inputs: {
-    address: {
-      type: 'string',
-      example: 'abcd',
-      description: 'coin code of coin',
-      required: true
-    }
+    // address: {
+    //   type: 'string',
+    //   example: 'abcd',
+    //   description: 'coin code of coin',
+    //   required: true
+    // }
   },
 
   exits: {
@@ -67,14 +67,9 @@ module.exports = {
       ]
     };
     try {
-      var data = await kraken.api('AddOrder', {
-        pair: 'XRPXBT',
-        type: 'buy',
-        ordertype: 'market',
-        volume: '40',
-        validate:true
-      })
-      return exits.success(data);
+     status = await kraken.api('Balance');
+     console.log(">>>>>>>>>>>>>>>",status)
+      return exits.success(status);
     } catch (err) {
       console.log(err);
     }
