@@ -45,13 +45,23 @@ module.exports = {
 
           // Admin Active
           if (admin_details.is_active) {
+            var ip;
+            if (req.headers['x-forwarded-for']) {
+              ip = req
+                .headers['x-forwarded-for']
+                .split(",")[0];
+            } else if (req.connection && req.connection.remoteAddress) {
+              ip = req.connection.remoteAddress;
+            } else {
+              ip = req.ip;
+            }
 
             if (admin_details.whitelist_ip != null && admin_details.whitelist_ip != "" && admin_details.whitelist_ip.indexOf(ip) <= -1) {
               return res
                 .status(401)
                 .json({
                   "status": 401,
-                  "err": sails.__("Your session has been expired. Please Login again to continue.")
+                  "err": sails.__("Unauthorized Access")
                 });
             }
 
@@ -118,7 +128,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) {}
+                  if (admin_details.is_twofactor) { }
 
                   delete admin_details.password;
                   // Token Issue
@@ -424,16 +434,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-            to: admin_details.email,
-            subject: "Forgot Password"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Reset password link sent to your email successfully.")
-              });
-            }
-          })
+              to: admin_details.email,
+              subject: "Forgot Password"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("Reset password link sent to your email successfully.")
+                });
+              }
+            })
       } else {
         return res
           .status(401)

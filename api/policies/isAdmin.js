@@ -12,12 +12,10 @@ module.exports = async function (req, res, next) {
   let urlPrefix = urlArray[1];
   if (urlPrefix.toLowerCase() == "admin") {
     if (req.user.isAdmin) {
-      console.log("ADMIN DATA >>>>>>>>>", req.user.id)
       var userData = await Admin.findOne({
         id: req.user.id
       });
 
-      console.log(userData)
       if (userData != undefined) {
         if (userData.whitelist_ip == null && userData.deleted_at == null) {
           return next()
