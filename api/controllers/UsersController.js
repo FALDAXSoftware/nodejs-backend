@@ -4,7 +4,6 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-var uuidv1 = require('uuid/v1');
 var UploadFiles = require('../services/UploadFiles');
 var bcrypt = require('bcrypt');
 var fetch = require('node-fetch');
@@ -12,6 +11,7 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 var csc = require('country-state-city');
+
 module.exports = {
   //------------------Web APi------------------------------------------------//
 
@@ -524,7 +524,6 @@ module.exports = {
   },
 
   getUserDetails: async function (req, res) {
-
     let id = req.user.id;
     let usersData = await Users.find({
       id: id
@@ -646,7 +645,6 @@ module.exports = {
         .upload(async function (err, uploadedFiles) {
           try {
             if (uploadedFiles.length > 0) {
-              console.log("------------", uploadedFiles);
 
               let filename = uploadedFiles[0].filename;
               var name = filename.substring(filename.indexOf("."));
@@ -1399,7 +1397,7 @@ module.exports = {
       if ((data && data != "")) {
         query = query + "AND LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
-          query += " OR referral.amount=" + data;
+          query += " OR reffered_data.total_referal=" + data;
         }
       }
 
@@ -1538,58 +1536,58 @@ module.exports = {
         ...user
       } = req.allParams();
       console.log('...user', ...user)
-      // let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
-      // if (existedUser == undefined) {
-      //   let hubspotcontact = await sails
-      //     .helpers
-      //     .hubspot
-      //     .contacts
-      //     .create(user.first_name, user.last_name, user.email)
-      //     .tolerate("serverError", () => {
-      //       throw new Error("serverError");
-      //     });
-      //   let generatedUser = await Users
-      //     .create({
-      //       ...user,
-      //       hubspot_id: hubspotcontact,
-      //       is_active: true,
-      //       is_verified: true,
-      //       password: randomize('Aa0', 60)
-      //     })
-      //     .fetch();
-      //   if (kyc_done == true) {
-      //     await KYC.create({
-      //       first_name: user.first_name,
-      //       last_name: user.last_name,
-      //       steps: 3,
-      //       status: true,
-      //       direct_response: "ACCEPT",
-      //       webhook_response: "ACCEPT",
-      //       user_id: generatedUser.id
-      //     });
-      //   }
-      //   // if (generate_wallet_coins.length > 0) {
-      //   //   // create receive address
-      //   //   for (let index = 0; index < generate_wallet_coins.length; index++) {
-      //   //     const element = generate_wallet_coins[index];
-      //   //     await sails
-      //   //       .helpers
-      //   //       .wallet
-      //   //       .receiveOneAddress(element, generatedUser);
-      //   //   }
-      //   // }
-      //   return res.json({
-      //     status: 200,
-      //     message: sails.__("user created success")
-      //   });
-      // } else {
-      //   return res
-      //     .status(500)
-      //     .json({
-      //       status: 500,
-      //       "err": sails.__("email already registered")
-      //     });
-      // }
+      let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
+      if (existedUser == undefined) {
+        let hubspotcontact = await sails
+          .helpers
+          .hubspot
+          .contacts
+          .create(user.first_name, user.last_name, user.email)
+          .tolerate("serverError", () => {
+            throw new Error("serverError");
+          });
+        let generatedUser = await Users
+          .create({
+            ...user,
+            hubspot_id: hubspotcontact,
+            is_active: true,
+            is_verified: true,
+            password: randomize('Aa0', 60)
+          })
+          .fetch();
+        if (kyc_done == true) {
+          await KYC.create({
+            first_name: user.first_name,
+            last_name: user.last_name,
+            steps: 3,
+            status: true,
+            direct_response: "ACCEPT",
+            webhook_response: "ACCEPT",
+            user_id: generatedUser.id
+          });
+        }
+        // if (generate_wallet_coins.length > 0) {
+        //   // create receive address
+        //   for (let index = 0; index < generate_wallet_coins.length; index++) {
+        //     const element = generate_wallet_coins[index];
+        //     await sails
+        //       .helpers
+        //       .wallet
+        //       .receiveOneAddress(element, generatedUser);
+        //   }
+        // }
+        return res.json({
+          status: 200,
+          message: sails.__("user created success")
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("email already registered")
+          });
+      }
     } catch (error) {
       console.log('error', error)
       return res

@@ -171,7 +171,7 @@ module.exports.routes = {
   'post /users/verify-two-factor': 'Users.verifyTwoFactor',
   'post /users/disable-two-factor': 'Users.disableTwoFactor',
   'post /users/send-otp-email': 'Auth.sendOtpEmail',
-  'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
+  // 'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser', //7
   'post /users/update-email': 'Users.updateEmail',
   'post /users/add-whitelist-ip': 'Users.addWhiteListIP',

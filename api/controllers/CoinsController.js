@@ -321,6 +321,7 @@ module.exports = {
   },
 
   getPairDetails: async function (req, res) {
+
     try {
       let room = req.query.room;
 
