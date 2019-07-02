@@ -268,5 +268,6 @@
   "Your session has been expired. Please Login again to continue.": "Your session has been expired. Please Login again to continue.",
   "WhiteLsit IP Add Success": "Your White List IP has been added successfully.",
   "WhiteLsit IP info Success": "White List IP has been retrieved successfully.",
-  "Unauthorized Access": "Unauthorized Access"
+  "Unauthorized Access": "Unauthorized Access",
+  "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order."
 }
