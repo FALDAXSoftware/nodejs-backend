@@ -67,9 +67,7 @@ module.exports = {
       ]
     };
     try {
-      status = await kraken.api('Depth', {
-        pair: 'XXRPXXBT'
-      });
+      status = await kraken.api('Balance');
       console.log(">>>>>>>>>>>>>>>", status)
       return exits.success(status);
     } catch (err) {

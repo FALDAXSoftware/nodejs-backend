@@ -248,7 +248,7 @@ module.exports = {
             }
           }
         })
-        .select(["coin_icon", "coin_name", "coin"]);
+        .select(["coin_icon", "coin_name", "coin", "min_limit"]);
 
       let feesDetails = await AdminSetting.findOne({
         deleted_at: null,
