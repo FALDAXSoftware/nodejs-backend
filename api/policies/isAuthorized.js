@@ -115,6 +115,8 @@ module.exports = async function (req, res, next) {
               });
           }
         }
+      } else {
+        next();
       }
     }
   } catch (error) {
