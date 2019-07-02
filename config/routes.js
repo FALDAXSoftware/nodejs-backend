@@ -48,6 +48,8 @@ module.exports.routes = {
   'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
   'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
   'get /admin/get-details': 'Admin.getAdminDetails',
+  'post /admin/add-whitelist-ip': 'Admin.addAdminIPs',
+  'get /admin/get-all-whitelist-ip': 'Admin.getAdminWhiteListIP',
 
   // Role
   'post /admin/role/create': 'RoleController.create',

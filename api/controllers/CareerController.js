@@ -9,7 +9,7 @@ var UploadFiles = require('../services/UploadFiles');
 module.exports = {
   applyJob: async function (req, res) {
 
-    let jobDetail = await Jobs.findOne({ id: req.body.job_id });
+    let jobDetail = await Jobs.find({ id: req.body.job_id });
     if (jobDetail) {
       req
         .file('resume')
@@ -51,12 +51,13 @@ module.exports = {
                         website_url: req.body.website_url,
                         linkedin_profile: req.body.linkedin_profile,
                         resume: 'career/' + uploadFileName,
-                        job_id: jobDetail.id,
+                        job_id: req.body.job_id,
                         cover_letter: (uploadLetter !== null
                           ? ('career/' + uploadLetter)
                           : null),
                         created_at: new Date()
                       }).fetch();
+
                       if (jobDetails) {
                         return res.json({
                           status: 200,

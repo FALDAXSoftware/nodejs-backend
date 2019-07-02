@@ -255,5 +255,7 @@
 	"Job Category added success": "Job category has been added successfully.",
 	"Job Category updated success": "Job Category has been updated successfully.",
 	"pair already exist": "Pair Already Exist.",
-	"Panic Status": "Panic status retrived successfully"
+	"Panic Status": "Panic status retrived successfully",
+	"WhiteLsit IP info Success": "WhiteLsit IP info Success",
+	"WhiteLsit IP Add Success": "WhiteLsit IP Add Success"
 }
