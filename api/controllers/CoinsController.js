@@ -254,13 +254,13 @@ module.exports = {
         deleted_at: null,
         slug: 'faldax_fee'
       });
-      let faldaxFees = parseFloat(feesDetails);
+      let faldaxFees = parseFloat(feesDetails.value);
 
       let feesDetailsKraken = await AdminSetting.findOne({
         deleted_at: null,
         slug: 'kraken_fee'
       });
-      let krakenFees = parseFloat(feesDetailsKraken);
+      let krakenFees = parseFloat(feesDetailsKraken.value);
 
       return res.json({
         "status": 200,
