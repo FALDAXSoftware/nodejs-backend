@@ -781,5 +781,86 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+
+  addAdminIPs: async function (req, res) {
+    try {
+      const { admin_id } = req.allParams();
+      var requestData = req.body;
+      var adminData = await Admin.findOne({
+        id: admin_id,
+        deleted_at: null,
+        is_active: true
+      });
+
+      if (adminData != undefined) {
+        var updateAdminData = await Admin.update({
+          id: admin_id,
+          deleted_at: null,
+          is_active: true
+        }).set({
+          email: adminData.email,
+          whitelist_ip: requestData.ip
+        });
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteLsit IP Add Success"),
+          "data": updateAdminData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getAdminWhiteListIP: async function (req, res) {
+    try {
+      const { admin_id } = req.allParams();
+      var adminData = await Admin.findOne({
+        select: [
+          'whitelist_ip'
+        ],
+        where: {
+          id: admin_id,
+          deleted_at: null,
+          is_active: true
+        }
+      });
+
+      if (adminData != undefined) {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteLsit IP info Success"),
+          "data": adminData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 };

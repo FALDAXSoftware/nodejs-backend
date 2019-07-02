@@ -250,11 +250,17 @@ module.exports = {
         })
         .select(["coin_icon", "coin_name", "coin"]);
 
-      let feesDetails = await AdminSetting.find({
-        deleted_at: null
-      })
-      let krakenFees = parseFloat(feesDetails[6].value);
-      let faldaxFees = parseFloat(feesDetails[7].value);
+      let feesDetails = await AdminSetting.findOne({
+        deleted_at: null,
+        slug: 'faldax_fee'
+      });
+      let faldaxFees = parseFloat(feesDetails);
+
+      let feesDetailsKraken = await AdminSetting.findOne({
+        deleted_at: null,
+        slug: 'kraken_fee'
+      });
+      let krakenFees = parseFloat(feesDetailsKraken);
 
       return res.json({
         "status": 200,

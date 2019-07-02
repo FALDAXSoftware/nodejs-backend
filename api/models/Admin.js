@@ -60,6 +60,11 @@ module.exports = {
       columnName: 'reset_token',
       allowNull: true
     },
+    whitelist_ip: {
+      type: 'string',
+      columnName: 'whitelist_ip',
+      allowNull: true
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
