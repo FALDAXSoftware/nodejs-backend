@@ -176,6 +176,8 @@ module.exports.routes = {
   // 'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser', //7
   'post /users/update-email': 'Users.updateEmail',
+  'post /users/add-whitelist-ip': 'Users.addWhiteListIP',
+  'get /users/get-whitelist-ip': 'Users.getWhiteListIP',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
@@ -290,8 +292,6 @@ module.exports.routes = {
   'post /type2coin/sendcoin': 'Type2CoinController.sendCoin',
   'get /type2coin/listaddreses/:coin_code': 'Type2CoinController.listAddresses',
   'post /type2coin/getwalletbalance': 'Type2CoinController.getAddressBalance',
-  'get /call-helper': 'RootController.callKrakenAPI',
-
   'get /call-helper': 'RootController.callKrakenAPI',
 
   //Kraken API

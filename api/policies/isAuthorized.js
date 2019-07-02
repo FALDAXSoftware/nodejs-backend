@@ -7,55 +7,123 @@
 
 module.exports = async function (req, res, next) {
 
-    var token;
+  var token;
 
-    try {
-        // console.log('RWEQ LOG??????????????????????????', req);
-        if (req.headers && req.headers.authorization) {
-            var parts = req.headers.authorization.split(' ');
-            if (parts.length == 2) {
-                var scheme = parts[0],
-                    credentials = parts[1];
+  try {
+    // console.log('RWEQ LOG??????????????????????????', req);
+    if (req.headers && req.headers.authorization) {
+      var parts = req
+        .headers
+        .authorization
+        .split(' ');
+      if (parts.length == 2) {
+        var scheme = parts[0],
+          credentials = parts[1];
 
-                if (/^Bearer$/i.test(scheme)) {
-                    token = credentials;
-                }
-            } else {
-                return res.status(403).json({ status: 403, err: 'Invalid Authorization token' });
-            }
-        } else if (req.param('token')) {
-            token = req.param('token');
-            // We delete the token from param to not mess with blueprints
-            delete req.query.token;
-        } else if (req.isSocket) {
-            if (req.socket.handshake.headers.authorization) {
-                var parts = req.socket.handshake.headers.authorization.split(' ');
-                if (parts.length == 2) {
-                    var scheme = parts[0],
-                        credentials = parts[1];
-
-                    if (/^Bearer$/i.test(scheme)) {
-                        token = credentials;
-                    }
-                } else {
-                    return res.status(403).json({ status: 403, err: 'Invalid Authorization token' });
-                }
-            } else {
-                return res.status(401).json({ status: 401, err: 'No Authorization header was found' });
-            }
+        if (/^Bearer$/i.test(scheme)) {
+          token = credentials;
         }
-        else {
-            return res.status(401).json({ status: 401, err: 'No Authorization header was found' });
-        }
+      } else {
+        return res
+          .status(403)
+          .json({
+            status: 403,
+            err: 'Invalid Authorization token'
+          });
+      }
+    } else if (req.param('token')) {
+      token = req.param('token');
+      // We delete the token from param to not mess with blueprints
+      delete req.query.token;
+    } else if (req.isSocket) {
+      if (req.socket.handshake.headers.authorization) {
+        var parts = req
+          .socket
+          .handshake
+          .headers
+          .authorization
+          .split(' ');
+        if (parts.length == 2) {
+          var scheme = parts[0],
+            credentials = parts[1];
 
-        var verifyData = await sails.helpers.jwtVerify(token);
-        if (verifyData) {            
-            req.user = verifyData;
-            next();
+          if (/^Bearer$/i.test(scheme)) {
+            token = credentials;
+          }
+        } else {
+          return res
+            .status(403)
+            .json({
+              status: 403,
+              err: 'Invalid Authorization token'
+            });
         }
-    } catch (error) {
-        return res.status(403).json({
-            status: 403, err: 'Your session has been expired. Please Login again to continue.'
+      } else {
+        return res
+          .status(401)
+          .json({
+            status: 401,
+            err: 'No Authorization header was found'
+          });
+      }
+    } else {
+      return res
+        .status(401)
+        .json({
+          status: 401,
+          err: 'No Authorization header was found'
         });
     }
+
+    var verifyData = await sails
+      .helpers
+      .jwtVerify(token);
+    if (verifyData) {
+      req.user = verifyData;
+      var userData = await Users.findOne({
+        id: req.user.id
+      });
+      if (userData != undefined && userData.isAdmin != true) {
+        if (userData.whitelist_ip == null && userData.deleted_at == null) {
+          next();
+        } else if (userData.deleted_at != null) {
+          return res
+            .status(403)
+            .json({
+              status: 403,
+              err: 'Your User has been deleted.'
+            });
+        } else if (userData.whitelist_ip != null) {
+          var ip;
+          if (req.headers['x-forwarded-for']) {
+            ip = req
+              .headers['x-forwarded-for']
+              .split(",")[0];
+          } else if (req.connection && req.connection.remoteAddress) {
+            ip = req.connection.remoteAddress;
+          } else {
+            ip = req.ip;
+          }
+          if (userData.whitelist_ip.indexOf(ip) > -1) {
+            next();
+          } else {
+            return res
+              .status(403)
+              .json({
+                status: 403,
+                err: 'Your IP has not been whitelisted. Please whitelist your IP to continue.'
+              });
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(403)
+      .json({
+        status: 403,
+        err: 'Your session has been expired. Please Login again to continue.'
+      });
+  }
 };

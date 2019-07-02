@@ -16,12 +16,12 @@ module.exports = {
   //------------------Web APi------------------------------------------------//
 
   /**
-    * API for creating user
-    * Renders this api when user needs to be created
-    *
-    * @param <email , password, firstname, lastname>
-    *
-    * @return <Coin node Info or error data>
+   * API for creating user
+   * Renders this api when user needs to be created
+   *
+   * @param <email , password, firstname, lastname>
+   *
+   * @return <Coin node Info or error data>
    */
 
   create: async function (req, res) {
@@ -32,7 +32,11 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({ email, deleted_at: null, is_active: true });
+      var existedUser = await Users.findOne({
+        email,
+        deleted_at: null,
+        is_active: true
+      });
       if (existedUser) {
         return res
           .status(401)
@@ -42,7 +46,9 @@ module.exports = {
           });
       }
       if (req.body.referral_code) {
-        var referredUser = await Users.findOne({ referral_code: req.body.referral_code });
+        var referredUser = await Users.findOne({
+          referral_code: req.body.referral_code
+        });
         if (!referredUser) {
           return res
             .status(401)
@@ -70,9 +76,8 @@ module.exports = {
           device_type: req.body.device_type,
           account_tier: 1,
           account_class: 4,
-          email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2)
-            ? email_verify_code
-            : email_verify_token
+          email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
+            email_verify_code : email_verify_token
         }).fetch();
 
         if (user_detail) {
@@ -84,16 +89,17 @@ module.exports = {
           } else {
             slug = "signup_for_web"
           }
-          let template = await EmailTemplate.findOne({ slug });
+          let template = await EmailTemplate.findOne({
+            slug
+          });
           let emailContent = await sails
             .helpers
             .utilities
             .formatEmail(template.content, {
               recipientName: user_detail.first_name,
               token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2)
-                ? email_verify_code
-                : email_verify_token
+              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                email_verify_code : email_verify_token
             })
           if (template) {
             sails
@@ -102,18 +108,17 @@ module.exports = {
               .send("general-email", {
                 content: emailContent
               }, {
-                  to: user_detail.email,
-                  subject: "Signup Verification"
-                }, function (err) {
-                  if (!err) {
-                    return res.json({
-                      "status": 200,
-                      "message": (req.body.device_type == 1 || req.body.device_type == 2)
-                        ? sails.__("verification code")
-                        : sails.__("verification link")
-                    });
-                  }
-                });
+                to: user_detail.email,
+                subject: "Signup Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+                      sails.__("verification code") : sails.__("verification link")
+                  });
+                }
+              });
           }
         } else {
           return res
@@ -143,12 +148,12 @@ module.exports = {
   },
 
   /**
-    * API for updating use email id
-    * Renders this api when user needs to be update email
-    *
-    * @param <new_email>
-    *
-    * @return <Coin node Info or error data>
+   * API for updating use email id
+   * Renders this api when user needs to be update email
+   *
+   * @param <new_email>
+   *
+   * @return <Coin node Info or error data>
    */
 
   updateEmail: async function (req, res) {
@@ -157,8 +162,14 @@ module.exports = {
         .body
         .new_email
         .toLowerCase();
-      var existedUser = await Users.findOne({ id: req.user.id, is_active: true, deleted_at: null });
-      var existedEmail = await Users.find({ email: newEmail });
+      var existedUser = await Users.findOne({
+        id: req.user.id,
+        is_active: true,
+        deleted_at: null
+      });
+      var existedEmail = await Users.find({
+        email: newEmail
+      });
 
       if (existedEmail && existedEmail.length > 0) {
         return res
@@ -172,12 +183,21 @@ module.exports = {
       let new_email_token = randomize('0', 6);
 
       var user = await Users
-        .update({ id: req.user.id, deleted_at: null })
-        .set({ requested_email: newEmail, email: existedUser.email, new_email_token: new_email_token })
+        .update({
+          id: req.user.id,
+          deleted_at: null
+        })
+        .set({
+          requested_email: newEmail,
+          email: existedUser.email,
+          new_email_token: new_email_token
+        })
         .fetch();
       if (user) {
         let slug = "new_email_confirmation"
-        let template = await EmailTemplate.findOne({ slug });
+        let template = await EmailTemplate.findOne({
+          slug
+        });
         let emailContent = await sails
           .helpers
           .utilities
@@ -191,16 +211,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: existedUser.email,
-              subject: "New Email Confirmation"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("confirm otp")
-                });
-              }
-            })
+            to: existedUser.email,
+            subject: "New Email Confirmation"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("confirm otp")
+              });
+            }
+          })
       }
     } catch (error) {
       return res
@@ -213,18 +233,20 @@ module.exports = {
   },
 
   /**
-    * API for confirming new email
-    * Renders this api when user needs to confirm new email
-    *
-    * @param <new email token>
-    *
-    * @return <Coin node Info or error data>
+   * API for confirming new email
+   * Renders this api when user needs to confirm new email
+   *
+   * @param <new email token>
+   *
+   * @return <Coin node Info or error data>
    */
 
   confirmNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_token) {
-        let user = await Users.findOne({ new_email_token: req.body.new_email_token });
+        let user = await Users.findOne({
+          new_email_token: req.body.new_email_token
+        });
         if (user) {
           let requested_email = user.requested_email;
           if (user["hubspot_id"] && user["hubspot_id"] != null) {
@@ -238,12 +260,24 @@ module.exports = {
           let re_new_email_token = randomize('Aa0', 10);
 
           await Users
-            .update({ id: user.id, new_email_token: req.body.new_email_token, deleted_at: null })
-            .set({ email: requested_email, new_email_token: null, email_verify_token: re_new_email_token, requested_email: null, is_new_email_verified: false })
+            .update({
+              id: user.id,
+              new_email_token: req.body.new_email_token,
+              deleted_at: null
+            })
+            .set({
+              email: requested_email,
+              new_email_token: null,
+              email_verify_token: re_new_email_token,
+              requested_email: null,
+              is_new_email_verified: false
+            })
             .fetch();
 
           let slug = "new_email_verification"
-          let template = await EmailTemplate.findOne({ slug });
+          let template = await EmailTemplate.findOne({
+            slug
+          });
           let emailContent = await sails
             .helpers
             .utilities
@@ -257,17 +291,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: requested_email,
-                subject: "New Email Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": re_new_email_token,
-                    "message": sails.__("verification link")
-                  });
-                }
-              })
+              to: requested_email,
+              subject: "New Email Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "new_email_token": re_new_email_token,
+                  "message": sails.__("verification link")
+                });
+              }
+            })
         } else {
           return res
             .status(400)
@@ -279,7 +313,10 @@ module.exports = {
       } else {
         return res
           .status(500)
-          .json({ status: 500, "err": "Invalid Params" });
+          .json({
+            status: 500,
+            "err": "Invalid Params"
+          });
       }
     } catch (error) {
       return res
@@ -292,23 +329,32 @@ module.exports = {
   },
 
   /**
-    * API for verifying the email
-    * Renders this api when user's email need to verified
-    *
-    * @param <email verify token>
-    *
-    * @return <Coin node Info or error data>
+   * API for verifying the email
+   * Renders this api when user's email need to verified
+   *
+   * @param <email verify token>
+   *
+   * @return <Coin node Info or error data>
    */
 
   verifyNewEmail: async function (req, res) {
     try {
       if (req.body.new_email_verify_token) {
-        let user = await Users.findOne({ email_verify_token: req.body.new_email_verify_token });
+        let user = await Users.findOne({
+          email_verify_token: req.body.new_email_verify_token
+        });
         if (user) {
 
           await Users
-            .update({ id: user.id, deleted_at: null })
-            .set({ email: user.email, is_new_email_verified: true, email_verify_token: null });
+            .update({
+              id: user.id,
+              deleted_at: null
+            })
+            .set({
+              email: user.email,
+              is_new_email_verified: true,
+              email_verify_token: null
+            });
 
           var token = await sails
             .helpers
@@ -340,16 +386,119 @@ module.exports = {
   },
 
   /**
-    * API for getting particular users details
-    * Renders this api when user details needs to be fetched
-    *
-    * @param <email , password, firstname, lastname>
-    *
-    * @return <Coin node Info or error data>
+   * API for adding particular users IP
+   * Renders this api when user needs to add IP
+   *
+   * @param <ip>
+   *
+   * @return <userdetails>
+   */
+
+  addWhiteListIP: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var requestData = req.body;
+      var userData = await Users.findOne({
+        id: user_id,
+        deleted_at: null,
+        is_active: true
+      });
+
+      if (userData != undefined) {
+        var emailData = await Users.update({
+          id: user_id,
+          deleted_at: null,
+          is_active: true
+        }).set({
+          email: userData.email,
+          whitelist_ip: requestData.ip
+        });
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteLsit IP Add Success"),
+          "data": emailData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  /**
+   * API for getting particular users IP list
+   * Renders this api when user whitelist IP needs to be fetched
+   *
+   * @param 
+   *
+   * @return <UserDetails>
+   */
+
+  getWhiteListIP: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var userData = await Users.findOne({
+        select :[
+          'whitelist_ip'
+        ],
+        where : {
+          id: user_id,
+        deleted_at: null,
+        is_active: true
+        }
+      });
+
+      if (userData != undefined) {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteLsit IP info Success"),
+          "data": userData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  /**
+   * API for getting particular users details
+   * Renders this api when user details needs to be fetched
+   *
+   * @param <email , password, firstname, lastname>
+   *
+   * @return <Coin node Info or error data>
    */
 
   getAllUserDetails: async function (req, res) {
-    let { user_id } = req.allParams();
+    let {
+      user_id
+    } = req.allParams();
     try {
       let query = " from users WHERE id=" + user_id;
 
@@ -376,7 +525,9 @@ module.exports = {
 
   getUserDetails: async function (req, res) {
     let id = req.user.id;
-    let usersData = await Users.find({ id: id });
+    let usersData = await Users.find({
+      id: id
+    });
     if (usersData.length > 0) {
 
       if (usersData[0].country) {
@@ -401,7 +552,9 @@ module.exports = {
         }
       }
     }
-    let userKyc = await KYC.findOne({ user_id: id });
+    let userKyc = await KYC.findOne({
+      user_id: id
+    });
     usersData[0].is_kyc_done = 0;
     if (userKyc) {
       if (userKyc.steps == 3) {
@@ -425,7 +578,10 @@ module.exports = {
   },
 
   getReferred: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {
+      page,
+      limit
+    } = req.allParams();
 
     let id = req.user.id;
     let usersData = await Users.find({
@@ -447,7 +603,9 @@ module.exports = {
   // For Get Login History
   getLoginHistory: async function (req, res) {
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({
+        user: req.user.id
+      })
       .sort('created_at DESC')
       .limit(10);
     return res.json({
@@ -459,11 +617,16 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({
+        id: req.user.id
+      });
       if (!user_details) {
         return res
           .status(401)
-          .json({ "status": 401, "err": 'Invalid email' });
+          .json({
+            "status": 401,
+            "err": 'Invalid email'
+          });
       }
       var user = req.body;
       user['email'] = user_details['email'];
@@ -497,18 +660,21 @@ module.exports = {
                     .helpers
                     .hubspot
                     .contacts
-                    .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
-                      ? ", " + user.street_address_2
-                      : ''), user.country
-                        ? user.country
-                        : user_details["country"], user.state
-                        ? user.state
-                        : user_details["state"], user.city_town
-                        ? user.city_town
-                        : user_details["city_town"], user.postal_code);
+                    .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
+                        ", " + user.street_address_2 :
+                        ''), user.country ?
+                      user.country :
+                      user_details["country"], user.state ?
+                      user.state :
+                      user_details["state"], user.city_town ?
+                      user.city_town :
+                      user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
-                  .update({ email: user.email, deleted_at: null })
+                  .update({
+                    email: user.email,
+                    deleted_at: null
+                  })
                   .set(user)
                   .fetch();
                 delete updatedUsers.password
@@ -521,27 +687,35 @@ module.exports = {
               if (user.remove_pic == 'true') {
                 delete user.remove_pic;
                 await Users
-                  .update({ email: user.email })
-                  .set({ email: user.email, profile_pic: null });
+                  .update({
+                    email: user.email
+                  })
+                  .set({
+                    email: user.email,
+                    profile_pic: null
+                  });
               }
               if (user_details["hubspot_id"] && user_details["hubspot_id"] != null) {
                 await sails
                   .helpers
                   .hubspot
                   .contacts
-                  .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2
-                    ? ", " + user.street_address_2
-                    : ''), user.country
-                      ? user.country
-                      : user_details["country"], user.state
-                      ? user.state
-                      : user_details["state"], user.city_town
-                      ? user.city_town
-                      : user_details["city_town"], user.postal_code);
+                  .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
+                    user.country :
+                    user_details["country"], user.state ?
+                    user.state :
+                    user_details["state"], user.city_town ?
+                    user.city_town :
+                    user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
-                .update({ email: user.email, deleted_at: null })
+                .update({
+                  email: user.email,
+                  deleted_at: null
+                })
                 .set(user);
 
               return res.json({
@@ -590,7 +764,9 @@ module.exports = {
           });
       }
 
-      const user_details = await Users.findOne({ id: req.user.id });
+      const user_details = await Users.findOne({
+        id: req.user.id
+      });
       if (!user_details) {
         return res
           .status(401)
@@ -610,8 +786,13 @@ module.exports = {
       }
 
       var updatedUsers = await Users
-        .update({ id: req.user.id })
-        .set({ email: user_details.email, password: req.body.new_password })
+        .update({
+          id: req.user.id
+        })
+        .set({
+          email: user_details.email,
+          password: req.body.new_password
+        })
         .fetch();
 
       if (updatedUsers) {
@@ -648,11 +829,24 @@ module.exports = {
       }
     });
 
-    var users = await Users.findOne({ deleted_at: null, id: id });
-    var referredData = await Referral.find({ deleted_at: null, user_id: id, is_collected: true });
-    var leftReferredData = await Referral.find({ deleted_at: null, user_id: id, is_collected: false })
+    var users = await Users.findOne({
+      deleted_at: null,
+      id: id
+    });
+    var referredData = await Referral.find({
+      deleted_at: null,
+      user_id: id,
+      is_collected: true
+    });
+    var leftReferredData = await Referral.find({
+      deleted_at: null,
+      user_id: id,
+      is_collected: false
+    })
 
-    var currencyData = await CurrencyConversion.find({ deleted_at: null })
+    var currencyData = await CurrencyConversion.find({
+      deleted_at: null
+    })
 
     var m = 0;
     sum = [];
@@ -686,9 +880,14 @@ module.exports = {
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
-    let { page, limit } = req.allParams();
+    let {
+      page,
+      limit
+    } = req.allParams();
     let history = await LoginHistory
-      .find({ user: req.user.id })
+      .find({
+        user: req.user.id
+      })
       .sort('created_at DESC')
       .paginate(page - 1, parseInt(limit));
 
@@ -709,7 +908,12 @@ module.exports = {
   setupTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({
+        id: user_id,
+        is_active: true,
+        is_verified: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -718,10 +922,17 @@ module.exports = {
             "err": sails.__("user inactive")
           });
       }
-      const secret = speakeasy.generateSecret({ length: 10 });
+      const secret = speakeasy.generateSecret({
+        length: 10
+      });
       await Users
-        .update({ id: user.id })
-        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+        .update({
+          id: user.id
+        })
+        .set({
+          "email": user.email,
+          "twofactor_secret": secret.base32
+        });
       let url = speakeasy.otpauthURL({
         secret: secret.ascii,
         label: 'FALDAX( ' + user.email + ')'
@@ -748,8 +959,15 @@ module.exports = {
   verifyTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let { otp } = req.allParams();
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let {
+        otp
+      } = req.allParams();
+      let user = await Users.findOne({
+        id: user_id,
+        is_active: true,
+        is_verified: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -761,11 +979,20 @@ module.exports = {
 
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
+        });
       if (verified) {
         await Users
-          .update({ id: user.id })
-          .set({ email: user.email, is_twofactor: true });
+          .update({
+            id: user.id
+          })
+          .set({
+            email: user.email,
+            is_twofactor: true
+          });
         return res.json({
           status: 200,
           message: sails.__("2 factor enabled")
@@ -797,7 +1024,12 @@ module.exports = {
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let user = await Users.findOne({ id: user_id, is_active: true, is_verified: true, deleted_at: null });
+      let user = await Users.findOne({
+        id: user_id,
+        is_active: true,
+        is_verified: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -815,8 +1047,15 @@ module.exports = {
           });
       }
       await Users
-        .update({ id: user.id, deleted_at: null })
-        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
+        .update({
+          id: user.id,
+          deleted_at: null
+        })
+        .set({
+          email: user.email,
+          is_twofactor: false,
+          twofactor_secret: null
+        });
       return res.json({
         status: 200,
         message: sails.__("2 factor disabled")
@@ -835,7 +1074,11 @@ module.exports = {
     let user_id = req.user.id;
     let userEmail = req.email;
 
-    let user = await Users.findOne({ id: user_id, email: userEmail, deleted_at: null });
+    let user = await Users.findOne({
+      id: user_id,
+      email: userEmail,
+      deleted_at: null
+    });
 
     if (!user) {
       res
@@ -847,8 +1090,13 @@ module.exports = {
     }
 
     await Users
-      .update({ id: user.id })
-      .set({ email: user.email, deleted_at: new Date() });
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_at: new Date()
+      });
 
     res.json({
       status: 200,
@@ -914,9 +1162,9 @@ module.exports = {
 
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY users." + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY users.created_at DESC";
@@ -951,17 +1199,30 @@ module.exports = {
   },
 
   updateUserDetails: async function (req, res) {
-    let { user_id, email, percentage } = req.allParams();
+    let {
+      user_id,
+      email,
+      percentage
+    } = req.allParams();
     var updateUserData;
     if (user_id && email) {
       updateUserData = await Users
-        .update({ id: user_id })
-        .set({ email: email, referal_percentage: percentage })
+        .update({
+          id: user_id
+        })
+        .set({
+          email: email,
+          referal_percentage: percentage
+        })
         .fetch();
     } else {
       updateUserData = await AdminSetting
-        .update({ slug: 'default_referral_percentage' })
-        .set({ value: percentage })
+        .update({
+          slug: 'default_referral_percentage'
+        })
+        .set({
+          value: percentage
+        })
         .fetch();
     }
 
@@ -980,11 +1241,17 @@ module.exports = {
 
   updateSendCoinFee: async function (req, res) {
     try {
-      let { send_coin_fee } = req.body;
+      let {
+        send_coin_fee
+      } = req.body;
 
       updateCoinFee = await AdminSetting
-        .update({ slug: 'default_send_coin_fee' })
-        .set({ value: send_coin_fee })
+        .update({
+          slug: 'default_send_coin_fee'
+        })
+        .set({
+          value: send_coin_fee
+        })
         .fetch();
 
       if (updateCoinFee) {
@@ -1005,17 +1272,32 @@ module.exports = {
 
   userActivate: async function (req, res) {
     try {
-      let { user_id, email, is_active, is_verified } = req.body;
+      let {
+        user_id,
+        email,
+        is_active,
+        is_verified
+      } = req.body;
 
       if (typeof is_active == 'boolean') {
         var usersData = await Users
-          .update({ id: user_id })
-          .set({ email: email, is_active })
+          .update({
+            id: user_id
+          })
+          .set({
+            email: email,
+            is_active
+          })
           .fetch();
       } else {
         usersData = await Users
-          .update({ id: user_id })
-          .set({ email: email, is_verified })
+          .update({
+            id: user_id
+          })
+          .set({
+            email: email,
+            is_verified
+          })
           .fetch();
       }
 
@@ -1041,10 +1323,15 @@ module.exports = {
   },
 
   getCountriesData: async function (req, res) {
-    fetch(' https://restcountries.eu/rest/v2/all', { method: "GET" })
+    fetch(' https://restcountries.eu/rest/v2/all', {
+        method: "GET"
+      })
       .then(resData => resData.json())
       .then(resData => {
-        res.json({ status: 200, data: resData })
+        res.json({
+          status: 200,
+          data: resData
+        })
       })
       .catch(err => {
         return res
@@ -1059,7 +1346,9 @@ module.exports = {
   getCountries: async function (req, res) {
     let countriesResponse = [];
     let countries = await Countries
-      .find({ is_active: true })
+      .find({
+        is_active: true
+      })
       .populate('state');
     countries.forEach(country => {
       let temp = {
@@ -1115,9 +1404,9 @@ module.exports = {
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
 
@@ -1176,13 +1465,11 @@ module.exports = {
           .find({
             where: {
               ...q,
-              or: [
-                {
-                  ip: {
-                    contains: data
-                  }
+              or: [{
+                ip: {
+                  contains: data
                 }
-              ]
+              }]
             }
           })
           .sort("created_at DESC")
@@ -1190,13 +1477,11 @@ module.exports = {
         let allHistoryCount = await LoginHistory.count({
           where: {
             ...q,
-            or: [
-              {
-                ip: {
-                  contains: data
-                }
+            or: [{
+              ip: {
+                contains: data
               }
-            ]
+            }]
           }
         });
 
@@ -1315,7 +1600,9 @@ module.exports = {
   },
 
   getTicketsAdmin: async function (req, res) {
-    const { user_id } = req.allParams();
+    const {
+      user_id
+    } = req.allParams();
     try {
       let tickets = await sails
         .helpers

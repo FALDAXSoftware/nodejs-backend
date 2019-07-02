@@ -44,7 +44,6 @@ module.exports = {
       var coinData;
       var referralData = await Users.findOne({deleted_at: null, is_active: true, id: inputs.user_id});
       var referredUserData = await Users.findOne({deleted_at: null, is_active: true, id: referralData.referred_id});
-      console.log(referredUserData);
       var addRefferalAddData = {};
 
       if (referredUserData !== undefined) {
