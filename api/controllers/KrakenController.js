@@ -246,6 +246,26 @@ module.exports = {
         volume,
         includeFees
       } = req.allParams();
+      let {
+        crypto,
+        currency
+      } = await sails
+        .helpers
+        .utilities
+        .getCurrencies(pair);
+
+      var cryptoLimit = await Coins.findOne({
+        deleted_at: null,
+        is_active: true,
+        coin: crypto
+      });
+
+      if (volume < cryptoLimit.min_limit) {
+        return res.status(500).json({
+          status: 500,
+          err: sails.__("Minimum amount requiried")
+        });
+      }
       let userId = req.user.id;
       let pairDetails = await Pairs.findOne({
         name: pair,
@@ -277,13 +297,6 @@ module.exports = {
           currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);
           currencyAmount = currencyAmount + ((currencyAmount * faldaxFees) / 100);
         }
-        let {
-          crypto,
-          currency
-        } = await sails
-          .helpers
-          .utilities
-          .getCurrencies(pair);
         let walletCurrencyBalance = null;
         let walletCryptoBalance = null;
         walletCurrencyBalance = await sails
