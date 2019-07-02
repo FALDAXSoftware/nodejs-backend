@@ -30,7 +30,7 @@ module.exports = {
 
     const key = 'YL4+gCHMerqCbiTHlKO6N3l8qaNib9JHvXPJhN+Fa3dZK1F4KUNFhxjw'; //API Key
     const secret = 'xfAlQbL6KvD3pWGqJ7uXzHSLykmn19bXoV5Oic5+QNCqx4/5ipth8uBCAMPtJUSmkF9iDf4gqMJee Hy' +
-        'NjMl4LQ == '; // API Private Key
+      'NjMl4LQ == '; // API Private Key
     var kraken = new KrakenClient(key, secret);
     const methods = {
       public: [
@@ -67,8 +67,10 @@ module.exports = {
       ]
     };
     try {
-     status = await kraken.api('Balance');
-     console.log(">>>>>>>>>>>>>>>",status)
+      status = await kraken.api('Depth', {
+        pair: 'XXRPXXBT'
+      });
+      console.log(">>>>>>>>>>>>>>>", status)
       return exits.success(status);
     } catch (err) {
       console.log(err);
