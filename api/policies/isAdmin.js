@@ -12,10 +12,13 @@ module.exports = function (req, res, next) {
   let urlPrefix = urlArray[1];
   if (urlPrefix.toLowerCase() == "admin") {
     if (req.user.isAdmin) {
-      // console.log("ADMIN DATA >>>>>>>>>", req.user)
+      console.log("ADMIN DATA >>>>>>>>>", req.user)
       return next();
     } else {
-      return res.status(403).json({ status: 403, err: 'Unauthorized access' });
+      return res.status(403).json({
+        status: 403,
+        err: 'Unauthorized access'
+      });
     }
   }
 
