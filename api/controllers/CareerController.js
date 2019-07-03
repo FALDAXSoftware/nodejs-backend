@@ -387,6 +387,14 @@ module.exports = {
     try {
 
       if (req.body) {
+        let existingCategory = await JobCategory.findOne({ category: req.body.category, is_active: true });
+        if (existingCategory) {
+          return res.json({
+            "status": 500,
+            "err": sails.__("Job Category Exists")
+          });
+        }
+
         req.body.is_active = true;
         var addCategoryData = await JobCategory
           .create(req.body)
