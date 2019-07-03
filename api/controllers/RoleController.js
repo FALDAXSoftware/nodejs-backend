@@ -51,7 +51,7 @@ module.exports = {
   get: async function (req, res) {
     try {
       let { sortCol, sortOrder, status } = req.allParams();
-      let query = " from roles WHERE deleted_at IS NULL";
+      let query = " from roles WHERE deleted_at IS NULL ";
       if (status) {
         query += "AND is_active = " + status
       }
@@ -78,7 +78,6 @@ module.exports = {
         // roleName
       })
     } catch (error) {
-      console.log('error', error)
       return res
         .status(500)
         .json({
