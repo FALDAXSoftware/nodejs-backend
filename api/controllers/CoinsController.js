@@ -248,7 +248,7 @@ module.exports = {
             }
           }
         })
-        .select(["coin_icon", "coin_name", "coin"]);
+        .select(["coin_icon", "coin_name", "coin", "min_limit"]);
 
       let feesDetails = await AdminSetting.findOne({
         deleted_at: null,
@@ -290,7 +290,6 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
-      console.log("pair", req.query.crypto, pair);
 
       let coinIds = [];
       for (let index = 0; index < pair.length; index++) {

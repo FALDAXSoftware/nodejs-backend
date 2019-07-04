@@ -267,5 +267,9 @@
   "Panic Status": "Panic status retrived successfully",
   "Your session has been expired. Please Login again to continue.": "Your session has been expired. Please Login again to continue.",
   "WhiteLsit IP Add Success": "Your White List IP has been added successfully.",
-  "WhiteLsit IP info Success": "White List IP has been retrieved successfully."
+  "WhiteLsit IP info Success": "White List IP has been retrieved successfully.",
+  "Unauthorized Access": "Unauthorized Access",
+  "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order.",
+  "Job Category Exists": "Job Category Already Exists!",
+	"Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue."
 }

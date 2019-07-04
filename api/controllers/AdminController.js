@@ -35,14 +35,39 @@ module.exports = {
           email: req.body.email,
           password: req.body.password
         }
-        var admin_details = await Admin.findOne({ email: query.email, deleted_at: null });
+        var admin_details = await Admin.findOne({
+          email: query.email,
+          deleted_at: null
+        });
 
         // Admin Existence
         if (admin_details) {
 
           // Admin Active
           if (admin_details.is_active) {
-            let role = await Role.findOne({ id: admin_details.role_id })
+            var ip;
+            if (req.headers['x-forwarded-for']) {
+              ip = req
+                .headers['x-forwarded-for']
+                .split(",")[0];
+            } else if (req.connection && req.connection.remoteAddress) {
+              ip = req.connection.remoteAddress;
+            } else {
+              ip = req.ip;
+            }
+
+            if (admin_details.whitelist_ip != null && admin_details.whitelist_ip != "" && admin_details.whitelist_ip.indexOf(ip) <= -1) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": sails.__("Unauthorized Access")
+                });
+            }
+
+            let role = await Role.findOne({
+              id: admin_details.role_id
+            })
             admin_details.roles = role;
 
             // Role Not Active
@@ -67,7 +92,12 @@ module.exports = {
               }
               let verified = speakeasy
                 .totp
-                .verify({ secret: admin_details.twofactor_secret, encoding: 'base32', token: req.body.otp, window: 2 });
+                .verify({
+                  secret: admin_details.twofactor_secret,
+                  encoding: 'base32',
+                  token: req.body.otp,
+                  window: 2
+                });
               if (!verified) {
                 return res
                   .status(402)
@@ -105,7 +135,10 @@ module.exports = {
                   var token = await sails
                     .helpers
                     .jwtIssue(admin_details.id, true, true);
-                  res.json({ user: admin_details, token });
+                  res.json({
+                    user: admin_details,
+                    token
+                  });
                 }
               });
           } else {
@@ -149,7 +182,10 @@ module.exports = {
       if (req.body.email && req.body.password) {
         // Create Admin
         var user_detail = await Admin
-          .create({ email: req.body.email, password: req.body.password })
+          .create({
+            email: req.body.email,
+            password: req.body.password
+          })
           .fetch();
 
         // Token Issue
@@ -218,7 +254,9 @@ module.exports = {
           });
       }
 
-      const user_details = await Admin.findOne({ email: req.body.email });
+      const user_details = await Admin.findOne({
+        email: req.body.email
+      });
       if (!user_details) {
         return res
           .status(401)
@@ -239,8 +277,13 @@ module.exports = {
       }
       // Update New Password
       var adminUpdates = await Admin
-        .update({ email: req.body.email })
-        .set({ email: req.body.email, password: req.body.new_password })
+        .update({
+          email: req.body.email
+        })
+        .set({
+          email: req.body.email,
+          password: req.body.new_password
+        })
         .fetch();
 
       if (adminUpdates) {
@@ -270,7 +313,9 @@ module.exports = {
   // Update Profile Details Admin
   update: async function (req, res) {
     try {
-      const admin_details = await Admin.findOne({ email: req.body.email });
+      const admin_details = await Admin.findOne({
+        email: req.body.email
+      });
       if (!admin_details) {
         return res
           .status(401)
@@ -280,7 +325,9 @@ module.exports = {
           });
       }
       var updatedAdmin = await Admin
-        .update({ email: req.body.email })
+        .update({
+          email: req.body.email
+        })
         .set({
           ...req.body
         })
@@ -309,11 +356,19 @@ module.exports = {
     try {
       var reset_token = req.body.reset_token;
 
-      let admin_details = await Admin.findOne({ reset_token });
+      let admin_details = await Admin.findOne({
+        reset_token
+      });
       if (admin_details) {
         let updateAdmin = await Admin
-          .update({ email: admin_details.email })
-          .set({ email: admin_details.email, password: req.body.password, reset_token: null })
+          .update({
+            email: admin_details.email
+          })
+          .set({
+            email: admin_details.email,
+            password: req.body.password,
+            reset_token: null
+          })
           .fetch();
         if (updateAdmin) {
           return res.json({
@@ -348,7 +403,10 @@ module.exports = {
   // Forgot Password request Admin
   forgotPassword: async function (req, res) {
     try {
-      const admin_details = await Admin.findOne({ email: req.body.email, deleted_at: null });
+      const admin_details = await Admin.findOne({
+        email: req.body.email,
+        deleted_at: null
+      });
 
       if (admin_details) {
         let reset_token = randomize('Aa0', 10);
@@ -357,12 +415,16 @@ module.exports = {
           reset_token: reset_token
         }
         var updatedAdmin = await Admin
-          .update({ email: req.body.email })
+          .update({
+            email: req.body.email
+          })
           .set(new_admin)
           .fetch();
 
         let slug = "forgot_password"
-        let template = await EmailTemplate.findOne({ slug });
+        let template = await EmailTemplate.findOne({
+          slug
+        });
         let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
           recipientName: admin_details.name,
           token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
@@ -403,7 +465,11 @@ module.exports = {
   //get all employees function
   getAllEmployee: async function (req, res) {
     try {
-      let { sortCol, sortOrder, data } = req.allParams();
+      let {
+        sortCol,
+        sortOrder,
+        data
+      } = req.allParams();
       let query = " from admin WHERE deleted_at IS NULL ";
 
       if ((data && data != "")) {
@@ -414,9 +480,9 @@ module.exports = {
       countQuery = query;
 
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -430,7 +496,9 @@ module.exports = {
 
       for (let index = 0; index < allEmployees.length; index++) {
         if (allEmployees[index].role_id) {
-          let role = await Role.findOne({ id: allEmployees[index].role_id })
+          let role = await Role.findOne({
+            id: allEmployees[index].role_id
+          })
           allEmployees[index].role = role.name
         }
       }
@@ -460,7 +528,10 @@ module.exports = {
     try {
       if (req.body.email && req.body.roles) {
 
-        let existedEmployee = await Admin.findOne({ email: req.body.email, deleted_at: null });
+        let existedEmployee = await Admin.findOne({
+          email: req.body.email,
+          deleted_at: null
+        });
 
         if (existedEmployee) {
           return res
@@ -478,9 +549,8 @@ module.exports = {
           phone_number: req.body.phone_number,
           email: req.body.email,
           role_id: req.body.roles,
-          password: req.body.password
-            ? req.body.password
-            : 'faldax123',
+          password: req.body.password ?
+            req.body.password : 'faldax123',
           created_at: new Date(),
           deleted_at: null
         }).fetch();
@@ -515,12 +585,21 @@ module.exports = {
     try {
       if (req.body.id) {
         let employee = await Admin
-          .findOne({ id: req.body.id })
-          .meta({ fetch: true });
+          .findOne({
+            id: req.body.id
+          })
+          .meta({
+            fetch: true
+          });
         if (employee) {
           let updatedEmp = await Admin
-            .update({ id: req.body.id })
-            .set({ email: employee.email, deleted_at: new Date() })
+            .update({
+              id: req.body.id
+            })
+            .set({
+              email: employee.email,
+              deleted_at: new Date()
+            })
             .fetch();
           if (updatedEmp) {
             return res.json({
@@ -559,11 +638,17 @@ module.exports = {
     try {
       if (req.body.id) {
         let employee = await Admin
-          .findOne({ id: req.body.id })
-          .meta({ fetch: true });
+          .findOne({
+            id: req.body.id
+          })
+          .meta({
+            fetch: true
+          });
         if (employee) {
           let updatedEmp = await Admin
-            .update({ id: req.body.id })
+            .update({
+              id: req.body.id
+            })
             .set({
               first_name: req.body.first_name,
               last_name: req.body.last_name,
@@ -609,10 +694,14 @@ module.exports = {
   },
 
   getEmployeeDetails: async function (req, res) {
-    let { emp_id } = req.allParams()
+    let {
+      emp_id
+    } = req.allParams()
     try {
       if (emp_id) {
-        let employee = await Admin.find({ id: emp_id })
+        let employee = await Admin.find({
+          id: emp_id
+        })
 
         return res.json({
           "status": 200,
@@ -638,8 +727,14 @@ module.exports = {
   //Setup Two Factor
   setupTwoFactor: async function (req, res) {
     try {
-      let { admin_id } = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      let {
+        admin_id
+      } = req.body;
+      let user = await Admin.findOne({
+        id: admin_id,
+        is_active: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -648,10 +743,17 @@ module.exports = {
             "err": sails.__("Admin not found or it's not active")
           });
       }
-      const secret = speakeasy.generateSecret({ length: 10 });
+      const secret = speakeasy.generateSecret({
+        length: 10
+      });
       await Admin
-        .update({ id: user.id })
-        .set({ "email": user.email, "twofactor_secret": secret.base32 });
+        .update({
+          id: user.id
+        })
+        .set({
+          "email": user.email,
+          "twofactor_secret": secret.base32
+        });
       let url = speakeasy.otpauthURL({
         secret: secret.ascii,
         label: 'FALDAX( ' + user.email + ')'
@@ -678,8 +780,15 @@ module.exports = {
   //Verify 2 factor
   verifyTwoFactor: async function (req, res) {
     try {
-      let { admin_id, otp } = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      let {
+        admin_id,
+        otp
+      } = req.body;
+      let user = await Admin.findOne({
+        id: admin_id,
+        is_active: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -699,11 +808,21 @@ module.exports = {
 
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp, window: 2 });
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp,
+          window: 2
+        });
       if (verified) {
         await Admin
-          .update({ id: user.id })
-          .set({ email: user.email, is_twofactor: true });
+          .update({
+            id: user.id
+          })
+          .set({
+            email: user.email,
+            is_twofactor: true
+          });
         return res.json({
           status: 200,
           message: sails.__("2 factor enabled")
@@ -728,8 +847,14 @@ module.exports = {
   //Disable 2 factor
   disableTwoFactor: async function (req, res) {
     try {
-      let { admin_id } = req.body;
-      let user = await Admin.findOne({ id: admin_id, is_active: true, deleted_at: null });
+      let {
+        admin_id
+      } = req.body;
+      let user = await Admin.findOne({
+        id: admin_id,
+        is_active: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -747,8 +872,15 @@ module.exports = {
           });
       }
       await Admin
-        .update({ id: user.id, deleted_at: null })
-        .set({ email: user.email, is_twofactor: false, twofactor_secret: null });
+        .update({
+          id: user.id,
+          deleted_at: null
+        })
+        .set({
+          email: user.email,
+          is_twofactor: false,
+          twofactor_secret: null
+        });
       return res.json({
         status: 200,
         message: sails.__("2 factor disabled")
@@ -765,8 +897,14 @@ module.exports = {
 
   getAdminDetails: async function (req, res) {
     try {
-      const { admin_id } = req.allParams();
-      let adminDetails = await Admin.findOne({ is_active: true, id: admin_id, deleted_at: null })
+      const {
+        admin_id
+      } = req.allParams();
+      let adminDetails = await Admin.findOne({
+        is_active: true,
+        id: admin_id,
+        deleted_at: null
+      })
 
       return res.json({
         status: 200,
@@ -785,7 +923,9 @@ module.exports = {
 
   addAdminIPs: async function (req, res) {
     try {
-      const { admin_id } = req.allParams();
+      const {
+        admin_id
+      } = req.allParams();
       var requestData = req.body;
       var adminData = await Admin.findOne({
         id: admin_id,
@@ -828,7 +968,9 @@ module.exports = {
 
   getAdminWhiteListIP: async function (req, res) {
     try {
-      const { admin_id } = req.allParams();
+      const {
+        admin_id
+      } = req.allParams();
       var adminData = await Admin.findOne({
         select: [
           'whitelist_ip'
