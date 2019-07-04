@@ -108,17 +108,17 @@ module.exports = {
               .send("general-email", {
                 content: emailContent
               }, {
-                to: user_detail.email,
-                subject: "Signup Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-                      sails.__("verification code") : sails.__("verification link")
-                  });
-                }
-              });
+                  to: user_detail.email,
+                  subject: "Signup Verification"
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+                        sails.__("verification code") : sails.__("verification link")
+                    });
+                  }
+                });
           }
         } else {
           return res
@@ -211,16 +211,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: existedUser.email,
-            subject: "New Email Confirmation"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("confirm otp")
-              });
-            }
-          })
+              to: existedUser.email,
+              subject: "New Email Confirmation"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("confirm otp")
+                });
+              }
+            })
       }
     } catch (error) {
       return res
@@ -291,17 +291,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-              to: requested_email,
-              subject: "New Email Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "new_email_token": re_new_email_token,
-                  "message": sails.__("verification link")
-                });
-              }
-            })
+                to: requested_email,
+                subject: "New Email Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": re_new_email_token,
+                    "message": sails.__("verification link")
+                  });
+                }
+              })
         } else {
           return res
             .status(400)
@@ -451,13 +451,13 @@ module.exports = {
     try {
       var user_id = req.user.id;
       var userData = await Users.findOne({
-        select :[
+        select: [
           'whitelist_ip'
         ],
-        where : {
+        where: {
           id: user_id,
-        deleted_at: null,
-        is_active: true
+          deleted_at: null,
+          is_active: true
         }
       });
 
@@ -661,14 +661,14 @@ module.exports = {
                     .hubspot
                     .contacts
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                        ", " + user.street_address_2 :
-                        ''), user.country ?
-                      user.country :
-                      user_details["country"], user.state ?
-                      user.state :
-                      user_details["state"], user.city_town ?
-                      user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
+                        user.country :
+                        user_details["country"], user.state ?
+                        user.state :
+                        user_details["state"], user.city_town ?
+                        user.city_town :
+                        user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -701,14 +701,14 @@ module.exports = {
                   .hubspot
                   .contacts
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                      ", " + user.street_address_2 :
-                      ''), user.country ?
-                    user.country :
-                    user_details["country"], user.state ?
-                    user.state :
-                    user_details["state"], user.city_town ?
-                    user.city_town :
-                    user_details["city_town"], user.postal_code);
+                    ", " + user.street_address_2 :
+                    ''), user.country ?
+                      user.country :
+                      user_details["country"], user.state ?
+                      user.state :
+                      user_details["state"], user.city_town ?
+                      user.city_town :
+                      user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
@@ -1095,6 +1095,7 @@ module.exports = {
       })
       .set({
         email: user.email,
+        deleted_by: 1,
         deleted_at: new Date()
       });
 
@@ -1324,8 +1325,8 @@ module.exports = {
 
   getCountriesData: async function (req, res) {
     fetch(' https://restcountries.eu/rest/v2/all', {
-        method: "GET"
-      })
+      method: "GET"
+    })
       .then(resData => resData.json())
       .then(resData => {
         res.json({

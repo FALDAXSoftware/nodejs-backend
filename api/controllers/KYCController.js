@@ -121,7 +121,6 @@ module.exports = {
         }
       }
     } catch (e) {
-      console.log(e);
       return res
         .status(500)
         .json({
@@ -245,8 +244,6 @@ module.exports = {
             }
           }
         }
-
-
       }
 
       var kycCron = await sails
@@ -275,7 +272,6 @@ module.exports = {
           });
       }
     } catch (e) {
-      console.log(e);
       return res
         .status(500)
         .json({
@@ -293,6 +289,8 @@ module.exports = {
         data,
         sortCol,
         sortOrder,
+        start_date,
+        end_date,
         status
       } = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
@@ -301,7 +299,7 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += " LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%'";
+          query += " (LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.mtid) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
 
@@ -318,6 +316,18 @@ module.exports = {
           ? 'DESC'
           : 'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
+      }
+
+      if (start_date && end_date) {
+        query += whereAppended
+          ? " AND "
+          : " WHERE ";
+
+        query += " (kyc.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00') AND (kyc.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59')";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
@@ -338,61 +348,6 @@ module.exports = {
         });
       }
     } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong")
-        });
-    }
-  },
-
-  approveDisapproveKYC: async function (req, res) {
-    try {
-      let { id, isApprove } = req.body;
-      let kyc_details = await KYC.findOne({ id });
-
-      if (kyc_details) {
-        if (isApprove == true) {
-          let updated_kyc = await KYC
-            .update({ id: kyc_details.id })
-            .set({ direct_response: 'ACCEPT', webhook_response: 'ACCEPT', is_approve: true, updated_at: new Date() })
-            .fetch();
-          if (updated_kyc) {
-            return res.json({
-              'status': 200,
-              'message': sails.__("KYC application approved'")
-            })
-          }
-        } else {
-          let updated_kyc = await KYC
-            .update({ id: kyc_details.id })
-            .set({
-              is_approve: false,
-              steps: 2,
-              direct_response: null,
-              webhook_response: null,
-              mtid: null,
-              kyc_doc_details: null,
-              updated_at: new Date()
-            })
-            .fetch();
-          if (updated_kyc) {
-            return res.json({
-              'status': 200,
-              'message': sails.__("KYC application rejected")
-            })
-          }
-        }
-      } else {
-        return res
-          .status(500)
-          .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
-      }
-    } catch (e) {
       return res
         .status(500)
         .json({

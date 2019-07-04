@@ -204,7 +204,7 @@
   "Coin requested success": "Asset requested successfully",
   "Coin requests retrived success": "Asset requests has been retrived successfully",
   "listed": "listed",
-  "Please provide email, current password, new password, confirm password": "Please provide email, current password, new password, confirm password",
+  "Please provide email, new password, confirm password": "Please provide email, new password, confirm password",
   "Email address not found": "Email address not found",
   "Current password mismatch": "Current password mismatch",
   "Something went wrong! Could not able to update the password": "Something went wrong! Could not able to update the password",
