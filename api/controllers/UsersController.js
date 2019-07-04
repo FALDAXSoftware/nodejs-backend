@@ -1536,7 +1536,6 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
-      console.log('...user', ...user)
       let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
       if (existedUser == undefined) {
         let hubspotcontact = await sails

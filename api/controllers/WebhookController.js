@@ -15,7 +15,6 @@ module.exports = {
             type: 1,
             hot_receive_wallet_address: { '!=': null }
         });
-        console.log("----------", coins);
 
         for (let index = 0; index < coins.length; index++) {
             const coin = coins[index];
@@ -23,7 +22,6 @@ module.exports = {
             // remove Existing webhooks
             let webhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_receive_wallet_address);
 
-            console.log(webhookres["webhooks"]);
             let webhooks = webhookres.webhooks
             for (let webhookIndex = 0; webhookIndex < webhooks.length; webhookIndex++) {
                 const webhook = webhooks[webhookIndex];
@@ -62,7 +60,6 @@ module.exports = {
 
     // webhook on receive
     webhookOnReceive: async function (req, res) {
-        console.log("webhook", req.body);
         // res.end();
 
         if (req.body.state == "confirmed") {
@@ -70,7 +67,6 @@ module.exports = {
             let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
             if (transfer.state == "confirmed") {
                 let alreadyWalletHistory = await WalletHistory.find({ transaction_type: "receive", transaction_id: req.body.hash });
-                console.log(alreadyWalletHistory);
 
                 if (alreadyWalletHistory.length == 0) {
                     // Object Of receiver
@@ -191,7 +187,6 @@ module.exports = {
             // remove Existing webhooks
             let webhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_receive_wallet_address);
 
-            console.log(webhookres["webhooks"]);
             let webhooks = webhookres.webhooks
             for (let webhookIndex = 0; webhookIndex < webhooks.length; webhookIndex++) {
                 const webhook = webhooks[webhookIndex];
@@ -204,7 +199,6 @@ module.exports = {
             if (coin.coin == "ETH") {
                 allToken = true
             }
-            console.log("address webhook wallet", coin.hot_receive_wallet_address);
 
             await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_receive_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, "address_confirmation", allToken);
         }
@@ -217,7 +211,6 @@ module.exports = {
 
         if (req.body.address && req.body.walletId) {
             let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
-            console.log("-=-=-=-=-=-", address);
             let addressLable = address.label;
             let coin = address.coin;
             if (addressLable.includes("-")) {

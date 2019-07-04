@@ -39,7 +39,6 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    console.log(`${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}`);
 
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}`,
