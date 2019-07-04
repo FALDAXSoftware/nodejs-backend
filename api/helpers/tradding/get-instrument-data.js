@@ -111,7 +111,6 @@ module.exports = {
         }
         pairData.push(instrument_data);
       }
-      console.log("-===============>>>>", pairData);
 
       // Send back the result through the success exit.
       return exits.success(pairData);

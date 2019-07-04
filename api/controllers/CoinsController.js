@@ -290,7 +290,6 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
-      console.log("pair", req.query.crypto, pair);
 
       let coinIds = [];
       for (let index = 0; index < pair.length; index++) {

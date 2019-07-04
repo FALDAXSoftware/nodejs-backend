@@ -16,7 +16,6 @@ module.exports = {
   fn: async function (inputs, exits) {
     // Get Currency Conversion data.
     try {
-      console.log(sails.config.local.CURRENCY_LIST)
       fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?convert=' + sails.config.local.CURRENCY_LIST + '&start=1&limit=20', {
           method: "GET",
           headers: {
@@ -25,7 +24,6 @@ module.exports = {
         })
         .then(resData => resData.json())
         .then(resData => {
-          console.log('>>>>>>>>resData', resData)
           return exits.success(resData);
         });
     } catch (err) {

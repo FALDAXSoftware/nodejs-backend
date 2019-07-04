@@ -25,7 +25,6 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
-        console.log('>>>>>EMAIL ', inputs)
         //Email Notification
 
         // Temporary Email template is here, change to actual email template

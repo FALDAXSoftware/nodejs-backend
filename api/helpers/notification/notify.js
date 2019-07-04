@@ -18,7 +18,6 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
-        console.log('SEND', inputs)
         let user = await Users.findOne({ id: inputs.user_id, is_active: true, deleted_at: null, is_verified: true });
         if (user) {
             await sails.helpers.notification.send.email('test')

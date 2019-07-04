@@ -23,7 +23,9 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
       var country;
-      var userKyc = await KYC.findOne({user_id: inputs.user_id});
+      var userKyc = await KYC.findOne({
+        user_id: inputs.user_id
+      });
       var countryData;
       var stateData;
       var response;
@@ -38,6 +40,7 @@ module.exports = {
         });
 
         if (countryData != undefined && countryData.length > 0) {
+
           if (countryData[0].legality == 1) {
             response = true;
             msg = "You are allowed to trade"
@@ -48,7 +51,9 @@ module.exports = {
                 name: userKyc.state
               }
             });
-            if (stateData != undefined && stateData.length > 0) {
+
+            if (stateData != undefined) {
+
               if (stateData.legality == 1) {
                 response = true;
                 msg = "You are allowed to trade"
