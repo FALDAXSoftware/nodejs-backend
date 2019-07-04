@@ -55,7 +55,6 @@ module.exports = {
           console.log('>>>>>>>>>>>>else');
         }
       }
-      console.log('>>>>>>>>>>>>coins_detail', currency_data)
     }
   },
 
@@ -79,8 +78,6 @@ module.exports = {
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
                     WHERE wallets.user_id = ${req.user.id} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
-
-      console.log(nonWalletQuery);
 
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
@@ -533,12 +530,10 @@ module.exports = {
         walletUserData = {};
         walletUserData["flag"] = 2;
       }
-      console.log(coinData);
       walletUserData['coin_code'] = coinData.coin_code;
       walletUserData['coin_icon'] = coinData.coin_icon;
       walletUserData['coin'] = coinData.coin;
       walletUserData['coin_name'] = coinData.coin_name;
-      console.log(walletUserData);
       // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
       // coin_id: coinData.id, deleted_at: null });
       if (walletTransData) {

@@ -137,7 +137,6 @@ module.exports = {
             if (err) {
               console.log(err)
             } else {
-              console.log(response);
             }
           })
         }
@@ -151,7 +150,6 @@ module.exports = {
             if (err) {
               console.log(err)
             } else {
-              console.log(response);
             }
           })
         }
