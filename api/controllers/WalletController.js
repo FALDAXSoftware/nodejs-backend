@@ -247,7 +247,6 @@ module.exports = {
                       // If after all condition user has accepted to wait for 2 days then request need
                       // to be added in the withdraw request table
                       if (req.body.confirm_for_wait === undefined) {
-
                         //Check for warm wallet minimum thresold
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
@@ -329,10 +328,11 @@ module.exports = {
                             user_id: user_id,
                             amount: amount,
                             transaction_type: 'send',
-                            // is_approve: false,
                             coin_id: coin.id,
                             is_executed: false
                           }
+
+                          console.log("Request Object >>>>>>>>", requestObject);
 
                           await WithdrawRequest.create({
                             ...requestObject
