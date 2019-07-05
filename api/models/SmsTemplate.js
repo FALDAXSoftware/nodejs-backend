@@ -1,31 +1,37 @@
 /**
- * UserNotification.js
+ * SmsTemplate.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'user_notifications',
+
+  tableName: 'sms_template',
   attributes: {
     slug: {
       type: 'string',
-      allowNull: true,
-      columnName: 'slug'
+      columnName: 'slug',
+      required: true
     },
     user_id: {
       columnName: "user_id",
       model: "users"
     },
-    text: {
-      type: 'boolean',
-      columnName: "text",
-      defaultsTo: false
+    name: {
+      type: 'string',
+      columnName: 'name',
+      required: true
     },
-    email: {
-      type: 'boolean',
-      columnName: "email",
-      defaultsTo: false
+    content: {
+      type: 'string',
+      columnName: 'content',
+      required: true
+    },
+    note: {
+      type: 'string',
+      columnName: 'note',
+      required: true
     },
     created_at: {
       type: 'ref',
@@ -42,7 +48,6 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     }
-
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
@@ -51,5 +56,6 @@ module.exports = {
   beforeUpdate: (values, next) => {
     values.updated_at = new Date();
     next();
-  }
+  },
+
 };

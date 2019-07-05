@@ -128,7 +128,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) { }
+                  if (admin_details.is_twofactor) {}
 
                   delete admin_details.password;
                   // Token Issue
@@ -434,16 +434,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-              to: admin_details.email,
-              subject: "Forgot Password"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("Reset password link sent to your email successfully.")
-                });
-              }
-            })
+            to: admin_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -1005,4 +1005,52 @@ module.exports = {
         });
     }
   },
+
+  deleteUser: async function (req, res) {
+
+    try {
+      var {
+        user_id
+      } = req.allParams();
+
+      var userDetail = await Users.findOne({
+        where: {
+          deleted_at: null,
+          id: user_id
+        }
+      })
+
+      if (userDetail != undefined) {
+        var deleteUSerDetail = await Users
+          .update({
+            deleted_at: null,
+            is: user_id
+          })
+          .set({
+            email: userDetail.email,
+            deleted_at: Date.now()
+          })
+
+        res.json({
+          status: 200,
+          message: sails.__("user_delete_success")
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("User Detail Not Found")
+          });
+      }
+
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  }
 };

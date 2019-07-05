@@ -32,7 +32,11 @@ module.exports = {
     try {
       let { otp, status } = req.allParams();
       let user_id = req.user.id;
-      let user = await Admin.findOne({ id: user_id, is_active: true, deleted_at: null });
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
       if (!user) {
         return res
           .status(401)
@@ -43,7 +47,11 @@ module.exports = {
       }
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
+        });
       if (verified) {
         await AdminSetting.update({
           slug: "panic_status"
@@ -77,7 +85,10 @@ module.exports = {
     var data = await sails
       .helpers
       .krakenApi();
-    return res.json({ status: 200, "data": data });
+    return res.json({
+      status: 200,
+      "data": data
+    });
   },
 
   sendOpenTicketForm: async function (req, res) {
@@ -112,8 +123,12 @@ module.exports = {
         .keys(req.body)
         .forEach(async function eachKey(key) {
           contactDetails = await AdminSetting
-            .update({ slug: key })
-            .set({ value: req.body[key] })
+            .update({
+              slug: key
+            })
+            .set({
+              value: req.body[key]
+            })
             .fetch();
         });
       if (contactDetails) {
@@ -136,14 +151,21 @@ module.exports = {
 
   webhookOnReciveBitgo: async function (req, res) {
     if (req.body.state == "confirmed") {
-      var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+      var bitgo = new BitGoJS.BitGo({
+        env: sails.config.local.BITGO_ENV_MODE,
+        accessToken: sails.config.local.BITGO_ACCESS_TOKEN
+      });
       var wallet = await bitgo
         .coin(req.body.coin)
         .wallets()
-        .get({ id: req.body.wallet });
+        .get({
+          id: req.body.wallet
+        });
       let transferId = req.body.transfer;
       wallet
-        .getTransfer({ id: transferId })
+        .getTransfer({
+          id: transferId
+        })
         .then(async function (transfer) {
           if (transfer.state == "confirmed") {
             // Object Of receiver
@@ -151,7 +173,11 @@ module.exports = {
             // Object of sender
             let source = transfer.outputs[1];
             // receiver wallet
-            let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
+            let userWallet = await Wallet.findOne({
+              receive_address: dest.address,
+              deleted_at: null,
+              is_active: true
+            });
             // transaction amount
             let amount = (dest.value / 100000000);
             // user wallet exitence check
@@ -172,7 +198,9 @@ module.exports = {
               });
               // update wallet balance
               await Wallet
-                .update({ id: userWallet.id })
+                .update({
+                  id: userWallet.id
+                })
                 .set({
                   balance: userWallet.balance + amount,
                   placed_balance: userWallet.placed_balance + amount
@@ -185,7 +213,10 @@ module.exports = {
   },
 
   queryTest: async function (req, res) {
-    let data = await sails.helpers.notification.notify(req.user.id);
+    // console.log("Slug Value >>>>>>>>>>>>", req.allParams());
+    let user_id = 1347;
+    let slug = 'kyc'
+    let data = await sails.helpers.notification.notify(user_id, slug);
     //  await sails.helpers.notification.send.text("+917990841590", "test form twillio");
     // console.log("done", user);
     return res.json({
@@ -197,7 +228,9 @@ module.exports = {
     try {
       return res
         .status(101)
-        .json({ status: 101 });
+        .json({
+          status: 101
+        });
     } catch (err) {
       console.log("error :: ", err);
     }
@@ -233,17 +266,16 @@ module.exports = {
   testemail: function (req, res) {
     sails
       .hooks
-      .email.send("testemail", {
-      }, {
-          to: "ankit.morker@openxcellinc.com",
-          subject: "test email"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": "dkhsd"
-            });
-          }
-        });
+      .email.send("testemail", {}, {
+        to: "ankit.morker@openxcellinc.com",
+        subject: "test email"
+      }, function (err) {
+        if (!err) {
+          return res.json({
+            "status": 200,
+            "message": "dkhsd"
+          });
+        }
+      });
   }
 };
