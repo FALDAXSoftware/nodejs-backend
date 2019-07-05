@@ -55,4 +55,4 @@ module.exports.http = {
       return middlewareFn;
     })(),
   },
-};
+}; //, maxTimeToBuffer: 120000,
