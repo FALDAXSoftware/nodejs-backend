@@ -11,11 +11,11 @@
 module.exports.policies = {
 
   /***************************************************************************
-  *                                                                          *
-  * Default policy for all controllers and actions, unless overridden.       *
-  * (`true` allows public access)                                            *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Default policy for all controllers and actions, unless overridden.       *
+   * (`true` allows public access)                                            *
+   *                                                                          *
+   ***************************************************************************/
 
   // '*': true,
   '*': [
@@ -68,7 +68,8 @@ module.exports.policies = {
     "sendListTokenForm": true,
     "callKrakenAPI": true,
     "bitgoTest": true,
-    "testemail": true
+    "testemail": true,
+    "queryTest": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },

@@ -42,6 +42,7 @@ module.exports.routes = {
   'post /admin/add-employee': "Admin.addEmployee",
   'get /admin/get-employees': "Admin.getAllEmployee",
   'delete /admin/delete-employee': "Admin.deleteEmployee",
+  'delete /admin/delete-user': "Admin.deleteUser",
   'put /admin/update-employee': "Admin.updateEmployee",
   'get /admin/get-employee-details': "Admin.getEmployeeDetails",
   'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
