@@ -33,7 +33,7 @@
   "Contact Admin": "Contact the admin to activate your account.",
   "Activate Account": "Activate your account for logging in.",
   "Invalid Email": "Invalid Email Address",
-  "Something Wrong": "Something went wrong!!",
+  "Something Wrong": "An unknown error occurred while processing your request. Please contact support or try again.",
   "User Update": "User details updated successfully",
   "Blog Details": "Blog Details",
   "No KYC": "No KYC details updated.",
@@ -271,5 +271,6 @@
   "Unauthorized Access": "Unauthorized Access",
   "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order.",
   "Job Category Exists": "Job Category Already Exists!",
-	"Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue."
+  "Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue.",
+  "Panic status Update": "Panic status changed successfully."
 }

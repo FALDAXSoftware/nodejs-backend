@@ -5,17 +5,18 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const BitGoJS = require('bitgo');
+const speakeasy = require('speakeasy');
 
 module.exports = {
   getPanicStatus: async function (req, res) {
     try {
-      let status = await AdminSetting.findOne({
+      let panicStatus = await AdminSetting.findOne({
         slug: "panic_status"
       });
       return res.json({
         status: 200,
         message: sails.__("Panic Status"),
-        status
+        panicStatus
       });
     } catch (error) {
       return res
@@ -29,36 +30,6 @@ module.exports = {
 
   panicBtn: async function (req, res) {
     try {
-      // let btnCall = await sails
-      //   .helpers
-      //   .panicButton();
-
-      // if (btnCall.length > 0) {
-      //   btnCall.forEach(async (element) => {
-      //     let userDetails = await Users.find({ id: element });
-      //     let slug = "panic_email"
-      //     let template = await EmailTemplate.findOne({ slug });
-      //     let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-      //       recipientName: userDetails[0].first_name,
-      //     })
-      //     sails
-      //       .hooks
-      //       .email.send("general-email", {
-      //         content: emailContent
-      //       }, {
-      //           to: "krina.soni@openxcellinc.com",
-      //           subject: "Panic Button"
-      //         }, function (err) {
-      //           if (!err) {
-      //             return res.json({
-      //               "status": 200,
-      //               "message": sails.__("Email sent success")
-      //             });
-      //           }
-      //         })
-      //   });
-      // }
-
       let { otp, status } = req.allParams();
       let user_id = req.user.id;
       let user = await Admin.findOne({ id: user_id, is_active: true, deleted_at: null });
