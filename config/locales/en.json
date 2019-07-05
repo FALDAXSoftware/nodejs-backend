@@ -271,5 +271,6 @@
   "Unauthorized Access": "Unauthorized Access",
   "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order.",
   "Job Category Exists": "Job Category Already Exists!",
-	"Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue."
+  "Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue.",
+  "User Detail Not Found": "No User Details has been found"
 }
