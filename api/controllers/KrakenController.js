@@ -297,10 +297,6 @@ module.exports = {
             currencyAmount = volume * pairDetails.bid_price;
             // currencyAmount = 0.002 * '5530.00000';
           }
-          if (includeFees == "false" || includeFees == false) {
-            currencyAmount = currencyAmount + ((currencyAmount * krakenFees) / 100);
-            currencyAmount = currencyAmount + ((currencyAmount * faldaxFees) / 100);
-          }
           let walletCurrencyBalance = null;
           let walletCryptoBalance = null;
           walletCurrencyBalance = await sails
@@ -313,7 +309,6 @@ module.exports = {
             .tolerate("serverError", () => {
               throw new Error("serverError")
             });
-
           walletCryptoBalance = await sails
             .helpers
             .utilities
@@ -353,9 +348,9 @@ module.exports = {
                         .helpers
                         .kraken
                         .queryTradeInfo(transactionId);
-
-                      console.log("Trade Info Data >>>>>>>>>>>>>>>>", tradeInfoData);
-
+                      let totalFees = 0;
+                      totalFees = (tradeInfoData.result[transactionId].vol * krakenFees) / 100;
+                      totalFees = totalFees + ((tradeInfoData.result[transactionId].vol * faldaxFees) / 100)
                       let tradeHistoryData = {
                         order_type: "Market",
                         fill_price: tradeInfoData.result[transactionId].price,
@@ -380,8 +375,8 @@ module.exports = {
                       resultData.is_market = true;
                       resultData.fix_quantity = volume;
                       resultData.maker_fee = 0.0;
-                      resultData.taker_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
-                      resultData.user_fee = parseFloat(tradeInfoData.result[transactionId].fee) + (faldaxFees);
+                      resultData.taker_fee = totalFees;
+                      resultData.user_fee = totalFees;
                       resultData.requested_fee = 0.0;
 
                       let activity = await sails
@@ -417,8 +412,8 @@ module.exports = {
                             id: walletCryptoBalance.id
                           })
                           .set({
-                            balance: (walletCryptoBalance.balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100)))),
-                            placed_balance: (walletCryptoBalance.placed_balance + (tradeInfoData.result[transactionId].vol - (tradeInfoData.result[transactionId].vol * (faldaxFees / 100))))
+                            balance: (walletCryptoBalance.balance + (tradeInfoData.result[transactionId].vol - totalFees)),
+                            placed_balance: (walletCryptoBalance.placed_balance + (tradeInfoData.result[transactionId].vol - totalFees))
                           });
 
                       } else if (type == "sell") {
