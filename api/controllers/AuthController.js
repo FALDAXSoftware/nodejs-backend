@@ -64,12 +64,12 @@ module.exports = {
               last_name: user.last_name
             });
           // Create Receive Address
-          await sails
-            .helpers
-            .wallet
-            .receiveAddress(user, req.body.test_key ?
-              req.body.test_key :
-              "false");
+          // await sails
+          //   .helpers
+          //   .wallet
+          //   .receiveAddress(user, req.body.test_key ?
+          //     req.body.test_key :
+          //     "false");
           return res.json({
             message: "Verification successfull.",
             "status": 200,
