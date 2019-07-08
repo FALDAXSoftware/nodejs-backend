@@ -1095,7 +1095,7 @@ module.exports = {
       })
       .set({
         email: user.email,
-        deleted_by: 1,
+        deleted_by: 1, //deleted by user
         deleted_at: new Date()
       });
 
