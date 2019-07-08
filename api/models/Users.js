@@ -227,6 +227,11 @@ module.exports = {
       allowNull: true,
       columnName: 'gender'
     },
+    deleted_by: {
+      type: 'number',
+      allowNull: true,
+      columnName: 'deleted_by'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

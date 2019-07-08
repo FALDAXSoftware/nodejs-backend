@@ -228,11 +228,11 @@ module.exports = {
   // Change Password Admin
   changePassword: async function (req, res) {
     try {
-      if (!req.body.email || !req.body.current_password || !req.body.new_password || !req.body.confirm_password) {
+      if (!req.body.email || !req.body.new_password || !req.body.confirm_password) {
         return res
           .status(401)
           .json({
-            err: sails.__("Please provide email, current password, new password, confirm password")
+            err: sails.__("Please provide email, new password, confirm password")
           });
       }
 
@@ -245,14 +245,14 @@ module.exports = {
           });
       }
 
-      if (req.body.current_password === req.body.new_password) {
-        return res
-          .status(401)
-          .json({
-            "status": 401,
-            err: sails.__("current new must not be same")
-          });
-      }
+      // if (req.body.current_password === req.body.new_password) {
+      //   return res
+      //     .status(401)
+      //     .json({
+      //       "status": 401,
+      //       err: sails.__("current new must not be same")
+      //     });
+      // }
 
       const user_details = await Admin.findOne({
         email: req.body.email
@@ -266,15 +266,15 @@ module.exports = {
           });
       }
 
-      let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
-      if (!compareCurrent) {
-        return res
-          .status(401)
-          .json({
-            "status": 401,
-            err: sails.__("Current password mismatch")
-          });
-      }
+      // let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
+      // if (!compareCurrent) {
+      //   return res
+      //     .status(401)
+      //     .json({
+      //       "status": 401,
+      //       err: sails.__("Current password mismatch")
+      //     });
+      // }
       // Update New Password
       var adminUpdates = await Admin
         .update({
@@ -1005,4 +1005,49 @@ module.exports = {
         });
     }
   },
+
+  deleteUser: async function (req, res) {
+    try {
+      let { user_id } = req.allParams();
+
+      var userDetail = await Users.findOne({
+        where: {
+          deleted_at: null,
+          id: user_id
+        }
+      })
+
+      if (userDetail != undefined) {
+        var deleteUSerDetail = await Users
+          .update({
+            deleted_at: null,
+            id: user_id
+          })
+          .set({
+            email: userDetail.email,
+            deleted_by: 2, //deleted by admin
+            deleted_at: new Date()
+          })
+
+        res.json({
+          status: 200,
+          message: sails.__("user_delete_success")
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("User Detail Not Found")
+          });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  }
 };
