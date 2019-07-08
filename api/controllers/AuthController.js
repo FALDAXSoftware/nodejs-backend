@@ -267,25 +267,25 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                      to: user_detail["email"],
-                      subject: "New Device Confirmation"
-                    }, function (err) {
-                      if (!err) {
-                        return res
-                          .status(202)
-                          .json({
-                            "status": 202,
-                            "err": sails.__("New device confirmation email sent to your email.")
-                          });
-                      } else {
-                        return res
-                          .status(500)
-                          .json({
-                            "status": 500,
-                            "err": sails.__("Something Wrong")
-                          });
-                      }
-                    });
+                        to: user_detail["email"],
+                        subject: "New Device Confirmation"
+                      }, function (err) {
+                        if (!err) {
+                          return res
+                            .status(202)
+                            .json({
+                              "status": 202,
+                              "err": sails.__("New device confirmation email sent to your email.")
+                            });
+                        } else {
+                          return res
+                            .status(500)
+                            .json({
+                              "status": 500,
+                              "err": sails.__("Something Wrong")
+                            });
+                        }
+                      });
                 }
               }
             });
@@ -459,23 +459,23 @@ module.exports = {
       .send("general-email", {
         content: emailContent
       }, {
-        to: user.email,
-        subject: "Authentication Code"
-      }, function (err) {
-        if (!err) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Authentication code sent to email successfully")
-          });
-        } else {
-          return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Something Wrong")
+          to: user.email,
+          subject: "Authentication Code"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Authentication code sent to email successfully")
             });
-        }
-      })
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
   },
 
   /**
@@ -584,16 +584,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: req.body.email,
-            subject: "Signup Verification"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("verification code")
-              });
-            }
-          })
+              to: req.body.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("verification code")
+                });
+              }
+            })
       } else {
         return res
           .status(401)
@@ -707,34 +707,45 @@ module.exports = {
         .set(new_user)
         .fetch();
 
-      let slug = "forgot_password"
-      let template = await EmailTemplate.findOne({
-        slug
+      // Email sending stopped for performance testing
+
+
+      // let slug = "forgot_password"
+      // let template = await EmailTemplate.findOne({
+      //   slug
+      // });
+      // let emailContent = await sails
+      //   .helpers
+      //   .utilities
+      //   .formatEmail(template.content, {
+      //     recipientName: updatedUser.first_name,
+      //     token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
+      //   })
+
+      // sails
+      //   .hooks
+      //   .email
+      //   .send("general-email", {
+      //     content: emailContent
+      //   }, {
+      //       to: user_details.email,
+      //       subject: "Forgot Password"
+      //     }, function (err) {
+      //       if (!err) {
+      //         return res.json({
+      //           "status": 200,
+      //           "message": sails.__("Reset password link sent to your email successfully.")
+      //         });
+      //       }
+      //     })
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Reset password link sent to your email successfully."),
+        reset_token
       });
-      let emailContent = await sails
-        .helpers
-        .utilities
-        .formatEmail(template.content, {
-          recipientName: updatedUser.first_name,
-          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
-        })
-      sails
-        .hooks
-        .email
-        .send("general-email", {
-          content: emailContent
-        }, {
-          to: user_details.email,
-          subject: "Forgot Password"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Reset password link sent to your email successfully.")
-            });
-          }
-        })
     } catch (error) {
+      console.log('error', error)
       return res
         .status(500)
         .json({
