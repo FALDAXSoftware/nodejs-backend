@@ -73,19 +73,6 @@ module.exports = {
     } catch (err) {
       console.log(err);
     }
-    // url = "http://dev-monero-currency.faldax.com/json_rpc" headers = {
-    // 'content-type': 'application/json' } rpc_input = {   "method":
-    // "create_wallet",   "params": {     "filename": "monero-wallet-rpc",
-    // "password": "Admin@123$",     "language": "English"   },   "jsonrpc": "2.0",
-    // "id": "0",   "rpc_username": "monerorpc",   "rpc_password": "secret" } //
-    // rpc_input.update({"jsonrpc": "2.0", "id": "0"})response = request.post(url,
-    // data = JSON.stringify(rpc_input), headers = headers)print(response.text)
-    // options = {   uri: 'http://dev-monero-currency.faldax.com/json_rpc/',   json:
-    // true,   headers: {     "Authorization": "Basic bW9uZXJvcnBjOnNlY3JldA==",
-    // "Content-Type": "application/json"   },   method: 'POST',   method:
-    // "create_wallet",   params: {     "filename": "monero-wallet-rpc", "password":
-    // "Admin@123$",     "language": "English"   },   jsonrpc: "2.0", id: "0" };
-    // console.log(options); request(options, function (err, resp, body) {
-    // console.log(err, resp, body); });
+
   }
 };
