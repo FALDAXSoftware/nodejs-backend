@@ -245,14 +245,14 @@ module.exports = {
           });
       }
 
-      // if (req.body.current_password === req.body.new_password) {
-      //   return res
-      //     .status(401)
-      //     .json({
-      //       "status": 401,
-      //       err: sails.__("current new must not be same")
-      //     });
-      // }
+      if (req.body.current_password === req.body.new_password) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("current new must not be same")
+          });
+      }
 
       const user_details = await Admin.findOne({
         email: req.body.email
@@ -266,15 +266,15 @@ module.exports = {
           });
       }
 
-      // let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
-      // if (!compareCurrent) {
-      //   return res
-      //     .status(401)
-      //     .json({
-      //       "status": 401,
-      //       err: sails.__("Current password mismatch")
-      //     });
-      // }
+      let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
+      if (!compareCurrent) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("Current password mismatch")
+          });
+      }
       // Update New Password
       var adminUpdates = await Admin
         .update({
