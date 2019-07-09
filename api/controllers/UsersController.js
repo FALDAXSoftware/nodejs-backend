@@ -101,25 +101,31 @@ module.exports = {
               tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
                 email_verify_code : email_verify_token
             })
-          if (template) {
-            sails
-              .hooks
-              .email
-              .send("general-email", {
-                content: emailContent
-              }, {
-                  to: user_detail.email,
-                  subject: "Signup Verification"
-                }, function (err) {
-                  if (!err) {
-                    return res.json({
-                      "status": 200,
-                      "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-                        sails.__("verification code") : sails.__("verification link")
-                    });
-                  }
-                });
-          }
+          // if (template) {
+          //   sails
+          //     .hooks
+          //     .email
+          //     .send("general-email", {
+          //       content: emailContent
+          //     }, {
+          //         to: user_detail.email,
+          //         subject: "Signup Verification"
+          //       }, function (err) {
+          //         if (!err) {
+          //           return res.json({
+          //             "status": 200,
+          //             "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+          //               sails.__("verification code") : sails.__("verification link")
+          //           });
+          //         }
+          //       });
+          // }
+          return res
+            .json({
+              status: 200,
+              email_verify_token,
+              "message": "Success"
+            });
         } else {
           return res
             .status(401)
