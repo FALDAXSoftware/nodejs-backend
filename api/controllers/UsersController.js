@@ -583,28 +583,30 @@ module.exports = {
     }
   },
 
-  getReferred: async function (req, res) {
-    let {
-      page,
-      limit
-    } = req.allParams();
+  // getReferred: async function (req, res) {
+  //   let {
+  //     page,
+  //     limit
+  //   } = req.allParams();
 
-    let id = req.user.id;
-    let usersData = await Users.find({
-      select: ['email'],
-      where: {
-        referred_id: id
-      }
-    }).paginate(parseInt(page) - 1, parseInt(limit));
+  //   let id = req.user.id;
+  //   let usersData = await Users.find({
+  //     select: ['email'],
+  //     where: {
+  //       referred_id: id
+  //     }
+  //   }).sort('id DESC').paginate(parseInt(page) - 1, parseInt(limit));
 
-    if (usersData) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("User referred Data"),
-        "data": usersData
-      });
-    }
-  },
+  //   console.log('usersData', usersData)
+
+  //   if (usersData) {
+  //     return res.json({
+  //       "status": 200,
+  //       "message": sails.__("User referred Data"),
+  //       "data": usersData
+  //     });
+  //   }
+  // },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
@@ -828,12 +830,12 @@ module.exports = {
     let id = req.user.id;
     let usersData = await Users.find({
       select: [
-        'email', 'full_name', 'fiat'
+        'email', 'full_name', 'fiat', 'created_at'
       ],
       where: {
         referred_id: id
       }
-    });
+    }).sort('created_at DESC');
 
     var users = await Users.findOne({
       deleted_at: null,
@@ -842,8 +844,9 @@ module.exports = {
     var referredData = await Referral.find({
       deleted_at: null,
       user_id: id,
-      is_collected: true
+      is_collected: true,
     });
+
     var leftReferredData = await Referral.find({
       deleted_at: null,
       user_id: id,

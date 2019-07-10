@@ -15,7 +15,7 @@ module.exports = {
       if (user_id) {
         let query = 'FROM coins LEFT JOIN (SELECT * FROM user_limit WHERE user_id = ' + user_id + ' AND deleted_at IS NULL) AS specific_user_limit ON coins.id = specific_user_limit.coin_id WHERE coins.deleted_at IS NULL AND coins.is_active = true';
 
-        let limitData = await sails.sendNativeQuery("Select *" + query, [])
+        let limitData = await sails.sendNativeQuery("Select coins.id as coin_table_id,coins.coin_code,coins.coin,specific_user_limit.*" + query, [])
 
         limitData = limitData.rows;
 
@@ -56,11 +56,10 @@ module.exports = {
       if (req.body.user_id && req.body.coin_id) {
         const limit_details = await UserLimit.findOne({ user_id: req.body.user_id, coin_id: req.body.coin_id, deleted_at: null });
         var updatedLimit;
-        if (limit_details == undefined || limit_details == null || !limit_details) {
-          if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
-            updatedLimit = await UserLimit
-              .create(req.body);
 
+        if (limit_details == undefined || limit_details == null || !limit_details) {
+          // if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
+          updatedLimit = await UserLimit.create({ ...req.body }).fetch();
           if (!updatedLimit) {
             return res.json({
               "status": 500,
