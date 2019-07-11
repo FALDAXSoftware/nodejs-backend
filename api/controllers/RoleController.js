@@ -64,18 +64,18 @@ module.exports = {
         query += " ORDER BY id DESC";
       }
 
-      let roles = await sails.sendNativeQuery("Select id, name, is_active, users, assets, roles, countries, employee," +
+      let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
         "pairs, transaction_history, trade_history, withdraw_requests," +
         "dashboard, jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
-      //let roleName = await sails.sendNativeQuery("Select id, name, is_active" + query, [])
+      let roleName = await sails.sendNativeQuery("Select id, name, is_active" + query, [])
 
-      // roleName = roleName.rows;
+      roleName = roleName.rows;
       roles = roles.rows;
       return res.json({
         status: 200,
         message: sails.__("Role retrived success"),
         roles,
-        // roleName
+        roleName
       })
     } catch (error) {
       return res

@@ -273,5 +273,6 @@
   "Job Category Exists": "Job Category Already Exists!",
   "Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue.",
   "Panic status Update": "Panic status changed successfully.",
-  "User Detail Not Found": "No User Details has been found"
+  "User Detail Not Found": "No User Details has been found",
+  "Change_Password_Email": "Change Password Email Sent Successfully"
 }

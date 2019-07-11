@@ -60,6 +60,7 @@ module.exports.routes = {
 
   //users
   'post /admin/change-password': "Admin.changePassword",
+  'post /admin/employee-change-password': 'Admin.updateEmployeePassword',
   'get /admin/get-users': 'Users.getUserPaginate',
   'get /admin/referred-users': 'Users.getUserReferredAdmin',
   'post /admin/update-user-referal': 'Users.updateUserDetails',
