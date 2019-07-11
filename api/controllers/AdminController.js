@@ -227,8 +227,9 @@ module.exports = {
 
   // Change Password Admin
   changePassword: async function (req, res) {
+    let { email, current_password, new_password, confirm_password } = req.body;
     try {
-      if (!req.body.email || !req.body.new_password || !req.body.confirm_password) {
+      if (!email || !current_password || !new_password || !confirm_password) {
         return res
           .status(401)
           .json({
@@ -236,7 +237,7 @@ module.exports = {
           });
       }
 
-      if (req.body.new_password !== req.body.confirm_password) {
+      if (new_password !== confirm_password) {
         return res
           .status(401)
           .json({
@@ -245,7 +246,8 @@ module.exports = {
           });
       }
 
-      if (req.body.current_password === req.body.new_password) {
+      // check new passowrd for same as current password
+      if (current_password === new_password) {
         return res
           .status(401)
           .json({
@@ -255,7 +257,7 @@ module.exports = {
       }
 
       const user_details = await Admin.findOne({
-        email: req.body.email
+        email
       });
       if (!user_details) {
         return res
@@ -266,7 +268,8 @@ module.exports = {
           });
       }
 
-      let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
+      // check current password
+      let compareCurrent = await bcrypt.compare(current_password, user_details.password);
       if (!compareCurrent) {
         return res
           .status(401)
@@ -275,16 +278,128 @@ module.exports = {
             err: sails.__("Current password mismatch")
           });
       }
+
       // Update New Password
       var adminUpdates = await Admin
         .update({
-          email: req.body.email
+          email
         })
         .set({
-          email: req.body.email,
-          password: req.body.new_password
+          email,
+          password: new_password
         })
         .fetch();
+
+      if (adminUpdates) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("password change success"),
+          "data": adminUpdates
+        });
+      } else {
+        return res
+          .status(401)
+          .json({
+            err: sails.__("Something went wrong! Could not able to update the password")
+          });
+      }
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
+    }
+  },
+
+  updateEmployeePassword: async function (req, res) {
+    let { email, new_password, confirm_password } = req.body;
+    try {
+      if (!email || !new_password || !confirm_password) {
+        return res
+          .status(401)
+          .json({
+            err: sails.__("Please provide email, new password, confirm password")
+          });
+      }
+
+      if (new_password !== confirm_password) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("password must match")
+          });
+      }
+
+      const user_details = await Admin.findOne({ email });
+      if (!user_details) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("Email address not found")
+          });
+      }
+
+      // Update New Password
+      var adminUpdates = await Admin
+        .update({
+          email
+        })
+        .set({
+          email,
+          password: new_password
+        })
+        .fetch();
+
+      var ip;
+      if (req.headers['x-forwarded-for']) {
+        ip = req
+          .headers['x-forwarded-for']
+          .split(",")[0];
+      } else if (req.connection && req.connection.remoteAddress) {
+        ip = req.connection.remoteAddress;
+      } else {
+        ip = req.ip;
+      }
+
+      let slug = "change_password_subadmin"
+      let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
+      let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+        recipientName: adminUpdates[0].first_name,
+        datetime: new Date(),
+        browser: req.headers['user-agent'],
+        ip
+      })
+
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: adminUpdates[0]["email"],
+            subject: "Password Change"
+          }, function (err) {
+            if (!err) {
+              return res
+                .status(202)
+                .json({
+                  "status": 202,
+                  "message": sails.__("Change_Password_Email")
+                });
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "err": sails.__("Something Wrong")
+                });
+            }
+          });
 
       if (adminUpdates) {
         return res.json({
@@ -684,7 +799,6 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log(error)
       return res
         .status(500)
         .json({
@@ -700,9 +814,12 @@ module.exports = {
     } = req.allParams()
     try {
       if (emp_id) {
-        let employee = await Admin.find({
+        let employee = await Admin.findOne({
           id: emp_id
         })
+
+        let role = await Role.findOne({ select: ['name'], where: { id: employee.role_id } })
+        employee['role_name'] = role.name;
 
         return res.json({
           "status": 200,
@@ -978,8 +1095,6 @@ module.exports = {
         ],
         where: {
           id: admin_id,
-          deleted_at: null,
-          is_active: true
         }
       });
 
