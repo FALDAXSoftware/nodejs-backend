@@ -25,6 +25,7 @@ module.exports = {
    */
 
   create: async function (req, res) {
+    console.log('Starting of signup', new Date())
     try {
       var referred_id = null;
       let email = req
@@ -120,6 +121,7 @@ module.exports = {
           //         }
           //       });
           // }
+          console.log('End of signup', new Date())
           return res
             .json({
               status: 200,
@@ -143,6 +145,7 @@ module.exports = {
           });
         return;
       }
+
     } catch (error) {
       return res
         .status(500)
