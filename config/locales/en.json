@@ -272,7 +272,10 @@
   "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order.",
   "Job Category Exists": "Job Category Already Exists!",
   "Your IP has not been whitelisted. Please whitelist your IP to continue.": "Your IP has not been whitelisted. Please whitelist your IP to continue.",
-  "Panic status Update": "Panic status changed successfully.",
   "User Detail Not Found": "No User Details has been found",
+  "WhiteLsit IP info Success Not Found": "No White List IP for user has been found",
+  "Days greater 0": "Days you selected should be greater than zero",
+  "WhiteList IP has been deleted successfully": "WhiteList IP has been deleted successfully",
+  "Panic status Update": "Panic status changed successfully.",
   "Change_Password_Email": "Change Password Email Sent Successfully"
 }

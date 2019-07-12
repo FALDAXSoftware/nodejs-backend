@@ -177,8 +177,9 @@ module.exports.routes = {
   // 'post /users/email-subscription': 'Subscribe.senEmailSubscribtion',
   'delete /users/deleteAccount': 'Users.deleteUser', //7
   'post /users/update-email': 'Users.updateEmail',
-  'post /users/add-whitelist-ip': 'Users.addWhiteListIP',
-  'get /users/get-whitelist-ip': 'Users.getWhiteListIP',
+  'post /users/add-whitelist-ip': 'IPWhitelistController.addWhiteListIPUser',
+  'get /users/get-whitelist-ip': 'IPWhitelistController.getWhiteListIPUser',
+  'delete /users/delete-whitelist-ip/:id': 'IPWhitelistController.deleteUserWhitelistIP',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
