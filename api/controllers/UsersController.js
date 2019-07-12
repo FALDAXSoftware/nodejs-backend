@@ -25,6 +25,7 @@ module.exports = {
    */
 
   create: async function (req, res) {
+    console.log('Starting of signup', new Date())
     try {
       var referred_id = null;
       let email = req
@@ -101,25 +102,32 @@ module.exports = {
               tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
                 email_verify_code : email_verify_token
             })
-          if (template) {
-            sails
-              .hooks
-              .email
-              .send("general-email", {
-                content: emailContent
-              }, {
-                  to: user_detail.email,
-                  subject: "Signup Verification"
-                }, function (err) {
-                  if (!err) {
-                    return res.json({
-                      "status": 200,
-                      "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-                        sails.__("verification code") : sails.__("verification link")
-                    });
-                  }
-                });
-          }
+          // if (template) {
+          //   sails
+          //     .hooks
+          //     .email
+          //     .send("general-email", {
+          //       content: emailContent
+          //     }, {
+          //         to: user_detail.email,
+          //         subject: "Signup Verification"
+          //       }, function (err) {
+          //         if (!err) {
+          //           return res.json({
+          //             "status": 200,
+          //             "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+          //               sails.__("verification code") : sails.__("verification link")
+          //           });
+          //         }
+          //       });
+          // }
+          console.log('End of signup', new Date())
+          return res
+            .json({
+              status: 200,
+              email_verify_token,
+              "message": "Success"
+            });
         } else {
           return res
             .status(401)
@@ -137,6 +145,7 @@ module.exports = {
           });
         return;
       }
+
     } catch (error) {
       return res
         .status(500)
@@ -577,28 +586,30 @@ module.exports = {
     }
   },
 
-  getReferred: async function (req, res) {
-    let {
-      page,
-      limit
-    } = req.allParams();
+  // getReferred: async function (req, res) {
+  //   let {
+  //     page,
+  //     limit
+  //   } = req.allParams();
 
-    let id = req.user.id;
-    let usersData = await Users.find({
-      select: ['email'],
-      where: {
-        referred_id: id
-      }
-    }).paginate(parseInt(page) - 1, parseInt(limit));
+  //   let id = req.user.id;
+  //   let usersData = await Users.find({
+  //     select: ['email'],
+  //     where: {
+  //       referred_id: id
+  //     }
+  //   }).sort('id DESC').paginate(parseInt(page) - 1, parseInt(limit));
 
-    if (usersData) {
-      return res.json({
-        "status": 200,
-        "message": sails.__("User referred Data"),
-        "data": usersData
-      });
-    }
-  },
+  //   console.log('usersData', usersData)
+
+  //   if (usersData) {
+  //     return res.json({
+  //       "status": 200,
+  //       "message": sails.__("User referred Data"),
+  //       "data": usersData
+  //     });
+  //   }
+  // },
 
   // For Get Login History
   getLoginHistory: async function (req, res) {
@@ -822,12 +833,12 @@ module.exports = {
     let id = req.user.id;
     let usersData = await Users.find({
       select: [
-        'email', 'full_name', 'fiat'
+        'email', 'full_name', 'fiat', 'created_at'
       ],
       where: {
         referred_id: id
       }
-    });
+    }).sort('created_at DESC');
 
     var users = await Users.findOne({
       deleted_at: null,
@@ -836,8 +847,9 @@ module.exports = {
     var referredData = await Referral.find({
       deleted_at: null,
       user_id: id,
-      is_collected: true
+      is_collected: true,
     });
+
     var leftReferredData = await Referral.find({
       deleted_at: null,
       user_id: id,
@@ -1095,7 +1107,7 @@ module.exports = {
       })
       .set({
         email: user.email,
-        deleted_by: 1,
+        deleted_by: 1, //deleted by user
         deleted_at: new Date()
       });
 

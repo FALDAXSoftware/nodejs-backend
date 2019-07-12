@@ -33,7 +33,7 @@
   "Contact Admin": "Contact the admin to activate your account.",
   "Activate Account": "Activate your account for logging in.",
   "Invalid Email": "Invalid Email Address",
-  "Something Wrong": "Something went wrong!!",
+  "Something Wrong": "An unknown error occurred while processing your request. Please contact support or try again.",
   "User Update": "User details updated successfully",
   "Blog Details": "Blog Details",
   "No KYC": "No KYC details updated.",
@@ -275,5 +275,7 @@
   "User Detail Not Found": "No User Details has been found",
   "WhiteLsit IP info Success Not Found": "No White List IP for user has been found",
   "Days greater 0": "Days you selected should be greater than zero",
-  "WhiteList IP has been deleted successfully": "WhiteList IP has been deleted successfully"
+  "WhiteList IP has been deleted successfully": "WhiteList IP has been deleted successfully",
+  "Panic status Update": "Panic status changed successfully.",
+  "Change_Password_Email": "Change Password Email Sent Successfully"
 }

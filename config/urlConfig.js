@@ -1,6 +1,7 @@
 module.exports.urlconf = {
 
-    CMS_URL: 'https://admin.faldax.com',
+    CMS_URL: 'https://staging-admin.faldax.com',
+    // CMS_URL: 'https://admin.faldax.com',
 
     APP_URL: 'https://dev.faldax.com',
     //APP_URL: 'https://trade.faldax.com',
