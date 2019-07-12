@@ -645,7 +645,6 @@ module.exports = {
 
         let existedEmployee = await Admin.findOne({
           email: req.body.email,
-          deleted_at: null
         });
 
         if (existedEmployee) {
