@@ -15,6 +15,7 @@
  */
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
+const moment = require('moment');
 
 module.exports = {
   // Verify User Api
@@ -206,15 +207,43 @@ module.exports = {
                   ip = req.ip;
                 }
 
-                if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
-                  return res
-                    .status(401)
-                    .json({
-                      "status": 401,
-                      "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
-                    });
-                }
+                // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
+                //   return res
+                //     .status(401)
+                //     .json({
+                //       "status": 401,
+                //       "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                //     });
+                // }
 
+                var check_any_whitelistip = {
+                  user_id :user_detail.id,
+                  user_type : 2,
+                  deleted_at: null
+                };
+
+                var check_whitelist_data = await IPWhitelist.find( check_any_whitelistip );
+                if( check_whitelist_data.length > 0 ){
+                  var whitelist_data = {
+                    user_id :user_detail.id,
+                    user_type : 2,
+                    ip:ip,
+                    deleted_at : null
+                  };
+
+                  var check_whitelist = await IPWhitelist.findOne( whitelist_data );
+                  if( check_whitelist != undefined ){
+                    var current_datetime = moment().valueOf();
+                    if( current_datetime > check_whitelist.expire_time ){
+                      return res
+                      .status(401)
+                      .json({
+                        "status": 401,
+                        "err": sails.__("Time for whitelist has been expired.")
+                      });
+                    }
+                  }
+                }
 
                 // Check For New Ip
                 let loginData = await LoginHistory.find({
@@ -321,6 +350,7 @@ module.exports = {
         return;
       }
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({

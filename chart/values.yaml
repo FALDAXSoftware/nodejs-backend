@@ -26,12 +26,12 @@ configuration:
       Fixtures.identify(:sdf'
       sdf
       'sdf
-      ')  
+      ')
 
 
 ingress:
   enabled: true
-  annotations: 
+  annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
   #  alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:496403030999:certificate/c789b806-1990-4ff0-8e95-011a9727b80c
