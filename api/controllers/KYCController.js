@@ -310,24 +310,25 @@ module.exports = {
         query += " kyc.direct_response = '" + status + "'";
       }
 
-      countQuery = query;
-      if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
-      }
-
       if (start_date && end_date) {
         query += whereAppended
           ? " AND "
           : " WHERE ";
 
-        query += " (kyc.created_at >= '" + await sails
+        query += "((kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00') AND (kyc.created_at <= '" + await sails
             .helpers
-            .dateFormat(end_date) + " 23:59:59')";
+            .dateFormat(end_date) + " 23:59:59'))";
+      }
+
+      countQuery = query;
+
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY kyc." + sortCol + " " + sortVal;
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
