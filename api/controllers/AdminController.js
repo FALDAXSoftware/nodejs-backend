@@ -67,30 +67,30 @@ module.exports = {
             // }
 
             var check_any_whitelistip = {
-              user_id :admin_details.id,
-              user_type : 1,
+              user_id: admin_details.id,
+              user_type: 1,
               deleted_at: null
             };
 
-            var check_whitelist_data = await IPWhitelist.find( check_any_whitelistip );
-            if( check_whitelist_data.length > 0  ){
+            var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
+            if (check_whitelist_data.length > 0) {
               var whitelist_data = {
-                user_id :admin_details.id,
-                user_type : 1,
-                ip:ip,
-                deleted_at : null
+                user_id: admin_details.id,
+                user_type: 1,
+                ip: ip,
+                deleted_at: null
               };
 
-              var check_whitelist = await IPWhitelist.findOne( whitelist_data );
-              if( check_whitelist != undefined ){
+              var check_whitelist = await IPWhitelist.findOne(whitelist_data);
+              if (check_whitelist != undefined) {
                 var current_datetime = moment().valueOf();
-                if( current_datetime > check_whitelist.expire_time ){
+                if (current_datetime > check_whitelist.expire_time) {
                   return res
-                  .status(401)
-                  .json({
-                    "status": 401,
-                    "err": sails.__("Time for whitelist has been expired.")
-                  });
+                    .status(401)
+                    .json({
+                      "status": 401,
+                      "err": sails.__("Time for whitelist has been expired.")
+                    });
                 }
               }
             }
@@ -1078,14 +1078,12 @@ module.exports = {
       var adminData = await Admin.findOne({
         id: user_id,
         deleted_at: null,
-        is_active: true
       });
 
       if (adminData != undefined) {
         var updateAdminData = await Admin.update({
           id: user_id,
           deleted_at: null,
-          is_active: true
         }).set({
           email: adminData.email
         });
@@ -1113,13 +1111,13 @@ module.exports = {
           addValue.expire_time = null;
         }
 
-        var add_data = await IPWhitelist.addWhitelist( addValue );
-        if( add_data ){
+        var add_data = await IPWhitelist.addWhitelist(addValue);
+        if (add_data) {
           return res.status(401).json({
             status: 500,
             "message": sails.__("IP in whitelist exists")
           })
-        }else{
+        } else {
           return res.status(200).json({
             "status": 200,
             "message": sails.__("WhiteList IP Add Success"),
@@ -1135,7 +1133,6 @@ module.exports = {
           });
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
@@ -1147,7 +1144,7 @@ module.exports = {
 
   addUserIpWhitelist: async function (req, res) {
     try {
-      if( !req.user.isAdmin ){
+      if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
           err: 'Unauthorized access'
@@ -1177,13 +1174,13 @@ module.exports = {
         addValue.expire_time = null;
       }
 
-      var add_data = await IPWhitelist.addWhitelist( addValue );
-      if( add_data ){
+      var add_data = await IPWhitelist.addWhitelist(addValue);
+      if (add_data) {
         return res.status(401).json({
           status: 500,
           "message": sails.__("IP in whitelist exists")
         })
-      }else{
+      } else {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP Add Success"),
@@ -1192,7 +1189,6 @@ module.exports = {
       }
 
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
@@ -1214,10 +1210,10 @@ module.exports = {
         page,
         limit
       } = req.allParams();
-      let params={
+      let params = {
         deleted_at: null,
         user_id: user_id,
-        user_type : 1,
+        user_type: 1,
         or: [{
           expire_time: {
             '>=': now
@@ -1226,14 +1222,14 @@ module.exports = {
           expire_time: null
         }]
       };
-      let get_data = await IPWhitelist.getWhiteListData("",params,limit,page );
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
 
-      if ( get_data.data != undefined && get_data.data.length > 0 ) {
+      if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success"),
           "data": get_data.data,
-          "total":get_data.total
+          "total": get_data.total
         })
       } else {
         return res.status(200).json({
@@ -1256,7 +1252,7 @@ module.exports = {
       const {
         user_id
       } = req.allParams();
-      if( !req.user.isAdmin ){
+      if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
           err: 'Unauthorized access'
@@ -1267,7 +1263,7 @@ module.exports = {
         page,
         limit
       } = req.allParams();
-      let params={
+      let params = {
         deleted_at: null,
         user_id: user_id,
         or: [{
@@ -1278,14 +1274,14 @@ module.exports = {
           expire_time: null
         }]
       };
-      let get_data = await IPWhitelist.getWhiteListData("",params,limit,page );
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
 
-      if ( get_data.data != undefined && get_data.data.length > 0 ) {
+      if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success"),
           "data": get_data.data,
-          "total":get_data.total
+          "total": get_data.total
         })
       } else {
         return res.status(200).json({
@@ -1306,7 +1302,6 @@ module.exports = {
 
   deleteWhitelistIP: async function (req, res) {
     try {
-
       var user_id = req.user.id;
       let {
         id
@@ -1316,21 +1311,20 @@ module.exports = {
         id: id,
         user_id: user_id
       };
-      var delete_data = await IPWhitelist.deleteWhiteListData(id, data );
-      if( delete_data ){
+      var delete_data = await IPWhitelist.deleteWhiteListData(id, data);
+      if (delete_data) {
         return res.status(200)
-        .json({
-          status: 200,
-          "message": sails.__("WhiteList IP has been deleted successfully")
-        })
-      }else{
+          .json({
+            status: 200,
+            "message": sails.__("WhiteList IP has been deleted successfully")
+          })
+      } else {
         return res.status(200).json({
           "status": 204,
           "message": sails.__("WhiteList IP info Success Not Found"),
         })
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
@@ -1342,8 +1336,7 @@ module.exports = {
 
   deleteUserWhitelistIP: async function (req, res) {
     try {
-
-      if( !req.user.isAdmin ){
+      if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
           err: 'Unauthorized access'
@@ -1356,21 +1349,20 @@ module.exports = {
         deleted_at: null,
         id: id
       };
-      var delete_data = await IPWhitelist.deleteWhiteListData(id, data );
-      if( delete_data ){
+      var delete_data = await IPWhitelist.deleteWhiteListData(id, data);
+      if (delete_data) {
         return res.status(200)
-        .json({
-          status: 200,
-          "message": sails.__("WhiteList IP has been deleted successfully")
-        })
-      }else{
+          .json({
+            status: 200,
+            "message": sails.__("WhiteList IP has been deleted successfully")
+          })
+      } else {
         return res.status(200).json({
           "status": 204,
           "message": sails.__("WhiteList IP info Success Not Found"),
         })
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({

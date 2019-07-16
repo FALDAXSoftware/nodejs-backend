@@ -56,21 +56,21 @@ module.exports = {
   },
   checkUserHasWhitelist: checkUserHasWhitelist,
   checkWhitelistValid: checkWhitelistValid,
-  addWhitelist : addWhitelist,
-  getWhiteListData : getWhiteListData,
+  addWhitelist: addWhitelist,
+  getWhiteListData: getWhiteListData,
   deleteWhiteListData: deleteWhiteListData
 };
 
-async function checkUserHasWhitelist( opts ){
+async function checkUserHasWhitelist(opts) {
   var object = {
     user_id: opts.id,
     user_type: opts.user_type,
-    deleted_at:null
+    deleted_at: null
   };
-  var get_data = await IPWhitelist.find( object );
-  if( get_data.length > 0 ){
+  var get_data = await IPWhitelist.find(object);
+  if (get_data.length > 0) {
     return 1;
-  }else{
+  } else {
     return 0;
   }
 }
@@ -81,76 +81,72 @@ async function checkWhitelistValid(opts) {
     user_id: opts.id,
     user_type: opts.user_type,
     ip: opts.ip,
-    deleted_at:null
+    deleted_at: null
   };
-  var get_data = await IPWhitelist.findOne( object );
-  if( get_data != undefined ){
+  var get_data = await IPWhitelist.findOne(object);
+  if (get_data != undefined) {
     var current_datetime = moment().valueOf();
-    if( current_datetime > get_data.expire_time ){
+    if (current_datetime > get_data.expire_time) {
       return 1;
-    }else{
+    } else {
       return 0;
     }
-  }else{
+  } else {
     return 2;
   }
 }
 
 async function addWhitelist(opts) {
-  var moment = require("moment");
   var object = {
     user_id: opts.id,
     user_type: opts.user_type,
     ip: opts.ip,
-    deleted_at:null
+    deleted_at: null
   };
-  var check_exist = await IPWhitelist.findOne( object );
-  if( check_exist != undefined ){
+  var check_exist = await IPWhitelist.findOne(object);
+  if (check_exist != undefined) {
     return 1;
-  }else{
+  } else {
     var addIPData = await IPWhitelist.create(opts);
     return 0;
   }
 }
 
-async function getWhiteListData( select, params, limit, page ){
+async function getWhiteListData(select, params, limit, page) {
   var moment = require("moment");
   var data = await IPWhitelist.find({
-      where: params
-    })
+    where: params
+  })
     .sort('created_at DESC')
     .paginate(parseInt(page) - 1, parseInt(limit));
 
-    let IPCount = await IPWhitelist.count({
-      where: {
-        user_id: params.user_id,
-        deleted_at: null
-      }
-    });
-    var all_data = {};
+  let IPCount = await IPWhitelist.count({
+    where: {
+      user_id: params.user_id,
+      deleted_at: null
+    }
+  });
+  var all_data = {};
 
-    all_data.total = IPCount;
-  if( data.length > 0 ){
+  all_data.total = IPCount;
+  if (data.length > 0) {
     all_data.data = data;
-    data.filter( function(value){
+    data.filter(function (value) {
       let new_date = parseInt(value.expire_time);
       value.expire_time = moment(new_date).format();
     })
     return all_data;
-  }else{
+  } else {
     all_data.data = [];
     return all_data;
   }
 }
 
-
-
-async function deleteWhiteListData( id, params ){
+async function deleteWhiteListData(id, params) {
   var moment = require("moment");
   var deleteData = await IPWhitelist.find({
     where: params
   })
-
   if (deleteData.length > 0 && deleteData != undefined && deleteData != null) {
     var deletedData = await IPWhitelist
       .update({

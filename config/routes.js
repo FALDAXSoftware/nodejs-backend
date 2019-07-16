@@ -51,10 +51,10 @@ module.exports.routes = {
   'get /admin/get-details': 'Admin.getAdminDetails',
   'post /admin/add-whitelist-ip': 'Admin.addAdminIPs',
   'get /admin/get-all-whitelist-ip': 'Admin.getAdminWhiteListIP',
-  'delete /admin/delete-whitelist-ip/:id': 'Admin.deleteWhitelistIP',
+  'delete /admin/delete-whitelist-ip': 'Admin.deleteWhitelistIP',
   'get /admin/get-user-whitelist-ip': 'Admin.getUserWhiteListIP',
-  'post /admin/add-user-ip-whitelist':'Admin.addUserIpWhitelist',
-  'delete /admin/delete-user-whitelist-ip/:id': 'Admin.deleteUserWhitelistIP',
+  'post /admin/add-user-ip-whitelist': 'Admin.addUserIpWhitelist',
+  'delete /admin/delete-user-whitelist-ip': 'Admin.deleteUserWhitelistIP',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
