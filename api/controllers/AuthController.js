@@ -217,32 +217,32 @@ module.exports = {
                 // }
 
                 var check_any_whitelistip = {
-                  user_id :user_detail.id,
-                  user_type : 2,
+                  user_id: user_detail.id,
+                  user_type: 2,
                   deleted_at: null
                 };
 
-                var check_whitelist_data = await IPWhitelist.find( check_any_whitelistip );
-                if( check_whitelist_data.length > 0 ){
+                var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
+                if (check_whitelist_data.length > 0) {
                   var whitelist_data = {
-                    user_id :user_detail.id,
-                    user_type : 2,
-                    ip:ip,
-                    deleted_at : null
+                    user_id: user_detail.id,
+                    user_type: 2,
+                    ip: ip,
+                    deleted_at: null
                   };
 
-                  var check_whitelist = await IPWhitelist.findOne( whitelist_data );
-                  if( check_whitelist != undefined ){
+                  var check_whitelist = await IPWhitelist.findOne(whitelist_data);
+                  if (check_whitelist != undefined) {
                     var current_datetime = moment().valueOf();
-                    if( current_datetime > check_whitelist.expire_time ){
+                    if (current_datetime > check_whitelist.expire_time) {
                       return res
-                      .status(401)
-                      .json({
-                        "status": 401,
-                        "err": sails.__("Time for whitelist has been expired.")
-                      });
+                        .status(401)
+                        .json({
+                          "status": 401,
+                          "err": sails.__("Time for whitelist has been expired.")
+                        });
                     }
-                  }else{
+                  } else {
                     return res
                       .status(401)
                       .json({
@@ -860,7 +860,7 @@ module.exports = {
         email: req.body.email
       });
       if (user) {
-        if( user.is_verified ){
+        if (user.is_verified) {
           return res
             .status(500)
             .json({
@@ -892,9 +892,9 @@ module.exports = {
           .utilities
           .formatEmail(template.content, {
             recipientName: user.first_name,
-              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
-              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
-                email_verify_code : email_verify_code
+            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
+            tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+              email_verify_code : email_verify_code
           });
         sails
           .hooks
