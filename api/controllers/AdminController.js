@@ -25,6 +25,7 @@ var bcrypt = require('bcrypt');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 const moment = require('moment');
+var useragent = require('useragent');
 
 module.exports = {
   // CMS Login
@@ -404,12 +405,15 @@ module.exports = {
         ip = req.ip;
       }
 
+      var agent = useragent.parse(req.headers['user-agent']);
+      var device = agent.toAgent();
+
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: new Date(),
-        browser: req.headers['user-agent'],
+        datetime: moment().utc(new Date()).format('DD-MM-YYYY'),
+        browser: device,
         ip
       })
 
