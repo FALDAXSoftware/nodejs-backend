@@ -846,5 +846,82 @@ module.exports = {
         });
       return;
     }
-  }
+  },
+  resendVerificationEmail: async function (req, res) {
+    if (req.body.email) {
+      let user = await Users.findOne({
+        email: req.body.email
+      });
+      if (user) {
+        if( user.is_verified ){
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Email is already verified")
+            });
+        }
+        delete user.email_verify_token;
+        let email_verify_code = randomize('0', 6);
+        await Users
+          .update({
+            email: user.email
+          })
+          .set({
+            email_verify_token: email_verify_code
+          });
+
+        let slug = "";
+        if (req.body.device_type == 1 || req.body.device_type == 2) {
+          slug = "signup_for_mobile"
+        } else {
+          slug = "signup_for_web"
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
+              tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                email_verify_code : email_verify_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: req.body.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("verification code")
+                });
+              }
+            })
+      } else {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
+      }
+    } else {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
+    }
+  },
+
+
 };
