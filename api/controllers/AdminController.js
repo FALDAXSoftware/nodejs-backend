@@ -91,6 +91,13 @@ module.exports = {
                     "status": 401,
                     "err": sails.__("Time for whitelist has been expired.")
                   });
+                }else{
+                  return res
+                    .status(401)
+                    .json({
+                      "status": 401,
+                      "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                    });
                 }
               }
             }
