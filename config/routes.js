@@ -183,10 +183,11 @@ module.exports.routes = {
   'post /users/update-email': 'Users.updateEmail',
   'post /users/add-whitelist-ip': 'IPWhitelistController.addWhiteListIPUser',
   'get /users/get-whitelist-ip': 'IPWhitelistController.getWhiteListIPUser',
-  'delete /users/delete-whitelist-ip/:id': 'IPWhitelistController.deleteUserWhitelistIP',
+  'delete /users/delete-whitelist-ip': 'IPWhitelistController.deleteUserWhitelistIP',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
+  'post /users/resend-email': "AuthController.resendVerificationEmail", //Resend Email For Registered users
 
   //all forms
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
