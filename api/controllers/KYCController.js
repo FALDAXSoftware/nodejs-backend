@@ -10,19 +10,21 @@ var csc = require('country-state-city');
 module.exports = {
 
   /**
-    * API for updating kyc information
-    * Renders this api when kyc info needs to be updated
-    *
-    * @param <kyc related all information>
-    *
-    * @return <KYC update success message or error data>
+   * API for updating kyc information
+   * Renders this api when kyc info needs to be updated
+   *
+   * @param <kyc related all information>
+   *
+   * @return <KYC update success message or error data>
    */
 
   updateKYCInfo: async function (req, res) {
     try {
       let user_id = req.user.id;
       req.body.user_id = user_id;
-      let kyc_details = await KYC.findOne({ user_id });
+      let kyc_details = await KYC.findOne({
+        user_id
+      });
       req.body.city = req.body.city_town;
 
       if (kyc_details) {
@@ -70,12 +72,16 @@ module.exports = {
           req.body.webhook_response = "ACCEPT";
           req.body.steps = 1;
           updated_kyc = await KYC
-            .update({ id: kyc_details.id })
+            .update({
+              id: kyc_details.id
+            })
             .set(req.body)
             .fetch();
         } else {
           updated_kyc = await KYC
-            .update({ id: kyc_details.id })
+            .update({
+              id: kyc_details.id
+            })
             .set(req.body)
             .fetch();
         }
@@ -131,41 +137,55 @@ module.exports = {
   },
 
   /**
-    * API for uploading kyc documents
-    * Renders this api when kyc documents needs to be uploaded
-    *
-    * @param <frontimage and backimage>
-    *
-    * @return <document uploaded success message or error data>
+   * API for uploading kyc documents
+   * Renders this api when kyc documents needs to be uploaded
+   *
+   * @param <frontimage and backimage>
+   *
+   * @return <document uploaded success message or error data>
    */
 
   uploadKYCDoc: async function (req, res) {
-    req
-      .file('image')
-      .upload(function (err, file) {
-        if (err) {
-          return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Something Wrong")
-            })
-        } else {
-          if (file.length <= 0) {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-          return res.json({
-            'status': 200,
-            'message': sails.__('KYC Doc Upload'),
-            data: file[0].fd
-          })
-        }
-      });
+
+    try {
+      if (req._fileparser.upstreams.length) {
+        req
+          .file('image')
+          .upload(function (err, file) {
+            console.log(err);
+            if (err) {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "err": sails.__("Something Wrong")
+                })
+            } else {
+              if (file.length <= 0) {
+                return res
+                  .status(500)
+                  .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong")
+                  });
+              }
+              return res.json({
+                'status': 200,
+                'message': sails.__('KYC Doc Upload'),
+                data: file[0].fd
+              })
+            }
+          });
+      } else {
+        return res.status(200).json({
+          'status': 200,
+          'message': sails.__("Image Required")
+        })
+      }
+    } catch (err) {
+      console.log("errrrr:", err);
+    }
+
   },
 
   callbackKYC: async function (req, res) {
@@ -182,11 +202,12 @@ module.exports = {
           if (data.ednaScoreCard.er) {
             if (data.ednaScoreCard.er.reportedRule) {
               let updated = await KYC
-                .update({ mtid: data.mtid })
+                .update({
+                  mtid: data.mtid
+                })
                 .set({
-                  kyc_doc_details: data.ednaScoreCard.er.reportedRule.details
-                    ? data.ednaScoreCard.er.reportedRule.details
-                    : '',
+                  kyc_doc_details: data.ednaScoreCard.er.reportedRule.details ?
+                    data.ednaScoreCard.er.reportedRule.details : '',
                   direct_response: resultState[data.state],
                   webhook_response: resultState[data.state]
                 })
@@ -197,8 +218,13 @@ module.exports = {
       } catch (err) {
         if (data.mtid) {
           let updated = await KYC
-            .update({ mtid: data.mtid })
-            .set({ kyc_doc_details: 'Something went wrong', webhook_response: 'MANUAL_REVIEW' })
+            .update({
+              mtid: data.mtid
+            })
+            .set({
+              kyc_doc_details: 'Something went wrong',
+              webhook_response: 'MANUAL_REVIEW'
+            })
             .fetch();
         }
       }
@@ -207,18 +233,20 @@ module.exports = {
   },
 
   /**
-    * API for getting user kyc details
-    * Renders this api when user kyc data need to be egt
-    *
-    * @param <>
-    *
-    * @return <User KYC data or error data>
+   * API for getting user kyc details
+   * Renders this api when user kyc data need to be egt
+   *
+   * @param <>
+   *
+   * @return <User KYC data or error data>
    */
 
   getKYCDetails: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let KYCData = await KYC.findOne({ user_id });
+      let KYCData = await KYC.findOne({
+        user_id
+      });
       if (KYCData) {
         KYCData.city_town = KYCData.city;
         delete KYCData.city;
@@ -304,30 +332,30 @@ module.exports = {
       }
 
       if (status && data != "") {
-        query += whereAppended
-          ? " AND "
-          : " WHERE ";
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
         query += " kyc.direct_response = '" + status + "'";
       }
 
       countQuery = query;
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
 
       if (start_date && end_date) {
-        query += whereAppended
-          ? " AND "
-          : " WHERE ";
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
 
         query += " (kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00') AND (kyc.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59')";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59')";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
@@ -359,9 +387,13 @@ module.exports = {
 
   getUserKYCDetails: async function (req, res) {
     try {
-      let { user_id } = req.allParams();
+      let {
+        user_id
+      } = req.allParams();
 
-      let KYCData = await KYC.findOne({ user_id });
+      let KYCData = await KYC.findOne({
+        user_id
+      });
       if (KYCData) {
         return res.json({
           "status": 200,

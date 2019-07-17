@@ -277,5 +277,6 @@
   "Days greater 0": "Days you selected should be greater than zero",
   "WhiteList IP has been deleted successfully": "WhiteList IP has been deleted successfully",
   "Panic status Update": "Panic status changed successfully.",
-  "Change_Password_Email": "Change Password Email Sent Successfully"
+  "Change_Password_Email": "Change Password Email Sent Successfully",
+  "Image Required":"Please Provide Image to continue"
 }
