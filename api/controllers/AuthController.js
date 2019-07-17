@@ -15,6 +15,7 @@
  */
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
+const moment = require('moment');
 
 module.exports = {
   // Verify User Api
@@ -206,15 +207,50 @@ module.exports = {
                   ip = req.ip;
                 }
 
-                if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
-                  return res
-                    .status(401)
-                    .json({
-                      "status": 401,
-                      "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
-                    });
-                }
+                // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
+                //   return res
+                //     .status(401)
+                //     .json({
+                //       "status": 401,
+                //       "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                //     });
+                // }
 
+                var check_any_whitelistip = {
+                  user_id: user_detail.id,
+                  user_type: 2,
+                  deleted_at: null
+                };
+
+                var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
+                if (check_whitelist_data.length > 0) {
+                  var whitelist_data = {
+                    user_id: user_detail.id,
+                    user_type: 2,
+                    ip: ip,
+                    deleted_at: null
+                  };
+
+                  var check_whitelist = await IPWhitelist.findOne(whitelist_data);
+                  if (check_whitelist != undefined) {
+                    var current_datetime = moment().valueOf();
+                    if (current_datetime > check_whitelist.expire_time) {
+                      return res
+                        .status(401)
+                        .json({
+                          "status": 401,
+                          "err": sails.__("Time for whitelist has been expired.")
+                        });
+                    }
+                  } else {
+                    return res
+                      .status(401)
+                      .json({
+                        "status": 401,
+                        "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                      });
+                  }
+                }
 
                 // Check For New Ip
                 let loginData = await LoginHistory.find({
@@ -321,6 +357,7 @@ module.exports = {
         return;
       }
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -816,5 +853,82 @@ module.exports = {
         });
       return;
     }
-  }
+  },
+  resendVerificationEmail: async function (req, res) {
+    if (req.body.email) {
+      let user = await Users.findOne({
+        email: req.body.email
+      });
+      if (user) {
+        if (user.is_verified) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Email is already verified")
+            });
+        }
+        delete user.email_verify_token;
+        let email_verify_code = randomize('0', 6);
+        await Users
+          .update({
+            email: user.email
+          })
+          .set({
+            email_verify_token: email_verify_code
+          });
+
+        let slug = "";
+        if (req.body.device_type == 1 || req.body.device_type == 2) {
+          slug = "signup_for_mobile"
+        } else {
+          slug = "signup_for_web"
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
+            tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+              email_verify_code : email_verify_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: req.body.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("verification code")
+                });
+              }
+            })
+      } else {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
+      }
+    } else {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
+    }
+  },
+
+
 };

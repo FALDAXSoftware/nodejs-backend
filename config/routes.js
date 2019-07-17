@@ -51,6 +51,10 @@ module.exports.routes = {
   'get /admin/get-details': 'Admin.getAdminDetails',
   'post /admin/add-whitelist-ip': 'Admin.addAdminIPs',
   'get /admin/get-all-whitelist-ip': 'Admin.getAdminWhiteListIP',
+  'delete /admin/delete-whitelist-ip': 'Admin.deleteWhitelistIP',
+  'get /admin/get-user-whitelist-ip': 'Admin.getUserWhiteListIP',
+  'post /admin/add-user-ip-whitelist': 'Admin.addUserIpWhitelist',
+  'delete /admin/delete-user-whitelist-ip': 'Admin.deleteUserWhitelistIP',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
@@ -70,6 +74,7 @@ module.exports.routes = {
   'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
   'post /admin/update-send-coin-fee': 'Users.updateSendCoinFee',
   'post /admin/add-user': 'Users.addUser',
+  'post /admin/update-user': 'Admin.updateUser',
   'post /admin/get-user-tickets': 'Users.getTicketsAdmin',
   //coins
   'get /admin/get-coins': 'Coins.getCoins',
@@ -179,10 +184,11 @@ module.exports.routes = {
   'post /users/update-email': 'Users.updateEmail',
   'post /users/add-whitelist-ip': 'IPWhitelistController.addWhiteListIPUser',
   'get /users/get-whitelist-ip': 'IPWhitelistController.getWhiteListIPUser',
-  'delete /users/delete-whitelist-ip/:id': 'IPWhitelistController.deleteUserWhitelistIP',
+  'delete /users/delete-whitelist-ip': 'IPWhitelistController.deleteUserWhitelistIP',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
+  'post /users/resend-email': "AuthController.resendVerificationEmail", //Resend Email For Registered users
 
   //all forms
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
