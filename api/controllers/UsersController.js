@@ -451,7 +451,7 @@ module.exports = {
    * API for getting particular users IP list
    * Renders this api when user whitelist IP needs to be fetched
    *
-   * @param 
+   * @param
    *
    * @return <UserDetails>
    */
@@ -807,6 +807,21 @@ module.exports = {
         .fetch();
 
       if (updatedUsers) {
+        // Send email notification
+        // let slug = 'change_password_user';
+        // let template = await EmailTemplate.findOne({
+        //   slug
+        // });
+        // let emailContent = await sails
+        //   .helpers
+        //   .utilities
+        //   .formatEmail(template.content, {
+        //     recipientName: user_detail.first_name,
+        //     token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+        //     tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+        //       email_verify_code : email_verify_token
+        //   })
+
         return res.json({
           "status": 200,
           "message": sails.__("password change success")

@@ -25,7 +25,6 @@ var bcrypt = require('bcrypt');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 const moment = require('moment');
-var useragent = require('useragent');
 
 module.exports = {
   // CMS Login
@@ -405,15 +404,12 @@ module.exports = {
         ip = req.ip;
       }
 
-      var agent = useragent.parse(req.headers['user-agent']);
-      var device = agent.toAgent();
-
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: moment().utc(new Date()).format('DD-MM-YYYY'),
-        browser: device,
+        datetime: new Date(),
+        browser: req.headers['user-agent'],
         ip
       })
 
@@ -1427,5 +1423,50 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // Update user data
+  updateUser: async function (req, res) {
+    try {
+      var req_data = req.body;
+      // var data = {
+      //   first_name: req_data.first_name,
+      //   middle_name: req_data.middle_name,
+      //   last_name: req_data.last_name,
+      //   street_address: req_data.street_address,
+      //   street_address_2: req_data.street_address_2,
+      //   dob: req_data.dob,
+      //   gender: req_data.gender,
+      //   postal_code: req_data.postal_code,
+      //   country: req_data.country,
+      //   account_tier: req_data.account_tier,
+      //   account_class: req_data.account_class
+      // };
+      var user_id = req_data.user_id;
+      delete req_data.user_id;
+      var update_data = await Users.updateData( user_id, req_data );
+      if( update_data ){
+        return res.json({
+          "status": 200,
+          "message": sails.__("User Update"),
+          data: update_data
+        });
+      }else{
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+
+    } catch (error) {
+      console.log('error,', error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 };
