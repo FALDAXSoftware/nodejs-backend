@@ -75,24 +75,22 @@ module.exports = {
             var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
 
             if (check_whitelist_data.length > 0) {
-              var whitelist_data = {
-                user_id: admin_details.id,
-                user_type: 1,
-                ip: ip,
-                deleted_at: null
-              };
+              check_any_whitelistip.ip= ip;
 
-              var check_whitelist = await IPWhitelist.findOne(whitelist_data);
+              var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
               if (check_whitelist != undefined) {
-                var current_datetime = moment().valueOf();
-                if (current_datetime > check_whitelist.expire_time) {
-                  return res
-                    .status(401)
-                    .json({
-                      "status": 401,
-                      "err": sails.__("Time for whitelist has been expired.")
-                    });
+                if( check_whitelist.days != 0 ){
+                  var current_datetime = moment().valueOf();
+                  if (current_datetime > check_whitelist.expire_time) {
+                    return res
+                      .status(401)
+                      .json({
+                        "status": 401,
+                        "err": sails.__("Time for whitelist has been expired.")
+                      });
+                  }
                 }
+
               } else {
                 return res
                   .status(401)
@@ -329,11 +327,36 @@ module.exports = {
         .fetch();
 
       if (adminUpdates) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("password change success"),
-          "data": adminUpdates
+        // Send email notification
+        let slug = 'profile_change_password';
+        let template = await EmailTemplate.findOne({
+          slug
         });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_details.first_name
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success"),
+                  "data": adminUpdates
+                });
+              }
+            })
+
       } else {
         return res
           .status(401)
@@ -524,10 +547,34 @@ module.exports = {
           })
           .fetch();
         if (updateAdmin) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Password updated Successfully")
+          // Send email notification
+          let slug = 'profile_change_password';
+          let template = await EmailTemplate.findOne({
+            slug
           });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: admin_details.first_name
+            })
+
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+                to: (admin_details.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("password change success")
+                  });
+                }
+              })
         } else {
           return res.json({
             "status": 400,
@@ -1104,9 +1151,8 @@ module.exports = {
         addValue.user_type = 1;
         addValue.days = requestData.days;
 
-
-        if (JSON.parse(requestData.days) != null) {
-          if (JSON.parse(requestData.days) > 0) {
+        if (requestData.days != '' && requestData.days != null ) {
+          if (requestData.days > 0) {
             expire_time = moment().add(requestData.days, 'days').valueOf();
             addValue.expire_time = expire_time;
           } else {
@@ -1116,6 +1162,7 @@ module.exports = {
             })
           }
         } else {
+          addValue.days = 0;
           addValue.expire_time = null;
         }
 
@@ -1126,11 +1173,36 @@ module.exports = {
             "message": sails.__("IP in whitelist exists")
           })
         } else {
-          return res.status(200).json({
-            "status": 200,
-            "message": sails.__("WhiteList IP Add Success"),
-            "data": updateAdminData
+          // Send email notification
+          let slug = 'new_ip_whitelist';
+          let template = await EmailTemplate.findOne({
+            slug
           });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: adminData.first_name,
+              newIPAddress:requestData.ip
+            })
+
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+                to: (adminData.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.status(200).json({
+                    "status": 200,
+                    "message": sails.__("WhiteList IP Add Success"),
+                    "data": updateAdminData
+                  });
+                }
+              })
         }
       } else {
         return res
@@ -1168,8 +1240,8 @@ module.exports = {
       addValue.days = requestData.days;
 
 
-      if (JSON.parse(requestData.days) != null) {
-        if (JSON.parse(requestData.days) > 0) {
+      if (requestData.days != '' && requestData.days != null ) {
+        if (requestData.days > 0) {
           expire_time = moment().add(requestData.days, 'days').valueOf();
           addValue.expire_time = expire_time;
         } else {
@@ -1179,6 +1251,7 @@ module.exports = {
           })
         }
       } else {
+        addValue.days = 0;
         addValue.expire_time = null;
       }
 
@@ -1189,14 +1262,41 @@ module.exports = {
           "message": sails.__("IP in whitelist exists")
         })
       } else {
-        return res.status(200).json({
-          "status": 200,
-          "message": sails.__("WhiteList IP Add Success"),
-          "data": []
+        // Send email notification
+        var user_data = await Users.findOne({id:requestData.user_id});
+        let slug = 'new_ip_whitelist';
+        let template = await EmailTemplate.findOne({
+          slug
         });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_data.first_name,
+            newIPAddress:requestData.ip
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_data.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": []
+                });
+              }
+            })
       }
 
     } catch (err) {
+      console.log(err);
       return res
         .status(500)
         .json({
@@ -1241,8 +1341,9 @@ module.exports = {
         })
       } else {
         return res.status(200).json({
-          "status": 204,
+          "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
+          "data":[]
         })
       }
     } catch (err) {
@@ -1293,8 +1394,9 @@ module.exports = {
         })
       } else {
         return res.status(200).json({
-          "status": 204,
+          "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
+          "data":[]
         })
       }
     } catch (err) {
@@ -1428,19 +1530,6 @@ module.exports = {
   updateUser: async function (req, res) {
     try {
       var req_data = req.body;
-      // var data = {
-      //   first_name: req_data.first_name,
-      //   middle_name: req_data.middle_name,
-      //   last_name: req_data.last_name,
-      //   street_address: req_data.street_address,
-      //   street_address_2: req_data.street_address_2,
-      //   dob: req_data.dob,
-      //   gender: req_data.gender,
-      //   postal_code: req_data.postal_code,
-      //   country: req_data.country,
-      //   account_tier: req_data.account_tier,
-      //   account_class: req_data.account_class
-      // };
       var user_id = req_data.user_id;
       delete req_data.user_id;
       var update_data = await Users.updateData( user_id, req_data );

@@ -224,23 +224,20 @@ module.exports = {
 
                 var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
                 if (check_whitelist_data.length > 0) {
-                  var whitelist_data = {
-                    user_id: user_detail.id,
-                    user_type: 2,
-                    ip: ip,
-                    deleted_at: null
-                  };
+                  check_any_whitelistip.ip = ip;
 
-                  var check_whitelist = await IPWhitelist.findOne(whitelist_data);
+                  var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
                   if (check_whitelist != undefined) {
-                    var current_datetime = moment().valueOf();
-                    if (current_datetime > check_whitelist.expire_time) {
-                      return res
-                        .status(401)
-                        .json({
-                          "status": 401,
-                          "err": sails.__("Time for whitelist has been expired.")
-                        });
+                    if( check_whitelist.days != 0 ){
+                      var current_datetime = moment().valueOf();
+                      if (current_datetime > check_whitelist.expire_time) {
+                        return res
+                          .status(401)
+                          .json({
+                            "status": 401,
+                            "err": sails.__("Time for whitelist has been expired.")
+                          });
+                      }
                     }
                   } else {
                     return res

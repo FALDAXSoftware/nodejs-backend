@@ -46,11 +46,7 @@ module.exports = async function(req, res, next) {
                         };
                         var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist(opts);
                         if (check_whitelist_exists) {
-                            var opts = {
-                                id: userData.id,
-                                user_type: 1,
-                                ip: ip
-                            };
+                            opts.ip = ip;
                             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
                             if (checkexist == 2) {
                                 next();

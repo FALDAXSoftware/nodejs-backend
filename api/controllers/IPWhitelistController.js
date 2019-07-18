@@ -26,8 +26,8 @@ module.exports = {
       addValue.user_type = 2;
       addValue.days = days;
 
-      if (JSON.parse(days) != null) {
-        if (JSON.parse(days) > 0) {
+      if ( days != '' && days != null ) {
+        if (days > 0) {
           expire_time = moment().add(days, 'days').valueOf();
           addValue.expire_time = expire_time;
         } else {
@@ -37,23 +37,9 @@ module.exports = {
           })
         }
       } else {
+        addValue.days = 0;
         addValue.expire_time = null;
       }
-
-      // var check_exist = await IPWhitelist.findOne({
-      //   user_id : addValue.user_id,
-      //   user_type : user_type,
-      //   ip : addValue.ip,
-      //   deleted_at: null
-      // });
-      // if( check_exist != undefined ){
-      //   return res.status(401).json({
-      //     status: 500,
-      //     "message": sails.__("IP in whitelist exists")
-      //   })
-      // }else{
-      //   var addIPData = await IPWhitelist.create(addValue);
-      // }
 
       var add_data = await IPWhitelist.addWhitelist( addValue );
       if( add_data ){
@@ -62,10 +48,36 @@ module.exports = {
           "message": sails.__("IP in whitelist exists")
         })
       }else{
-        return res.status(200).json({
-          status: 200,
-          "message": sails.__("WhiteList IP Add Success")
-        })
+        // Send email notification
+        var user_data = await Users.findOne({id:user_id});
+        let slug = 'new_ip_whitelist';
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_data.first_name,
+            newIPAddress:ip
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_data.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success")
+                });
+              }
+            })
       }
     } catch (err) {
       console.log(err);
@@ -129,8 +141,9 @@ module.exports = {
         })
       } else {
         return res.status(200).json({
-          "status": 204,
+          "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
+          "data":[]
         })
       }
 

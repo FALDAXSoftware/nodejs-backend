@@ -808,24 +808,33 @@ module.exports = {
 
       if (updatedUsers) {
         // Send email notification
-        // let slug = 'change_password_user';
-        // let template = await EmailTemplate.findOne({
-        //   slug
-        // });
-        // let emailContent = await sails
-        //   .helpers
-        //   .utilities
-        //   .formatEmail(template.content, {
-        //     recipientName: user_detail.first_name,
-        //     token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-        //     tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
-        //       email_verify_code : email_verify_token
-        //   })
-
-        return res.json({
-          "status": 200,
-          "message": sails.__("password change success")
+        let slug = '"profile_change_password"';
+        let template = await EmailTemplate.findOne({
+          slug
         });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_details.first_name
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success")
+                });
+              }
+            })
       } else {
         return res
           .status(401)

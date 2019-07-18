@@ -28,7 +28,8 @@ module.exports = {
     },
     days: {
       type: "number",
-      columnName: "days"
+      columnName: "days",
+      // defaultsTo:0
     },
     created_at: {
       type: 'ref',
@@ -85,6 +86,9 @@ async function checkWhitelistValid(opts) {
   };
   var get_data = await IPWhitelist.findOne(object);
   if (get_data != undefined) {
+    if( get_data.days == 0 ){
+      return 0;
+    }
     var current_datetime = moment().valueOf();
     if (current_datetime > get_data.expire_time) {
       return 1;
@@ -132,8 +136,13 @@ async function getWhiteListData(select, params, limit, page) {
   if (data.length > 0) {
     all_data.data = data;
     data.filter(function (value) {
-      let new_date = parseInt(value.expire_time);
-      value.expire_time = moment(new_date).format();
+      if( value.expire_time == null || value.expire_time == "" ){
+        value.expire_time = "";
+      }else{
+        let new_date = parseInt(value.expire_time);
+        value.expire_time = moment(new_date).format();
+      }
+
     })
     return all_data;
   } else {
