@@ -83,7 +83,7 @@ module.exports = async function (req, res, next) {
       var userData = await Users.findOne({
         id: req.user.id
       });
-      console.log("userData",userData);
+
       if (userData != undefined && userData.isAdmin != true) {
 
         if (userData.deleted_at == null) {
@@ -112,10 +112,9 @@ module.exports = async function (req, res, next) {
             user_type : 2
           };
           var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist( opts );
-          console.log("check_whitelist_exists",check_whitelist_exists);
+
           if( check_whitelist_exists ){
             opts.ip = ip;
-            console.log("checkexist",checkexist);
             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
             if(checkexist == 2 ){
               next();

@@ -330,5 +330,8 @@ module.exports.routes = {
 
   //Job Category API
   'post /admin/add-job-category': 'CareerController.addJobCategory',
-  'put /admin/update-job-category': 'CareerController.updateJobCategory'
+  'put /admin/update-job-category': 'CareerController.updateJobCategory',
+
+  // Security Feature Enable/Disable
+  'post /users/security-feature-status-change': 'UsersController.changeSFStatus',
 };

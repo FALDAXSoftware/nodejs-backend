@@ -281,5 +281,7 @@
   "Time for whitelist has been expired.": "Your IP whitelist's session is expired. Try with adding new whitelist.",
   "IP in whitelist exists": "IP address is already exists in your whitelist",
   "Email is already verified": "Email is already verified.",
-  "Image Required": "Please Provide Image to continue"
+  "Image Required": "Please Provide Image to continue",
+  "SF Status Enabled":"Security feature is enabled.",
+  "SF Status Disabled":"Security feature is disabled."
 }

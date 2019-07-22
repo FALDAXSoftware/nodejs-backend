@@ -212,6 +212,37 @@ module.exports = {
                   webhook_response: resultState[data.state]
                 })
                 .fetch();
+
+                if( resultState[data.state] == "ACCEPT" ){
+                  // Send email notification
+                  var user_data = await Users.findOne({mtid:data.mtid});
+                  if( user_data != undefined  ){
+                    let slug = 'kyc_approved';
+                    let template = await EmailTemplate.findOne({
+                      slug
+                    });
+                    let emailContent = await sails
+                      .helpers
+                      .utilities
+                      .formatEmail(template.content, {
+                        recipientName: user_data.first_name
+                      })
+
+                    sails
+                      .hooks
+                      .email
+                      .send("general-email", {
+                        content: emailContent
+                      }, {
+                          to: (user_data.email).trim(),
+                          subject: template.name
+                        }, function (err) {
+                          if( err ){
+                            console.log("err in sending email, while kyc approved",err);
+                          }
+                        })
+                  }
+                }
             }
           }
         }

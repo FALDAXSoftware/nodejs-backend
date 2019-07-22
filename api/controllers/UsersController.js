@@ -1013,6 +1013,15 @@ module.exports = {
           });
       }
 
+      if (user.is_twofactor == true) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("2 factor already enabled")
+          });
+      }
+
       let verified = speakeasy
         .totp
         .verify({
@@ -1020,6 +1029,7 @@ module.exports = {
           encoding: "base32",
           token: otp
         });
+      console.log("verified",verified);
       if (verified) {
         await Users
           .update({
@@ -1029,25 +1039,46 @@ module.exports = {
             email: user.email,
             is_twofactor: true
           });
-        return res.json({
-          status: 200,
-          message: sails.__("2 factor enabled")
-        });
-      }
-      if (user.is_twofactor == true) {
+          // Send email notification
+          let slug = '2fa_enable_disable';
+          let template = await EmailTemplate.findOne({
+            slug
+          });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: user.first_name,
+              status:"ENABLED"
+            })
+
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+                to: (user.email).trim(),
+                subject: "2 Factor Authentication Enabled"
+              }, function (err) {
+                console.log("err",err);
+                if (!err || err == null) {
+                  return res.json({
+                    status: 200,
+                    message: sails.__("2 factor enabled")
+                  });
+                }
+              })
+      }else{
         return res
           .status(401)
           .json({
-            "status": 401,
-            "err": sails.__("2 factor already enabled")
+            err: sails.__("invalid otp")
           });
       }
-      return res
-        .status(401)
-        .json({
-          err: sails.__("invalid otp")
-        });
+
     } catch (error) {
+      console.log("error",error);
       return res
         .status(500)
         .json({
@@ -1092,10 +1123,37 @@ module.exports = {
           is_twofactor: false,
           twofactor_secret: null
         });
-      return res.json({
-        status: 200,
-        message: sails.__("2 factor disabled")
+
+      // Send email notification
+      let slug = '2fa_enable_disable';
+      let template = await EmailTemplate.findOne({
+        slug
       });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user.first_name,
+          status:"DISABLED"
+        })
+
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: (user.email).trim(),
+            subject: "2 Factor Authentication Disabled"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                status: 200,
+                message: sails.__("2 factor disabled")
+              });
+            }
+          })
+
     } catch (error) {
       return res
         .status(500)
@@ -1658,5 +1716,40 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // Change Security Feature Status
+  changeSFStatus: async function (req, res) {
+    try {
+      let { security_feature } = req.body;
+      var update_data;
+      var message;
+      if( security_feature ){
+        update_data = {
+          security_feature : security_feature,
+          security_feature_expired_time : moment().utc()
+        };
+        message = sails.__("SF Status Enabled");
+      }else{
+        update_data = {
+          security_feature : security_feature,
+        };
+        message = sails.__("SF Status Disabled");
+      }
+      await Users
+        .update({ id: req.user.id })
+        .set(update_data);
+
+      return res.json({
+        "status": 200,
+        "message": message
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 };
