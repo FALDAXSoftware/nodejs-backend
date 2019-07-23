@@ -810,14 +810,14 @@ module.exports = {
       if (updatedUsers) {
         // Send email notification
         var slug = "profile_change_password";
-        if( user_details.security_feature == true ){
+        if (user_details.security_feature == true) {
           slug = "profile_change_password_sf";
           await Users
             .update({
               id: req.user.id
             })
             .set({
-              security_feature_expired_time : moment().utc()
+              security_feature_expired_time: moment().utc()
             })
         }
         let template = await EmailTemplate.findOne({
@@ -1040,7 +1040,7 @@ module.exports = {
           encoding: "base32",
           token: otp
         });
-      console.log("verified",verified);
+      console.log("verified", verified);
       if (verified) {
         await Users
           .update({
@@ -1050,47 +1050,47 @@ module.exports = {
             email: user.email,
             is_twofactor: true
           });
-          // Send email notification
-          var slug = "2fa_enable_disable";
-          if( user.security_feature == true ){
-            slug = "2fa_enable_disable_sf";
-            await Users
-              .update({
-                id: req.user.id
-              })
-              .set({
-                security_feature_expired_time : moment().utc()
-              })
-          }
-          let template = await EmailTemplate.findOne({
-            slug
-          });
-          let emailContent = await sails
-            .helpers
-            .utilities
-            .formatEmail(template.content, {
-              recipientName: user.first_name,
-              status:"ENABLED"
+        // Send email notification
+        var slug = "2fa_enable_disable";
+        if (user.security_feature == true) {
+          slug = "2fa_enable_disable_sf";
+          await Users
+            .update({
+              id: req.user.id
             })
+            .set({
+              security_feature_expired_time: moment().utc()
+            })
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+            status: "ENABLED"
+          })
 
-          sails
-            .hooks
-            .email
-            .send("general-email", {
-              content: emailContent
-            }, {
-                to: (user.email).trim(),
-                subject: "2 Factor Authentication Enabled"
-              }, function (err) {
-                console.log("err",err);
-                if (!err || err == null) {
-                  return res.json({
-                    status: 200,
-                    message: sails.__("2 factor enabled")
-                  });
-                }
-              })
-      }else{
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user.email).trim(),
+              subject: "2 Factor Authentication Enabled"
+            }, function (err) {
+              console.log("err", err);
+              if (!err || err == null) {
+                return res.json({
+                  status: 200,
+                  message: sails.__("2 factor enabled")
+                });
+              }
+            })
+      } else {
         return res
           .status(401)
           .json({
@@ -1099,7 +1099,7 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("error",error);
+      console.log("error", error);
       return res
         .status(500)
         .json({
@@ -1155,7 +1155,7 @@ module.exports = {
         .utilities
         .formatEmail(template.content, {
           recipientName: user.first_name,
-          status:"DISABLED"
+          status: "DISABLED"
         })
 
       sails
@@ -1745,16 +1745,16 @@ module.exports = {
       var update_data;
       var message;
       var status;
-      if( security_feature == true ){
+      if (security_feature == true) {
         update_data = {
-          security_feature : security_feature,
+          security_feature: security_feature,
           // security_feature_expired_time : moment().utc()
         };
         message = sails.__("SF Status Enabled");
         status = "Enabled";
-      }else{
+      } else {
         update_data = {
-          security_feature : security_feature,
+          security_feature: security_feature,
           // security_feature_expired_time : null
         };
         message = sails.__("SF Status Disabled");
@@ -1792,13 +1792,13 @@ module.exports = {
                 "status": 200,
                 "message": message
               });
-            }else{
+            } else {
               return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
             }
           })
     } catch (error) {
@@ -1814,7 +1814,7 @@ module.exports = {
   // Change Whitelist IP status
   changeWhitelistIPStatus: async function (req, res) {
     let user_id = req.user.id;
-    let {status} = req.body;
+    let { status } = req.body;
     let user = await Users.findOne({
       id: user_id,
       deleted_at: null
@@ -1834,14 +1834,14 @@ module.exports = {
         id: user.id
       })
       .set({
-        is_whitelist_ip:status
+        is_whitelist_ip: status
       });
-    if( status == true ){
+    if (status == true) {
       res.json({
         status: 200,
         message: sails.__("Whitelist ip enabled")
       });
-    }else{
+    } else {
       res.json({
         status: 200,
         message: sails.__("Whitelist ip disabled")

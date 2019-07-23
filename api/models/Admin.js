@@ -93,7 +93,11 @@ module.exports = {
     role_id: {
       columnName: 'role_id',
       model: 'role'
-    }
+    },
+    is_whitelist_ip: {
+      type: 'boolean',
+      columnName: 'is_whitelist_ip'
+    },
   },
   beforeCreate: (values, next) => {
     Admin

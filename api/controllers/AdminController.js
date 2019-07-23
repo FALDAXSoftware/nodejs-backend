@@ -75,11 +75,11 @@ module.exports = {
             var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
 
             if (admin_details.is_whitelist_ip == true && check_whitelist_data.length > 0) {
-              check_any_whitelistip.ip= ip;
+              check_any_whitelistip.ip = ip;
 
               var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
               if (check_whitelist != undefined) {
-                if( check_whitelist.days != 0 ){
+                if (check_whitelist.days != 0) {
                   var current_datetime = moment().valueOf();
                   if (current_datetime > check_whitelist.expire_time) {
                     return res
@@ -517,7 +517,6 @@ module.exports = {
       });
 
     } catch (error) {
-      console.log('error,', error)
       return res
         .status(500)
         .json({
@@ -1150,8 +1149,8 @@ module.exports = {
         addValue.user_id = user_id;
         addValue.user_type = 1;
         addValue.days = requestData.days;
-        addValue.is_permanent = (requestData.is_permanent!="" && requestData.is_permanent == true ? true : false);
-        if (requestData.days != '' && requestData.days != null ) {
+        addValue.is_permanent = (requestData.is_permanent != "" && requestData.is_permanent == true ? true : false);
+        if (requestData.days != '' && requestData.days != null) {
           if (requestData.days > 0) {
             expire_time = moment().add(requestData.days, 'days').valueOf();
             addValue.expire_time = expire_time;
@@ -1183,7 +1182,7 @@ module.exports = {
             .utilities
             .formatEmail(template.content, {
               recipientName: adminData.first_name,
-              newIPAddress:requestData.ip
+              newIPAddress: requestData.ip
             })
 
           sails
@@ -1238,9 +1237,9 @@ module.exports = {
       addValue.user_id = requestData.user_id;
       addValue.user_type = requestData.user_type;
       addValue.days = requestData.days;
-      addValue.is_permanent = (requestData.is_permanent!="" && requestData.is_permanent == true ? true : false);
+      addValue.is_permanent = (requestData.is_permanent != "" && requestData.is_permanent == true ? true : false);
 
-      if (requestData.days != '' && requestData.days != null ) {
+      if (requestData.days != '' && requestData.days != null) {
         if (requestData.days > 0) {
           expire_time = moment().add(requestData.days, 'days').valueOf();
           addValue.expire_time = expire_time;
@@ -1263,7 +1262,7 @@ module.exports = {
         })
       } else {
         // Send email notification
-        var user_data = await Users.findOne({id:requestData.user_id});
+        var user_data = await Users.findOne({ id: requestData.user_id });
         let slug = 'new_ip_whitelist';
         let template = await EmailTemplate.findOne({
           slug
@@ -1273,7 +1272,7 @@ module.exports = {
           .utilities
           .formatEmail(template.content, {
             recipientName: user_data.first_name,
-            newIPAddress:requestData.ip
+            newIPAddress: requestData.ip
           })
 
         sails
@@ -1343,7 +1342,7 @@ module.exports = {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
-          "data":[]
+          "data": []
         })
       }
     } catch (err) {
@@ -1396,7 +1395,7 @@ module.exports = {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
-          "data":[]
+          "data": []
         })
       }
     } catch (err) {
@@ -1532,14 +1531,14 @@ module.exports = {
       var req_data = req.body;
       var user_id = req_data.user_id;
       delete req_data.user_id;
-      var update_data = await Users.updateData( user_id, req_data );
-      if( update_data ){
+      var update_data = await Users.updateData(user_id, req_data);
+      if (update_data) {
         return res.json({
           "status": 200,
           "message": sails.__("User Update"),
           data: update_data
         });
-      }else{
+      } else {
         return res
           .status(500)
           .json({
@@ -1549,7 +1548,6 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log('error,', error)
       return res
         .status(500)
         .json({
@@ -1561,77 +1559,90 @@ module.exports = {
 
   // Change Whitelist IP status
   changeWhitelistIPStatus: async function (req, res) {
-    let user_id = req.user.id;
-    let {status} = req.body;
-    let user = await Admin.findOne({
-      id: user_id,
-      deleted_at: null
-    });
+    try {
+      let user_id = req.user.id;
+      let { status } = req.body;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
 
-    if (!user) {
-      res
-        .status(401)
-        .json({
-          "status": 401,
-          "err": sails.__("User not found")
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      await Admin
+        .update({
+          id: adminData.id,
+          deleted_at: null
+        })
+        .set({
+          is_whitelist_ip: status,
+          email: adminData.email
+        })
+      if (status == true) {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip enabled")
         });
-    }
-
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        is_whitelist_ip:status
-      });
-    if( status == true ){
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip enabled")
-      });
-    }else{
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip disabled")
-      });
+      } else {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip disabled")
+        });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   // Change Whitelist IP status for User
   changeUserWhitelistIPStatus: async function (req, res) {
-    let {status, user_id} = req.body;
-    let user = await Users.findOne({
-      id: user_id,
-      deleted_at: null
-    });
+    try {
+      let { status, user_id } = req.body;
+      let user = await Users.findOne({
+        id: user_id,
+        deleted_at: null
+      });
 
-    if (!user) {
-      res
-        .status(401)
-        .json({
-          "status": 401,
-          "err": sails.__("User not found")
+      if (!user) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("User not found")
+          });
+      }
+
+      await Users
+        .update({
+          id: user.id
+        })
+        .set({
+          is_whitelist_ip: status
         });
+      if (status == true) {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip enabled")
+        });
+      } else {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip disabled")
+        });
+      }
+    } catch (err) {
+      console.log('err', err)
     }
-
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        is_whitelist_ip:status
-      });
-    if( status == true ){
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip enabled")
-      });
-    }else{
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip disabled")
-      });
-    }
-
   },
 };
