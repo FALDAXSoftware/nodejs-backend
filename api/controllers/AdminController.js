@@ -74,7 +74,7 @@ module.exports = {
 
             var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
 
-            if (check_whitelist_data.length > 0) {
+            if (admin_details.is_whitelist_ip == true && check_whitelist_data.length > 0) {
               check_any_whitelistip.ip= ip;
 
               var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
@@ -1150,7 +1150,7 @@ module.exports = {
         addValue.user_id = user_id;
         addValue.user_type = 1;
         addValue.days = requestData.days;
-
+        addValue.is_permanent = (requestData.is_permanent!="" && requestData.is_permanent == true ? true : false);
         if (requestData.days != '' && requestData.days != null ) {
           if (requestData.days > 0) {
             expire_time = moment().add(requestData.days, 'days').valueOf();
@@ -1238,7 +1238,7 @@ module.exports = {
       addValue.user_id = requestData.user_id;
       addValue.user_type = requestData.user_type;
       addValue.days = requestData.days;
-
+      addValue.is_permanent = (requestData.is_permanent!="" && requestData.is_permanent == true ? true : false);
 
       if (requestData.days != '' && requestData.days != null ) {
         if (requestData.days > 0) {
@@ -1557,5 +1557,81 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  // Change Whitelist IP status
+  changeWhitelistIPStatus: async function (req, res) {
+    let user_id = req.user.id;
+    let {status} = req.body;
+    let user = await Admin.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        is_whitelist_ip:status
+      });
+    if( status == true ){
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip enabled")
+      });
+    }else{
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip disabled")
+      });
+    }
+  },
+
+  // Change Whitelist IP status for User
+  changeUserWhitelistIPStatus: async function (req, res) {
+    let {status, user_id} = req.body;
+    let user = await Users.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        is_whitelist_ip:status
+      });
+    if( status == true ){
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip enabled")
+      });
+    }else{
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip disabled")
+      });
+    }
+
   },
 };

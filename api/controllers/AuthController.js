@@ -223,7 +223,9 @@ module.exports = {
                 };
 
                 var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
-                if (check_whitelist_data.length > 0) {
+                console.log("user_detail.is_whitelist_ip",user_detail.is_whitelist_ip);
+                console.log("check_whitelist_data",check_whitelist_data);
+                if ( user_detail.is_whitelist_ip == true && check_whitelist_data.length > 0) {
                   check_any_whitelistip.ip = ip;
 
                   var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);

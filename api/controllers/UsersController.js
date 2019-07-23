@@ -11,6 +11,7 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 var csc = require('country-state-city');
+const moment = require('moment');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -808,7 +809,17 @@ module.exports = {
 
       if (updatedUsers) {
         // Send email notification
-        let slug = '"profile_change_password"';
+        var slug = "profile_change_password";
+        if( user_details.security_feature == true ){
+          slug = "profile_change_password_sf";
+          await Users
+            .update({
+              id: req.user.id
+            })
+            .set({
+              security_feature_expired_time : moment().utc()
+            })
+        }
         let template = await EmailTemplate.findOne({
           slug
         });
@@ -1040,7 +1051,17 @@ module.exports = {
             is_twofactor: true
           });
           // Send email notification
-          let slug = '2fa_enable_disable';
+          var slug = "2fa_enable_disable";
+          if( user.security_feature == true ){
+            slug = "2fa_enable_disable_sf";
+            await Users
+              .update({
+                id: req.user.id
+              })
+              .set({
+                security_feature_expired_time : moment().utc()
+              })
+          }
           let template = await EmailTemplate.findOne({
             slug
           });
@@ -1723,26 +1744,63 @@ module.exports = {
       let { security_feature } = req.body;
       var update_data;
       var message;
-      if( security_feature ){
+      var status;
+      if( security_feature == true ){
         update_data = {
           security_feature : security_feature,
-          security_feature_expired_time : moment().utc()
+          // security_feature_expired_time : moment().utc()
         };
         message = sails.__("SF Status Enabled");
+        status = "Enabled";
       }else{
         update_data = {
           security_feature : security_feature,
+          // security_feature_expired_time : null
         };
         message = sails.__("SF Status Disabled");
+        status = "Disabled";
       }
-      await Users
+      var user_details = await Users
         .update({ id: req.user.id })
-        .set(update_data);
+        .set(update_data)
+        .fetch();
 
-      return res.json({
-        "status": 200,
-        "message": message
+      // Send email notification
+      var slug = 'security_feature_enable_disable';
+      var template = await EmailTemplate.findOne({
+        slug
       });
+      var emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user_details[0].first_name,
+          status: status
+        })
+
+      await sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: (user_details[0].email).trim(),
+            subject: "Security Feature"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": message
+              });
+            }else{
+              return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+            }
+          })
     } catch (error) {
       return res
         .status(500)
@@ -1751,5 +1809,44 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  // Change Whitelist IP status
+  changeWhitelistIPStatus: async function (req, res) {
+    let user_id = req.user.id;
+    let {status} = req.body;
+    let user = await Users.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        is_whitelist_ip:status
+      });
+    if( status == true ){
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip enabled")
+      });
+    }else{
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip disabled")
+      });
+    }
+
   },
 };

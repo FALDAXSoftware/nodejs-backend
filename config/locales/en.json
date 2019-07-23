@@ -283,5 +283,7 @@
   "Email is already verified": "Email is already verified.",
   "Image Required": "Please Provide Image to continue",
   "SF Status Enabled":"Security feature is enabled.",
-  "SF Status Disabled":"Security feature is disabled."
+  "SF Status Disabled":"Security feature is disabled.",
+  "Whitelist ip enabled":"Whitelist ip is enabled",
+  "Whitelist ip disabled":"Whitelist ip is disabled"
 }

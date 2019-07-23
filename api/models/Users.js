@@ -250,7 +250,20 @@ module.exports = {
     history: {
       collection: 'loginHistory',
       via: 'user'
-    }
+    },
+    security_feature: {
+      type: 'boolean',
+      columnName: 'security_feature'
+    },
+    security_feature_expired_time: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'security_feature_expired_time'
+    },
+    is_whitelist_ip: {
+      type: 'boolean',
+      columnName: 'is_whitelist_ip'
+    },
   },
   beforeCreate: (values, next) => {
     Users

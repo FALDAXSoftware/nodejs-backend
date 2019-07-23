@@ -15,7 +15,8 @@ module.exports = {
       var user_id = req.user.id;
       var {
         ip,
-        days
+        days,
+        is_permanent
       } = req.body;
 
       var addValue = {}
@@ -25,6 +26,7 @@ module.exports = {
       addValue.user_id = user_id;
       addValue.user_type = 2;
       addValue.days = days;
+      addValue.is_permanent = (is_permanent!="" && is_permanent == true ? true : false);
 
       if ( days != '' && days != null ) {
         if (days > 0) {

@@ -112,8 +112,9 @@ module.exports = async function (req, res, next) {
             user_type : 2
           };
           var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist( opts );
-
-          if( check_whitelist_exists ){
+          console.log("userData.is_whitelist_ip",userData.is_whitelist_ip);
+          console.log("check_whitelist_exists",check_whitelist_exists);
+          if( userData.is_whitelist_ip == true && check_whitelist_exists  ){
             opts.ip = ip;
             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
             if(checkexist == 2 ){

@@ -55,6 +55,8 @@ module.exports.routes = {
   'get /admin/get-user-whitelist-ip': 'Admin.getUserWhiteListIP',
   'post /admin/add-user-ip-whitelist': 'Admin.addUserIpWhitelist',
   'delete /admin/delete-user-whitelist-ip': 'Admin.deleteUserWhitelistIP',
+  'post /admin/whitelist-ip-status-change': 'Admin.changeWhitelistIPStatus',
+  'post /admin/user-whitelist-ip-status-change': 'Admin.changeUserWhitelistIPStatus',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
@@ -334,4 +336,7 @@ module.exports.routes = {
 
   // Security Feature Enable/Disable
   'post /users/security-feature-status-change': 'UsersController.changeSFStatus',
+
+  // Whitelist ip Enable/Disable
+  'post /users/whitelist-ip-status-change': 'UsersController.changeWhitelistIPStatus',
 };

@@ -31,6 +31,10 @@ module.exports = {
       columnName: "days",
       // defaultsTo:0
     },
+    is_permanent: {
+      type: 'boolean',
+      columnName: 'is_permanent'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
