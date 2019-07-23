@@ -1577,7 +1577,7 @@ module.exports = {
         });
     }
 
-    await Users
+    await Admin
       .update({
         id: user.id
       })
