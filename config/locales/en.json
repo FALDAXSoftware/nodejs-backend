@@ -287,5 +287,7 @@
   "Whitelist ip enabled":"Whitelist ip is enabled",
   "Whitelist ip disabled":"Whitelist ip is disabled",
   "Please enter Twofa Backup code to continue":"Please enter 2FA Backup code to continue.",
-  "Invalid twofa backup code":"Invalid 2FA Backup Code."
+  "Invalid twofa backup code":"Invalid 2FA Backup Code.",
+  "Twofactor not enabled":"Two Factor is not enabled.",
+  "Twofactor backup code is generated":"Two Factor Backup code is generated."
 }

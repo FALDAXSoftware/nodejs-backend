@@ -1903,6 +1903,47 @@ module.exports = {
         message: sails.__("Whitelist ip disabled")
       });
     }
+  },
+  // Regenrate Backup code
+  regenerateBackupcode: async function (req, res) {
+    let user_id = req.user.id;
+    let user = await Users.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    if (!user.is_twofactor) {
+      res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Twofactor not enabled")
+        });
+    }
+    var random_string = await sails
+          .helpers
+          .randomStringGenerator(10);
+    await Users
+      .update({
+        id: user_id
+      })
+      .set({
+        twofactor_backup_code: random_string
+      });
+      res.json({
+        status: 200,
+        message: sails.__("Twofactor backup code is generated"),
+        twofactor_backup_code: random_string
+      });
 
   },
 };

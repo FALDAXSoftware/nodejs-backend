@@ -191,6 +191,7 @@ module.exports.routes = {
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
   'post /users/resend-email': "AuthController.resendVerificationEmail", //Resend Email For Registered users
+  'post /users/regenerate-backupcode': 'Users.regenerateBackupcode',
 
   //all forms
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
