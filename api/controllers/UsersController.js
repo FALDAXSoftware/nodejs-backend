@@ -991,7 +991,7 @@ module.exports = {
       historyCount
     });
   },
-
+  // Setup two factor code
   setupTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -1043,6 +1043,7 @@ module.exports = {
     }
   },
 
+  // Verify Two Factor
   verifyTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -1080,28 +1081,23 @@ module.exports = {
           encoding: "base32",
           token: otp
         });
-      console.log("verified", verified);
+
       if (verified) {
+        var random_string = await sails
+          .helpers
+          .randomStringGenerator(10);
+
         await Users
           .update({
             id: user.id
           })
           .set({
             email: user.email,
-            is_twofactor: true
+            is_twofactor: true,
+            twofactor_backup_code: random_string
           });
         // Send email notification
         var slug = "2fa_enable_disable";
-        if (user.security_feature == true) {
-          slug = "2fa_enable_disable_sf";
-          await Users
-            .update({
-              id: req.user.id
-            })
-            .set({
-              security_feature_expired_time: moment().utc()
-            })
-        }
         let template = await EmailTemplate.findOne({
           slug
         });
@@ -1126,7 +1122,8 @@ module.exports = {
             if (!err || err == null) {
               return res.json({
                 status: 200,
-                message: sails.__("2 factor enabled")
+                message: sails.__("2 factor enabled"),
+                twofactor_backup_code:random_string
               });
             }
           })

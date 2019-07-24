@@ -142,6 +142,11 @@ module.exports = {
       columnName: "twofactor_secret",
       allowNull: true
     },
+    twofactor_backup_code: {
+      type: "string",
+      columnName: "twofactor_backup_code",
+      allowNull: true
+    },
     auth_code: {
       type: "string",
       columnName: "auth_code",

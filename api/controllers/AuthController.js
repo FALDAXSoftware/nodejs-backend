@@ -157,7 +157,51 @@ module.exports = {
                       });
                   }
                 }
-                if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                // if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                //   if (!req.body.otp) {
+                //     return res
+                //       .status(201)
+                //       .json({
+                //         "status": 201,
+                //         "err": sails.__("Please enter OTP to continue")
+                //       });
+                //   }
+                //   let verified = speakeasy
+                //     .totp
+                //     .verify({
+                //       secret: user_detail.twofactor_secret,
+                //       encoding: 'base32',
+                //       token: req.body.otp,
+                //       window: 2
+                //     });
+                //   if (!verified) {
+                //     return res
+                //       .status(402)
+                //       .json({
+                //         "status": 402,
+                //         "err": sails.__("invalid otp")
+                //       });
+                //   }
+                // }
+                // If Enter 2fa backup code
+                if ( req.body.twofactor_backup_code ) {
+                  if (!req.body.twofactor_backup_code) {
+                    return res
+                      .status(201)
+                      .json({
+                        "status": 201,
+                        "err": sails.__("Please enter Twofa Backup code to continue")
+                      });
+                  }
+                  if( user_detail.twofactor_backup_code != req.body.twofactor_backup_code ){
+                    return res
+                    .status(402)
+                    .json({
+                      "status": 402,
+                      "err": sails.__("Invalid twofa backup code")
+                    });
+                  }
+                }else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                   if (!req.body.otp) {
                     return res
                       .status(201)
@@ -223,8 +267,7 @@ module.exports = {
                 };
 
                 var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
-                console.log("user_detail.is_whitelist_ip",user_detail.is_whitelist_ip);
-                console.log("check_whitelist_data",check_whitelist_data);
+
                 if ( user_detail.is_whitelist_ip == true && check_whitelist_data.length > 0) {
                   check_any_whitelistip.ip = ip;
 

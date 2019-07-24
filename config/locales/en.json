@@ -285,5 +285,7 @@
   "SF Status Enabled":"Security feature is enabled.",
   "SF Status Disabled":"Security feature is disabled.",
   "Whitelist ip enabled":"Whitelist ip is enabled",
-  "Whitelist ip disabled":"Whitelist ip is disabled"
+  "Whitelist ip disabled":"Whitelist ip is disabled",
+  "Please enter Twofa Backup code to continue":"Please enter 2FA Backup code to continue.",
+  "Invalid twofa backup code":"Invalid 2FA Backup Code."
 }
