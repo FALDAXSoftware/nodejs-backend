@@ -221,16 +221,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: existedUser.email,
-              subject: "New Email Confirmation"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("confirm otp")
-                });
-              }
-            })
+            to: existedUser.email,
+            subject: "New Email Confirmation"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("confirm otp")
+              });
+            }
+          })
       }
     } catch (error) {
       return res
@@ -301,17 +301,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: requested_email,
-                subject: "New Email Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": re_new_email_token,
-                    "message": sails.__("verification link")
-                  });
-                }
-              })
+              to: requested_email,
+              subject: "New Email Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "new_email_token": re_new_email_token,
+                  "message": sails.__("verification link")
+                });
+              }
+            })
         } else {
           return res
             .status(400)
@@ -370,12 +370,52 @@ module.exports = {
             .helpers
             .jwtIssue(user.id);
 
-          return res.json({
-            "status": 200,
-            user,
-            token,
-            "message": "Welcome back, " + user.first_name + "!"
-          });
+          // Send email if Security Feature Enabled
+          if (user.security_feature == true) {
+            var slug = "new_email_verification_sf";
+            await Users
+              .update({
+                id: user.id
+              })
+              .set({
+                security_feature_expired_time: moment().utc().add(24, 'hours')
+              })
+
+            let template = await EmailTemplate.findOne({
+              slug
+            });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user.first_name
+              });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: user.email,
+                subject: "New Email Updated"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    user,
+                    token,
+                    "message": "Welcome back, " + user.first_name + "!"
+                  });
+                }
+              })
+          } else {
+            return res.json({
+              "status": 200,
+              user,
+              token,
+              "message": "Welcome back, " + user.first_name + "!"
+            });
+          }
         } else {
           return res
             .status(400)
@@ -673,14 +713,14 @@ module.exports = {
                     .hubspot
                     .contacts
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                      ", " + user.street_address_2 :
-                      ''), user.country ?
-                        user.country :
-                        user_details["country"], user.state ?
-                        user.state :
-                        user_details["state"], user.city_town ?
-                        user.city_town :
-                        user_details["city_town"], user.postal_code);
+                        ", " + user.street_address_2 :
+                        ''), user.country ?
+                      user.country :
+                      user_details["country"], user.state ?
+                      user.state :
+                      user_details["state"], user.city_town ?
+                      user.city_town :
+                      user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -713,14 +753,14 @@ module.exports = {
                   .hubspot
                   .contacts
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                    ", " + user.street_address_2 :
-                    ''), user.country ?
-                      user.country :
-                      user_details["country"], user.state ?
-                      user.state :
-                      user_details["state"], user.city_town ?
-                      user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
+                    user.country :
+                    user_details["country"], user.state ?
+                    user.state :
+                    user_details["state"], user.city_town ?
+                    user.city_town :
+                    user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
@@ -836,16 +876,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_details.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("password change success")
-                });
-              }
-            })
+            to: (user_details.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("password change success")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -1079,17 +1119,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user.email).trim(),
-              subject: "2 Factor Authentication Enabled"
-            }, function (err) {
-              console.log("err", err);
-              if (!err || err == null) {
-                return res.json({
-                  status: 200,
-                  message: sails.__("2 factor enabled")
-                });
-              }
-            })
+            to: (user.email).trim(),
+            subject: "2 Factor Authentication Enabled"
+          }, function (err) {
+            console.log("err", err);
+            if (!err || err == null) {
+              return res.json({
+                status: 200,
+                message: sails.__("2 factor enabled")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -1146,7 +1186,17 @@ module.exports = {
         });
 
       // Send email notification
-      let slug = '2fa_enable_disable';
+      var slug = "2fa_enable_disable";
+      if (user.security_feature == true) {
+        slug = "2fa_enable_disable_sf";
+        await Users
+          .update({
+            id: user.id
+          })
+          .set({
+            security_feature_expired_time: moment().utc().add(24, 'hours')
+          })
+      }
       let template = await EmailTemplate.findOne({
         slug
       });
@@ -1164,16 +1214,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (user.email).trim(),
-            subject: "2 Factor Authentication Disabled"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                status: 200,
-                message: sails.__("2 factor disabled")
-              });
-            }
-          })
+          to: (user.email).trim(),
+          subject: "2 Factor Authentication Disabled"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              status: 200,
+              message: sails.__("2 factor disabled")
+            });
+          }
+        })
 
     } catch (error) {
       return res
@@ -1440,8 +1490,8 @@ module.exports = {
 
   getCountriesData: async function (req, res) {
     fetch(' https://restcountries.eu/rest/v2/all', {
-      method: "GET"
-    })
+        method: "GET"
+      })
       .then(resData => resData.json())
       .then(resData => {
         res.json({
@@ -1651,7 +1701,10 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
-      let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
+      let existedUser = await Users.findOne({
+        deleted_at: null,
+        email: user.email
+      });
       if (existedUser == undefined) {
         let hubspotcontact = await sails
           .helpers
@@ -1741,7 +1794,9 @@ module.exports = {
   // Change Security Feature Status
   changeSFStatus: async function (req, res) {
     try {
-      let { security_feature } = req.body;
+      let {
+        security_feature
+      } = req.body;
       var update_data;
       var message;
       var status;
@@ -1761,7 +1816,9 @@ module.exports = {
         status = "Disabled";
       }
       var user_details = await Users
-        .update({ id: req.user.id })
+        .update({
+          id: req.user.id
+        })
         .set(update_data)
         .fetch();
 
@@ -1784,23 +1841,23 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (user_details[0].email).trim(),
-            subject: "Security Feature"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": message
+          to: (user_details[0].email).trim(),
+          subject: "Security Feature"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": message
+            });
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
               });
-            } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
-            }
-          })
+          }
+        })
     } catch (error) {
       return res
         .status(500)
@@ -1814,7 +1871,9 @@ module.exports = {
   // Change Whitelist IP status
   changeWhitelistIPStatus: async function (req, res) {
     let user_id = req.user.id;
-    let { status } = req.body;
+    let {
+      status
+    } = req.body;
     let user = await Users.findOne({
       id: user_id,
       deleted_at: null

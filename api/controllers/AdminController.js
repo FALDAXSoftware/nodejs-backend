@@ -1235,7 +1235,7 @@ module.exports = {
 
       addValue.ip = requestData.ip;
       addValue.user_id = requestData.user_id;
-      addValue.user_type = requestData.user_type;
+      addValue.user_type = 1;
       addValue.days = requestData.days;
       addValue.is_permanent = (requestData.is_permanent != "" && requestData.is_permanent == true ? true : false);
 
@@ -1262,7 +1262,7 @@ module.exports = {
         })
       } else {
         // Send email notification
-        var user_data = await Users.findOne({ id: requestData.user_id });
+        var user_data = await Admin.findOne({ id: requestData.user_id });
         let slug = 'new_ip_whitelist';
         let template = await EmailTemplate.findOne({
           slug
@@ -1609,7 +1609,7 @@ module.exports = {
   changeUserWhitelistIPStatus: async function (req, res) {
     try {
       let { status, user_id } = req.body;
-      let user = await Users.findOne({
+      let user = await Admin.findOne({
         id: user_id,
         deleted_at: null
       });
@@ -1623,7 +1623,7 @@ module.exports = {
           });
       }
 
-      await Users
+      await Admin
         .update({
           id: user.id
         })

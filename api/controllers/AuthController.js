@@ -678,10 +678,47 @@ module.exports = {
             })
             .fetch();
           if (updateUsers) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Password updated Successfully")
+            // Send email notification
+            var slug = "profile_change_password";
+            if (user_details.security_feature == true) {
+              slug = "profile_change_password_sf";
+              await Users
+                .update({
+                  id: user_details.id
+                })
+                .set({
+                  security_feature_expired_time: moment().utc().add(24, 'hours')
+                })
+            }
+            let template = await EmailTemplate.findOne({
+              slug
             });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user_details.first_name
+              })
+
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                  to: (user_details.email).trim(),
+                  subject: template.name
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": sails.__("Password updated Successfully")
+                    });
+                  }else{
+                    throw "Update password Error"
+                  }
+                })
+
           } else {
             throw "Update password Error"
           }
@@ -746,40 +783,40 @@ module.exports = {
       // Email sending stopped for performance testing
 
 
-      // let slug = "forgot_password"
-      // let template = await EmailTemplate.findOne({
-      //   slug
-      // });
-      // let emailContent = await sails
-      //   .helpers
-      //   .utilities
-      //   .formatEmail(template.content, {
-      //     recipientName: updatedUser.first_name,
-      //     token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
-      //   })
-
-      // sails
-      //   .hooks
-      //   .email
-      //   .send("general-email", {
-      //     content: emailContent
-      //   }, {
-      //       to: user_details.email,
-      //       subject: "Forgot Password"
-      //     }, function (err) {
-      //       if (!err) {
-      //         return res.json({
-      //           "status": 200,
-      //           "message": sails.__("Reset password link sent to your email successfully.")
-      //         });
-      //       }
-      //     })
-
-      return res.json({
-        "status": 200,
-        "message": sails.__("Reset password link sent to your email successfully."),
-        reset_token
+      let slug = "forgot_password"
+      let template = await EmailTemplate.findOne({
+        slug
       });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: updatedUser.first_name,
+          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
+        })
+
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
+
+      // return res.json({
+      //   "status": 200,
+      //   "message": sails.__("Reset password link sent to your email successfully."),
+      //   reset_token
+      // });
     } catch (error) {
       console.log('error', error)
       return res

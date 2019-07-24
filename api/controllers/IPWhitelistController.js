@@ -52,7 +52,17 @@ module.exports = {
       }else{
         // Send email notification
         var user_data = await Users.findOne({id:user_id});
-        let slug = 'new_ip_whitelist';
+        var slug = "new_ip_whitelist";
+        if (user_data.security_feature == true) {
+          slug = "new_ip_whitelist_sf";
+          await Users
+            .update({
+              id: user_data.id
+            })
+            .set({
+              security_feature_expired_time: moment().utc().add(24, 'hours')
+            })
+        }
         let template = await EmailTemplate.findOne({
           slug
         });
