@@ -1929,21 +1929,43 @@ module.exports = {
           "err": sails.__("Twofactor not enabled")
         });
     }
-    var random_string = await sails
-          .helpers
-          .randomStringGenerator(10);
-    await Users
-      .update({
-        id: user_id
-      })
-      .set({
-        twofactor_backup_code: random_string
+
+    let {
+      otp
+    } = req.body;
+
+    let verified = speakeasy
+      .totp
+      .verify({
+        secret: user.twofactor_secret,
+        encoding: "base32",
+        token: otp
       });
-      res.json({
-        status: 200,
-        message: sails.__("Twofactor backup code is generated"),
-        twofactor_backup_code: random_string
-      });
+    if( verified ){
+      var random_string = await sails
+        .helpers
+        .randomStringGenerator(10);
+      await Users
+        .update({
+          id: user_id
+        })
+        .set({
+          twofactor_backup_code: random_string
+        });
+        res.json({
+          status: 200,
+          message: sails.__("Twofactor backup code is generated"),
+          twofactor_backup_code: random_string
+        });
+    }else {
+      return res
+        .status(401)
+        .json({
+          status: 401,
+          err: sails.__("invalid otp")
+        });
+    }
+
 
   },
 };

@@ -1008,6 +1008,90 @@ module.exports = {
         });
     }
   },
+  // Forgot Two Factors
+  forgotTwofactors: async function (req, res) {
+    if (req.body.email) {
+      let user = await Users.findOne({
+        email: req.body.email
+      });
 
+      if (user) {
+        if (!user.is_verified) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Account_Not_Verified")
+            });
+        }
+
+        let check_exist = await UserForgotTwofactors.findOne({user_id:user.id, status:true});
+        if( check_exist != undefined ) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Twofactors already requested")
+            });
+        }
+
+        req
+        .file('uploaded_file')
+        .upload(async function (err, uploadedFiles) {
+          if (uploadedFiles.length > 0) {
+            let filename = uploadedFiles[0].filename;
+            let extention = filename.split('.').pop();
+            var valid_extention = ["jpg","jpeg","png"];
+            if( valid_extention.indexOf(extention) < 0  ){
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": sails.__("Extention required")
+                });
+            }
+            var name = filename.substring(filename.indexOf("."));
+            let timestamp = new Date()
+              .getTime()
+              .toString();
+            var uploadFileName = timestamp + name;
+            var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'temp_users_images_twofactors/' + uploadFileName);
+            var store_filename = 'temp_users_images_twofactors/'+uploadFileName;
+            var data = {
+              user_id:user.id,
+              uploaded_file:store_filename,
+              status: "open"
+            };
+            var add = await UserForgotTwofactors.create( data );
+            return res.json({
+              "status": 200,
+              "message": sails.__("Your request for twofactors is sent")
+            });
+          }else{
+            return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Image Required")
+            });
+          }
+        });
+      } else {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
+      }
+    } else {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
+    }
+  },
 
 };
