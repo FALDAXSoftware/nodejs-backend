@@ -344,5 +344,6 @@ module.exports.routes = {
 
   // Two factor requests
   'post /admin/get-twofactors-requests':'AdminController.getTwoFactorsRequests',
-  'post /admin/approve-twofactors-request-status':'AdminController.approveUserTwofactorRequest'
+  'post /admin/approve-twofactors-request-status':'AdminController.approveUserTwofactorRequest',
+  'post /admin/reject-twofactors-request-status':'AdminController.rejectUserTwofactorRequest'
 };
