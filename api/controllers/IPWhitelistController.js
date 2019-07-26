@@ -26,9 +26,9 @@ module.exports = {
       addValue.user_id = user_id;
       addValue.user_type = 2;
       addValue.days = days;
-      addValue.is_permanent = (is_permanent!="" && is_permanent == true ? true : false);
+      addValue.is_permanent = (is_permanent != "" && is_permanent == true ? true : false);
 
-      if ( days != '' && days != null ) {
+      if (days != '' && days != null) {
         if (days > 0) {
           expire_time = moment().add(days, 'days').valueOf();
           addValue.expire_time = expire_time;
@@ -43,15 +43,15 @@ module.exports = {
         addValue.expire_time = null;
       }
 
-      var add_data = await IPWhitelist.addWhitelist( addValue );
-      if( add_data ){
+      var add_data = await IPWhitelist.addWhitelist(addValue);
+      if (add_data) {
         return res.status(401).json({
           status: 500,
           "message": sails.__("IP in whitelist exists")
         })
-      }else{
+      } else {
         // Send email notification
-        var user_data = await Users.findOne({id:user_id});
+        var user_data = await Users.findOne({ id: user_id });
         var slug = "new_ip_whitelist";
         if (user_data.security_feature == true) {
           slug = "new_ip_whitelist_sf";
@@ -71,7 +71,7 @@ module.exports = {
           .utilities
           .formatEmail(template.content, {
             recipientName: user_data.first_name,
-            newIPAddress:ip
+            newIPAddress: ip
           })
 
         sails
@@ -130,10 +130,10 @@ module.exports = {
       //   })
       //   .sort('created_at DESC')
       //   .paginate(page - 1, parseInt(limit));
-      let params={
+      let params = {
         deleted_at: null,
         user_id: user_id,
-        user_type : 2,
+        user_type: 2,
         or: [{
           expire_time: {
             '>=': now
@@ -142,20 +142,20 @@ module.exports = {
           expire_time: null
         }]
       };
-      let get_data = await IPWhitelist.getWhiteListData("",params,limit,page );
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
 
-      if ( get_data.data != undefined && get_data.data.length > 0 ) {
+      if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success"),
           "data": get_data.data,
-          "total":get_data.total
+          "total": get_data.total
         })
       } else {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("WhiteList IP info Success Not Found"),
-          "data":[]
+          "data": []
         })
       }
 
@@ -182,14 +182,14 @@ module.exports = {
         id: id,
         user_id: user_id
       };
-      var delete_data = await IPWhitelist.deleteWhiteListData(id, data );
-      if( delete_data ){
+      var delete_data = await IPWhitelist.deleteWhiteListData(id, data);
+      if (delete_data) {
         return res.status(200)
-        .json({
-          status: 200,
-          "message": sails.__("WhiteList IP has been deleted successfully")
-        })
-      }else{
+          .json({
+            status: 200,
+            "message": sails.__("WhiteList IP has been deleted successfully")
+          })
+      } else {
         return res.status(200).json({
           "status": 204,
           "message": sails.__("WhiteList IP info Success Not Found"),

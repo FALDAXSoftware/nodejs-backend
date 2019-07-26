@@ -34,17 +34,17 @@ module.exports.routes = {
   'post /webhook-on-send': 'WebhookController.webhookOnSend',
 
   // CMS Routes/////////////////////////////////////////// Admin
-  'post /admin/login': "Admin.login",
-  'post /admin/forgot-password': "Admin.forgotPassword",
-  'post /admin/create': "Admin.create",
-  'put /admin/update': "Admin.update",
-  'put /admin/reset-password': "Admin.resetPassword",
-  'post /admin/add-employee': "Admin.addEmployee",
-  'get /admin/get-employees': "Admin.getAllEmployee",
-  'delete /admin/delete-employee': "Admin.deleteEmployee",
-  'delete /admin/delete-user': "Admin.deleteUser",
-  'put /admin/update-employee': "Admin.updateEmployee",
-  'get /admin/get-employee-details': "Admin.getEmployeeDetails",
+  'post /admin/login': 'Admin.login',
+  'post /admin/forgot-password': 'Admin.forgotPassword',
+  'post /admin/create': 'Admin.create',
+  'put /admin/update': 'Admin.update',
+  'put /admin/reset-password': 'Admin.resetPassword',
+  'post /admin/add-employee': 'Admin.addEmployee',
+  'get /admin/get-employees': 'Admin.getAllEmployee',
+  'delete /admin/delete-employee': 'Admin.deleteEmployee',
+  'delete /admin/delete-user': 'Admin.deleteUser',
+  'put /admin/update-employee': 'Admin.updateEmployee',
+  'get /admin/get-employee-details': 'Admin.getEmployeeDetails',
   'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
   'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
   'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
@@ -65,7 +65,7 @@ module.exports.routes = {
   'delete /admin/role/delete': 'RoleController.delete',
 
   //users
-  'post /admin/change-password': "Admin.changePassword",
+  'post /admin/change-password': 'Admin.changePassword',
   'post /admin/employee-change-password': 'Admin.updateEmployeePassword',
   'get /admin/get-users': 'Users.getUserPaginate',
   'get /admin/referred-users': 'Users.getUserReferredAdmin',
@@ -83,7 +83,7 @@ module.exports.routes = {
   'post /admin/coins/create': 'Coins.create',
   'put /admin/coins/update': 'Coins.update',
   'delete /admin/coins/delete': 'Coins.delete',
-  'get /admin/coin/get-coin-details': "Coins.getCoinDetails",
+  'get /admin/coin/get-coin-details': 'Coins.getCoinDetails',
 
 
   // Email Templates
