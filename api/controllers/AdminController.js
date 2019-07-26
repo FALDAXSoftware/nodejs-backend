@@ -1399,7 +1399,6 @@ module.exports = {
         })
       }
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({
@@ -1613,6 +1612,7 @@ module.exports = {
         id: user_id,
         deleted_at: null
       });
+      console.log('user', user)
 
       if (!user) {
         res
@@ -1628,7 +1628,8 @@ module.exports = {
           id: user.id
         })
         .set({
-          is_whitelist_ip: status
+          is_whitelist_ip: status,
+          email: user.email
         });
       if (status == true) {
         res.json({
