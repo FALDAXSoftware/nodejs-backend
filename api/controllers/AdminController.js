@@ -1646,4 +1646,150 @@ module.exports = {
       console.log('err', err)
     }
   },
+  // Get Twofactors requests
+  getTwoFactorsRequests : async function( req, res ){
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if( adminData.role_id != 1 ){
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+
+      let data = {
+        status:"open"
+      };
+      var get_data = await UserForgotTwofactors.getOpenRequests();
+      if( get_data.rowCount > 0 ){
+        return res.json({
+          "status": 200,
+          "message": sails.__("Twofactors lists"),
+          "data": get_data.rows
+        });
+      }else{
+        return res.json({
+          "status": 200,
+          "message": sails.__("No record found"),
+          "data": []
+        });
+      }
+    }catch( err ){
+      console.log("err",err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Approve User's Twofactor request status
+  approveUserTwofactorRequest: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if( adminData.role_id != 1 ){
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+      let { id } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({id:id});
+      if( !get_data ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("No record found")
+          });
+      }
+
+      if( get_data.status == "closed" ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Twofactor request closed")
+          });
+      }
+      // Disable user's 2fa
+      var user = await Users
+        .update({id:get_data.user_id})
+        .set({
+          is_twofactor:false,
+          twofactor_secret:"",
+          security_feature:true,
+          security_feature_expired_time: moment().utc().add(24, 'hours')
+        }).fetch();
+
+      await UserForgotTwofactors
+        .update({id:get_data.id})
+        .set({status:"closed"});
+
+      let slug = "twofactor_request_email_approved";
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user[0].first_name
+        });
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user[0].email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request approved")
+              });
+            }
+          })
+    } catch (err) {
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+  },
 };

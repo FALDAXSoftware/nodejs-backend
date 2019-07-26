@@ -191,6 +191,7 @@ module.exports.routes = {
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
   'post /users/resend-email': "AuthController.resendVerificationEmail", //Resend Email For Registered users
+  'post /users/forgot-twofactors': "AuthController.forgotTwofactors",
   'post /users/regenerate-backupcode': 'Users.regenerateBackupcode',
 
   //all forms
@@ -340,4 +341,8 @@ module.exports.routes = {
 
   // Whitelist ip Enable/Disable
   'post /users/whitelist-ip-status-change': 'UsersController.changeWhitelistIPStatus',
+
+  // Two factor requests
+  'post /admin/get-twofactors-requests':'AdminController.getTwoFactorsRequests',
+  'post /admin/approve-twofactors-request-status':'AdminController.approveUserTwofactorRequest'
 };
