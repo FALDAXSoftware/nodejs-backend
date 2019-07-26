@@ -1758,6 +1758,10 @@ module.exports = {
           security_feature_expired_time: moment().utc().add(24, 'hours')
         }).fetch();
 
+      if( get_data.uploaded_file ){
+        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      }
+
       await UserForgotTwofactors
         .update({ id: get_data.id })
         .set({ status: "closed" });
@@ -1796,4 +1800,98 @@ module.exports = {
       });
     }
   },
+
+  // Reject User's Twofactor request status
+  rejectUserTwofactorRequest: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if( adminData.role_id != 1 ){
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+      let { id,reason } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({id:id});
+      if( !get_data ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("No record found")
+          });
+      }
+
+      if( get_data.status == "closed" ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Twofactor request closed")
+          });
+      }
+
+      await UserForgotTwofactors
+        .update({id:get_data.id})
+        .set({status:"rejected",reason:reason});
+
+      if( get_data.uploaded_file ){
+        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      }
+
+      var user = await Users
+        .findOne({id:get_data.user_id})
+      let slug = "twofactor_request_email_rejected";
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user.first_name,
+          reason:reason
+        });
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user.email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request rejected")
+              });
+            }
+          })
+    } catch (err) {
+      console.log("err",err);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+  },
+
+
 };
