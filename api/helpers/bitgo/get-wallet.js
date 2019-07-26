@@ -50,7 +50,7 @@ module.exports = {
       },
       json: true
     }, function (err, httpResponse, body) {
-
+      console.log("wallet", err);
       if (err) {
         return exits.error(err);
       }

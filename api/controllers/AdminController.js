@@ -24,6 +24,7 @@ var randomize = require('randomatic');
 var bcrypt = require('bcrypt');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
+const moment = require('moment');
 
 module.exports = {
   // CMS Login
@@ -56,13 +57,48 @@ module.exports = {
               ip = req.ip;
             }
 
-            if (admin_details.whitelist_ip != null && admin_details.whitelist_ip != "" && admin_details.whitelist_ip.indexOf(ip) <= -1) {
-              return res
-                .status(401)
-                .json({
-                  "status": 401,
-                  "err": sails.__("Unauthorized Access")
-                });
+            // if (admin_details.whitelist_ip != null && admin_details.whitelist_ip != "" && admin_details.whitelist_ip.indexOf(ip) <= -1) {
+            //   return res
+            //     .status(401)
+            //     .json({
+            //       "status": 401,
+            //       "err": sails.__("Unauthorized Access")
+            //     });
+            // }
+
+            var check_any_whitelistip = {
+              user_id: admin_details.id,
+              user_type: 1,
+              deleted_at: null
+            };
+
+            var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
+
+            if (admin_details.is_whitelist_ip == true && check_whitelist_data.length > 0) {
+              check_any_whitelistip.ip = ip;
+
+              var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
+              if (check_whitelist != undefined) {
+                if (check_whitelist.days != 0) {
+                  var current_datetime = moment().valueOf();
+                  if (current_datetime > check_whitelist.expire_time) {
+                    return res
+                      .status(401)
+                      .json({
+                        "status": 401,
+                        "err": sails.__("Time for whitelist has been expired.")
+                      });
+                  }
+                }
+
+              } else {
+                return res
+                  .status(401)
+                  .json({
+                    "status": 401,
+                    "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                  });
+              }
             }
 
             let role = await Role.findOne({
@@ -291,11 +327,36 @@ module.exports = {
         .fetch();
 
       if (adminUpdates) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("password change success"),
-          "data": adminUpdates
+        // Send email notification
+        let slug = 'profile_change_password';
+        let template = await EmailTemplate.findOne({
+          slug
         });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_details.first_name
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success"),
+                  "data": adminUpdates
+                });
+              }
+            })
+
       } else {
         return res
           .status(401)
@@ -366,11 +427,15 @@ module.exports = {
         ip = req.ip;
       }
 
+      let today = new Date();
+      let dd = String(today.getDate()).padStart(2, '0');
+      let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: new Date(),
+        datetime: dd + '/' + mm + '/' + today.getFullYear(),
         browser: req.headers['user-agent'],
         ip
       })
@@ -456,7 +521,6 @@ module.exports = {
       });
 
     } catch (error) {
-      console.log('error,', error)
       return res
         .status(500)
         .json({
@@ -486,10 +550,34 @@ module.exports = {
           })
           .fetch();
         if (updateAdmin) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Password updated Successfully")
+          // Send email notification
+          let slug = 'profile_change_password';
+          let template = await EmailTemplate.findOne({
+            slug
           });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: admin_details.first_name
+            })
+
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+                to: (admin_details.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("password change success")
+                  });
+                }
+              })
         } else {
           return res.json({
             "status": 400,
@@ -1040,31 +1128,85 @@ module.exports = {
 
   addAdminIPs: async function (req, res) {
     try {
-      const {
-        admin_id
-      } = req.allParams();
+      // const {
+      //   admin_id
+      // } = req.allParams();
+      var user_id = req.user.id;
       var requestData = req.body;
       var adminData = await Admin.findOne({
-        id: admin_id,
+        id: user_id,
         deleted_at: null,
-        is_active: true
       });
 
       if (adminData != undefined) {
         var updateAdminData = await Admin.update({
-          id: admin_id,
+          id: user_id,
           deleted_at: null,
-          is_active: true
         }).set({
-          email: adminData.email,
-          whitelist_ip: requestData.ip
+          email: adminData.email
         });
 
-        return res.status(200).json({
-          "status": 200,
-          "message": sails.__("WhiteLsit IP Add Success"),
-          "data": updateAdminData
-        });
+        var addValue = {}
+        var expire_time;
+
+        addValue.ip = requestData.ip;
+        addValue.user_id = user_id;
+        addValue.user_type = 1;
+        addValue.days = requestData.days;
+        addValue.is_permanent = (requestData.is_permanent != "" && requestData.is_permanent == true ? true : false);
+        if (requestData.days != '' && requestData.days != null) {
+          if (requestData.days > 0) {
+            expire_time = moment().add(requestData.days, 'days').valueOf();
+            addValue.expire_time = expire_time;
+          } else {
+            return res.status(500).json({
+              status: 500,
+              "message": sails.__("Days greater 0")
+            })
+          }
+        } else {
+          addValue.days = 0;
+          addValue.expire_time = null;
+        }
+
+        var add_data = await IPWhitelist.addWhitelist(addValue);
+        if (add_data) {
+          return res.status(401).json({
+            status: 500,
+            "message": sails.__("IP in whitelist exists")
+          })
+        } else {
+          // Send email notification
+          let slug = 'new_ip_whitelist';
+          let template = await EmailTemplate.findOne({
+            slug
+          });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: adminData.first_name,
+              newIPAddress: requestData.ip
+            })
+
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+                to: (adminData.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.status(200).json({
+                    "status": 200,
+                    "message": sails.__("WhiteList IP Add Success"),
+                    "data": updateAdminData
+                  });
+                }
+              })
+        }
       } else {
         return res
           .status(500)
@@ -1083,33 +1225,254 @@ module.exports = {
     }
   },
 
+  addUserIpWhitelist: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var requestData = req.body;
+      var addValue = {}
+      var expire_time;
+
+      addValue.ip = requestData.ip;
+      addValue.user_id = requestData.user_id;
+      addValue.user_type = 1;
+      addValue.days = requestData.days;
+      addValue.is_permanent = (requestData.is_permanent != "" && requestData.is_permanent == true ? true : false);
+
+      if (requestData.days != '' && requestData.days != null) {
+        if (requestData.days > 0) {
+          expire_time = moment().add(requestData.days, 'days').valueOf();
+          addValue.expire_time = expire_time;
+        } else {
+          return res.status(500).json({
+            status: 500,
+            "message": sails.__("Days greater 0")
+          })
+        }
+      } else {
+        addValue.days = 0;
+        addValue.expire_time = null;
+      }
+
+      var add_data = await IPWhitelist.addWhitelist(addValue);
+      if (add_data) {
+        return res.status(401).json({
+          status: 500,
+          "message": sails.__("IP in whitelist exists")
+        })
+      } else {
+        // Send email notification
+        var user_data = await Admin.findOne({ id: requestData.user_id });
+        let slug = 'new_ip_whitelist';
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_data.first_name,
+            newIPAddress: requestData.ip
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: (user_data.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": []
+                });
+              }
+            })
+      }
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   getAdminWhiteListIP: async function (req, res) {
     try {
       const {
         admin_id
       } = req.allParams();
-      var adminData = await Admin.findOne({
-        select: [
-          'whitelist_ip'
-        ],
-        where: {
-          id: admin_id,
-        }
-      });
 
-      if (adminData != undefined) {
+      var user_id = req.user.id;
+      var now = moment().valueOf();
+      let {
+        page,
+        limit
+      } = req.allParams();
+      let params = {
+        deleted_at: null,
+        user_id: user_id,
+        user_type: 1,
+        or: [{
+          expire_time: {
+            '>=': now
+          }
+        }, {
+          expire_time: null
+        }]
+      };
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
+
+      if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteLsit IP info Success"),
-          "data": adminData
-        });
+          "message": sails.__("WhiteList IP info Success"),
+          "data": get_data.data,
+          "total": get_data.total
+        })
       } else {
-        return res
-          .status(500)
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteList IP info Success Not Found"),
+          "data": []
+        })
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getUserWhiteListIP: async function (req, res) {
+    try {
+      const {
+        user_id
+      } = req.allParams();
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var now = moment().valueOf();
+      let {
+        page,
+        limit
+      } = req.allParams();
+      let params = {
+        deleted_at: null,
+        user_id: user_id,
+        or: [{
+          expire_time: {
+            '>=': now
+          }
+        }, {
+          expire_time: null
+        }]
+      };
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
+
+      if (get_data.data != undefined && get_data.data.length > 0) {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteList IP info Success"),
+          "data": get_data.data,
+          "total": get_data.total
+        })
+      } else {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("WhiteList IP info Success Not Found"),
+          "data": []
+        })
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  deleteWhitelistIP: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      let {
+        id
+      } = req.allParams();
+      var data = {
+        deleted_at: null,
+        id: id,
+        user_id: user_id
+      };
+      var delete_data = await IPWhitelist.deleteWhiteListData(id, data);
+      if (delete_data) {
+        return res.status(200)
           .json({
-            status: 500,
-            "err": sails.__("Something Wrong")
-          });
+            status: 200,
+            "message": sails.__("WhiteList IP has been deleted successfully")
+          })
+      } else {
+        return res.status(200).json({
+          "status": 204,
+          "message": sails.__("WhiteList IP info Success Not Found"),
+        })
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  deleteUserWhitelistIP: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      let {
+        id
+      } = req.allParams();
+      var data = {
+        deleted_at: null,
+        id: id
+      };
+      var delete_data = await IPWhitelist.deleteWhiteListData(id, data);
+      if (delete_data) {
+        return res.status(200)
+          .json({
+            status: 200,
+            "message": sails.__("WhiteList IP has been deleted successfully")
+          })
+      } else {
+        return res.status(200).json({
+          "status": 204,
+          "message": sails.__("WhiteList IP info Success Not Found"),
+        })
       }
     } catch (err) {
       return res
@@ -1164,5 +1527,371 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // Update user data
+  updateUser: async function (req, res) {
+    try {
+      var req_data = req.body;
+      var user_id = req_data.user_id;
+      delete req_data.user_id;
+      var update_data = await Users.updateData(user_id, req_data);
+      if (update_data) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("User Update"),
+          data: update_data
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Change Whitelist IP status
+  changeWhitelistIPStatus: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let { status } = req.body;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      await Admin
+        .update({
+          id: adminData.id,
+          deleted_at: null
+        })
+        .set({
+          is_whitelist_ip: status,
+          email: adminData.email
+        })
+      if (status == true) {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip enabled")
+        });
+      } else {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip disabled")
+        });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Change Whitelist IP status for User
+  changeUserWhitelistIPStatus: async function (req, res) {
+    try {
+      let { status, user_id } = req.body;
+      let user = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+      console.log('user', user)
+
+      if (!user) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("User not found")
+          });
+      }
+
+      await Admin
+        .update({
+          id: user.id
+        })
+        .set({
+          is_whitelist_ip: status,
+          email: user.email
+        });
+      if (status == true) {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip enabled")
+        });
+      } else {
+        res.json({
+          status: 200,
+          message: sails.__("Whitelist ip disabled")
+        });
+      }
+    } catch (err) {
+      console.log('err', err)
+    }
+  },
+  // Get Twofactors requests
+  getTwoFactorsRequests: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if (adminData.role_id != 1) {
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+
+      let data = {
+        status: "open"
+      };
+      var get_data = await UserForgotTwofactors.getOpenRequests();
+      if (get_data.rowCount > 0) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Twofactors lists"),
+          "data": get_data.rows
+        });
+      } else {
+        return res.json({
+          "status": 200,
+          "message": sails.__("No record found"),
+          "data": []
+        });
+      }
+    } catch (err) {
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Approve User's Twofactor request status
+  approveUserTwofactorRequest: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if (adminData.role_id != 1) {
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+      let { id } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({ id: id });
+      if (!get_data) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("No record found")
+          });
+      }
+
+      if (get_data.status == "closed") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Twofactor request closed")
+          });
+      }
+      // Disable user's 2fa
+      var user = await Users
+        .update({ id: get_data.user_id })
+        .set({
+          is_twofactor: false,
+          twofactor_secret: "",
+          security_feature: true,
+          security_feature_expired_time: moment().utc().add(24, 'hours')
+        }).fetch();
+
+      if( get_data.uploaded_file ){
+        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      }
+
+      await UserForgotTwofactors
+        .update({ id: get_data.id })
+        .set({ status: "closed" });
+
+      let slug = "twofactor_request_email_approved";
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user[0].first_name
+        });
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user[0].email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request approved")
+              });
+            }
+          })
+    } catch (err) {
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  // Reject User's Twofactor request status
+  rejectUserTwofactorRequest: async function (req, res) {
+    try {
+      let user_id = req.user.id;
+      let adminData = await Admin.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+
+      if (!adminData) {
+        res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("Employee not found")
+          });
+      }
+      if( adminData.role_id != 1 ){
+        res
+          .status(403)
+          .json({
+            "status": 403,
+            "err": sails.__("Unauthorized Access")
+          });
+      }
+      let { id,reason } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({id:id});
+      if( !get_data ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("No record found")
+          });
+      }
+
+      if( get_data.status == "closed" ){
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Twofactor request closed")
+          });
+      }
+
+      await UserForgotTwofactors
+        .update({id:get_data.id})
+        .set({status:"rejected",reason:reason});
+
+      if( get_data.uploaded_file ){
+        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      }
+
+      var user = await Users
+        .findOne({id:get_data.user_id})
+      let slug = "twofactor_request_email_rejected";
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user.first_name,
+          reason:reason
+        });
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user.email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request rejected")
+              });
+            }
+          })
+    } catch (err) {
+      console.log("err",err);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+  },
+
+
 };

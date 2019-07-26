@@ -97,10 +97,36 @@ module.exports = {
                 "message": sails.__("Something Wrong")
               });
             }
-            return res.json({
-              "status": 200,
-              "message": sails.__('Update User Limit')
+            // User Limit Increased/Decreased Information Email
+
+            let user = await Users.find({ select: ['first_name', 'email'], where: { id: req.body.user_id } });
+
+            let slug = "user_limit_updation"
+            let template = await EmailTemplate.findOne({
+              slug
             });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user[0].first_name,
+              });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                  to: user[0].email,
+                  subject: "User Limit Updation"
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": sails.__("Update User Limit")
+                    });
+                  }
+                })
           }
         }
       } else {

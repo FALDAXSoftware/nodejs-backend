@@ -83,8 +83,10 @@ module.exports = async function (req, res, next) {
       var userData = await Users.findOne({
         id: req.user.id
       });
+
       if (userData != undefined && userData.isAdmin != true) {
-        if (userData.whitelist_ip == null && userData.deleted_at == null) {
+
+        if (userData.deleted_at == null) {
           next();
         } else if (userData.deleted_at != null) {
           return res
@@ -93,7 +95,7 @@ module.exports = async function (req, res, next) {
               status: 403,
               err: 'Your User has been deleted.'
             });
-        } else if (userData.whitelist_ip != null) {
+        } else {
           var ip;
           if (req.headers['x-forwarded-for']) {
             ip = req
@@ -104,16 +106,44 @@ module.exports = async function (req, res, next) {
           } else {
             ip = req.ip;
           }
-          if (userData.whitelist_ip.indexOf(ip) > -1) {
-            next();
-          } else {
-            return res
-              .status(403)
+          // Check if IP's session is not timeout
+          var opts = {
+            id : userData.id,
+            user_type : 2
+          };
+          var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist( opts );
+          console.log("userData.is_whitelist_ip",userData.is_whitelist_ip);
+          console.log("check_whitelist_exists",check_whitelist_exists);
+          if( userData.is_whitelist_ip == true && check_whitelist_exists  ){
+            opts.ip = ip;
+            var checkexist = await IPWhitelist.checkWhitelistValid(opts);
+            if(checkexist == 2 ){
+              next();
+            }else if(checkexist == 1){
+              return res
+              .status(401)
               .json({
-                status: 403,
-                err: 'Your IP has not been whitelisted. Please whitelist your IP to continue.'
+                "status": 401,
+                "err": sails.__("Time for whitelist has been expired.")
               });
+            }else{
+              next();
+            }
+          }else{
+            next();
           }
+
+
+          // if (userData.whitelist_ip.indexOf(ip) > -1) {
+          //   next();
+          // } else {
+          //   return res
+          //     .status(403)
+          //     .json({
+          //       status: 403,
+          //       err: 'Your IP has not been whitelisted. Please whitelist your IP to continue.'
+          //     });
+          // }
         }
       } else {
         next();

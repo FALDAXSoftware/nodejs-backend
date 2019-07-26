@@ -34,23 +34,29 @@ module.exports.routes = {
   'post /webhook-on-send': 'WebhookController.webhookOnSend',
 
   // CMS Routes/////////////////////////////////////////// Admin
-  'post /admin/login': "Admin.login",
-  'post /admin/forgot-password': "Admin.forgotPassword",
-  'post /admin/create': "Admin.create",
-  'put /admin/update': "Admin.update",
-  'put /admin/reset-password': "Admin.resetPassword",
-  'post /admin/add-employee': "Admin.addEmployee",
-  'get /admin/get-employees': "Admin.getAllEmployee",
-  'delete /admin/delete-employee': "Admin.deleteEmployee",
-  'delete /admin/delete-user': "Admin.deleteUser",
-  'put /admin/update-employee': "Admin.updateEmployee",
-  'get /admin/get-employee-details': "Admin.getEmployeeDetails",
+  'post /admin/login': 'Admin.login',
+  'post /admin/forgot-password': 'Admin.forgotPassword',
+  'post /admin/create': 'Admin.create',
+  'put /admin/update': 'Admin.update',
+  'put /admin/reset-password': 'Admin.resetPassword',
+  'post /admin/add-employee': 'Admin.addEmployee',
+  'get /admin/get-employees': 'Admin.getAllEmployee',
+  'delete /admin/delete-employee': 'Admin.deleteEmployee',
+  'delete /admin/delete-user': 'Admin.deleteUser',
+  'put /admin/update-employee': 'Admin.updateEmployee',
+  'get /admin/get-employee-details': 'Admin.getEmployeeDetails',
   'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
   'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
   'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
   'get /admin/get-details': 'Admin.getAdminDetails',
   'post /admin/add-whitelist-ip': 'Admin.addAdminIPs',
   'get /admin/get-all-whitelist-ip': 'Admin.getAdminWhiteListIP',
+  'delete /admin/delete-whitelist-ip': 'Admin.deleteWhitelistIP',
+  'get /admin/get-user-whitelist-ip': 'Admin.getUserWhiteListIP',
+  'post /admin/add-user-ip-whitelist': 'Admin.addUserIpWhitelist',
+  'delete /admin/delete-user-whitelist-ip': 'Admin.deleteUserWhitelistIP',
+  'post /admin/whitelist-ip-status-change': 'Admin.changeWhitelistIPStatus',
+  'post /admin/user-whitelist-ip-status-change': 'Admin.changeUserWhitelistIPStatus',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
@@ -59,7 +65,7 @@ module.exports.routes = {
   'delete /admin/role/delete': 'RoleController.delete',
 
   //users
-  'post /admin/change-password': "Admin.changePassword",
+  'post /admin/change-password': 'Admin.changePassword',
   'post /admin/employee-change-password': 'Admin.updateEmployeePassword',
   'get /admin/get-users': 'Users.getUserPaginate',
   'get /admin/referred-users': 'Users.getUserReferredAdmin',
@@ -70,13 +76,14 @@ module.exports.routes = {
   'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
   'post /admin/update-send-coin-fee': 'Users.updateSendCoinFee',
   'post /admin/add-user': 'Users.addUser',
+  'post /admin/update-user': 'Admin.updateUser',
   'post /admin/get-user-tickets': 'Users.getTicketsAdmin',
   //coins
   'get /admin/get-coins': 'Coins.getCoins',
   'post /admin/coins/create': 'Coins.create',
   'put /admin/coins/update': 'Coins.update',
   'delete /admin/coins/delete': 'Coins.delete',
-  'get /admin/coin/get-coin-details': "Coins.getCoinDetails",
+  'get /admin/coin/get-coin-details': 'Coins.getCoinDetails',
 
 
   // Email Templates
@@ -179,10 +186,13 @@ module.exports.routes = {
   'post /users/update-email': 'Users.updateEmail',
   'post /users/add-whitelist-ip': 'IPWhitelistController.addWhiteListIPUser',
   'get /users/get-whitelist-ip': 'IPWhitelistController.getWhiteListIPUser',
-  'delete /users/delete-whitelist-ip/:id': 'IPWhitelistController.deleteUserWhitelistIP',
+  'delete /users/delete-whitelist-ip': 'IPWhitelistController.deleteUserWhitelistIP',
   'post /users/confirm-new-email': 'Users.confirmNewEmail',
   'post /users/verify-new-email': 'Users.verifyNewEmail',
   'post /logout': "AuthController.logOut",
+  'post /users/resend-email': "AuthController.resendVerificationEmail", //Resend Email For Registered users
+  'post /users/forgot-twofactors': "AuthController.forgotTwofactors",
+  'post /users/regenerate-backupcode': 'Users.regenerateBackupcode',
 
   //all forms
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
@@ -324,5 +334,16 @@ module.exports.routes = {
 
   //Job Category API
   'post /admin/add-job-category': 'CareerController.addJobCategory',
-  'put /admin/update-job-category': 'CareerController.updateJobCategory'
+  'put /admin/update-job-category': 'CareerController.updateJobCategory',
+
+  // Security Feature Enable/Disable
+  'post /users/security-feature-status-change': 'UsersController.changeSFStatus',
+
+  // Whitelist ip Enable/Disable
+  'post /users/whitelist-ip-status-change': 'UsersController.changeWhitelistIPStatus',
+
+  // Two factor requests
+  'post /admin/get-twofactors-requests':'AdminController.getTwoFactorsRequests',
+  'post /admin/approve-twofactors-request-status':'AdminController.approveUserTwofactorRequest',
+  'post /admin/reject-twofactors-request-status':'AdminController.rejectUserTwofactorRequest'
 };

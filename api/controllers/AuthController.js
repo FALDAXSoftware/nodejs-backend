@@ -15,6 +15,7 @@
  */
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
+const moment = require('moment');
 
 module.exports = {
   // Verify User Api
@@ -115,11 +116,16 @@ module.exports = {
         }
 
         var user_detail = await Users.findOne({
-          email: query.email,
-          deleted_at: null
+          email: query.email
         });
 
         if (user_detail) {
+          if (user_detail.deleted_at && user_detail.deleted_by == 2) {
+            return res.json(403, {
+              "status": 403,
+              err: sails.__('Deleted By Admin')
+            });
+          }
 
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
@@ -156,7 +162,51 @@ module.exports = {
                       });
                   }
                 }
-                if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                // if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                //   if (!req.body.otp) {
+                //     return res
+                //       .status(201)
+                //       .json({
+                //         "status": 201,
+                //         "err": sails.__("Please enter OTP to continue")
+                //       });
+                //   }
+                //   let verified = speakeasy
+                //     .totp
+                //     .verify({
+                //       secret: user_detail.twofactor_secret,
+                //       encoding: 'base32',
+                //       token: req.body.otp,
+                //       window: 2
+                //     });
+                //   if (!verified) {
+                //     return res
+                //       .status(402)
+                //       .json({
+                //         "status": 402,
+                //         "err": sails.__("invalid otp")
+                //       });
+                //   }
+                // }
+                // If Enter 2fa backup code
+                if (req.body.twofactor_backup_code) {
+                  if (!req.body.twofactor_backup_code) {
+                    return res
+                      .status(201)
+                      .json({
+                        "status": 201,
+                        "err": sails.__("Please enter Twofa Backup code to continue")
+                      });
+                  }
+                  if (user_detail.twofactor_backup_code != req.body.twofactor_backup_code) {
+                    return res
+                      .status(402)
+                      .json({
+                        "status": 402,
+                        "err": sails.__("Invalid twofa backup code")
+                      });
+                  }
+                } else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                   if (!req.body.otp) {
                     return res
                       .status(201)
@@ -206,15 +256,48 @@ module.exports = {
                   ip = req.ip;
                 }
 
-                if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
-                  return res
-                    .status(401)
-                    .json({
-                      "status": 401,
-                      "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
-                    });
-                }
+                // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
+                //   return res
+                //     .status(401)
+                //     .json({
+                //       "status": 401,
+                //       "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                //     });
+                // }
 
+                var check_any_whitelistip = {
+                  user_id: user_detail.id,
+                  user_type: 2,
+                  deleted_at: null
+                };
+
+                var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
+
+                if (user_detail.is_whitelist_ip == true && check_whitelist_data.length > 0) {
+                  check_any_whitelistip.ip = ip;
+
+                  var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
+                  if (check_whitelist != undefined) {
+                    if (check_whitelist.days != 0) {
+                      var current_datetime = moment().valueOf();
+                      if (current_datetime > check_whitelist.expire_time) {
+                        return res
+                          .status(401)
+                          .json({
+                            "status": 401,
+                            "err": sails.__("Time for whitelist has been expired.")
+                          });
+                      }
+                    }
+                  } else {
+                    return res
+                      .status(401)
+                      .json({
+                        "status": 401,
+                        "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                      });
+                  }
+                }
 
                 // Check For New Ip
                 let loginData = await LoginHistory.find({
@@ -321,6 +404,7 @@ module.exports = {
         return;
       }
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -642,10 +726,47 @@ module.exports = {
             })
             .fetch();
           if (updateUsers) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Password updated Successfully")
+            // Send email notification
+            var slug = "profile_change_password";
+            if (user_details.security_feature == true) {
+              slug = "profile_change_password_sf";
+              await Users
+                .update({
+                  id: user_details.id
+                })
+                .set({
+                  security_feature_expired_time: moment().utc().add(24, 'hours')
+                })
+            }
+            let template = await EmailTemplate.findOne({
+              slug
             });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user_details.first_name
+              })
+
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                  to: (user_details.email).trim(),
+                  subject: template.name
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": sails.__("Password updated Successfully")
+                    });
+                  } else {
+                    throw "Update password Error"
+                  }
+                })
+
           } else {
             throw "Update password Error"
           }
@@ -710,40 +831,40 @@ module.exports = {
       // Email sending stopped for performance testing
 
 
-      // let slug = "forgot_password"
-      // let template = await EmailTemplate.findOne({
-      //   slug
-      // });
-      // let emailContent = await sails
-      //   .helpers
-      //   .utilities
-      //   .formatEmail(template.content, {
-      //     recipientName: updatedUser.first_name,
-      //     token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
-      //   })
-
-      // sails
-      //   .hooks
-      //   .email
-      //   .send("general-email", {
-      //     content: emailContent
-      //   }, {
-      //       to: user_details.email,
-      //       subject: "Forgot Password"
-      //     }, function (err) {
-      //       if (!err) {
-      //         return res.json({
-      //           "status": 200,
-      //           "message": sails.__("Reset password link sent to your email successfully.")
-      //         });
-      //       }
-      //     })
-
-      return res.json({
-        "status": 200,
-        "message": sails.__("Reset password link sent to your email successfully."),
-        reset_token
+      let slug = "forgot_password"
+      let template = await EmailTemplate.findOne({
+        slug
       });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: updatedUser.first_name,
+          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
+        })
+
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+            to: user_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
+
+      // return res.json({
+      //   "status": 200,
+      //   "message": sails.__("Reset password link sent to your email successfully."),
+      //   reset_token
+      // });
     } catch (error) {
       console.log('error', error)
       return res
@@ -816,5 +937,166 @@ module.exports = {
         });
       return;
     }
-  }
+  },
+  resendVerificationEmail: async function (req, res) {
+    if (req.body.email) {
+      let user = await Users.findOne({
+        email: req.body.email
+      });
+      if (user) {
+        if (user.is_verified) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Email is already verified")
+            });
+        }
+        delete user.email_verify_token;
+        let email_verify_code = randomize('0', 6);
+        await Users
+          .update({
+            email: user.email
+          })
+          .set({
+            email_verify_token: email_verify_code
+          });
+
+        let slug = "";
+        if (req.body.device_type == 1 || req.body.device_type == 2) {
+          slug = "signup_for_mobile"
+        } else {
+          slug = "signup_for_web"
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+            token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
+            tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+              email_verify_code : email_verify_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: req.body.email,
+              subject: "Signup Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("verification code")
+                });
+              }
+            })
+      } else {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
+      }
+    } else {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
+    }
+  },
+  // Forgot Two Factors
+  forgotTwofactors: async function (req, res) {
+    if (req.body.email) {
+      let user = await Users.findOne({
+        email: req.body.email
+      });
+
+      if (user) {
+        if (!user.is_verified) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Account_Not_Verified")
+            });
+        }
+
+        let check_exist = await UserForgotTwofactors.findOne({ user_id: user.id, status: true });
+        if (check_exist != undefined) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Twofactors already requested")
+            });
+        }
+
+        req
+          .file('uploaded_file')
+          .upload(async function (err, uploadedFiles) {
+            if (uploadedFiles.length > 0) {
+              let filename = uploadedFiles[0].filename;
+              let extention = filename.split('.').pop();
+              var valid_extention = ["jpg", "jpeg", "png"];
+              if (valid_extention.indexOf(extention) < 0) {
+                return res
+                  .status(401)
+                  .json({
+                    "status": 401,
+                    "err": sails.__("Extention required")
+                  });
+              }
+              var name = filename.substring(filename.indexOf("."));
+              let timestamp = new Date()
+                .getTime()
+                .toString();
+              var uploadFileName = timestamp + name;
+              var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'temp_users_images_twofactors/' + uploadFileName);
+              var store_filename = 'temp_users_images_twofactors/' + uploadFileName;
+              var data = {
+                user_id: user.id,
+                uploaded_file: store_filename,
+                status: "open"
+              };
+              var add = await UserForgotTwofactors.create(data);
+              return res.json({
+                "status": 200,
+                "message": sails.__("Your request for twofactors is sent")
+              });
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "err": sails.__("Image Required")
+                });
+            }
+          });
+      } else {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__("This email id is not registered with us.")
+          });
+      }
+    } else {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Email is required.")
+        });
+    }
+  },
+
 };

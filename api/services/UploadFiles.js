@@ -10,7 +10,7 @@ var mime = require('mime');
 var S3BucketName = "production-static-asset";
 
 function UploadFiles() {
-  return { upload: _upload };
+  return { upload: _upload, deleteFile : _deleteFile };
 
   function _upload(filePath, uploadFileName) {
     return new Promise((resolve, reject) => {
@@ -43,6 +43,22 @@ function UploadFiles() {
         });
     })
   }
+
+  // Delete File from S3
+  function _deleteFile( key ){
+    return new Promise((resolve, reject) => {
+      var params = {  Bucket: S3BucketName, Key: key };
+      s3.deleteObject(params, function (err, rese) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rese)
+        }
+      });
+    })
+  }
 }
 
-module.exports = UploadFiles();
+
+
+module.exports =  UploadFiles();

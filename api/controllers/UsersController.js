@@ -11,6 +11,7 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 var csc = require('country-state-city');
+const moment = require('moment');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -220,16 +221,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: existedUser.email,
-              subject: "New Email Confirmation"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("confirm otp")
-                });
-              }
-            })
+            to: existedUser.email,
+            subject: "New Email Confirmation"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("confirm otp")
+              });
+            }
+          })
       }
     } catch (error) {
       return res
@@ -300,17 +301,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: requested_email,
-                subject: "New Email Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "new_email_token": re_new_email_token,
-                    "message": sails.__("verification link")
-                  });
-                }
-              })
+              to: requested_email,
+              subject: "New Email Verification"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "new_email_token": re_new_email_token,
+                  "message": sails.__("verification link")
+                });
+              }
+            })
         } else {
           return res
             .status(400)
@@ -369,12 +370,52 @@ module.exports = {
             .helpers
             .jwtIssue(user.id);
 
-          return res.json({
-            "status": 200,
-            user,
-            token,
-            "message": "Welcome back, " + user.first_name + "!"
-          });
+          // Send email if Security Feature Enabled
+          if (user.security_feature == true) {
+            var slug = "new_email_verification_sf";
+            await Users
+              .update({
+                id: user.id
+              })
+              .set({
+                security_feature_expired_time: moment().utc().add(24, 'hours')
+              })
+
+            let template = await EmailTemplate.findOne({
+              slug
+            });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user.first_name
+              });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: user.email,
+                subject: "New Email Updated"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    user,
+                    token,
+                    "message": "Welcome back, " + user.first_name + "!"
+                  });
+                }
+              })
+          } else {
+            return res.json({
+              "status": 200,
+              user,
+              token,
+              "message": "Welcome back, " + user.first_name + "!"
+            });
+          }
         } else {
           return res
             .status(400)
@@ -451,7 +492,7 @@ module.exports = {
    * API for getting particular users IP list
    * Renders this api when user whitelist IP needs to be fetched
    *
-   * @param 
+   * @param
    *
    * @return <UserDetails>
    */
@@ -672,14 +713,14 @@ module.exports = {
                     .hubspot
                     .contacts
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                      ", " + user.street_address_2 :
-                      ''), user.country ?
-                        user.country :
-                        user_details["country"], user.state ?
-                        user.state :
-                        user_details["state"], user.city_town ?
-                        user.city_town :
-                        user_details["city_town"], user.postal_code);
+                        ", " + user.street_address_2 :
+                        ''), user.country ?
+                      user.country :
+                      user_details["country"], user.state ?
+                      user.state :
+                      user_details["state"], user.city_town ?
+                      user.city_town :
+                      user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -712,14 +753,14 @@ module.exports = {
                   .hubspot
                   .contacts
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                    ", " + user.street_address_2 :
-                    ''), user.country ?
-                      user.country :
-                      user_details["country"], user.state ?
-                      user.state :
-                      user_details["state"], user.city_town ?
-                      user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
+                    user.country :
+                    user_details["country"], user.state ?
+                    user.state :
+                    user_details["state"], user.city_town ?
+                    user.city_town :
+                    user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
@@ -807,10 +848,44 @@ module.exports = {
         .fetch();
 
       if (updatedUsers) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("password change success")
+        // Send email notification
+        var slug = "profile_change_password";
+        if (user_details.security_feature == true) {
+          slug = "profile_change_password_sf";
+          await Users
+            .update({
+              id: req.user.id
+            })
+            .set({
+              security_feature_expired_time: moment().utc()
+            })
+        }
+        let template = await EmailTemplate.findOne({
+          slug
         });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user_details.first_name
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+            to: (user_details.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("password change success")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -916,7 +991,7 @@ module.exports = {
       historyCount
     });
   },
-
+  // Setup two factor code
   setupTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -968,6 +1043,7 @@ module.exports = {
     }
   },
 
+  // Verify Two Factor
   verifyTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -989,27 +1065,6 @@ module.exports = {
           });
       }
 
-      let verified = speakeasy
-        .totp
-        .verify({
-          secret: user.twofactor_secret,
-          encoding: "base32",
-          token: otp
-        });
-      if (verified) {
-        await Users
-          .update({
-            id: user.id
-          })
-          .set({
-            email: user.email,
-            is_twofactor: true
-          });
-        return res.json({
-          status: 200,
-          message: sails.__("2 factor enabled")
-        });
-      }
       if (user.is_twofactor == true) {
         return res
           .status(401)
@@ -1018,12 +1073,70 @@ module.exports = {
             "err": sails.__("2 factor already enabled")
           });
       }
-      return res
-        .status(401)
-        .json({
-          err: sails.__("invalid otp")
+
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
         });
+
+      if (verified) {
+        var random_string = await sails
+          .helpers
+          .randomStringGenerator(10);
+
+        await Users
+          .update({
+            id: user.id
+          })
+          .set({
+            email: user.email,
+            is_twofactor: true,
+            twofactor_backup_code: random_string
+          });
+        // Send email notification
+        var slug = "2fa_enable_disable";
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: user.first_name,
+            status: "ENABLED"
+          })
+
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+            to: (user.email).trim(),
+            subject: "2 Factor Authentication Enabled"
+          }, function (err) {
+            console.log("err", err);
+            if (!err || err == null) {
+              return res.json({
+                status: 200,
+                message: sails.__("2 factor enabled"),
+                twofactor_backup_code:random_string
+              });
+            }
+          })
+      } else {
+        return res
+          .status(401)
+          .json({
+            err: sails.__("invalid otp")
+          });
+      }
+
     } catch (error) {
+      console.log("error", error);
       return res
         .status(500)
         .json({
@@ -1068,10 +1181,47 @@ module.exports = {
           is_twofactor: false,
           twofactor_secret: null
         });
-      return res.json({
-        status: 200,
-        message: sails.__("2 factor disabled")
+
+      // Send email notification
+      var slug = "2fa_enable_disable";
+      if (user.security_feature == true) {
+        slug = "2fa_enable_disable_sf";
+        await Users
+          .update({
+            id: user.id
+          })
+          .set({
+            security_feature_expired_time: moment().utc().add(24, 'hours')
+          })
+      }
+      let template = await EmailTemplate.findOne({
+        slug
       });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user.first_name,
+          status: "DISABLED"
+        })
+
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: (user.email).trim(),
+          subject: "2 Factor Authentication Disabled"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              status: 200,
+              message: sails.__("2 factor disabled")
+            });
+          }
+        })
+
     } catch (error) {
       return res
         .status(500)
@@ -1337,8 +1487,8 @@ module.exports = {
 
   getCountriesData: async function (req, res) {
     fetch(' https://restcountries.eu/rest/v2/all', {
-      method: "GET"
-    })
+        method: "GET"
+      })
       .then(resData => resData.json())
       .then(resData => {
         res.json({
@@ -1548,7 +1698,10 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
-      let existedUser = await Users.findOne({ deleted_at: null, email: user.email });
+      let existedUser = await Users.findOne({
+        deleted_at: null,
+        email: user.email
+      });
       if (existedUser == undefined) {
         let hubspotcontact = await sails
           .helpers
@@ -1634,5 +1787,185 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // Change Security Feature Status
+  changeSFStatus: async function (req, res) {
+    try {
+      let {
+        security_feature
+      } = req.body;
+      var update_data;
+      var message;
+      var status;
+      if (security_feature == true) {
+        update_data = {
+          security_feature: security_feature,
+          // security_feature_expired_time : moment().utc()
+        };
+        message = sails.__("SF Status Enabled");
+        status = "Enabled";
+      } else {
+        update_data = {
+          security_feature: security_feature,
+          // security_feature_expired_time : null
+        };
+        message = sails.__("SF Status Disabled");
+        status = "Disabled";
+      }
+      var user_details = await Users
+        .update({
+          id: req.user.id
+        })
+        .set(update_data)
+        .fetch();
+
+      // Send email notification
+      var slug = 'security_feature_enable_disable';
+      var template = await EmailTemplate.findOne({
+        slug
+      });
+      var emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: user_details[0].first_name,
+          status: status
+        })
+
+      await sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: (user_details[0].email).trim(),
+          subject: "Security Feature"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": message
+            });
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Change Whitelist IP status
+  changeWhitelistIPStatus: async function (req, res) {
+    let user_id = req.user.id;
+    let {
+      status
+    } = req.body;
+    let user = await Users.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        is_whitelist_ip: status
+      });
+    if (status == true) {
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip enabled")
+      });
+    } else {
+      res.json({
+        status: 200,
+        message: sails.__("Whitelist ip disabled")
+      });
+    }
+  },
+  // Regenrate Backup code
+  regenerateBackupcode: async function (req, res) {
+    let user_id = req.user.id;
+    let user = await Users.findOne({
+      id: user_id,
+      deleted_at: null
+    });
+
+    if (!user) {
+      res
+        .status(401)
+        .json({
+          "status": 401,
+          "err": sails.__("User not found")
+        });
+    }
+
+    if (!user.is_twofactor) {
+      res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Twofactor not enabled")
+        });
+    }
+
+    let {
+      otp
+    } = req.body;
+
+    let verified = speakeasy
+      .totp
+      .verify({
+        secret: user.twofactor_secret,
+        encoding: "base32",
+        token: otp
+      });
+    if( verified ){
+      var random_string = await sails
+        .helpers
+        .randomStringGenerator(10);
+      await Users
+        .update({
+          id: user_id
+        })
+        .set({
+          twofactor_backup_code: random_string
+        });
+        res.json({
+          status: 200,
+          message: sails.__("Twofactor backup code is generated"),
+          twofactor_backup_code: random_string
+        });
+    }else {
+      return res
+        .status(401)
+        .json({
+          status: 401,
+          err: sails.__("invalid otp")
+        });
+    }
+
+
+  },
 };
