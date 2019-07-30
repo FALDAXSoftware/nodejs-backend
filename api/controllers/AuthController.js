@@ -116,11 +116,16 @@ module.exports = {
         }
 
         var user_detail = await Users.findOne({
-          email: query.email,
-          deleted_at: null
+          email: query.email
         });
 
         if (user_detail) {
+          if (user_detail.deleted_at && user_detail.deleted_by == 2) {
+            return res.json(403, {
+              "status": 403,
+              err: sails.__('Deleted By Admin')
+            });
+          }
 
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
@@ -184,7 +189,7 @@ module.exports = {
                 //   }
                 // }
                 // If Enter 2fa backup code
-                if ( req.body.twofactor_backup_code ) {
+                if (req.body.twofactor_backup_code) {
                   if (!req.body.twofactor_backup_code) {
                     return res
                       .status(201)
@@ -193,15 +198,15 @@ module.exports = {
                         "err": sails.__("Please enter Twofa Backup code to continue")
                       });
                   }
-                  if( user_detail.twofactor_backup_code != req.body.twofactor_backup_code ){
+                  if (user_detail.twofactor_backup_code != req.body.twofactor_backup_code) {
                     return res
-                    .status(402)
-                    .json({
-                      "status": 402,
-                      "err": sails.__("Invalid twofa backup code")
-                    });
+                      .status(402)
+                      .json({
+                        "status": 402,
+                        "err": sails.__("Invalid twofa backup code")
+                      });
                   }
-                }else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+                } else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
                   if (!req.body.otp) {
                     return res
                       .status(201)
@@ -268,12 +273,12 @@ module.exports = {
 
                 var check_whitelist_data = await IPWhitelist.find(check_any_whitelistip);
 
-                if ( user_detail.is_whitelist_ip == true && check_whitelist_data.length > 0) {
+                if (user_detail.is_whitelist_ip == true && check_whitelist_data.length > 0) {
                   check_any_whitelistip.ip = ip;
 
                   var check_whitelist = await IPWhitelist.findOne(check_any_whitelistip);
                   if (check_whitelist != undefined) {
-                    if( check_whitelist.days != 0 ){
+                    if (check_whitelist.days != 0) {
                       var current_datetime = moment().valueOf();
                       if (current_datetime > check_whitelist.expire_time) {
                         return res
@@ -757,7 +762,7 @@ module.exports = {
                       "status": 200,
                       "message": sails.__("Password updated Successfully")
                     });
-                  }else{
+                  } else {
                     throw "Update password Error"
                   }
                 })
@@ -1025,8 +1030,8 @@ module.exports = {
             });
         }
 
-        let check_exist = await UserForgotTwofactors.findOne({user_id:user.id, status:true});
-        if( check_exist != undefined ) {
+        let check_exist = await UserForgotTwofactors.findOne({ user_id: user.id, status: true });
+        if (check_exist != undefined) {
           return res
             .status(500)
             .json({
@@ -1036,46 +1041,46 @@ module.exports = {
         }
 
         req
-        .file('uploaded_file')
-        .upload(async function (err, uploadedFiles) {
-          if (uploadedFiles.length > 0) {
-            let filename = uploadedFiles[0].filename;
-            let extention = filename.split('.').pop();
-            var valid_extention = ["jpg","jpeg","png"];
-            if( valid_extention.indexOf(extention) < 0  ){
+          .file('uploaded_file')
+          .upload(async function (err, uploadedFiles) {
+            if (uploadedFiles.length > 0) {
+              let filename = uploadedFiles[0].filename;
+              let extention = filename.split('.').pop();
+              var valid_extention = ["jpg", "jpeg", "png"];
+              if (valid_extention.indexOf(extention) < 0) {
+                return res
+                  .status(401)
+                  .json({
+                    "status": 401,
+                    "err": sails.__("Extention required")
+                  });
+              }
+              var name = filename.substring(filename.indexOf("."));
+              let timestamp = new Date()
+                .getTime()
+                .toString();
+              var uploadFileName = timestamp + name;
+              var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'temp_users_images_twofactors/' + uploadFileName);
+              var store_filename = 'temp_users_images_twofactors/' + uploadFileName;
+              var data = {
+                user_id: user.id,
+                uploaded_file: store_filename,
+                status: "open"
+              };
+              var add = await UserForgotTwofactors.create(data);
+              return res.json({
+                "status": 200,
+                "message": sails.__("Your request for twofactors is sent")
+              });
+            } else {
               return res
-                .status(401)
+                .status(500)
                 .json({
-                  "status": 401,
-                  "err": sails.__("Extention required")
+                  "status": 500,
+                  "err": sails.__("Image Required")
                 });
             }
-            var name = filename.substring(filename.indexOf("."));
-            let timestamp = new Date()
-              .getTime()
-              .toString();
-            var uploadFileName = timestamp + name;
-            var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'temp_users_images_twofactors/' + uploadFileName);
-            var store_filename = 'temp_users_images_twofactors/'+uploadFileName;
-            var data = {
-              user_id:user.id,
-              uploaded_file:store_filename,
-              status: "open"
-            };
-            var add = await UserForgotTwofactors.create( data );
-            return res.json({
-              "status": 200,
-              "message": sails.__("Your request for twofactors is sent")
-            });
-          }else{
-            return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Image Required")
-            });
-          }
-        });
+          });
       } else {
         return res
           .status(401)

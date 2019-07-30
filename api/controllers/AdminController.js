@@ -427,11 +427,15 @@ module.exports = {
         ip = req.ip;
       }
 
+      let today = new Date();
+      let dd = String(today.getDate()).padStart(2, '0');
+      let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: new Date(),
+        datetime: dd + '/' + mm + '/' + today.getFullYear(),
         browser: req.headers['user-agent'],
         ip
       })
@@ -1647,7 +1651,7 @@ module.exports = {
     }
   },
   // Get Twofactors requests
-  getTwoFactorsRequests : async function( req, res ){
+  getTwoFactorsRequests: async function (req, res) {
     try {
       let user_id = req.user.id;
       let adminData = await Admin.findOne({
@@ -1663,7 +1667,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if( adminData.role_id != 1 ){
+      if (adminData.role_id != 1) {
         res
           .status(403)
           .json({
@@ -1673,24 +1677,24 @@ module.exports = {
       }
 
       let data = {
-        status:"open"
+        status: "open"
       };
       var get_data = await UserForgotTwofactors.getOpenRequests();
-      if( get_data.rowCount > 0 ){
+      if (get_data.rowCount > 0) {
         return res.json({
           "status": 200,
           "message": sails.__("Twofactors lists"),
           "data": get_data.rows
         });
-      }else{
+      } else {
         return res.json({
           "status": 200,
           "message": sails.__("No record found"),
           "data": []
         });
       }
-    }catch( err ){
-      console.log("err",err);
+    } catch (err) {
+      console.log("err", err);
       return res
         .status(500)
         .json({
@@ -1717,7 +1721,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if( adminData.role_id != 1 ){
+      if (adminData.role_id != 1) {
         res
           .status(403)
           .json({
@@ -1726,8 +1730,8 @@ module.exports = {
           });
       }
       let { id } = req.body;
-      var get_data = await UserForgotTwofactors.findOne({id:id});
-      if( !get_data ){
+      var get_data = await UserForgotTwofactors.findOne({ id: id });
+      if (!get_data) {
         return res
           .status(500)
           .json({
@@ -1736,7 +1740,7 @@ module.exports = {
           });
       }
 
-      if( get_data.status == "closed" ){
+      if (get_data.status == "closed") {
         return res
           .status(500)
           .json({
@@ -1746,11 +1750,11 @@ module.exports = {
       }
       // Disable user's 2fa
       var user = await Users
-        .update({id:get_data.user_id})
+        .update({ id: get_data.user_id })
         .set({
-          is_twofactor:false,
-          twofactor_secret:"",
-          security_feature:true,
+          is_twofactor: false,
+          twofactor_secret: "",
+          security_feature: true,
           security_feature_expired_time: moment().utc().add(24, 'hours')
         }).fetch();
 
@@ -1759,8 +1763,8 @@ module.exports = {
       }
 
       await UserForgotTwofactors
-        .update({id:get_data.id})
-        .set({status:"closed"});
+        .update({ id: get_data.id })
+        .set({ status: "closed" });
 
       let slug = "twofactor_request_email_approved";
       let template = await EmailTemplate.findOne({
