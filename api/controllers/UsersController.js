@@ -1797,7 +1797,8 @@ module.exports = {
       var update_data;
       var message;
       var status;
-      if (security_feature == true) {
+      // security_feature = new Boolean(security_feature);
+      if (security_feature == true || security_feature == "true") {
         update_data = {
           security_feature: security_feature,
           // security_feature_expired_time : moment().utc()
@@ -1892,7 +1893,7 @@ module.exports = {
       .set({
         is_whitelist_ip: status
       });
-    if (status == true) {
+    if (status == true || status == "true") {
       res.json({
         status: 200,
         message: sails.__("Whitelist ip enabled")
