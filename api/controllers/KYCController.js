@@ -377,6 +377,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       }
+      console.log('query', query)
 
       if (start_date && end_date) {
         query += whereAppended ?
