@@ -16,10 +16,10 @@ module.exports = {
     var client = new twilio(accountSid, authToken);
 
     client.messages.create({
-        body: 'Hello from Node',
-        to: '+919727331128', // Text this number
-        from: '+13522689310' // From a valid Twilio number
-      })
+      body: 'Hello from Node',
+      to: '+919727331128', // Text this number
+      from: '+13522689310' // From a valid Twilio number
+    })
       .then((message) => console.log('?>>>>>>>>>>>>', message));
   },
 
@@ -266,11 +266,11 @@ module.exports = {
         where: {
           deleted_at: null,
           created_at: [{
-              '>=': dataBefore
-            },
-            {
-              '<=': today
-            }
+            '>=': dataBefore
+          },
+          {
+            '<=': today
+          }
           ]
         }
       })
@@ -313,25 +313,27 @@ module.exports = {
           }
         }
       }
+      console.log('>>>>>>>>q dashboard', q)
       let kyc_approved = await KYC.count({
-        is_approve: true,
-        deleted_at: null,
-        webhook_response: 'ACCEPT',
+        //is_approve: true,
+        //deleted_at: null,
+        direct_response: 'ACCEPT',
         ...q
       })
       let total_kyc = await KYC.count({
-        deleted_at: null,
+        //deleted_at: null,
         ...q
       })
       let kyc_disapproved = await KYC.count({
-        is_approve: false,
-        deleted_at: null,
+        //is_approve: false,
+        direct_response: 'DENY',
+        //deleted_at: null,
         ...q
       })
       let kyc_pending = await KYC.count({
-        deleted_at: null,
-        webhook_response: null,
-        is_approve: true,
+        //deleted_at: null,
+        direct_response: 'REVIEW',
+        //is_approve: true,
         ...q
       })
 

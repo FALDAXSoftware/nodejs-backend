@@ -12,8 +12,8 @@ module.exports = {
         limit,
         data,
         legality,
-        sort_col,
-        sort_order
+        sortCol,
+        sortOrder
       } = req.allParams();
       let query = " from countries";
       if ((data && data != "") || (legality && legality != "")) {
@@ -32,11 +32,11 @@ module.exports = {
         }
       }
       countQuery = query;
-      if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend'
           ? 'DESC'
           : 'ASC');
-        query += " ORDER BY " + sort_col + " " + sortVal;
+        query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
       }
@@ -64,7 +64,6 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log(err)
       return res
         .status(500)
         .json({
@@ -109,7 +108,6 @@ module.exports = {
 
       let stateCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       stateCount = stateCount.rows[0].count;
-
       if (stateData) {
         return res.json({
           "status": 200,
