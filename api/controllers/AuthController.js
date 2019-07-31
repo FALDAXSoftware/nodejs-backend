@@ -250,11 +250,15 @@ module.exports = {
                   ip = req
                     .headers['x-forwarded-for']
                     .split(",")[0];
+                  console.log("first");
                 } else if (req.connection && req.connection.remoteAddress) {
                   ip = req.connection.remoteAddress;
+                  console.log("second");
                 } else {
+                  console.log("third");
                   ip = req.ip;
                 }
+                console.log("IP Address",ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
                 //   return res
