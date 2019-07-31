@@ -106,7 +106,7 @@ async function checkWhitelistValid(opts) {
 
 async function addWhitelist(opts) {
   var object = {
-    user_id: opts.id,
+    user_id: opts.user_id,
     user_type: opts.user_type,
     ip: opts.ip,
     deleted_at: null

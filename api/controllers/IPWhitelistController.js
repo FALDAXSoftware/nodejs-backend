@@ -44,6 +44,7 @@ module.exports = {
       }
 
       var add_data = await IPWhitelist.addWhitelist(addValue);
+
       if (add_data) {
         return res.status(401).json({
           status: 500,
