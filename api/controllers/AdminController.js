@@ -430,12 +430,13 @@ module.exports = {
       let today = new Date();
       let dd = String(today.getDate()).padStart(2, '0');
       let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      let time = String(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds())
 
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: dd + '/' + mm + '/' + today.getFullYear(),
+        datetime: dd + '-' + mm + '-' + today.getFullYear() + ' ' + time,
         browser: req.headers['user-agent'],
         ip
       })
@@ -1831,8 +1832,8 @@ module.exports = {
           security_feature_expired_time: moment().utc().add(24, 'hours')
         }).fetch();
 
-      if( get_data.uploaded_file ){
-        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      if (get_data.uploaded_file) {
+        await UploadFiles.deleteFile(get_data.uploaded_file); // delete the file
       }
 
       await UserForgotTwofactors
@@ -1891,7 +1892,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if( adminData.role_id != 1 ){
+      if (adminData.role_id != 1) {
         res
           .status(403)
           .json({
@@ -1899,9 +1900,9 @@ module.exports = {
             "err": sails.__("Unauthorized Access")
           });
       }
-      let { id,reason } = req.body;
-      var get_data = await UserForgotTwofactors.findOne({id:id});
-      if( !get_data ){
+      let { id, reason } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({ id: id });
+      if (!get_data) {
         return res
           .status(500)
           .json({
@@ -1910,7 +1911,7 @@ module.exports = {
           });
       }
 
-      if( get_data.status == "closed" ){
+      if (get_data.status == "closed") {
         return res
           .status(500)
           .json({
@@ -1920,15 +1921,15 @@ module.exports = {
       }
 
       await UserForgotTwofactors
-        .update({id:get_data.id})
-        .set({status:"rejected",reason:reason});
+        .update({ id: get_data.id })
+        .set({ status: "rejected", reason: reason });
 
-      if( get_data.uploaded_file ){
-        await UploadFiles.deleteFile( get_data.uploaded_file ); // delete the file
+      if (get_data.uploaded_file) {
+        await UploadFiles.deleteFile(get_data.uploaded_file); // delete the file
       }
 
       var user = await Users
-        .findOne({id:get_data.user_id})
+        .findOne({ id: get_data.user_id })
       let slug = "twofactor_request_email_rejected";
       let template = await EmailTemplate.findOne({
         slug
@@ -1939,7 +1940,7 @@ module.exports = {
         .utilities
         .formatEmail(template.content, {
           recipientName: user.first_name,
-          reason:reason
+          reason: reason
         });
       sails
         .hooks
@@ -1958,7 +1959,7 @@ module.exports = {
             }
           })
     } catch (err) {
-      console.log("err",err);
+      console.log("err", err);
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
