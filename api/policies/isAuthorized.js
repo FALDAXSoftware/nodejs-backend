@@ -5,6 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Policies
  */
 
+var requestIp = require('request-ip');
+
 module.exports = async function (req, res, next) {
 
   var token;
@@ -96,16 +98,17 @@ module.exports = async function (req, res, next) {
               err: 'Your User has been deleted.'
             });
         } else {
-          var ip;
-          if (req.headers['x-forwarded-for']) {
-            ip = req
-              .headers['x-forwarded-for']
-              .split(",")[0];
-          } else if (req.connection && req.connection.remoteAddress) {
-            ip = req.connection.remoteAddress;
-          } else {
-            ip = req.ip;
-          }
+          var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+          // var ip = clientIp;
+          // if (req.headers['x-forwarded-for']) {
+          //   ip = req
+          //     .headers['x-forwarded-for']
+          //     .split(",")[0];
+          // } else if (req.connection && req.connection.remoteAddress) {
+          //   ip = req.connection.remoteAddress;
+          // } else {
+          //   ip = req.ip;
+          // }
           // Check if IP's session is not timeout
           var opts = {
             id : userData.id,

@@ -16,6 +16,8 @@
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 const moment = require('moment');
+var requestIp = require('request-ip');
+
 
 module.exports = {
   // Verify User Api
@@ -106,6 +108,8 @@ module.exports = {
 
   login: async function (req, res) {
     try {
+      // var clientIp = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+      // console.log("Client IP >>>>>>>>>>>>", clientIp);
       if (req.body.email && req.body.password) {
         let query = {
           email: req
@@ -245,19 +249,20 @@ module.exports = {
                   .helpers
                   .jwtIssue(user_detail.id);
                 // Login History Save
-                var ip;
-                if (req.headers['x-forwarded-for']) {
-                  ip = req
-                    .headers['x-forwarded-for']
-                    .split(",")[0];
-                  console.log("first");
-                } else if (req.connection && req.connection.remoteAddress) {
-                  ip = req.connection.remoteAddress;
-                  console.log("second");
-                } else {
-                  console.log("third");
-                  ip = req.ip;
-                }
+                // var ip;
+                // if (req.headers['x-forwarded-for']) {
+                //   ip = req
+                //     .headers['x-forwarded-for']
+                //     .split(",")[0];
+                //   console.log("first");
+                // } else if (req.connection && req.connection.remoteAddress) {
+                //   ip = req.connection.remoteAddress;
+                //   console.log("second");
+                // } else {
+                //   console.log("third");
+                //   ip = req.ip;
+                // }
+                var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
                 console.log("IP Address",ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
@@ -429,16 +434,17 @@ module.exports = {
 
   verifyNewIp: async function (req, res) {
     try {
-      var ip;
-      if (req.headers['x-forwarded-for']) {
-        ip = req
-          .headers['x-forwarded-for']
-          .split(",")[0];
-      } else if (req.connection && req.connection.remoteAddress) {
-        ip = req.connection.remoteAddress;
-      } else {
-        ip = req.ip;
-      }
+      // var ip;
+      // if (req.headers['x-forwarded-for']) {
+      //   ip = req
+      //     .headers['x-forwarded-for']
+      //     .split(",")[0];
+      // } else if (req.connection && req.connection.remoteAddress) {
+      //   ip = req.connection.remoteAddress;
+      // } else {
+      //   ip = req.ip;
+      // }
+      var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
       if (req.body.token) {
 
         let user_detail = await Users.findOne({

@@ -1886,24 +1886,59 @@ module.exports = {
         });
     }
 
-    await Users
+    var user_details = await Users
       .update({
         id: user.id
       })
       .set({
         is_whitelist_ip: status
-      });
-    if (status == true || status == "true") {
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip enabled")
-      });
-    } else {
-      res.json({
-        status: 200,
-        message: sails.__("Whitelist ip disabled")
-      });
-    }
+      })
+      .fetch();
+
+    // Send email notification
+    var slug = 'own_whitelist_enable_disable';
+    var template = await EmailTemplate.findOne({
+      slug
+    });
+    var emailContent = await sails
+      .helpers
+      .utilities
+      .formatEmail(template.content, {
+        recipientName: user_details[0].first_name,
+        status: (status == true || status == "true" ? "Enabled" : "Disabled")
+      })
+
+    await sails
+      .hooks
+      .email
+      .send("general-email", {
+        content: emailContent
+      }, {
+          to: (user_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
+            } else {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
+            }
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
+
   },
   // Regenrate Backup code
   regenerateBackupcode: async function (req, res) {
