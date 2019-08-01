@@ -1578,7 +1578,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      await Admin
+      var admin_details = await Admin
         .update({
           id: adminData.id,
           deleted_at: null
@@ -1587,17 +1587,52 @@ module.exports = {
           is_whitelist_ip: status,
           email: adminData.email
         })
-      if (status == true) {
-        res.json({
-          status: 200,
-          message: sails.__("Whitelist ip enabled")
-        });
-      } else {
-        res.json({
-          status: 200,
-          message: sails.__("Whitelist ip disabled")
-        });
-      }
+        .fetch();
+
+      // Send email notification
+      var slug = 'own_whitelist_enable_disable';
+      var template = await EmailTemplate.findOne({
+        slug
+      });
+      var emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: admin_details[0].first_name,
+          status: (status == true || status == "true" ? "Enabled" : "Disabled")
+        })
+
+      await sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
+            } else {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
+            }
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
+
     } catch (err) {
       return res
         .status(500)
@@ -1616,7 +1651,6 @@ module.exports = {
         id: user_id,
         deleted_at: null
       });
-      console.log('user', user)
 
       if (!user) {
         res
@@ -1627,27 +1661,66 @@ module.exports = {
           });
       }
 
-      await Admin
+      var admin_details = await Admin
         .update({
           id: user.id
         })
         .set({
           is_whitelist_ip: status,
           email: user.email
-        });
-      if (status == true) {
-        res.json({
-          status: 200,
-          message: sails.__("Whitelist ip enabled")
-        });
-      } else {
-        res.json({
-          status: 200,
-          message: sails.__("Whitelist ip disabled")
-        });
-      }
+        })
+        .fetch();
+
+      // Send email notification
+      var slug = 'admin_whitelist_enable_disable';
+      var template = await EmailTemplate.findOne({
+        slug
+      });
+      var emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: admin_details[0].first_name,
+          status: (status == true || status == "true" ? "Enabled" : "Disabled")
+        })
+
+      await sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
+            } else {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
+            }
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
     } catch (err) {
-      console.log('err', err)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
   // Get Twofactors requests
