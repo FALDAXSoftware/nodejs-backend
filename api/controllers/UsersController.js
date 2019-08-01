@@ -1717,7 +1717,7 @@ module.exports = {
             hubspot_id: hubspotcontact,
             is_active: true,
             is_verified: true,
-            password: randomize('Aa0', 60)
+            password: user.password
           })
           .fetch();
         if (kyc_done == true) {
