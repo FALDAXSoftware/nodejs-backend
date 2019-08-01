@@ -313,7 +313,6 @@ module.exports = {
           }
         }
       }
-      console.log('>>>>>>>>q dashboard', q)
       let kyc_approved = await KYC.count({
         //is_approve: true,
         //deleted_at: null,
