@@ -16,6 +16,8 @@
 var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 const moment = require('moment');
+var requestIp = require('request-ip');
+
 
 module.exports = {
   // Verify User Api
@@ -106,6 +108,8 @@ module.exports = {
 
   login: async function (req, res) {
     try {
+      var clientIp = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+      console.log("Client IP >>>>>>>>>>>>", clientIp);
       if (req.body.email && req.body.password) {
         let query = {
           email: req
