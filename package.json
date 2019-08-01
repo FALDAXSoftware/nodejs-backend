@@ -26,6 +26,7 @@
     "html2plaintext": "^2.1.2",
     "image-to-base64": "^2.0.1",
     "iota.lib.js": "^0.5.1",
+    "ip": "^1.1.5",
     "jsonwebtoken": "^8.4.0",
     "kraken": "^0.4.0",
     "kraken-api": "^1.0.0",

@@ -25,6 +25,8 @@ var bcrypt = require('bcrypt');
 var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 const moment = require('moment');
+var requestIp = require('request-ip');
+
 
 module.exports = {
   // CMS Login
@@ -46,16 +48,17 @@ module.exports = {
 
           // Admin Active
           if (admin_details.is_active) {
-            var ip;
-            if (req.headers['x-forwarded-for']) {
-              ip = req
-                .headers['x-forwarded-for']
-                .split(",")[0];
-            } else if (req.connection && req.connection.remoteAddress) {
-              ip = req.connection.remoteAddress;
-            } else {
-              ip = req.ip;
-            }
+            // var ip;
+            var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+            // if (req.headers['x-forwarded-for']) {
+            //   ip = req
+            //     .headers['x-forwarded-for']
+            //     .split(",")[0];
+            // } else if (req.connection && req.connection.remoteAddress) {
+            //   ip = req.connection.remoteAddress;
+            // } else {
+            //   ip = req.ip;
+            // }
 
             // if (admin_details.whitelist_ip != null && admin_details.whitelist_ip != "" && admin_details.whitelist_ip.indexOf(ip) <= -1) {
             //   return res
@@ -416,16 +419,17 @@ module.exports = {
         })
         .fetch();
 
-      var ip;
-      if (req.headers['x-forwarded-for']) {
-        ip = req
-          .headers['x-forwarded-for']
-          .split(",")[0];
-      } else if (req.connection && req.connection.remoteAddress) {
-        ip = req.connection.remoteAddress;
-      } else {
-        ip = req.ip;
-      }
+        var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+      // var ip;
+      // if (req.headers['x-forwarded-for']) {
+      //   ip = req
+      //     .headers['x-forwarded-for']
+      //     .split(",")[0];
+      // } else if (req.connection && req.connection.remoteAddress) {
+      //   ip = req.connection.remoteAddress;
+      // } else {
+      //   ip = req.ip;
+      // }
 
       let today = new Date();
       let dd = String(today.getDate()).padStart(2, '0');
