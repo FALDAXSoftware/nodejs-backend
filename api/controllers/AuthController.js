@@ -353,33 +353,40 @@ module.exports = {
                     ip: ip
                   })
 
-                  sails
-                    .hooks
-                    .email
-                    .send("general-email", {
-                      content: emailContent
-                    }, {
-                      to: user_detail["email"],
-                      subject: "New Device Confirmation"
-                    }, function (err) {
-                      if (!err) {
-                        return res
-                          .status(202)
-                          .json({
-                            "status": 202,
-                            "err": sails.__("New device confirmation email sent to your email.")
-                          });
-                      } else {
-                        return res
-                          .status(500)
-                          .json({
-                            "status": 500,
-                            "err": sails.__("Something Wrong")
-                          });
-                      }
-                    });
+                  // sails
+                  //   .hooks
+                  //   .email
+                  //   .send("general-email", {
+                  //     content: emailContent
+                  //   }, {
+                  //       to: user_detail["email"],
+                  //       subject: "New Device Confirmation"
+                  //     }, function (err) {
+                  //       if (!err) {
+                  //         return res
+                  //           .status(202)
+                  //           .json({
+                  //             "status": 202,
+                  //             "err": sails.__("New device confirmation email sent to your email.")
+                  //           });
+                  //       } else {
+                  //         return res
+                  //           .status(500)
+                  //           .json({
+                  //             "status": 500,
+                  //             "err": sails.__("Something Wrong")
+                  //           });
+                  //       }
+                  //     });
                 }
               }
+            });
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              verifyToken,
+              "err": "Success"
             });
           // if (user_detail.is_verified == false) {   return res     .status(402) .json({
           // "status": 402, "err": "To login please activate your account" }); } if
@@ -853,28 +860,27 @@ module.exports = {
           token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
         })
 
-      sails
-        .hooks
-        .email
-        .send("general-email", {
-          content: emailContent
-        }, {
-          to: user_details.email,
-          subject: "Forgot Password"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Reset password link sent to your email successfully.")
-            });
-          }
-        })
-
-      // return res.json({
-      //   "status": 200,
-      //   "message": sails.__("Reset password link sent to your email successfully."),
-      //   reset_token
-      // });
+      // sails
+      //   .hooks
+      //   .email
+      //   .send("general-email", {
+      //     content: emailContent
+      //   }, {
+      //       to: user_details.email,
+      //       subject: "Forgot Password"
+      //     }, function (err) {
+      //       if (!err) {
+      //         return res.json({
+      //           "status": 200,
+      //           "message": sails.__("Reset password link sent to your email successfully.")
+      //         });
+      //       }
+      //     })
+      return res.json({
+        "status": 200,
+        "message": 'test',
+        reset_token
+      });
     } catch (error) {
       console.log('error', error)
       return res
