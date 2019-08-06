@@ -298,5 +298,6 @@
   "Twofactors lists": "Twofactors request's listed successfully.",
   "Twofactor request closed": "This request is already closed.",
   "Twofactor Request approved": "2 Factor Authentication is disabled for this user.",
-  "Deleted By Admin": "User has been deleted by Admin"
+  "Deleted By Admin": "User has been deleted by Admin",
+  "Wait for 24 hours": "Due to security feature you cannot withdraw coin for 24 hour"
 }

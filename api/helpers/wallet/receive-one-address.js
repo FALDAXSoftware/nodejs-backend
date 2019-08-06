@@ -34,10 +34,17 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     //Configuring bitgo
-    var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var bitgo = new BitGoJS.BitGo({
+      env: sails.config.local.BITGO_ENV_MODE,
+      accessToken: sails.config.local.BITGO_ACCESS_TOKEN
+    });
 
     //Fetching coin list
-    const coin = await Coins.findOne({ deleted_at: null, is_active: true, coin: inputs.coin });
+    const coin = await Coins.findOne({
+      deleted_at: null,
+      is_active: true,
+      coin: inputs.coin
+    });
 
 
     var walletData = await Wallet.findOne({
@@ -68,16 +75,21 @@ module.exports = {
         if (wallet) {
           // Here chain =0 means testnet Generating wallet address Create bitgo wallet
           // address
+          //Address generation for receiving coin
           let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
+          //Address generation for sending the coin
+          let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);
           let obj = {
             wallet_id: "wallet",
             coin_id: parseInt(coin.id),
             receive_address: address.address,
+            send_address: sendAddress.address,
             user_id: parseInt(inputs.user.id),
             balance: 0.0,
             placed_balance: 0.0,
             address_label: address_label
           }
+
           // walletArray.push({ ...obj });
           var data = await Wallet
             .create({

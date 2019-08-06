@@ -119,41 +119,7 @@ module.exports = {
         coin_code
       } = req.allParams();
       let user_id = req.user.id;
-      // check 2FA verified or not
-      var userData = await Users.findOne({
-        deleted_at: null,
-        id: user_id,
-        is_active: true
-      });
-      // if (userData.is_twofactor && userData.twofactor_secret) {
-      //   if (!req.body.otp) {
-      //     return res
-      //       .status(201)
-      //       .json({
-      //         "status": 201,
-      //         "err": sails.__("Please enter OTP to continue")
-      //       });
-      //   }
-      //   let verified = speakeasy
-      //     .totp
-      //     .verify({
-      //       secret: userData.twofactor_secret,
-      //       encoding: 'base32',
-      //       token: req.body.otp,
-      //       window: 2
-      //     });
-      //   if (!verified) {
-      //     return res
-      //       .status(402)
-      //       .json({
-      //         "status": 402,
-      //         "err": sails.__("invalid otp")
-      //       });
-      //   }
-      // }
-
-      // If security feature was disabled and expired time is within 24 hours, then warn user that not able to do this
-      var today = moment().format();
+      var today = moment().utc().format();
 
       var yesterday = moment()
         .startOf('day')
@@ -162,6 +128,50 @@ module.exports = {
       var monthlyData = moment()
         .startOf('month')
         .format();
+
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "err": sails.__("Please enter OTP to continue")
+            });
+        }
+      }
+
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user_detail.twofactor_secret,
+          encoding: 'base32',
+          token: req.body.otp,
+          window: 2
+        });
+
+      if (!verified) {
+        return res
+          .status(402)
+          .json({
+            "status": 402,
+            "err": sails.__("invalid otp")
+          });
+      }
+
+      if (userData.security_feature) {
+        if (moment(userData.security_feature_expired_time).isAfter(today)) {
+          return res.status(203).json({
+            "status": 203,
+            "err": sails.__("Wait for 24 hours")
+          })
+        }
+      }
 
       var limitAmount;
       var limitAmountMonthly;
@@ -276,11 +286,13 @@ module.exports = {
                       // to be added in the withdraw request table
                       if (req.body.confirm_for_wait === undefined) {
                         //Check for warm wallet minimum thresold
-                        console.log(warmWalletData.balance)
-                        console.log(coin.min_thresold);
-                        console.log(warmWalletData.balance >= coin.min_thresold)
+                        // console.log(warmWalletData.balance)
+                        // console.log(coin.min_thresold);
+                        // console.log(warmWalletData.balance >= coin.min_thresold)
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
+
+                          // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
@@ -289,7 +301,7 @@ module.exports = {
                           //Here remainning ebtry as well as address change
                           let walletHistory = {
                             coin_id: wallet.coin_id,
-                            source_address: sendWalletData.receiveAddress.address,
+                            source_address: wallet.send_address,
                             destination_address: destination_address,
                             user_id: user_id,
                             amount: amount,
@@ -318,7 +330,7 @@ module.exports = {
                           let addObject = {
                             coin_id: coin.id,
                             source_address: warmWalletData.receiveAddress.address,
-                            destination_address: sendWalletData.receiveAddress.address,
+                            destination_address: wallet.send_address,
                             user_id: user_id,
                             amount: amount,
                             transaction_type: 'send',
@@ -355,7 +367,7 @@ module.exports = {
                           //Insert request in withdraw request
                           var requestObject = {
                             source_address: warmWalletData.receiveAddress.address,
-                            destination_address: sendWalletData.receiveAddress.address,
+                            destination_address: wallet.send_address,
                             user_id: user_id,
                             amount: amount,
                             transaction_type: 'send',
