@@ -20,6 +20,10 @@ module.exports = {
       type: "string",
       columnName: "receive_address"
     },
+    send_address: {
+      type: "string",
+      columnName: "send_address"
+    },
     address_label: {
       type: "string",
       columnName: "address_label",

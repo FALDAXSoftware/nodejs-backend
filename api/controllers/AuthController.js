@@ -263,7 +263,7 @@ module.exports = {
                 //   ip = req.ip;
                 // }
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-                console.log("IP Address",ip);
+                console.log("IP Address", ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
                 //   return res
@@ -359,25 +359,25 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                        to: user_detail["email"],
-                        subject: "New Device Confirmation"
-                      }, function (err) {
-                        if (!err) {
-                          return res
-                            .status(202)
-                            .json({
-                              "status": 202,
-                              "err": sails.__("New device confirmation email sent to your email.")
-                            });
-                        } else {
-                          return res
-                            .status(500)
-                            .json({
-                              "status": 500,
-                              "err": sails.__("Something Wrong")
-                            });
-                        }
-                      });
+                      to: user_detail["email"],
+                      subject: "New Device Confirmation"
+                    }, function (err) {
+                      if (!err) {
+                        return res
+                          .status(202)
+                          .json({
+                            "status": 202,
+                            "err": sails.__("New device confirmation email sent to your email.")
+                          });
+                      } else {
+                        return res
+                          .status(500)
+                          .json({
+                            "status": 500,
+                            "err": sails.__("Something Wrong")
+                          });
+                      }
+                    });
                 }
               }
             });
@@ -553,23 +553,23 @@ module.exports = {
       .send("general-email", {
         content: emailContent
       }, {
-          to: user.email,
-          subject: "Authentication Code"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Authentication code sent to email successfully")
+        to: user.email,
+        subject: "Authentication Code"
+      }, function (err) {
+        if (!err) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Authentication code sent to email successfully")
+          });
+        } else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Something Wrong")
             });
-          } else {
-            return res
-              .status(500)
-              .json({
-                "status": 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        })
+        }
+      })
   },
 
   /**
@@ -678,16 +678,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: req.body.email,
-              subject: "Signup Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("verification code")
-                });
-              }
-            })
+            to: req.body.email,
+            subject: "Signup Verification"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("verification code")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -764,18 +764,18 @@ module.exports = {
               .send("general-email", {
                 content: emailContent
               }, {
-                  to: (user_details.email).trim(),
-                  subject: template.name
-                }, function (err) {
-                  if (!err) {
-                    return res.json({
-                      "status": 200,
-                      "message": sails.__("Password updated Successfully")
-                    });
-                  } else {
-                    throw "Update password Error"
-                  }
-                })
+                to: (user_details.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("Password updated Successfully")
+                  });
+                } else {
+                  throw "Update password Error"
+                }
+              })
 
           } else {
             throw "Update password Error"
@@ -859,16 +859,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user_details.email,
-            subject: "Forgot Password"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Reset password link sent to your email successfully.")
-              });
-            }
-          })
+          to: user_details.email,
+          subject: "Forgot Password"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Reset password link sent to your email successfully.")
+            });
+          }
+        })
 
       // return res.json({
       //   "status": 200,
@@ -996,16 +996,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: req.body.email,
-              subject: "Signup Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("verification code")
-                });
-              }
-            })
+            to: req.body.email,
+            subject: "Signup Verification"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("verification code")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -1040,7 +1040,10 @@ module.exports = {
             });
         }
 
-        let check_exist = await UserForgotTwofactors.findOne({ user_id: user.id, status: true });
+        let check_exist = await UserForgotTwofactors.findOne({
+          user_id: user.id,
+          status: true
+        });
         if (check_exist != undefined) {
           return res
             .status(500)
