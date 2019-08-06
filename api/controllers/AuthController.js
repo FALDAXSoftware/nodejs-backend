@@ -352,6 +352,13 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
+                  return res
+                    .status(200)
+                    .json({
+                      "status": 200,
+                      verifyToken,
+                      "err": "Success"
+                    });
 
                   // sails
                   //   .hooks
@@ -381,13 +388,7 @@ module.exports = {
                 }
               }
             });
-          return res
-            .status(200)
-            .json({
-              "status": 200,
-              verifyToken,
-              "err": "Success"
-            });
+
           // if (user_detail.is_verified == false) {   return res     .status(402) .json({
           // "status": 402, "err": "To login please activate your account" }); } if
           // (user_detail) {   if (user_detail.is_new_email_verified == false) { return
