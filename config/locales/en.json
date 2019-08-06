@@ -294,6 +294,7 @@
   "Twofactors already requested": "You have already requested.",
   "Extention required": "Only valid images(jpeg,png,jpg) are allowed.",
   "No record found": "No data found.",
+  "Record found": "Data found.",
   "Twofactors lists": "Twofactors request's listed successfully.",
   "Twofactor request closed": "This request is already closed.",
   "Twofactor Request approved": "2 Factor Authentication is disabled for this user.",

@@ -6,6 +6,7 @@
  */
 const BitGoJS = require('bitgo');
 var moment = require('moment');
+var speakeasy = require('speakeasy');
 
 module.exports = {
   // call currency conversion helper
@@ -70,12 +71,12 @@ module.exports = {
     // console.log("req",req);
 
     try {
-      let query = `SELECT 
-                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, 
-                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote 
-                    FROM coins 
-                    INNER JOIN wallets ON coins.id = wallets.coin_id 
-                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
+      let query = `SELECT
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id,
+                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote
+                    FROM coins
+                    INNER JOIN wallets ON coins.id = wallets.coin_id
+                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                     WHERE wallets.user_id = ${req.user.id} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
 
@@ -118,7 +119,40 @@ module.exports = {
         coin_code
       } = req.allParams();
       let user_id = req.user.id;
+      // check 2FA verified or not
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+      // if (userData.is_twofactor && userData.twofactor_secret) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(201)
+      //       .json({
+      //         "status": 201,
+      //         "err": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "err": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
+      // If security feature was disabled and expired time is within 24 hours, then warn user that not able to do this
       var today = moment().format();
 
       var yesterday = moment()
@@ -158,12 +192,6 @@ module.exports = {
           coin_id: coin.id
         })
         if (userTierData.length == 0 || userTierData == undefined) {
-
-          let userData = await Users.findOne({
-            deleted_at: null,
-            id: user_id,
-            is_active: true
-          });
           if (userData != undefined) {
             //If user wise limit is not found than search according to tier wise
             let limitTierData = await Limit.findOne({
