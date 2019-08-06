@@ -258,6 +258,10 @@ module.exports = {
         is_active: true,
         deleted_at: null
       });
+      let inactiveEmployeeCount = await Admin.count({
+        is_active: false,
+        deleted_at: null
+      });
       let jobsCount = await Jobs.count({
         is_active: true,
         deleted_at: null
@@ -360,6 +364,7 @@ module.exports = {
         illegalCountries,
         neutralCountries,
         employeeCount,
+        inactiveEmployeeCount,
         jobsCount,
         withdrawReqCount,
         kyc_approved,
