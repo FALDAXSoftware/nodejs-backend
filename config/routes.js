@@ -341,6 +341,7 @@ module.exports.routes = {
 
   // Whitelist ip Enable/Disable
   'post /users/whitelist-ip-status-change': 'UsersController.changeWhitelistIPStatus',
+  'get /users/get-security-status': 'UsersController.getSecurityStatus',
 
   // Two factor requests
   'post /admin/get-twofactors-requests':'AdminController.getTwoFactorsRequests',

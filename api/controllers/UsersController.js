@@ -466,7 +466,7 @@ module.exports = {
 
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteLsit IP Add Success"),
+          "message": sails.__("WhiteList IP Add Success"),
           "data": emailData
         });
       } else {
@@ -514,7 +514,7 @@ module.exports = {
       if (userData != undefined) {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteLsit IP info Success"),
+          "message": sails.__("WhiteList IP info Success"),
           "data": userData
         });
       } else {
@@ -2003,5 +2003,51 @@ module.exports = {
     }
 
 
+  },
+
+
+  /**
+   * API for getting User's security status 2fa/security feature
+   * Renders this api when user whitelist IP needs to be fetched
+   *
+   * @param
+   *
+   * @return <UserDetails>
+   */
+
+  getSecurityStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var userData = await Users.findOne({
+        select: [
+          'is_twofactor','security_feature'
+        ],
+        where: {
+          id: user_id
+        }
+      });
+
+      if (userData != undefined) {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Record found"),
+          "data": userData
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   },
 };
