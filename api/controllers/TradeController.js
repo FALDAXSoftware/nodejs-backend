@@ -10,22 +10,32 @@ module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * Market Sell Order
-    * Renders page for user to place order for market sell
-    *
-    * @param <symbol, side, order type and order quantity>
-    *
-    * @return <Success message for successfully fulfilled or error>
+   * Market Sell Order
+   * Renders page for user to place order for market sell
+   *
+   * @param <symbol, side, order type and order quantity>
+   *
+   * @return <Success message for successfully fulfilled or error>
    */
   marketSell: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity
+      } = req.allParams();
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Market Sell Order for order execution
         let market_sell_response = await sails
           .helpers
           .tradding
@@ -47,6 +57,7 @@ module.exports = {
           "message": sails.__("Order Success")
         });
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -95,22 +106,32 @@ module.exports = {
   },
 
   /**
-    * Market Buy Order
-    * Renders page for user to place order for market buy
-    *
-    * @param <symbol, side, order type and order quantity>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Market Buy Order
+   * Renders page for user to place order for market buy
+   *
+   * @param <symbol, side, order type and order quantity>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   marketBuy: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity } = req.allParams();
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity
+      } = req.allParams();
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Market Buy Order for order execution
         let market_buy_response = await sails
           .helpers
           .tradding
@@ -132,6 +153,7 @@ module.exports = {
           "message": sails.__("Order Success")
         });
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -173,22 +195,33 @@ module.exports = {
   },
 
   /**
-    * Limit Sell Order
-    * Renders page for user to place order for limit sell
-    *
-    * @param <symbol, side, order type and order quantity, Limit Price>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Limit Sell Order
+   * Renders page for user to place order for limit sell
+   *
+   * @param <symbol, side, order type and order quantity, Limit Price>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   limitSell: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity,
+        limit_price
+      } = req.allParams();
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Limit Sell Order for order execution
         let limit_sell_response = await sails
           .helpers
           .tradding
@@ -210,6 +243,7 @@ module.exports = {
           });
         }
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -251,23 +285,33 @@ module.exports = {
   },
 
   /**
-    * Limit Buy Order
-    * Renders page for user to place order for limit buy
-    *
-    * @param <symbol, side, order type and order quantity, Limit Price>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Limit Buy Order
+   * Renders page for user to place order for limit buy
+   *
+   * @param <symbol, side, order type and order quantity, Limit Price>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   limitBuy: async function (req, res) {
     try {
-      let { symbol, side, order_type, orderQuantity, limit_price } = req.allParams();
+      let {
+        symbol,
+        side,
+        order_type,
+        orderQuantity,
+        limit_price
+      } = req.allParams();
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
 
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Limit Buy Order for order execution
         let limit_buy_response = await sails
           .helpers
           .tradding
@@ -301,6 +345,7 @@ module.exports = {
           });
         }
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -342,13 +387,13 @@ module.exports = {
   },
 
   /**
-    * Stop Limit Buy Order
-    * Renders page for user to place order for stop limit buy
-    *
-    * @param <symbol, side, order type and order quantity, Limit Price, Stop Price>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Stop Limit Buy Order
+   * Renders page for user to place order for stop limit buy
+   *
+   * @param <symbol, side, order type and order quantity, Limit Price, Stop Price>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   stopLimitBuy: async function (req, res) {
     try {
@@ -361,10 +406,15 @@ module.exports = {
         stop_price
       } = req.allParams();
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Stop Limit Sell Order for order execution
         let stop_limit_buy_response = await sails
           .helpers
           .tradding
@@ -383,6 +433,7 @@ module.exports = {
           "message": sails.__("Order Palce Success")
         });
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -416,13 +467,13 @@ module.exports = {
   },
 
   /**
-    * Stop Limit Sell Order
-    * Renders page for user to place order for stop limit Sell
-    *
-    * @param <symbol, side, order type and order quantity, Limit Price, Stop Price>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Stop Limit Sell Order
+   * Renders page for user to place order for stop limit Sell
+   *
+   * @param <symbol, side, order type and order quantity, Limit Price, Stop Price>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   stopLimitSell: async function (req, res) {
     try {
@@ -435,10 +486,15 @@ module.exports = {
         stop_price
       } = req.allParams();
       let user_id = req.user.id;
+
+      //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
+        // Stop Limit Buy Order for order execution
         let stop_limit_sell_response = await sails
           .helpers
           .tradding
@@ -457,6 +513,7 @@ module.exports = {
           "message": sails.__("Order Palce Success")
         });
       } else {
+        // Whatever the response of user trade checking
         res.json({
           "status": 200,
           "message": sails.__(geo_fencing_data.msg)
@@ -490,16 +547,18 @@ module.exports = {
   },
 
   /**
-    * Method for fetching orders from pending book
-    *
-    * Renders execution for order already placed in pending book
-    *
-    * @param
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Method for fetching orders from pending book
+   *
+   * Renders execution for order already placed in pending book
+   *
+   * @param
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   stopLimitExecute: async function (req, res) {
+
+    // As stop limit order are initially added in the pending book they need to be checked everytime order executes if price is reached or not. So this function is for that execution
     await sails
       .helpers
       .tradding
@@ -508,18 +567,22 @@ module.exports = {
   },
 
   /**
-    * Cancel Pending order of limit or stop limit
-    *
-    * Renders page for user to cancel order that has already been placed
-    *
-    * @param <side, order type and order id>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Cancel Pending order of limit or stop limit
+   *
+   * Renders page for user to cancel order that has already been placed
+   *
+   * @param <side, order type and order id>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   cancelPendingOrder: async function (req, res) {
     try {
-      let { side, id, order_type } = req.allParams();
+      let {
+        side,
+        id,
+        order_type
+      } = req.allParams();
       let user_id = req.user.id;
       let cancel_pending_data = await sails
         .helpers
@@ -556,13 +619,13 @@ module.exports = {
   },
 
   /**
-    * Getting User wise trade history
-    * Renders page for user when user tries to see the history
-    *
-    * @param <symbol, side, From Date, To Date, User Id>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Getting User wise trade history
+   * Renders page for user when user tries to see the history
+   *
+   * @param <symbol, side, From Date, To Date, User Id>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   getUserHistory: async function (req, res) {
     try {
@@ -605,14 +668,14 @@ module.exports = {
   },
 
   /**
-    * Socket API
-    * Get User Wallet Balance
-    * Renders page for user at trade screen to get balance
-    *
-    * @param <room=symbol, userid>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Socket API
+   * Get User Wallet Balance
+   * Renders page for user at trade screen to get balance
+   *
+   * @param <room=symbol, userid>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   getUserWallet: async function (req, res) {
 
@@ -633,7 +696,10 @@ module.exports = {
                   "message": sails.__("error")
                 });
             } else {
-              let { crypto, currency } = await sails
+              let {
+                crypto,
+                currency
+              } = await sails
                 .helpers
                 .utilities
                 .getCurrencies(room);
@@ -666,14 +732,14 @@ module.exports = {
   },
 
   /**
-    * Socket API
-    * Get all trade Trade History on trade page
-    * Renders page for user at trade screen to get trade history
-    *
-    * @param <room=symbol, previous room ,userid>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Socket API
+   * Get all trade Trade History on trade page
+   * Renders page for user at trade screen to get trade history
+   *
+   * @param <room=symbol, previous room ,userid>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   getAllTradeHistory: async function (req, res) {
     var room = req.query.room;
@@ -705,7 +771,10 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -717,7 +786,11 @@ module.exports = {
                         .getTradeDetails(crypto, currency, 100);
 
                       if (tradeDetails) {
-                        return res.json({ status: 200, data: tradeDetails, "message": "Trade data retrived successfully." });
+                        return res.json({
+                          status: 200,
+                          data: tradeDetails,
+                          "message": "Trade data retrived successfully."
+                        });
                       }
                     }
                   });
@@ -735,7 +808,10 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -770,14 +846,14 @@ module.exports = {
   },
 
   /**
-    * Socket API
-    * Get User particular trade history for completed, pending and cancelled
-    * Renders page for user at trade screen to get user's trade that has been completed or pending or cancelled
-    *
-    * @param <room=symbol, userid, month, filter type>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Socket API
+   * Get User particular trade history for completed, pending and cancelled
+   * Renders page for user at trade screen to get user's trade that has been completed or pending or cancelled
+   *
+   * @param <room=symbol, userid, month, filter type>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   getUserTradeHistory: async function (req, res) {
     var room = req.query.room;
@@ -814,7 +890,10 @@ module.exports = {
                       if (month == undefined) {
                         month = 0;
                       }
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -860,7 +939,10 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -907,14 +989,14 @@ module.exports = {
   },
 
   /**
-    * Socket API
-    * Get Depth Chart
-    * Renders page for user at trade screen to get depth chart
-    *
-    * @param <room=symbol, Previous Room ,userid>
-    *
-    * @return <Success message for successfully fulfilled or error>
-  */
+   * Socket API
+   * Get Depth Chart
+   * Renders page for user at trade screen to get depth chart
+   *
+   * @param <room=symbol, Previous Room ,userid>
+   *
+   * @return <Success message for successfully fulfilled or error>
+   */
 
   getDepthchartData: async function (req, res) {
     var room = req.query.room;
@@ -944,7 +1026,10 @@ module.exports = {
                           "err": sails.__("Something Wrong")
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -973,7 +1058,10 @@ module.exports = {
                     "err": sails.__("Something Wrong")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -989,7 +1077,7 @@ module.exports = {
               }
             });
         }
-      } else { }
+      } else {}
     } catch (error) {
       return res
         .status(500)
@@ -1031,39 +1119,39 @@ module.exports = {
       }
 
       if (user_id) {
-        query += whereAppended
-          ? " AND "
-          : " WHERE ";
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
         whereAppended = true;
         query += " trade_history.user_id=" + user_id
       }
 
       if (t_type) {
-        query += whereAppended
-          ? " AND "
-          : " WHERE ";
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
 
         whereAppended = true;
         query += "  trade_history.side='" + t_type + "'";
       }
 
       if (start_date && end_date) {
-        query += whereAppended
-          ? " AND "
-          : " WHERE ";
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
 
         query += " trade_history.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
 

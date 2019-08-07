@@ -31,14 +31,17 @@ module.exports = {
     var authToken = sails.config.local.TWILLIO_ACCOUNT_AUTH_TOKEN; // Your Auth Token from www.twilio.com/console
     var user_id = inputs.user.id;
 
+    //Template for sending Email
     var bodyValue = await SmsTemplate.findOne({
       deleted_at: null,
       slug: inputs.slug,
       user_id: user_id
     })
 
+    //Twilio Integration
     var client = new twilio(accountSid, authToken);
 
+    //Sending SMS to users 
     client.messages.create({
         body: bodyValue.content,
         to: inputs.user.phone_number, // Text this number

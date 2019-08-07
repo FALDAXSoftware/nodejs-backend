@@ -135,40 +135,40 @@ module.exports = {
         is_active: true
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret) {
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
         if (!req.body.otp) {
           return res
             .status(202)
             .json({
               "status": 202,
-              "err": sails.__("Please enter OTP to continue")
+              "message": sails.__("Please enter OTP to continue")
             });
         }
-      }
 
-      let verified = speakeasy
-        .totp
-        .verify({
-          secret: user_detail.twofactor_secret,
-          encoding: 'base32',
-          token: req.body.otp,
-          window: 2
-        });
-
-      if (!verified) {
-        return res
-          .status(402)
-          .json({
-            "status": 402,
-            "err": sails.__("invalid otp")
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
           });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
       }
 
       if (userData.security_feature) {
         if (moment(userData.security_feature_expired_time).isAfter(today)) {
           return res.status(203).json({
             "status": 203,
-            "err": sails.__("Wait for 24 hours")
+            "message": sails.__("Wait for 24 hours")
           })
         }
       }
@@ -259,11 +259,11 @@ module.exports = {
           //If total amount + amount to be send is less than limited amount
           if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
-            //Checking monthly limit is greater than the total sum of month
+            //   //Checking monthly limit is greater than the total sum of month
             if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
-              // If total amount monthly + amount to be send is less than limited amount of
-              // month
+              //     // If total amount monthly + amount to be send is less than limited amount of
+              //     // month
               if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                 let wallet = await Wallet.findOne({
@@ -289,6 +289,7 @@ module.exports = {
                         // console.log(warmWalletData.balance)
                         // console.log(coin.min_thresold);
                         // console.log(warmWalletData.balance >= coin.min_thresold)
+                        console.log(warmWalletData.balance)
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
 
@@ -296,7 +297,8 @@ module.exports = {
 
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
-                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8);
+                          // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
+                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, amount * 1e8);
 
                           //Here remainning ebtry as well as address change
                           let walletHistory = {
@@ -374,8 +376,6 @@ module.exports = {
                             coin_id: coin.id,
                             is_executed: false
                           }
-
-                          console.log("Request Object >>>>>>>>", requestObject);
 
                           await WithdrawRequest.create({
                             ...requestObject
