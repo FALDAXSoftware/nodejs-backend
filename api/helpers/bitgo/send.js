@@ -59,12 +59,13 @@ module.exports = {
       },
       body: {
         address: inputs.address,
-        amount: inputs.amount,
+        amount: parseFloat(inputs.amount),
         walletPassphrase: sails.config.local.BITGO_PASSPHRASE
       },
       json: true
     }, function (err, httpResponse, body) {
       if (err) {
+        console.log(err)
         return exits.error(err);
       }
       if (body.error) {
@@ -76,4 +77,3 @@ module.exports = {
 
 
 };
-

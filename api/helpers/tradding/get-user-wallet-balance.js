@@ -74,6 +74,8 @@ module.exports = {
 
     var sellBookValue,
       buyBookValue;
+
+    // Fetching the fees for the user
     let fees = await sails
       .helpers
       .utilities

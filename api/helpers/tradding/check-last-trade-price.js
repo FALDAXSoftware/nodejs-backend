@@ -28,6 +28,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     // TODO
+    // Fetching trade history data on the basis of the currency and crypto
     var tradeHistoryCount = await sails
       .helpers
       .tradding
@@ -36,6 +37,7 @@ module.exports = {
 
     var lastTradePrice;
 
+    // If no trade history data has been found fetching details from the buy book and sell book and average of it
     if (tradeHistoryCount.length == 0) {
       var buyBook = await sails
         .helpers
@@ -55,6 +57,7 @@ module.exports = {
       lastTradePrice = ((buyBookData + sellBookData) / 2);
 
     } else {
+      // Fetching last trade price for particular pair from trade history
       var tradeData = await sails
         .helpers
         .tradding
