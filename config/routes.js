@@ -344,7 +344,10 @@ module.exports.routes = {
   'get /users/get-security-status': 'UsersController.getSecurityStatus',
 
   // Two factor requests
-  'post /admin/get-twofactors-requests':'AdminController.getTwoFactorsRequests',
-  'post /admin/approve-twofactors-request-status':'AdminController.approveUserTwofactorRequest',
-  'post /admin/reject-twofactors-request-status':'AdminController.rejectUserTwofactorRequest'
+  'post /admin/get-twofactors-requests': 'AdminController.getTwoFactorsRequests',
+  'post /admin/approve-twofactors-request-status': 'AdminController.approveUserTwofactorRequest',
+  'post /admin/reject-twofactors-request-status': 'AdminController.rejectUserTwofactorRequest',
+
+  //User Favourites routes
+  'get /users/get-favourite-list': 'UserFavouritesController.getFavourites'
 };
