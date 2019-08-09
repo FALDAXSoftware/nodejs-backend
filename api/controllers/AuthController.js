@@ -352,39 +352,39 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
-                  return res
-                    .status(200)
-                    .json({
-                      "status": 200,
-                      verifyToken,
-                      "err": "Success"
-                    });
+                  // return res
+                  //   .status(200)
+                  //   .json({
+                  //     "status": 200,
+                  //     verifyToken,
+                  //     "err": "Success"
+                  //   });
 
-                  // sails
-                  //   .hooks
-                  //   .email
-                  //   .send("general-email", {
-                  //     content: emailContent
-                  //   }, {
-                  //       to: user_detail["email"],
-                  //       subject: "New Device Confirmation"
-                  //     }, function (err) {
-                  //       if (!err) {
-                  //         return res
-                  //           .status(202)
-                  //           .json({
-                  //             "status": 202,
-                  //             "err": sails.__("New device confirmation email sent to your email.")
-                  //           });
-                  //       } else {
-                  //         return res
-                  //           .status(500)
-                  //           .json({
-                  //             "status": 500,
-                  //             "err": sails.__("Something Wrong")
-                  //           });
-                  //       }
-                  //     });
+                  sails
+                    .hooks
+                    .email
+                    .send("general-email", {
+                      content: emailContent
+                    }, {
+                      to: user_detail["email"],
+                      subject: "New Device Confirmation"
+                    }, function (err) {
+                      if (!err) {
+                        return res
+                          .status(202)
+                          .json({
+                            "status": 202,
+                            "err": sails.__("New device confirmation email sent to your email.")
+                          });
+                      } else {
+                        return res
+                          .status(500)
+                          .json({
+                            "status": 500,
+                            "err": sails.__("Something Wrong")
+                          });
+                      }
+                    });
                 }
               }
             });
