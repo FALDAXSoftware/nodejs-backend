@@ -419,7 +419,7 @@ module.exports = {
         })
         .fetch();
 
-        var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+      var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
       // var ip;
       // if (req.headers['x-forwarded-for']) {
       //   ip = req
@@ -634,7 +634,7 @@ module.exports = {
           slug
         });
         let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-          recipientName: admin_details.name,
+          recipientName: admin_details.first_name,
           token: sails.config.urlconf.CMS_URL + '/reset-password/' + reset_token,
         })
         sails
@@ -676,7 +676,9 @@ module.exports = {
       let {
         sortCol,
         sortOrder,
-        data
+        data,
+        page,
+        limit
       } = req.allParams();
       let query = " from admin WHERE deleted_at IS NULL ";
 
@@ -695,6 +697,9 @@ module.exports = {
       } else {
         query += " ORDER BY id DESC";
       }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
       let allEmployees = await sails.sendNativeQuery("Select *" + query, [])
 
       allEmployees = allEmployees.rows;
@@ -1613,30 +1618,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (admin_details[0].email).trim(),
-          subject: "IP Whitelist status changed"
-        }, function (err) {
-          if (!err) {
-            if (status == true || status == "true") {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip enabled")
-              });
+            to: (admin_details[0].email).trim(),
+            subject: "IP Whitelist status changed"
+          }, function (err) {
+            if (!err) {
+              if (status == true || status == "true") {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip enabled")
+                });
+              } else {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip disabled")
+                });
+              }
             } else {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip disabled")
-              });
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
             }
-          } else {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        })
+          })
 
     } catch (err) {
       return res
@@ -1695,30 +1700,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (admin_details[0].email).trim(),
-          subject: "IP Whitelist status changed"
-        }, function (err) {
-          if (!err) {
-            if (status == true || status == "true") {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip enabled")
-              });
+            to: (admin_details[0].email).trim(),
+            subject: "IP Whitelist status changed"
+          }, function (err) {
+            if (!err) {
+              if (status == true || status == "true") {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip enabled")
+                });
+              } else {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip disabled")
+                });
+              }
             } else {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip disabled")
-              });
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
             }
-          } else {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        })
+          })
     } catch (err) {
       return res
         .status(500)
