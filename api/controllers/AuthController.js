@@ -254,7 +254,6 @@ module.exports = {
                 //   ip = req
                 //     .headers['x-forwarded-for']
                 //     .split(",")[0];
-                //   console.log("first");
                 // } else if (req.connection && req.connection.remoteAddress) {
                 //   ip = req.connection.remoteAddress;
                 //   console.log("second");
@@ -263,7 +262,6 @@ module.exports = {
                 //   ip = req.ip;
                 // }
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-                console.log("IP Address", ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
                 //   return res
@@ -352,39 +350,39 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
-                  return res
-                    .status(200)
-                    .json({
-                      "status": 200,
-                      verifyToken,
-                      "err": "Success"
-                    });
+                  // return res
+                  //   .status(200)
+                  //   .json({
+                  //     "status": 200,
+                  //     verifyToken,
+                  //     "err": "Success"
+                  //   });
 
-                  // sails
-                  //   .hooks
-                  //   .email
-                  //   .send("general-email", {
-                  //     content: emailContent
-                  //   }, {
-                  //       to: user_detail["email"],
-                  //       subject: "New Device Confirmation"
-                  //     }, function (err) {
-                  //       if (!err) {
-                  //         return res
-                  //           .status(202)
-                  //           .json({
-                  //             "status": 202,
-                  //             "err": sails.__("New device confirmation email sent to your email.")
-                  //           });
-                  //       } else {
-                  //         return res
-                  //           .status(500)
-                  //           .json({
-                  //             "status": 500,
-                  //             "err": sails.__("Something Wrong")
-                  //           });
-                  //       }
-                  //     });
+                  sails
+                    .hooks
+                    .email
+                    .send("general-email", {
+                      content: emailContent
+                    }, {
+                      to: user_detail["email"],
+                      subject: "New Device Confirmation"
+                    }, function (err) {
+                      if (!err) {
+                        return res
+                          .status(202)
+                          .json({
+                            "status": 202,
+                            "err": sails.__("New device confirmation email sent to your email.")
+                          });
+                      } else {
+                        return res
+                          .status(500)
+                          .json({
+                            "status": 500,
+                            "err": sails.__("Something Wrong")
+                          });
+                      }
+                    });
                 }
               }
             });

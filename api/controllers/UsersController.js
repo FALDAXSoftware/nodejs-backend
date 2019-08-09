@@ -902,7 +902,7 @@ module.exports = {
               id: req.user.id
             })
             .set({
-              security_feature_expired_time: moment().utc()
+              security_feature_expired_time: moment().utc().add(24, 'hours')
             })
         }
         let template = await EmailTemplate.findOne({
