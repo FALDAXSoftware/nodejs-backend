@@ -45,6 +45,7 @@ module.exports = {
 
       var add_data = await IPWhitelist.addWhitelist(addValue);
 
+      console.log(add_data)
       if (add_data) {
         return res.status(401).json({
           status: 500,
@@ -52,7 +53,18 @@ module.exports = {
         })
       } else {
         // Send email notification
-        var user_data = await Users.findOne({ id: user_id });
+        var user_data = await Users.findOne({
+          id: user_id
+        });
+
+        await Users
+          .update({
+            id: user_id,
+            deleted_at: null
+          })
+          .set({
+            is_whitelist_ip: true
+          })
         var slug = "new_ip_whitelist";
         if (user_data.security_feature == true) {
           slug = "new_ip_whitelist_sf";
@@ -81,16 +93,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_data.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.status(200).json({
-                  "status": 200,
-                  "message": sails.__("WhiteList IP Add Success")
-                });
-              }
-            })
+            to: (user_data.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.status(200).json({
+                "status": 200,
+                "message": sails.__("WhiteList IP Add Success")
+              });
+            }
+          })
       }
     } catch (err) {
       console.log(err);
