@@ -254,7 +254,6 @@ module.exports = {
                 //   ip = req
                 //     .headers['x-forwarded-for']
                 //     .split(",")[0];
-                //   console.log("first");
                 // } else if (req.connection && req.connection.remoteAddress) {
                 //   ip = req.connection.remoteAddress;
                 //   console.log("second");
