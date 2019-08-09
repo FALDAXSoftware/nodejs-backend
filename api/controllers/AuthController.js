@@ -263,7 +263,6 @@ module.exports = {
                 //   ip = req.ip;
                 // }
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-                console.log("IP Address", ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
                 //   return res
