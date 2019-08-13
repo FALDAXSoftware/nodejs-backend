@@ -244,6 +244,22 @@ module.exports = {
     return res.end();
   },
 
+  createWallet: async function (req, res) {
+
+    console.log(req.allParams())
+
+    var {
+      coin_code
+    } = req.allParams();
+
+    await sails
+      .helpers
+      .wallet
+      .create(coin_code);
+    return res.end();
+  },
+
+
   bitgoTest: async function (req, res) {
     await sails.helpers.bitgo.getWallet("tbtc", "5ce2deb441a6330d04e59f9b799a182a");
     // console.log(sails.config.local.BITGO_ACCESS_TOKEN);
