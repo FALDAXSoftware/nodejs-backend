@@ -149,7 +149,7 @@ module.exports = {
       let verified = speakeasy
         .totp
         .verify({
-          secret: user_detail.twofactor_secret,
+          secret: userData.twofactor_secret,
           encoding: 'base32',
           token: req.body.otp,
           window: 2
