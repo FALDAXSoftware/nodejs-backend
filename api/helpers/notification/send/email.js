@@ -29,18 +29,20 @@ module.exports = {
     // Temporary Email template is here, change to actual email template
     let slug = inputs.slug;
     let user = inputs.user;
+
+    //According to the slug find the email template
     let template = await EmailTemplate.findOne({
       slug: slug
     });
-    console.log("Email Template Value >>>>>>>>>>", template);
+    // console.log("Email Template Value >>>>>>>>>>", template);
+
+    //Sending Email to users for notification
     let emailContent = await sails
       .helpers
       .utilities
       .formatEmail(template.content, {
         recipientName: user.first_name
       });
-
-    console.log("Email Content >>>>>>>>>>", emailContent);
 
     sails
       .hooks

@@ -30,7 +30,10 @@ module.exports = {
 
   panicBtn: async function (req, res) {
     try {
-      let { otp, status } = req.allParams();
+      let {
+        otp,
+        status
+      } = req.allParams();
       let user_id = req.user.id;
       let user = await Admin.findOne({
         id: user_id,
@@ -213,12 +216,9 @@ module.exports = {
   },
 
   queryTest: async function (req, res) {
-    // console.log("Slug Value >>>>>>>>>>>>", req.allParams());
     let user_id = 1347;
     let slug = 'kyc'
     let data = await sails.helpers.notification.notify(user_id, slug);
-    //  await sails.helpers.notification.send.text("+917990841590", "test form twillio");
-    // console.log("done", user);
     return res.json({
       success: true
     });
@@ -243,6 +243,22 @@ module.exports = {
       .createAll();
     return res.end();
   },
+
+  createWallet: async function (req, res) {
+
+    console.log(req.allParams())
+
+    var {
+      coin_code
+    } = req.allParams();
+
+    await sails
+      .helpers
+      .wallet
+      .create(coin_code);
+    return res.end();
+  },
+
 
   bitgoTest: async function (req, res) {
     await sails.helpers.bitgo.getWallet("tbtc", "5ce2deb441a6330d04e59f9b799a182a");

@@ -69,7 +69,8 @@ module.exports.policies = {
     "callKrakenAPI": true,
     "bitgoTest": true,
     "testemail": true,
-    "queryTest": true
+    "queryTest": true,
+    "createWallet": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },

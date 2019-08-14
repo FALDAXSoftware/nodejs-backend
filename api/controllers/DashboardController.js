@@ -254,7 +254,10 @@ module.exports = {
       let neutralCountries = await Countries.count({
         legality: 3
       });
-      let employeeCount = await Admin.count({
+      let PartialCountries = await Countries.count({
+        legality: 4
+      });
+      let activeEmployeeCount = await Admin.count({
         is_active: true,
         deleted_at: null
       });
@@ -320,8 +323,8 @@ module.exports = {
       let kyc_approved = await KYC.count({
         //is_approve: true,
         //deleted_at: null,
+        ...q,
         direct_response: 'ACCEPT',
-        ...q
       })
       let total_kyc = await KYC.count({
         //deleted_at: null,
@@ -363,7 +366,8 @@ module.exports = {
         legalCountries,
         illegalCountries,
         neutralCountries,
-        employeeCount,
+        PartialCountries,
+        activeEmployeeCount,
         inactiveEmployeeCount,
         jobsCount,
         withdrawReqCount,
@@ -378,7 +382,6 @@ module.exports = {
         feesTransactionValue
       });
     } catch (e) {
-      console.log(e)
       return res
         .status(500)
         .json({

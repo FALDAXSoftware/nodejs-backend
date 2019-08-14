@@ -299,5 +299,8 @@
   "Twofactor request closed": "This request is already closed.",
   "Twofactor Request approved": "2 Factor Authentication is disabled for this user.",
   "Deleted By Admin": "User has been deleted by Admin",
-  "Wait for 24 hours": "Due to security feature you cannot withdraw coin for 24 hour"
+  "Wait for 24 hours": "Due to security feature you cannot withdraw coin for 24 hour",
+  "Favourites List Success": "Favourites List has been retrieved successfully",
+  "This email id is verified.": "Your email id has not been verified. Please verify your email id",
+  "Deleted By User": "User has been deleted. Please contact support."
 }

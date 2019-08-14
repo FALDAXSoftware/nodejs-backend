@@ -46,20 +46,27 @@ module.exports = {
       var user_id = parseInt(request.user_id);
       var requested_user_id = parseInt(request.requested_user_id);
 
+      // Fetching currency data value
       var currencyData = await Coins.findOne({
         deleted_at: null,
         is_active: true,
         coin: request.currency
       });
+
+      // Fetching cryptocurrency data value
       var cryptoData = await Coins.findOne({
         deleted_at: null,
         is_active: true,
         coin: request.settle_currency
       });
 
-      //Maker and Taker fee according to trades executed by user
+      var now = moment().format();
+      var resultData;
+      var yesterday = moment(now)
+        .subtract(1, 'months')
+        .format();
 
-      // var now = moment().format();
+      //Maker and Taker fee according to trades executed by user
 
       // var getCurrencyPriceData = await CurrencyConversion.findOne({
       //   coin_id: currencyData.id,
@@ -70,20 +77,32 @@ module.exports = {
       //   deleted_at: null
       // });
 
+      // Fetching Amount of trade done on the basis of time and usd value
       // var currencyAmount = await TradeHistory
       //   .sum('amount')
       //   .find({
       //     user_id: user_id,
       //     deleted_at: null,
-      //     currency: currencyData.coin
+      //     created_at :{
+      //        ">=" : yesterday  
+      //     },
+      //     created_at : {
+      //        "<=" : now 
+      //      }   
       //   });
 
+      // Fetching Amount of trade done on the basis of time and usd value
       // var cryptoAmount = await TradeHistory
       //   .sum('amount')
       //   .find({
       //     user_id: requested_user_id,
       //     deleted_at: null,
-      //     settle_currency: cryptoData.coin
+      //     created_at :{
+      //        ">=" : yesterday  
+      //     },
+      //     created_at : {
+      //        "<=" : now 
+      //      }   
       //   });
 
       // var userData = await User.findOne({
@@ -100,29 +119,39 @@ module.exports = {
       // var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[userData.fiat].price;
       // var totalCryptoAmount = cryptoAmount * getCurrencyPriceData.qoute[requestData.fiat].price;
 
+      // Fetching the fees on the basis of the total trade done in last 30 days
       // var currencyMakerFee = await Fees.findOne({
+      //   select : [
+      //      'maker_fee',
+      //      'taker_fee
+      //   ],
       //   where: {
       //     deleted_at: null,
       //     min_trade_volume: {
-      //       '<=': totalCurrencyAmount
-      //     },
-      //     max_trade_volume: {
       //       '>=': totalCurrencyAmount
       //     },
+      //     max_trade_volume: {
+      //       '<=': totalCurrencyAmount
+      //     },
       //     created_at: {
       //       '<=': now
       //     }
       //   }
       // });
 
+      // Fetching the fees on the basis of the total trade done in last 30 days 
       // var cryptoTakerFee = await Fees.findOne({
+      //   select : [
+      //      'maker_fee',
+      //      'taker_fee
+      //   ],
       //   where: {
       //     deleted_at: null,
       //     min_trade_volume: {
-      //       '<=': totalCryptoAmount
+      //       '>=': totalCryptoAmount
       //     },
       //     max_trade_volume: {
-      //       '>=': totalCryptoAmount
+      //       '<=': totalCryptoAmount
       //     },
       //     created_at: {
       //       '<=': now
@@ -130,10 +159,9 @@ module.exports = {
       //   }
       // });
 
-      var resultData;
-      var yesterday = moment(now)
-        .subtract(1, 'months')
-        .format();
+      //Just Replace inputs.makerFee and inputs.takerFee with following
+      // inputs.makerFee = cryptoTakerFee.maker_fee
+      // inputs.takerFee = currencyMakerFee.taker_fee
 
       var user_usd;
 
@@ -162,6 +190,7 @@ module.exports = {
         user_id: request.user_id
       });
 
+      // Calculating fees value on basis of the side and order executed
       if (request.side == "Buy") {
 
         // ---------------------------crypto-------------------------------------- //

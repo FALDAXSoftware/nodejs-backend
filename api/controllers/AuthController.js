@@ -123,9 +123,17 @@ module.exports = {
           email: query.email
         });
 
+        // console.log(user_detail);
+
         if (user_detail) {
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
-            return res.json(403, {
+            return res.status(403).json({
+              "status": 403,
+              err: sails.__('Deleted By Admin')
+            });
+          }
+          if (user_detail.deleted_at && user_detail.deleted_by == 1) {
+            return res.status(403).json({
               "status": 403,
               err: sails.__('Deleted By Admin')
             });
@@ -134,7 +142,7 @@ module.exports = {
           Users
             .comparePassword(query.password, user_detail, async function (err, valid) {
               if (err) {
-                return res.json(403, {
+                return res.status(403).json({
                   "status": 403,
                   err: 'Forbidden'
                 });
@@ -254,7 +262,6 @@ module.exports = {
                 //   ip = req
                 //     .headers['x-forwarded-for']
                 //     .split(",")[0];
-                //   console.log("first");
                 // } else if (req.connection && req.connection.remoteAddress) {
                 //   ip = req.connection.remoteAddress;
                 //   console.log("second");
@@ -263,7 +270,6 @@ module.exports = {
                 //   ip = req.ip;
                 // }
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-                console.log("IP Address", ip);
 
                 // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
                 //   return res
@@ -324,7 +330,7 @@ module.exports = {
                       req.body.device_token : null
                   });
 
-                  return res.json({
+                  return res.status(200).json({
                     status: 200,
                     user: user_detail,
                     token,
@@ -352,39 +358,39 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
-                  return res
-                    .status(200)
-                    .json({
-                      "status": 200,
-                      verifyToken,
-                      "err": "Success"
-                    });
+                  // return res
+                  //   .status(200)
+                  //   .json({
+                  //     "status": 200,
+                  //     verifyToken,
+                  //     "err": "Success"
+                  //   });
 
-                  // sails
-                  //   .hooks
-                  //   .email
-                  //   .send("general-email", {
-                  //     content: emailContent
-                  //   }, {
-                  //       to: user_detail["email"],
-                  //       subject: "New Device Confirmation"
-                  //     }, function (err) {
-                  //       if (!err) {
-                  //         return res
-                  //           .status(202)
-                  //           .json({
-                  //             "status": 202,
-                  //             "err": sails.__("New device confirmation email sent to your email.")
-                  //           });
-                  //       } else {
-                  //         return res
-                  //           .status(500)
-                  //           .json({
-                  //             "status": 500,
-                  //             "err": sails.__("Something Wrong")
-                  //           });
-                  //       }
-                  //     });
+                  sails
+                    .hooks
+                    .email
+                    .send("general-email", {
+                      content: emailContent
+                    }, {
+                      to: user_detail["email"],
+                      subject: "New Device Confirmation"
+                    }, function (err) {
+                      if (!err) {
+                        return res
+                          .status(202)
+                          .json({
+                            "status": 202,
+                            "err": sails.__("New device confirmation email sent to your email.")
+                          });
+                      } else {
+                        return res
+                          .status(500)
+                          .json({
+                            "status": 500,
+                            "err": sails.__("Something Wrong")
+                          });
+                      }
+                    });
                 }
               }
             });
@@ -460,7 +466,24 @@ module.exports = {
           new_ip_verification_token: req.body.token
         });
 
+
+
         if (user_detail) {
+
+          console.log('user details inside verify new IP >>>>>>>>>>>>>>', user_detail)
+
+          if (user_detail.deleted_at && user_detail.deleted_by == 2) {
+            return res.status(403).json({
+              "status": 403,
+              err: sails.__('Deleted By Admin')
+            });
+          }
+          if (user_detail.deleted_at && user_detail.deleted_by == 1) {
+            return res.status(403).json({
+              "status": 403,
+              err: sails.__('Deleted By User')
+            });
+          }
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
           // new_ip_verification_token: null,   email: user_detail.email });
           await LoginHistory.create({
@@ -830,6 +853,14 @@ module.exports = {
             err: sails.__("Contact Admin")
           });
       }
+      if (user_details.is_verified == false || user_details.is_new_email_verified == false) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("This email id is verified.")
+          });
+      }
       let reset_token = randomize('Aa0', 10);
       let reset_token_expire = new Date().getTime() + 300000;
 
@@ -861,27 +892,27 @@ module.exports = {
           token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
         })
 
-      // sails
-      //   .hooks
-      //   .email
-      //   .send("general-email", {
-      //     content: emailContent
-      //   }, {
-      //       to: user_details.email,
-      //       subject: "Forgot Password"
-      //     }, function (err) {
-      //       if (!err) {
-      //         return res.json({
-      //           "status": 200,
-      //           "message": sails.__("Reset password link sent to your email successfully.")
-      //         });
-      //       }
-      //     })
-      return res.json({
-        "status": 200,
-        "message": 'test',
-        reset_token
-      });
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: user_details.email,
+          subject: "Forgot Password"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Reset password link sent to your email successfully.")
+            });
+          }
+        })
+      // return res.json({
+      //   "status": 200,
+      //   "message": 'test',
+      //   reset_token
+      // });
     } catch (error) {
       console.log('error', error)
       return res
@@ -958,10 +989,13 @@ module.exports = {
   resendVerificationEmail: async function (req, res) {
     if (req.body.email) {
       let user = await Users.findOne({
-        email: req.body.email
+        email: req.body.email,
+        // is_verified: false
+        // is_new_email_verified: true
       });
+      console.log(user)
       if (user) {
-        if (user.is_verified) {
+        if (user.is_verified && user.is_new_email_verified) {
           return res
             .status(500)
             .json({

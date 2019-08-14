@@ -82,6 +82,50 @@ module.exports = {
             email_verify_code : email_verify_token
         }).fetch();
 
+        var now = moment.now();
+
+        var userFavouritesData = await UserFavourites.createEach([{
+          user_id: user_detail.id,
+          pair_from: "BTC",
+          pair_to: "ETH",
+          priority: 1,
+          created: now,
+          updated: now,
+          deleted: null
+        }, {
+          user_id: user_detail.id,
+          pair_from: "BTC",
+          pair_to: "XRP",
+          priority: 2,
+          created: now,
+          updated: now,
+          deleted: null
+        }, {
+          user_id: user_detail.id,
+          pair_from: "BTC",
+          pair_to: "LTC",
+          priority: 3,
+          created: now,
+          updated: now,
+          deleted: null
+        }, {
+          user_id: user_detail.id,
+          pair_from: "ETH",
+          pair_to: "BAT",
+          priority: 4,
+          created: now,
+          updated: now,
+          deleted: null
+        }, {
+          user_id: user_detail.id,
+          pair_from: "BTC",
+          pair_to: "BCH",
+          priority: 5,
+          created: now,
+          updated: now,
+          deleted: null
+        }]).fetch();
+
         if (user_detail) {
           //   Create Recive Address 
           await sails.helpers.wallet.receiveAddress(user_detail);
@@ -104,31 +148,31 @@ module.exports = {
                 email_verify_code : email_verify_token
             })
           if (template) {
-            // sails
-            //   .hooks
-            //   .email
-            //   .send("general-email", {
-            //     content: emailContent
-            //   }, {
-            //       to: user_detail.email,
-            //       subject: "Signup Verification"
-            //     }, function (err) {
-            //       if (!err) {
-            //         return res.json({
-            //           "status": 200,
-            //           "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-            //             sails.__("verification code") : sails.__("verification link")
-            //         });
-            //       }
-            //     });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: user_detail.email,
+                subject: "Signup Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+                      sails.__("verification code") : sails.__("verification link")
+                  });
+                }
+              });
           }
           console.log('End of signup', new Date())
-          return res
-            .json({
-              status: 200,
-              email_verify_token,
-              "message": "Success"
-            });
+          // return res
+          //   .json({
+          //     status: 200,
+          //     email_verify_token,
+          //     "message": "Success"
+          //   });
         } else {
           return res
             .status(401)
@@ -148,6 +192,7 @@ module.exports = {
       }
 
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -857,7 +902,7 @@ module.exports = {
               id: req.user.id
             })
             .set({
-              security_feature_expired_time: moment().utc()
+              security_feature_expired_time: moment().utc().add(24, 'hours')
             })
         }
         let template = await EmailTemplate.findOne({

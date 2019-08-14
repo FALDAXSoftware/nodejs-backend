@@ -36,20 +36,33 @@ module.exports = {
 
     try {
 
+      // Collect referral data for user according to the referral percentage
+      // Here when 1 user has refference the user 2 and user 2 does the trade then user1 earns the referral according to the amount and referral percentage mentioned in it
       var referral_percentage = 0;
       var trade_object = inputs.trade_object;
 
       var collectedAmount = 0;
       var collectCoin;
       var coinData;
-      var referralData = await Users.findOne({deleted_at: null, is_active: true, id: inputs.user_id});
-      var referredUserData = await Users.findOne({deleted_at: null, is_active: true, id: referralData.referred_id});
+      var referralData = await Users.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: inputs.user_id
+      });
+      var referredUserData = await Users.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: referralData.referred_id
+      });
       var addRefferalAddData = {};
 
       if (referredUserData !== undefined) {
         referral_percentage = parseFloat(referredUserData.referal_percentage);
       } else {
-        var referal_data = await AdminSetting.findOne({deleted_at: null, slug: 'default_referral_percentage'});
+        var referal_data = await AdminSetting.findOne({
+          deleted_at: null,
+          slug: 'default_referral_percentage'
+        });
         referral_percentage = parseFloat(referal_data.value);
       }
 
@@ -58,7 +71,11 @@ module.exports = {
           if (trade_object.side == 'Buy') {
             collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
             collectCoin = trade_object.settle_currency;
-            coinData = await Coins.findOne({is_active: true, deleted_at: null, coin: trade_object.settle_currency});
+            coinData = await Coins.findOne({
+              is_active: true,
+              deleted_at: null,
+              coin: trade_object.settle_currency
+            });
             addRefferalAddData.coin_id = coinData.id;
             addRefferalAddData.amount = collectedAmount;
             addRefferalAddData.coin_name = collectCoin;
@@ -71,7 +88,11 @@ module.exports = {
           } else if (trade_object.side == 'Sell') {
             collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
             collectCoin = trade_object.currency;
-            coinData = await Coins.findOne({is_active: true, deleted_at: null, coin: trade_object.currency});
+            coinData = await Coins.findOne({
+              is_active: true,
+              deleted_at: null,
+              coin: trade_object.currency
+            });
             addRefferalAddData.coin_id = coinData.id;
             addRefferalAddData.amount = collectedAmount;
             addRefferalAddData.coin_name = collectCoin;
@@ -86,7 +107,11 @@ module.exports = {
           if (trade_object.side == 'Buy') {
             collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
             collectCoin = trade_object.currency;
-            coinData = await Coins.findOne({is_active: true, deleted_at: null, coin: trade_object.currency});
+            coinData = await Coins.findOne({
+              is_active: true,
+              deleted_at: null,
+              coin: trade_object.currency
+            });
             addRefferalAddData.coin_id = coinData.id;
             addRefferalAddData.amount = collectedAmount;
             addRefferalAddData.coin_name = collectCoin;
@@ -100,7 +125,11 @@ module.exports = {
           } else if (trade_object.side == 'Sell') {
             collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
             collectCoin = trade_object.settle_currency;
-            coinData = await Coins.findOne({is_active: true, deleted_at: null, coin: trade_object.settle_currency});
+            coinData = await Coins.findOne({
+              is_active: true,
+              deleted_at: null,
+              coin: trade_object.settle_currency
+            });
             addRefferalAddData.coin_id = coinData.id;
             addRefferalAddData.amount = collectedAmount;
             addRefferalAddData.coin_name = collectCoin;
