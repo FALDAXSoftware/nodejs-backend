@@ -44,7 +44,6 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    console.log(values)
     values.created_at = new Date();
     next();
   },
@@ -57,12 +56,12 @@ module.exports = {
 
 
 // Get Open Requests
-async function getOpenRequests(){
-  var query = `SELECT uft.*, u.full_name FROM users_forgot_twofactors uft
+async function getOpenRequests() {
+  var query = `SELECT uft.*, u.full_name, u.email FROM users_forgot_twofactors uft
               INNER JOIN users u
               ON uft.user_id=u.id
-              WHERE uft.status="open"
+              WHERE uft.status='open'
               `;
-  var get_data = await sails.sendNativeQuery( query );
+  var get_data = await sails.sendNativeQuery(query);
   return get_data;
 }

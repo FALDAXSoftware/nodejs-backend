@@ -1736,6 +1736,7 @@ module.exports = {
   // Get Twofactors requests
   getTwoFactorsRequests: async function (req, res) {
     try {
+      let { page, limit } = req.allParams();
       let user_id = req.user.id;
       let adminData = await Admin.findOne({
         id: user_id,
@@ -1759,9 +1760,6 @@ module.exports = {
           });
       }
 
-      let data = {
-        status: "open"
-      };
       var get_data = await UserForgotTwofactors.getOpenRequests();
       if (get_data.rowCount > 0) {
         return res.json({
@@ -1777,7 +1775,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("err", err);
+      console.log("errfsdfdsf", err);
       return res
         .status(500)
         .json({
@@ -1877,6 +1875,7 @@ module.exports = {
             }
           })
     } catch (err) {
+      console.log('err', err)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
