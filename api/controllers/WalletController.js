@@ -298,7 +298,7 @@ module.exports = {
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
                           // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
-                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, amount * 1e8);
+                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString() );
 
                           //Here remainning ebtry as well as address change
                           let walletHistory = {
