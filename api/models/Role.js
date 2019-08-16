@@ -119,6 +119,11 @@ module.exports = {
       columnName: 'news_source',
       defaultsTo: false,
     },
+    two_factor_requests: {
+      type: "boolean",
+      columnName: 'two_factor_requests',
+      defaultsTo: false,
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
