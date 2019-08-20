@@ -85,7 +85,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No more limit order Sell")
+            "err": sails.__("No more limit order Buy")
           });
       }
       if (error.message == "serverError") {
@@ -181,7 +181,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No more limit order Buy")
+            "err": sails.__("No more limit order Sell")
           });
       }
 
