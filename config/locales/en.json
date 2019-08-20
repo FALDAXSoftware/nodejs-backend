@@ -303,5 +303,6 @@
   "Favourites List Success": "Favourites List has been retrieved successfully",
   "This email id is verified.": "Your email id has not been verified. Please verify your email id",
   "Deleted By User": "User has been deleted. Please contact support.",
-  "amount greater than zero": "Amount must be greater than 0."
+  "amount greater than zero": "Amount must be greater than 0.",
+  "Twofactor Request rejected": "Twofactor Request rejected"
 }
