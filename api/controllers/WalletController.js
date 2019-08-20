@@ -118,6 +118,8 @@ module.exports = {
         destination_address,
         coin_code
       } = req.allParams();
+
+      console.log(req.allParams());
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -128,6 +130,8 @@ module.exports = {
       var monthlyData = moment()
         .startOf('month')
         .format();
+
+      console.log(user_id);
 
       var userData = await Users.findOne({
         deleted_at: null,
@@ -166,9 +170,13 @@ module.exports = {
 
       if (userData.security_feature) {
         if (moment(userData.security_feature_expired_time).isAfter(today)) {
+          var dateFormat = 'YYYY-DD-MM HH:mm:ss';
+          var testDateUtc = moment.utc(userData.security_feature_expired_time);
+          var localDate = testDateUtc.local();
+          var localDateFormat = localDate.format(dateFormat)
           return res.status(203).json({
             "status": 203,
-            "message": sails.__("Wait for 24 hours")
+            "message": sails.__("Wait for 24 hours") + " till " + localDateFormat
           })
         }
       }
@@ -252,6 +260,15 @@ module.exports = {
               '<=': today
             }
           })
+
+        // if (parseFloat(amount) <= 0) {
+        //   return res
+        //     .status(400)
+        //     .json({
+        //       status: 400,
+        //       message: sails.__('amount greater than zero')
+        //     })
+        // }
 
         // Limited amount is greater than the total sum of day
         if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
