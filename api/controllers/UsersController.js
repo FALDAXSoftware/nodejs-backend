@@ -976,6 +976,8 @@ module.exports = {
       is_collected: false
     })
 
+    console.log(leftReferredData);
+
     var currencyData = await CurrencyConversion.find({
       deleted_at: null
     })

@@ -66,6 +66,9 @@ module.exports = {
         referral_percentage = parseFloat(referal_data.value);
       }
 
+      console.log(referredUserData)
+      console.log(referral_percentage)
+
       if (referredUserData != undefined) {
         if (trade_object.user_id == inputs.user_id) {
           if (trade_object.side == 'Buy') {

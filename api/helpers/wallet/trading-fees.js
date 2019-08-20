@@ -190,6 +190,9 @@ module.exports = {
         user_id: request.user_id
       });
 
+      console.log(currencyWalletRequested);
+      console.log(cryptoWalletUser);
+
       // Calculating fees value on basis of the side and order executed
       if (request.side == "Buy") {
 
@@ -318,6 +321,7 @@ module.exports = {
         var userFee = (request.quantity * request.fill_price * (inputs.takerFee / 100));
         user_usd = (request.quantity * request.fill_price) * (resultData);
       }
+
       return exits.success({
         'userFee': userFee,
         'requestedFee': requestedFee
