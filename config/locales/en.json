@@ -133,7 +133,6 @@
   "News Status Update success": "News Status has been Updated successfully",
   "No news found": "No news found",
   "Invalid limit": "Invalid limit",
-  "limit id is not sent.": "limit id is not sent.",
   "KYC Data success": "KYC Data has been retrieved successfully",
   "KYC application approved": "KYC application has been approved ",
   "KYC application rejected": "KYC application has been rejected",
@@ -217,8 +216,6 @@
   "Employee id is required": "Employee id is required",
   "Admin not found or it's not active": "Admin not found or it's not active",
   "Admin Details": "Admin Details",
-  "Order Filfilled Success": "Order Filfilled Success",
-  "Order Fulfilled Success": "Order Fulfilled Success",
   "It looks like Robot !": "It looks like Robot !",
   "User Log out successfully.": "User Log out successfully.",
   "Account Class Data": "Account Class data fetched successfully.",
@@ -299,10 +296,9 @@
   "Twofactor request closed": "This request is already closed.",
   "Twofactor Request approved": "2 Factor Authentication is disabled for this user.",
   "Deleted By Admin": "User has been deleted by Admin",
-  "Wait for 24 hours": "Due to security feature you cannot withdraw coin ",
+  "Wait for 24 hours": "Due to security feature you cannot withdraw coin for 24 hour",
   "Favourites List Success": "Favourites List has been retrieved successfully",
   "This email id is verified.": "Your email id has not been verified. Please verify your email id",
   "Deleted By User": "User has been deleted. Please contact support.",
-  "amount greater than zero": "Amount must be greater than 0.",
   "Twofactor Request rejected": "Twofactor Request rejected"
 }
