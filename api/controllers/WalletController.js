@@ -8,6 +8,8 @@ const BitGoJS = require('bitgo');
 var moment = require('moment');
 var speakeasy = require('speakeasy');
 
+
+
 module.exports = {
   // call currency conversion helper
   getConversionData: async function (req, res) {
@@ -170,13 +172,12 @@ module.exports = {
 
       if (userData.security_feature) {
         if (moment(userData.security_feature_expired_time).isAfter(today)) {
-          var dateFormat = 'YYYY-DD-MM HH:mm:ss';
-          var testDateUtc = moment.utc(userData.security_feature_expired_time);
-          var localDate = testDateUtc.local();
-          var localDateFormat = localDate.format(dateFormat)
+          var existing = moment(userData.security_feature_expired_time);
+          var tz = moment.tz.guess();
           return res.status(203).json({
             "status": 203,
-            "message": sails.__("Wait for 24 hours") + " till " + localDateFormat
+            "message": sails.__("Wait for 24 hours") + " till ",
+            "datetime": existing.tz(tz).format()
           })
         }
       }
@@ -315,7 +316,7 @@ module.exports = {
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
                           // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
-                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString() );
+                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
                           //Here remainning ebtry as well as address change
                           let walletHistory = {
