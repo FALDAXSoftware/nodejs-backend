@@ -83,6 +83,9 @@ module.exports = {
           let dest = transfer.outputs[0];
           // Object of sender
           let source = transfer.outputs[1];
+
+          console.log(dest);
+          console.log(source)
           // receiver wallet
           let userWallet = await Wallet.findOne({
             receive_address: dest.address,
@@ -127,7 +130,7 @@ module.exports = {
               source_address: source.address,
               destination_address: dest.address,
               user_id: userWallet.user_id,
-              amount: amount,
+              amount: (amount / 1e8),
               transaction_type: 'receive',
             }
 
@@ -183,7 +186,7 @@ module.exports = {
               transactionLog.push({
                 source_address: userWallet.receive_address,
                 destination_address: warmWallet.receiveAddress.address,
-                amount: warmWalletAmount,
+                amount: (warmWalletAmount / 1e8),
                 user_id: userWallet.user_id,
                 transaction_type: "receive",
                 coin_id: coin.id,
@@ -198,7 +201,7 @@ module.exports = {
               transactionLog.push({
                 source_address: userWallet.receive_address,
                 destination_address: custodialWallet.receiveAddress.address,
-                amount: custodialWalletAmount,
+                amount: (custodialWalletAmount / 1e8),
                 user_id: userWallet.user_id,
                 transaction_type: "receive",
                 coin_id: coin.id,
