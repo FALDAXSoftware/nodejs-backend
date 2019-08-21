@@ -33,6 +33,41 @@ module.exports = {
         .helpers
         .userTradeChecking(user_id);
 
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
+
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
         // Market Sell Order for order execution
@@ -1077,7 +1112,7 @@ module.exports = {
               }
             });
         }
-      } else { }
+      } else {}
     } catch (error) {
       return res
         .status(500)
@@ -1143,8 +1178,8 @@ module.exports = {
         query += " trade_history.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 
