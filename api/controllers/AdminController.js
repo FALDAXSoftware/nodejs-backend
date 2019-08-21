@@ -1736,7 +1736,7 @@ module.exports = {
   // Get Twofactors requests
   getTwoFactorsRequests: async function (req, res) {
     try {
-      let { page, limit } = req.allParams();
+
       let user_id = req.user.id;
       let adminData = await Admin.findOne({
         id: user_id,
@@ -1760,22 +1760,80 @@ module.exports = {
           });
       }
 
-      var get_data = await UserForgotTwofactors.getOpenRequests();
-      if (get_data.rowCount > 0) {
+      // var get_data = await UserForgotTwofactors.getOpenRequests();
+      // if (get_data.rowCount > 0) {
+      //   return res.json({
+      //     "status": 200,
+      //     "message": sails.__("Twofactors lists"),
+      //     "data": get_data.rows
+      //   });
+      // } else {
+      //   return res.json({
+      //     "status": 200,
+      //     "message": sails.__("No record found"),
+      //     "data": []
+      //   });
+      // }
+
+      let {
+        page,
+        limit,
+        data,
+        r_type,
+        sort_col,
+        sort_order
+      } = req.allParams();
+
+      let query = " from users_forgot_twofactors uft LEFT JOIN users u ON uft.user_id = u.id";
+      let whereAppended = false;
+
+      if ((data && data != "")) {
+        if (data && data != "" && data != null) {
+          query += " WHERE"
+          whereAppended = true;
+          query += " (LOWER(u.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(uft.status) LIKE '%" + data.toLowerCase() + "%' OR LOWER(u.full_name) LIKE '%" + data.toLowerCase()+"%'";
+          query += ")"
+        }
+      }
+
+      if (r_type && r_type.trim() != "") {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += "  uft.status='" + r_type + "'";
+      }
+      countQuery = query;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY uft.id DESC";
+      }
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+      let request_data = await sails.sendNativeQuery("Select uft.*, u.full_name, u.email " + query, [])
+      request_data = request_data.rows;
+
+      let requests_counts = await sails.sendNativeQuery("Select COUNT(uft.id)" + countQuery, [])
+      requests_counts = requests_counts.rows[0].count;
+
+
+      if (request_data) {
         return res.json({
           "status": 200,
           "message": sails.__("Twofactors lists"),
-          "data": get_data.rows
-        });
-      } else {
-        return res.json({
-          "status": 200,
-          "message": sails.__("No record found"),
-          "data": []
+          "data": request_data,
+          requests_counts
         });
       }
     } catch (err) {
-      console.log("errfsdfdsf", err);
+      console.log(err);
       return res
         .status(500)
         .json({
