@@ -131,6 +131,10 @@ module.exports = {
               transaction_type: 'receive',
             }
 
+            await TransactionTable.create({
+              ...transactionHistory
+            })
+
             // update wallet balance
             await Wallet
               .update({
