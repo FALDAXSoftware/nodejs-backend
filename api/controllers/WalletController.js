@@ -121,7 +121,6 @@ module.exports = {
         coin_code
       } = req.allParams();
 
-      console.log(req.allParams());
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -132,8 +131,6 @@ module.exports = {
       var monthlyData = moment()
         .startOf('month')
         .format();
-
-      console.log(user_id);
 
       var userData = await Users.findOne({
         deleted_at: null,
@@ -361,6 +358,20 @@ module.exports = {
                             ...addObject
                           });
 
+                          let addObject2 = {
+                            coin_id: coin.id,
+                            source_address: wallet.send_address,
+                            destination_address: destination_address,
+                            user_id: user_id,
+                            amount: amount,
+                            transaction_type: 'send',
+                            is_executed: false
+                          }
+
+                          await TransactionTable.create({
+                            ...addObject2
+                          })
+
                           return res.json({
                             status: 200,
                             message: sails.__("Token send success")
@@ -555,7 +566,7 @@ module.exports = {
       // Explicitly call toJson of Model
       coinData = JSON.parse(JSON.stringify(coinData));
 
-      let walletTransData = await WalletHistory
+      let walletTransData = await TransactionTable
         .find({
           user_id: req.user.id,
           coin_id: coinData.id,
