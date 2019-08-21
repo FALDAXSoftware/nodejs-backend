@@ -121,6 +121,16 @@ module.exports = {
             await WalletHistory.create({
               ...walletHistory
             });
+
+            let transactionHistory = {
+              coin_id: userWallet.coin_id,
+              source_address: source.address,
+              destination_address: dest.address,
+              user_id: userWallet.user_id,
+              amount: amount,
+              transaction_type: 'receive',
+            }
+
             // update wallet balance
             await Wallet
               .update({
