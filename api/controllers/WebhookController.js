@@ -130,7 +130,7 @@ module.exports = {
               source_address: source.address,
               destination_address: dest.address,
               user_id: userWallet.user_id,
-              amount: (amount / 1e8),
+              amount: (amount),
               transaction_type: 'receive',
             }
 
