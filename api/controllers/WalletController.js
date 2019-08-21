@@ -638,11 +638,19 @@ module.exports = {
         coin_code
       } = req.allParams();
       var user_id = req.user.id;
-      var userData = await Users.findOne({
+      var userData = [];
+      userData = await Users.findOne({
         deleted_at: null,
         is_active: true,
         id: user_id
       });
+      if (!userData) {
+        userData = await Admin.findOne({
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        });
+      }
       var walletDataCreate = await sails
         .helpers
         .wallet
