@@ -1893,8 +1893,8 @@ module.exports = {
         .set({
           is_twofactor: false,
           twofactor_secret: "",
-          security_feature: true,
-          security_feature_expired_time: moment().utc().add(24, 'hours')
+          // security_feature: true,
+          // security_feature_expired_time: moment().utc().add(24, 'hours')
         }).fetch();
 
       if (get_data.uploaded_file) {
@@ -1905,7 +1905,10 @@ module.exports = {
         .update({ id: get_data.id })
         .set({ status: "closed" });
 
-      let slug = "twofactor_request_email_approved";
+      var slug = "twofactor_request_email_approved";
+      if( user[0].security_feature == true ){
+        slug = "twofactor_request_email_approved_sf";
+      }
       let template = await EmailTemplate.findOne({
         slug
       });
