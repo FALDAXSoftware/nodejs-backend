@@ -68,98 +68,121 @@ module.exports = {
 
       //Maker and Taker fee according to trades executed by user
 
-      // var getCurrencyPriceData = await CurrencyConversion.findOne({
-      //   coin_id: currencyData.id,
-      //   deleted_at: null
-      // });
-      // var getCryptoPriceData = await CurrencyConversion.findOne({
-      //   coin_id: cryptoData.id,
-      //   deleted_at: null
-      // });
+      var getCurrencyPriceData = await CurrencyConversion.findOne({
+        coin_id: currencyData.id,
+        deleted_at: null
+      });
+      var getCryptoPriceData = await CurrencyConversion.findOne({
+        coin_id: cryptoData.id,
+        deleted_at: null
+      });
+
+      console.log("Currency Value >>>>>>>>>>>>", getCurrencyPriceData);
+      console.log("Crypto Value >>>>>>>>>>>>", getCryptoPriceData);
 
       // Fetching Amount of trade done on the basis of time and usd value
-      // var currencyAmount = await TradeHistory
-      //   .sum('amount')
-      //   .find({
-      //     user_id: user_id,
-      //     deleted_at: null,
-      //     created_at :{
-      //        ">=" : yesterday  
-      //     },
-      //     created_at : {
-      //        "<=" : now 
-      //      }   
-      //   });
+      var currencyAmount = await TradeHistory
+        .sum('amount')
+        .find({
+          or: [{
+              user_id: user_id,
+            },
+            {
+              requested_user_id: user_id
+            }
+          ],
+          deleted_at: null,
+          created_at: {
+            ">=": yesterday
+          },
+          created_at: {
+            "<=": now
+          }
+        });
+
+      console.log("currency amount?????????????", currencyAmount);
 
       // Fetching Amount of trade done on the basis of time and usd value
-      // var cryptoAmount = await TradeHistory
-      //   .sum('amount')
-      //   .find({
-      //     user_id: requested_user_id,
-      //     deleted_at: null,
-      //     created_at :{
-      //        ">=" : yesterday  
-      //     },
-      //     created_at : {
-      //        "<=" : now 
-      //      }   
-      //   });
+      var cryptoAmount = await TradeHistory
+        .sum('amount')
+        .find({
+          or: [{
+              user_id: requested_user_id,
+            },
+            {
+              requested_user_id: requested_user_id
+            }
+          ],
+          deleted_at: null,
+          created_at: {
+            ">=": yesterday
+          },
+          created_at: {
+            "<=": now
+          }
+        });
 
-      // var userData = await User.findOne({
-      //   deleted_at: null,
-      //   is_active: true,
-      //   id: user_id
-      // });
-      // var requestData = await User.findOne({
-      //   deleted_at: null,
-      //   is_active: true,
-      //   id: requested_user_id
-      // });
+      console.log("Crypto Amount ????????????????", cryptoAmount);
 
-      // var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[userData.fiat].price;
-      // var totalCryptoAmount = cryptoAmount * getCurrencyPriceData.qoute[requestData.fiat].price;
+      var userData = await User.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: user_id
+      });
+      var requestData = await User.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: requested_user_id
+      });
+
+      var totalCurrencyAmount = currencyAmount * getCurrencyPriceData.qoute[userData.fiat].price;
+      var totalCryptoAmount = cryptoAmount * getCryptoPriceData.qoute[requestData.fiat].price;
 
       // Fetching the fees on the basis of the total trade done in last 30 days
-      // var currencyMakerFee = await Fees.findOne({
-      //   select : [
-      //      'maker_fee',
-      //      'taker_fee
-      //   ],
-      //   where: {
-      //     deleted_at: null,
-      //     min_trade_volume: {
-      //       '>=': totalCurrencyAmount
-      //     },
-      //     max_trade_volume: {
-      //       '<=': totalCurrencyAmount
-      //     },
-      //     created_at: {
-      //       '<=': now
-      //     }
-      //   }
-      // });
+      var currencyMakerFee = await Fees.findOne({
+        select: [
+          'maker_fee',
+          'taker_fee'
+        ],
+        where: {
+          deleted_at: null,
+          min_trade_volume: {
+            '>=': totalCurrencyAmount
+          },
+          max_trade_volume: {
+            '<=': totalCurrencyAmount
+          },
+          created_at: {
+            '<=': now
+          }
+        }
+      });
+
+      console.log("Maker Fee ??????????????????", currencyMakerFee);
 
       // Fetching the fees on the basis of the total trade done in last 30 days 
-      // var cryptoTakerFee = await Fees.findOne({
-      //   select : [
-      //      'maker_fee',
-      //      'taker_fee
-      //   ],
-      //   where: {
-      //     deleted_at: null,
-      //     min_trade_volume: {
-      //       '>=': totalCryptoAmount
-      //     },
-      //     max_trade_volume: {
-      //       '<=': totalCryptoAmount
-      //     },
-      //     created_at: {
-      //       '<=': now
-      //     }
-      //   }
-      // });
+      var cryptoTakerFee = await Fees.findOne({
+        select: [
+          'maker_fee',
+          'taker_fee'
+        ],
+        where: {
+          deleted_at: null,
+          min_trade_volume: {
+            '>=': totalCryptoAmount
+          },
+          max_trade_volume: {
+            '<=': totalCryptoAmount
+          },
+          created_at: {
+            '<=': now
+          }
+        }
+      });
 
-      //Just Replace inputs.makerFee and inputs.takerFee with following
+      console.log("Taker Fee>>>>>>>>>>>>>>>>>", cryptoTakerFee);
+
+      // Just Replace inputs.makerFee and inputs.takerFee with following
       // inputs.makerFee = cryptoTakerFee.maker_fee
       // inputs.takerFee = currencyMakerFee.taker_fee
 

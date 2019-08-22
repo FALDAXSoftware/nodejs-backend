@@ -47,6 +47,11 @@ module.exports = {
       columnName: 'is_active',
       defaultsTo: true
     },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

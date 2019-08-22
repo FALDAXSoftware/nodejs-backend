@@ -50,7 +50,7 @@ module.exports = {
     var walletData = await Wallet.findOne({
       deleted_at: null,
       coin_id: coin.id,
-      user_id: parseInt(inputs.user.id)
+      user_id: parseInt(inputs.user.id),
     })
     //For all the coins accept USD EURO and ETH
     if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
@@ -89,7 +89,8 @@ module.exports = {
             user_id: parseInt(inputs.user.id),
             balance: 0.0,
             placed_balance: 0.0,
-            address_label: address_label
+            address_label: address_label,
+            is_admin: (inputs.user.flag == true ? true : false)
           }
 
           // walletArray.push({ ...obj });

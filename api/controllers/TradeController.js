@@ -164,6 +164,42 @@ module.exports = {
         .helpers
         .userTradeChecking(user_id);
 
+      //Security Feature for 2 factor
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
+
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
         // Market Buy Order for order execution
@@ -254,6 +290,42 @@ module.exports = {
         .helpers
         .userTradeChecking(user_id);
 
+      //Security Feature for 2 factor
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
+
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
         // Limit Sell Order for order execution
@@ -343,6 +415,42 @@ module.exports = {
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
 
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
@@ -447,6 +555,42 @@ module.exports = {
         .helpers
         .userTradeChecking(user_id);
 
+      //Security Feature for 2 factor
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
+
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
         // Stop Limit Sell Order for order execution
@@ -526,6 +670,42 @@ module.exports = {
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      var userData = await Users.findOne({
+        deleted_at: null,
+        id: user_id,
+        is_active: true
+      });
+
+      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue")
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp")
+            });
+        }
+      }
 
       // If user is allowed to trade in his region 
       if (geo_fencing_data.response == true) {
