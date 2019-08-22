@@ -661,7 +661,11 @@ module.exports = {
           is_active: true,
           id: user_id
         });
+        userData.flag = true;
+      } else {
+        userData.flag = false;
       }
+      console.log("User Data Value >>>>>>>>>>", userData)
       var walletDataCreate = await sails
         .helpers
         .wallet
