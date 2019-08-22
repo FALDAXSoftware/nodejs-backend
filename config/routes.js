@@ -354,5 +354,10 @@ module.exports.routes = {
 
   //user Threshold
   'post /users/add-thresholds-limits': 'UsersController.addOrUpdateUserThresholds',
-  'get /users/get-user-thresholds': 'UsersController.getUserThresholds'
+  'get /users/get-user-thresholds': 'UsersController.getUserThresholds',
+
+  //admin threshold
+  'get /admin/get-admin-thresholds': 'AdminController.adminThresholdLists',
+  'post /admin/add-admin-thresholds': 'AdminController.addOrUpdateAdminThresholds'
+
 };
