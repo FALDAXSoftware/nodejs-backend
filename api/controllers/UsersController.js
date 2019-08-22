@@ -127,7 +127,7 @@ module.exports = {
         }]).fetch();
 
         if (user_detail) {
-          //   Create Recive Address 
+          //   Create Recive Address
           await sails.helpers.wallet.receiveAddress(user_detail);
           let slug = "";
           if (req.body.device_type == 1 || req.body.device_type == 2) {
@@ -2097,4 +2097,123 @@ module.exports = {
         });
     }
   },
+
+  /**
+   * API for Add User's Thresholds limits
+   * Renders this api when user whitelist IP needs to be fetched
+   *
+   * @param
+   *
+   * @return <UserDetails>
+   */
+  addOrUpdateUserThresholds: async function(req, res){
+    try{
+      var user_id = req.user.id;
+      var assets = req.body;
+
+      let users_thresholds = await UserThresholds.findOne({
+        deleted_at: null,
+        user_id: user_id
+      });
+
+      if( users_thresholds != undefined ){
+        await UserThresholds
+          .update({
+            id: users_thresholds.id
+          })
+          .set({
+            asset:assets
+          })
+      }else{
+        await UserThresholds
+          .create({
+            user_id: user_id,
+            asset: assets
+          })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold updated"),
+        "data": assets
+      });
+    }catch(err){
+      console.log("err",err);
+      return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  /**
+   * API to get User's Thresholds limits
+   * Renders this api when user whitelist IP needs to be fetched
+   *
+   * @param
+   *
+   * @return <UserDetails>
+   */
+  getUserThresholds: async function(req, res){
+    try{
+      var user_id = req.user.id;
+      var get_coins = await sails.sendNativeQuery("SELECT id as coin_id, coin FROM coins WHERE is_active=true and deleted_at IS NULL");
+      let users_thresholds = await UserThresholds.findOne({
+        deleted_at: null,
+        user_id: user_id
+      });
+      var all_coins = get_coins.rows;
+      var check_all;
+      var newarray =[];
+      if( users_thresholds != undefined && (users_thresholds.asset != null || users_thresholds.asset != "" ) && (users_thresholds.asset).length > 0  ){
+        var assets = users_thresholds.asset;
+
+        all_coins.map(obj =>{
+          var singledata = {};
+          let exisiting = assets.find( each_value => each_value['coin_id'] === obj.coin_id );
+          //console.log(exisiting);
+            singledata.coin = obj.coin;
+            singledata.coin_id = obj.coin_id;
+            if( exisiting != undefined ){
+              singledata.upper_limit = exisiting.upper_limit;
+              singledata.lower_limit = exisiting.lower_limit;
+                singledata.is_sms_notification = exisiting.is_sms_notification;
+                singledata.is_email_notification = exisiting.is_email_notification;
+            }else{
+              singledata.upper_limit = 0;
+              singledata.lower_limit = 0;
+                singledata.is_sms_notification = false;
+                singledata.is_email_notification = false;
+            }
+          newarray.push( singledata );
+        })
+      }else{
+
+        all_coins.map(obj =>{
+          var singledata = {};
+          singledata.coin_id = obj.coin_id;
+          singledata.coin = obj.coin;
+          singledata.upper_limit = 0;
+          singledata.lower_limit = 0;
+          singledata.is_sms_notification = false;
+          singledata.is_email_notification = false;
+          newarray.push(singledata);
+        })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold listed"),
+        "data": newarray
+      });
+    }catch(err){
+      console.log("err",err);
+      return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  }
 };
