@@ -2032,6 +2032,112 @@ module.exports = {
       });
     }
   },
+  // Admin Thresholds lists
+  adminThresholdLists: async function(req,res){
+    try{
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var get_coins = await sails.sendNativeQuery("SELECT id as coin_id, coin FROM coins WHERE is_active=true and deleted_at IS NULL");
+      let admin_thresholds = await AdminSetting.findOne({
+        where: {
+          slug: 'admin_threshold_notification',
+          deleted_at: null
+        }
+      });
+      var all_coins = get_coins.rows;
+      var check_all;
+      var newarray =[];
+      if( admin_thresholds != undefined && (admin_thresholds.value != null || admin_thresholds.value != "" ) && (JSON.parse(admin_thresholds.value)).length > 0  ){
+        var assets = JSON.parse(admin_thresholds.value);
+        all_coins.map(obj =>{
+          var singledata = {};
+          let exisiting = assets.find( each_value => each_value['coin_id'] === obj.coin_id );
+          //console.log(exisiting);
+            singledata.coin = obj.coin;
+            singledata.coin_id = obj.coin_id;
+            if( exisiting != undefined ){
+              singledata.limit = exisiting.limit;
+                              singledata.is_sms_notification = exisiting.is_sms_notification;
+                singledata.is_email_notification = exisiting.is_email_notification;
+            }else{
+              singledata.limit = 0;
 
+                singledata.is_sms_notification = false;
+                singledata.is_email_notification = false;
+            }
+          newarray.push( singledata );
+        })
+      }else{
+
+        all_coins.map(obj =>{
+          var singledata = {};
+          singledata.coin_id = obj.coin_id;
+          singledata.coin = obj.coin;
+          singledata.limit = 0;
+          singledata.is_sms_notification = false;
+          singledata.is_email_notification = false;
+          newarray.push(singledata);
+        })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold listed"),
+        "data": newarray
+      });
+    }catch(err){
+      console.log("err", err);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+
+  },
+  // Add or Update Admin Thresholds
+  addOrUpdateAdminThresholds: async function(req, res){
+    try{
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var assets = req.body;
+
+      let admin_thresholds = await AdminSetting.findOne({
+        where: {
+          slug: 'admin_threshold_notification',
+          deleted_at: null
+        }
+      });
+
+      if( admin_thresholds != undefined ){
+        await AdminSetting
+          .update({
+            id: admin_thresholds.id
+          })
+          .set({
+            value:JSON.stringify(assets)
+          })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold updated"),
+        "data": assets
+      });
+    }catch(err){
+      console.log("err",err);
+      return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
 
 };

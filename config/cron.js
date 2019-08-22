@@ -53,12 +53,12 @@ module.exports.cron = {
     }
   },
 
-  updateConversionValue: {
-    schedule: '0 * * * * *',
-    onTick: async function () {
-      if (sails.config.local.CRON_STATUS == "true") {
-        await sails.helpers.kraken.getOrderBook();
-      }
-    }
-  }
+  // updateConversionValue: {
+  //   schedule: '0 * * * * *',
+  //   onTick: async function () {
+  //     if (sails.config.local.CRON_STATUS == "true") {
+  //       await sails.helpers.kraken.getOrderBook();
+  //     }
+  //   }
+  // }
 };
