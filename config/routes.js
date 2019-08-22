@@ -350,5 +350,9 @@ module.exports.routes = {
   'post /admin/reject-twofactors-request-status': 'AdminController.rejectUserTwofactorRequest',
 
   //User Favourites routes
-  'get /users/get-favourite-list': 'UserFavouritesController.getFavourites'
+  'get /users/get-favourite-list': 'UserFavouritesController.getFavourites',
+
+  //user Threshold
+  'post /users/add-thresholds-limits': 'UsersController.addOrUpdateUserThresholds',
+  'get /users/get-user-thresholds': 'UsersController.getUserThresholds'
 };
