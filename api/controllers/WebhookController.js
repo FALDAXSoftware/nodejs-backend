@@ -244,6 +244,7 @@ module.exports = {
       }
 
       await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_receive_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, "address_confirmation", allToken);
+      await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_send_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-send-address`, "address_confirmation", allToken);
     }
     res.json({
       success: true
@@ -255,9 +256,7 @@ module.exports = {
   webhookOnAddress: async function (req, res) {
 
     if (req.body.address && req.body.walletId) {
-      console.log("Ethereum Webhook ?????????????", req.body);
       let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
-      console.log("Ethereum Address ?????????????/", address)
       let addressLable = address.label;
       let coin = address.coin;
       if (addressLable.includes("-")) {
@@ -269,6 +268,8 @@ module.exports = {
         is_active: true
       });
       if (coinObject) {
+
+
         await Wallet
           .update({
             coin_id: coinObject.id,
@@ -277,6 +278,7 @@ module.exports = {
           .set({
             receive_address: address.address
           });
+
       }
 
       return res.json({
@@ -285,6 +287,44 @@ module.exports = {
 
     }
   },
+
+
+  // Webhook for address confiramtion
+  webhookOnSendAddress: async function (req, res) {
+
+    if (req.body.address && req.body.walletId) {
+      let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+      let addressLable = address.label;
+      let coin = address.coin;
+      if (addressLable.includes("-")) {
+        coin = addressLable.split("-")[0];
+      }
+      let coinObject = await Coins.findOne({
+        coin_code: coin,
+        deleted_at: null,
+        is_active: true
+      });
+      if (coinObject) {
+
+
+        await Wallet
+          .update({
+            coin_id: coinObject.id,
+            address_label: addressLable
+          })
+          .set({
+            send_address: address.address
+          });
+
+      }
+
+      return res.json({
+        success: true
+      })
+
+    }
+  },
+
 
 
   webhookOnSend: async function (req, res) {

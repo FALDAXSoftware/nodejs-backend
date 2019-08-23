@@ -29,6 +29,11 @@ module.exports = {
       type: 'string',
       columnName: 'transaction_type'
     },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
+    },
     coin_id: {
       type: 'number',
       columnName: 'coin_id'

@@ -552,7 +552,8 @@ module.exports = {
   getWalletTransactionHistory: async function (req, res) {
     try {
       let {
-        coinReceive
+        coinReceive,
+        is_admin
       } = req.body;
       let coinData = await Coins.findOne({
         select: [
@@ -566,13 +567,26 @@ module.exports = {
       // Explicitly call toJson of Model
       coinData = JSON.parse(JSON.stringify(coinData));
 
-      let walletTransData = await TransactionTable
-        .find({
-          user_id: req.user.id,
-          coin_id: coinData.id,
-          deleted_at: null
-        })
-        .sort('id DESC');
+      var walletTransData
+      if (is_admin) {
+        walletTransData = await TransactionTable
+          .find({
+            user_id: req.user.id,
+            coin_id: coinData.id,
+            deleted_at: null,
+            is_admin: true
+          })
+          .sort('id DESC');
+      } else {
+        walletTransData = await TransactionTable
+          .find({
+            user_id: req.user.id,
+            coin_id: coinData.id,
+            deleted_at: null
+          })
+          .sort('id DESC');
+      }
+
       let coinFee = await AdminSetting.findOne({
         where: {
           slug: 'default_send_coin_fee',
