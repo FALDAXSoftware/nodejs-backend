@@ -301,6 +301,8 @@
 	"This email id is verified.": "Your email id has not been verified. Please verify your email id",
 	"Deleted By User": "User has been deleted. Please contact support.",
 	"Twofactor Request rejected": "Twofactor Request rejected",
-	"Threshold updated": "Threshold limits Updated Successfully",
-	"Threshold listed":"Thresholds has been listed successfully"
+	"Threshold updated": "Threshold limits updated successfully",
+  "Threshold listed":"Thresholds has been listed successfully",
+  "Threshold Contacts updated":"Contact list updated successfully",
+  "Threshold Contacts listed":"Contact list has been listed successfully"
 }

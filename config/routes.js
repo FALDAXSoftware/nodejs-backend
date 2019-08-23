@@ -359,6 +359,8 @@ module.exports.routes = {
 
   //admin threshold
   'get /admin/get-admin-thresholds': 'AdminController.adminThresholdLists',
-  'post /admin/add-admin-thresholds': 'AdminController.addOrUpdateAdminThresholds'
+  'post /admin/add-admin-thresholds': 'AdminController.addOrUpdateAdminThresholds',
+  'get /admin/get-admin-thresholds-contacts': 'AdminController.adminThresholdContactList',
+  'post /admin/add-admin-thresholds-contacts': 'AdminController.addThresholdContacts'
 
 };
