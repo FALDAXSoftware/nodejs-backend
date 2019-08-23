@@ -244,6 +244,7 @@ module.exports = {
       }
 
       await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_receive_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, "address_confirmation", allToken);
+      await sails.helpers.bitgo.addWebhook(coin.coin_code, coin.hot_send_wallet_address, `${sails.config.local.WEBHOOK_BASE_URL}/webhook-on-address`, "address_confirmation", allToken);
     }
     res.json({
       success: true
@@ -269,14 +270,30 @@ module.exports = {
         is_active: true
       });
       if (coinObject) {
-        await Wallet
-          .update({
-            coin_id: coinObject.id,
-            address_label: addressLable
-          })
-          .set({
-            receive_address: address.address
-          });
+        var walletData = await Wallet.find({
+          coin_id: coinObject.id,
+          address_label: addressLable
+        });
+
+        if (walletData.receive_address == undefined) {
+          await Wallet
+            .update({
+              coin_id: coinObject.id,
+              address_label: addressLable
+            })
+            .set({
+              receive_address: address.address
+            });
+        } else {
+          await Wallet
+            .update({
+              coin_id: coinObject.id,
+              address_label: addressLable
+            })
+            .set({
+              send_address: address.address
+            });
+        }
       }
 
       return res.json({
