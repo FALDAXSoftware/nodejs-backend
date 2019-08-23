@@ -288,7 +288,7 @@
 	"Twofactor not enabled": "Two Factor is not enabled.",
 	"Twofactor backup code is generated": "Two Factor Backup code is generated.",
 	"Your request for twofactors is sent": "Your request of TwoFactor/Backup code, is sent to support team for verification.",
-	"Twofactors already requested": "You have already requested.",
+	"Twofactors already requested": "You have already requested. Support team will notify you about this.",
 	"Extention required": "Only valid images(jpeg,png,jpg) are allowed.",
 	"No record found": "No data found.",
 	"Record found": "Data found.",
