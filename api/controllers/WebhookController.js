@@ -275,6 +275,8 @@ module.exports = {
           address_label: addressLable
         });
 
+        console.log("Wallet Data >>>>>>>>>>>>", walletData)
+
         if (walletData.receive_address == undefined) {
           await Wallet
             .update({
