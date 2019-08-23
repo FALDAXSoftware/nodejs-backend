@@ -1083,7 +1083,7 @@ module.exports = {
 
         let check_exist = await UserForgotTwofactors.findOne({
           user_id: user.id,
-          status: true
+          status: "open"
         });
         if (check_exist != undefined) {
           return res
