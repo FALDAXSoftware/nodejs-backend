@@ -2063,14 +2063,17 @@ module.exports = {
             singledata.coin = obj.coin;
             singledata.coin_id = obj.coin_id;
             if( exisiting != undefined ){
-              singledata.limit = exisiting.limit;
-                              singledata.is_sms_notification = exisiting.is_sms_notification;
-                singledata.is_email_notification = exisiting.is_email_notification;
+              singledata.fist_limit = exisiting.fist_limit;
+              singledata.second_limit = exisiting.second_limit;
+              singledata.third_limit = exisiting.third_limit;
+              singledata.is_sms_notification = exisiting.is_sms_notification;
+              singledata.is_email_notification = exisiting.is_email_notification;
             }else{
-              singledata.limit = 0;
-
-                singledata.is_sms_notification = false;
-                singledata.is_email_notification = false;
+              singledata.fist_limit = 0;
+              singledata.second_limit = 0;
+              singledata.third_limit = 0;
+              singledata.is_sms_notification = false;
+              singledata.is_email_notification = false;
             }
           newarray.push( singledata );
         })
@@ -2080,7 +2083,9 @@ module.exports = {
           var singledata = {};
           singledata.coin_id = obj.coin_id;
           singledata.coin = obj.coin;
-          singledata.limit = 0;
+          singledata.fist_limit = 0;
+          singledata.second_limit = 0;
+          singledata.third_limit = 0;
           singledata.is_sms_notification = false;
           singledata.is_email_notification = false;
           newarray.push(singledata);
@@ -2141,6 +2146,88 @@ module.exports = {
         "err": sails.__("Something Wrong")
       });
     }
+  },
+  // Add or Update Admin Thresholds Contacts list
+  addThresholdContacts: async function(req, res){
+    try{
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var contacts = req.body;
+
+      let admin_thresholds = await AdminSetting.findOne({
+        where: {
+          slug: 'admin_threshold_notification_contacts',
+          deleted_at: null
+        }
+      });
+
+      if( admin_thresholds != undefined ){
+        await AdminSetting
+          .update({
+            id: admin_thresholds.id
+          })
+          .set({
+            value:JSON.stringify(contacts)
+          })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold Contacts updated"),
+        "data": admin_thresholds
+      });
+    }catch(err){
+      console.log("err",err);
+      return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  // Admin Thresholds Contact lists
+  adminThresholdContactList: async function(req,res){
+    try{
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+
+      let admin_thresholds_contacts = await AdminSetting.findOne({
+        where: {
+          slug: 'admin_threshold_notification_contacts',
+          deleted_at: null
+        }
+      });
+      if( admin_thresholds_contacts != undefined ){
+        admin_thresholds_contacts.value = JSON.parse(admin_thresholds_contacts.value);
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Threshold Contacts listed"),
+          "data": admin_thresholds_contacts
+        });
+      }else{
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("No record found"),
+          "data": newarray
+        });
+      }
+    }catch(err){
+      console.log("err", err);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+
   },
 
 };
