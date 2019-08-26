@@ -125,5 +125,8 @@ module.exports.policies = {
   },
   "WebhookController": {
     "*": true
+  },
+  "ThresoldController": {
+    "addThresoldValue": true
   }
 };

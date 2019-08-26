@@ -53,6 +53,15 @@ module.exports.cron = {
     }
   },
 
+  updateThresoldNotification: {
+    schedule: '',
+    onTick: async function () {
+      if (sails.config.local.CRON_STATUS == "true") {
+        await ThresoldController.addThresoldValue()
+      }
+    }
+  }
+
   // updateConversionValue: {
   //   schedule: '0 * * * * *',
   //   onTick: async function () {

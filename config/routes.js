@@ -25,6 +25,7 @@ module.exports.routes = {
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
   'get /testemail': 'RootController.testemail',
+  'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
 
 
   // Webhook  routes
