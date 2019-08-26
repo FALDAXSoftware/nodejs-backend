@@ -215,10 +215,17 @@ module.exports = {
     res.end();
   },
 
-  queryTest: async function (req, res) {
-    let user_id = 1347;
-    let slug = 'kyc'
+  queryTest: async function (user_id, slug) {
+    // let user_id = 1347;
+    // let slug = 'kyc'
     let data = await sails.helpers.notification.notify(user_id, slug);
+    return res.json({
+      success: true
+    });
+  },
+
+  queryTestThresold: async function (req, res) {
+    let data = await sails.helpers.notification.checkTheresoldNotification();
     return res.json({
       success: true
     });
@@ -245,8 +252,6 @@ module.exports = {
   },
 
   createWallet: async function (req, res) {
-
-    console.log(req.allParams())
 
     var {
       coin_code

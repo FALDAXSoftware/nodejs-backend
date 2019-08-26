@@ -70,7 +70,8 @@ module.exports.policies = {
     "bitgoTest": true,
     "testemail": true,
     "queryTest": true,
-    "createWallet": true
+    "createWallet": true,
+    "queryTestThresold": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
