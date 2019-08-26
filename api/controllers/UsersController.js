@@ -2132,33 +2132,33 @@ module.exports = {
           })
       }
 
-      var data = await UserNotification.findOne({
-        where: {
-          slug: "thresold_notification",
-          user_id: user_id,
-          deleted_at: null
-        }
-      })
+      // var data = await UserNotification.findOne({
+      //   where: {
+      //     slug: "thresold_notification",
+      //     user_id: user_id,
+      //     deleted_at: null
+      //   }
+      // })
 
-      if (data) {
-        await UserNotification
-          .update({
-            slug: "thresold_notification",
-            user_id: user_id,
-            deleted_at: null
-          }).set({
-            text: req.body.text_status,
-            email: req.body.email_status
-          })
-      } else {
-        await UserNotification.create({
-          slug: "thresold_notification",
-          user_id: user_id,
-          text: req.body.text_status,
-          email: req.body.email_status,
-          created_at: Date.now()
-        })
-      }
+      // if (data) {
+      //   await UserNotification
+      //     .update({
+      //       slug: "thresold_notification",
+      //       user_id: user_id,
+      //       deleted_at: null
+      //     }).set({
+      //       text: req.body.text_status,
+      //       email: req.body.email_status
+      //     })
+      // } else {
+      //   await UserNotification.create({
+      //     slug: "thresold_notification",
+      //     user_id: user_id,
+      //     text: req.body.text_status,
+      //     email: req.body.email_status,
+      //     created_at: Date.now()
+      //   })
+      // }
 
       return res.status(200).json({
         "status": 200,
