@@ -304,7 +304,7 @@ module.exports = {
                         // console.log(warmWalletData.balance)
                         // console.log(coin.min_thresold);
                         // console.log(warmWalletData.balance >= coin.min_thresold)
-                        console.log(warmWalletData.balance)
+                        console.log(warmWalletData)
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
 

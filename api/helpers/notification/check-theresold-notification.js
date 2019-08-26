@@ -17,32 +17,14 @@ module.exports = {
       deleted_at: null
     });
 
-    // let coinValue = await Coins.find({
-    //   where: {
-    //     deleted_at: null,
-    //     is_active: true
-    //   }
-    // })
-
-    // let coinArray = [];
-    // for (let index = 0; index < coins.length; index++) {
-    //   const element = coins[index];
-    //   coinArray.push(element.coin)
-    // }
-
     let priceValue = await ThresoldPrices.find({
       where: {
         deleted_at: null
       }
     }).sort('id DESC').limit(7)
 
-    console.log(user.length);
-
     for (let index = 0; index < user.length; index++) {
-      // console.log("INSIDE FOR LOOP >>>>>>>>>>>", user[index])
       const element = user[index];
-
-      console.log(element.asset)
       var assetValue = element.asset;
 
       for (var j = 0; j < assetValue.length; j++) {
