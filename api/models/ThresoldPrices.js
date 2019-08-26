@@ -1,12 +1,12 @@
 /**
- * CurrencyConversion.js
+ * ThresoldPrices.js
  *
- * @description :: Represents a database table currency_conversion.
+ * @description :: Represents a database table thresold_prices.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'currency_conversion',
+  tableName: 'thresold_prices',
   attributes: {
     coin_id: {
       model: "coins",

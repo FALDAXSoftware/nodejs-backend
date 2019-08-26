@@ -34,8 +34,7 @@ module.exports = {
     //Template for sending Email
     var bodyValue = await SmsTemplate.findOne({
       deleted_at: null,
-      slug: inputs.slug,
-      user_id: user_id
+      slug: inputs.slug
     })
 
     //Twilio Integration

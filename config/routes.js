@@ -19,12 +19,14 @@ module.exports.routes = {
   'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
+  'get /query-test-thresold': 'RootController.queryTestThresold',
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /create-wallet': 'RootController.createWallet',
   'post /toggle-panic-status': 'RootController.panicBtn',
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
   'get /testemail': 'RootController.testemail',
+  'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
 
 
   // Webhook  routes

@@ -14,10 +14,6 @@ module.exports = {
       columnName: 'slug',
       required: true
     },
-    user_id: {
-      columnName: "user_id",
-      model: "users"
-    },
     name: {
       type: 'string',
       columnName: 'name',
