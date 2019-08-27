@@ -60,7 +60,10 @@ module.exports = {
     try {
       var userIds = [];
       userIds.push(inputs.user_id);
-      let {crypto, currency} = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -129,7 +132,7 @@ module.exports = {
             };
             trade_history_data.maker_fee = fees.makerFee;
             trade_history_data.taker_fee = fees.takerFee;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.quantity = inputs.orderQuantity;
             trade_history_data.requested_user_id = currentSellBookDetails.user_id;
             trade_history_data.created_at = now;
             trade_history_data.fix_quantity = inputs.orderQuantity;
@@ -178,7 +181,9 @@ module.exports = {
                 .helpers
                 .tradding
                 .sell
-                .update(currentSellBookDetails.id, {quantity: remainigQuantity});
+                .update(currentSellBookDetails.id, {
+                  quantity: remainigQuantity
+                });
             } else {
               await sails
                 .helpers
@@ -198,7 +203,7 @@ module.exports = {
             };
             trade_history_data.maker_fee = fees.makerFee;
             trade_history_data.taker_fee = fees.takerFee;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.quantity = availableQty;
             trade_history_data.requested_user_id = currentSellBookDetails.user_id;
             trade_history_data.created_at = now;
             trade_history_data.fix_quantity = inputs.orderQuantity;
