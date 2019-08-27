@@ -1922,16 +1922,20 @@ module.exports = {
           });
       }
       // Disable user's 2fa
+      var user_data = user = await Users.findOne({ id: get_data.user_id });
+      var disable_withdrawls = {
+        is_twofactor: false,
+        twofactor_secret: "",
+        security_feature_expired_time:""
+      }
+      if( user_data.security_feature == true || user_data.security_feature == "true" ){
+        disable_withdrawls.security_feature_expired_time = moment().utc().add(process.env.WITHDRAWLS_DURATION, 'minutes');
+      }
+
       var user = await Users
-        .update({
-          id: get_data.user_id
-        })
-        .set({
-          is_twofactor: false,
-          twofactor_secret: "",
-          // security_feature: true,
-          // security_feature_expired_time: moment().utc().add(24, 'hours')
-        }).fetch();
+        .update({ id: get_data.user_id })
+        .set(disable_withdrawls)
+        .fetch();
 
       if (get_data.uploaded_file) {
         await UploadFiles.deleteFile(get_data.uploaded_file); // delete the file
