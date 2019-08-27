@@ -32,7 +32,22 @@ module.exports = {
           if (priceValue[k].coin_id == assetValue[j].coin_id) {
             if (assetValue[j].upper_limit != undefined && assetValue[j].upper_limit != null) {
               if (priceValue[k].quote.USD.price >= assetValue[j].upper_limit) {
-                await sails.helpers.notification.notify(element.user_id, "thresold_notification");
+                var userData = await Users.findOne({
+                  where: {
+                    id: element.user_id,
+                    is_active: true,
+                    deleted_at: null,
+                    is_verified: true
+                  }
+                });
+                if (userData) {
+                  if (assetValue[j].is_email_notification == true && assetValue[j].is_email_notification == "true") {
+                    await sails.helpers.notification.send.email("thresold_notification", userData)
+                  }
+                  if (assetValue[j].is_sms_notification == true && assetValue[j].is_sms_notification == "true") {
+                    await sails.helpers.notification.send.email("thresold_notification", userData)
+                  }
+                }
               }
             }
             if (assetValue[j].lower_limit != undefined && assetValue[j].lower_limit != null) {

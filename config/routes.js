@@ -27,7 +27,7 @@ module.exports.routes = {
   'get /test-bitgo': 'RootController.bitgoTest',
   'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
-
+  'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',

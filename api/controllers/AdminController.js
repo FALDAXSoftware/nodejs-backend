@@ -167,7 +167,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) { }
+                  if (admin_details.is_twofactor) {}
 
                   delete admin_details.password;
                   // Token Issue
@@ -266,7 +266,12 @@ module.exports = {
 
   // Change Password Admin
   changePassword: async function (req, res) {
-    let { email, current_password, new_password, confirm_password } = req.body;
+    let {
+      email,
+      current_password,
+      new_password,
+      confirm_password
+    } = req.body;
     try {
       if (!email || !current_password || !new_password || !confirm_password) {
         return res
@@ -348,17 +353,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_details.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("password change success"),
-                  "data": adminUpdates
-                });
-              }
-            })
+            to: (user_details.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("password change success"),
+                "data": adminUpdates
+              });
+            }
+          })
 
       } else {
         return res
@@ -379,7 +384,11 @@ module.exports = {
   },
 
   updateEmployeePassword: async function (req, res) {
-    let { email, new_password, confirm_password } = req.body;
+    let {
+      email,
+      new_password,
+      confirm_password
+    } = req.body;
     try {
       if (!email || !new_password || !confirm_password) {
         return res
@@ -398,7 +407,9 @@ module.exports = {
           });
       }
 
-      const user_details = await Admin.findOne({ email });
+      const user_details = await Admin.findOne({
+        email
+      });
       if (!user_details) {
         return res
           .status(401)
@@ -437,7 +448,12 @@ module.exports = {
       let time = String(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds())
 
       let slug = "change_password_subadmin"
-      let template = await EmailTemplate.findOne({ select: ['content'], where: { slug } });
+      let template = await EmailTemplate.findOne({
+        select: ['content'],
+        where: {
+          slug
+        }
+      });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
         datetime: dd + '-' + mm + '-' + today.getFullYear() + ' ' + time,
@@ -451,25 +467,25 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: adminUpdates[0]["email"],
-            subject: "Password Change"
-          }, function (err) {
-            if (!err) {
-              return res
-                .status(202)
-                .json({
-                  "status": 202,
-                  "message": sails.__("Change_Password_Email")
-                });
-            } else {
-              return res
-                .status(500)
-                .json({
-                  "status": 500,
-                  "err": sails.__("Something Wrong")
-                });
-            }
-          });
+          to: adminUpdates[0]["email"],
+          subject: "Password Change"
+        }, function (err) {
+          if (!err) {
+            return res
+              .status(202)
+              .json({
+                "status": 202,
+                "message": sails.__("Change_Password_Email")
+              });
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        });
 
       if (adminUpdates) {
         return res.json({
@@ -573,16 +589,16 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (admin_details.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "message": sails.__("password change success")
-                  });
-                }
-              })
+              to: (admin_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success")
+                });
+              }
+            })
         } else {
           return res.json({
             "status": 400,
@@ -642,16 +658,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-              to: admin_details.email,
-              subject: "Forgot Password"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("Reset password link sent to your email successfully.")
-                });
-              }
-            })
+            to: admin_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -915,7 +931,12 @@ module.exports = {
           id: emp_id
         })
 
-        let role = await Role.findOne({ select: ['name'], where: { id: employee.role_id } })
+        let role = await Role.findOne({
+          select: ['name'],
+          where: {
+            id: employee.role_id
+          }
+        })
         employee['role_name'] = role.name;
 
         return res.json({
@@ -1205,17 +1226,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (adminData.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.status(200).json({
-                    "status": 200,
-                    "message": sails.__("WhiteList IP Add Success"),
-                    "data": updateAdminData
-                  });
-                }
-              })
+              to: (adminData.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": updateAdminData
+                });
+              }
+            })
         }
       } else {
         return res
@@ -1276,7 +1297,9 @@ module.exports = {
         })
       } else {
         // Send email notification
-        var user_data = await Admin.findOne({ id: requestData.user_id });
+        var user_data = await Admin.findOne({
+          id: requestData.user_id
+        });
         let slug = 'new_ip_whitelist';
         let template = await EmailTemplate.findOne({
           slug
@@ -1295,17 +1318,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_data.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.status(200).json({
-                  "status": 200,
-                  "message": sails.__("WhiteList IP Add Success"),
-                  "data": []
-                });
-              }
-            })
+            to: (user_data.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.status(200).json({
+                "status": 200,
+                "message": sails.__("WhiteList IP Add Success"),
+                "data": []
+              });
+            }
+          })
       }
 
     } catch (err) {
@@ -1496,7 +1519,9 @@ module.exports = {
 
   deleteUser: async function (req, res) {
     try {
-      let { user_id } = req.allParams();
+      let {
+        user_id
+      } = req.allParams();
 
       var userDetail = await Users.findOne({
         where: {
@@ -1574,7 +1599,9 @@ module.exports = {
   changeWhitelistIPStatus: async function (req, res) {
     try {
       let user_id = req.user.id;
-      let { status } = req.body;
+      let {
+        status
+      } = req.body;
       let adminData = await Admin.findOne({
         id: user_id,
         deleted_at: null
@@ -1618,30 +1645,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
 
     } catch (err) {
       return res
@@ -1656,7 +1683,10 @@ module.exports = {
   // Change Whitelist IP status for User
   changeUserWhitelistIPStatus: async function (req, res) {
     try {
-      let { status, user_id } = req.body;
+      let {
+        status,
+        user_id
+      } = req.body;
       let user = await Admin.findOne({
         id: user_id,
         deleted_at: null
@@ -1700,30 +1730,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
     } catch (err) {
       return res
         .status(500)
@@ -1791,7 +1821,7 @@ module.exports = {
         if (data && data != "" && data != null) {
           query += " WHERE"
           whereAppended = true;
-          query += " (LOWER(u.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(uft.status) LIKE '%" + data.toLowerCase() + "%' OR LOWER(u.full_name) LIKE '%" + data.toLowerCase()+"%'";
+          query += " (LOWER(u.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(uft.status) LIKE '%" + data.toLowerCase() + "%' OR LOWER(u.full_name) LIKE '%" + data.toLowerCase() + "%'";
           query += ")"
         }
       }
@@ -1808,9 +1838,9 @@ module.exports = {
       countQuery = query;
 
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY uft.id DESC";
@@ -1868,8 +1898,12 @@ module.exports = {
             "err": sails.__("Unauthorized Access")
           });
       }
-      let { id } = req.body;
-      var get_data = await UserForgotTwofactors.findOne({ id: id });
+      let {
+        id
+      } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({
+        id: id
+      });
       if (!get_data) {
         return res
           .status(500)
@@ -1889,7 +1923,9 @@ module.exports = {
       }
       // Disable user's 2fa
       var user = await Users
-        .update({ id: get_data.user_id })
+        .update({
+          id: get_data.user_id
+        })
         .set({
           is_twofactor: false,
           twofactor_secret: "",
@@ -1902,11 +1938,15 @@ module.exports = {
       }
 
       await UserForgotTwofactors
-        .update({ id: get_data.id })
-        .set({ status: "closed" });
+        .update({
+          id: get_data.id
+        })
+        .set({
+          status: "closed"
+        });
 
       var slug = "twofactor_request_email_approved";
-      if( user[0].security_feature == true ){
+      if (user[0].security_feature == true) {
         slug = "twofactor_request_email_approved_sf";
       }
       let template = await EmailTemplate.findOne({
@@ -1925,16 +1965,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user[0].email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request approved")
-              });
-            }
-          })
+          to: user[0].email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request approved")
+            });
+          }
+        })
     } catch (err) {
       console.log('err', err)
       return res.json({
@@ -1969,8 +2009,13 @@ module.exports = {
             "err": sails.__("Unauthorized Access")
           });
       }
-      let { id, reason } = req.body;
-      var get_data = await UserForgotTwofactors.findOne({ id: id });
+      let {
+        id,
+        reason
+      } = req.body;
+      var get_data = await UserForgotTwofactors.findOne({
+        id: id
+      });
       if (!get_data) {
         return res
           .status(500)
@@ -1990,15 +2035,22 @@ module.exports = {
       }
 
       await UserForgotTwofactors
-        .update({ id: get_data.id })
-        .set({ status: "rejected", reason: reason });
+        .update({
+          id: get_data.id
+        })
+        .set({
+          status: "rejected",
+          reason: reason
+        });
 
       if (get_data.uploaded_file) {
         await UploadFiles.deleteFile(get_data.uploaded_file); // delete the file
       }
 
       var user = await Users
-        .findOne({ id: get_data.user_id })
+        .findOne({
+          id: get_data.user_id
+        })
       let slug = "twofactor_request_email_rejected";
       let template = await EmailTemplate.findOne({
         slug
@@ -2017,16 +2069,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user.email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request rejected")
-              });
-            }
-          })
+          to: user.email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request rejected")
+            });
+          }
+        })
     } catch (err) {
       console.log("err", err);
       return res.json({
@@ -2036,8 +2088,8 @@ module.exports = {
     }
   },
   // Admin Thresholds lists
-  adminThresholdLists: async function(req,res){
-    try{
+  adminThresholdLists: async function (req, res) {
+    try {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2053,33 +2105,33 @@ module.exports = {
       });
       var all_coins = get_coins.rows;
       var check_all;
-      var newarray =[];
-      if( admin_thresholds != undefined && (admin_thresholds.value != null || admin_thresholds.value != "" ) && (JSON.parse(admin_thresholds.value)).length > 0  ){
+      var newarray = [];
+      if (admin_thresholds != undefined && (admin_thresholds.value != null || admin_thresholds.value != "") && (JSON.parse(admin_thresholds.value)).length > 0) {
         var assets = JSON.parse(admin_thresholds.value);
-        all_coins.map(obj =>{
+        all_coins.map(obj => {
           var singledata = {};
-          let exisiting = assets.find( each_value => each_value['coin_id'] === obj.coin_id );
+          let exisiting = assets.find(each_value => each_value['coin_id'] === obj.coin_id);
           //console.log(exisiting);
-            singledata.coin = obj.coin;
-            singledata.coin_id = obj.coin_id;
-            if( exisiting != undefined ){
-              singledata.fist_limit = exisiting.fist_limit;
-              singledata.second_limit = exisiting.second_limit;
-              singledata.third_limit = exisiting.third_limit;
-              singledata.is_sms_notification = exisiting.is_sms_notification;
-              singledata.is_email_notification = exisiting.is_email_notification;
-            }else{
-              singledata.fist_limit = 0;
-              singledata.second_limit = 0;
-              singledata.third_limit = 0;
-              singledata.is_sms_notification = false;
-              singledata.is_email_notification = false;
-            }
-          newarray.push( singledata );
+          singledata.coin = obj.coin;
+          singledata.coin_id = obj.coin_id;
+          if (exisiting != undefined) {
+            singledata.fist_limit = exisiting.fist_limit;
+            singledata.second_limit = exisiting.second_limit;
+            singledata.third_limit = exisiting.third_limit;
+            singledata.is_sms_notification = exisiting.is_sms_notification;
+            singledata.is_email_notification = exisiting.is_email_notification;
+          } else {
+            singledata.fist_limit = 0;
+            singledata.second_limit = 0;
+            singledata.third_limit = 0;
+            singledata.is_sms_notification = false;
+            singledata.is_email_notification = false;
+          }
+          newarray.push(singledata);
         })
-      }else{
+      } else {
 
-        all_coins.map(obj =>{
+        all_coins.map(obj => {
           var singledata = {};
           singledata.coin_id = obj.coin_id;
           singledata.coin = obj.coin;
@@ -2096,7 +2148,7 @@ module.exports = {
         "message": sails.__("Threshold listed"),
         "data": newarray
       });
-    }catch(err){
+    } catch (err) {
       console.log("err", err);
       return res.json({
         "status": 500,
@@ -2106,8 +2158,8 @@ module.exports = {
 
   },
   // Add or Update Admin Thresholds
-  addOrUpdateAdminThresholds: async function(req, res){
-    try{
+  addOrUpdateAdminThresholds: async function (req, res) {
+    try {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2123,13 +2175,13 @@ module.exports = {
         }
       });
 
-      if( admin_thresholds != undefined ){
+      if (admin_thresholds != undefined) {
         await AdminSetting
           .update({
             id: admin_thresholds.id
           })
           .set({
-            value:JSON.stringify(assets)
+            value: JSON.stringify(assets)
           })
       }
       return res.status(200).json({
@@ -2137,19 +2189,19 @@ module.exports = {
         "message": sails.__("Threshold updated"),
         "data": assets
       });
-    }catch(err){
-      console.log("err",err);
+    } catch (err) {
+      console.log("err", err);
       return res
-      .status(500)
-      .json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
   // Add or Update Admin Thresholds Contacts list
-  addThresholdContacts: async function(req, res){
-    try{
+  addThresholdContacts: async function (req, res) {
+    try {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2165,13 +2217,13 @@ module.exports = {
         }
       });
 
-      if( admin_thresholds != undefined ){
+      if (admin_thresholds != undefined) {
         await AdminSetting
           .update({
             id: admin_thresholds.id
           })
           .set({
-            value:JSON.stringify(contacts)
+            value: JSON.stringify(contacts)
           })
       }
       return res.status(200).json({
@@ -2179,20 +2231,20 @@ module.exports = {
         "message": sails.__("Threshold Contacts updated"),
         "data": admin_thresholds
       });
-    }catch(err){
-      console.log("err",err);
+    } catch (err) {
+      console.log("err", err);
       return res
-      .status(500)
-      .json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
   // Admin Thresholds Contact lists
-  adminThresholdContactList: async function(req,res){
-    try{
+  adminThresholdContactList: async function (req, res) {
+    try {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2206,21 +2258,21 @@ module.exports = {
           deleted_at: null
         }
       });
-      if( admin_thresholds_contacts != undefined ){
+      if (admin_thresholds_contacts != undefined) {
         admin_thresholds_contacts.value = JSON.parse(admin_thresholds_contacts.value);
         return res.status(200).json({
           "status": 200,
           "message": sails.__("Threshold Contacts listed"),
           "data": admin_thresholds_contacts
         });
-      }else{
+      } else {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("No record found"),
           "data": newarray
         });
       }
-    }catch(err){
+    } catch (err) {
       console.log("err", err);
       return res.json({
         "status": 500,
@@ -2229,5 +2281,18 @@ module.exports = {
     }
 
   },
+
+  getAdminWalletDetails: async function (req, res) {
+    try {
+      var walletAdminDetails = await Wallet.find({
+        is_admin: true,
+        deleted_at: null
+      });
+
+      console.log(walletAdminDetails);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 };
