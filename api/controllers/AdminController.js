@@ -1933,21 +1933,9 @@ module.exports = {
       }
 
       var user = await Users
-<<<<<<< HEAD
         .update({ id: get_data.user_id })
         .set(disable_withdrawls)
         .fetch();
-=======
-        .update({
-          id: get_data.user_id
-        })
-        .set({
-          is_twofactor: false,
-          twofactor_secret: "",
-          // security_feature: true,
-          // security_feature_expired_time: moment().utc().add(24, 'hours')
-        }).fetch();
->>>>>>> e1753f1359611bfb8f040afea42eb0c5dbb9df91
 
       if (get_data.uploaded_file) {
         await UploadFiles.deleteFile(get_data.uploaded_file); // delete the file
