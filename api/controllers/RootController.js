@@ -218,7 +218,7 @@ module.exports = {
   queryTest: async function (user_id, slug) {
     // let user_id = 1347;
     // let slug = 'kyc'
-    let data = await sails.helpers.notification.notify(user_id, slug);
+    let data = await sails.helpers.notification.checkAdminWalletNotification();
     return res.json({
       success: true
     });
