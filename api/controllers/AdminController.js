@@ -2288,13 +2288,13 @@ module.exports = {
 
   getAdminWalletDetails: async function (req, res) {
     try {
-      var query = `Select c.coin,th.balance,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
+      var query = `Select c.coin,w.balance,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
       LEFT JOIN trade_history th
       ON c.coin=th.user_coin
       LEFT JOIN wallets w
       ON c.id=w.coin_id
       WHERE w.is_admin=TRUE AND c.is_active=TRUE
-      GROUP BY c.coin, w.send_address, w.receive_address`;
+      GROUP BY c.coin, w.send_address, w.receive_address, w.balance`;
       let FeeData = await sails.sendNativeQuery(query, []);
       FeeData = FeeData.rows;
 
