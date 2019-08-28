@@ -130,5 +130,8 @@ module.exports.policies = {
   },
   "ThresoldController": {
     "addThresoldValue": true
-  }
+  },
+  // "NotificationsController": {
+  //   "getNotificationList": true
+  // }
 };
