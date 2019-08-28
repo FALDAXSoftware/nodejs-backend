@@ -1926,9 +1926,9 @@ module.exports = {
       var disable_withdrawls = {
         is_twofactor: false,
         twofactor_secret: "",
-        security_feature_expired_time:""
+        security_feature_expired_time: ""
       }
-      if( user_data.security_feature == true || user_data.security_feature == "true" ){
+      if (user_data.security_feature == true || user_data.security_feature == "true") {
         disable_withdrawls.security_feature_expired_time = moment().utc().add(process.env.WITHDRAWLS_DURATION, 'minutes');
       }
 
@@ -2288,7 +2288,7 @@ module.exports = {
 
   getAdminWalletDetails: async function (req, res) {
     try {
-      var query = `Select c.coin,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
+      var query = `Select c.coin,th.balance,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
       LEFT JOIN trade_history th
       ON c.coin=th.user_coin
       LEFT JOIN wallets w
