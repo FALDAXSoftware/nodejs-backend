@@ -363,6 +363,10 @@ module.exports.routes = {
   'get /admin/get-admin-thresholds': 'AdminController.adminThresholdLists',
   'post /admin/add-admin-thresholds': 'AdminController.addOrUpdateAdminThresholds',
   'get /admin/get-admin-thresholds-contacts': 'AdminController.adminThresholdContactList',
-  'post /admin/add-admin-thresholds-contacts': 'AdminController.addThresholdContacts'
+  'post /admin/add-admin-thresholds-contacts': 'AdminController.addThresholdContacts',
+
+  // Notification API
+  'get /get-notification-list': 'NotificationsController.getNotificationList',
+  'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification'
 
 };

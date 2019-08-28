@@ -58,10 +58,10 @@ module.exports.cron = {
     onTick: async function () {
       if (sails.config.local.CRON_STATUS == "true") {
         // Updating Thresold Value according to the latest value
-        await ThresoldController.addThresoldValue();
+        // await sails.controllers.ThresoldController.addThresoldValue();
 
         // Checking the condition for notification
-        await sails.helpers.notification.CheckThresoldNotification();
+        await sails.helpers.notification.checkTheresoldNotification();
       }
     }
   },

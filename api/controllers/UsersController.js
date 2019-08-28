@@ -64,6 +64,7 @@ module.exports = {
       }
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
+      console.log(req.body)
       if (req.body.email && req.body.password) {
         var user_detail = await Users.create({
           email: email,
@@ -83,6 +84,28 @@ module.exports = {
         }).fetch();
 
         var now = moment.now();
+
+        var notificationList = await Notifications.find({
+          where: {
+            deleted_at: null
+          }
+        });
+
+        for (var i = 0; i < notificationList.length; i++) {
+          var object = {};
+          object.slug = notificationList[i].slug;
+          object.created_at = new Date();
+          object.user_id = user_detail.id
+          if (notificationList[i].is_necessary == "true" || notificationList[i].is_necessary == true) {
+            object.email = true
+          } else {
+            object.email = false
+          }
+          object.text = false;
+          var data = await UserNotification.create({
+            ...object
+          }).fetch();
+        }
 
         var userFavouritesData = await UserFavourites.createEach([{
           user_id: user_detail.id,

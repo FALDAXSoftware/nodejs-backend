@@ -1,3 +1,4 @@
+var ThresoldController = require("../../controllers/ThresoldController");
 module.exports = {
   friendlyName: 'Email',
   description: 'Send Email for Notification',
@@ -11,6 +12,8 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+
+    await ThresoldController.addThresoldValue();
 
     //Getting User Notification Details
     let user = await UserThresholds.find({
@@ -31,7 +34,35 @@ module.exports = {
         for (var k = 0; k < priceValue.length; k++) {
           if (priceValue[k].coin_id == assetValue[j].coin_id) {
             if (assetValue[j].upper_limit != undefined && assetValue[j].upper_limit != null) {
+              console.log(priceValue[k].quote.USD.price);
+              console.log(assetValue[j].upper_limit);
               if (priceValue[k].quote.USD.price >= assetValue[j].upper_limit) {
+                console.log(element.user_id);
+                var userData = await Users.findOne({
+                  where: {
+                    id: element.user_id,
+                    is_active: true,
+                    deleted_at: null,
+                    is_verified: true
+                  }
+                });
+                console.log(userData);
+                if (userData) {
+                  if (assetValue[j].is_email_notification == true || assetValue[j].is_email_notification == "true") {
+                    console.log(userData)
+                    if (userData.email != undefined) {
+                      await sails.helpers.notification.send.email("thresold_notification", userData)
+                    }
+                  }
+                  if (assetValue[j].is_sms_notification == true || assetValue[j].is_sms_notification == "true") {
+                    if (userData.phone_number != undefined)
+                      await sails.helpers.notification.send.text("thresold_notification", userData)
+                  }
+                }
+              }
+            }
+            if (assetValue[j].lower_limit != undefined && assetValue[j].lower_limit != null) {
+              if (priceValue[k].quote.USD.price <= assetValue[j].lower_limit) {
                 var userData = await Users.findOne({
                   where: {
                     id: element.user_id,
@@ -41,18 +72,17 @@ module.exports = {
                   }
                 });
                 if (userData) {
-                  if (assetValue[j].is_email_notification == true && assetValue[j].is_email_notification == "true") {
-                    await sails.helpers.notification.send.email("thresold_notification", userData)
+                  if (assetValue[j].is_email_notification == true || assetValue[j].is_email_notification == "true") {
+                    console.log(userData)
+                    if (userData.email != undefined) {
+                      await sails.helpers.notification.send.email("thresold_notification", userData)
+                    }
                   }
-                  if (assetValue[j].is_sms_notification == true && assetValue[j].is_sms_notification == "true") {
-                    await sails.helpers.notification.send.email("thresold_notification", userData)
+                  if (assetValue[j].is_sms_notification == true || assetValue[j].is_sms_notification == "true") {
+                    if (userData.phone_number != undefined)
+                      await sails.helpers.notification.send.text("thresold_notification", userData)
                   }
                 }
-              }
-            }
-            if (assetValue[j].lower_limit != undefined && assetValue[j].lower_limit != null) {
-              if (priceValue[k].quote.USD.price <= assetValue[j].lower_limit) {
-                await sails.helpers.notification.notify(element.user_id, "thresold_notification");
               }
             }
           }
