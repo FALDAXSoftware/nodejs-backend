@@ -272,7 +272,10 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     Users
-      .findOne({ 'email': values.email, 'deleted_at': null })
+      .findOne({
+        'email': values.email,
+        'deleted_at': null
+      })
       .exec(function (err, found) {
         values.created_at = new Date()
         if (!found) {
@@ -289,7 +292,9 @@ module.exports = {
                 })
             });
         } else {
-          next({ error: 'Email address already exists' });
+          next({
+            error: 'Email address already exists'
+          });
         }
       });
   },
@@ -332,17 +337,17 @@ module.exports = {
     }
     return this;
   },
-  updateData:updateData
+  updateData: updateData
 
 };
 
 // Update User data
-async function updateData( filter, params ){
+async function updateData(filter, params) {
   var check_exist = await Users.findOne(filter);
-  if( check_exist != undefined ){
+  if (check_exist != undefined) {
     if (params.first_name && params.last_name) {
       params.full_name = params.first_name + ' ' + check_exist.last_name;
-    }else if (params.first_name) {
+    } else if (params.first_name) {
       params.full_name = params.first_name + ' ' + check_exist.last_name;
     } else if (params.last_name) {
       params.full_name = check_exist.first_name + ' ' + params.last_name;
@@ -351,8 +356,8 @@ async function updateData( filter, params ){
     }
 
     var data = await Users
-      .update( filter )
-      .set( params )
+      .update(filter)
+      .set(params)
       .fetch();
 
     if (check_exist["hubspot_id"] && check_exist["hubspot_id"] != null) {
@@ -362,12 +367,12 @@ async function updateData( filter, params ){
         .hubspot
         .contacts
         .update(check_exist["hubspot_id"], user.first_name, user.last_name, user.street_address + (
-          ", " + user.street_address_2 ), user.country,
+            ", " + user.street_address_2), user.country,
           user.state, user.city_town, user.postal_code);
     }
 
     return data;
-  }else{
+  } else {
     return 0;
   }
 

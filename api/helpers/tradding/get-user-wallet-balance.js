@@ -67,6 +67,10 @@ module.exports = {
       }
     });
 
+    if (userWalletCurrencyBalance.length == 0) {
+      userWalletCurrencyBalance = "Please create wallet for " + inputs.currency;
+    }
+
     userWalletCryptoBalance = await Wallet.find({
       where: {
         coin_id: cryptoId.id,
@@ -76,11 +80,12 @@ module.exports = {
       }
     });
 
+    if (userWalletCryptoBalance.length == 0) {
+      userWalletCryptoBalance = "Please create the wallet for " + inputs.crypto;
+    }
+
     var sellBookValue,
       buyBookValue;
-
-    // Fetching the fees for the user let fees = await sails   .helpers   .utilities
-    //   .getMakerTakerFees(inputs.crypto, inputs.currency);
 
     var user_id = parseInt(inputs.user_id);
 
