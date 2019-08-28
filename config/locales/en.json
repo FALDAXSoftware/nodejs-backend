@@ -302,7 +302,8 @@
 	"Deleted By User": "User has been deleted. Please contact support.",
 	"Twofactor Request rejected": "Twofactor Request rejected",
 	"Threshold updated": "Threshold limits updated successfully",
-  "Threshold listed":"Thresholds has been listed successfully",
-  "Threshold Contacts updated":"Contact list updated successfully",
-  "Threshold Contacts listed":"Contact list has been listed successfully"
+	"Threshold listed": "Thresholds has been listed successfully",
+	"Threshold Contacts updated": "Contact list updated successfully",
+	"Threshold Contacts listed": "Contact list has been listed successfully",
+	"Wallet Details": "Wallet Details"
 }

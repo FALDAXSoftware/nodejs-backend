@@ -124,6 +124,16 @@ module.exports = {
       columnName: 'two_factor_requests',
       defaultsTo: false,
     },
+    notifications: {
+      type: "boolean",
+      columnName: 'notifications',
+      defaultsTo: false,
+    },
+    wallet_dashboard: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'wallet_dashboard',
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
