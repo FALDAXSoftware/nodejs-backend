@@ -69,9 +69,7 @@ module.exports = {
     console.log(req.body.state)
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
-      console.log("transfer Id >>>>>>>>>>.", transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-      console.log("Transfer Value ?????????????", transfer);
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
@@ -84,8 +82,6 @@ module.exports = {
           // Object of sender
           let source = transfer.outputs[1];
 
-          console.log(dest);
-          console.log(source)
           // receiver wallet
           let userWallet = await Wallet.findOne({
             receive_address: dest.address,

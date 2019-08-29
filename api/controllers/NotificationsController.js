@@ -49,7 +49,7 @@ module.exports = {
           id: data[i].id
         })
 
-        if (notificationData != undefined || notificationData.length > 0) {
+        if (notificationData != undefined) {
           var updatedData = await UserNotification
             .update({
               deleted_at: null,
@@ -64,11 +64,19 @@ module.exports = {
         }
       }
 
+      console.log(user_id);
+
+      var notificationUpdateData = await UserNotification.find({
+        deleted_at: null,
+        user_id: user_id
+      })
+
       return res
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("notification update success")
+          "message": sails.__("notification update success"),
+          "data": notificationUpdateData
         })
 
     } catch (err) {

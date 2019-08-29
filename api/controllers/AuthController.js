@@ -108,8 +108,6 @@ module.exports = {
 
   login: async function (req, res) {
     try {
-      // var clientIp = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-      // console.log("Client IP >>>>>>>>>>>>", clientIp);
       if (req.body.email && req.body.password) {
         let query = {
           email: req
@@ -256,29 +254,7 @@ module.exports = {
                 var token = await sails
                   .helpers
                   .jwtIssue(user_detail.id);
-                // Login History Save
-                // var ip;
-                // if (req.headers['x-forwarded-for']) {
-                //   ip = req
-                //     .headers['x-forwarded-for']
-                //     .split(",")[0];
-                // } else if (req.connection && req.connection.remoteAddress) {
-                //   ip = req.connection.remoteAddress;
-                //   console.log("second");
-                // } else {
-                //   console.log("third");
-                //   ip = req.ip;
-                // }
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
-
-                // if (user_detail.whitelist_ip != null && user_detail.whitelist_ip != "" && user_detail.whitelist_ip.indexOf(ip) <= -1) {
-                //   return res
-                //     .status(401)
-                //     .json({
-                //       "status": 401,
-                //       "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
-                //     });
-                // }
 
                 var check_any_whitelistip = {
                   user_id: user_detail.id,
@@ -352,6 +328,22 @@ module.exports = {
                   let template = await EmailTemplate.findOne({
                     slug
                   });
+
+                  // Notification Sending for users
+                  var userNotification = await Users.findOne({
+                    user_id: user_detail.id,
+                    deleted_at: null,
+                    slug: 'login_new_ip'
+                  })
+                  if (userNotification != undefined) {
+                    if (userNotification.email == true || userNotification.email == "true") {
+                      await sails.helpers.notification.send.email("kyc_approved", user_data)
+                    }
+                    if (userNotification.text == true || userNotification.text == "true") {
+                      await sails.helpers.notification.send.text("kyc_approved", user_data)
+                    }
+                  }
+
                   let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
                     homeLink: sails.config.urlconf.APP_URL,
                     recipientName: user_detail.first_name,
