@@ -1925,8 +1925,7 @@ module.exports = {
       var user_data = user = await Users.findOne({ id: get_data.user_id });
       var disable_withdrawls = {
         is_twofactor: false,
-        twofactor_secret: "",
-        security_feature_expired_time: ""
+        twofactor_secret: ""
       }
       if (user_data.security_feature == true || user_data.security_feature == "true") {
         disable_withdrawls.security_feature_expired_time = moment().utc().add(process.env.WITHDRAWLS_DURATION, 'minutes');
@@ -2283,7 +2282,6 @@ module.exports = {
         "message": sails.__("Something Wrong")
       });
     }
-
   },
 
   getAdminWalletDetails: async function (req, res) {
@@ -2305,7 +2303,10 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
     }
   }
-
 };
