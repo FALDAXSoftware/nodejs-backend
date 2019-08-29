@@ -61,7 +61,7 @@ module.exports.cron = {
         // await sails.controllers.ThresoldController.addThresoldValue();
 
         // Checking the condition for notification
-        await sails.helpers.notification.checkTheresoldNotification();
+        //await sails.helpers.notification.checkTheresoldNotification();
       }
     }
   },
