@@ -94,6 +94,7 @@ module.exports = {
         for (var i = 0; i < notificationList.length; i++) {
           var object = {};
           object.slug = notificationList[i].slug;
+          object.title = notificationList[i].title;
           object.created_at = new Date();
           object.user_id = user_detail.id
           if (notificationList[i].is_necessary == "true" || notificationList[i].is_necessary == true) {

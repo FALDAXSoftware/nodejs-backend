@@ -37,22 +37,16 @@ module.exports = {
   updateOrAddUserNotification: async function (req, res) {
     try {
 
-      var {
-        data
-      } = req.body;
-
-      console.log(req.body)
+      var data = req.body;
 
       var user_id = req.user.id;
-
-      console.log(data);
-      console.log(data.length);
 
       for (var i = 0; i < data.length; i++) {
         var notificationData = await UserNotification.findOne({
           deleted_at: null,
           slug: data[i].slug,
-          user_id: user_id
+          user_id: user_id,
+          id: data[i].id
         })
 
         if (notificationData != undefined || notificationData.length > 0) {
@@ -60,7 +54,8 @@ module.exports = {
             .update({
               deleted_at: null,
               slug: data[i].slug,
-              user_id: user_id
+              user_id: user_id,
+              id: data[i].id
             })
             .set({
               text: data[i].text,
