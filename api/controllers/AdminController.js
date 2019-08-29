@@ -167,7 +167,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) {}
+                  if (admin_details.is_twofactor) { }
 
                   delete admin_details.password;
                   // Token Issue
@@ -353,17 +353,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: (user_details.email).trim(),
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("password change success"),
-                "data": adminUpdates
-              });
-            }
-          })
+              to: (user_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success"),
+                  "data": adminUpdates
+                });
+              }
+            })
 
       } else {
         return res
@@ -467,25 +467,25 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: adminUpdates[0]["email"],
-          subject: "Password Change"
-        }, function (err) {
-          if (!err) {
-            return res
-              .status(202)
-              .json({
-                "status": 202,
-                "message": sails.__("Change_Password_Email")
-              });
-          } else {
-            return res
-              .status(500)
-              .json({
-                "status": 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        });
+            to: adminUpdates[0]["email"],
+            subject: "Password Change"
+          }, function (err) {
+            if (!err) {
+              return res
+                .status(202)
+                .json({
+                  "status": 202,
+                  "message": sails.__("Change_Password_Email")
+                });
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "err": sails.__("Something Wrong")
+                });
+            }
+          });
 
       if (adminUpdates) {
         return res.json({
@@ -589,16 +589,16 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-              to: (admin_details.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("password change success")
-                });
-              }
-            })
+                to: (admin_details.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("password change success")
+                  });
+                }
+              })
         } else {
           return res.json({
             "status": 400,
@@ -658,16 +658,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-            to: admin_details.email,
-            subject: "Forgot Password"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Reset password link sent to your email successfully.")
-              });
-            }
-          })
+              to: admin_details.email,
+              subject: "Forgot Password"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("Reset password link sent to your email successfully.")
+                });
+              }
+            })
       } else {
         return res
           .status(401)
@@ -1226,17 +1226,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-              to: (adminData.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.status(200).json({
-                  "status": 200,
-                  "message": sails.__("WhiteList IP Add Success"),
-                  "data": updateAdminData
-                });
-              }
-            })
+                to: (adminData.email).trim(),
+                subject: template.name
+              }, function (err) {
+                if (!err) {
+                  return res.status(200).json({
+                    "status": 200,
+                    "message": sails.__("WhiteList IP Add Success"),
+                    "data": updateAdminData
+                  });
+                }
+              })
         }
       } else {
         return res
@@ -1318,17 +1318,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: (user_data.email).trim(),
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.status(200).json({
-                "status": 200,
-                "message": sails.__("WhiteList IP Add Success"),
-                "data": []
-              });
-            }
-          })
+              to: (user_data.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": []
+                });
+              }
+            })
       }
 
     } catch (err) {
@@ -1645,30 +1645,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (admin_details[0].email).trim(),
-          subject: "IP Whitelist status changed"
-        }, function (err) {
-          if (!err) {
-            if (status == true || status == "true") {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip enabled")
-              });
+            to: (admin_details[0].email).trim(),
+            subject: "IP Whitelist status changed"
+          }, function (err) {
+            if (!err) {
+              if (status == true || status == "true") {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip enabled")
+                });
+              } else {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip disabled")
+                });
+              }
             } else {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip disabled")
-              });
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
             }
-          } else {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        })
+          })
 
     } catch (err) {
       return res
@@ -1730,30 +1730,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (admin_details[0].email).trim(),
-          subject: "IP Whitelist status changed"
-        }, function (err) {
-          if (!err) {
-            if (status == true || status == "true") {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip enabled")
-              });
+            to: (admin_details[0].email).trim(),
+            subject: "IP Whitelist status changed"
+          }, function (err) {
+            if (!err) {
+              if (status == true || status == "true") {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip enabled")
+                });
+              } else {
+                res.json({
+                  status: 200,
+                  message: sails.__("Whitelist ip disabled")
+                });
+              }
             } else {
-              res.json({
-                status: 200,
-                message: sails.__("Whitelist ip disabled")
-              });
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
             }
-          } else {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
-              });
-          }
-        })
+          })
     } catch (err) {
       return res
         .status(500)
@@ -1926,9 +1926,9 @@ module.exports = {
       var disable_withdrawls = {
         is_twofactor: false,
         twofactor_secret: "",
-        security_feature_expired_time:""
+        security_feature_expired_time: ""
       }
-      if( user_data.security_feature == true || user_data.security_feature == "true" ){
+      if (user_data.security_feature == true || user_data.security_feature == "true") {
         disable_withdrawls.security_feature_expired_time = moment().utc().add(process.env.WITHDRAWLS_DURATION, 'minutes');
       }
 
@@ -1969,16 +1969,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: user[0].email,
-          subject: template.name
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Twofactor Request approved")
-            });
-          }
-        })
+            to: user[0].email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request approved")
+              });
+            }
+          })
     } catch (err) {
       console.log('err', err)
       return res.json({
@@ -2073,16 +2073,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: user.email,
-          subject: template.name
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": sails.__("Twofactor Request rejected")
-            });
-          }
-        })
+            to: user.email,
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Twofactor Request rejected")
+              });
+            }
+          })
     } catch (err) {
       console.log("err", err);
       return res.json({
@@ -2288,12 +2288,21 @@ module.exports = {
 
   getAdminWalletDetails: async function (req, res) {
     try {
-      var walletAdminDetails = await Wallet.find({
-        is_admin: true,
-        deleted_at: null
-      });
+      var query = `Select c.coin,w.balance,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
+      LEFT JOIN trade_history th
+      ON c.coin=th.user_coin
+      LEFT JOIN wallets w
+      ON c.id=w.coin_id
+      WHERE w.is_admin=TRUE AND c.is_active=TRUE
+      GROUP BY c.coin, w.send_address, w.receive_address, w.balance`;
+      let FeeData = await sails.sendNativeQuery(query, []);
+      FeeData = FeeData.rows;
 
-      console.log(walletAdminDetails);
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Wallet Details"),
+        "data": FeeData
+      });
     } catch (error) {
       console.log(error);
     }
