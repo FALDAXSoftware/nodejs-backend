@@ -2282,7 +2282,6 @@ module.exports = {
         "message": sails.__("Something Wrong")
       });
     }
-
   },
 
   getAdminWalletDetails: async function (req, res) {
@@ -2304,7 +2303,10 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
     }
   }
-
 };
