@@ -728,5 +728,52 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  addWalletBalance: async function (req, res) {
+    try {
+      console.log("Inside this method >>>>>>>>.")
+      var {
+        coin,
+        user_id,
+        balance
+      } = req.body;
+
+      console.log(req.body)
+
+      var coinData = await Coins.findOne({
+        deleted_at: null,
+        coin_code: coin,
+        // is_active: true
+      });
+
+      console.log("COin Value >>>>>>>>>>>", coinData)
+
+      var walletData = await Wallet.findOne({
+        deleted_at: null,
+        coin_id: coinData.id,
+        user_id: user_id
+      });
+
+      console.log("wallet Data >>>>>>.", walletData)
+
+
+      if (walletData != undefined) {
+        var updateWalletData = await Wallet.update({
+            deleted_at: null,
+            coin_id: coinData.id,
+            user_id: user_id
+          })
+          .set({
+            balance: balance,
+            placed_balance: balance
+          });
+      }
+      return res.status(200).json({
+        "status": 200
+      })
+    } catch (error) {
+
+    }
   }
 };
