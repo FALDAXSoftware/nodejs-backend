@@ -69,7 +69,10 @@ module.exports = {
     try {
       var userIds = [];
       userIds.push(inputs.user_id);
-      let {crypto, currency} = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -150,6 +153,31 @@ module.exports = {
             .intercept('serverError', () => {
               return new Error("serverError");
             });
+          for (var i = 0; i < userIds.length; i++) {
+            // Notification Sending for users
+            var userNotification = await UserNotification.findOne({
+              user_id: userIds[i],
+              deleted_at: null,
+              slug: 'trade_execute'
+            })
+            var user_data = await Users.findOne({
+              deleted_at: null,
+              id: userIds[i],
+              is_active: true
+            });
+            if (user_data != undefined) {
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (user_data.email != undefined)
+                    await sails.helpers.notification.send.email("trade_execute", user_data)
+                }
+                if (userNotification.text == true || userNotification.text == "true") {
+                  if (user_data.phone_number != undefined)
+                    await sails.helpers.notification.send.text("trade_execute", user_data)
+                }
+              }
+            }
+          }
           await sails
             .helpers
             .sockets
@@ -169,6 +197,34 @@ module.exports = {
               .addBuyOrder(buyLimitOrderData);
             //Add Socket Here Emit
             addBuyBook.added = true;
+
+
+            // Notification sending for users
+            for (var i = 0; i < userIds.length; i++) {
+              // Notification Sending for users
+              var userNotification = await UserNotification.findOne({
+                user_id: userIds[i],
+                deleted_at: null,
+                slug: 'trade_execute'
+              })
+              var user_data = await Users.findOne({
+                deleted_at: null,
+                id: userIds[i],
+                is_active: true
+              });
+              if (user_data != undefined) {
+                if (userNotification != undefined) {
+                  if (userNotification.email == true || userNotification.email == "true") {
+                    if (user_data.email != undefined)
+                      await sails.helpers.notification.send.email("trade_execute", user_data)
+                  }
+                  if (userNotification.text == true || userNotification.text == "true") {
+                    if (user_data.phone_number != undefined)
+                      await sails.helpers.notification.send.text("trade_execute", user_data)
+                  }
+                }
+              }
+            }
             await sails
               .helpers
               .sockets
@@ -198,6 +254,34 @@ module.exports = {
             });
 
           addBuyBook.added = true;
+
+          // Notification sending for Users
+          for (var i = 0; i < userIds.length; i++) {
+            // Notification Sending for users
+            var userNotification = await UserNotification.findOne({
+              user_id: userIds[i],
+              deleted_at: null,
+              slug: 'trade_execute'
+            })
+            var user_data = await Users.findOne({
+              deleted_at: null,
+              id: userIds[i],
+              is_active: true
+            });
+            if (user_data != undefined) {
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (user_data.email != undefined)
+                    await sails.helpers.notification.send.email("trade_execute", user_data)
+                }
+                if (userNotification.text == true || userNotification.text == "true") {
+                  if (user_data.phone_number != undefined)
+                    await sails.helpers.notification.send.text("trade_execute", user_data)
+                }
+              }
+            }
+          }
+
           //Add Socket Here Emit
           await sails
             .helpers

@@ -290,10 +290,12 @@ module.exports = {
         if (user_data != undefined) {
           if (userNotification != undefined) {
             if (userNotification.email == true || userNotification.email == "true") {
-              await sails.helpers.notification.send.email("trade_execute", user_data)
+              if (user_data.email != undefined)
+                await sails.helpers.notification.send.email("trade_execute", user_data)
             }
             if (userNotification.text == true || userNotification.text == "true") {
-              await sails.helpers.notification.send.text("trade_execute", user_data)
+              if (user_data.phone_number != undefined)
+                await sails.helpers.notification.send.text("trade_execute", user_data)
             }
           }
         }

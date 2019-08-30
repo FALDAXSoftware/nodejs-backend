@@ -225,10 +225,12 @@ module.exports = {
                 })
                 if (userNotification != undefined) {
                   if (userNotification.email == true || userNotification.email == "true") {
-                    await sails.helpers.notification.send.email("kyc_approved", user_data)
+                    if (user_data.email != undefined)
+                      await sails.helpers.notification.send.email("kyc_approved", user_data)
                   }
                   if (userNotification.text == true || userNotification.text == "true") {
-                    await sails.helpers.notification.send.text("kyc_approved", user_data)
+                    if (user_data.phone_number != undefined)
+                      await sails.helpers.notification.send.text("kyc_approved", user_data)
                   }
                 }
                 if (user_data != undefined) {

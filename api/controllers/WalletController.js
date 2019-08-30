@@ -372,6 +372,22 @@ module.exports = {
                             ...addObject2
                           })
 
+                          var userNotification = await UserNotification.findOne({
+                            user_id: userData.id,
+                            deleted_at: null,
+                            slug: 'withdraw'
+                          })
+                          if (userNotification != undefined) {
+                            if (userNotification.email == true || userNotification.email == "true") {
+                              if (userData.email != undefined)
+                                await sails.helpers.notification.send.email("withdraw", userData)
+                            }
+                            if (userNotification.text == true || userNotification.text == "true") {
+                              if (userData.phone_number != undefined)
+                                await sails.helpers.notification.send.text("withdraw", userData)
+                            }
+                          }
+
                           return res.json({
                             status: 200,
                             message: sails.__("Token send success")
