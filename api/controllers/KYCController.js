@@ -215,7 +215,24 @@ module.exports = {
 
               if (resultState[data.state] == "ACCEPT") {
                 // Send email notification
-                var user_data = await Users.findOne({ mtid: data.mtid });
+                var user_data = await Users.findOne({
+                  mtid: data.mtid
+                });
+                var userNotification = await UserNotification.findOne({
+                  user_id: user_data.id,
+                  deleted_at: null,
+                  slug: 'kyc_approved'
+                })
+                if (userNotification != undefined) {
+                  if (userNotification.email == true || userNotification.email == "true") {
+                    if (user_data.email != undefined)
+                      await sails.helpers.notification.send.email("kyc_approved", user_data)
+                  }
+                  if (userNotification.text == true || userNotification.text == "true") {
+                    if (user_data.phone_number != undefined)
+                      await sails.helpers.notification.send.text("kyc_approved", user_data)
+                  }
+                }
                 if (user_data != undefined) {
                   let slug = 'kyc_approved';
                   let template = await EmailTemplate.findOne({
@@ -234,13 +251,13 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                        to: (user_data.email).trim(),
-                        subject: template.name
-                      }, function (err) {
-                        if (err) {
-                          console.log("err in sending email, while kyc approved", err);
-                        }
-                      })
+                      to: (user_data.email).trim(),
+                      subject: template.name
+                    }, function (err) {
+                      if (err) {
+                        console.log("err in sending email, while kyc approved", err);
+                      }
+                    })
                 }
               }
             }
@@ -378,8 +395,8 @@ module.exports = {
         query += " kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND kyc.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 

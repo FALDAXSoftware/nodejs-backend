@@ -148,7 +148,35 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, {'quantity': remainingQty});
+                  .update(sellBook[0].id, {
+                    'quantity': remainingQty
+                  });
+
+                // for (var i = 0; i < userIds.length; i++) {
+                //   // Notification Sending for users
+                //   var userNotification = await UserNotification.findOne({
+                //     user_id: userIds[i],
+                //     deleted_at: null,
+                //     slug: 'trade_execute'
+                //   })
+                //   var user_data = await Users.findOne({
+                //     deleted_at: null,
+                //     id: userIds[i],
+                //     is_active: true
+                //   });
+                //   if (user_data != undefined) {
+                //     if (userNotification != undefined) {
+                //       if (userNotification.email == true || userNotification.email == "true") {
+                //         if (user_data.email != undefined)
+                //           await sails.helpers.notification.send.email("trade_execute", user_data)
+                //       }
+                //       if (userNotification.text == true || userNotification.text == "true") {
+                //         if (user_data.phone_number != undefined)
+                //           await sails.helpers.notification.send.text("trade_execute", user_data)
+                //       }
+                //     }
+                //   }
+                // }
                 //Emit the socket
                 await sails
                   .helpers
@@ -161,6 +189,32 @@ module.exports = {
                   .tradding
                   .sell
                   .deleteOrder(sellBook[0].id);
+
+                // for (var i = 0; i < userIds.length; i++) {
+                //   // Notification Sending for users
+                //   var userNotification = await UserNotification.findOne({
+                //     user_id: userIds[i],
+                //     deleted_at: null,
+                //     slug: 'trade_execute'
+                //   })
+                //   var user_data = await Users.findOne({
+                //     deleted_at: null,
+                //     id: userIds[i],
+                //     is_active: true
+                //   });
+                //   if (user_data != undefined) {
+                //     if (userNotification != undefined) {
+                //       if (userNotification.email == true || userNotification.email == "true") {
+                //         if (user_data.email != undefined)
+                //           await sails.helpers.notification.send.email("trade_execute", user_data)
+                //       }
+                //       if (userNotification.text == true || userNotification.text == "true") {
+                //         if (user_data.phone_number != undefined)
+                //           await sails.helpers.notification.send.text("trade_execute", user_data)
+                //       }
+                //     }
+                //   }
+                // }
 
                 //Emit the socket here
                 await sails
@@ -250,6 +304,39 @@ module.exports = {
                 .tradding
                 .sell
                 .deleteOrder(sellBook[0].id);
+
+              // for (var i = 0; i < userIds.length; i++) {
+              //   // Notification Sending for users
+              //   var userNotification = await UserNotification.findOne({
+              //     user_id: userIds[i],
+              //     deleted_at: null,
+              //     slug: 'trade_execute'
+              //   })
+              //   var user_data = await Users.findOne({
+              //     deleted_at: null,
+              //     id: userIds[i],
+              //     is_active: true
+              //   });
+              //   if (user_data != undefined) {
+              //     if (userNotification != undefined) {
+              //       if (userNotification.email == true || userNotification.email == "true") {
+              //         if (user_data.email != undefined)
+              //           await sails.helpers.notification.send.email("trade_execute", user_data)
+              //       }
+              //       if (userNotification.text == true || userNotification.text == "true") {
+              //         if (user_data.phone_number != undefined)
+              //           await sails.helpers.notification.send.text("trade_execute", user_data)
+              //       }
+              //     }
+              //   }
+              // }
+
+              //Emit the socket here
+              await sails
+                .helpers
+                .sockets
+                .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
+
               //Emit socket here
               var resendDataLimit = {
                 ...buyLimitOrderData
@@ -306,6 +393,32 @@ module.exports = {
               .tradding
               .buy
               .addBuyOrder(buyAddedData);
+
+            // for (var i = 0; i < userIds.length; i++) {
+            //   // Notification Sending for users
+            //   var userNotification = await UserNotification.findOne({
+            //     user_id: userIds[i],
+            //     deleted_at: null,
+            //     slug: 'trade_execute'
+            //   })
+            //   var user_data = await Users.findOne({
+            //     deleted_at: null,
+            //     id: userIds[i],
+            //     is_active: true
+            //   });
+            //   if (user_data != undefined) {
+            //     if (userNotification != undefined) {
+            //       if (userNotification.email == true || userNotification.email == "true") {
+            //         if (user_data.email != undefined)
+            //           await sails.helpers.notification.send.email("trade_execute", user_data)
+            //       }
+            //       if (userNotification.text == true || userNotification.text == "true") {
+            //         if (user_data.phone_number != undefined)
+            //           await sails.helpers.notification.send.text("trade_execute", user_data)
+            //       }
+            //     }
+            //   }
+            // }
             await sails
               .helpers
               .sockets
@@ -340,6 +453,32 @@ module.exports = {
             .tradding
             .buy
             .addBuyOrder(buyAddedData);
+
+          // for (var i = 0; i < userIds.length; i++) {
+          //   // Notification Sending for users
+          //   var userNotification = await UserNotification.findOne({
+          //     user_id: userIds[i],
+          //     deleted_at: null,
+          //     slug: 'trade_execute'
+          //   })
+          //   var user_data = await Users.findOne({
+          //     deleted_at: null,
+          //     id: userIds[i],
+          //     is_active: true
+          //   });
+          //   if (user_data != undefined) {
+          //     if (userNotification != undefined) {
+          //       if (userNotification.email == true || userNotification.email == "true") {
+          //         if (user_data.email != undefined)
+          //           await sails.helpers.notification.send.email("trade_execute", user_data)
+          //       }
+          //       if (userNotification.text == true || userNotification.text == "true") {
+          //         if (user_data.phone_number != undefined)
+          //           await sails.helpers.notification.send.text("trade_execute", user_data)
+          //       }
+          //     }
+          //   }
+          // }
 
           await sails
             .helpers

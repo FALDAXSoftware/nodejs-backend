@@ -269,6 +269,31 @@ module.exports = {
         return exits.orderBookEmpty();
       }
       // console.log("----wallet", wallet);
+      // for (var i = 0; i < userIds.length; i++) {
+      //   // Notification Sending for users
+      //   var userNotification = await UserNotification.findOne({
+      //     user_id: userIds[i],
+      //     deleted_at: null,
+      //     slug: 'trade_execute'
+      //   })
+      //   var user_data = await Users.findOne({
+      //     deleted_at: null,
+      //     id: userIds[i],
+      //     is_active: true
+      //   });
+      //   if (user_data != undefined) {
+      //     if (userNotification != undefined) {
+      //       if (userNotification.email == true || userNotification.email == "true") {
+      //         if (user_data.email != undefined)
+      //           await sails.helpers.notification.send.email("trade_execute", user_data)
+      //       }
+      //       if (userNotification.text == true || userNotification.text == "true") {
+      //         if (user_data.phone_number != undefined)
+      //           await sails.helpers.notification.send.text("trade_execute", user_data)
+      //       }
+      //     }
+      //   }
+      // }
       await sails
         .helpers
         .sockets

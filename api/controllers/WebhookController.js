@@ -69,9 +69,7 @@ module.exports = {
     console.log(req.body.state)
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
-      console.log("transfer Id >>>>>>>>>>.", transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-      console.log("Transfer Value ?????????????", transfer);
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
@@ -84,8 +82,6 @@ module.exports = {
           // Object of sender
           let source = transfer.outputs[1];
 
-          console.log(dest);
-          console.log(source)
           // receiver wallet
           let userWallet = await Wallet.findOne({
             receive_address: dest.address,
@@ -148,14 +144,37 @@ module.exports = {
                 placed_balance: userWallet.placed_balance + amount
               });
 
+            // Sending Notification To users
+
+            var userData = await Users.findOne({
+              deleted_at: null,
+              is_active: true,
+              id: userWallet.user_id
+            })
+
+            var userNotification = await UserNotification.findOne({
+              user_id: userData.id,
+              deleted_at: null,
+              slug: 'receive'
+            })
+            if (userNotification != undefined) {
+              if (userNotification.email == true || userNotification.email == "true") {
+                if (userData.email != undefined)
+                  await sails.helpers.notification.send.email("receive", userData)
+              }
+              if (userNotification.text == true || userNotification.text == "true") {
+                if (userData.phone_number != undefined)
+                  await sails.helpers.notification.send.text("receive", userData)
+              }
+            }
+
 
             // Send fund to Warm and custody wallet
             let coin = await Coins.findOne({
               id: userWallet.coin_id
             });
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
-            console.log("warm wallet", warmWallet);
-            console.log(warmWallet)
+
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
             // check for wallet exist or not
             console.log(custodialWallet)

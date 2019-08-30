@@ -13,6 +13,10 @@ module.exports = {
       allowNull: true,
       columnName: 'slug'
     },
+    title: {
+      type: 'string',
+      columnName: 'title'
+    },
     user_id: {
       columnName: "user_id",
       model: "users"

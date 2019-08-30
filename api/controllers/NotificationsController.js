@@ -37,30 +37,25 @@ module.exports = {
   updateOrAddUserNotification: async function (req, res) {
     try {
 
-      var {
-        data
-      } = req.body;
-
-      console.log(req.body)
+      var data = req.body;
 
       var user_id = req.user.id;
-
-      console.log(data);
-      console.log(data.length);
 
       for (var i = 0; i < data.length; i++) {
         var notificationData = await UserNotification.findOne({
           deleted_at: null,
           slug: data[i].slug,
-          user_id: user_id
+          user_id: user_id,
+          id: data[i].id
         })
 
-        if (notificationData != undefined || notificationData.length > 0) {
+        if (notificationData != undefined) {
           var updatedData = await UserNotification
             .update({
               deleted_at: null,
               slug: data[i].slug,
-              user_id: user_id
+              user_id: user_id,
+              id: data[i].id
             })
             .set({
               text: data[i].text,
@@ -69,11 +64,19 @@ module.exports = {
         }
       }
 
+      console.log(user_id);
+
+      var notificationUpdateData = await UserNotification.find({
+        deleted_at: null,
+        user_id: user_id
+      })
+
       return res
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("notification update success")
+          "message": sails.__("notification update success"),
+          "data": notificationUpdateData
         })
 
     } catch (err) {
