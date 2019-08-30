@@ -367,6 +367,8 @@ module.exports.routes = {
 
   // Notification API
   'get /get-notification-list': 'NotificationsController.getNotificationList',
-  'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification'
+  'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
+  // Update User Wallet balance
+  'post /update-user-balance': 'WalletController.addWalletBalance'
 };
