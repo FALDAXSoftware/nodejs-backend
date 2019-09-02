@@ -63,6 +63,9 @@ module.exports = {
         'activity_id': activity_id
       });
 
+      console.log("Pending Book Details >>>>>>>>>>>>", pendingDetails);
+      console.log("Pending Book Detaile Length >>>>>>>>>>>>>>>", pendingDetails.length);
+
       if (pendingDetails.length > 0) {
         if (order_type == "StopLimit" && side == "Buy") {
 

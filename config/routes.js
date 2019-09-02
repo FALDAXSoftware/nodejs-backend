@@ -370,5 +370,8 @@ module.exports.routes = {
   'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
   // Update User Wallet balance
-  'post /update-user-balance': 'WalletController.addWalletBalance'
+  'post /update-user-balance': 'WalletController.addWalletBalance',
+
+  // Admin Send API
+  'post /send-coin-admin': 'WalletController.sendCoinAdmin'
 };
