@@ -134,6 +134,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'wallet_dashboard',
     },
+    batch_and_balance: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'batch_and_balance',
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

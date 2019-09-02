@@ -46,6 +46,10 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_executed'
     },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

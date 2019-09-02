@@ -73,8 +73,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -114,7 +114,8 @@ module.exports = {
         amount,
         destination_address,
         coin_id,
-        user_id
+        user_id,
+        reason
       } = req.body;
 
       if (status == true) {
@@ -160,7 +161,7 @@ module.exports = {
                   // Send to hot warm wallet and make entry in diffrent table for both warm to
                   // receive and receive to destination
                   let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8)
-                  //Here remainning ebtry as well as address change
+                  //Here remainning entry as well as address change
                   let walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: sendWalletData.receiveAddress.address,
@@ -249,10 +250,10 @@ module.exports = {
             id: id
           })
           .set({
-            is_approve: false
+            is_approve: false,
+            reason
           })
           .fetch();
-
 
         if (!withdrawLimitData) {
           return res
@@ -271,7 +272,6 @@ module.exports = {
       }
     } catch (err) {
       console.log("errr", err);
-
       return res
         .status(500)
         .json({
