@@ -9,12 +9,12 @@ module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * API for getting buy book details
-    * Renders this api when buy book details need to be fetched
-    *
-    * @param <room, previous room>
-    *
-    * @return <Buy book details or error data>
+   * API for getting buy book details
+   * Renders this api when buy book details need to be fetched
+   *
+   * @param <room, previous room>
+   *
+   * @return <Buy book details or error data>
    */
 
   getBuyBookDetails: async function (req, res) {
@@ -45,7 +45,10 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -77,7 +80,10 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -108,7 +114,10 @@ module.exports = {
     } catch (err) {
       return res
         .status(500)
-        .json({ "status": 500, "err": err });
+        .json({
+          "status": 500,
+          "err": err
+        });
     }
   },
 
@@ -149,9 +158,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
