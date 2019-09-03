@@ -2286,23 +2286,38 @@ module.exports = {
 
   getAdminWalletDetails: async function (req, res) {
     try {
-      var query = `Select c.coin,w.balance,w.send_address, w.receive_address,(sum(th.user_fee)+sum(th.requested_fee)) as Fee from coins c
+      var walletQuery;
+      let { search } = req.allParams();
+
+      walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
+      (sum(th.user_fee)+sum(th.requested_fee)) as Fee 
+      from coins c
       LEFT JOIN trade_history th
       ON c.coin=th.user_coin
       LEFT JOIN wallets w
       ON c.id=w.coin_id
-      WHERE w.is_admin=TRUE AND c.is_active=TRUE
-      GROUP BY c.coin, w.send_address, w.receive_address, w.balance`;
-      let FeeData = await sails.sendNativeQuery(query, []);
+      WHERE w.is_admin=TRUE AND c.is_active=TRUE 
+      ${(search && search != "" && search != null) ? `AND LOWER(c.coin) LIKE '%${search.toLowerCase()}%'` : ''}
+      GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance`;
+
+      let FeeData = await sails.sendNativeQuery(walletQuery, []);
       FeeData = FeeData.rows;
+
+      let coinFee = await AdminSetting.findOne({
+        where: {
+          slug: 'default_send_coin_fee',
+          deleted_at: null
+        }
+      });
 
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Wallet Details"),
-        "data": FeeData
+        "data": FeeData,
+        'default_send_Coin_fee': parseFloat(coinFee.value),
       });
     } catch (error) {
-      console.log(error);
+      console.log('error', error)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
