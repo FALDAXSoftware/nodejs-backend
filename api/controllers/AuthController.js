@@ -330,7 +330,7 @@ module.exports = {
                   });
 
                   // Notification Sending for users
-                  var userNotification = await Users.findOne({
+                  var userNotification = await UserNotification.findOne({
                     user_id: user_detail["id"],
                     deleted_at: null,
                     slug: 'login_new_ip'
