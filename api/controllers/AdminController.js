@@ -2317,7 +2317,6 @@ module.exports = {
         'default_send_Coin_fee': parseFloat(coinFee.value),
       });
     } catch (error) {
-      console.log('error', error)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
