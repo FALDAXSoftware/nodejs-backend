@@ -891,9 +891,7 @@ module.exports = {
             status: 400,
             message: sails.__("Coin not found")
           });
-
       }
-
     } catch (err) {
       console.log(err);
       return res
@@ -905,9 +903,7 @@ module.exports = {
     }
   },
 
-
   // Just for QA testing
-
   addWalletBalance: async function (req, res) {
     try {
       console.log("Inside this method >>>>>>>>.")
@@ -938,10 +934,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: balance,
             placed_balance: balance
