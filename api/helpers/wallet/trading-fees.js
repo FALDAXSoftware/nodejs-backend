@@ -200,10 +200,10 @@ module.exports = {
       if (request.side == "Buy") {
 
         // ---------------------------crypto-------------------------------------- //
-        var cryptouserbalance = cryptoWalletUser.balance + (request.quantity - (request.quantity * inputs.takerFee / 100));
-        var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(6));
-        var cryptouserPlacedbalance = cryptoWalletUser.placed_balance + (request.quantity - (request.quantity * inputs.takerFee / 100));
-        var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(6));
+        var cryptouserbalance = cryptoWalletUser.balance + ((request.quantity).toFixed(3) - ((request.quantity * inputs.takerFee / 100).toFixed(5)));
+        var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(8));
+        var cryptouserPlacedbalance = cryptoWalletUser.placed_balance + ((request.quantity).toFixed(3) - ((request.quantity * inputs.takerFee / 100)).toFixed(5));
+        var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(8));
 
         var a = await Wallet
           .update({
@@ -214,8 +214,8 @@ module.exports = {
             placed_balance: cryptouserPlacedbalance
           });
 
-        var cryptorequestedbalance = cryptoWalletRequested.balance - (request.quantity);
-        var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(6));
+        var cryptorequestedbalance = cryptoWalletRequested.balance - ((request.quantity)).toFixed(3);
+        var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(8));
 
         var a = await Wallet
           .update({
@@ -227,10 +227,10 @@ module.exports = {
           .fetch();
 
         // -----------------------currency-------------------------------------- //
-        var currencyuserbalance = currencyWalletUser.balance - ((request.quantity * request.fill_price));
-        var currencyuserbalance = parseFloat(currencyuserbalance.toFixed(6))
-        var currencyuserplacedbalance = currencyWalletUser.placed_balance - ((request.quantity * request.fill_price));
-        var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(6))
+        var currencyuserbalance = currencyWalletUser.balance - (((request.quantity).toFixed(3) * request.fill_price.toFixed(5)));
+        var currencyuserbalance = parseFloat(currencyuserbalance.toFixed(8))
+        var currencyuserplacedbalance = currencyWalletUser.placed_balance - (((request.quantity).toFixed(3) * (request.fill_price).toFixed(5)));
+        var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(8))
         var b = await Wallet
           .update({
             id: currencyWalletUser.id
@@ -241,10 +241,10 @@ module.exports = {
           })
           .fetch();
 
-        var currencyrequestedbalance = currencyWalletRequested.balance + ((request.quantity * request.fill_price) - (request.quantity * request.fill_price * (inputs.makerFee / 100)));
-        var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(6));
-        var currencyrequestedplacedbalance = currencyWalletRequested.placed_balance + ((request.quantity * request.fill_price) - (request.quantity * request.fill_price * (inputs.makerFee / 100)));
-        var currencyrequestedplacedbalance = parseFloat(currencyrequestedplacedbalance.toFixed(6));
+        var currencyrequestedbalance = currencyWalletRequested.balance + (((request.quantity).toFixed(3) * request.fill_price) - ((request.quantity).toFixed(3) * request.fill_price * (inputs.makerFee / 100)));
+        var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(8));
+        var currencyrequestedplacedbalance = currencyWalletRequested.placed_balance + (((request.quantity).toFixed(3) * request.fill_price) - ((request.quantity).toFixed(3) * request.fill_price * (inputs.makerFee / 100)));
+        var currencyrequestedplacedbalance = parseFloat(currencyrequestedplacedbalance.toFixed(8));
 
         var b = await Wallet
           .update({
@@ -256,18 +256,18 @@ module.exports = {
           })
           .fetch();
 
-        var requestedFee = (request.quantity * request.fill_price * (inputs.makerFee / 100));
-        var userFee = (request.quantity * inputs.takerFee / 100);
+        var requestedFee = ((request.quantity).toFixed(3) * request.fill_price * (inputs.makerFee / 100));
+        var userFee = ((request.quantity).toFixed(3) * inputs.takerFee / 100);
 
-        user_usd = (request.quantity * request.fill_price) * (resultData);
+        user_usd = ((request.quantity).toFixed(3) * request.fill_price) * (resultData);
 
       } else if (request.side == "Sell") {
 
         // --------------------------------------crypto--------------------------- //
-        var cryptouserbalance = cryptoWalletUser.balance - (request.quantity);
-        var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(6))
-        var cryptouserPlacedbalance = cryptoWalletUser.placed_balance - ((request.quantity));
-        var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(6))
+        var cryptouserbalance = cryptoWalletUser.balance - ((request.quantity).toFixed(3));
+        var cryptouserbalance = parseFloat(cryptouserbalance.toFixed(8))
+        var cryptouserPlacedbalance = cryptoWalletUser.placed_balance - (((request.quantity).toFixed(3)));
+        var cryptouserPlacedbalance = parseFloat(cryptouserPlacedbalance.toFixed(8))
 
         var a = await Wallet
           .update({
@@ -278,10 +278,10 @@ module.exports = {
             placed_balance: cryptouserPlacedbalance
           });
 
-        var cryptorequestedbalance = cryptoWalletRequested.balance + (request.quantity - (request.quantity * (inputs.makerFee / 100)));
-        var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(6))
-        var cryptorequestedplacedbalance = cryptoWalletRequested.placed_balance + (request.quantity - (request.quantity * (inputs.makerFee / 100)));
-        var cryptorequestedplacedbalance = parseFloat(cryptorequestedplacedbalance.toFixed(6))
+        var cryptorequestedbalance = cryptoWalletRequested.balance + ((request.quantity).toFixed(3) - ((request.quantity).toFixed(3) * (inputs.makerFee / 100)));
+        var cryptorequestedbalance = parseFloat(cryptorequestedbalance.toFixed(8))
+        var cryptorequestedplacedbalance = cryptoWalletRequested.placed_balance + ((request.quantity).toFixed(3) - (((request.quantity).toFixed(3) * (inputs.makerFee / 100))).toFixed(5));
+        var cryptorequestedplacedbalance = parseFloat(cryptorequestedplacedbalance.toFixed(8))
 
         var a = await Wallet
           .update({
@@ -295,10 +295,10 @@ module.exports = {
 
         // -------------------------- currency ---------------------------- //
 
-        var currencyuserbalance = currencyWalletUser.balance + (request.quantity * request.fill_price - (request.quantity * request.fill_price * (inputs.takerFee / 100)));
-        var currencyuserbalance = parseFloat(currencyuserbalance.toFixed(6))
-        var currencyuserplacedbalance = currencyWalletUser.placed_balance + (request.quantity * request.fill_price - (request.quantity * request.fill_price * (inputs.takerFee / 100)));
-        var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(6))
+        var currencyuserbalance = currencyWalletUser.balance + ((request.quantity).toFixed(3) * (request.fill_price).toFixed(5) - (((request.quantity).toFixed(3) * (request.fill_price).toFixed(5) * (inputs.takerFee / 100))).toFixed(5));
+        var currencyuserbalance = parseFloat(currencyuserbalance.toFixed(8))
+        var currencyuserplacedbalance = currencyWalletUser.placed_balance + ((request.quantity).toFixed(3) * request.fill_price - ((request.quantity).toFixed(3) * request.fill_price * (inputs.takerFee / 100)));
+        var currencyuserplacedbalance = parseFloat(currencyuserplacedbalance.toFixed(8))
 
         var b = await Wallet
           .update({
@@ -309,8 +309,8 @@ module.exports = {
             placed_balance: currencyuserplacedbalance
           });
 
-        var currencyrequestedbalance = currencyWalletRequested.balance - ((request.quantity * request.fill_price));
-        var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(6))
+        var currencyrequestedbalance = currencyWalletRequested.balance - ((((request.quantity).toFixed(3) * (request.fill_price).toFixed(5))));
+        var currencyrequestedbalance = parseFloat(currencyrequestedbalance.toFixed(8))
         var b = await Wallet
           .update({
             id: currencyWalletRequested.id
@@ -320,9 +320,9 @@ module.exports = {
           })
           .fetch();
 
-        var requestedFee = request.quantity * (inputs.makerFee / 100);
-        var userFee = (request.quantity * request.fill_price * (inputs.takerFee / 100));
-        user_usd = (request.quantity * request.fill_price) * (resultData);
+        var requestedFee = (((request.quantity).toFixed(3)) * ((inputs.makerFee / 100)).toFixed(8))
+        var userFee = ((((request.quantity).toFixed(3) * request.fill_price).toFixed(3) * ((inputs.takerFee / 100)))).toFixed(8);
+        user_usd = ((request.quantity).toFixed(3) * request.fill_price) * (resultData);
       }
 
       return exits.success({
