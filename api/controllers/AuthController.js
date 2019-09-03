@@ -338,11 +338,11 @@ module.exports = {
                   if (userNotification != undefined) {
                     if (userNotification.email == true || userNotification.email == "true") {
                       if (user_detail.email != undefined)
-                        await sails.helpers.notification.send.email("kyc_approved", user_detail)
+                        await sails.helpers.notification.send.email("login_new_ip", user_detail)
                     }
                     if (userNotification.text == true || userNotification.text == "true") {
                       if (user_detail.phone_number != undefined)
-                        await sails.helpers.notification.send.text("kyc_approved", user_detail)
+                        await sails.helpers.notification.send.text("login_new_ip", user_detail)
                     }
                   }
 
