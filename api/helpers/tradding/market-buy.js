@@ -131,7 +131,7 @@ module.exports = {
           .add(resultData);
 
         if (quantityValue <= availableQty) {
-          if ((fillPriceValue * quantityValue) <= (wallet.placed_balance).toFixed(8)) {
+          if ((fillPriceValue * quantityValue).toFixed(8) <= (wallet.placed_balance).toFixed(8)) {
             var trade_history_data = {
               ...orderData
             };
