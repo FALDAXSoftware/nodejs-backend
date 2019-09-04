@@ -113,7 +113,7 @@ module.exports = {
               source_address: source.address,
               destination_address: dest.address,
               user_id: userWallet.user_id,
-              amount: amount,
+              amount: (amount).toFixed(8),
               transaction_type: 'receive',
               transaction_id: req.body.hash
             }
@@ -128,7 +128,7 @@ module.exports = {
               source_address: source.address,
               destination_address: dest.address,
               user_id: userWallet.user_id,
-              amount: (amount),
+              amount: (amount).toFixed(8),
               transaction_type: 'receive',
             }
 
@@ -142,8 +142,8 @@ module.exports = {
                 id: userWallet.id
               })
               .set({
-                balance: userWallet.balance + amount,
-                placed_balance: userWallet.placed_balance + amount
+                balance: (userWallet.balance + amount).toFixed(8),
+                placed_balance: (userWallet.placed_balance + amount).toFixed(8)
               });
 
             // Sending Notification To users
