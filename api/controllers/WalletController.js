@@ -84,6 +84,14 @@ module.exports = {
 
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
+      for (var i = 0; i < balanceWalletData.rows.length; i++) {
+        balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(8);
+        balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(8);
+        balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(8);
+        balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(8);
+        balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(8);
+      }
+
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
 
       return res.json({
@@ -217,7 +225,9 @@ module.exports = {
             });
             if (limitTierData != undefined) {
               limitAmount = limitTierData.daily_withdraw_crypto;
+              limitAmount = limitAmount.toFixed(8)
               limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
+              limitAmountMonthly = limitAmountMonthly.toFixed(8);
             } else {
               limitAmount = null;
               limitAmountMonthly = null;
@@ -225,7 +235,9 @@ module.exports = {
           }
         } else if (userTierData.length > 0) {
           limitAmount = userTierData[0].daily_withdraw_crypto;
+          limitAmount = limitAmount.toFixed(8)
           limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
+          limitAmountMonthly = limitAmountMonthly.toFixed(8);
         } else {
           limitAmount = null;
           limitAmountMonthly = null;
@@ -258,6 +270,9 @@ module.exports = {
               '<=': today
             }
           })
+
+        walletHistoryData = walletHistoryData.toFixed(8);
+        walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(8);
 
         // if (parseFloat(amount) <= 0) {
         //   return res
@@ -292,7 +307,7 @@ module.exports = {
                 if (wallet) {
 
                   //If placed balance is greater than the amount to be send
-                  if (wallet.placed_balance >= parseFloat(amount)) {
+                  if ((wallet.placed_balance).toFixed(8) >= (parseFloat(amount)).toFixed(8)) {
 
                     //If coin is of bitgo type
                     if (coin.type == 1) {
@@ -315,13 +330,14 @@ module.exports = {
                           // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
                           let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
+
                           //Here remainning ebtry as well as address change
                           let walletHistory = {
                             coin_id: wallet.coin_id,
                             source_address: wallet.send_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: amount,
+                            amount: (amount),
                             transaction_type: 'send',
                             transaction_id: transaction.txid,
                             is_executed: false
@@ -338,8 +354,8 @@ module.exports = {
                               id: wallet.id
                             })
                             .set({
-                              balance: wallet.balance - amount,
-                              placed_balance: wallet.placed_balance - amount
+                              balance: (wallet.balance - amount).toFixed(8),
+                              placed_balance: (wallet.placed_balance - amount).toFixed(8)
                             });
 
                           // Adding the transaction details in transaction table This is entry for sending
@@ -349,7 +365,7 @@ module.exports = {
                             source_address: warmWalletData.receiveAddress.address,
                             destination_address: wallet.send_address,
                             user_id: user_id,
-                            amount: amount,
+                            amount: (amount),
                             transaction_type: 'send',
                             is_executed: true
                           }
@@ -363,7 +379,7 @@ module.exports = {
                             source_address: wallet.send_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: amount,
+                            amount: (amount),
                             transaction_type: 'send',
                             is_executed: false
                           }
@@ -416,7 +432,7 @@ module.exports = {
                             source_address: warmWalletData.receiveAddress.address,
                             destination_address: wallet.send_address,
                             user_id: user_id,
-                            amount: amount,
+                            amount: (amount).toFixed(8),
                             transaction_type: 'send',
                             coin_id: coin.id,
                             is_executed: false
@@ -934,10 +950,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-          deleted_at: null,
-          coin_id: coinData.id,
-          user_id: user_id
-        })
+            deleted_at: null,
+            coin_id: coinData.id,
+            user_id: user_id
+          })
           .set({
             balance: balance,
             placed_balance: balance
