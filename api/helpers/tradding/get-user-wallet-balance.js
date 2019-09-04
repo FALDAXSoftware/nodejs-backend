@@ -36,8 +36,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    console.log("HERE ????????????");
-
     // Get user wallet balance.
     var userWalletBalance;
     // TODO
@@ -67,8 +65,9 @@ module.exports = {
       }
     });
 
+    var currencyMessage = '';
     if (userWalletCurrencyBalance.length == 0) {
-      userWalletCurrencyBalance = "Please create wallet for " + inputs.currency;
+      currencyMessage = "Please create wallet for " + inputs.currency;
     }
 
     userWalletCryptoBalance = await Wallet.find({
@@ -80,8 +79,9 @@ module.exports = {
       }
     });
 
+    var cryptoMessage = '';
     if (userWalletCryptoBalance.length == 0) {
-      userWalletCryptoBalance = "Please create the wallet for " + inputs.crypto;
+      cryptoMessage = "Please create the wallet for " + inputs.crypto;
     }
 
     var sellBookValue,
@@ -174,7 +174,9 @@ module.exports = {
 
     userWalletBalance = {
       'currency': userWalletCurrencyBalance,
+      'currency_msg': currencyMessage,
       'crypto': userWalletCryptoBalance,
+      'crypto_msg': cryptoMessage,
       'buyEstimatedPrice': buyEstimatedFee,
       'sellEstimatedPrice': sellEstimatedFee,
       'buyPay': buyPay,

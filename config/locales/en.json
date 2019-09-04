@@ -307,5 +307,7 @@
   "Threshold Contacts listed": "Contact list has been listed successfully",
   "notification retreive success": "Notification List has been retrieved successfully.",
   "notification update success": "Notification List has been updated successfully",
-  "Wallet Details": "Wallet Details"
+  "Wallet Details": "Wallet Details",
+  "Create Crypto Wallet": "Please generate your crypto wallet to continue.",
+  "Create Currency Wallet": "Please generate your Currency wallet to continue."
 }
