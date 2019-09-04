@@ -28,76 +28,143 @@ module.exports = {
       orderQuantity = parseFloat(orderQuantity);
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Market Sell Order for order execution
-        let market_sell_response = await sails
-          .helpers
-          .tradding
-          .marketSell(symbol, user_id, side, order_type, orderQuantity)
-          .tolerate("coinNotFound", () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate("serverError", () => {
-            throw new Error("serverError");
-          })
-          .tolerate("insufficientBalance", () => {
-            throw new Error("insufficientBalance");
-          })
-          .tolerate("orderBookEmpty", () => {
-            throw new Error("orderBookEmpty");
-          });
-        res.json({
-          "status": 200,
-          "message": sails.__("Order Success")
+      // if (geo_fencing_data.response == true) {
+      // Market Sell Order for order execution
+      let market_sell_response = await sails
+        .helpers
+        .tradding
+        .marketSell(symbol, user_id, side, order_type, orderQuantity)
+        .tolerate("coinNotFound", () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate("serverError", () => {
+          throw new Error("serverError");
+        })
+        .tolerate("insufficientBalance", () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate("orderBookEmpty", () => {
+          throw new Error("orderBookEmpty");
         });
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
-          "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
-        });
-      }
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
       if (error.message == "coinNotFound") {
         return res
@@ -159,78 +226,145 @@ module.exports = {
       } = req.allParams();
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      //Security Feature for 2 factor
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+      // //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Market Buy Order for order execution
-        let market_buy_response = await sails
-          .helpers
-          .tradding
-          .marketBuy(symbol, user_id, side, order_type, orderQuantity)
-          .tolerate("coinNotFound", () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate("serverError", () => {
-            throw new Error("serverError");
-          })
-          .tolerate("insufficientBalance", () => {
-            throw new Error("insufficientBalance");
-          })
-          .tolerate("orderBookEmpty", () => {
-            throw new Error("orderBookEmpty");
-          });
-        res.json({
-          "status": 200,
-          "message": sails.__("Order Success")
+      // if (geo_fencing_data.response == true) {
+      // Market Buy Order for order execution
+      let market_buy_response = await sails
+        .helpers
+        .tradding
+        .marketBuy(symbol, user_id, side, order_type, orderQuantity)
+        .tolerate("coinNotFound", () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate("serverError", () => {
+          throw new Error("serverError");
+        })
+        .tolerate("insufficientBalance", () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate("orderBookEmpty", () => {
+          throw new Error("orderBookEmpty");
         });
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
-          "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
-        });
-      }
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Success")
+      });
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
+      console.log(error)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -285,77 +419,143 @@ module.exports = {
       } = req.allParams();
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      //Security Feature for 2 factor
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Limit Sell Order for order execution
-        let limit_sell_response = await sails
-          .helpers
-          .tradding
-          .limitSell(symbol, user_id, side, order_type, orderQuantity, limit_price);
-        if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true && limit_sell_response.added == true) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order added Success")
-          });
-        } else if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order Partially Fulfilled and Successfully added to Sell book")
-          });
-        } else {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order Success")
-          });
-        }
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
+      // if (geo_fencing_data.response == true) {
+      // Limit Sell Order for order execution
+      let limit_sell_response = await sails
+        .helpers
+        .tradding
+        .limitSell(symbol, user_id, side, order_type, orderQuantity, limit_price);
+      if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true && limit_sell_response.added == true) {
+        return res.json({
           "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
+          "message": sails.__("Order added Success")
+        });
+      } else if (limit_sell_response.side == "Sell" && limit_sell_response.is_partially_fulfilled == true) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Order Partially Fulfilled and Successfully added to Sell book")
+        });
+      } else {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Order Success")
         });
       }
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
       if (error.code == "coinNotFound") {
         return res
@@ -411,89 +611,155 @@ module.exports = {
       } = req.allParams();
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      //Security Feature for 2 factor
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Limit Buy Order for order execution
-        let limit_buy_response = await sails
-          .helpers
-          .tradding
-          .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price)
-          .tolerate('invalidQuantity', () => {
-            throw new Error("invalidQuantity");
-          })
-          .tolerate('coinNotFound', () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate('insufficientBalance', () => {
-            throw new Error("insufficientBalance");
-          })
-          .tolerate('serverError', () => {
-            throw new Error("serverError");
-          });;
-        if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true && limit_buy_response.added == true) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order added Success")
-          });
-        } else if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order Partially Fulfilled and Successfully added to Buy book")
-          });
-        } else {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Order Success")
-          });
-        }
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
+      // if (geo_fencing_data.response == true) {
+      // Limit Buy Order for order execution
+      let limit_buy_response = await sails
+        .helpers
+        .tradding
+        .limitBuy(symbol, user_id, side, order_type, orderQuantity, limit_price)
+        .tolerate('invalidQuantity', () => {
+          throw new Error("invalidQuantity");
+        })
+        .tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
+        });;
+      if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true && limit_buy_response.added == true) {
+        return res.json({
           "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
+          "message": sails.__("Order added Success")
+        });
+      } else if (limit_buy_response.side == "Buy" && limit_buy_response.is_partially_fulfilled == true) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Order Partially Fulfilled and Successfully added to Buy book")
+        });
+      } else {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Order Success")
         });
       }
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
       if (error.code == "coinNotFound") {
         return res
@@ -550,74 +816,140 @@ module.exports = {
       } = req.allParams();
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      //Security Feature for 2 factor
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Stop Limit Sell Order for order execution
-        let stop_limit_buy_response = await sails
-          .helpers
-          .tradding
-          .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
-          .tolerate('coinNotFound', () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate('insufficientBalance', () => {
-            throw new Error("insufficientBalance");
-          })
-          .tolerate('serverError', () => {
-            throw new Error("serverError");
-          });
-        res.json({
-          "status": 200,
-          "message": sails.__("Order Palce Success")
+      // if (geo_fencing_data.response == true) {
+      // Stop Limit Sell Order for order execution
+      let stop_limit_buy_response = await sails
+        .helpers
+        .tradding
+        .stopLimitBuyAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
+        .tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
         });
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
-          "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
-        });
-      }
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Palce Success")
+      });
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
       if (error.message == "coinNotFound") {
         return res
@@ -666,74 +998,140 @@ module.exports = {
       } = req.allParams();
       let user_id = req.user.id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .utilities
+        .getCurrencies(symbol);
+      let wallet = await sails
+        .helpers
+        .utilities
+        .getSellWalletBalance(crypto, currency, user_id)
+        .intercept("coinNotFound", () => {
+          return new Error("coinNotFound");
+        })
+        .intercept("serverError", () => {
+          return new Error("serverError")
+        });
 
-      //Security Feature for 2 factor
-      var userData = await Users.findOne({
+      let coinValue = await Coins.findOne({
+        is_active: true,
         deleted_at: null,
-        id: user_id,
-        is_active: true
+        coin: currency
+      })
+
+      let walletCurrency = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: coinValue.id,
+          is_active: true,
+          user_id: user_id
+        }
       });
 
-      if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue")
-            });
-        }
-
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: userData.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
-          });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp")
-            });
-        }
+      if (walletCurrency == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Currency Wallet")
+          })
       }
+
+      let cryptoValue = await Coins.findOne({
+        is_active: true,
+        deleted_at: null,
+        coin: crypto
+      })
+
+      let walletCrypto = await Wallet.findOne({
+        where: {
+          deleted_at: null,
+          coin_id: cryptoValue.id,
+          is_active: true,
+          user_id: user_id
+        }
+      });
+
+      if (walletCrypto == undefined) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("Create Crypto Wallet")
+          })
+      }
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+      //Security Feature for 2 factor
+      // var userData = await Users.findOne({
+      //   deleted_at: null,
+      //   id: user_id,
+      //   is_active: true
+      // });
+
+      // if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
+      //   if (!req.body.otp) {
+      //     return res
+      //       .status(202)
+      //       .json({
+      //         "status": 202,
+      //         "message": sails.__("Please enter OTP to continue")
+      //       });
+      //   }
+
+      //   let verified = speakeasy
+      //     .totp
+      //     .verify({
+      //       secret: userData.twofactor_secret,
+      //       encoding: 'base32',
+      //       token: req.body.otp,
+      //       window: 2
+      //     });
+
+      //   if (!verified) {
+      //     return res
+      //       .status(402)
+      //       .json({
+      //         "status": 402,
+      //         "message": sails.__("invalid otp")
+      //       });
+      //   }
+      // }
 
       // If user is allowed to trade in his region 
-      if (geo_fencing_data.response == true) {
-        // Stop Limit Buy Order for order execution
-        let stop_limit_sell_response = await sails
-          .helpers
-          .tradding
-          .stopLimitSellAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
-          .tolerate('coinNotFound', () => {
-            throw new Error("coinNotFound");
-          })
-          .tolerate('insufficientBalance', () => {
-            throw new Error("insufficientBalance");
-          })
-          .tolerate('serverError', () => {
-            throw new Error("serverError");
-          });
-        res.json({
-          "status": 200,
-          "message": sails.__("Order Palce Success")
+      // if (geo_fencing_data.response == true) {
+      // Stop Limit Buy Order for order execution
+      let stop_limit_sell_response = await sails
+        .helpers
+        .tradding
+        .stopLimitSellAddPending(symbol, user_id, side, order_type, orderQuantity, limit_price, stop_price)
+        .tolerate('coinNotFound', () => {
+          throw new Error("coinNotFound");
+        })
+        .tolerate('insufficientBalance', () => {
+          throw new Error("insufficientBalance");
+        })
+        .tolerate('serverError', () => {
+          throw new Error("serverError");
         });
-      } else {
-        // Whatever the response of user trade checking
-        res.json({
-          "status": 200,
-          "message": sails.__(geo_fencing_data.msg)
-        });
-      }
+      res.json({
+        "status": 200,
+        "message": sails.__("Order Palce Success")
+      });
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
     } catch (error) {
       if (error.message == "coinNotFound") {
         return res
