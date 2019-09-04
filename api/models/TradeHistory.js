@@ -125,6 +125,11 @@ module.exports = {
     deleted: {
       type: 'boolean',
       columnName: 'deleted'
+    },
+    trade_type: {
+      type: 'number',
+      columnName: 'trade_type',
+      defaultsTo:1
     }
   },
   beforeCreate: function (values, next) {
