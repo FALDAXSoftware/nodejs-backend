@@ -1852,7 +1852,7 @@ module.exports = {
           is_partially_fulfilled: true
         },
         sort: 'id DESC'
-      }).paginate(parseInt(page) - 1, parseInt(limit));;
+      }).paginate(parseInt(page) - 1, parseInt(limit));
 
       let pendingDataCount = await SellBook.count({
         deleted_at: null,
@@ -1861,17 +1861,73 @@ module.exports = {
       });
 
       tradePendingDetails = pendingDetailsBuy.concat(sellBookDetails);
-      console.log('tradePendingDetails', tradePendingDetails)
 
       if (tradePendingDetails) {
         return res.json({
           "status": 200,
-          "message": sails.__("Trade list"),
+          "message": sails.__("Pending Orders List"),
           "data": tradePendingDetails, pendingDataCount
         });
       }
     } catch (err) {
-      console.log('err', err)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+    //Last Query
+    //   SELECT *
+    // FROM pending_book
+    // LEFT JOIN buy_book
+    // ON pending_book.user_id = CAST(buy_book.user_id as character varying)
+    // WHERE pending_book.user_id='80' AND pending_book.deleted_at IS NULL AND buy_book.deleted_at IS NULL
+    // GROUP BY pending_book.id, buy_book.id
+  },
+
+  //get all cancel book orders
+  getAllCancelledOrders: async function (req, res) {
+    try {
+      let { user_id, page, limit, data, sort_col, sort_order } = req.allParams();
+      let query = " from activity_table WHERE is_cancel=true AND user_id='" + user_id + "' ";
+      let whereAppended = false;
+      if ((data && data != "")) {
+        whereAppended = true;
+        if (data && data != "" && data != null) {
+          query += "AND (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%')";
+          if (!isNaN(data)) {
+            query += " OR (limit_price=" + data + " OR fill_price=" + data + " OR quantity=" + data + ")";
+          }
+        }
+      }
+
+      countQuery = query;
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend'
+          ? 'DESC'
+          : 'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY id ASC";
+      }
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      let cancelDetails = await sails.sendNativeQuery("Select *" + query, [])
+
+      cancelDetails = cancelDetails.rows;
+
+      let cancelledOrderCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      cancelledOrderCount = cancelledOrderCount.rows[0].count;
+
+      if (cancelDetails) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Cancel Orders List"),
+          "data": cancelDetails,
+          cancelledOrderCount
+        });
+      }
+    } catch (err) {
       return res
         .status(500)
         .json({
