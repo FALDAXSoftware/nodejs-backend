@@ -373,5 +373,10 @@ module.exports.routes = {
   'post /update-user-balance': 'WalletController.addWalletBalance',
 
   // Admin Send API
-  'post /send-coin-admin': 'WalletController.sendCoinAdmin'
+  'post /send-coin-admin': 'WalletController.sendCoinAdmin',
+
+  // Batch and Balance Settlements
+  'post /admin/batches/create': 'AdminController.createBatch',
+  'post /admin/batches/list': 'AdminController.getBatchListing',
+
 };

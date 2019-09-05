@@ -2290,13 +2290,13 @@ module.exports = {
       let { search } = req.allParams();
 
       walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
-      (sum(th.user_fee)+sum(th.requested_fee)) as Fee 
+      (sum(th.user_fee)+sum(th.requested_fee)) as Fee
       from coins c
       LEFT JOIN trade_history th
       ON c.coin=th.user_coin
       LEFT JOIN wallets w
       ON c.id=w.coin_id
-      WHERE w.is_admin=TRUE AND c.is_active=TRUE 
+      WHERE w.is_admin=TRUE AND c.is_active=TRUE
       ${(search && search != "" && search != null) ? `AND LOWER(c.coin) LIKE '%${search.toLowerCase()}%'` : ''}
       GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance`;
 
@@ -2322,5 +2322,158 @@ module.exports = {
         "message": sails.__("Something Wrong")
       });
     }
-  }
+  },
+  // Create Batch
+  createBatch: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      // Parameter Existence
+      if (req.body.last_transaction_id ) {
+        // Get Previous data upto last tranasction
+        var get_data = await Batches
+          .find({deleted_at:null})
+          .sort('created_at DESC')
+          .limit(1);
+
+          let last_transaction_id = req.body.last_transaction_id;
+        var previous_trasaction_id=1;
+        var batch_number=1;
+        if( get_data.length > 0 ){
+          previous_trasaction_id = (get_data[0].transaction_end)+1;
+          batch_number = (get_data[0].batch_number)+1;
+        }
+        var query = `Select *,
+          (sum(user_fee)+sum(requested_fee)) as netprofit
+          from trade_history
+          WHERE id>='${previous_trasaction_id}' AND id<='${last_transaction_id}'
+          GROUP BY id`;
+
+          let get_transactions = await sails.sendNativeQuery(query, []);
+
+          var totalNetProfit = 0;
+          if( get_transactions.rowCount > 0 ){
+            (get_transactions.rows).map( function(each){
+              totalNetProfit += each.netprofit;
+            })
+          }
+
+        var data={
+          batch_number:batch_number,
+          transaction_start:previous_trasaction_id,
+          transaction_end:last_transaction_id,
+          net_profit:totalNetProfit
+        };
+
+        // Create Batch
+        var create_data = await Batches
+          .create(data)
+          .fetch();
+
+
+        if (create_data) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Batch added"),
+            "data": []
+          });
+        } else {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__("Something Wrong")
+            });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Enter last transaction id")
+          });
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Batch lists
+  getBatchListing: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      let {
+        sortCol,
+        sortOrder,
+        data,
+        page,
+        limit
+      } = req.allParams();
+      let query = " from batch_history WHERE deleted_at IS NULL ";
+
+      if ((data && data != "")) {
+        if (data && data != "" && data != null) {
+          query = query + " AND (batch_number LIKE '%" + data.toLowerCase() + "%')";
+        }
+      }
+      countQuery = query;
+
+      if (sortCol && sortOrder) {
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
+        query += " ORDER BY " + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY batch_date DESC";
+      }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      let get_batches = await sails.sendNativeQuery("Select *" + query, [])
+      let batch_count = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      batch_count = batch_count.rows[0].count;
+      // var get_batchs = await Batches.find().sort("batch_date DESC")
+      // console.log("get_batchs",get_batchs);
+      if( get_batches.rowCount > 0 ){
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Batch listed"),
+          "data": {
+            batches: get_batches.rows,
+            batch_count
+          }
+        });
+      }else{
+        return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("No record found")
+        });
+      }
+
+    } catch (err) {
+      console.log("err", err);
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong")
+      });
+    }
+
+  },
 };

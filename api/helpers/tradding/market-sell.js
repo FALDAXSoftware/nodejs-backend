@@ -87,9 +87,12 @@ module.exports = {
         .utilities
         .getMakerTakerFees(crypto, currency);
 
+      var quantityValue = (inputs.orderQuantity).toFixed(sails.config.local.QUANTITY_PRECISION)
+
       if (buyBook && buyBook.length > 0) {
         var availableQty = buyBook[0].quantity;
         var currentBuyBookDetails = buyBook[0];
+        var priceValue = (currentBuyBookDetails.price).toFixed(sails.config.local.PRICE_PRECISION)
         var now = new Date();
         var orderData = {
           user_id: inputs.user_id,
@@ -99,11 +102,11 @@ module.exports = {
           created_at: now,
           updated_at: now,
           maximum_time: now,
-          fill_price: currentBuyBookDetails.price,
+          fill_price: priceValue,
           limit_price: 0,
           stop_price: 0,
           price: 0,
-          quantity: inputs.orderQuantity,
+          quantity: quantityValue,
           order_status: "partially_filled",
           currency: currency,
           settle_currency: crypto
@@ -113,7 +116,7 @@ module.exports = {
           ...orderData
         }
         resultData.is_market = true;
-        resultData.fix_quantity = inputs.orderQuantity;
+        resultData.fix_quantity = quantityValue;
         resultData.maker_fee = fees.makerFee;
         resultData.taker_fee = fees.takerFee;
 
@@ -123,17 +126,17 @@ module.exports = {
           .activity
           .add(resultData);
 
-        if (inputs.orderQuantity <= availableQty) {
-          if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+        if (quantityValue <= availableQty) {
+          if ((priceValue * quantityValue).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var trade_history_data = {
               ...orderData
             };
             trade_history_data.maker_fee = fees.makerFee;
             trade_history_data.taker_fee = fees.takerFee;
-            trade_history_data.quantity = inputs.orderQuantity;
+            trade_history_data.quantity = quantityValue;
             trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
             trade_history_data.created_at = now;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.fix_quantity = quantityValue;
             let updatedActivity = await sails
               .helpers
               .tradding
@@ -146,8 +149,8 @@ module.exports = {
               currency: currency,
               side: inputs.side,
               settle_currency: crypto,
-              quantity: inputs.orderQuantity,
-              fill_price: currentBuyBookDetails.price
+              quantity: quantityValue,
+              fill_price: priceValue
             }
 
             var tradingFees = await sails
@@ -158,8 +161,8 @@ module.exports = {
                 return new Error("serverError")
               });
 
-            trade_history_data.user_fee = tradingFees.userFee;
-            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_fee = (tradingFees.userFee);
+            trade_history_data.requested_fee = (tradingFees.requestedFee);
             trade_history_data.user_coin = crypto;
             trade_history_data.requested_coin = currency;
             let tradeHistory = await sails
@@ -168,7 +171,7 @@ module.exports = {
               .trade
               .add(trade_history_data);
 
-            let remainigQuantity = availableQty - inputs.orderQuantity;
+            let remainigQuantity = availableQty - quantityValue;
 
             if (remainigQuantity > 0) {
               let updatedBuyBook = await sails
@@ -176,7 +179,7 @@ module.exports = {
                 .tradding
                 .buy
                 .update(currentBuyBookDetails.id, {
-                  quantity: remainigQuantity
+                  quantity: (remainigQuantity).toFixed(sails.config.local.QUANTITY_PRECISION)
                 });
             } else {
               await sails
@@ -190,8 +193,8 @@ module.exports = {
             return exits.insufficientBalance();
           }
         } else {
-          var remainingQty = inputs.orderQuantity - availableQty;
-          if ((currentBuyBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+          var remainingQty = quantityValue - availableQty;
+          if ((priceValue * quantityValue).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var trade_history_data = {
               ...orderData
             };
@@ -201,7 +204,7 @@ module.exports = {
             trade_history_data.requested_user_id = currentBuyBookDetails.user_id;
             trade_history_data.created_at = now;
 
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.fix_quantity = quantityValue;
             let updatedActivity = await sails
               .helpers
               .tradding
@@ -215,7 +218,7 @@ module.exports = {
               side: inputs.side,
               settle_currency: crypto,
               quantity: availableQty,
-              fill_price: currentBuyBookDetails.price
+              fill_price: priceValue
             }
             var tradingFees = await sails
               .helpers
@@ -224,8 +227,8 @@ module.exports = {
               .intercept("serverError", () => {
                 return new Error("serverError")
               });
-            trade_history_data.user_fee = tradingFees.userFee;
-            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_fee = (tradingFees.userFee);
+            trade_history_data.requested_fee = (tradingFees.requestedFee);
             trade_history_data.user_coin = crypto;
             trade_history_data.requested_coin = currency;
             let tradeHistory = await sails
