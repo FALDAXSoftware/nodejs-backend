@@ -135,7 +135,7 @@ module.exports.routes = {
   //Order routes
   'post /admin/all-sell-orders': 'SellController.getAllSellOrders',
   'post /admin/all-buy-orders': 'BuyController.getAllBuyOrders',
-
+  'post /admin/all-pending-orders': 'TradeController.getAllPendingOrders',
 
   //Add Job route
   'get /admin/all-jobs': 'CareerController.getAllJobsCMS',

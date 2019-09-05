@@ -1690,7 +1690,7 @@ module.exports = {
               }
             });
         }
-      } else {}
+      } else { }
     } catch (error) {
       return res
         .status(500)
@@ -1756,8 +1756,8 @@ module.exports = {
         query += " trade_history.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 
@@ -1790,6 +1790,88 @@ module.exports = {
         });
       }
     } catch (err) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  //get all pending book orders
+  getAllPendingOrders: async function (req, res) {
+    try {
+      let { user_id, page, limit, search } = req.allParams();
+
+      var pendingOrderDetails = await PendingBook.find({
+        where: {
+          deleted_at: null,
+          user_id
+        },
+        sort: 'id DESC'
+      });
+
+      var buyBookDetails = await BuyBook.find({
+        where: {
+          deleted_at: null,
+          user_id,
+          is_partially_fulfilled: true
+        },
+        sort: 'id DESC'
+      });
+
+      // Select c.coin_code, c.coin, w.balance, w.send_address, w.receive_address,
+      //   (sum(th.user_fee) + sum(th.requested_fee)) as Fee
+      // from pending_book
+      // LEFT JOIN buy_book buy
+      // ON buy.user_id = pending_book.user_id
+      // LEFT JOIN sell_book sell
+      // ON sell.user_id = pending_book.user_id
+      // WHERE pending_book.deleted_at IS NULL AND buy.is_partially_fulfilled = TRUE
+      // GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance
+
+      var pendingDetailsBuy = pendingOrderDetails.concat(buyBookDetails);
+
+      var sellBookDetails = await SellBook.find({
+        select: [
+          'id',
+          'fix_quantity',
+          'quantity',
+          'fill_price',
+          'side',
+          'order_type',
+          'symbol',
+          'created_at',
+          'deleted_at',
+          'limit_price'
+        ],
+        where: {
+          deleted_at: null,
+          user_id,
+          is_partially_fulfilled: true
+        },
+        sort: 'id DESC'
+      }).paginate(parseInt(page) - 1, parseInt(limit));;
+
+      let pendingDataCount = await SellBook.count({
+        deleted_at: null,
+        user_id,
+        is_partially_fulfilled: true
+      });
+
+      tradePendingDetails = pendingDetailsBuy.concat(sellBookDetails);
+      console.log('tradePendingDetails', tradePendingDetails)
+
+      if (tradePendingDetails) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Trade list"),
+          "data": tradePendingDetails, pendingDataCount
+        });
+      }
+    } catch (err) {
+      console.log('err', err)
       return res
         .status(500)
         .json({
