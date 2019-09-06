@@ -58,6 +58,12 @@ module.exports = {
                         .sell
                         .getSellBookOrders(crypto, currency);
 
+                      // for (var i = 0; i < sellBookDetails.length; i++) {
+                      //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                      // }
+
                       if (sellBookDetails) {
                         return res.json({
                           status: 200,
@@ -93,6 +99,12 @@ module.exports = {
                   .tradding
                   .sell
                   .getSellBookOrders(crypto, currency);
+
+                // for (var i = 0; i < sellBookDetails.length; i++) {
+                //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                // }
 
                 if (sellBookDetails) {
                   return res.json({

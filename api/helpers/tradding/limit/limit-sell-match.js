@@ -88,7 +88,7 @@ module.exports = {
           if (buyBook[0].quantity >= sellLimitOrderData.quantity) {
             sellLimitOrderData.fill_price = buyBook[0].price;
             delete sellLimitOrderData.id;
-            if ((sellLimitOrderData.fill_price * sellLimitOrderData.quantity) <= wallet.placed_balance) {
+            if ((sellLimitOrderData.fill_price * sellLimitOrderData.quantity).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
               var sellAddedData = {
                 ...sellLimitOrderData
               }
@@ -143,6 +143,7 @@ module.exports = {
 
               // Transfer fees here Updating the trade history data for adding fees
               var remainingQty = buyBook[0].quantity - sellLimitOrderData.quantity;
+              remainingQty = (remainingQty).toFixed(sails.config.local.QUANTITY_PRECISION);
               if (remainingQty > 0) {
                 let updatedBuyBook = await sails
                   .helpers
@@ -230,11 +231,12 @@ module.exports = {
             }
           } else {
             var remainingQty = sellLimitOrderData.quantity - buyBook[0].quantity;
+            remainingQty = (remainingQty).toFixed(sails.config.local.QUANTITY_PRECISION)
             var feeResult = await sails
               .helpers
               .utilities
               .getMakerTakerFees(sellLimitOrderData.settle_currency, sellLimitOrderData.currency);
-            if ((sellLimitOrderData.fill_price * sellLimitOrderData.quantity) <= wallet.placed_balance) {
+            if ((sellLimitOrderData.fill_price * sellLimitOrderData.quantity).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
               var sellAddedData = {
                 ...sellLimitOrderData
               }
@@ -360,7 +362,7 @@ module.exports = {
           }
         } else {
 
-          if (sellLimitOrderData.quantity * sellLimitOrderData.limit_price <= wallet.placed_balance) {
+          if ((sellLimitOrderData.quantity * sellLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var sellAddedData = {
               ...sellLimitOrderData
             }
@@ -422,7 +424,7 @@ module.exports = {
           }
         }
       } else {
-        if (sellLimitOrderData.quantity * sellLimitOrderData.limit_price <= wallet.placed_balance) {
+        if ((sellLimitOrderData.quantity * sellLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           var sellAddedData = {
             ...sellLimitOrderData
           }
