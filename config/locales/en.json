@@ -313,5 +313,7 @@
   "Enter last transaction id":"Enter last transaction id.",
   "Batch added": "Batch has been added successfully",
   "Batch listed": "Batch has been listed successfully",
-  "Batch updated": "Batch has been updated successfully"
+  "Batch updated": "Batch has been updated successfully",
+  "Pending Orders List": "Pending orders listed successfully.",
+  "Cancel Orders List": "Cancelled orders listed successfully."
 }

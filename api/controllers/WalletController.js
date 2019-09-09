@@ -85,11 +85,11 @@ module.exports = {
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
-        balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(8);
-        balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(8);
-        balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(8);
-        balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(8);
-        balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(8);
+        balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
+        balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
+        balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION);
+        balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
+        balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
@@ -225,9 +225,9 @@ module.exports = {
             });
             if (limitTierData != undefined) {
               limitAmount = limitTierData.daily_withdraw_crypto;
-              limitAmount = limitAmount.toFixed(8)
+              limitAmount = limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)
               limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
-              limitAmountMonthly = limitAmountMonthly.toFixed(8);
+              limitAmountMonthly = limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
             } else {
               limitAmount = null;
               limitAmountMonthly = null;
@@ -235,9 +235,9 @@ module.exports = {
           }
         } else if (userTierData.length > 0) {
           limitAmount = userTierData[0].daily_withdraw_crypto;
-          limitAmount = limitAmount.toFixed(8)
+          limitAmount = limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)
           limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
-          limitAmountMonthly = limitAmountMonthly.toFixed(8);
+          limitAmountMonthly = limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
         } else {
           limitAmount = null;
           limitAmountMonthly = null;
@@ -271,8 +271,8 @@ module.exports = {
             }
           })
 
-        walletHistoryData = walletHistoryData.toFixed(8);
-        walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(8);
+        walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
+        walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
 
         // if (parseFloat(amount) <= 0) {
         //   return res
@@ -307,7 +307,7 @@ module.exports = {
                 if (wallet) {
 
                   //If placed balance is greater than the amount to be send
-                  if ((wallet.placed_balance).toFixed(8) >= (parseFloat(amount)).toFixed(8)) {
+                  if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(amount)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
                     //If coin is of bitgo type
                     if (coin.type == 1) {
@@ -354,8 +354,8 @@ module.exports = {
                               id: wallet.id
                             })
                             .set({
-                              balance: (wallet.balance - amount).toFixed(8),
-                              placed_balance: (wallet.placed_balance - amount).toFixed(8)
+                              balance: (wallet.balance - amount).toFixed(sails.config.local.TOTAL_PRECISION),
+                              placed_balance: (wallet.placed_balance - amount).toFixed(sails.config.local.TOTAL_PRECISION)
                             });
 
                           // Adding the transaction details in transaction table This is entry for sending
@@ -432,7 +432,7 @@ module.exports = {
                             source_address: warmWalletData.receiveAddress.address,
                             destination_address: wallet.send_address,
                             user_id: user_id,
-                            amount: (amount).toFixed(8),
+                            amount: (amount),
                             transaction_type: 'send',
                             coin_id: coin.id,
                             is_executed: false

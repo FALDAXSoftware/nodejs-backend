@@ -98,6 +98,10 @@ module.exports = {
         .getMakerTakerFees(crypto, currency);
       var now = new Date();
 
+      var priceValue = (inputs.orderQuantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+
+      var limitPriceValue = (inputs.limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+
       var sellLimitOrderData = {
         'user_id': inputs.user_id,
         'symbol': inputs.symbol,
@@ -106,11 +110,11 @@ module.exports = {
         'created': now,
         'updated': now,
         'fill_price': 0.0,
-        'limit_price': inputs.limit_price,
+        'limit_price': limitPriceValue,
         'stop_price': 0.0,
-        'price': inputs.limit_price,
-        'quantity': inputs.orderQuantity,
-        'fix_quantity': inputs.orderQuantity,
+        'price': limitPriceValue,
+        'quantity': priceValue,
+        'fix_quantity': priceValue,
         'order_status': "open",
         'currency': currency,
         'settle_currency': crypto,
@@ -121,7 +125,7 @@ module.exports = {
         ...sellLimitOrderData
       }
       resultData.isMarket = false;
-      resultData.fix_quantity = inputs.orderQuantity;
+      resultData.fix_quantity = priceValue;
       resultData.maker_fee = fees.makerFee;
       resultData.taker_fee = fees.takerFee;
 
@@ -133,7 +137,7 @@ module.exports = {
 
       if (buyBook && buyBook.length > 0) {
         var currentPrice = buyBook[0].price;
-        if (inputs.limit_price <= currentPrice) {
+        if (limitPriceValue <= currentPrice) {
           var limitMatchData = await sails
             .helpers
             .tradding

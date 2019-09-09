@@ -85,7 +85,7 @@ module.exports = {
           if (sellBook[0].quantity >= buyLimitOrderData.quantity) {
             buyLimitOrderData.fill_price = sellBook[0].price;
             delete buyLimitOrderData.id;
-            if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity) <= wallet.placed_balance) {
+            if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
               var buyAddedData = {
                 ...buyLimitOrderData
               }
@@ -228,6 +228,7 @@ module.exports = {
             }
           } else {
             var remainingQty = buyLimitOrderData.quantity - sellBook[0].quantity;
+            remainingQty = (remainingQty).toFixed(sails.config.local.QUANTITY_PRECISION);
             var feeResult = await sails
               .helpers
               .utilities
@@ -240,6 +241,9 @@ module.exports = {
               var resendData = {
                 ...buyLimitOrderData
               };
+
+              sellBook[0].quantity = (sellBook[0].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+              sellBook[0].price = (sellBook[0].price).toFixed(sails.config.local.PRICE_PRECISION);
 
               buyLimitOrderData.quantity = sellBook[0].quantity;
               buyLimitOrderData.order_status = "partially_filled";
@@ -371,7 +375,7 @@ module.exports = {
           }
         } else {
 
-          if (buyLimitOrderData.quantity * buyLimitOrderData.limit_price <= wallet.placed_balance) {
+          if ((buyLimitOrderData.quantity * buyLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var buyAddedData = {
               ...buyLimitOrderData
             }
@@ -431,7 +435,7 @@ module.exports = {
           }
         }
       } else {
-        if (buyLimitOrderData.quantity * buyLimitOrderData.limit_price <= wallet.placed_balance) {
+        if ((buyLimitOrderData.quantity * buyLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           var buyAddedData = {
             ...buyLimitOrderData
           }
@@ -508,5 +512,4 @@ module.exports = {
       return exits.serverError();
     }
   }
-
 };
