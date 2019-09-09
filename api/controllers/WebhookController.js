@@ -66,12 +66,9 @@ module.exports = {
   webhookOnReceive: async function (req, res) {
     // res.end();
 
-    console.log(req.body.state)
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
-      console.log(transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-      console.log(transfer)
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
@@ -179,10 +176,8 @@ module.exports = {
 
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
             // check for wallet exist or not
-            console.log(custodialWallet)
             if (warmWallet.id && custodialWallet.id) {
 
-              console.log("INDSIDE IF LOOP >>>>>>>>>>>>>>>>>>>");
               // check for warm wallet balance 
               let warmWalletAmount = 0;
               let custodialWalletAmount = 0;
@@ -200,7 +195,7 @@ module.exports = {
               // }
 
               // send amount to warm wallet
-              console.log(warmWalletAmount, custodialWalletAmount)
+
               await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
               let transactionLog = [];
               // Log Transafer in transaction table

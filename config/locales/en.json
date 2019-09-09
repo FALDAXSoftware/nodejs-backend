@@ -314,5 +314,8 @@
   "Batch added": "Batch has been addedd successfully",
   "Batch listed": "Batch has been listed successfully",
   "Pending Orders List": "Pending orders listed successfully.",
-  "Cancel Orders List": "Cancelled orders listed successfully."
+  "Cancel Orders List": "Cancelled orders listed successfully.",
+  "tier details retrieve success": "Tier Details has been retrieved successfully.",
+  "no tier details retrieve success": "No Tier Details has been found",
+  "tier update success": "Tier Has been updated Successfully"
 }

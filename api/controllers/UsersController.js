@@ -26,7 +26,6 @@ module.exports = {
    */
 
   create: async function (req, res) {
-    console.log('Starting of signup', new Date())
     try {
       var referred_id = null;
       let email = req
@@ -64,7 +63,6 @@ module.exports = {
       }
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
-      console.log(req.body)
       if (req.body.email && req.body.password) {
         var user_detail = await Users.create({
           email: email,
@@ -190,7 +188,6 @@ module.exports = {
                 }
               });
           }
-          console.log('End of signup', new Date())
           // return res
           //   .json({
           //     status: 200,
@@ -999,8 +996,6 @@ module.exports = {
       user_id: id,
       is_collected: false
     })
-
-    console.log(leftReferredData);
 
     var currencyData = await CurrencyConversion.find({
       deleted_at: null

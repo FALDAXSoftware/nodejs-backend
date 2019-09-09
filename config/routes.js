@@ -380,4 +380,9 @@ module.exports.routes = {
   'post /admin/batches/create': 'AdminController.createBatch',
   'post /admin/batches/list': 'AdminController.getBatchListing',
 
+  // Tier Wise API
+  'get /get-tier-details': 'TierController.getUserTierList',
+  'get /admin/get-tier-details': 'TierController.getTierList',
+  'post /admin/update-tier-list': 'TierController.updateTierList'
+
 };

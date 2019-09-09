@@ -9,7 +9,10 @@ var UploadFiles = require('../services/UploadFiles');
 module.exports = {
   applyJob: async function (req, res) {
 
-    let jobDetail = await Jobs.find({ id: req.body.job_id, is_active: true });
+    let jobDetail = await Jobs.find({
+      id: req.body.job_id,
+      is_active: true
+    });
     if (jobDetail) {
       var uploadFileName = '';
       var uploadCoverName = '';
@@ -18,7 +21,6 @@ module.exports = {
         req
           .file('resume')
           .upload(async function (err, uploadedDoc) {
-            console.log('uploadedDoc', uploadedDoc)
             try {
               if (uploadedDoc.length > 0) {
                 let filename = uploadedDoc[0].filename;
@@ -37,7 +39,6 @@ module.exports = {
                         console.log('try', uploadedLetter, err)
                         if (uploadedLetter && uploadedLetter.length > 0) {
                           let cover_file = uploadedLetter[0].filename;
-                          console.log('cover_file', uploadedLetter, cover_file)
                           var coverName = cover_file.substring(cover_file.indexOf("."));
                           let timestamp = new Date()
                             .getTime()
@@ -45,7 +46,6 @@ module.exports = {
                           uploadCoverName = timestamp + coverName;
                           var cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'career/' + uploadCoverName);
                         }
-                        console.log('cover_letter', uploadCoverName)
 
                         let jobDetails = await Career.create({
                           first_name: req.body.first_name,
@@ -57,13 +57,12 @@ module.exports = {
                           linkedin_profile: req.body.linkedin_profile,
                           resume: 'career/' + uploadFileName,
                           job_id: req.body.job_id,
-                          cover_letter: (uploadCoverName !== null
-                            ? ('career/' + uploadCoverName)
-                            : null),
+                          cover_letter: (uploadCoverName !== null ?
+                            ('career/' + uploadCoverName) :
+                            null),
                           created_at: new Date()
                         }).fetch();
 
-                        console.log('jobDetails>>>>>>', jobDetails)
                         if (jobDetails) {
                           return res.json({
                             status: 200,
@@ -106,14 +105,18 @@ module.exports = {
 
   getAllJobs: async function (req, res) {
     let allJobCategories = await JobCategory
-      .find({ deleted_at: null })
+      .find({
+        deleted_at: null
+      })
       .populate('jobs', {
         where: {
           is_active: true,
           deleted_at: null
         }
       });
-    let careerDesc = await Statics.findOne({ slug: 'career' });
+    let careerDesc = await Statics.findOne({
+      slug: 'career'
+    });
     if (allJobCategories) {
       return res.json({
         "status": 200,
@@ -133,11 +136,18 @@ module.exports = {
 
   getAllJobCategories: async function (req, res) {
     try {
-      let { active } = req.allParams();
+      let {
+        active
+      } = req.allParams();
       if (active == 'true') {
-        var allJobCategories = await JobCategory.find({ deleted_at: null, is_active: true }).sort('id ASC');
+        var allJobCategories = await JobCategory.find({
+          deleted_at: null,
+          is_active: true
+        }).sort('id ASC');
       } else {
-        var allJobCategories = await JobCategory.find({ deleted_at: null }).sort('id ASC');
+        var allJobCategories = await JobCategory.find({
+          deleted_at: null
+        }).sort('id ASC');
       }
 
       if (allJobCategories) {
@@ -166,7 +176,13 @@ module.exports = {
 
   getAllJobsCMS: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        sortCol,
+        sortOrder
+      } = req.allParams();
       let query = " from jobs LEFT JOIN job_category ON jobs.category_id = job_category.id WHERE jobs.deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
@@ -175,9 +191,9 @@ module.exports = {
       }
       countQuery = query;
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
         query += " ORDER BY jobs.id ASC";
@@ -209,8 +225,12 @@ module.exports = {
 
   getJobDetail: async function (req, res) {
     try {
-      let { id } = req.allParams();
-      let jobDetail = await Jobs.findOne({ id });
+      let {
+        id
+      } = req.allParams();
+      let jobDetail = await Jobs.findOne({
+        id
+      });
       if (jobDetail) {
         return res.json({
           "status": 200,
@@ -272,10 +292,14 @@ module.exports = {
 
   editJob: async function (req, res) {
     try {
-      let job = await Jobs.findOne({ id: req.body.job_id })
+      let job = await Jobs.findOne({
+        id: req.body.job_id
+      })
       if (job) {
         let updatedJob = await Jobs
-          .update({ id: req.body.job_id })
+          .update({
+            id: req.body.job_id
+          })
           .set(req.body)
           .fetch();
         if (updatedJob) {
@@ -311,7 +335,9 @@ module.exports = {
 
   deleteJob: async function (req, res) {
     try {
-      let { job_id } = req.allParams();
+      let {
+        job_id
+      } = req.allParams();
       if (!job_id) {
         return res
           .status(500)
@@ -321,8 +347,12 @@ module.exports = {
           });
       }
       let deletedJob = await Jobs
-        .update({ id: job_id })
-        .set({ deleted_at: new Date() })
+        .update({
+          id: job_id
+        })
+        .set({
+          deleted_at: new Date()
+        })
         .fetch();
       if (deletedJob) {
         return res.json({
@@ -365,9 +395,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -397,7 +427,10 @@ module.exports = {
     try {
 
       if (req.body) {
-        let existingCategory = await JobCategory.findOne({ category: req.body.category, is_active: true });
+        let existingCategory = await JobCategory.findOne({
+          category: req.body.category,
+          is_active: true
+        });
         if (existingCategory) {
           return res.json({
             "status": 500,
@@ -444,11 +477,20 @@ module.exports = {
 
   updateJobCategory: async function (req, res) {
     try {
-      var { id, is_active, category } = req.body;
+      var {
+        id,
+        is_active,
+        category
+      } = req.body;
 
       var updatedJobData = await JobCategory
-        .update({ id })
-        .set({ is_active, category })
+        .update({
+          id
+        })
+        .set({
+          is_active,
+          category
+        })
         .fetch();
 
       if (updatedJobData) {
