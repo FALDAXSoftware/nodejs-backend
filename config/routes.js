@@ -379,5 +379,5 @@ module.exports.routes = {
   // Batch and Balance Settlements
   'post /admin/batches/create': 'AdminController.createBatch',
   'post /admin/batches/list': 'AdminController.getBatchListing',
-
+  'put /admin/batches/update': 'AdminController.updateBatch',
 };
