@@ -64,7 +64,7 @@ module.exports.routes = {
 
   // Role
   'post /admin/role/create': 'RoleController.create',
-  'get /admin/role/get': 'RoleController.get',
+  'get /admin/role/get': 'RoleController.getRoles',
   'put /admin/role/update': 'RoleController.update',
   'delete /admin/role/delete': 'RoleController.delete',
 
@@ -383,6 +383,7 @@ module.exports.routes = {
   // Tier Wise API
   'get /get-tier-details': 'TierController.getUserTierList',
   'get /admin/get-tier-details': 'TierController.getTierList',
-  'post /admin/update-tier-list': 'TierController.updateTierList'
+  'post /admin/update-tier-list': 'TierController.updateTierList',
 
+  'put /admin/batches/update': 'AdminController.updateBatch',
 };

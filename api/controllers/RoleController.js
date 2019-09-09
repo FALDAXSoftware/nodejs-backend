@@ -48,7 +48,7 @@ module.exports = {
     }
   },
 
-  get: async function (req, res) {
+  getRoles: async function (req, res) {
     try {
       let { sortCol, sortOrder, status } = req.allParams();
       let query = " from roles WHERE deleted_at IS NULL ";
@@ -71,12 +71,15 @@ module.exports = {
 
       roleName = roleName.rows;
       roles = roles.rows;
-      return res.json({
-        status: 200,
-        message: sails.__("Role retrived success"),
-        roles,
-        roleName
-      })
+
+      if (roles) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Role retrived success"),
+          roles,
+          roleName
+        })
+      }
     } catch (error) {
       return res
         .status(500)

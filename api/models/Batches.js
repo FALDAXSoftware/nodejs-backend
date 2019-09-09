@@ -49,6 +49,16 @@ module.exports = {
       columnName: 'net_profit',
       defaultsTo: 0
     },
+    download_file: {
+      type: 'string',
+      columnName: 'download_file',
+      allowNull:true
+    },
+    uploaded_file: {
+      type: 'string',
+      columnName: 'uploaded_file',
+      allowNull:true
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
