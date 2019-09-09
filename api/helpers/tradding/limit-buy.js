@@ -99,6 +99,10 @@ module.exports = {
 
       var now = new Date();
 
+      var quantityValue = (inputs.orderQuantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+
+      var priceValue = (inputs.limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+
       var buyLimitOrderData = {
         'user_id': inputs.user_id,
         'symbol': inputs.symbol,
@@ -107,11 +111,11 @@ module.exports = {
         'created': now,
         'updated': now,
         'fill_price': 0.0,
-        'limit_price': inputs.limit_price,
+        'limit_price': priceValue,
         'stop_price': 0.0,
-        'price': inputs.limit_price,
-        'quantity': inputs.orderQuantity,
-        'fix_quantity': inputs.orderQuantity,
+        'price': priceValue,
+        'quantity': quantityValue,
+        'fix_quantity': quantityValue,
         'order_status': "open",
         'currency': currency,
         'settle_currency': crypto,
@@ -122,7 +126,7 @@ module.exports = {
         ...buyLimitOrderData
       }
       resultData.isMarket = false;
-      resultData.fix_quantity = inputs.orderQuantity
+      resultData.fix_quantity = quantityValue
 
       let activity = await sails
         .helpers
@@ -135,7 +139,7 @@ module.exports = {
 
       if (sellBook && sellBook.length > 0) {
         var currentPrice = sellBook[0].price;
-        if (inputs.limit_price >= currentPrice) {
+        if (priceValue >= currentPrice) {
           var limitMatchData = await sails
             .helpers
             .tradding
