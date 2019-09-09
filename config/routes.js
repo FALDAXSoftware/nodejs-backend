@@ -64,7 +64,7 @@ module.exports.routes = {
 
   // Role
   'post /admin/role/create': 'RoleController.create',
-  'get /admin/role/get': 'RoleController.get',
+  'get /admin/role/get': 'RoleController.getRoles',
   'put /admin/role/update': 'RoleController.update',
   'delete /admin/role/delete': 'RoleController.delete',
 
