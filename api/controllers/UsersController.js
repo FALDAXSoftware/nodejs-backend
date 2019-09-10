@@ -2285,9 +2285,9 @@ module.exports = {
 
       var get_fees = await sails.helpers.feesCalculation( coin[0].toLowerCase(), quantity, price );
       var actual_price = (quantity*price);
-      get_price.price = "USD "+actual_price;
-      get_price.network_fees = "USD "+parseFloat(parseFloat(get_fees)*actual_price).toFixed(process.env.TOTAL_PRECISION);
-      get_price.faldax_fees = "USD "+((actual_price*get_faldax_fee.value)/100).toFixed(process.env.TOTAL_PRECISION);
+      get_price.price = actual_price;
+      get_price.network_fees = parseFloat(parseFloat(get_fees)*actual_price).toFixed(process.env.TOTAL_PRECISION);
+      get_price.faldax_fees = parseFloat((actual_price*get_faldax_fee.value)/100).toFixed(process.env.TOTAL_PRECISION);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
