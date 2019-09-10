@@ -19,12 +19,12 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    var get_price = await PriceHistory.findOne({
+    var coin = inputs.coin + '/USD'
+    var get_price = await PriceHistory.find({
       where: {
-        coin: inputs.coin
+        coin: coin
       },
-      sort: 'created_at DESC'
-    })
+    }).sort('id DESC').limit(1)
 
     // TODO Send back the result through the success exit.
     return exits.success(get_price);
@@ -32,4 +32,3 @@ module.exports = {
 
 
 };
-
