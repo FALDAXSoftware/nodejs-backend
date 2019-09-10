@@ -316,7 +316,11 @@
   "Batch updated": "Batch has been updated successfully",
   "Pending Orders List": "Pending orders listed successfully.",
   "Cancel Orders List": "Cancelled orders listed successfully.",
+  "Batch is already generated with this transaction": "Batch is already generated with this transaction.",
   "tier details retrieve success": "Tier Details has been retrieved successfully.",
   "no tier details retrieve success": "No Tier Details has been found",
-  "tier update success": "Tier Has been updated Successfully"
+  "tier update success": "Tier Has been updated Successfully",
+  "Price listed": "Price listed successfully.",
+  "batch data retrieved": "Batch Data has been retreived successfully.",
+  "each batch data retrieved": "Batch Each Transaction Data has been retrieved successfully."
 }

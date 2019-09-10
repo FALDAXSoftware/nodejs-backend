@@ -2263,5 +2263,43 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+  // Get JST Price
+  getJSTPrice: async function (req, res) {
+    try {
+      var req_body = req.body;
+      console.log(req.body)
+      var symbol = req_body.symbol;
+      var quantity = req_body.quantity;
+      var side = req_body.side;
+      var get_price = await sails.helpers.fixapi.getMarketPrice(symbol);
+
+      var coin = symbol.split("/");
+
+      var price;
+      if (side == "Buy") {
+        price = get_price.Bid;
+      } else {
+        price = get_price.Ask;
+      }
+      var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
+
+      get_price.price = "$" + price;
+      get_price.fees = "$" + parseFloat(parseFloat(get_fees) * price).toFixed(process.env.TOTAL_PRECISION);
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Price listed"),
+        "data": get_price
+      });
+    } catch (err) {
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
+
 };

@@ -386,5 +386,10 @@ module.exports.routes = {
   'post /admin/update-tier-list': 'TierController.updateTierList',
 
   'put /admin/batches/update': 'AdminController.updateBatch',
-  'get /admin/get-batch-value': 'AdminController.GetBatchValue'
+  'get /admin/get-batch-value': 'AdminController.GetBatchValue',
+  'post /admin/batches/download': 'AdminController.downloadBatchFile',
+  'get /admin/get-each-transaction-value': 'AdminController.getTransactionBatchValue',
+
+  // Get JST Price
+  'post /get-jst-price': 'UsersController.getJSTPrice'
 };

@@ -2317,6 +2317,25 @@ module.exports = {
       }
       // Parameter Existence
       if (req.body.last_transaction_id) {
+        // Check if Batch is already created
+        var check_exist_transaction = await Batches
+          .count({
+            transaction_start: {
+              '<=': req.body.last_transaction_id
+            },
+            transaction_end: {
+              '>=': req.body.last_transaction_id
+            }
+          });
+
+        if (check_exist_transaction > 0) {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Batch is already generated with this transaction")
+            });
+        }
         // Get Previous data upto last tranasction
         var get_data = await Batches
           .find({
@@ -2346,7 +2365,6 @@ module.exports = {
             totalNetProfit += each.netprofit;
           })
         }
-
         var data = {
           batch_number: batch_number,
           transaction_start: previous_trasaction_id,
@@ -2434,158 +2452,6 @@ module.exports = {
   // Batch lists
   getBatchListing: async function (req, res) {
     try {
-      // // XLS
-      // const excel = require('node-excel-export');
-
-      // // You can define styles as json object
-      // const styles = {
-      //   headerDark: {
-      //     // fill: {
-      //     //   fgColor: {
-      //     //     rgb: 'FF000000'
-      //     //   }
-      //     // },
-      //     // font: {
-      //     //   // color: {
-      //     //   //   rgb: 'FFFFFFFF'
-      //     //   // },
-      //     //   // sz: 14,
-      //     //   // bold: true,
-      //     //   // underline: true
-      //     // }
-      //   },
-      //   cellPink: {
-      //     fill: {
-      //       fgColor: {
-      //         rgb: 'FFFFCCFF'
-      //       }
-      //     }
-      //   },
-      //   cellGreen: {
-      //     fill: {
-      //       fgColor: {
-      //         rgb: 'FF00FF00'
-      //       }
-      //     }
-      //   }
-      // };
-
-      // //Array of objects representing heading rows (very top)
-      // const heading = [
-      //   [{value: 'a1', style: styles.headerDark}, {value: 'b1', style: styles.headerDark}, {value: 'c1', style: styles.headerDark}],
-      //   ['a2', 'b2', 'c2'] // <-- It can be only values
-      // ];
-
-      // //Here you specify the export structure
-      // const specification = {
-      //   transaction_number: { // <- the key should match the actual data key
-      //     displayName: 'Transaction #', // <- Here you specify the column header
-      //     headerStyle: styles.headerDark, // <- Header style
-      //     // cellStyle: function(value, row) { // <- style renderer function
-      //     //   // if the status is 1 then color in green else color in red
-      //     //   // Notice how we use another cell value to style the current one
-      //     //   return (row.status_id == 1) ? styles.cellGreen : {fill: {fgColor: {rgb: 'FFFF0000'}}}; // <- Inline cell style is possible
-      //     // },
-      //     width: '10' // <- width in pixels
-      //   },
-      //   fees: {
-      //     displayName: 'Fees',
-      //     headerStyle: styles.headerDark,
-      //     // cellFormat: function(value, row) { // <- Renderer function, you can access also any row.property
-      //     //   return (value == 1) ? 'Active' : 'Inactive';
-      //     // },
-      //     width: '10' // <- width in chars (when the number is passed as string)
-      //   },
-      //   date: {
-      //     displayName: 'Date',
-      //     headerStyle: styles.headerDark,
-      //     // cellStyle: styles.cellPink, // <- Cell style
-      //     width: '10' // <- width in pixels
-      //   }
-      // }
-
-      // // The data set should have the following shape (Array of Objects)
-      // // The order of the keys is irrelevant, it is also irrelevant if the
-      // // dataset contains more fields as the report is build based on the
-      // // specification provided above. But you should have all the fields
-      // // that are listed in the report specification
-      // const dataset = [
-      //   {transaction_number: 1, fees: 0.45, date: '2018-01-12 10:00:00'},
-      //   {transaction_number: 2, fees: 0.451, date: '2018-01-12 10:00:00'},
-      //   {transaction_number: 3, fees: 0.555, date: '2018-01-12 10:00:00'}
-      // ]
-
-      // // Define an array of merges. 1-1 = A:1
-      // // The merges are independent of the data.
-      // // A merge will overwrite all data _not_ in the top-left cell.
-      // const merges = [
-      //   { start: { row: 1, column: 1 }, end: { row: 1, column: 1 } },
-      //   // { start: { row: 2, column: 2 }, end: { row: 2, column: 2 } },
-      //   // { start: { row: 2, column: 6 }, end: { row: 2, column: 10 } }
-      // ]
-
-      // // Create the excel report.
-      // // This function will return Buffer
-      // const report = excel.buildExport(
-      //   [ // <- Notice that this is an array. Pass multiple sheets to create multi sheet report
-      //     {
-      //       name: 'Report', // <- Specify sheet name (optional)
-      //       // heading: heading, // <- Raw heading array (optional)
-      //       merges: merges, // <- Merge cell ranges
-      //       specification: specification, // <- Report specification
-      //       data: dataset // <-- Report data
-      //     }
-      //   ]
-      // );
-
-      // // You can then return this straight
-      // res.download('report.xlsx'); // This is sails.js specific (in general you need to set headers)
-      //  return res.send(report);
-
-      // req
-      //     .file('uploaded_file')
-      //     .upload(async function (err, uploadedFiles) {
-      //       if (uploadedFiles.length > 0) {
-      //         let filename = uploadedFiles[0].filename;
-      //         let extention = filename.split('.').pop();
-      //         var valid_extention = ["pdf", "xlsx"];
-      //         if (valid_extention.indexOf(extention) < 0) {
-      //           return res
-      //             .status(401)
-      //             .json({
-      //               "status": 401,
-      //               "err": sails.__("Extention required")
-      //             });
-      //         }
-      //         var name = filename.substring(filename.indexOf("."));
-      //         let timestamp = new Date()
-      //           .getTime()
-      //           .toString();
-      //         var uploadFileName = timestamp + name;
-      //         var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'batches/' + uploadFileName);
-      //         var store_filename = 'batches/' + uploadFileName;
-      //         var data = {
-      //           user_id: user.id,
-      //           uploaded_file: store_filename,
-      //           status: "open"
-      //         };
-      //         var add = await UserForgotTwofactors.create(data);
-      //         return res.json({
-      //           "status": 200,
-      //           "message": sails.__("Your request for twofactors is sent")
-      //         });
-      //       } else {
-      //         return res
-      //           .status(500)
-      //           .json({
-      //             "status": 500,
-      //             "err": sails.__("Image Required")
-      //           });
-      //       }
-      //     });
-
-      // // OR you can save this buffer to the disk by creating a file.
-      // // XLS Test
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2653,15 +2519,16 @@ module.exports = {
 
   },
 
+  // Get Transaction Value for batch
   GetBatchValue: async function (req, res) {
     try {
 
-      // if (!req.user.isAdmin) {
-      //   return res.status(403).json({
-      //     status: 403,
-      //     err: 'Unauthorized access'
-      //   });
-      // }
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
 
       var {
         transaction_start,
@@ -2677,12 +2544,35 @@ module.exports = {
 
       var newArray = []
       if (coinDetail != undefined) {
+        var buyTxTotal = 0
+        var sellTxTotal = 0;
+        var feesTotal = 0;
         // coinDetail.map(async obj => {
         for (var i = 0; i < coinDetail.length; i++) {
           var details = coinDetail[i];
           var singledata = {}
           var buyDetails = await TradeHistory
             .sum('quantity')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Buy',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Sell',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var buyDetailsTx = await TradeHistory
+            .count('id')
             .where({
               deleted_at: null,
               id: {
@@ -2721,21 +2611,184 @@ module.exports = {
               trade_type: 1
             });
 
+          var sellDetailsTx = await TradeHistory
+            .count('id')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Sell',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Buy',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var coinUserFees = await TradeHistory
+            .sum('user_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              user_coin: details.coin,
+              trade_type: 1
+            })
+
+          var coinRequestedFees = await TradeHistory
+            .sum('requested_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              requested_coin: details.coin,
+              trade_type: 1
+            })
+
+          buyTxTotal = buyTxTotal + buyDetailsTx;
+          sellTxTotal = sellTxTotal + sellDetailsTx;
+
+          var coinFees = coinUserFees + coinRequestedFees
+          var usdValue = 0
+          feesTotal = feesTotal + (coinFees * usdValue);
+
           singledata.coin = details.coin;
           singledata.buy_detail = buyDetails;
           singledata.sell_detail = sellDetails;
+          singledata.asset_net = (buyDetails - sellDetails)
+          singledata.buy_tx = buyDetailsTx;
+          singledata.sell_tx = sellDetailsTx;
+          singledata.faldax_fees = coinFees;
+          singledata.faldax_usd_fees = '$' + 0;
           newArray.push(singledata);
-          console.log("INSIDE >>>>>>>>>", newArray);
+          // console.log("INSIDE >>>>>>>>>", newArray);
         }
 
-        // console.log("Buy Details??????????", buyDetails);
-        // console.log("Sell Details??????????", sellDetails)
-        // })
-        console.log("OUTSIDE >>>>>>>>>>>", newArray)
+        // console.log("OUTSIDE >>>>>>>>>>>", newArray, buyTxTotal, sellTxTotal);
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("batch data retrieved"),
+          "data": newArray,
+          buyTxTotal,
+          sellTxTotal,
+          feesTotal
+        })
       }
 
     } catch (err) {
       console.log(err)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
     }
+  },
+
+  // Get Each Transaction Value for batch
+  getTransactionBatchValue: async function (req, res) {
+
+    try {
+
+      var {
+        transaction_start,
+        transaction_end
+      } = req.allParams();
+
+      var diffrence = transaction_end - transaction_start;
+
+      var newarray = [];
+      var idValue;
+      for (var i = 0; i < diffrence; i++) {
+        var singledata = {};
+        idValue = i + parseInt(transaction_start);
+        var tradeData = await TradeHistory.findOne({
+          deleted_at: null,
+          id: idValue
+        });
+
+        if (tradeData != undefined) {
+          var asset_1_usd_value = 0;
+          var asset_2_usd_value = 0;
+          var dateValue = tradeData.created_at
+          singledata.transaction_id = tradeData.id;
+          singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+          singledata.pair = tradeData.symbol;
+          singledata.user_id = tradeData.user_id;
+          singledata.asset_1_amount = tradeData.quantity;
+          singledata.asset_1_value = (asset_1_usd_value * tradeData.quantity)
+          singledata.asset_2_amount = tradeData.filled;
+          singledata.asset_2_value = (tradeData.filled * asset_2_usd_value);
+          singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+          singledata.faldax_fee = (tradeData.user_fee);
+          singledata.faldax_fee_usd_value = (singledata.faldax_fee * asset_1_usd_value);
+
+          newarray.push(singledata);
+        }
+      }
+
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("each batch data retrieved"),
+        "data": newarray
+      })
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
+  },
+
+  // Download file
+  downloadBatchFile: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+
+      var req_body = req.body;
+      if (req_body.batch_id == "" || req_body.types == "") {
+        return res.status(500).json({
+          "status": 500,
+          "message": sails.__("Missing Parameters")
+        });
+      }
+
+      var batch_id = req_body.batch_id;
+      var types = req_body.types;
+
+      // var get_batches = await Batches.
+
+    } catch (err) {
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
   }
 };
