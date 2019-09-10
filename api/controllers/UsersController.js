@@ -2281,10 +2281,13 @@ module.exports = {
       }else{
         price=get_price.Ask;
       }
-      var get_fees = await sails.helpers.feesCalculation( coin[0].toLowerCase(), quantity, price );
+      var get_faldax_fee = await AdminSetting.findOne({slug:"faldax_fee"});
 
-      get_price.price = "$"+price;
-      get_price.fees = "$"+parseFloat(parseFloat(get_fees)*price).toFixed(process.env.TOTAL_PRECISION);
+      var get_fees = await sails.helpers.feesCalculation( coin[0].toLowerCase(), quantity, price );
+      var actual_price = (quantity*price);
+      get_price.price = "USD "+actual_price;
+      get_price.network_fees = "USD "+parseFloat(parseFloat(get_fees)*actual_price).toFixed(process.env.TOTAL_PRECISION);
+      get_price.faldax_fees = "USD "+((actual_price*get_faldax_fee.value)/100).toFixed(process.env.TOTAL_PRECISION);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
