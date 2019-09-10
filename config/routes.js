@@ -386,4 +386,5 @@ module.exports.routes = {
   'post /admin/update-tier-list': 'TierController.updateTierList',
 
   'put /admin/batches/update': 'AdminController.updateBatch',
+  'get /admin/get-batch-value': 'AdminController.GetBatchValue'
 };
