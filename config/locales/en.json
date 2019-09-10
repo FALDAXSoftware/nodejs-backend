@@ -315,5 +315,6 @@
   "Batch listed": "Batch has been listed successfully",
   "Batch updated": "Batch has been updated successfully",
   "Pending Orders List": "Pending orders listed successfully.",
-  "Cancel Orders List": "Cancelled orders listed successfully."
+  "Cancel Orders List": "Cancelled orders listed successfully.",
+  "Batch is already generated with this transaction": "Batch is already generated with this transaction."
 }

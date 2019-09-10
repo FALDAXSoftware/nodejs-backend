@@ -2268,5 +2268,25 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+  // Get JST Price
+  getJSTPrice: async function(req, res){
+    try{
+      var get_price = await sails.helpers.fixapi.getMarketPrice("XRP/USD");
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Threshold listed"),
+        "data": get_price
+      });
+    }catch(err){
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
+
 };
