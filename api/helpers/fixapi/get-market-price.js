@@ -43,13 +43,24 @@ module.exports = {
       //   symbol: inputs.symbol
       // },
       json: true
-    }, function (err, httpResponse, body) {
+    }, async function (err, httpResponse, body) {
       if (err) {
         return exits.error(err);
       }
       if (body.error) {
         return exits.error(body);
       }
+      // Add data in table
+      let object_data = {
+        coin:inputs.symbol,
+        ask_price:body.Ask,
+        ask_size:body.AskSize,
+        bid_price:body.Bid,
+        bid_size:body.BidSize,
+      };
+      await PriceHistory.create( object_data );
+      //ends
+
       return exits.success(body);
     });
 
