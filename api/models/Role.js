@@ -24,6 +24,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'users',
     },
+    tiers: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'tiers',
+    },
     countries: {
       type: "boolean",
       defaultsTo: false,
@@ -173,4 +178,3 @@ module.exports = {
     next();
   },
 };
-
