@@ -16,10 +16,10 @@ module.exports = {
     var client = new twilio(accountSid, authToken);
 
     client.messages.create({
-      body: 'Hello from Node',
-      to: '+919727331128', // Text this number
-      from: '+13522689310' // From a valid Twilio number
-    })
+        body: 'Hello from Node',
+        to: '+919727331128', // Text this number
+        from: '+13522689310' // From a valid Twilio number
+      })
       .then((message) => console.log('?>>>>>>>>>>>>', message));
   },
 
@@ -273,11 +273,11 @@ module.exports = {
         where: {
           deleted_at: null,
           created_at: [{
-            '>=': dataBefore
-          },
-          {
-            '<=': today
-          }
+              '>=': dataBefore
+            },
+            {
+              '<=': today
+            }
           ]
         }
       })

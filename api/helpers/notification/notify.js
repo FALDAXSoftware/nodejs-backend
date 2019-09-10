@@ -41,7 +41,6 @@ module.exports = {
         deleted_at: null
       });
 
-      console.log(user_notification);
       //Checking if email notification is enabled or not
       if (user_notification.email == true)
         await sails.helpers.notification.send.email(inputs.slug, user)

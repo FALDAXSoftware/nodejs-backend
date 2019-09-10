@@ -321,8 +321,6 @@ module.exports = {
             });
 
           if (walletCurrencyBalance != undefined && walletCryptoBalance != undefined) {
-            console.log(walletCryptoBalance);
-            console.log(walletCurrencyBalance);
             if ((type == "buy" && currencyAmount <= walletCurrencyBalance.placed_balance) || (type == "sell" && volume <= walletCryptoBalance.placed_balance)) {
               var addedData = await sails
                 .helpers

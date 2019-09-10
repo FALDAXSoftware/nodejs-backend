@@ -10,7 +10,6 @@ module.exports = {
   getNotificationList: async function (req, res) {
     try {
       var user_id = req.user.id;
-      console.log(user_id)
       var notificationList = await UserNotification.find({
         deleted_at: null,
         user_id: user_id
@@ -63,8 +62,6 @@ module.exports = {
             })
         }
       }
-
-      console.log(user_id);
 
       var notificationUpdateData = await UserNotification.find({
         deleted_at: null,

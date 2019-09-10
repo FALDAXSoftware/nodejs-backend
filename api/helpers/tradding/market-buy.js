@@ -89,7 +89,6 @@ module.exports = {
         .getMakerTakerFees(crypto, currency);
 
       var quantityFixed = inputs.orderQuantity
-      console.log(quantityFixed)
       var quantityValue = (quantityFixed).toFixed(sails.config.local.QUANTITY_PRECISION)
 
       if (sellBook && sellBook.length > 0) {

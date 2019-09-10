@@ -471,12 +471,7 @@ module.exports = {
             subject: "Password Change"
           }, function (err) {
             if (!err) {
-              return res
-                .status(202)
-                .json({
-                  "status": 202,
-                  "message": sails.__("Change_Password_Email")
-                });
+
             } else {
               return res
                 .status(500)
@@ -501,13 +496,12 @@ module.exports = {
           });
       }
     } catch (error) {
-      res
+      return res
         .status(500)
         .json({
           status: 500,
           "err": sails.__("Something Wrong")
         });
-      return;
     }
   },
 
@@ -696,11 +690,11 @@ module.exports = {
         page,
         limit
       } = req.allParams();
-      let query = " from admin WHERE deleted_at IS NULL ";
+      let query = " from admin LEFT JOIN roles ON admin.role_id=roles.id WHERE admin.deleted_at IS NULL ";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(email) LIKE '%" + data.toLowerCase() + "%')";
+          query = query + " AND (LOWER(admin.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(admin.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(admin.email) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
       countQuery = query;
@@ -709,31 +703,22 @@ module.exports = {
         let sortVal = (sortOrder == 'descend' ?
           'DESC' :
           'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY admin." + sortCol + " " + sortVal;
       } else {
-        query += " ORDER BY id DESC";
+        query += " ORDER BY admin.id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let allEmployees = await sails.sendNativeQuery("Select *" + query, [])
+      let allEmployees = await sails.sendNativeQuery("Select admin.*, roles.name as role " + query, [])
 
       allEmployees = allEmployees.rows;
 
-      let employeeCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let employeeCount = await sails.sendNativeQuery("Select COUNT(admin.id)" + countQuery, [])
       employeeCount = employeeCount.rows[0].count;
 
-      for (let index = 0; index < allEmployees.length; index++) {
-        if (allEmployees[index].role_id) {
-          let role = await Role.findOne({
-            id: allEmployees[index].role_id
-          })
-          allEmployees[index].role = role.name
-        }
-      }
-
       if (allEmployees) {
-        res.json({
+        return res.json({
           status: 200,
           'message': sails.__("Employee list"),
           'data': {
@@ -2303,18 +2288,10 @@ module.exports = {
       let FeeData = await sails.sendNativeQuery(walletQuery, []);
       FeeData = FeeData.rows;
 
-      let coinFee = await AdminSetting.findOne({
-        where: {
-          slug: 'default_send_coin_fee',
-          deleted_at: null
-        }
-      });
-
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Wallet Details"),
-        "data": FeeData,
-        'default_send_Coin_fee': parseFloat(coinFee.value),
+        "data": FeeData
       });
     } catch (error) {
       return res.json({
@@ -2531,7 +2508,7 @@ module.exports = {
   },
 
   // Download file
-  downloadBatchFile : async function(req, res){
+  downloadBatchFile: async function(req, res){
     try {
       if (!req.user.isAdmin) {
         return res.status(403).json({

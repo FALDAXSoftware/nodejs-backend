@@ -32,16 +32,16 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     request({
-      url: 'http://192.168.3.233:8080/Market/GetQuote',
+      url: 'http://192.168.3.233:8080/Market/GetQuote?symbol='+inputs.symbol,
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',
         // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: {
-        symbol: inputs.symbol
-      },
+      // body: {
+      //   symbol: inputs.symbol
+      // },
       json: true
     }, function (err, httpResponse, body) {
       if (err) {

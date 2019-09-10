@@ -134,4 +134,7 @@ module.exports.policies = {
   // "NotificationsController": {
   //   "getNotificationList": true
   // }
+  "TierController": {
+    "updateTierList": true
+  }
 };
