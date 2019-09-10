@@ -464,8 +464,6 @@ module.exports = {
 
         if (user_detail) {
 
-          console.log('user details inside verify new IP >>>>>>>>>>>>>>', user_detail)
-
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
@@ -987,7 +985,6 @@ module.exports = {
         // is_verified: false
         // is_new_email_verified: true
       });
-      console.log(user)
       if (user) {
         if (user.is_verified && user.is_new_email_verified) {
           return res

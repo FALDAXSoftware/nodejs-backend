@@ -310,10 +310,15 @@
   "Wallet Details": "Wallet Details",
   "Create Crypto Wallet": "Please generate your crypto wallet to continue.",
   "Create Currency Wallet": "Please generate your Currency wallet to continue.",
-  "Enter last transaction id":"Enter last transaction id.",
+  "Enter last transaction id": "Enter last transaction id.",
   "Batch added": "Batch has been added successfully",
   "Batch listed": "Batch has been listed successfully",
   "Batch updated": "Batch has been updated successfully",
   "Pending Orders List": "Pending orders listed successfully.",
-  "Cancel Orders List": "Cancelled orders listed successfully."
+  "Cancel Orders List": "Cancelled orders listed successfully.",
+  "Batch is already generated with this transaction": "Batch is already generated with this transaction.",
+  "tier details retrieve success": "Tier Details has been retrieved successfully.",
+  "no tier details retrieve success": "No Tier Details has been found",
+  "tier update success": "Tier Has been updated Successfully",
+  "Price listed": "Price listed successfully."
 }

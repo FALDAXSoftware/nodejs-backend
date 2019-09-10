@@ -319,7 +319,6 @@ module.exports = {
                         // console.log(warmWalletData.balance)
                         // console.log(coin.min_thresold);
                         // console.log(warmWalletData.balance >= coin.min_thresold)
-                        console.log(warmWalletData)
                         if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
                           //Execute Transaction
 
@@ -711,7 +710,6 @@ module.exports = {
       } else {
         userData.flag = false;
       }
-      console.log("User Data Value >>>>>>>>>>", userData)
       var walletDataCreate = await sails
         .helpers
         .wallet
@@ -922,14 +920,12 @@ module.exports = {
   // Just for QA testing
   addWalletBalance: async function (req, res) {
     try {
-      console.log("Inside this method >>>>>>>>.")
       var {
         coin,
         user_id,
         balance
       } = req.body;
 
-      console.log(req.body)
 
       var coinData = await Coins.findOne({
         deleted_at: null,
@@ -937,15 +933,11 @@ module.exports = {
         // is_active: true
       });
 
-      console.log("COin Value >>>>>>>>>>>", coinData)
-
       var walletData = await Wallet.findOne({
         deleted_at: null,
         coin_id: coinData.id,
         user_id: user_id
       });
-
-      console.log("wallet Data >>>>>>.", walletData)
 
 
       if (walletData != undefined) {

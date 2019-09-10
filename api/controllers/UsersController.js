@@ -26,7 +26,6 @@ module.exports = {
    */
 
   create: async function (req, res) {
-    console.log('Starting of signup', new Date())
     try {
       var referred_id = null;
       let email = req
@@ -64,7 +63,6 @@ module.exports = {
       }
       let email_verify_token = randomize('Aa0', 10);
       let email_verify_code = randomize('0', 6);
-      console.log(req.body)
       if (req.body.email && req.body.password) {
         var user_detail = await Users.create({
           email: email,
@@ -190,7 +188,6 @@ module.exports = {
                 }
               });
           }
-          console.log('End of signup', new Date())
           // return res
           //   .json({
           //     status: 200,
@@ -999,8 +996,6 @@ module.exports = {
       user_id: id,
       is_collected: false
     })
-
-    console.log(leftReferredData);
 
     var currencyData = await CurrencyConversion.find({
       deleted_at: null
@@ -2268,5 +2263,42 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+  // Get JST Price
+  getJSTPrice: async function(req, res){
+    try{
+      var req_body = req.body;
+      var symbol = req_body.symbol;
+      var quantity = req_body.quantity;
+      var side = req_body.side;
+      var get_price = await sails.helpers.fixapi.getMarketPrice( symbol );
+
+      var coin=symbol.split("/");
+
+      var price;
+      if(side=="Buy"){
+        price=get_price.Bid;
+      }else{
+        price=get_price.Ask;
+      }
+      var get_fees = await sails.helpers.feesCalculation( coin[0].toLowerCase(), quantity, price );
+
+      get_price.price = price;
+      get_price.fees = parseFloat(get_fees);
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Price listed"),
+        "data": get_price
+      });
+    }catch(err){
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
+
 };

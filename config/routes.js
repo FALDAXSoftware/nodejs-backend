@@ -64,7 +64,7 @@ module.exports.routes = {
 
   // Role
   'post /admin/role/create': 'RoleController.create',
-  'get /admin/role/get': 'RoleController.get',
+  'get /admin/role/get': 'RoleController.getRoles',
   'put /admin/role/update': 'RoleController.update',
   'delete /admin/role/delete': 'RoleController.delete',
 
@@ -379,5 +379,15 @@ module.exports.routes = {
   // Batch and Balance Settlements
   'post /admin/batches/create': 'AdminController.createBatch',
   'post /admin/batches/list': 'AdminController.getBatchListing',
+
+  // Tier Wise API
+  'get /get-tier-details': 'TierController.getUserTierList',
+  'get /admin/get-tier-details': 'TierController.getTierList',
+  'post /admin/update-tier-list': 'TierController.updateTierList',
+
   'put /admin/batches/update': 'AdminController.updateBatch',
+  'post /admin/batches/download': 'AdminController.downloadBatchFile',
+
+  // Get JST Price
+  'post /get-jst-price': 'UsersController.getJSTPrice'
 };

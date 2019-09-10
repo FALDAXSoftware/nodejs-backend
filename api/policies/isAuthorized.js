@@ -111,28 +111,26 @@ module.exports = async function (req, res, next) {
           // }
           // Check if IP's session is not timeout
           var opts = {
-            id : userData.id,
-            user_type : 2
+            id: userData.id,
+            user_type: 2
           };
-          var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist( opts );
-          console.log("userData.is_whitelist_ip",userData.is_whitelist_ip);
-          console.log("check_whitelist_exists",check_whitelist_exists);
-          if( userData.is_whitelist_ip == true && check_whitelist_exists  ){
+          var check_whitelist_exists = await IPWhitelist.checkUserHasWhitelist(opts);
+          if (userData.is_whitelist_ip == true && check_whitelist_exists) {
             opts.ip = ip;
             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
-            if(checkexist == 2 ){
+            if (checkexist == 2) {
               next();
-            }else if(checkexist == 1){
+            } else if (checkexist == 1) {
               return res
-              .status(401)
-              .json({
-                "status": 401,
-                "err": sails.__("Time for whitelist has been expired.")
-              });
-            }else{
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": sails.__("Time for whitelist has been expired.")
+                });
+            } else {
               next();
             }
-          }else{
+          } else {
             next();
           }
 

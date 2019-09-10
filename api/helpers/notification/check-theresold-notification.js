@@ -34,10 +34,7 @@ module.exports = {
         for (var k = 0; k < priceValue.length; k++) {
           if (priceValue[k].coin_id == assetValue[j].coin_id) {
             if (assetValue[j].upper_limit != undefined && assetValue[j].upper_limit != null) {
-              console.log(priceValue[k].quote.USD.price);
-              console.log(assetValue[j].upper_limit);
               if (priceValue[k].quote.USD.price >= assetValue[j].upper_limit) {
-                console.log(element.user_id);
                 var userData = await Users.findOne({
                   where: {
                     id: element.user_id,
@@ -46,10 +43,8 @@ module.exports = {
                     is_verified: true
                   }
                 });
-                console.log(userData);
                 if (userData) {
                   if (assetValue[j].is_email_notification == true || assetValue[j].is_email_notification == "true") {
-                    console.log(userData)
                     if (userData.email != undefined) {
                       await sails.helpers.notification.send.email("thresold_notification", userData)
                     }
@@ -73,7 +68,6 @@ module.exports = {
                 });
                 if (userData) {
                   if (assetValue[j].is_email_notification == true || assetValue[j].is_email_notification == "true") {
-                    console.log(userData)
                     if (userData.email != undefined) {
                       await sails.helpers.notification.send.email("thresold_notification", userData)
                     }
