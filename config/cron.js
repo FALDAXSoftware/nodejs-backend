@@ -83,4 +83,21 @@ module.exports.cron = {
   //     }
   //   }
   // }
+
+  updateJSTPrice: {
+    schedule: '* * * * *',
+    onTick: async function () {
+      if (sails.config.local.CRON_STATUS == "true") {
+        // Updating Thresold Value according to the latest value
+        await sails.helpers.fixapi.getMarketPrice("XRP/USD");
+        await sails.helpers.fixapi.getMarketPrice("BTC/USD");
+        await sails.helpers.fixapi.getMarketPrice("LTC/USD");
+        await sails.helpers.fixapi.getMarketPrice("ETH/USD");
+        await sails.helpers.fixapi.getMarketPrice("BCH/USD");
+
+        // Checking the condition for notification
+        // await sails.helpers.notification.checkTheresoldNotification();
+      }
+    }
+  },
 };
