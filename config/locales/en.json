@@ -320,5 +320,7 @@
   "tier details retrieve success": "Tier Details has been retrieved successfully.",
   "no tier details retrieve success": "No Tier Details has been found",
   "tier update success": "Tier Has been updated Successfully",
-  "Price listed": "Price listed successfully."
+  "Price listed": "Price listed successfully.",
+  "batch data retrieved": "Batch Data has been retreived successfully.",
+  "each batch data retrieved": "Batch Each Transaction Data has been retrieved successfully."
 }

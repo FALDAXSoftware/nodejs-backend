@@ -167,7 +167,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) { }
+                  if (admin_details.is_twofactor) {}
 
                   delete admin_details.password;
                   // Token Issue
@@ -353,17 +353,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_details.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("password change success"),
-                  "data": adminUpdates
-                });
-              }
-            })
+            to: (user_details.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("password change success"),
+                "data": adminUpdates
+              });
+            }
+          })
 
       } else {
         return res
@@ -467,20 +467,20 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: adminUpdates[0]["email"],
-            subject: "Password Change"
-          }, function (err) {
-            if (!err) {
+          to: adminUpdates[0]["email"],
+          subject: "Password Change"
+        }, function (err) {
+          if (!err) {
 
-            } else {
-              return res
-                .status(500)
-                .json({
-                  "status": 500,
-                  "err": sails.__("Something Wrong")
-                });
-            }
-          });
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        });
 
       if (adminUpdates) {
         return res.json({
@@ -583,16 +583,16 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (admin_details.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "message": sails.__("password change success")
-                  });
-                }
-              })
+              to: (admin_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success")
+                });
+              }
+            })
         } else {
           return res.json({
             "status": 400,
@@ -652,16 +652,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-              to: admin_details.email,
-              subject: "Forgot Password"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("Reset password link sent to your email successfully.")
-                });
-              }
-            })
+            to: admin_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -1211,17 +1211,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (adminData.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.status(200).json({
-                    "status": 200,
-                    "message": sails.__("WhiteList IP Add Success"),
-                    "data": updateAdminData
-                  });
-                }
-              })
+              to: (adminData.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": updateAdminData
+                });
+              }
+            })
         }
       } else {
         return res
@@ -1303,17 +1303,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_data.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.status(200).json({
-                  "status": 200,
-                  "message": sails.__("WhiteList IP Add Success"),
-                  "data": []
-                });
-              }
-            })
+            to: (user_data.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.status(200).json({
+                "status": 200,
+                "message": sails.__("WhiteList IP Add Success"),
+                "data": []
+              });
+            }
+          })
       }
 
     } catch (err) {
@@ -1630,30 +1630,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
 
     } catch (err) {
       return res
@@ -1715,30 +1715,30 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
     } catch (err) {
       return res
         .status(500)
@@ -1907,7 +1907,9 @@ module.exports = {
           });
       }
       // Disable user's 2fa
-      var user_data = user = await Users.findOne({ id: get_data.user_id });
+      var user_data = user = await Users.findOne({
+        id: get_data.user_id
+      });
       var disable_withdrawls = {
         is_twofactor: false,
         twofactor_secret: ""
@@ -1917,7 +1919,9 @@ module.exports = {
       }
 
       var user = await Users
-        .update({ id: get_data.user_id })
+        .update({
+          id: get_data.user_id
+        })
         .set(disable_withdrawls)
         .fetch();
 
@@ -1953,16 +1957,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user[0].email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request approved")
-              });
-            }
-          })
+          to: user[0].email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request approved")
+            });
+          }
+        })
     } catch (err) {
       console.log('err', err)
       return res.json({
@@ -2057,16 +2061,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user.email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request rejected")
-              });
-            }
-          })
+          to: user.email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request rejected")
+            });
+          }
+        })
     } catch (err) {
       console.log("err", err);
       return res.json({
@@ -2272,7 +2276,9 @@ module.exports = {
   getAdminWalletDetails: async function (req, res) {
     try {
       var walletQuery;
-      let { search } = req.allParams();
+      let {
+        search
+      } = req.allParams();
 
       walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
       (sum(th.user_fee)+sum(th.requested_fee)) as Fee
@@ -2314,11 +2320,15 @@ module.exports = {
         // Check if Batch is already created
         var check_exist_transaction = await Batches
           .count({
-            transaction_start: { '<=' : req.body.last_transaction_id },
-            transaction_end: { '>=' : req.body.last_transaction_id }
+            transaction_start: {
+              '<=': req.body.last_transaction_id
+            },
+            transaction_end: {
+              '>=': req.body.last_transaction_id
+            }
           });
 
-        if( check_exist_transaction > 0 ){
+        if (check_exist_transaction > 0) {
           return res
             .status(500)
             .json({
@@ -2328,7 +2338,9 @@ module.exports = {
         }
         // Get Previous data upto last tranasction
         var get_data = await Batches
-          .find({ deleted_at: null })
+          .find({
+            deleted_at: null
+          })
           .sort('created_at DESC')
           .limit(1);
 
@@ -2410,15 +2422,15 @@ module.exports = {
       }
       var req_body = req.body;
       var update_data = {
-        is_purchased:req_body.is_purchased,
-        is_withdrawled:req_body.is_withdrawled,
-        is_manual_withdrawled:req_body.is_manual_withdrawled
+        is_purchased: req_body.is_purchased,
+        is_withdrawled: req_body.is_withdrawled,
+        is_manual_withdrawled: req_body.is_manual_withdrawled
       };
       var get_data = await Batches
         .update({
           id: req_body.batch_id
         })
-        .set( update_data )
+        .set(update_data)
         .fetch();
 
       return res.status(200).json({
@@ -2507,8 +2519,246 @@ module.exports = {
 
   },
 
+  // Get Transaction Value for batch
+  GetBatchValue: async function (req, res) {
+    try {
+
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+
+      var {
+        transaction_start,
+        transaction_end
+      } = req.allParams();
+
+      var coinDetail = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true
+        }
+      });
+
+      var newArray = []
+      if (coinDetail != undefined) {
+        var buyTxTotal = 0
+        var sellTxTotal = 0;
+        var feesTotal = 0;
+        // coinDetail.map(async obj => {
+        for (var i = 0; i < coinDetail.length; i++) {
+          var details = coinDetail[i];
+          var singledata = {}
+          var buyDetails = await TradeHistory
+            .sum('quantity')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Buy',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Sell',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var buyDetailsTx = await TradeHistory
+            .count('id')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Buy',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Sell',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var sellDetails = await TradeHistory
+            .sum('quantity')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Sell',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Buy',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var sellDetailsTx = await TradeHistory
+            .count('id')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              or: [{
+                  currency: details.coin,
+                  side: 'Sell',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Buy',
+                }
+              ],
+              trade_type: 1
+            });
+
+          var coinUserFees = await TradeHistory
+            .sum('user_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              user_coin: details.coin,
+              trade_type: 1
+            })
+
+          var coinRequestedFees = await TradeHistory
+            .sum('requested_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              requested_coin: details.coin,
+              trade_type: 1
+            })
+
+          buyTxTotal = buyTxTotal + buyDetailsTx;
+          sellTxTotal = sellTxTotal + sellDetailsTx;
+
+          var coinFees = coinUserFees + coinRequestedFees
+          var usdValue = 0
+          feesTotal = feesTotal + (coinFees * usdValue);
+
+          singledata.coin = details.coin;
+          singledata.buy_detail = buyDetails;
+          singledata.sell_detail = sellDetails;
+          singledata.asset_net = (buyDetails - sellDetails)
+          singledata.buy_tx = buyDetailsTx;
+          singledata.sell_tx = sellDetailsTx;
+          singledata.faldax_fees = coinFees;
+          singledata.faldax_usd_fees = '$' + 0;
+          newArray.push(singledata);
+          // console.log("INSIDE >>>>>>>>>", newArray);
+        }
+
+        // console.log("OUTSIDE >>>>>>>>>>>", newArray, buyTxTotal, sellTxTotal);
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("batch data retrieved"),
+          "data": newArray,
+          buyTxTotal,
+          sellTxTotal,
+          feesTotal
+        })
+      }
+
+    } catch (err) {
+      console.log(err)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Get Each Transaction Value for batch
+  getTransactionBatchValue: async function (req, res) {
+
+    try {
+
+      var {
+        transaction_start,
+        transaction_end
+      } = req.allParams();
+
+      var diffrence = transaction_end - transaction_start;
+
+      var newarray = [];
+      var idValue;
+      for (var i = 0; i < diffrence; i++) {
+        var singledata = {};
+        idValue = i + parseInt(transaction_start);
+        var tradeData = await TradeHistory.findOne({
+          deleted_at: null,
+          id: idValue
+        });
+
+        if (tradeData != undefined) {
+          var asset_1_usd_value = 0;
+          var asset_2_usd_value = 0;
+          var dateValue = tradeData.created_at
+          singledata.transaction_id = tradeData.id;
+          singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+          singledata.pair = tradeData.symbol;
+          singledata.user_id = tradeData.user_id;
+          singledata.asset_1_amount = tradeData.quantity;
+          singledata.asset_1_value = (asset_1_usd_value * tradeData.quantity)
+          singledata.asset_2_amount = tradeData.filled;
+          singledata.asset_2_value = (tradeData.filled * asset_2_usd_value);
+          singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+          singledata.faldax_fee = (tradeData.user_fee);
+          singledata.faldax_fee_usd_value = (singledata.faldax_fee * asset_1_usd_value);
+
+          newarray.push(singledata);
+        }
+      }
+
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("each batch data retrieved"),
+        "data": newarray
+      })
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
+  },
+
   // Download file
-  downloadBatchFile: async function(req, res){
+  downloadBatchFile: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
         return res.status(403).json({
@@ -2518,7 +2768,7 @@ module.exports = {
       }
 
       var req_body = req.body;
-      if( req_body.batch_id == "" || req_body.types == "" ){
+      if (req_body.batch_id == "" || req_body.types == "") {
         return res.status(500).json({
           "status": 500,
           "message": sails.__("Missing Parameters")
@@ -2530,12 +2780,14 @@ module.exports = {
 
       // var get_batches = await Batches.
 
-    }catch(err){
+    } catch (err) {
       console.log("err", err);
-      return res.json({
-        "status": 500,
-        "message": sails.__("Something Wrong")
-      });
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
     }
 
   }

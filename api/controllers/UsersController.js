@@ -2265,35 +2265,38 @@ module.exports = {
     }
   },
   // Get JST Price
-  getJSTPrice: async function(req, res){
-    try{
+  getJSTPrice: async function (req, res) {
+    try {
       var req_body = req.body;
+      console.log(req.body)
       var symbol = req_body.symbol;
       var quantity = req_body.quantity;
       var side = req_body.side;
-      var get_price = await sails.helpers.fixapi.getMarketPrice( symbol );
+      var get_price = await sails.helpers.fixapi.getMarketPrice(symbol);
 
-      var coin=symbol.split("/");
+      var coin = symbol.split("/");
 
       var price;
-      if(side=="Buy"){
-        price=get_price.Bid;
-      }else{
-        price=get_price.Ask;
+      if (side == "Buy") {
+        price = get_price.Bid;
+      } else {
+        price = get_price.Ask;
       }
-      var get_faldax_fee = await AdminSetting.findOne({slug:"faldax_fee"});
+      var get_faldax_fee = await AdminSetting.findOne({
+        slug: "faldax_fee"
+      });
 
-      var get_fees = await sails.helpers.feesCalculation( coin[0].toLowerCase(), quantity, price );
-      var actual_price = (quantity*price);
+      var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
+      var actual_price = (quantity * price);
       get_price.price = actual_price;
-      get_price.network_fees = parseFloat(parseFloat(get_fees)*actual_price).toFixed(process.env.TOTAL_PRECISION);
-      get_price.faldax_fees = parseFloat((actual_price*get_faldax_fee.value)/100).toFixed(process.env.TOTAL_PRECISION);
+      get_price.network_fees = parseFloat(parseFloat(get_fees) * actual_price).toFixed(process.env.TOTAL_PRECISION);
+      get_price.faldax_fees = parseFloat((actual_price * get_faldax_fee.value) / 100).toFixed(process.env.TOTAL_PRECISION);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
         "data": get_price
       });
-    }catch(err){
+    } catch (err) {
       console.log("err", err);
       return res
         .status(500)
