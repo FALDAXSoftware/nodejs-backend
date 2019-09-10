@@ -380,4 +380,5 @@ module.exports.routes = {
   'post /admin/batches/create': 'AdminController.createBatch',
   'post /admin/batches/list': 'AdminController.getBatchListing',
   'put /admin/batches/update': 'AdminController.updateBatch',
+  'post /admin/batches/download': 'AdminController.downloadBatchFile',
 };
