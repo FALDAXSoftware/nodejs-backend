@@ -146,7 +146,6 @@ module.exports = {
   // Get Tier Data on basis fo the id
   getTierData: async function (req, res) {
     try {
-
       var {
         id
       } = req.allParams();
@@ -185,5 +184,4 @@ module.exports = {
         });
     }
   }
-
 }
