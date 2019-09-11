@@ -2660,7 +2660,6 @@ module.exports = {
 
           var coinFees = coinUserFees + coinRequestedFees
           var usdValue = await sails.helpers.fixapi.getPrice(details.coin)
-          // console.log(">>>>>>>>>>>>>>>>>>>", usdValue.bid_price, usdValue[0].bid_price);
           if (usdValue.length > 0)
             feesTotal = feesTotal + (coinFees * (usdValue[0].bid_price > 0 ? usdValue[0].bid_price : usdValue[0].ask_price));
 
@@ -2673,10 +2672,7 @@ module.exports = {
           singledata.faldax_fees = coinFees;
           singledata.faldax_usd_fees = 'USD ' + feesTotal;
           newArray.push(singledata);
-          // console.log("INSIDE >>>>>>>>>", newArray);
         }
-
-        // console.log("OUTSIDE >>>>>>>>>>>", newArray, buyTxTotal, sellTxTotal);
 
         return res.status(200).json({
           "status": 200,
@@ -2792,5 +2788,54 @@ module.exports = {
         });
     }
 
+  },
+
+  // Get Batch Details
+  getBatchDetails: async function (req, res) {
+    try {
+
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+
+      var {
+        id
+      } = req.allParams();
+
+      var batchDetail = await Batches.findOne({
+        where: {
+          deleted_at: null,
+          id: id
+        }
+      });
+
+      if (batchDetail) {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("batch detail retrieve success"),
+            "data": batchDetail
+          })
+      } else {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("no batch detail found")
+          })
+      }
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
   }
 };
