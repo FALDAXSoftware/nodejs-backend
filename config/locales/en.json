@@ -324,5 +324,7 @@
   "batch data retrieved": "Batch Data has been retreived successfully.",
   "each batch data retrieved": "Batch Each Transaction Data has been retrieved successfully.",
   "batch detail retrieve success": "Batch Details has been retrieved successfully.",
-  "no batch detail found": "No Batch Details has been found."
+  "no batch detail found": "No Batch Details has been found.",
+  "tier data retrieve success": "Tier Details has been retrieved successfully.",
+  "no tier data found": "No Tier Details has been found."
 }
