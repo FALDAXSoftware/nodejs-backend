@@ -25,6 +25,10 @@ module.exports = {
       type: 'number',
       columnName: 'stop_price'
     },
+    filled: {
+      type: 'number',
+      columnName: 'filled'
+    },
     price: {
       type: 'number',
       columnName: 'price'
@@ -129,7 +133,7 @@ module.exports = {
     trade_type: {
       type: 'number',
       columnName: 'trade_type',
-      defaultsTo:1
+      defaultsTo: 1
     }
   },
   beforeCreate: function (values, next) {

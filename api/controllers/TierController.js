@@ -141,6 +141,47 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
 
+  // Get Tier Data on basis fo the id
+  getTierData: async function (req, res) {
+    try {
+      var {
+        id
+      } = req.allParams();
+
+      var tierData = await Tiers.findOne({
+        where: {
+          deleted_at: null,
+          id: id
+        }
+      });
+
+      if (tierData) {
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            "message": sails.__("tier data retrieve success"),
+            "data": tierData
+          });
+      } else {
+        return res
+          .status(201)
+          .json({
+            status: 201,
+            "message": sails.__("no tier data found")
+          });
+      }
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  }
 }

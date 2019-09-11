@@ -34,7 +34,8 @@ module.exports.policies = {
     "login": true,
     "forgotPassword": true,
     "resetPassword": true, // We dont need authorization here, allowing public access,
-    "getAdminWalletDetails": true
+    "getAdminWalletDetails": true,
+    // "getTransactionBatchValue": true
   },
   'CountriesController': {
     '*': true
@@ -77,7 +78,8 @@ module.exports.policies = {
     // "webhookOnAddress": true
   },
   'WalletController': {
-    "addWalletBalance": true
+    "addWalletBalance": true,
+    "checkWalletBalance": true
   },
   'CareerController': {
     "applyJob": "checkReCaptcha",
@@ -135,6 +137,7 @@ module.exports.policies = {
   //   "getNotificationList": true
   // }
   "TierController": {
-    "updateTierList": true
+    "updateTierList": true,
+    // "getTierData": true
   }
 };

@@ -957,5 +957,49 @@ module.exports = {
     } catch (error) {
 
     }
-  }
+  },
+
+  // // Check Wallet Balance
+  // checkWalletBalance: async function (req, res) {
+  //   try {
+
+  //     var coinData = await Coins.find({
+  //       deleted_at: null,
+  //       is_active: true
+  //     });
+
+  //     var coin_limit_data = await AdminSetting.findOne({
+  //       where: {
+  //         deleted_at: null,
+  //         slug: 'admin_threshold_notification'
+  //       }
+  //     });
+
+  //     var data = JSON.parse(coin_limit_data.value)
+
+  //     for (var i = 0; i < coinData.length; i++) {
+
+  //       console.log(coinData[i].id);
+  //       console.log(coinData[i].coin_code);
+  //       let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
+  //       let custodialWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].custody_wallet_address);
+
+  //       console.log("Warm Wallet Balance ??????????????", warmWallet.balance);
+  //       console.log("Custodial Wallet Balance >>>>>>>>>>", custodialWallet.balance)
+
+  //       let exisiting = data.find(each_value => each_value['coin_id'] === coinData[i].id);
+  //       console.log("Existing Value >>>>>>>>>>>>.", exisiting);
+
+  //       if (warmWallet.balance != undefined) {
+  //         if (warmWallet.balance <= data.first_limit) {
+
+  //         }
+  //       }
+
+  //     }
+
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 };

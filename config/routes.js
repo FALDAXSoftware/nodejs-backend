@@ -384,10 +384,17 @@ module.exports.routes = {
   'get /get-tier-details': 'TierController.getUserTierList',
   'get /admin/get-tier-details': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
+  'get /admin/get-tier-data': 'TierController.getTierData',
 
   'put /admin/batches/update': 'AdminController.updateBatch',
+  'get /admin/get-batch-value': 'AdminController.GetBatchValue',
   'post /admin/batches/download': 'AdminController.downloadBatchFile',
+  'get /admin/get-each-transaction-value': 'AdminController.getTransactionBatchValue',
+  'get /admin/get-batch-detail': 'AdminController.getBatchDetails',
 
   // Get JST Price
-  'post /get-jst-price': 'UsersController.getJSTPrice'
+  'post /get-jst-price': 'UsersController.getJSTPrice',
+
+  // Wallet Balance related API
+  'get /coin-info': 'WalletController.checkWalletBalance'
 };

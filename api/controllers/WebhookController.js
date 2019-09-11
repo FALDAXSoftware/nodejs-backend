@@ -187,7 +187,6 @@ module.exports = {
               //     // send 10% to warm wallet and 90% to custodial wallet
               //     warmWalletAmount = (dest.value * 10) / 100;
               //     custodialWalletAmount = (dest.value * 90) / 100;
-
               // } else {
               //     // send 50% to warm wallet and 50% to custodial wallet
               //     warmWalletAmount = (dest.value * 50) / 100;
