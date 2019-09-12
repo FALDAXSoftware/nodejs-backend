@@ -2305,6 +2305,101 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  getReferralList: async function (req, res) {
+    try {
+
+      var userIds = [];
+      var referredData = await Users.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          referred_id: {
+            '!=': null
+          }
+        }
+      });
+
+      for (var i = 0; i < referredData.length; i++) {
+        if (userIds.indexOf(referredData[i].referred_id) == -1) {
+          userIds.push(referredData[i].referred_id)
+        }
+      }
+
+      var usersData = [];
+      for (var i = 0; i < userIds.length; i++) {
+        var userData = await Users.findOne({
+          select: [
+            'first_name',
+            'last_name',
+            'email'
+          ],
+          where: {
+            deleted_at: null,
+            is_active: true,
+            id: userIds[i]
+          }
+        });
+        if (userData != undefined) {
+          var userDataValue = await Users
+            .count('id')
+            .where({
+              deleted_at: null,
+              is_active: true,
+              referred_id: userIds[i]
+            });
+
+          userData.no_of_referral = userDataValue
+          usersData.push(userData)
+        }
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("referal data success"),
+          "data": usersData
+        })
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getReferredData: async function (req, res) {
+    try {
+
+      var {
+        id
+      } = req.allParams();
+
+      var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
+        "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("refer data retrieve"),
+          "data": get_reffered_data.rows
+        });
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
 
 };

@@ -25,7 +25,9 @@ module.exports.policies = {
     'create': 'checkReCaptcha',
     'getCountries': true,
     'getCountriesData': true,
-    'verifyNewEmail': true
+    'verifyNewEmail': true,
+    // "getReferredData": true,
+    // "getReferralList": true
     // 'updateSendCoinFee': true, 'updateUserDetails': true We dont need
     // authorization here, allowing public access,
   },
