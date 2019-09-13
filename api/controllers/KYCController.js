@@ -218,6 +218,17 @@ module.exports = {
                 var user_data = await Users.findOne({
                   mtid: data.mtid
                 });
+
+                var tier_step = parseInt(user_data.account_tier) + 1;
+                var user_data = await Users
+                  .update({
+                    id: user_data.id,
+                    deleted_at: null,
+                    is_active: true
+                  })
+                  .set({
+                    account_tier: tier_step
+                  })
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data.id,
                   deleted_at: null,

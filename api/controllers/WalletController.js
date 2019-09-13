@@ -940,6 +940,57 @@ module.exports = {
       });
 
 
+      var amount = parseInt(walletData.balance) + balance;
+      var placed_amount = parseInt(walletData.placed_balance) + balance
+      if (walletData != undefined) {
+        var updateWalletData = await Wallet.update({
+            deleted_at: null,
+            coin_id: coinData.id,
+            user_id: user_id
+          })
+          .set({
+            balance: amount,
+            placed_balance: placed_amount
+          });
+      }
+      return res.status(200).json({
+        "status": 200
+      })
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Update Wallet Balance
+  updateWalletBalance: async function (req, res) {
+    try {
+
+      var {
+        coin,
+        user_id,
+        balance
+      } = req.body;
+
+
+      var coinData = await Coins.findOne({
+        deleted_at: null,
+        coin_code: coin,
+        // is_active: true
+      });
+
+      var walletData = await Wallet.findOne({
+        deleted_at: null,
+        coin_id: coinData.id,
+        user_id: user_id
+      });
+
+
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
             deleted_at: null,
@@ -954,10 +1005,18 @@ module.exports = {
       return res.status(200).json({
         "status": 200
       })
-    } catch (error) {
 
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
-  },
+  }
 
   // // Check Wallet Balance
   // checkWalletBalance: async function (req, res) {

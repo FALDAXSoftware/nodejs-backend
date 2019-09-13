@@ -2272,27 +2272,30 @@ module.exports = {
       var symbol = req_body.symbol;
       var quantity = req_body.quantity;
       var side = req_body.side;
-      var get_price = await sails.helpers.fixapi.getMarketPrice(symbol);
-
       var coin = symbol.split("/");
+      var get_price = await sails.helpers.fixapi.getPrice(coin[0], side);
 
+      console.log(get_price[0].ask_price);
+      get_price = get_price[0];
       var price;
       if (side == "Buy") {
-        price = get_price.Bid;
+        price = get_price.ask_price;
       } else {
-        price = get_price.Ask;
+        price = get_price.bid_price;
       }
       var get_faldax_fee = await AdminSetting.findOne({
         slug: "faldax_fee"
       });
+      console.log(price)
 
       var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
       var actual_price = (price);
       get_price.price = actual_price;
-      var network_fees = actual_price + (get_fees*actual_price);
-      var faldax_fees = actual_price + ( (actual_price*get_faldax_fee.value)/100);
+      var network_fees = actual_price + (get_fees * actual_price);
+      var faldax_fees = actual_price + ((actual_price * get_faldax_fee.value) / 100);
       get_price.network_fees = parseFloat(network_fees).toFixed(process.env.TOTAL_PRECISION);
       get_price.faldax_fees = parseFloat(faldax_fees).toFixed(process.env.TOTAL_PRECISION);
+      console.log(get_price);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
@@ -2300,6 +2303,101 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getReferralList: async function (req, res) {
+    try {
+
+      var userIds = [];
+      var referredData = await Users.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          referred_id: {
+            '!=': null
+          }
+        }
+      });
+
+      for (var i = 0; i < referredData.length; i++) {
+        if (userIds.indexOf(referredData[i].referred_id) == -1) {
+          userIds.push(referredData[i].referred_id)
+        }
+      }
+
+      var usersData = [];
+      for (var i = 0; i < userIds.length; i++) {
+        var userData = await Users.findOne({
+          select: [
+            'first_name',
+            'last_name',
+            'email'
+          ],
+          where: {
+            deleted_at: null,
+            is_active: true,
+            id: userIds[i]
+          }
+        });
+        if (userData != undefined) {
+          var userDataValue = await Users
+            .count('id')
+            .where({
+              deleted_at: null,
+              is_active: true,
+              referred_id: userIds[i]
+            });
+
+          userData.no_of_referral = userDataValue
+          usersData.push(userData)
+        }
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("referal data success"),
+          "data": usersData
+        })
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getReferredData: async function (req, res) {
+    try {
+
+      var {
+        id
+      } = req.allParams();
+
+      var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
+        "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("refer data retrieve"),
+          "data": get_reffered_data.rows
+        });
+
+    } catch (err) {
+      console.log(err);
       return res
         .status(500)
         .json({

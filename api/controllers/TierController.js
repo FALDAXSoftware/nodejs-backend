@@ -28,6 +28,8 @@ module.exports = {
       for (let index = 0; index < tierDetails.length; index++) {
         if (tierDetails[index].tier_step == userData.account_tier) {
           tierDetails[index].is_active = true;
+          if (index != 0)
+            tierDetails[index - 1].is_verified = true;
         }
       }
 
@@ -58,14 +60,179 @@ module.exports = {
     }
   },
 
+  // Upgrade User Tier
+  upgrdaeUserTier: async function (req, res) {
+    try {
+
+      var {
+        tier_step
+      } = req.allParams();
+
+      var user_id = req.user.id;
+
+      if (tier_step == 2 || tier_step == 3 || tier_step == 4) {
+        var upgradeTier = await TierRequest.find({
+          where: {
+            deleted_at: null,
+            user_id: user_id
+          }
+        });
+
+        if (upgradeTier.length > 0) {
+          var upgradeData = await TierRequest
+            .update({
+              deleted_at: null,
+              user_id: user_id
+            })
+            .set({
+              tier_step: tier_step,
+              is_approved: null
+            })
+        } else {
+          var upgradeData = await TierRequest
+            .create({
+              tier_step: tier_step,
+              user_id: user_id,
+              is_approved: null
+            })
+        }
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("tier upgrade request success")
+          })
+      }
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   // ------------------------ CMS API --------------------------------------------
+
+  // Get Admin User List for Tier Upgradation
+  getUserTierRequest: async function (req, res) {
+    try {
+
+      var getUserPendingTierData = await TierRequest.find({
+        deleted_at: null,
+        is_approved: null
+      });
+
+      var getUserApprovedTierData = await TierRequest.find({
+        deleted_at: null,
+        is_approved: true
+      });
+
+      var getUserRejectedTierData = await TierRequest.find({
+        deleted_at: null,
+        is_approved: false
+      });
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("tier data retrieve"),
+          getUserPendingTierData,
+          getUserApprovedTierData,
+          getUserRejectedTierData
+        })
+
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  updateUserTierRequest: async function (req, res) {
+    try {
+      var {
+        id,
+        status
+      } = req.allParams();
+
+      var tierData = await TierRequest.findOne({
+        where: {
+          deleted_at: null,
+          id: id
+        }
+      });
+
+      if (tierData != undefined) {
+
+        var tierApproveData = await TierRequest
+          .update({
+            deleted_at: null,
+            id: id
+          })
+          .set({
+            is_approved: status
+          })
+          .fetch();
+
+        if (status == true || status == "true") {
+          var tier_step
+          if (tierData.tier_step != 4)
+            tier_step = parseInt(tierData.tier_step) + 1;
+          else
+            tier_step = 4;
+          var userData = await Users
+            .update({
+              deleted_at: null,
+              is_active: true,
+              id: tierApproveData.user_id
+            }).set({
+              account_tier: tier_step
+            });
+        }
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("request changed successfully")
+          })
+
+      } else {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("no request found")
+          })
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   getTierList: async function (req, res) {
     try {
       var tierDetails = await Tiers.find({
         where: {
           deleted_at: null
         }
-      });
+      }).sort('id ASC');
 
       if (tierDetails) {
         return res
@@ -98,30 +265,29 @@ module.exports = {
     try {
       var data = req.body;
 
-      for (let index = 0; index < data.length; index++) {
-        var tierData = await Tiers.findOne({
-          deleted_at: null,
-          id: data[index].id
-        });
+      var tierData = await Tiers.findOne({
+        deleted_at: null,
+        id: data.id
+      });
 
-        if (tierData != undefined) {
-          var updateTierData = await Tiers
-            .update({
-              deleted_at: null,
-              id: data[index].id
-            })
-            .set({
-              minimum_activity_thresold: data[index].minimum_activity_thresold,
-              daily_withdraw_limit: data[index].daily_withdraw_limit,
-              monthly_withdraw_limit: data[index].monthly_withdraw_limit,
-              requirements: data[index].requirements
-            });
-        }
 
+      if (tierData != undefined) {
+        var updateTierData = await Tiers
+          .update({
+            deleted_at: null,
+            id: data.id
+          })
+          .set({
+            minimum_activity_thresold: data.minimum_activity_thresold,
+            daily_withdraw_limit: data.daily_withdraw_limit,
+            monthly_withdraw_limit: data.monthly_withdraw_limit,
+            requirements: data.requirements
+          });
       }
 
       var tierUpdateData = await Tiers.find({
-        deleted_at: null
+        deleted_at: null,
+        id: data.id
       });
 
       return res

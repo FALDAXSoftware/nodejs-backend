@@ -134,6 +134,17 @@ module.exports = {
       type: 'number',
       columnName: 'trade_type',
       defaultsTo: 1
+    }    ,
+    order_id: {
+      type: 'string',
+      columnName: 'order_id',
+      defaultsTo: ""
+    },
+    execution_report: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'execution_report',
+      defaultsTo:{}
     }
   },
   beforeCreate: function (values, next) {

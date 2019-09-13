@@ -32,7 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     request({
-      url: 'http://192.168.3.233:8080/Market/GetQuote?symbol='+inputs.symbol,
+      url: 'http://3.19.249.13:8080/Market/GetQuote?symbol='+inputs.symbol,
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',
@@ -50,6 +50,7 @@ module.exports = {
       if (body.error) {
         return exits.error(body);
       }
+      console.log("body",body);
       // Add data in table
       let object_data = {
         coin:inputs.symbol,

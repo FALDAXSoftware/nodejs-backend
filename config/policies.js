@@ -25,7 +25,9 @@ module.exports.policies = {
     'create': 'checkReCaptcha',
     'getCountries': true,
     'getCountriesData': true,
-    'verifyNewEmail': true
+    'verifyNewEmail': true,
+    // "getReferredData": true,
+    // "getReferralList": true
     // 'updateSendCoinFee': true, 'updateUserDetails': true We dont need
     // authorization here, allowing public access,
   },
@@ -79,6 +81,7 @@ module.exports.policies = {
   },
   'WalletController': {
     "addWalletBalance": true,
+    "updateWalletBalance": true,
     "checkWalletBalance": true
   },
   'CareerController': {
@@ -138,6 +141,9 @@ module.exports.policies = {
   // }
   "TierController": {
     "updateTierList": true,
+    // "updateUserTierRequest": true,
+    // "getUserTierRequest": true
+    // "upgrdaeUserTier": true
     // "getTierData": true
   }
 };

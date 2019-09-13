@@ -2758,28 +2758,52 @@ module.exports = {
   // Download file
   downloadBatchFile: async function (req, res) {
     try {
-      if (!req.user.isAdmin) {
-        return res.status(403).json({
-          status: 403,
-          err: 'Unauthorized access'
+
+      var {
+        transaction_start,
+        transaction_end
+      } = req.allParams();
+
+      var diffrence = transaction_end - transaction_start;
+
+      var newarray = [];
+      var idValue;
+      for (var i = 0; i < diffrence; i++) {
+        var singledata = {};
+        idValue = i + parseInt(transaction_start);
+        var tradeData = await TradeHistory.findOne({
+          deleted_at: null,
+          id: idValue
         });
+
+        if (tradeData != undefined) {
+          var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency);
+          var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency);
+          var dateValue = tradeData.created_at
+          singledata.transaction_id = tradeData.id;
+          singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+          singledata.pair = tradeData.symbol;
+          singledata.user_id = tradeData.user_id;
+          singledata.asset_1_amount = tradeData.quantity;
+          singledata.asset_1_value = ((asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price) * tradeData.quantity)
+          singledata.asset_2_amount = tradeData.filled;
+          singledata.asset_2_value = (tradeData.filled * (asset_2_usd_value[0].bid_price > 0 ? asset_2_usd_value[0].bid_price : asset_2_usd_value[0].ask_price));
+          singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+          singledata.faldax_fee = (tradeData.user_fee);
+          singledata.faldax_fee_usd_value = (singledata.faldax_fee * (asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price));
+
+          newarray.push(singledata);
+        }
       }
 
-      var req_body = req.body;
-      if (req_body.batch_id == "" || req_body.types == "") {
-        return res.status(500).json({
-          "status": 500,
-          "message": sails.__("Missing Parameters")
-        });
-      }
-
-      var batch_id = req_body.batch_id;
-      var types = req_body.types;
-
-      // var get_batches = await Batches.
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("each batch data retrieved"),
+        "data": newarray
+      })
 
     } catch (err) {
-      console.log("err", err);
+      console.log(err);
       return res
         .status(500)
         .json({
@@ -2837,5 +2861,85 @@ module.exports = {
           "message": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // Upload file
+  uploadBatchFile: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+
+      var req_body = req.body;
+      if (req_body.batch_id == "")  {
+        return res.status(500).json({
+          "status": 500,
+          "message": sails.__("Missing Parameters")
+        });
+      }
+
+      var batch_id = req_body.batch_id;
+      if (req.file('batch_upload')) {
+        req
+          .file('batch_upload')
+          .upload(async function (err, uploadedDoc) {
+            try {
+              if (uploadedDoc.length > 0) {
+                let filename = uploadedDoc[0].filename;
+                var name = filename.substring(filename.indexOf("."));
+                let timestamp = new Date()
+                  .getTime()
+                  .toString();
+                uploadFileName = timestamp + name;
+                var stored_filename = 'batches_uploaded/' + uploadFileName;
+                var uploadResume = await UploadFiles.upload(uploadedDoc[0].fd, stored_filename);
+                if (uploadResume) {
+                  await Batches
+                    .update({
+                      id: batch_id
+                    })
+                    .set({
+                      uploaded_file: stored_filename
+                    });
+                  return res.json({
+                    status: 200,
+                    message: sails.__("BatchFile uploaded")
+                  })
+                } else {
+                  return res
+                    .status(500)
+                    .json({
+                      status: 500,
+                      "err": sails.__("Something Wrong")
+                    });
+                }
+              }else{
+
+                return res
+                  .status(500)
+                  .json({
+                    status: 500,
+                    "err": sails.__("File size should be greater than 0")
+                  });
+              }
+            } catch (e) {
+              console.log('>>>>>>>>thrown', e)
+              throw e;
+            }
+          })
+      }
+
+    } catch (err) {
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
+  },
 };
