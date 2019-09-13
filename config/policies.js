@@ -81,6 +81,7 @@ module.exports.policies = {
   },
   'WalletController': {
     "addWalletBalance": true,
+    "updateWalletBalance": true,
     "checkWalletBalance": true
   },
   'CareerController': {
@@ -140,6 +141,9 @@ module.exports.policies = {
   // }
   "TierController": {
     "updateTierList": true,
+    // "updateUserTierRequest": true,
+    // "getUserTierRequest": true
+    // "upgrdaeUserTier": true
     // "getTierData": true
   }
 };

@@ -371,7 +371,8 @@ module.exports.routes = {
   'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
   // Update User Wallet balance
-  'post /update-user-balance': 'WalletController.addWalletBalance',
+  'post /update-user-balance': 'WalletController.updateWalletBalance',
+  'post /add-user-balance': 'WalletController.addWalletBalance',
 
   // Admin Send API
   'post /send-coin-admin': 'WalletController.sendCoinAdmin',
@@ -385,6 +386,9 @@ module.exports.routes = {
   'get /admin/get-tier-details': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
+  'get /upgrade-user-tier': 'TierController.upgrdaeUserTier',
+  'get /admin/user-tier-request': 'TierController.getUserTierRequest',
+  'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
 
   'put /admin/batches/update': 'AdminController.updateBatch',
   'get /admin/get-batch-value': 'AdminController.GetBatchValue',
