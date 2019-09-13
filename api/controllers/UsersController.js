@@ -2272,15 +2272,16 @@ module.exports = {
       var symbol = req_body.symbol;
       var quantity = req_body.quantity;
       var side = req_body.side;
-      var get_price = await sails.helpers.fixapi.getMarketPrice(symbol);
-
       var coin = symbol.split("/");
+      var get_price = await sails.helpers.fixapi.getPrice(coin[0], side );
+
+
 
       var price;
       if (side == "Buy") {
-        price = get_price.Bid;
-      } else {
         price = get_price.Ask;
+      } else {
+        price = get_price.Bid;
       }
       var get_faldax_fee = await AdminSetting.findOne({
         slug: "faldax_fee"
