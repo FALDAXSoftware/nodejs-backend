@@ -396,5 +396,9 @@ module.exports.routes = {
   'post /get-jst-price': 'UsersController.getJSTPrice',
 
   // Wallet Balance related API
-  'get /coin-info': 'WalletController.checkWalletBalance'
+  'get /coin-info': 'WalletController.checkWalletBalance',
+
+  // Referral Admin API
+  'get /admin/get-referal-list': 'UsersController.getReferralList',
+  'get /admin/get-referred-id-data': 'UsersController.getReferredData',
 };
