@@ -65,7 +65,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      });
+      }).sort('id ASC');
 
       if (tierDetails) {
         return res
@@ -98,30 +98,29 @@ module.exports = {
     try {
       var data = req.body;
 
-      for (let index = 0; index < data.length; index++) {
-        var tierData = await Tiers.findOne({
-          deleted_at: null,
-          id: data[index].id
-        });
+      var tierData = await Tiers.findOne({
+        deleted_at: null,
+        id: data.id
+      });
 
-        if (tierData != undefined) {
-          var updateTierData = await Tiers
-            .update({
-              deleted_at: null,
-              id: data[index].id
-            })
-            .set({
-              minimum_activity_thresold: data[index].minimum_activity_thresold,
-              daily_withdraw_limit: data[index].daily_withdraw_limit,
-              monthly_withdraw_limit: data[index].monthly_withdraw_limit,
-              requirements: data[index].requirements
-            });
-        }
 
+      if (tierData != undefined) {
+        var updateTierData = await Tiers
+          .update({
+            deleted_at: null,
+            id: data.id
+          })
+          .set({
+            minimum_activity_thresold: data.minimum_activity_thresold,
+            daily_withdraw_limit: data.daily_withdraw_limit,
+            monthly_withdraw_limit: data.monthly_withdraw_limit,
+            requirements: data.requirements
+          });
       }
 
       var tierUpdateData = await Tiers.find({
-        deleted_at: null
+        deleted_at: null,
+        id: data.id
       });
 
       return res
