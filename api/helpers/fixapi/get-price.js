@@ -7,6 +7,12 @@ module.exports = {
       example: 'XRP',
       description: 'coin',
       required: true
+    },
+    side: {
+      type: 'string',
+      example: 'Buy',
+      description: 'Buy or Sell',
+      required: true
     }
   },
   exits: {
@@ -20,10 +26,17 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var coin = inputs.coin + '/USD'
+    var which_price={};
+    var query = {};
+    query.coin = coin;
+    if( inputs.side == "Buy" ){
+      query.ask_price ={'>':0} ;
+    }else{
+      query.bid_price ={'>':0};
+    }
+
     var get_price = await PriceHistory.find({
-      where: {
-        coin: coin
-      },
+      where: query,
     }).sort('id DESC').limit(1)
 
     // TODO Send back the result through the success exit.
