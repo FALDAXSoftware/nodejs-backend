@@ -328,9 +328,5 @@
   "tier data retrieve success": "Tier Details has been retrieved successfully.",
   "no tier data found": "No Tier Details has been found.",
   "referal data success": "Referral Data has been retrieved succcessfully.",
-  "refer data retrieve": "Referral Data for user has been retrieve successfully.",
-  "tier upgrade request success": "Tier Upgrade Request has been sent successfully.",
-  "tier data retrieve": "Tier Request Data has been retrieved successfully.",
-  "request changed successfully": "User Tier Request has been changed successfully",
-  "no request found": "No Request has been found."
+  "refer data retrieve": "Referral Data for user has been retrieve successfully."
 }

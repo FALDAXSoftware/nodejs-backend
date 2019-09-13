@@ -32,7 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     request({
-      url: 'http://192.168.1.100:8080/Market/GetQuote?symbol=' + inputs.symbol,
+      url: 'http://192.168.3.233:8080/Market/GetQuote?symbol='+inputs.symbol,
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',
@@ -52,13 +52,13 @@ module.exports = {
       }
       // Add data in table
       let object_data = {
-        coin: inputs.symbol,
-        ask_price: body.Ask,
-        ask_size: body.AskSize,
-        bid_price: body.Bid,
-        bid_size: body.BidSize,
+        coin:inputs.symbol,
+        ask_price:body.Ask,
+        ask_size:body.AskSize,
+        bid_price:body.Bid,
+        bid_size:body.BidSize,
       };
-      await PriceHistory.create(object_data);
+      await PriceHistory.create( object_data );
       //ends
 
       return exits.success(body);
@@ -68,3 +68,4 @@ module.exports = {
 
 
 };
+

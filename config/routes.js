@@ -395,6 +395,7 @@ module.exports.routes = {
   'post /admin/batches/download': 'AdminController.downloadBatchFile',
   'get /admin/get-each-transaction-value': 'AdminController.getTransactionBatchValue',
   'get /admin/get-batch-detail': 'AdminController.getBatchDetails',
+  'post /admin/batches/upload': 'AdminController.uploadBatchFile',
 
   // Get JST Price
   'post /get-jst-price': 'UsersController.getJSTPrice',
