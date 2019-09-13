@@ -2273,27 +2273,29 @@ module.exports = {
       var quantity = req_body.quantity;
       var side = req_body.side;
       var coin = symbol.split("/");
-      var get_price = await sails.helpers.fixapi.getPrice(coin[0], side );
+      var get_price = await sails.helpers.fixapi.getPrice(coin[0], side);
 
-
-
+      console.log(get_price[0].ask_price);
+      get_price = get_price[0];
       var price;
       if (side == "Buy") {
-        price = get_price.Ask;
+        price = get_price.ask_price;
       } else {
-        price = get_price.Bid;
+        price = get_price.bid_price;
       }
       var get_faldax_fee = await AdminSetting.findOne({
         slug: "faldax_fee"
       });
+      console.log(price)
 
       var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
       var actual_price = (price);
       get_price.price = actual_price;
-      var network_fees = actual_price + (get_fees*actual_price);
-      var faldax_fees = actual_price + ( (actual_price*get_faldax_fee.value)/100);
+      var network_fees = actual_price + (get_fees * actual_price);
+      var faldax_fees = actual_price + ((actual_price * get_faldax_fee.value) / 100);
       get_price.network_fees = parseFloat(network_fees).toFixed(process.env.TOTAL_PRECISION);
       get_price.faldax_fees = parseFloat(faldax_fees).toFixed(process.env.TOTAL_PRECISION);
+      console.log(get_price);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
