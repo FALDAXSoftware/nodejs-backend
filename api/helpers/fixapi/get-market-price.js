@@ -32,7 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     request({
-      url: 'http://192.168.3.233:8080/Market/GetQuote?symbol='+inputs.symbol,
+      url: 'http://192.168.1.100:8080/Market/GetQuote?symbol='+inputs.symbol,
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',

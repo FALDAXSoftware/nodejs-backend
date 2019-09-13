@@ -328,5 +328,7 @@
   "tier data retrieve success": "Tier Details has been retrieved successfully.",
   "no tier data found": "No Tier Details has been found.",
   "referal data success": "Referral Data has been retrieved succcessfully.",
-  "refer data retrieve": "Referral Data for user has been retrieve successfully."
+  "refer data retrieve": "Referral Data for user has been retrieve successfully.",
+  "BatchFile uploaded": "File is uploaded successfully.",
+  "File size should be greater than 0": "File size should be greater than 0."
 }

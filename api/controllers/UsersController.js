@@ -2274,9 +2274,6 @@ module.exports = {
       var side = req_body.side;
       var coin = symbol.split("/");
       var get_price = await sails.helpers.fixapi.getPrice(coin[0], side );
-
-
-
       var price;
       if (side == "Buy") {
         price = get_price.Ask;
