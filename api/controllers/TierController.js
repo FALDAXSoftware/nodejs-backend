@@ -122,20 +122,14 @@ module.exports = {
   getUserTierRequest: async function (req, res) {
     try {
 
-      var getUserPendingTierData = await TierRequest.find({
-        deleted_at: null,
-        is_approved: null
-      });
+      var getUserPendingTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL");
+      getUserPendingTierData = getUserPendingTierData.rows;
 
-      var getUserApprovedTierData = await TierRequest.find({
-        deleted_at: null,
-        is_approved: true
-      });
+      var getUserApprovedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = true AND tier_request.deleted_at IS NULL");
+      getUserApprovedTierData = getUserApprovedTierData.rows;
 
-      var getUserRejectedTierData = await TierRequest.find({
-        deleted_at: null,
-        is_approved: false
-      });
+      var getUserRejectedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = false AND tier_request.deleted_at IS NULL");
+      getUserRejectedTierData = getUserRejectedTierData.rows;
 
       return res
         .status(200)
