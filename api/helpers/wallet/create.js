@@ -40,6 +40,8 @@ module.exports = {
       coin_code: inputs.coin
     })
 
+    console.log(requestedCoin)
+
     //Generating wallet id for particular coin
     bitgo
       .coin(inputs.coin)
@@ -49,6 +51,7 @@ module.exports = {
         passphrase: sails.config.local.BITGO_PASSPHRASE
       })
       .then(async newWallet => {
+        console.log(newWallet);
         await Coins
           .update({
             id: requestedCoin.id
