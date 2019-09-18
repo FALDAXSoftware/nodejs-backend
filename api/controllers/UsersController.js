@@ -184,7 +184,7 @@ module.exports = {
                     "status": 200,
                     "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
                       sails.__("verification code") : sails.__("verification link"),
-                      "data":sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token
+                    email_verify_token
                   });
                 }
               });
