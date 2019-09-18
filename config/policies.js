@@ -37,7 +37,7 @@ module.exports.policies = {
     "forgotPassword": true,
     "resetPassword": true, // We dont need authorization here, allowing public access,
     "getAdminWalletDetails": true,
-    // "getTransactionBatchValue": true
+    "getBatchDetails": true
   },
   'CountriesController': {
     '*': true
