@@ -331,5 +331,6 @@
   "refer data retrieve": "Referral Data for user has been retrieve successfully.",
   "BatchFile uploaded": "File is uploaded successfully.",
   "File size should be greater than 0": "File size should be greater than 0.",
-  "Batch not found": "Batch not found"
+  "Batch not found": "Batch not found",
+  "option type required":"Option type should be sent."
 }

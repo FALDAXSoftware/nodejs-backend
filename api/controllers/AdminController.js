@@ -2538,19 +2538,26 @@ module.exports = {
       var coinDetail = await Coins.find({
         where: {
           deleted_at: null,
-          is_active: true
+          is_active: true,
+          coin:{
+            '!=':null
+          }
         }
       });
 
-      var newArray = []
+      var newarray = [];
+      var summary = {};
       if (coinDetail != undefined) {
         var buyTxTotal = 0
         var sellTxTotal = 0;
-        var feesTotal = 0;
+        var feesTotalBuy = 0;
+        var feesTotalSell = 0;
         // coinDetail.map(async obj => {
+        
         for (var i = 0; i < coinDetail.length; i++) {
           var details = coinDetail[i];
-          var singledata = {}
+          
+          var summary_data = {}
           var buyDetails = await TradeHistory
             .sum('quantity')
             .where({
@@ -2571,6 +2578,7 @@ module.exports = {
               trade_type: 1
             });
 
+        
           var buyDetailsTx = await TradeHistory
             .count('id')
             .where({
@@ -2631,7 +2639,7 @@ module.exports = {
               trade_type: 1
             });
 
-          var coinUserFees = await TradeHistory
+          var coinUserFeesBuy = await TradeHistory
             .sum('user_fee')
             .where({
               deleted_at: null,
@@ -2640,10 +2648,24 @@ module.exports = {
                 '>=': transaction_start
               },
               user_coin: details.coin,
+              side:"Buy",
               trade_type: 1
             })
 
-          var coinRequestedFees = await TradeHistory
+          var coinUserFeesSell = await TradeHistory
+            .sum('user_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              user_coin: details.coin,
+              side:"Sell",
+              trade_type: 1
+            })  
+
+          var coinRequestedFeesBuy = await TradeHistory
             .sum('requested_fee')
             .where({
               deleted_at: null,
@@ -2652,37 +2674,206 @@ module.exports = {
                 '>=': transaction_start
               },
               requested_coin: details.coin,
+              side:"Buy",
+              trade_type: 1
+            })
+          
+          var coinRequestedFeesSell = await TradeHistory
+            .sum('requested_fee')
+            .where({
+              deleted_at: null,
+              id: {
+                '<=': transaction_end,
+                '>=': transaction_start
+              },
+              requested_coin: details.coin,
+              side:"Sell",
               trade_type: 1
             })
 
           buyTxTotal = buyTxTotal + buyDetailsTx;
           sellTxTotal = sellTxTotal + sellDetailsTx;
 
-          var coinFees = coinUserFees + coinRequestedFees
-          var usdValue = await sails.helpers.fixapi.getPrice(details.coin)
-          if (usdValue.length > 0)
-            feesTotal = feesTotal + (coinFees * (usdValue[0].bid_price > 0 ? usdValue[0].bid_price : usdValue[0].ask_price));
+          var coinFeesBuy = coinUserFeesBuy + coinRequestedFeesBuy;
+          var coinFeesSell = coinUserFeesSell + coinRequestedFeesSell;
+          coinFees = coinFeesBuy+coinFeesSell;
+          console.log("details.coin",details.coin);
+          var usdValueBuy = await sails.helpers.fixapi.getPrice(details.coin, "Buy");
+          var usdValueSell = await sails.helpers.fixapi.getPrice(details.coin, "Sell");
+          if (usdValueBuy.length > 0){
+            feesTotalBuy = feesTotalBuy + (coinFeesBuy * usdValueBuy[0].ask_price);
+          } 
 
-          singledata.coin = details.coin;
-          singledata.buy_detail = buyDetails;
-          singledata.sell_detail = sellDetails;
-          singledata.asset_net = (buyDetails - sellDetails)
-          singledata.buy_tx = buyDetailsTx;
-          singledata.sell_tx = sellDetailsTx;
-          singledata.faldax_fees = coinFees;
-          singledata.faldax_usd_fees = 'USD ' + feesTotal;
-          newArray.push(singledata);
+          if (usdValueSell.length > 0){
+            feesTotalSell = feesTotalSell + (coinFeesSell * usdValueSell[0].bid_price);
+          } 
+          var feesTotal = feesTotalBuy+feesTotalSell;
+            
+
+          summary_data.coin = details.coin;
+          summary_data.buy_detail = buyDetails;
+          summary_data.sell_detail = sellDetails;
+          summary_data.asset_net = (buyDetails - sellDetails)
+          summary_data.buy_tx = buyDetailsTx;
+          summary_data.sell_tx = sellDetailsTx;
+          summary_data.faldax_fees = coinFees;
+          summary_data.faldax_usd_fees = 'USD ' + (feesTotal).toFixed(process.env.TOTAL_PRECISION);
+          newarray.push(summary_data);
         }
 
-        return res.status(200).json({
-          "status": 200,
-          "message": sails.__("batch data retrieved"),
-          "data": newArray,
-          buyTxTotal,
-          sellTxTotal,
-          feesTotal
-        })
+        summary.data = newarray;
+        summary.totalBuyTransaction = buyTxTotal;
+        summary.totalSellTransaction = sellTxTotal;
+        summary.totalNetworkFees = (feesTotal).toFixed(process.env.TOTAL_PRECISION);
       }
+
+
+
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("batch data retrieved"),
+        "data": summary
+      })
+      // if (coinDetail != undefined) {
+      //   var buyTxTotal = 0
+      //   var sellTxTotal = 0;
+      //   var feesTotal = 0;
+      //   // coinDetail.map(async obj => {
+      //   for (var i = 0; i < coinDetail.length; i++) {
+      //     var details = coinDetail[i];
+      //     var singledata = {}
+      //     var buyDetails = await TradeHistory
+      //       .sum('quantity')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Buy',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Sell',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var buyDetailsTx = await TradeHistory
+      //       .count('id')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Buy',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Sell',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var sellDetails = await TradeHistory
+      //       .sum('quantity')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Sell',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Buy',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var sellDetailsTx = await TradeHistory
+      //       .count('id')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Sell',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Buy',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var coinUserFees = await TradeHistory
+      //       .sum('user_fee')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         user_coin: details.coin,
+      //         trade_type: 1
+      //       })
+
+      //     var coinRequestedFees = await TradeHistory
+      //       .sum('requested_fee')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         requested_coin: details.coin,
+      //         trade_type: 1
+      //       })
+
+      //     buyTxTotal = buyTxTotal + buyDetailsTx;
+      //     sellTxTotal = sellTxTotal + sellDetailsTx;
+
+      //     var coinFees = coinUserFees + coinRequestedFees
+      //     var usdValue = await sails.helpers.fixapi.getPrice(details.coin)
+      //     if (usdValue.length > 0)
+      //       feesTotal = feesTotal + (coinFees * (usdValue[0].bid_price > 0 ? usdValue[0].bid_price : usdValue[0].ask_price));
+
+      //     singledata.coin = details.coin;
+      //     singledata.buy_detail = buyDetails;
+      //     singledata.sell_detail = sellDetails;
+      //     singledata.asset_net = (buyDetails - sellDetails)
+      //     singledata.buy_tx = buyDetailsTx;
+      //     singledata.sell_tx = sellDetailsTx;
+      //     singledata.faldax_fees = coinFees;
+      //     singledata.faldax_usd_fees = 'USD ' + feesTotal;
+      //     newArray.push(singledata);
+      //   }
+
+      //   return res.status(200).json({
+      //     "status": 200,
+      //     "message": sails.__("batch data retrieved"),
+      //     "data": newArray,
+      //     buyTxTotal,
+      //     sellTxTotal,
+      //     feesTotal
+      //   })
+      // }
 
     } catch (err) {
       console.log(err)
@@ -2707,33 +2898,80 @@ module.exports = {
 
       var diffrence = transaction_end - transaction_start;
 
-      var newarray = [];
+      
+      var newarray = {};
+      var purchases=[];
       var idValue;
+      // for (var i = 0; i < diffrence; i++) {
+      //   var singledata = {};
+      //   idValue = i + parseInt(transaction_start);
+      //   var tradeData = await TradeHistory.findOne({
+      //     deleted_at: null,
+      //     id: idValue
+      //   });
+
+      //   if (tradeData != undefined) {
+      //     var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency);
+      //     var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency);
+      //     var dateValue = tradeData.created_at
+      //     singledata.transaction_id = tradeData.id;
+      //     singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+      //     singledata.pair = tradeData.symbol;
+      //     singledata.user_id = tradeData.user_id;
+      //     singledata.asset_1_amount = tradeData.quantity;
+      //     singledata.asset_1_value = ((asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price) * tradeData.quantity)
+      //     singledata.asset_2_amount = tradeData.filled;
+      //     singledata.asset_2_value = (tradeData.filled * (asset_2_usd_value[0].bid_price > 0 ? asset_2_usd_value[0].bid_price : asset_2_usd_value[0].ask_price));
+      //     singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+      //     singledata.faldax_fee = (tradeData.user_fee);
+      //     singledata.faldax_fee_usd_value = (singledata.faldax_fee * (asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price));
+
+      //     newarray.push(singledata);
+      //   }
+      // }
+
       for (var i = 0; i < diffrence; i++) {
+          
+          
         var singledata = {};
         idValue = i + parseInt(transaction_start);
         var tradeData = await TradeHistory.findOne({
           deleted_at: null,
-          id: idValue
+          id: idValue,
+          // trade_type:2
         });
+        if (tradeData != undefined && tradeData.currency != "USD") {
+          var asset1_price = 0;
+          var asset2_price = 0;
+          if( tradeData.side == "Buy"){
+            var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency, "Buy");
+            var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency, "Sell");
+            asset1_price = asset_1_usd_value[0].ask_price;
+            asset2_price = asset_2_usd_value[0].bid_price;
+          }else{
+            var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency, "Sell");
+            var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency, "Buy");
+            asset1_price = asset_1_usd_value[0].bid_price;
+            asset2_price = asset_2_usd_value[0].ask_price;
+          }
+          
 
-        if (tradeData != undefined) {
-          var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency);
-          var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency);
           var dateValue = tradeData.created_at
           singledata.transaction_id = tradeData.id;
           singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
           singledata.pair = tradeData.symbol;
           singledata.user_id = tradeData.user_id;
           singledata.asset_1_amount = tradeData.quantity;
-          singledata.asset_1_value = ((asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price) * tradeData.quantity)
+          singledata.asset_1_value = ( asset1_price * tradeData.quantity )
           singledata.asset_2_amount = tradeData.filled;
-          singledata.asset_2_value = (tradeData.filled * (asset_2_usd_value[0].bid_price > 0 ? asset_2_usd_value[0].bid_price : asset_2_usd_value[0].ask_price));
+          singledata.asset_2_value = ( tradeData.filled * asset2_price );
           singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+          singledata.network_fee = 0;
+          singledata.network_fee_usd_value = 0;
           singledata.faldax_fee = (tradeData.user_fee);
-          singledata.faldax_fee_usd_value = (singledata.faldax_fee * (asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price));
+          singledata.faldax_fee_usd_value = (singledata.faldax_fee * asset1_price);
 
-          newarray.push(singledata);
+          purchases.push(singledata);
         }
       }
 
@@ -2792,236 +3030,276 @@ module.exports = {
       var purchases=[];
       var summary={};
       var idValue;
-      if( options == 0 || options == 2 ){ // Purchases
-        for (var i = 0; i < diffrence; i++) {
-          
-          
-            var singledata = {};
-            idValue = i + parseInt(transaction_start);
-            var tradeData = await TradeHistory.findOne({
-              deleted_at: null,
-              id: idValue,
-              trade_type:2
-            });
-            if (tradeData != undefined && tradeData.currency != "USD") {
-              var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency, tradeData.side);
-              var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency, tradeData.side);
-    
-              var dateValue = tradeData.created_at
-              singledata.transaction_id = tradeData.id;
-              singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
-              singledata.pair = tradeData.symbol;
-              singledata.user_id = tradeData.user_id;
-              singledata.asset_1_amount = tradeData.quantity;
-              singledata.asset_1_value = ((asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price) * tradeData.quantity)
-              singledata.asset_2_amount = tradeData.filled;
-              singledata.asset_2_value = (tradeData.filled * (asset_2_usd_value[0].bid_price > 0 ? asset_2_usd_value[0].bid_price : asset_2_usd_value[0].ask_price));
-              singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
-              singledata.network_fee = 0;
-              singledata.network_fee_usd_value = 0;
-              singledata.faldax_fee = (tradeData.user_fee);
-              singledata.faldax_fee_usd_value = (singledata.faldax_fee * (asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price));
-    
-              purchases.push(singledata);
-            }
-          }
-      }
+      // var allinone = [];
+      console.log("options.length",options.length);
+      if( options.length > 0 ){
 
-      if( options == 0 || options == 1 ){ // Summary
-         
-        var coinDetail = await Coins.find({
-          where: {
-            deleted_at: null,
-            is_active: true
-          }
-        });
-  
-        var newArray2 = [];
-        if (coinDetail != undefined) {
-          var buyTxTotal = 0
-          var sellTxTotal = 0;
-          var feesTotalBuy = 0;
-          var feesTotalSell = 0;
-          // coinDetail.map(async obj => {
-          for (var i = 0; i < coinDetail.length; i++) {
-            var details = coinDetail[i];
-            var summary_data = {}
-            var buyDetails = await TradeHistory
-              .sum('quantity')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                or: [{
-                    currency: details.coin,
-                    side: 'Buy',
-                  },
-                  {
-                    settle_currency: details.coin,
-                    side: 'Sell',
-                  }
-                ],
-                trade_type: 1
-              });
-
-          
-            var buyDetailsTx = await TradeHistory
-              .count('id')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                or: [{
-                    currency: details.coin,
-                    side: 'Buy',
-                  },
-                  {
-                    settle_currency: details.coin,
-                    side: 'Sell',
-                  }
-                ],
-                trade_type: 1
-              });
-  
-            var sellDetails = await TradeHistory
-              .sum('quantity')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                or: [{
-                    currency: details.coin,
-                    side: 'Sell',
-                  },
-                  {
-                    settle_currency: details.coin,
-                    side: 'Buy',
-                  }
-                ],
-                trade_type: 1
-              });
-  
-            var sellDetailsTx = await TradeHistory
-              .count('id')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                or: [{
-                    currency: details.coin,
-                    side: 'Sell',
-                  },
-                  {
-                    settle_currency: details.coin,
-                    side: 'Buy',
-                  }
-                ],
-                trade_type: 1
-              });
-  
-            var coinUserFeesBuy = await TradeHistory
-              .sum('user_fee')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                user_coin: details.coin,
-                side:"Buy",
-                trade_type: 1
-              })
-
-            var coinUserFeesSell = await TradeHistory
-              .sum('user_fee')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                user_coin: details.coin,
-                side:"Sell",
-                trade_type: 1
-              })  
-  
-            var coinRequestedFeesBuy = await TradeHistory
-              .sum('requested_fee')
-              .where({
-                deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                requested_coin: details.coin,
-                side:"Buy",
-                trade_type: 1
-              })
+      var flag=1;
+      options.forEach( async function( each_value ){
+        console.log("each_value",each_value);
+        if( each_value == 0 || each_value == 2 ){ // Purchases
+          for (var i = 0; i < diffrence; i++) {
             
-            var coinRequestedFeesSell = await TradeHistory
-              .sum('requested_fee')
-              .where({
+            
+              var singledata = {};
+              idValue = i + parseInt(transaction_start);
+              var tradeData = await TradeHistory.findOne({
                 deleted_at: null,
-                id: {
-                  '<=': transaction_end,
-                  '>=': transaction_start
-                },
-                requested_coin: details.coin,
-                side:"Sell",
-                trade_type: 1
-              })
-  
-            buyTxTotal = buyTxTotal + buyDetailsTx;
-            sellTxTotal = sellTxTotal + sellDetailsTx;
-  
-            var coinFeesBuy = coinUserFeesBuy + coinRequestedFeesBuy;
-            var coinFeesSell = coinUserFeesSell + coinRequestedFeesSell;
-            coinFees = coinFeesBuy+coinFeesSell;
-            var usdValueBuy = await sails.helpers.fixapi.getPrice(details.coin, "Buy");
-            var usdValueSell = await sails.helpers.fixapi.getPrice(details.coin, "Sell");
-            if (usdValueBuy.length > 0){
-              feesTotalBuy = feesTotalBuy + (coinFeesBuy * usdValueBuy[0].ask_price);
-            } 
-
-            if (usdValueSell.length > 0){
-              feesTotalSell = feesTotalSell + (coinFeesSell * usdValueSell[0].bid_price);
-            } 
-            var feesTotal = feesTotalBuy+feesTotalSell;
-              
-  
-            summary_data.coin = details.coin;
-            summary_data.buy_detail = buyDetails;
-            summary_data.sell_detail = sellDetails;
-            summary_data.asset_net = (buyDetails - sellDetails)
-            summary_data.buy_tx = buyDetailsTx;
-            summary_data.sell_tx = sellDetailsTx;
-            summary_data.faldax_fees = coinFees;
-            summary_data.faldax_usd_fees = 'USD ' + (feesTotal).toFixed(process.env.TOTAL_PRECISION);
-            newArray2.push(summary_data);
-          }
-  
-          summary.data = newArray2;
-          summary.totalBuyTransaction = buyTxTotal;
-          summary.totalSellTransaction = sellTxTotal;
-          summary.totalNetworkFees = (feesTotal).toFixed(process.env.TOTAL_PRECISION);
+                id: idValue,
+                
+                // trade_type:2
+              });
+              if (tradeData != undefined && tradeData.currency != "USD") {
+                var asset1_price = 0;
+                var asset2_price = 0;
+                if( tradeData.side == "Buy"){
+                  var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency, "Buy");
+                  var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency, "Sell");
+                  asset1_price = asset_1_usd_value[0].ask_price;
+                  asset2_price = asset_2_usd_value[0].bid_price;
+                }else{
+                  var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency, "Sell");
+                  var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency, "Buy");
+                  asset1_price = asset_1_usd_value[0].bid_price;
+                  asset2_price = asset_2_usd_value[0].ask_price;
+                }
+                
+      
+                var dateValue = tradeData.created_at
+                singledata.transaction_id = tradeData.id;
+                singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+                singledata.pair = tradeData.symbol;
+                singledata.user_id = tradeData.user_id;
+                singledata.asset_1_amount = tradeData.quantity;
+                singledata.asset_1_value = ( asset1_price * tradeData.quantity )
+                singledata.asset_2_amount = tradeData.filled;
+                singledata.asset_2_value = ( tradeData.filled * asset2_price );
+                singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+                singledata.network_fee = 0;
+                singledata.network_fee_usd_value = 0;
+                singledata.faldax_fee = (tradeData.user_fee);
+                singledata.faldax_fee_usd_value = (singledata.faldax_fee * asset1_price);
+      
+                purchases.push(singledata);
+              }
+            }
         }
-      } // Summary ends
-      newarray.purchases = purchases;
-      newarray.summary = summary;
 
+        if( each_value == 0 || each_value == 1 ){ // Summary
+         
+          var coinDetail = await Coins.find({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              coin:{
+                '!=':null
+              }
+            }
+          });
+    
+          var newArray2 = [];
+          if (coinDetail != undefined) {
+            var buyTxTotal = 0
+            var sellTxTotal = 0;
+            var feesTotalBuy = 0;
+            var feesTotalSell = 0;
+            // coinDetail.map(async obj => {
+            for (var i = 0; i < coinDetail.length; i++) {
+              var details = coinDetail[i];
+              var summary_data = {}
+              var buyDetails = await TradeHistory
+                .sum('quantity')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  or: [{
+                      currency: details.coin,
+                      side: 'Buy',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Sell',
+                    }
+                  ],
+                  trade_type: 1
+                });
+  
+            
+              var buyDetailsTx = await TradeHistory
+                .count('id')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  or: [{
+                      currency: details.coin,
+                      side: 'Buy',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Sell',
+                    }
+                  ],
+                  trade_type: 1
+                });
+    
+              var sellDetails = await TradeHistory
+                .sum('quantity')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  or: [{
+                      currency: details.coin,
+                      side: 'Sell',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Buy',
+                    }
+                  ],
+                  trade_type: 1
+                });
+    
+              var sellDetailsTx = await TradeHistory
+                .count('id')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  or: [{
+                      currency: details.coin,
+                      side: 'Sell',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Buy',
+                    }
+                  ],
+                  trade_type: 1
+                });
+    
+              var coinUserFeesBuy = await TradeHistory
+                .sum('user_fee')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  user_coin: details.coin,
+                  side:"Buy",
+                  trade_type: 1
+                })
+  
+              var coinUserFeesSell = await TradeHistory
+                .sum('user_fee')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  user_coin: details.coin,
+                  side:"Sell",
+                  trade_type: 1
+                })  
+    
+              var coinRequestedFeesBuy = await TradeHistory
+                .sum('requested_fee')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  requested_coin: details.coin,
+                  side:"Buy",
+                  trade_type: 1
+                })
+              
+              var coinRequestedFeesSell = await TradeHistory
+                .sum('requested_fee')
+                .where({
+                  deleted_at: null,
+                  id: {
+                    '<=': transaction_end,
+                    '>=': transaction_start
+                  },
+                  requested_coin: details.coin,
+                  side:"Sell",
+                  trade_type: 1
+                })
+    
+              buyTxTotal = buyTxTotal + buyDetailsTx;
+              sellTxTotal = sellTxTotal + sellDetailsTx;
+    
+              var coinFeesBuy = coinUserFeesBuy + coinRequestedFeesBuy;
+              var coinFeesSell = coinUserFeesSell + coinRequestedFeesSell;
+              coinFees = coinFeesBuy+coinFeesSell;
+              var usdValueBuy = await sails.helpers.fixapi.getPrice(details.coin, "Buy");
+              var usdValueSell = await sails.helpers.fixapi.getPrice(details.coin, "Sell");
+              if (usdValueBuy.length > 0){
+                feesTotalBuy = feesTotalBuy + (coinFeesBuy * usdValueBuy[0].ask_price);
+              } 
+  
+              if (usdValueSell.length > 0){
+                feesTotalSell = feesTotalSell + (coinFeesSell * usdValueSell[0].bid_price);
+              } 
+              var feesTotal = feesTotalBuy+feesTotalSell;
+                
+    
+              summary_data.coin = details.coin;
+              summary_data.buy_detail = buyDetails;
+              summary_data.sell_detail = sellDetails;
+              summary_data.asset_net = (buyDetails - sellDetails)
+              summary_data.buy_tx = buyDetailsTx;
+              summary_data.sell_tx = sellDetailsTx;
+              summary_data.faldax_fees = coinFees;
+              summary_data.faldax_usd_fees = 'USD ' + (feesTotal).toFixed(process.env.TOTAL_PRECISION);
+              newArray2.push(summary_data);
+            }
+    
+            summary.data = newArray2;
+            summary.totalBuyTransaction = buyTxTotal;
+            summary.totalSellTransaction = sellTxTotal;
+            summary.totalNetworkFees = (feesTotal).toFixed(process.env.TOTAL_PRECISION);
+          }
+        } // Summary ends
+        newarray.purchases = purchases;
+        newarray.summary = summary;
+        console.log("options", options );
+        console.log("flag", flag );
+        if( options.length == flag){
+          return res.status(200).json({
+            "status": 200,
+            "message": sails.__("each batch data retrieved"),
+            "data": newarray
+          })
+        }
+        flag++;
+      });
+      
+      // newarray.purchases = purchases;
+      // newarray.summary = summary;
+
+      
+    }else{
       return res.status(200).json({
-        "status": 200,
-        "message": sails.__("each batch data retrieved"),
+        "status": 400,
+        "message": sails.__("option type required"),
         "data": newarray
-      })
+      }) 
+    }
 
     } catch (err) {
       console.log(err);
