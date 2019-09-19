@@ -201,6 +201,10 @@ module.exports = {
         .wallet
         .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
 
+      console.log("Warm Wallet Data ++++++++++++++", warmWalletData);
+      console.log("Warm Wallet Address >>>>>>>>>>>>", warmWalletData.receiveAddress);
+      console.log("Warm Wallet Balance ??????????????", warmWalletData.balance)
+
       let sendWalletData = await sails
         .helpers
         .wallet

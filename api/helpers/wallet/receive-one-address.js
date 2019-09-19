@@ -46,6 +46,8 @@ module.exports = {
       coin: inputs.coin
     });
 
+    console.log(coin);
+
 
     var walletData = await Wallet.findOne({
       deleted_at: null,
@@ -68,6 +70,7 @@ module.exports = {
         address_label = coin.coin_code + '-' + address_label;
       }
 
+      console.log(walletCoinCode, coin.hot_receive_wallet_address)
       var wallet = await sails.helpers.bitgo.getWallet(walletCoinCode, coin.hot_receive_wallet_address);
 
 
@@ -77,8 +80,10 @@ module.exports = {
           // address
 
 
+          console.log(walletCoinCode, coin.hot_receive_wallet_address, address_label)
           //Address generation for receiving coin
           let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
+          console.log(address);
           //Address generation for sending the coin
           let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);
           let obj = {
