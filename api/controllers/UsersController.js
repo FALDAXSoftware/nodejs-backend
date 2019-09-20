@@ -150,7 +150,7 @@ module.exports = {
 
         if (user_detail) {
           //   Create Recive Address
-          await sails.helpers.wallet.receiveAddress(user_detail);
+          // await sails.helpers.wallet.receiveAddress(user_detail);
           let slug = "";
           if (req.body.device_type == 1 || req.body.device_type == 2) {
             slug = "signup_for_mobile"
