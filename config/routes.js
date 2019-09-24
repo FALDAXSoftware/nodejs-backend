@@ -82,6 +82,7 @@ module.exports.routes = {
   'post /admin/add-user': 'Users.addUser',
   'post /admin/update-user': 'Admin.updateUser',
   'post /admin/get-user-tickets': 'Users.getTicketsAdmin',
+  'get /admin/get-user-wallet-addresses': 'Users.getUserWalletAddresses',
   //coins
   'get /admin/get-coins': 'Coins.getCoins',
   'post /admin/coins/create': 'Coins.create',

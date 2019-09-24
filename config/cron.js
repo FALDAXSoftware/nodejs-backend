@@ -94,6 +94,11 @@ module.exports.cron = {
         await sails.helpers.fixapi.getMarketPrice("LTC/USD");
         await sails.helpers.fixapi.getMarketPrice("ETH/USD");
         await sails.helpers.fixapi.getMarketPrice("BCH/USD");
+        await sails.helpers.fixapi.getMarketPrice("ETH/BTC");
+        await sails.helpers.fixapi.getMarketPrice("LTC/BTC");
+        await sails.helpers.fixapi.getMarketPrice("XRP/BTC");
+        await sails.helpers.fixapi.getMarketPrice("LTC/ETH");
+        await sails.helpers.fixapi.getMarketPrice("XRP/ETH");
 
         // Checking the condition for notification
         // await sails.helpers.notification.checkTheresoldNotification();

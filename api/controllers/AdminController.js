@@ -2486,7 +2486,7 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       let get_batches = await sails.sendNativeQuery("Select *" + query, [])
-      console.log('>>>>>>>>>>get_batches', get_batches.rows)
+      
       let batch_count = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       batch_count = batch_count.rows[0].count;
       // var get_batchs = await Batches.find().sort("batch_date DESC")
@@ -2697,7 +2697,7 @@ module.exports = {
           var coinFeesBuy = coinUserFeesBuy + coinRequestedFeesBuy;
           var coinFeesSell = coinUserFeesSell + coinRequestedFeesSell;
           coinFees = coinFeesBuy + coinFeesSell;
-          console.log("details.coin", details.coin);
+          
           var usdValueBuy = await sails.helpers.fixapi.getPrice(details.coin, "Buy");
           var usdValueSell = await sails.helpers.fixapi.getPrice(details.coin, "Sell");
           if (usdValueBuy.length > 0) {
@@ -3031,12 +3031,12 @@ module.exports = {
       var summary = {};
       var idValue;
       // var allinone = [];
-      console.log("options.length", options.length);
+
       if (options.length > 0) {
 
         var flag = 1;
         options.forEach(async function (each_value) {
-          console.log("each_value", each_value);
+
           if (each_value == 0 || each_value == 2) { // Purchases
             for (var i = 0; i < diffrence; i++) {
 
@@ -3277,8 +3277,7 @@ module.exports = {
           } // Summary ends
           newarray.purchases = purchases;
           newarray.summary = summary;
-          console.log("options", options);
-          console.log("flag", flag);
+          
           if (options.length == flag) {
             return res.status(200).json({
               "status": 200,
