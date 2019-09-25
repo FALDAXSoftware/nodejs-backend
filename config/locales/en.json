@@ -332,6 +332,9 @@
   "BatchFile uploaded": "File is uploaded successfully.",
   "File size should be greater than 0": "File size should be greater than 0.",
   "Batch not found": "Batch not found",
-  "option type required":"Option type should be sent.",
-  "Wallet address list":"Wallet address has been listed."
+  "qoute details success": "Qoute Details has been retrieved Successfully",
+  "payment details success": "Payments Details has been retrieved success.",
+  "payment fail": "Payment has failed please try again to continue.",
+  "option type required": "Option type should be sent.",
+  "Wallet address list": "Wallet address has been listed."
 }

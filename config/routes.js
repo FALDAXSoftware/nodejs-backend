@@ -407,4 +407,11 @@ module.exports.routes = {
   // Referral Admin API
   'get /admin/get-referal-list': 'UsersController.getReferralList',
   'get /admin/get-referred-id-data': 'UsersController.getReferredData',
+
+  'get /get-encrypt-data': 'RootController.getEncryptKey',
+
+  // Simplex API
+  'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
+  'post /get-partner-data-info': 'SimplexController.getPartnerData',
+  'get /get-event-data': 'SimplexController.checkPaymentStatus',
 };

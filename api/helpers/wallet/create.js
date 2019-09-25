@@ -27,10 +27,12 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     //Configuring bitgo API with access token
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
-      accessToken: sails.config.local.BITGO_ACCESS_TOKEN
+      accessToken: access_token_value
     });
 
     //Fetching coin list
@@ -48,7 +50,7 @@ module.exports = {
       .wallets()
       .generateWallet({
         label: inputs.coin + '-wallet',
-        passphrase: sails.config.local.BITGO_PASSPHRASE
+        passphrase: passphrase_value
       })
       .then(async newWallet => {
         console.log(newWallet);

@@ -75,7 +75,8 @@ module.exports.policies = {
     "testemail": true,
     "queryTest": true,
     "createWallet": true,
-    "queryTestThresold": true
+    "queryTestThresold": true,
+    "getEncryptKey": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
@@ -145,5 +146,10 @@ module.exports.policies = {
     // "getUserTierRequest": true
     // "upgrdaeUserTier": true
     // "getTierData": true
+  },
+  "SimplexController": {
+    // "getUserQouteDetails": true,
+    // "getPartnerData": true,
+    "checkPaymentStatus": true
   }
 };

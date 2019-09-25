@@ -104,11 +104,12 @@ module.exports = {
     //kycUploadDetails.docCountry = 'US';
     kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
 
+    var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
     //production url : https://edna.identitymind.com/merchantedna/
     //user:password base64 
     request.post({
       headers: {
-        'Authorization': 'Basic ' + sails.config.local.IDM_TOKEN
+        'Authorization': 'Basic ' + idm_key
       },
       url: sails.config.local.IDM_URL,
       json: kycUploadDetails
@@ -136,8 +137,7 @@ module.exports = {
           s3.deleteObject(profileData, function (err, response) {
             if (err) {
               console.log(err)
-            } else {
-            }
+            } else {}
           })
         }
         if (kyc_details.back_doc != null) {
@@ -149,8 +149,7 @@ module.exports = {
           s3.deleteObject(profileData, function (err, response) {
             if (err) {
               console.log(err)
-            } else {
-            }
+            } else {}
           })
         }
 

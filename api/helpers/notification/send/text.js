@@ -27,7 +27,8 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    var accountSid = sails.config.local.TWILLIO_ACCOUNT_SID; // Your Account SID from www.twilio.com/console
+    var account_sid = await sails.helpers.getDecryptData(sails.config.local.TWILLIO_ACCOUNT_SID);
+    var accountSid = account_sid; // Your Account SID from www.twilio.com/console
     var authToken = sails.config.local.TWILLIO_ACCOUNT_AUTH_TOKEN; // Your Auth Token from www.twilio.com/console
     var user_id = inputs.user.id;
 
