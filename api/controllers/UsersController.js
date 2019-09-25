@@ -2406,6 +2406,50 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+  // For Get Login History
+  getUserWalletAddresses: async function (req, res) {
+    try {
+      const {
+        user_id
+      } = req.allParams();
+      
+      var coins = await Coins.find({
+        is_active:true          
+      })
+      .select("coin_code")
+      .sort('id DESC');
+
+      var all_data=[];
+      for( var i=0;i<coins.length;i++ ){
+        var user_coins = await Wallet.findOne(
+          {user_id :user_id, coin_id:coins[i].id }
+        );
+        coins[i].coin_code = (coins[i].coin_code).toUpperCase();
+        coins[i].user_id = user_id;
+        coins[i].send_address = "";
+        coins[i].receive_address = "";
+        if( user_coins != undefined ){          
+          coins[i].send_address = user_coins.send_address;
+          coins[i].receive_address = user_coins.receive_address;
+        }
+        all_data.push(coins[i]);
+      }
+        
+      return res.json({
+        "status": 200,
+        "message": sails.__("Wallet address list"),
+        "data":all_data
+      });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }    
+  },
 
 };
