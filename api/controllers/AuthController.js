@@ -121,8 +121,6 @@ module.exports = {
           email: query.email
         });
 
-        // console.log(user_detail);
-
         if (user_detail) {
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({

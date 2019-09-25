@@ -53,6 +53,18 @@ module.exports = {
       type: 'string',
       columnName: 'side'
     },
+    payment_id: {
+      type: 'string',
+      columnName: 'payment_id'
+    },
+    quote_id: {
+      type: 'string',
+      columnName: 'quote_id'
+    },
+    address: {
+      type: 'string',
+      columnName: 'address'
+    },
     order_type: {
       type: 'string',
       columnName: 'order_type'
@@ -134,7 +146,12 @@ module.exports = {
       type: 'number',
       columnName: 'trade_type',
       defaultsTo: 1
-    }    ,
+    },
+    simplex_payment_status: {
+      type: 'number',
+      columnName: 'simplex_payment_status',
+      defaultsTo: 1
+    },
     order_id: {
       type: 'string',
       columnName: 'order_id',
@@ -144,7 +161,7 @@ module.exports = {
       type: 'ref',
       columnType: 'json',
       columnName: 'execution_report',
-      defaultsTo:{}
+      defaultsTo: {}
     }
   },
   beforeCreate: function (values, next) {

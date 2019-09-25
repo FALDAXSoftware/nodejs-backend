@@ -33,10 +33,13 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+
     //Configuring bitgo
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
-      accessToken: sails.config.local.BITGO_ACCESS_TOKEN
+      accessToken: access_token_value
     });
 
     //Fetching coin list
