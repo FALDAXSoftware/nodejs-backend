@@ -146,7 +146,6 @@ module.exports = {
    */
 
   uploadKYCDoc: async function (req, res) {
-
     try {
       if (req._fileparser.upstreams.length) {
         req
@@ -185,7 +184,6 @@ module.exports = {
     } catch (err) {
       console.log("errrrr:", err);
     }
-
   },
 
   callbackKYC: async function (req, res) {
@@ -262,13 +260,13 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                      to: (user_data.email).trim(),
-                      subject: template.name
-                    }, function (err) {
-                      if (err) {
-                        console.log("err in sending email, while kyc approved", err);
-                      }
-                    })
+                        to: (user_data.email).trim(),
+                        subject: template.name
+                      }, function (err) {
+                        if (err) {
+                          console.log("err in sending email, while kyc approved", err);
+                        }
+                      })
                 }
               }
             }
@@ -406,8 +404,8 @@ module.exports = {
         query += " kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND kyc.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 

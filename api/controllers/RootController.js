@@ -107,6 +107,10 @@ module.exports = {
     return res.view('pages/listYourToken');
   },
 
+  sendTokenComingSoonForm: async function (req, res) {
+    return res.view('pages/tokenComingSoon');
+  },
+
   getContactInfo: async function (req, res) {
     let adminSettingDetails = await AdminSetting.find();
     let contacts = {};
