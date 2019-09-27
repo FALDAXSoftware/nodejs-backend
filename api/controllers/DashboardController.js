@@ -70,10 +70,10 @@ module.exports = {
 
       var currency = 'USD'
 
-      let risingFalling = await sails
-        .helpers
-        .dashboard
-        .getRisingFallingData(currency);
+      // let risingFalling = await sails
+      //   .helpers
+      //   .dashboard
+      //   .getRisingFallingData(currency);
       res.json({
         "status": 200,
         "message": sails.__("Rising Falling data retrived success"),
