@@ -42,7 +42,8 @@ module.exports = {
       coin_code: inputs.coin
     })
 
-    console.log(requestedCoin)
+    console.log(requestedCoin[0].id)
+    console.log(inputs.coin)
 
     //Generating wallet id for particular coin
     bitgo
@@ -56,10 +57,10 @@ module.exports = {
         console.log(newWallet);
         await Coins
           .update({
-            id: requestedCoin.id
+            id: requestedCoin[0].id
           })
           .set({
-            'hot_send_wallet_address': newWallet
+            'warm_wallet_address': newWallet
               .wallet
               .id()
           });

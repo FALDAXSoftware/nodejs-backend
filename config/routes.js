@@ -333,6 +333,9 @@ module.exports.routes = {
   //Create One Address for user
   'get /users/create-wallet/:coin_code': 'WalletController.createReceiveAddressCoin',
 
+  // Create One address for admin
+  'get /admin/create-wallet/:coin_code/:user_id': 'WalletController.createAdminReceiveAddressCoin',
+
   //API for approving and disappoving withdraw request
   'post /admin/approve-disapprove-withdraw-request': 'WithdrawReqController.approveDisapproveRequest',
 

@@ -15,10 +15,18 @@ module.exports = {
     try {
       var data = req.body;
       var ip = requestIp.getClientIp(req);
-      // var user_id = req.user.id;
-      user_id = 1712;
+      var user_id = req.user.id;
+      // user_id = 1712;
       data.client_ip = ip;
       data.end_user_id = user_id;
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+
+      // if (geo_fencing_data.response == true) {
       var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
       return res
         .status(200)
@@ -27,6 +35,14 @@ module.exports = {
           "message": sails.__("qoute details success"),
           "data": qouteDetail
         });
+
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
 
     } catch (err) {
       console.log(err);
@@ -43,7 +59,7 @@ module.exports = {
 
       var data = req.body;
       var user_id = req.user.id;
-      console.log(data);
+      console.log(data, user_id);
       // var user_id = 1712;
 
       var payment_id = uuidv1();
@@ -96,9 +112,20 @@ module.exports = {
       main_details.account_details = account_details;
       main_details.transaction_details = transaction_details;
 
+      console.log(main_details);
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+
+      // if (geo_fencing_data.response == true) {
+
       var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
 
       if (dataUpdate.is_kyc_update_required == true) {
+        console.log(user_id);
         var dataObject = {
           "version": 1,
           "partner": "faldax",
@@ -140,11 +167,30 @@ module.exports = {
           "address": data.address
         }
 
-        let tradeHistory = await sails
-          .helpers
-          .tradding
-          .trade
-          .add(tradeData);
+        let tradeHistory = await SimplexTradeHistory.create({
+          'payment_id': payment_id,
+          "quote_id": data.quote_id,
+          'currency': data.currency,
+          "settle_currency": data.fiat_currency,
+          "quantity": parseFloat(data.fiat_amount),
+          "user_id": user_id,
+          "symbol": data.currency + '-' + data.fiat_currency,
+          "side": 'Buy',
+          "created_at": now,
+          "updated_at": now,
+          "maximum_time": now,
+          "fill_price": parseFloat(data.total_amount),
+          "limit_price": 0,
+          "stop_price": 0,
+          "price": 0,
+          "simplex_payment_status": 1,
+          "trade_type": 3,
+          "order_status": "filled",
+          "order_type": "Market",
+          "address": data.address
+        }).fetch();
+
+        console.log(tradeHistory);
         return res
           .status(200)
           .json({
@@ -161,6 +207,14 @@ module.exports = {
           })
       }
 
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
+
     } catch (err) {
       console.log(err);
       return res.json({
@@ -174,15 +228,13 @@ module.exports = {
   checkPaymentStatus: async function (req, res) {
     try {
       var data = await sails.helpers.simplex.getEventData();
-      var tradeData = await TradeHistory.find({
+      var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
           trade_type: 3,
           simplex_payment_status: 1
         }
       });
-
-      console.log(data.events)
 
       for (var i = 0; i < tradeData.length; i++) {
         for (var j = 0; j < data.events.length; j++) {
@@ -209,8 +261,8 @@ module.exports = {
               user_id: tradeData[i].user_id
             })
             if (walletData != undefined) {
-              var balanceData = parseFloat(walletData.balance) + (tradeData[i].fill_price - (tradeData[i].fill_price * (feesFaldax.value / 100)))
-              var placedBalanceData = parseFloat(walletData.placed_balance) + (tradeData[i].fill_price - (tradeData[i].fill_price * (feesFaldax.value / 100)))
+              var balanceData = parseFloat(walletData.balance) + (tradeData[i].fill_price)
+              var placedBalanceData = parseFloat(walletData.placed_balance) + (tradeData[i].fill_price)
               var walletUpdate = await Wallet
                 .update({
                   coin_id: coinData.id,
@@ -232,8 +284,8 @@ module.exports = {
                 }
               })
               if (walletUpdated != undefined) {
-                var balance = parseFloat(walletUpdated.balance) + (tradeData[i].fill_price * (feesFaldax.value / 100));
-                var placed_balance = parseFloat(walletUpdated.placed_balance) + (tradeData[i].fill_price * (feesFaldax.value / 100));
+                var balance = parseFloat(walletUpdated.balance) + (tradeData[i].fill_price);
+                var placed_balance = parseFloat(walletUpdated.placed_balance) + (tradeData[i].fill_price);
                 var walletUpdated = await Wallet
                   .update({
                     deleted_at: null,
@@ -248,7 +300,7 @@ module.exports = {
               }
             }
             if (tradeData[i].simplex_payment_status == 1) {
-              var tradeHistoryData = await TradeHistory
+              var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
                 })
@@ -258,7 +310,7 @@ module.exports = {
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
             if (payment_data.status == "pending_simplexcc_approval") {
-              var tradeHistoryData = await TradeHistory
+              var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
                 })
@@ -266,7 +318,7 @@ module.exports = {
                   simplex_payment_status: 2
                 });
             } else if (payment_data.status == "cancelled") {
-              var tradeHistoryData = await TradeHistory
+              var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
                 })
