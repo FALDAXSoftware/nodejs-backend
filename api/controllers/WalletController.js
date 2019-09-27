@@ -13,10 +13,10 @@ var speakeasy = require('speakeasy');
 module.exports = {
   // call currency conversion helper
   getConversionData: async function (req, res) {
-    var currencyData = await sails
-      .helpers
-      .dashboard
-      .getCurrencyConversion();
+    // var currencyData = await sails
+    //   .helpers
+    //   .dashboard
+    //   .getCurrencyConversion();
 
     let coins = await Coins.find({
       deleted_at: null,
@@ -698,6 +698,63 @@ module.exports = {
         coin_code
       } = req.allParams();
       var user_id = req.user.id;
+      var userData = [];
+      userData = await Users.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: user_id
+      });
+      if (!userData) {
+        userData = await Admin.findOne({
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        });
+        userData.flag = true;
+      } else {
+        userData.flag = false;
+      }
+      var walletDataCreate = await sails
+        .helpers
+        .wallet
+        .receiveOneAddress(coin_code, userData);
+      if (walletDataCreate == 1) {
+        return res.json({
+          status: 500,
+          message: sails.__("Address already Create Success"),
+          data: walletDataCreate
+        })
+      } else if (walletDataCreate) {
+        return res.json({
+          status: 200,
+          message: sails.__("Address Create Success"),
+          data: walletDataCreate
+        })
+      } else {
+        return res.json({
+          status: 500,
+          message: sails.__("Address Not Create Success"),
+          data: walletDataCreate
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Create receive address for one coin
+  createAdminReceiveAddressCoin: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        user_id
+      } = req.allParams();
       var userData = [];
       userData = await Users.findOne({
         deleted_at: null,
