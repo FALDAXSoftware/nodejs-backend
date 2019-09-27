@@ -13,10 +13,10 @@ var speakeasy = require('speakeasy');
 module.exports = {
   // call currency conversion helper
   getConversionData: async function (req, res) {
-    var currencyData = await sails
-      .helpers
-      .dashboard
-      .getCurrencyConversion();
+    // var currencyData = await sails
+    //   .helpers
+    //   .dashboard
+    //   .getCurrencyConversion();
 
     let coins = await Coins.find({
       deleted_at: null,
