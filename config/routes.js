@@ -204,6 +204,7 @@ module.exports.routes = {
   'get /get-open-ticket-form': "RootController.sendOpenTicketForm",
   'get /get-subscriber-form': "RootController.sendSubscriberForm",
   'get /get-list-token-form': "RootController.sendListTokenForm",
+  'get /get-token-coming-soon-form': "RootController.sendTokenComingSoonForm",
 
   // Blogs
   'get /users/get-all-blogs': 'BlogsController.getAllBlogList',
@@ -386,11 +387,12 @@ module.exports.routes = {
   'post /admin/batches/list': 'AdminController.getBatchListing',
 
   // Tier Wise API
+  'post /upload-tier-document': 'TierController.tierDocumentUpload',
   'get /get-tier-details': 'TierController.getUserTierList',
   'get /admin/get-tier-details': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
-  'get /upgrade-user-tier': 'TierController.upgrdaeUserTier',
+  'get /upgrade-user-tier': 'TierController.upgradeUserTier',
   'get /admin/user-tier-request': 'TierController.getUserTierRequest',
   'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
 

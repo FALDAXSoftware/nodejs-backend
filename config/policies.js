@@ -70,6 +70,7 @@ module.exports.policies = {
     "createAllWallet": true,
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
+    "sendTokenComingSoonForm": true,
     "callKrakenAPI": true,
     "bitgoTest": true,
     "testemail": true,
@@ -144,7 +145,7 @@ module.exports.policies = {
     "updateTierList": true,
     // "updateUserTierRequest": true,
     // "getUserTierRequest": true
-    // "upgrdaeUserTier": true
+    // "upgradeUserTier": true
     // "getTierData": true
   },
   "SimplexController": {
