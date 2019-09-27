@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+var request = require('request');
 
 module.exports = {
 
@@ -62,77 +63,38 @@ module.exports = {
 
   tierDocumentUpload: async function (req, res) {
     try {
-      let { description } = req.allParams();
+      let { description, appId } = req.allParams();
       console.log('>>>>if', description)
       if (req.file('document') && description) {
         console.log('>>>>if')
         let kycDocUploadDetails = {};
 
-        kycDocUploadDetails.file = req.file('document');
         kycDocUploadDetails.description = description;
+        kycDocUploadDetails.file = req.file('document');
+
         console.log('kycDocUploadDetails', kycDocUploadDetails)
         let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
 
         if (req._fileparser.upstreams.length) {
-          // request.post({
-          //   headers: {
-          //     'Authorization': 'Basic ' + idm_key,
-          //     'content-type: application/json'
-          //   },
-          //   url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-          //   json: kycDocUploadDetails
-          // }, async function (error, response, body) {
-          //   try {
+          request.post({
+            headers: {
+              'Authorization': 'Basic ' + idm_key
+            },
+            url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
+            responseType: 'buffer',
+            body: kycDocUploadDetails
+          }, async function (error, response, body) {
+            try {
+              console.log('response', response);
+              if (response) {
 
-          //     kyc_details.direct_response = response.body.res;
-          //     kyc_details.webhook_response = null;
-          //     await KYC.update({
-          //       id: kyc_details.id
-          //     }).set({
-          //       direct_response: response.body.res,
-          //       webhook_response: null,
-          //       mtid: response.body.mtid,
-          //       comments: response.body.frd,
-          //       status: true,
-          //     });
+              } else {
 
-          //     if (kyc_details.front_doc != null) {
-          //       let profileData = {
-          //         Bucket: S3BucketName,
-          //         Key: kyc_details.front_doc
-          //       }
-
-          //       s3.deleteObject(profileData, function (err, response) {
-          //         if (err) {
-          //           console.log(err)
-          //         } else { }
-          //       })
-          //     }
-          //     if (kyc_details.back_doc != null) {
-          //       let profileData = {
-          //         Bucket: S3BucketName,
-          //         Key: kyc_details.back_doc
-          //       }
-
-          //       s3.deleteObject(profileData, function (err, response) {
-          //         if (err) {
-          //           console.log(err)
-          //         } else { }
-          //       })
-          //     }
-
-          //   } catch (error) {
-          //     console.log('error', error);
-          //     await KYC.update({
-          //       id: kyc_details.id
-          //     }).set({
-          //       direct_response: "MANUAL_REVIEW",
-          //       webhook_response: "MANUAL_REVIEW",
-          //       comments: "Could Not Verify",
-          //       status: true,
-          //     });
-          //   }
-          // });
+              }
+            } catch (error) {
+              console.log('error', error);
+            }
+          });
         } else {
           return res.status(200).json({
             'status': 200,
@@ -150,7 +112,6 @@ module.exports = {
   // Upgrade User Tier
   upgradeUserTier: async function (req, res) {
     try {
-
       var {
         tier_step
       } = req.allParams();
@@ -183,7 +144,6 @@ module.exports = {
               is_approved: null
             })
         }
-
         return res
           .status(200)
           .json({
@@ -191,7 +151,6 @@ module.exports = {
             "message": sails.__("tier upgrade request success")
           })
       }
-
     } catch (err) {
       console.log(err);
       return res
