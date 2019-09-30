@@ -775,6 +775,7 @@ module.exports = {
         .helpers
         .wallet
         .receiveOneAddress(coin_code, userData);
+
       if (walletDataCreate == 1) {
         return res.json({
           status: 500,
@@ -782,6 +783,34 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
+
+        let slug = "user_wallet_address_creation"
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: userData.first_name,
+            coin_code: coin_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+              to: userData.email,
+              subject: "User Wallet Address has been Created"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("wallet address creation")
+                });
+              }
+            })
         return res.json({
           status: 200,
           message: sails.__("Address Create Success"),
@@ -1005,10 +1034,10 @@ module.exports = {
       var placed_amount = parseInt(walletData.placed_balance) + balance
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: amount,
             placed_balance: placed_amount
@@ -1054,10 +1083,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: balance,
             placed_balance: balance

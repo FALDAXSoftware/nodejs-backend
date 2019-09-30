@@ -336,5 +336,6 @@
   "payment details success": "Payments Details has been retrieved success.",
   "payment fail": "Payment has failed please try again to continue.",
   "option type required": "Option type should be sent.",
-  "Wallet address list": "Wallet address has been listed."
+  "Wallet address list": "Wallet address has been listed.",
+  "wallet address creation": "Wallet address has been created."
 }
