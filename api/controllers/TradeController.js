@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
+var logger = require('../controllers/logger')
 
 module.exports = {
   //---------------------------Web Api------------------------------
@@ -166,6 +167,7 @@ module.exports = {
       //   });
       // }
     } catch (error) {
+      await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -365,6 +367,7 @@ module.exports = {
       // }
     } catch (error) {
       console.log(error)
+      await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -557,6 +560,7 @@ module.exports = {
       //   });
       // }
     } catch (error) {
+      await logger.error(error.message)
       if (error.code == "coinNotFound") {
         return res
           .status(500)
@@ -761,6 +765,7 @@ module.exports = {
       //   });
       // }
     } catch (error) {
+      await logger.error(error.message)
       if (error.code == "coinNotFound") {
         return res
           .status(500)
@@ -951,6 +956,7 @@ module.exports = {
       //   });
       // }
     } catch (error) {
+      await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -1133,6 +1139,7 @@ module.exports = {
       //   });
       // }
     } catch (error) {
+      await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -1213,6 +1220,7 @@ module.exports = {
         "message": sails.__("Order Success")
       });
     } catch (error) {
+      await logger.error(error.message)
       if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
@@ -1265,6 +1273,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -1351,6 +1360,13 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>', err)
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -1465,6 +1481,13 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>', err)
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -1608,6 +1631,13 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>', err)
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -1702,6 +1732,7 @@ module.exports = {
         }
       } else {}
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1850,9 +1881,7 @@ module.exports = {
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-        tradeData = await sails.sendNativeQuery("Select simplex_trade_history.id,simplex_trade_history.user_id,simplex_tr" +
-          "ade_history.symbol,simplex_trade_history.currency,simplex_trade_history.settle_currency,simplex_trade_hi" +
-          "story.side,simplex_trade_history.quantity,simplex_trade_history.fill_price, simplex_trade_history.price, users.email, simplex_trade_history.created_at" + query, [])
+        tradeData = await sails.sendNativeQuery("Select users.email, simplex_trade_history.*" + query, [])
 
         tradeData = tradeData.rows;
 
@@ -1869,6 +1898,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1955,6 +1985,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2020,6 +2051,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

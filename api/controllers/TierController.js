@@ -30,7 +30,9 @@ module.exports = {
         if (tierDetails[index].tier_step == userData.account_tier) {
           tierDetails[index].is_active = true;
           if (index != 0)
-            tierDetails[index - 1].is_verified = true;
+            for (var i = 1; i <= index; i++) {
+              tierDetails[index - i].is_verified = true;
+            }
         }
       }
 
@@ -63,7 +65,10 @@ module.exports = {
 
   tierDocumentUpload: async function (req, res) {
     try {
-      let { description, appId } = req.allParams();
+      let {
+        description,
+        appId
+      } = req.allParams();
       console.log('>>>>if', description)
       req.file('document').upload(async function (err, uploadedFiles) {
         var fs = require("fs");
