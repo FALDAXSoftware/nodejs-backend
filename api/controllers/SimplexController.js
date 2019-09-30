@@ -337,5 +337,64 @@ module.exports = {
         "err": sails.__("Something Wrong")
       });
     }
+  },
+
+  // ------------------------ CMS API -------------------------- //
+  getSimplexTokenValue: async function (req, res) {
+    try {
+      var access_token_value = await AdminSetting.findOne({
+        deleted_at: null,
+        slug: 'access_token'
+      });
+
+      var key = await sails.helpers.getDecryptData(access_token_value.value);
+
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: sails.__("simplex token retrieve success"),
+          data: key
+        })
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  updateSimplexTokenValue: async function (req, res) {
+    try {
+      var data = req.body;
+
+      var key_value = await sails.helpers.getEncryptData(data.access_token);
+
+      console.log(key_value);
+
+      var updateTokenValue = await AdminSetting
+        .update({
+          deleted_at: null,
+          slug: 'access_token'
+        })
+        .set({
+          value: key_value
+        });
+
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: sails.__("simplex token update success")
+        })
+
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
   }
 }

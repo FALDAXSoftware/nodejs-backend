@@ -419,4 +419,6 @@ module.exports.routes = {
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
   'post /get-partner-data-info': 'SimplexController.getPartnerData',
   'get /get-event-data': 'SimplexController.checkPaymentStatus',
+  'get /get-token-value': 'SimplexController.getSimplexTokenValue',
+  'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
 };
