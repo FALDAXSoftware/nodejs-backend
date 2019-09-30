@@ -783,7 +783,7 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
-
+        console.log('coin_code', coin_code)
         let slug = "user_wallet_address_creation"
         let template = await EmailTemplate.findOne({
           slug
