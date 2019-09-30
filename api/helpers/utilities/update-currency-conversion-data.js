@@ -22,10 +22,10 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    var currencyData = await sails
-      .helpers
-      .dashboard
-      .getCurrencyConversion();
+    // var currencyData = await sails
+    //   .helpers
+    //   .dashboard
+    //   .getCurrencyConversion();
 
     let coins = await Coins.find({
       deleted_at: null,

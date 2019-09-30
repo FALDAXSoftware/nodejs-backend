@@ -9,10 +9,10 @@ module.exports = {
   //---------------------------Web Api------------------------------
   addThresoldValue: async function (req, res) {
     try {
-      var currencyData = await sails
-        .helpers
-        .dashboard
-        .getCurrencyConversion();
+      // var currencyData = await sails
+      //   .helpers
+      //   .dashboard
+      //   .getCurrencyConversion();
       let coins = await Coins.find({
         deleted_at: null,
         is_active: true
