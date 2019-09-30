@@ -1245,16 +1245,26 @@ module.exports = {
       var data = req.allParams();
       let user_id = req.user.id;
       data.user_id = user_id;
-      let user_history_data = await sails
-        .helpers
-        .tradding
-        .getUserTradeHistory(data);
+      var user_history_data;
+      console.log(data);
+      if (data.trade_type == 1) {
+        user_history_data = await sails
+          .helpers
+          .tradding
+          .getUserTradeHistory(data);
+      } else if (data.trade_type == 2) {
+        user_history_data = await sails
+          .helpers
+          .simplex
+          .getUserSimplexHistory(data);
+      }
       res.json({
         "status": 200,
         "message": sails.__("Order Success"),
         "data": user_history_data
       });
     } catch (error) {
+      console.log(error);
       if (error.message == "coinNotFound") {
         return res
           .status(500)
@@ -1690,7 +1700,7 @@ module.exports = {
               }
             });
         }
-      } else { }
+      } else {}
     } catch (error) {
       return res
         .status(500)
@@ -1713,74 +1723,142 @@ module.exports = {
         start_date,
         end_date,
         sort_col,
-        sort_order
+        sort_order,
+        trade_type
       } = req.allParams();
 
-      let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
-      let whereAppended = false;
+      var tradeCount;
+      var tradeData;
+      if (trade_type == 1) {
+        let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
+        let whereAppended = false;
 
-      if ((data && data != "")) {
-        if (data && data != "" && data != null) {
-          query += " WHERE"
-          whereAppended = true;
-          query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
-          if (!isNaN(data)) {
-            query += " OR quantity=" + data + " OR fill_price=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
+        if ((data && data != "")) {
+          if (data && data != "" && data != null) {
+            query += " WHERE"
+            whereAppended = true;
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            if (!isNaN(data)) {
+              query += " OR quantity=" + data + " OR fill_price=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
+            }
+            query += ")"
           }
-          query += ")"
         }
-      }
 
-      if (user_id) {
-        query += whereAppended ?
-          " AND " :
-          " WHERE ";
-        whereAppended = true;
-        query += " trade_history.user_id=" + user_id
-      }
+        if (user_id) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+          whereAppended = true;
+          query += " trade_history.user_id=" + user_id
+        }
 
-      if (t_type) {
-        query += whereAppended ?
-          " AND " :
-          " WHERE ";
+        if (t_type) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
 
-        whereAppended = true;
-        query += "  trade_history.side='" + t_type + "'";
-      }
+          whereAppended = true;
+          query += "  trade_history.side='" + t_type + "'";
+        }
 
-      if (start_date && end_date) {
-        query += whereAppended ?
-          " AND " :
-          " WHERE ";
+        if (start_date && end_date) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
 
-        query += " trade_history.created_at >= '" + await sails
-          .helpers
-          .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
+          query += " trade_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
             .helpers
             .dateFormat(end_date) + " 23:59:59'";
+        }
+        countQuery = query;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY " + sort_col + " " + sortVal;
+        }
+
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
+          "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
+          "story.side,trade_history.quantity,trade_history.fill_price, trade_history.price, trade_history.maker_" +
+          "fee, trade_history.taker_fee, trade_history.stop_price, trade_history.limit_price, users.email, requested_user.email as reqested_user" +
+          "_email, trade_history.created_at" + query, [])
+
+        tradeData = tradeData.rows;
+
+        tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
+        tradeCount = tradeCount.rows[0].count;
+
+      } else if (trade_type == 2) {
+        let query = " from simplex_trade_history LEFT JOIN users ON simplex_trade_history.user_id = users.id";
+        let whereAppended = false;
+
+        if ((data && data != "")) {
+          if (data && data != "" && data != null) {
+            query += " WHERE"
+            whereAppended = true;
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            if (!isNaN(data)) {
+              query += " OR quantity=" + data + " OR fill_price=" + data
+            }
+            query += ")"
+          }
+        }
+
+        if (user_id) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+          whereAppended = true;
+          query += " simplex_trade_history.user_id=" + user_id
+        }
+
+        if (t_type) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+
+          whereAppended = true;
+          query += "  simplex_trade_history.side='" + t_type + "'";
+        }
+
+        if (start_date && end_date) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+
+          query += " simplex_trade_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND simplex_trade_history.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+        }
+        countQuery = query;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY " + sort_col + " " + sortVal;
+        }
+
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        tradeData = await sails.sendNativeQuery("Select simplex_trade_history.id,simplex_trade_history.user_id,simplex_tr" +
+          "ade_history.symbol,simplex_trade_history.currency,simplex_trade_history.settle_currency,simplex_trade_hi" +
+          "story.side,simplex_trade_history.quantity,simplex_trade_history.fill_price, simplex_trade_history.price, users.email, simplex_trade_history.created_at" + query, [])
+
+        tradeData = tradeData.rows;
+
+        tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
+        tradeCount = tradeCount.rows[0].count;
       }
-      countQuery = query;
-
-      if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend' ?
-          'DESC' :
-          'ASC');
-        query += " ORDER BY " + sort_col + " " + sortVal;
-      }
-
-      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
-      let tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
-        "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
-        "story.side,trade_history.quantity,trade_history.fill_price, trade_history.price, trade_history.maker_" +
-        "fee, trade_history.taker_fee, trade_history.stop_price, trade_history.limit_price, users.email, requested_user.email as reqested_user" +
-        "_email, trade_history.created_at" + query, [])
-
-      tradeData = tradeData.rows;
-
-      let tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
-      tradeCount = tradeCount.rows[0].count;
-
       if (tradeData) {
         return res.json({
           "status": 200,
@@ -1790,6 +1868,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err)
       return res
         .status(500)
         .json({
@@ -1802,7 +1881,12 @@ module.exports = {
   //get all pending book orders
   getAllPendingOrders: async function (req, res) {
     try {
-      let { user_id, page, limit, search } = req.allParams();
+      let {
+        user_id,
+        page,
+        limit,
+        search
+      } = req.allParams();
 
       var pendingOrderDetails = await PendingBook.find({
         where: {
@@ -1866,7 +1950,8 @@ module.exports = {
         return res.json({
           "status": 200,
           "message": sails.__("Pending Orders List"),
-          "data": tradePendingDetails, pendingDataCount
+          "data": tradePendingDetails,
+          pendingDataCount
         });
       }
     } catch (err) {
@@ -1889,7 +1974,14 @@ module.exports = {
   //get all cancel book orders
   getAllCancelledOrders: async function (req, res) {
     try {
-      let { user_id, page, limit, data, sort_col, sort_order } = req.allParams();
+      let {
+        user_id,
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order
+      } = req.allParams();
       let query = " from activity_table WHERE is_cancel=true AND user_id='" + user_id + "' ";
       let whereAppended = false;
       if ((data && data != "")) {
@@ -1904,9 +1996,9 @@ module.exports = {
 
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id ASC";
