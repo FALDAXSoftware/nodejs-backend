@@ -338,5 +338,6 @@
   "option type required": "Option type should be sent.",
   "Wallet address list": "Wallet address has been listed.",
   "simplex token retrieve success": "Simplex token has been retrieved success.",
-  "simplex token update success": "Simplex token has been updated successfuly."
+  "simplex token update success": "Simplex token has been updated successfuly.",
+  "wallet address creation": "Wallet address has been created."
 }

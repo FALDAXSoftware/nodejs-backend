@@ -65,23 +65,73 @@ module.exports = {
     try {
       let { description, appId } = req.allParams();
       console.log('>>>>if', description)
-      if (req.file('document') && description) {
-        console.log('>>>>if')
+      req.file('document').upload(async function (err, uploadedFiles) {
+        var fs = require("fs");
         let kycDocUploadDetails = {};
-
+        // kycDocUploadDetails.file = (uploadedFiles[0].fd);
         kycDocUploadDetails.description = description;
-        kycDocUploadDetails.file = req.file('document');
+        kycDocUploadDetails.file = fs.createReadStream(uploadedFiles[0].fd);
+
+        // console.log('kycDocUploadDetails', kycDocUploadDetails)
+        let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
+        // console.log("idm_key", idm_key);
+        // console.log("filep", req._fileparser.upstreams.length);
+        if (req._fileparser.upstreams.length) {
+          request.post({
+            headers: {
+              'Authorization': 'Basic ' + idm_key,
+              'Content-Type': 'multipart/mixed'
+            },
+            // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
+            url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
+            //
+            encoding: null, //  if you expect binary data
+            responseType: 'buffer',
+            body: JSON.stringify(kycDocUploadDetails)
+          }, async function (error, response, body) {
+            try {
+              console.log("error", error);
+              console.log("response", response.toJSON());
+              // console.log('response', response);
+              // console.log('body', body);
+              // console.log('response_body', response.body);
+              if (response) {
+
+              } else {
+
+              }
+            } catch (error) {
+              console.log('error', error);
+            }
+          });
+        } else {
+          return res.status(200).json({
+            'status': 200,
+            'message': sails.__("Image Required")
+          })
+        }
+
+      });
+      return 1;
+      if (req.file('document') && description) {
+        let kycDocUploadDetails = new FormData();
+
+        kycDocUploadDetails.append("description", description);
+        kycDocUploadDetails.append("file", req.file('document'));
+        // kycDocUploadDetails.file = req.file('document');
 
         console.log('kycDocUploadDetails', kycDocUploadDetails)
         let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-
+        console.log("idm_key", idm_key);
+        console.log("filep", req._fileparser.upstreams.length);
         if (req._fileparser.upstreams.length) {
           request.post({
             headers: {
               'Authorization': 'Basic ' + idm_key
             },
-            url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-            responseType: 'buffer',
+            // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
+            url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
+            //
             body: kycDocUploadDetails
           }, async function (error, response, body) {
             try {
