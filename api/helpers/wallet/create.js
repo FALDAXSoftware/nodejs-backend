@@ -42,9 +42,6 @@ module.exports = {
       coin_code: inputs.coin
     })
 
-    console.log(requestedCoin[0].id)
-    console.log(inputs.coin)
-
     //Generating wallet id for particular coin
     bitgo
       .coin(inputs.coin)
