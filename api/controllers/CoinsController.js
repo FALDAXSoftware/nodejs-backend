@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+var logger = require("./logger");
+
 module.exports = {
 
   /**
@@ -45,7 +47,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
-
+      await logger.error(err.message)
       res
         .status(500)
         .json({
@@ -74,18 +76,18 @@ module.exports = {
         // wallets.deleted_" +     "at IS NULL ORDER BY wallets.balance DESC LIMIT " +
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
-          deleted_at: null,
-          is_active: true,
-          or: [{
-            coin_name: {
-              contains: data
-            }
-          }, {
-            coin_code: {
-              contains: data
-            }
-          }]
-        })
+            deleted_at: null,
+            is_active: true,
+            or: [{
+              coin_name: {
+                contains: data
+              }
+            }, {
+              coin_code: {
+                contains: data
+              }
+            }]
+          })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -171,6 +173,7 @@ module.exports = {
         }
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -216,6 +219,7 @@ module.exports = {
         "message": sails.__("wallet created success")
       });
     } catch (error) {
+      await logger.error(error.message)
       if (error.raw) {
         return res
           .status(500)
@@ -270,6 +274,7 @@ module.exports = {
         'faldax_fees': faldaxFees
       });
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -315,6 +320,7 @@ module.exports = {
         "data": coins
       });
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -422,6 +428,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -477,6 +484,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -565,7 +573,7 @@ module.exports = {
               });
           }
         } catch (error) {
-
+          await logger.error(error.message)
           return res
             .status(500)
             .json({
@@ -628,6 +636,7 @@ module.exports = {
       });
     } catch (error) {
       console.log('error', error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -693,6 +702,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

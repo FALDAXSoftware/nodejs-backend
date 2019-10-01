@@ -17,6 +17,7 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 const moment = require('moment');
 var requestIp = require('request-ip');
+var logger = require('./logger');
 
 
 module.exports = {
@@ -88,6 +89,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -420,6 +422,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -503,6 +506,7 @@ module.exports = {
           "err": sails.__("Invalid verification token")
         });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -811,6 +815,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({
@@ -905,6 +910,7 @@ module.exports = {
       // });
     } catch (error) {
       console.log('error', error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -967,6 +973,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       res
         .status(500)
         .json({

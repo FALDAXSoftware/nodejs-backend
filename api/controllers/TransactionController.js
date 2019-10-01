@@ -68,16 +68,16 @@ module.exports = {
       query += " wallet_history.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+        .helpers
+        .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
 
     if (sort_col && sort_order) {
-      let sortVal = (sort_order == 'descend'
-        ? 'DESC'
-        : 'ASC');
+      let sortVal = (sort_order == 'descend' ?
+        'DESC' :
+        'ASC');
       query += " ORDER BY " + sort_col + " " + sortVal;
     } else {
       query += " ORDER BY wallet_history.id DESC";
@@ -168,16 +168,16 @@ module.exports = {
       query += " wallet_history.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+        .helpers
+        .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
 
     if (sort_col && sort_order) {
-      let sortVal = (sort_order == 'descend'
-        ? 'DESC'
-        : 'ASC');
+      let sortVal = (sort_order == 'descend' ?
+        'DESC' :
+        'ASC');
       query += " ORDER BY " + sort_col + " " + sortVal;
     }
 

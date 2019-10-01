@@ -7,6 +7,7 @@
 const BitGoJS = require('bitgo');
 const speakeasy = require('speakeasy');
 var aesjs = require('aes-js');
+var logger = require("./logger");
 
 module.exports = {
   getPanicStatus: async function (req, res) {
@@ -20,6 +21,7 @@ module.exports = {
         panicStatus
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -76,6 +78,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -154,6 +157,7 @@ module.exports = {
       }
     } catch (error) {
       console.log('index', error)
+      await logger.error(error.message)
     }
   },
 

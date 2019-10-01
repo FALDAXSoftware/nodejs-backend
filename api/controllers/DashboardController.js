@@ -6,6 +6,7 @@
  */
 var moment = require('moment');
 var twilio = require('twilio');
+var logger = require('./logger');
 
 module.exports = {
 
@@ -47,6 +48,7 @@ module.exports = {
         data: activity
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -80,6 +82,7 @@ module.exports = {
         data: risingFalling
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -111,6 +114,7 @@ module.exports = {
         data: portfolio
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -203,6 +207,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -382,6 +387,7 @@ module.exports = {
         feesTransactionValue
       });
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({

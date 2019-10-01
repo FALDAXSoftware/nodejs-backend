@@ -6,6 +6,7 @@
  */
 var UploadFiles = require('../services/UploadFiles');
 var csc = require('country-state-city');
+var logger = require("./logger");
 
 module.exports = {
 
@@ -127,6 +128,7 @@ module.exports = {
         }
       }
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({
@@ -183,6 +185,13 @@ module.exports = {
       }
     } catch (err) {
       console.log("errrrr:", err);
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
     }
   },
 
@@ -260,13 +269,13 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                        to: (user_data.email).trim(),
-                        subject: template.name
-                      }, function (err) {
-                        if (err) {
-                          console.log("err in sending email, while kyc approved", err);
-                        }
-                      })
+                      to: (user_data.email).trim(),
+                      subject: template.name
+                    }, function (err) {
+                      if (err) {
+                        console.log("err in sending email, while kyc approved", err);
+                      }
+                    })
                 }
               }
             }
@@ -357,6 +366,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({
@@ -404,8 +414,8 @@ module.exports = {
         query += " kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND kyc.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 
@@ -433,6 +443,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -466,6 +477,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({

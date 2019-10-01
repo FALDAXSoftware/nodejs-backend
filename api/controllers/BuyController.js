@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+var logger = require("./logger");
+
 module.exports = {
   //---------------------------Web Api------------------------------
 
@@ -125,6 +127,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -196,6 +199,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

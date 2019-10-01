@@ -7,6 +7,7 @@
 const BitGoJS = require('bitgo');
 var moment = require('moment');
 var speakeasy = require('speakeasy');
+var logger = require("./logger")
 
 
 
@@ -104,6 +105,7 @@ module.exports = {
 
     } catch (error) {
       console.log('wallet error', error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -522,6 +524,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -566,6 +569,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -675,6 +679,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('err', err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -739,6 +744,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -801,16 +807,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: userData.email,
-              subject: "User Wallet Address has been Created"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("wallet address creation")
-                });
-              }
-            })
+            to: userData.email,
+            subject: "User Wallet Address has been Created"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("wallet address creation")
+              });
+            }
+          })
         return res.json({
           status: 200,
           message: sails.__("Address Create Success"),
@@ -825,6 +831,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -998,6 +1005,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1034,10 +1042,10 @@ module.exports = {
       var placed_amount = parseInt(walletData.placed_balance) + balance
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-          deleted_at: null,
-          coin_id: coinData.id,
-          user_id: user_id
-        })
+            deleted_at: null,
+            coin_id: coinData.id,
+            user_id: user_id
+          })
           .set({
             balance: amount,
             placed_balance: placed_amount
@@ -1048,6 +1056,7 @@ module.exports = {
       })
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1083,10 +1092,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-          deleted_at: null,
-          coin_id: coinData.id,
-          user_id: user_id
-        })
+            deleted_at: null,
+            coin_id: coinData.id,
+            user_id: user_id
+          })
           .set({
             balance: balance,
             placed_balance: balance
@@ -1099,6 +1108,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

@@ -46,6 +46,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -217,6 +218,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -332,6 +334,7 @@ module.exports = {
       return res.status(200).json()
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -358,6 +361,7 @@ module.exports = {
         })
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -391,6 +395,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
