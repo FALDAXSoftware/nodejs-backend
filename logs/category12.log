@@ -5,3 +5,5 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-09-30T10:57:20.377Z","@version":0,"message":"Query failed: missing FROM-clause entry for table \"simplex_trade_history\""}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-09-30T11:28:36.839Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-09-30T11:54:11.738Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-01T04:12:18.617Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-01T04:42:13.695Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}

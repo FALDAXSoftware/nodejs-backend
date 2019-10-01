@@ -783,7 +783,7 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
-        console.log('coin_code', coin_code)
+        //Sending email to user for wallet Address Creation
         let slug = "user_wallet_address_creation"
         let template = await EmailTemplate.findOne({
           slug
@@ -793,7 +793,7 @@ module.exports = {
           .utilities
           .formatEmail(template.content, {
             recipientName: userData.first_name,
-            coin_code: coin_code
+            coin: coin_code
           });
         sails
           .hooks
@@ -805,10 +805,7 @@ module.exports = {
               subject: "User Wallet Address has been Created"
             }, function (err) {
               if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("wallet address creation")
-                });
+
               }
             })
         return res.json({
@@ -824,7 +821,6 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log(error)
       return res
         .status(500)
         .json({
