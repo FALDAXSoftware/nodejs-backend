@@ -144,6 +144,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'batch_and_balance',
     },
+    simplex_token: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'simplex_token',
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',

@@ -1730,7 +1730,7 @@ module.exports = {
               }
             });
         }
-      } else {}
+      } else { }
     } catch (error) {
       await logger.error(error.message)
       return res
@@ -1801,8 +1801,8 @@ module.exports = {
           query += " trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
@@ -1867,8 +1867,8 @@ module.exports = {
           query += " simplex_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND simplex_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
