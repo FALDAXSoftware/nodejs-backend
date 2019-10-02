@@ -152,6 +152,6 @@ module.exports.policies = {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
     "checkPaymentStatus": true,
-    "getSimplexCoinList": true
+    // "getSimplexCoinList": true
   }
 };

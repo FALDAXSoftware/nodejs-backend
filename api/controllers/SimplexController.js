@@ -380,12 +380,6 @@ module.exports = {
   getSimplexCoinList: async function (req, res) {
     try {
       var coinList = await Coins.find({
-        select: [
-          coin,
-          coin_code,
-          coin_name,
-          is_simplex_supported
-        ],
         where: {
           deleted_at: null,
           is_active: true,
@@ -393,12 +387,22 @@ module.exports = {
         }
       });
 
-      var fiatValue = [];
-      fiatValue.push('USD')
-      fiatValue.push('EUR')
+      var fiatValue = {};
+
+      fiatValue = [{
+          id: 1,
+          coin: "USD",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+        },
+        {
+          id: 2,
+          coin: "EUR",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+        }
+      ]
 
       var object = {
-        coinList: coinList,
+        coinList,
         fiat: fiatValue
       }
 
@@ -411,7 +415,7 @@ module.exports = {
         })
     } catch (error) {
       console.log(error);
-      await logger.error(err.message)
+      await logger.error(error.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
