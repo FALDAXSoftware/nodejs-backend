@@ -1,6 +1,6 @@
 /**
  * app.js
-*/
+ */
 require("sqreen");
 // Ensure we're in the project directory, so cwd-relative paths work as expected
 // no matter where we actually lift from.
@@ -27,7 +27,7 @@ try {
   console.error('not run this file (`app.js`), but it will do exactly the same thing.');
   console.error('(It even uses your app directory\'s local Sails install, if possible.)');
   return;
-}//-•
+} //-•
 
 // Start server
 sails.lift(rc('sails'));

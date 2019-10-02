@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var request = require('request');
+var logger = require("./logger")
 
 module.exports = {
 
@@ -54,6 +55,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -161,6 +163,7 @@ module.exports = {
       }
     } catch (err) {
       console.log("errrrr:", err);
+      await logger.error(err.message)
     }
   },
 
@@ -208,6 +211,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -244,6 +248,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -312,6 +317,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -347,6 +353,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -395,6 +402,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -437,6 +445,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

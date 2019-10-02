@@ -9,6 +9,7 @@ var {
   map,
   sortBy
 } = require('lodash');
+var logger = require("./logger")
 module.exports = {
   // ---------------------------Web Api------------------------------
 
@@ -139,6 +140,7 @@ module.exports = {
       })
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

@@ -20,32 +20,50 @@ module.exports = {
       data.client_ip = ip;
       data.end_user_id = user_id;
 
-      //Checking whether user can trade in the area selected in the KYC
-      // var geo_fencing_data = await sails
-      //   .helpers
-      //   .userTradeChecking(user_id);
+      var panic_button_details = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'panic_status'
+        }
+      });
+
+      // Checking for if panic button in one or not
+      if (panic_button_details.value == false || panic_button_details.value == "false") {
+        //Checking whether user can trade in the area selected in the KYC
+        // var geo_fencing_data = await sails
+        //   .helpers
+        //   .userTradeChecking(user_id);
 
 
-      // if (geo_fencing_data.response == true) {
-      var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
-      return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": sails.__("qoute details success"),
-          "data": qouteDetail
-        });
+        // if (geo_fencing_data.response == true) {
+        var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("qoute details success"),
+            "data": qouteDetail
+          });
 
-      // } else {
-      //   // Whatever the response of user trade checking
-      //   res.json({
-      //     "status": 200,
-      //     "message": sails.__(geo_fencing_data.msg)
-      //   });
-      // }
+        // } else {
+        //   // Whatever the response of user trade checking
+        //   res.json({
+        //     "status": 200,
+        //     "message": sails.__(geo_fencing_data.msg)
+        //   });
+        // }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("panic button enabled")
+          })
+      }
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -114,109 +132,127 @@ module.exports = {
 
       console.log(main_details);
 
-      //Checking whether user can trade in the area selected in the KYC
-      // var geo_fencing_data = await sails
-      //   .helpers
-      //   .userTradeChecking(user_id);
-
-
-      // if (geo_fencing_data.response == true) {
-
-      var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
-
-      if (dataUpdate.is_kyc_update_required == true) {
-        console.log(user_id);
-        var dataObject = {
-          "version": 1,
-          "partner": "faldax",
-          "payment_flow_type": "wallet",
-          "return_url_success": sails.config.local.SUCCESS_URL,
-          "return_url_fail": sails.config.local.FAIL_URL,
-          "payment_id": payment_id,
-          "quote_id": data.quote_id,
-          "user_id": user_id,
-          "destination_wallet[address]": data.address,
-          "destination_wallet[currency]": data.currency,
-          "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
-          "fiat_total_amount[currency]": data.fiat_currency,
-          "digital_total_amount[amount]": parseFloat(data.total_amount),
-          "digital_total_amount[currency]": data.currency,
-          "action": "https://sandbox.test-simplexcc.com/payments/new"
+      // Checking for panic button details
+      var panic_button_details = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'panic_status'
         }
-        var now = new Date();
-        var tradeData = {
-          'payment_id': payment_id,
-          "quote_id": data.quote_id,
-          'currency': data.currency,
-          "settle_currency": data.fiat_currency,
-          "quantity": parseFloat(data.fiat_amount),
-          "user_id": user_id,
-          "symbol": data.currency + '-' + data.fiat_currency,
-          "side": 'Buy',
-          "created_at": now,
-          "updated_at": now,
-          "maximum_time": now,
-          "fill_price": parseFloat(data.total_amount),
-          "limit_price": 0,
-          "stop_price": 0,
-          "price": 0,
-          "simplex_payment_status": 1,
-          "trade_type": 3,
-          "order_status": "filled",
-          "order_type": "Market",
-          "address": data.address
+      })
+
+      if (panic_button_details.value == false || panic_button_details.value == "false") {
+        //Checking whether user can trade in the area selected in the KYC
+        // var geo_fencing_data = await sails
+        //   .helpers
+        //   .userTradeChecking(user_id);
+
+
+        // if (geo_fencing_data.response == true) {
+
+        var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
+
+        if (dataUpdate.is_kyc_update_required == true) {
+          console.log(user_id);
+          var dataObject = {
+            "version": 1,
+            "partner": "faldax",
+            "payment_flow_type": "wallet",
+            "return_url_success": sails.config.local.SUCCESS_URL,
+            "return_url_fail": sails.config.local.FAIL_URL,
+            "payment_id": payment_id,
+            "quote_id": data.quote_id,
+            "user_id": user_id,
+            "destination_wallet[address]": data.address,
+            "destination_wallet[currency]": data.currency,
+            "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
+            "fiat_total_amount[currency]": data.fiat_currency,
+            "digital_total_amount[amount]": parseFloat(data.total_amount),
+            "digital_total_amount[currency]": data.currency,
+            "action": "https://sandbox.test-simplexcc.com/payments/new"
+          }
+          var now = new Date();
+          var tradeData = {
+            'payment_id': payment_id,
+            "quote_id": data.quote_id,
+            'currency': data.currency,
+            "settle_currency": data.fiat_currency,
+            "quantity": parseFloat(data.fiat_amount),
+            "user_id": user_id,
+            "symbol": data.currency + '-' + data.fiat_currency,
+            "side": 'Buy',
+            "created_at": now,
+            "updated_at": now,
+            "maximum_time": now,
+            "fill_price": parseFloat(data.total_amount),
+            "limit_price": 0,
+            "stop_price": 0,
+            "price": 0,
+            "simplex_payment_status": 1,
+            "trade_type": 3,
+            "order_status": "filled",
+            "order_type": "Market",
+            "address": data.address
+          }
+
+          let tradeHistory = await SimplexTradeHistory.create({
+            'payment_id': payment_id,
+            "quote_id": data.quote_id,
+            'currency': data.currency,
+            "settle_currency": data.fiat_currency,
+            "quantity": parseFloat(data.fiat_amount),
+            "user_id": user_id,
+            "symbol": data.currency + '-' + data.fiat_currency,
+            "side": 'Buy',
+            "created_at": now,
+            "updated_at": now,
+            "maximum_time": now,
+            "fill_price": parseFloat(data.total_amount),
+            "limit_price": 0,
+            "stop_price": 0,
+            "price": 0,
+            "simplex_payment_status": 1,
+            "trade_type": 3,
+            "order_status": "filled",
+            "order_type": "Market",
+            "address": data.address
+          }).fetch();
+
+          console.log(tradeHistory);
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("payment details success"),
+              "data": dataObject
+            })
+        } else {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "message": sails.__("payment fail")
+            })
         }
 
-        let tradeHistory = await SimplexTradeHistory.create({
-          'payment_id': payment_id,
-          "quote_id": data.quote_id,
-          'currency': data.currency,
-          "settle_currency": data.fiat_currency,
-          "quantity": parseFloat(data.fiat_amount),
-          "user_id": user_id,
-          "symbol": data.currency + '-' + data.fiat_currency,
-          "side": 'Buy',
-          "created_at": now,
-          "updated_at": now,
-          "maximum_time": now,
-          "fill_price": parseFloat(data.total_amount),
-          "limit_price": 0,
-          "stop_price": 0,
-          "price": 0,
-          "simplex_payment_status": 1,
-          "trade_type": 3,
-          "order_status": "filled",
-          "order_type": "Market",
-          "address": data.address
-        }).fetch();
-
-        console.log(tradeHistory);
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("payment details success"),
-            "data": dataObject
-          })
+        // } else {
+        //   // Whatever the response of user trade checking
+        //   res.json({
+        //     "status": 200,
+        //     "message": sails.__(geo_fencing_data.msg)
+        //   });
+        // }
       } else {
         return res
-          .status(400)
+          .status(500)
           .json({
-            "status": 400,
-            "message": sails.__("payment fail")
+            "status": 500,
+            "message": sails.__("panic button enabled")
           })
       }
 
-      // } else {
-      //   // Whatever the response of user trade checking
-      //   res.json({
-      //     "status": 200,
-      //     "message": sails.__(geo_fencing_data.msg)
-      //   });
-      // }
-
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -332,6 +368,54 @@ module.exports = {
       return res.status(200).json()
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  // get simplex supported coin list
+  getSimplexCoinList: async function (req, res) {
+    try {
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_simplex_supported: true
+        }
+      });
+
+      var fiatValue = {};
+
+      fiatValue = [{
+          id: 1,
+          coin: "USD",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+        },
+        {
+          id: 2,
+          coin: "EUR",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+        }
+      ]
+
+      var object = {
+        coinList,
+        fiat: fiatValue
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("coin list retrieve success"),
+          object
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -358,6 +442,7 @@ module.exports = {
         })
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")
@@ -391,6 +476,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong")

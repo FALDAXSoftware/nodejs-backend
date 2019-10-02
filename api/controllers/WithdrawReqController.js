@@ -6,6 +6,7 @@
  */
 
 var BitGoJS = require('bitgo');
+var logger = require('./logger')
 
 module.exports = {
   // ---------------------------Web Api------------------------------
@@ -73,8 +74,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+        .helpers
+        .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -272,6 +273,7 @@ module.exports = {
       }
     } catch (err) {
       console.log("errr", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

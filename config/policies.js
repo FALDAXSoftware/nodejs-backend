@@ -84,7 +84,7 @@ module.exports.policies = {
   'WalletController': {
     "addWalletBalance": true,
     "updateWalletBalance": true,
-    "checkWalletBalance": true
+    // "checkWalletBalance": true
   },
   'CareerController': {
     "applyJob": "checkReCaptcha",
@@ -151,6 +151,7 @@ module.exports.policies = {
   "SimplexController": {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
-    "checkPaymentStatus": true
+    "checkPaymentStatus": true,
+    // "getSimplexCoinList": true
   }
 };

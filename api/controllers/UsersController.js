@@ -12,6 +12,7 @@ var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 var csc = require('country-state-city');
 const moment = require('moment');
+var logger = require("./logger");
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -215,6 +216,7 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -300,6 +302,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -396,6 +399,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -493,6 +497,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -546,6 +551,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -594,6 +600,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -631,6 +638,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -684,6 +692,15 @@ module.exports = {
     var dataResponse = await sails
       .helpers
       .userTradeChecking(usersData[0].id);
+
+    var panic_button_details = await AdminSetting.findOne({
+      where: {
+        deleted_at: null,
+        slug: 'panic_status'
+      }
+    });
+
+    usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
       return res.json({
@@ -847,6 +864,7 @@ module.exports = {
           }
         });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -962,6 +980,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1101,6 +1120,7 @@ module.exports = {
         })
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1204,6 +1224,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1290,6 +1311,7 @@ module.exports = {
         })
 
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1347,6 +1369,7 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1419,6 +1442,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1491,6 +1515,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1543,6 +1568,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1657,6 +1683,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1749,6 +1776,7 @@ module.exports = {
         }
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1822,6 +1850,7 @@ module.exports = {
       }
     } catch (error) {
       console.log('error', error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1847,6 +1876,7 @@ module.exports = {
         message: "Ticket"
       });
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1924,6 +1954,7 @@ module.exports = {
           }
         })
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -2109,6 +2140,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2187,6 +2219,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2257,6 +2290,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2304,6 +2338,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2370,6 +2405,7 @@ module.exports = {
         })
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2399,6 +2435,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2447,6 +2484,7 @@ module.exports = {
       });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

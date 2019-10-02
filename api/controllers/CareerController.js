@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var UploadFiles = require('../services/UploadFiles');
+var logger = require("./logger");
 
 module.exports = {
   applyJob: async function (req, res) {
@@ -145,6 +146,7 @@ module.exports = {
                             });
                         }
                       } catch (e) {
+                        await logger.error(e.message)
                         console.log('>>>>>>>>thrown cover', e)
                         throw e;
                       }
@@ -152,6 +154,7 @@ module.exports = {
                 }
               }
             } catch (e) {
+              await logger.error(e.message)
               console.log('>>>>>>>>thrown', e)
               throw e;
             }
@@ -232,6 +235,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -281,6 +285,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -313,6 +318,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -348,6 +354,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -391,6 +398,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(400)
         .json({
@@ -435,6 +443,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -481,6 +490,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -533,6 +543,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -575,6 +586,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

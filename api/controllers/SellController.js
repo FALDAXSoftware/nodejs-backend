@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger")
 module.exports = {
   //---------------------------Web Api------------------------------
 
@@ -126,6 +126,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>', err)
+      await logger.error(err.message)
     }
   },
 
@@ -139,6 +140,7 @@ module.exports = {
 
     } catch (err) {
       console.log('>getData>>', err)
+      await logger.error(err.message)
     }
   },
 
@@ -205,6 +207,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('>err>>', err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

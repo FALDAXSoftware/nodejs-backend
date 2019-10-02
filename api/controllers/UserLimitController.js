@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var moment = require('moment');
+var logger = require("./logger")
 module.exports = {
   // ---------------------------Web Api------------------------------
   // -------------------------------CMS Api--------------------------
@@ -43,6 +44,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -156,6 +158,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
