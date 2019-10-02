@@ -26,6 +26,7 @@ var speakeasy = require('speakeasy');
 var QRCode = require('qrcode');
 const moment = require('moment');
 var requestIp = require('request-ip');
+var logger = require("../controllers/logger");
 
 
 module.exports = {
@@ -167,7 +168,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) { }
+                  if (admin_details.is_twofactor) {}
 
                   delete admin_details.password;
                   // Token Issue
@@ -205,6 +206,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -255,6 +257,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -353,17 +356,17 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_details.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("password change success"),
-                  "data": adminUpdates
-                });
-              }
-            })
+            to: (user_details.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("password change success"),
+                "data": adminUpdates
+              });
+            }
+          })
 
       } else {
         return res
@@ -373,6 +376,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -467,20 +471,20 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: adminUpdates[0]["email"],
-            subject: "Password Change"
-          }, function (err) {
-            if (!err) {
+          to: adminUpdates[0]["email"],
+          subject: "Password Change"
+        }, function (err) {
+          if (!err) {
 
-            } else {
-              return res
-                .status(500)
-                .json({
-                  "status": 500,
-                  "err": sails.__("Something Wrong")
-                });
-            }
-          });
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        });
 
       if (adminUpdates) {
         return res.json({
@@ -496,6 +500,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -536,6 +541,7 @@ module.exports = {
       });
 
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -583,16 +589,16 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (admin_details.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "message": sails.__("password change success")
-                  });
-                }
-              })
+              to: (admin_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success")
+                });
+              }
+            })
         } else {
           return res.json({
             "status": 400,
@@ -608,6 +614,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       res
         .status(500)
         .json({
@@ -652,16 +659,16 @@ module.exports = {
           .email.send("general-email", {
             content: emailContent
           }, {
-              to: admin_details.email,
-              subject: "Forgot Password"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "message": sails.__("Reset password link sent to your email successfully.")
-                });
-              }
-            })
+            to: admin_details.email,
+            subject: "Forgot Password"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": sails.__("Reset password link sent to your email successfully.")
+              });
+            }
+          })
       } else {
         return res
           .status(401)
@@ -670,6 +677,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -728,6 +736,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -784,6 +793,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -837,6 +847,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -897,6 +908,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -936,6 +948,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -989,6 +1002,7 @@ module.exports = {
         })
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1056,6 +1070,7 @@ module.exports = {
           err: sails.__("invalid otp")
         });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1107,6 +1122,7 @@ module.exports = {
         message: sails.__("2 factor disabled")
       });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1133,6 +1149,7 @@ module.exports = {
         data: adminDetails
       });
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1211,17 +1228,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-                to: (adminData.email).trim(),
-                subject: template.name
-              }, function (err) {
-                if (!err) {
-                  return res.status(200).json({
-                    "status": 200,
-                    "message": sails.__("WhiteList IP Add Success"),
-                    "data": updateAdminData
-                  });
-                }
-              })
+              to: (adminData.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.status(200).json({
+                  "status": 200,
+                  "message": sails.__("WhiteList IP Add Success"),
+                  "data": updateAdminData
+                });
+              }
+            })
         }
       } else {
         return res
@@ -1232,6 +1249,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1303,21 +1321,22 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-              to: (user_data.email).trim(),
-              subject: template.name
-            }, function (err) {
-              if (!err) {
-                return res.status(200).json({
-                  "status": 200,
-                  "message": sails.__("WhiteList IP Add Success"),
-                  "data": []
-                });
-              }
-            })
+            to: (user_data.email).trim(),
+            subject: template.name
+          }, function (err) {
+            if (!err) {
+              return res.status(200).json({
+                "status": 200,
+                "message": sails.__("WhiteList IP Add Success"),
+                "data": []
+              });
+            }
+          })
       }
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1368,6 +1387,7 @@ module.exports = {
         })
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1421,6 +1441,7 @@ module.exports = {
         })
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1455,6 +1476,7 @@ module.exports = {
         })
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1493,6 +1515,7 @@ module.exports = {
         })
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1540,6 +1563,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1571,6 +1595,7 @@ module.exports = {
       }
 
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1630,32 +1655,33 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
 
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1715,31 +1741,32 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: (admin_details[0].email).trim(),
-            subject: "IP Whitelist status changed"
-          }, function (err) {
-            if (!err) {
-              if (status == true || status == "true") {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip enabled")
-                });
-              } else {
-                res.json({
-                  status: 200,
-                  message: sails.__("Whitelist ip disabled")
-                });
-              }
+          to: (admin_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
             } else {
-              return res
-                .status(500)
-                .json({
-                  status: 500,
-                  "err": sails.__("Something Wrong")
-                });
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
             }
-          })
+          } else {
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+        })
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1849,6 +1876,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -1957,18 +1985,19 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user[0].email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request approved")
-              });
-            }
-          })
+          to: user[0].email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request approved")
+            });
+          }
+        })
     } catch (err) {
       console.log('err', err)
+      await logger.error(err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2061,18 +2090,19 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-            to: user.email,
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("Twofactor Request rejected")
-              });
-            }
-          })
+          to: user.email,
+          subject: template.name
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Twofactor Request rejected")
+            });
+          }
+        })
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2142,6 +2172,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2183,6 +2214,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2225,6 +2257,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2266,6 +2299,7 @@ module.exports = {
       }
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2300,6 +2334,7 @@ module.exports = {
         "data": FeeData
       });
     } catch (error) {
+      await logger.error(error.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2402,6 +2437,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -2440,6 +2476,7 @@ module.exports = {
       });
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2486,7 +2523,7 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       let get_batches = await sails.sendNativeQuery("Select *" + query, [])
-      
+
       let batch_count = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       batch_count = batch_count.rows[0].count;
       // var get_batchs = await Batches.find().sort("batch_date DESC")
@@ -2511,6 +2548,7 @@ module.exports = {
 
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2567,13 +2605,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                currency: details.coin,
-                side: 'Buy',
-              },
-              {
-                settle_currency: details.coin,
-                side: 'Sell',
-              }
+                  currency: details.coin,
+                  side: 'Buy',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Sell',
+                }
               ],
               trade_type: 1
             });
@@ -2588,13 +2626,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                currency: details.coin,
-                side: 'Buy',
-              },
-              {
-                settle_currency: details.coin,
-                side: 'Sell',
-              }
+                  currency: details.coin,
+                  side: 'Buy',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Sell',
+                }
               ],
               trade_type: 1
             });
@@ -2608,13 +2646,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                currency: details.coin,
-                side: 'Sell',
-              },
-              {
-                settle_currency: details.coin,
-                side: 'Buy',
-              }
+                  currency: details.coin,
+                  side: 'Sell',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Buy',
+                }
               ],
               trade_type: 1
             });
@@ -2628,13 +2666,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                currency: details.coin,
-                side: 'Sell',
-              },
-              {
-                settle_currency: details.coin,
-                side: 'Buy',
-              }
+                  currency: details.coin,
+                  side: 'Sell',
+                },
+                {
+                  settle_currency: details.coin,
+                  side: 'Buy',
+                }
               ],
               trade_type: 1
             });
@@ -2697,7 +2735,7 @@ module.exports = {
           var coinFeesBuy = coinUserFeesBuy + coinRequestedFeesBuy;
           var coinFeesSell = coinUserFeesSell + coinRequestedFeesSell;
           coinFees = coinFeesBuy + coinFeesSell;
-          
+
           var usdValueBuy = await sails.helpers.fixapi.getPrice(details.coin, "Buy");
           var usdValueSell = await sails.helpers.fixapi.getPrice(details.coin, "Sell");
           if (usdValueBuy.length > 0) {
@@ -2877,6 +2915,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -2983,6 +3022,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -3116,13 +3156,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                      currency: details.coin,
-                      side: 'Buy',
-                    },
-                    {
-                      settle_currency: details.coin,
-                      side: 'Sell',
-                    }
+                        currency: details.coin,
+                        side: 'Buy',
+                      },
+                      {
+                        settle_currency: details.coin,
+                        side: 'Sell',
+                      }
                     ],
                     trade_type: 1
                   });
@@ -3137,13 +3177,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                      currency: details.coin,
-                      side: 'Buy',
-                    },
-                    {
-                      settle_currency: details.coin,
-                      side: 'Sell',
-                    }
+                        currency: details.coin,
+                        side: 'Buy',
+                      },
+                      {
+                        settle_currency: details.coin,
+                        side: 'Sell',
+                      }
                     ],
                     trade_type: 1
                   });
@@ -3157,13 +3197,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                      currency: details.coin,
-                      side: 'Sell',
-                    },
-                    {
-                      settle_currency: details.coin,
-                      side: 'Buy',
-                    }
+                        currency: details.coin,
+                        side: 'Sell',
+                      },
+                      {
+                        settle_currency: details.coin,
+                        side: 'Buy',
+                      }
                     ],
                     trade_type: 1
                   });
@@ -3177,13 +3217,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                      currency: details.coin,
-                      side: 'Sell',
-                    },
-                    {
-                      settle_currency: details.coin,
-                      side: 'Buy',
-                    }
+                        currency: details.coin,
+                        side: 'Sell',
+                      },
+                      {
+                        settle_currency: details.coin,
+                        side: 'Buy',
+                      }
                     ],
                     trade_type: 1
                   });
@@ -3277,7 +3317,7 @@ module.exports = {
           } // Summary ends
           newarray.purchases = purchases;
           newarray.summary = summary;
-          
+
           if (options.length == flag) {
             return res.status(200).json({
               "status": 200,
@@ -3302,6 +3342,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -3352,6 +3393,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -3431,6 +3473,7 @@ module.exports = {
 
     } catch (err) {
       console.log("err", err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

@@ -13,6 +13,7 @@
  */
 var request = require('request');
 var h2p = require('html2plaintext')
+var logger = require("./logger");
 module.exports = {
   //---------------------------Web Api------------------------------
 
@@ -64,10 +65,15 @@ module.exports = {
 
   getAllBlogList: async function (req, res) {
     var https = require('https');
-    let { page, limit, data } = req.allParams();
+    let {
+      page,
+      limit,
+      data
+    } = req.allParams();
 
     https.request('https://api.hubapi.com/content/api/v2/blog-posts?hapikey=e2032f87-8de8-4e18-8f16' +
-      '-f4210e714245&offset=' + page * 9 + '&limit=9', function (response) {
+      '-f4210e714245&offset=' + page * 9 + '&limit=9',
+      function (response) {
         var responseData = '';
         response.setEncoding('utf8');
 
@@ -80,7 +86,7 @@ module.exports = {
           res.serverError(err);
         });
 
-        response.on('end', function () {
+        response.on('end', async function () {
           try {
             let data = JSON.parse(responseData);
             for (let index = 0; index < data.objects.length; index++) {
@@ -94,6 +100,7 @@ module.exports = {
               "data": data
             });
           } catch (e) {
+            await logger.error(e.message)
             sails
               .log
               .warn('Could not parse response from options.hostname: ' + e);
@@ -126,10 +133,18 @@ module.exports = {
 
   getComment: async function (req, res) {
     try {
-      let { blog_id } = req.body;
-      let { page, limit } = req.allParams();
+      let {
+        blog_id
+      } = req.body;
+      let {
+        page,
+        limit
+      } = req.allParams();
       let comments = await BlogComment
-        .find({ blog: blog_id, deleted_at: null })
+        .find({
+          blog: blog_id,
+          deleted_at: null
+        })
         .sort('created_at DESC')
         .paginate(page - 1, parseInt(limit));
 
@@ -164,6 +179,7 @@ module.exports = {
         });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -175,8 +191,13 @@ module.exports = {
 
   getRelatedPost: async function (req, res) {
     try {
-      let { blog_id } = req.body;
-      let blog = await Blogs.findOne({ id: blog_id, deleted_at: null });
+      let {
+        blog_id
+      } = req.body;
+      let blog = await Blogs.findOne({
+        id: blog_id,
+        deleted_at: null
+      });
       if (!blog) {
         return res
           .status(400)
@@ -185,11 +206,11 @@ module.exports = {
             "err": sails.__("Blog not found")
           });
       }
-      let tags = blog.tags != undefined
-        ? blog
-          .tags
-          .split(",")
-        : '';
+      let tags = blog.tags != undefined ?
+        blog
+        .tags
+        .split(",") :
+        '';
       let conditionArray = [];
       for (let index = 0; index < tags.length; index++) {
         let temp = {};
@@ -202,17 +223,19 @@ module.exports = {
       }
 
       let relatedPosts = await Blogs.find({
-        id: {
-          '!=': blog_id
-        },
-        deleted_at: null,
-        or: conditionArray
-      })
+          id: {
+            '!=': blog_id
+          },
+          deleted_at: null,
+          or: conditionArray
+        })
         .sort('created_at DESC')
         .limit(3);
       for (let index = 0; index < relatedPosts.length; index++) {
         if (relatedPosts[index].admin_id) {
-          let admin = await Admin.findOne({ id: relatedPosts[index].admin_id })
+          let admin = await Admin.findOne({
+            id: relatedPosts[index].admin_id
+          })
           relatedPosts[index].admin_name = admin.name
         }
       }
@@ -226,6 +249,7 @@ module.exports = {
         });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -237,9 +261,15 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllNews: async function (req, res) {
     // req.setLocale('en')
-    let { page, limit, data } = req.allParams();
+    let {
+      page,
+      limit,
+      data
+    } = req.allParams();
 
-    var newsSources = await NewsSource.find({ is_active: true })
+    var newsSources = await NewsSource.find({
+      is_active: true
+    })
     var allNewsSouceIds = [];
     for (let index = 0; index < newsSources.length; index++) {
       const element = newsSources[index];
@@ -252,14 +282,14 @@ module.exports = {
           where: {
             deleted_at: null,
             is_active: true,
-            owner_id: { in: allNewsSouceIds },
-            or: [
-              {
-                search_keywords: {
-                  contains: data
-                }
+            owner_id: {
+              in: allNewsSouceIds
+            },
+            or: [{
+              search_keywords: {
+                contains: data
               }
-            ]
+            }]
           }
         })
         .sort("posted_at DESC")
@@ -269,14 +299,14 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          owner_id: { in: allNewsSouceIds },
-          or: [
-            {
-              search_keywords: {
-                contains: data
-              }
+          owner_id: {
+            in: allNewsSouceIds
+          },
+          or: [{
+            search_keywords: {
+              contains: data
             }
-          ]
+          }]
         }
       });
       if (newsData) {
@@ -289,7 +319,13 @@ module.exports = {
       }
     } else {
       let newsData = await News
-        .find({ deleted_at: null, is_active: true, owner_id: { in: allNewsSouceIds }, })
+        .find({
+          deleted_at: null,
+          is_active: true,
+          owner_id: {
+            in: allNewsSouceIds
+          },
+        })
         .sort("posted_at DESC")
         .paginate(page - 1, parseInt(limit));
 
@@ -297,7 +333,9 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          owner_id: { in: allNewsSouceIds },
+          owner_id: {
+            in: allNewsSouceIds
+          },
         }
       });
       return res.json({

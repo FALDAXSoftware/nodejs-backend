@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var speakeasy = require('speakeasy');
+var logger = require("../controllers/logger")
 
 module.exports = {
   /**
@@ -35,6 +36,7 @@ module.exports = {
         allClasses
       });
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -65,6 +67,7 @@ module.exports = {
         message: sails.__("Class added success")
       })
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -106,6 +109,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -178,6 +182,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

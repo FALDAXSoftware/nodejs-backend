@@ -66,6 +66,11 @@ module.exports = {
       columnName: 'is_address_created_signup',
       defaultsTo: false
     },
+    is_simplex_supported: {
+      type: 'boolean',
+      columnName: 'is_simplex_supported',
+      defaultsTo: false
+    },
     hot_send_wallet_address: {
       type: 'string',
       columnName: 'hot_send_wallet_address',

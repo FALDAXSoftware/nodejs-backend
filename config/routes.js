@@ -421,4 +421,5 @@ module.exports.routes = {
   'get /get-event-data': 'SimplexController.checkPaymentStatus',
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
   'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
+  'get /get-simplex-coin-list': 'SimplexController.getSimplexCoinList',
 };

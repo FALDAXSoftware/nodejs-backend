@@ -6,6 +6,7 @@
  */
 
 const moment = require('moment');
+var logger = require("./logger");
 
 module.exports = {
 
@@ -105,6 +106,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -172,6 +174,7 @@ module.exports = {
       }
 
     } catch (err) {
+      await logger.error(err.message)
       console.log(err);
       return res
         .status(500)
@@ -209,6 +212,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

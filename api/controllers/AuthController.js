@@ -17,6 +17,7 @@ var randomize = require('randomatic');
 var speakeasy = require('speakeasy');
 const moment = require('moment');
 var requestIp = require('request-ip');
+var logger = require('./logger');
 
 
 module.exports = {
@@ -88,6 +89,7 @@ module.exports = {
         }
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -420,6 +422,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -474,6 +477,26 @@ module.exports = {
               err: sails.__('Deleted By User')
             });
           }
+
+          if (user_detail.is_twofactor && user_detail.twofactor_secret) {
+
+            await Users
+              .update({
+                id: user_detail.id
+              }).set({
+                new_ip_verification_token: null
+              })
+
+            await LoginHistory.create({
+              user: user_detail.id,
+              ip: ip,
+              created_at: new Date()
+            });
+            return res.status(201).json({
+              "status": 201,
+              message: sails.__("account verify success")
+            })
+          }
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
           // new_ip_verification_token: null,   email: user_detail.email });
           await LoginHistory.create({
@@ -503,6 +526,7 @@ module.exports = {
           "err": sails.__("Invalid verification token")
         });
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -811,6 +835,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       return res
         .status(500)
         .json({
@@ -905,6 +930,7 @@ module.exports = {
       // });
     } catch (error) {
       console.log('error', error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -967,6 +993,7 @@ module.exports = {
           });
       }
     } catch (e) {
+      await logger.error(e.message)
       res
         .status(500)
         .json({

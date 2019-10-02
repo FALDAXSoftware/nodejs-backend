@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger");
 module.exports = {
 
   getNotificationList: async function (req, res) {
@@ -24,6 +24,7 @@ module.exports = {
         });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -78,6 +79,7 @@ module.exports = {
 
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

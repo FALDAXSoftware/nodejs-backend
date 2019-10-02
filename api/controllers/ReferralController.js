@@ -1,3 +1,4 @@
+var logger = require('./logger');
 module.exports = {
 
   //Get Referred user amount
@@ -82,6 +83,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -114,6 +116,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('err', err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({

@@ -15,8 +15,6 @@ var logger = bunyan.createLogger({
   stream: formatOut
 })
 
-console.log(logger)
-
 logger._emit = (rec, noemit) => {
   console.log(rec)
   delete rec.pid
