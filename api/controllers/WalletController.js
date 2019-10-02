@@ -127,6 +127,7 @@ module.exports = {
     try {
       let {
         amount,
+        total_fees,
         destination_address,
         coin_code
       } = req.allParams();
@@ -202,10 +203,6 @@ module.exports = {
         .helpers
         .wallet
         .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-
-      console.log("Warm Wallet Data ++++++++++++++", warmWalletData);
-      console.log("Warm Wallet Address >>>>>>>>>>>>", warmWalletData.receiveAddress);
-      console.log("Warm Wallet Balance ??????????????", warmWalletData.balance)
 
       let sendWalletData = await sails
         .helpers
@@ -300,7 +297,7 @@ module.exports = {
 
               //     // If total amount monthly + amount to be send is less than limited amount of
               //     // month
-              if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
+              if ((parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                 let wallet = await Wallet.findOne({
                   deleted_at: null,
@@ -313,7 +310,7 @@ module.exports = {
                 if (wallet) {
 
                   //If placed balance is greater than the amount to be send
-                  if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(amount)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+                  if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
                     //If coin is of bitgo type
                     if (coin.type == 1) {
@@ -322,19 +319,43 @@ module.exports = {
                       // to be added in the withdraw request table
                       if (req.body.confirm_for_wait === undefined) {
                         //Check for warm wallet minimum thresold
-                        // console.log(warmWalletData.balance)
-                        // console.log(coin.min_thresold);
-                        // console.log(warmWalletData.balance >= coin.min_thresold)
-                        if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold) {
+                        if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
                           //Execute Transaction
 
                           // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
                           // Send to hot warm wallet and make entry in diffrent table for both warm to
                           // receive and receive to destination
-                          // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
-                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
+                          // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (total_fees * 1e8).toString());
+                          let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (total_fees * 1e8).toString());
 
+                          var adminWalletDetails = await Wallet.findOne({
+                            where: {
+                              deleted_at: null,
+                              coin_id: coin.id,
+                              is_active: true,
+                              user_id: 36,
+                              is_admin: true
+                            }
+                          });
+
+                          if (adminWalletDetails != undefined) {
+                            var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(total_fees - amount));
+                            var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(total_fees - amount));
+                            var updatedData = await Wallet
+                              .update({
+                                deleted_at: null,
+                                coin_id: coin.id,
+                                is_active: true,
+                                user_id: 36,
+                                is_admin: true
+                              })
+                              .set({
+                                balance: updatedBalance,
+                                placed_balance: updatedPlacedBalance
+                              })
+                              .fetch();
+                          }
 
                           //Here remainning ebtry as well as address change
                           let walletHistory = {

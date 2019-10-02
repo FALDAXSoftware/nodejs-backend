@@ -339,5 +339,7 @@
   "Wallet address list": "Wallet address has been listed.",
   "simplex token retrieve success": "Simplex token has been retrieved success.",
   "simplex token update success": "Simplex token has been updated successfuly.",
-  "wallet address creation": "Wallet address has been created."
+  "wallet address creation": "Wallet address has been created.",
+  "panic button enabled": "As Panic button in enable you are not allowed to trade for 24 hours.",
+  "account verify success": "Account has been verified successfully with new IP"
 }

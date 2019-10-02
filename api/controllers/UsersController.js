@@ -692,6 +692,15 @@ module.exports = {
     var dataResponse = await sails
       .helpers
       .userTradeChecking(usersData[0].id);
+
+    var panic_button_details = await AdminSetting.findOne({
+      where: {
+        deleted_at: null,
+        slug: 'panic_status'
+      }
+    });
+
+    usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = dataResponse.response;
     if (usersData) {
       return res.json({

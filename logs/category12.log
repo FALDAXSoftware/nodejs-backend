@@ -7,3 +7,4 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-09-30T11:54:11.738Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-01T04:12:18.617Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-01T04:42:13.695Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-01T12:08:30.424Z","@version":0,"message":"i is not defined"}
