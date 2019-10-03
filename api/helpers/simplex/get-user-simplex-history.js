@@ -31,71 +31,63 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     // Get user simplex history.
-    var userSimplexHistory;
-    var data = inputs.data;
+    try {
+      var userSimplexHistory;
+      var data = inputs.data;
 
-    var q = [];
+      var q = [];
 
-    var currency,
-      settle_currency;
-    if (data.symbol != null || data.symbol != undefined) {
-      var values = await sails
-        .helpers
-        .utilities
-        .getCurrencies(data.symbol);
+      var currency,
+        settle_currency;
+      if (data.symbol != null || data.symbol != undefined) {
+        var values = await sails
+          .helpers
+          .utilities
+          .getCurrencies(data.symbol);
 
-      settle_currency = values.crypto;
-      currency = values.currency;
-    }
-
-    if (data.symbol != null || data.symbol != undefined) {
-      if (currency != "null" && settle_currency != "null") {
-        q['currency'] = currency,
-          q['settle_currency'] = settle_currency
+        settle_currency = values.crypto;
+        currency = values.currency;
       }
-    }
 
-    if (data.toDate != undefined && data.toDate != null && data.fromDate != undefined && data.fromDate != null) {
-      q['created_at'] = {}
-    }
+      console.log(data.symbol)
 
-    if (data.toDate != undefined || data.toDate != null) {
-      q['created_at']['<='] = moment(data.toDate)
-        .endOf('day')
-        .format();
-    }
-    if (data.fromDate != undefined || data.fromDate != null) {
-      q['created_at']['>='] = moment(data.fromDate).format();
-    }
-    q['or'] = [];
-    if (data.buy == "true" || data.buy == true) {
-      q['or'].push({
-        user_id: data.user_id,
-        side: 'Buy'
-      })
-    }
+      if (data.symbol != null || data.symbol != undefined) {
+        if (currency != "null" && settle_currency != "null") {
+          q['currency'] = settle_currency,
+            q['settle_currency'] = currency
+        }
+      }
 
-    if (data.sell == "true" || data.sell == true) {
-      q['or'].push({
-        user_id: data.user_id,
-        side: 'Sell'
-      })
+      if (data.toDate != undefined && data.toDate != null && data.fromDate != undefined && data.fromDate != null) {
+        q['created_at'] = {}
+      }
+
+      if (data.toDate != undefined || data.toDate != null) {
+        q['created_at']['<='] = moment(data.toDate)
+          .endOf('day')
+          .format();
+      }
+      if (data.fromDate != undefined || data.fromDate != null) {
+        q['created_at']['>='] = moment(data.fromDate).format();
+      }
+
+      if ((data.buy == "false" && data.sell == "false") || (data.buy == "true" && data.sell == "true")) {
+        q['user_id'] = data.user_id
+      }
+      console.log(q);
+
+      userSimplexHistory = await SimplexTradeHistory
+        .find({
+          ...q
+        })
+        .sort("id DESC");
+
+      // Send back the result through the success exit.
+      return exits.success(userSimplexHistory);
+
+    } catch (error) {
+      console.log("error in simplex", error);
     }
-
-    if (data.buy == "false" && data.sell == "false") {
-      q['or'].push({
-        user_id: data.user_id
-      })
-    }
-
-    userSimplexHistory = await SimplexTradeHistory
-      .find({
-        ...q
-      })
-      .sort("id DESC");
-
-    // Send back the result through the success exit.
-    return exits.success(userSimplexHistory);
 
   }
 

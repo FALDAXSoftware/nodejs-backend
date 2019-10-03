@@ -12,3 +12,10 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T08:13:17.658Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T08:14:08.257Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:49:11.642Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:52:22.509Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:52:37.777Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:53:42.644Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:53:48.040Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:56:10.014Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:56:25.903Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T12:07:38.209Z","@version":0,"message":"Cannot read property 'push' of undefined"}
