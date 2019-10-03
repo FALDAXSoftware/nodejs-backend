@@ -19,3 +19,10 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:56:10.014Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T11:56:25.903Z","@version":0,"message":"Unexpected error from database adapter: column \"0\" does not exist"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-02T12:07:38.209Z","@version":0,"message":"Cannot read property 'push' of undefined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T08:20:34.922Z","@version":0,"message":"Query failed: syntax error at or near \"ORDER\""}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T08:51:53.247Z","@version":0,"message":"email is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T09:12:37.164Z","@version":0,"message":"Cannot read property 'join' of undefined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T09:14:47.101Z","@version":0,"message":"usersEmail is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T09:16:22.257Z","@version":0,"message":"usersEmail is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T09:25:35.680Z","@version":0,"message":"Could not run formatEmail() because of a problem:\n------------------------------------------------------\n• \"data\" is required, but it was not defined.\n------------------------------------------------------\n\nPlease adjust your usage and try again.\n [?] See https://sailsjs.com/support for help."}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-03T09:29:43.769Z","@version":0,"message":"Could not run formatEmail() because of a problem:\n------------------------------------------------------\n• \"data\" is required, but it was not defined.\n------------------------------------------------------\n\nPlease adjust your usage and try again.\n [?] See https://sailsjs.com/support for help."}

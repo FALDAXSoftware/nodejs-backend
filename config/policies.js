@@ -77,7 +77,8 @@ module.exports.policies = {
     "queryTest": true,
     "createWallet": true,
     "queryTestThresold": true,
-    "getEncryptKey": true
+    "getEncryptKey": true,
+    "testPanicStatus": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
