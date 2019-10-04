@@ -1452,6 +1452,79 @@ module.exports = {
     }
   },
 
+  getInactiveUserPaginate: async function (req, res) {
+    try {
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        country
+      } = req.allParams();
+      let whereAppended = false;
+      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
+      query += " WHERE users.is_active = false AND is_verified = false"
+      if ((data && data != "")) {
+        query += " AND"
+        whereAppended = true;
+        if (data && data != "" && data != null) {
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+        }
+        query += ")"
+      }
+
+      if (country && country != "") {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += "  users.country='" + country + "'";
+      }
+
+      countQuery = query;
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        query += " ORDER BY users." + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY users.created_at DESC";
+      }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      console.log(query);
+      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals" + query, [])
+
+      usersData = usersData.rows;
+
+      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      userCount = userCount.rows[0].count;
+
+      if (usersData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Users list"),
+          "data": usersData,
+          userCount
+        });
+      }
+    } catch (err) {
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   updateUserDetails: async function (req, res) {
     let {
       user_id,

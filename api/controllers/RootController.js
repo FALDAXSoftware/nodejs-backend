@@ -43,6 +43,62 @@ module.exports = {
         is_active: true,
         deleted_at: null
       });
+
+      var emailData = await Users.find({
+        select: [
+          'email'
+        ],
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_verified: true
+        }
+      });
+
+      console.log(emailData);
+
+      // var usersEmail = ((emailData.email).join(','));
+      var all_user_emails = [];
+      emailData.map(function (each) {
+        console.log(each)
+        all_user_emails.push(each.email);
+        return each;
+      });
+      // console.log(usersEmail);
+      console.log(all_user_emails);
+      // console.log(usersEmail);
+      var splitted_users = all_user_emails.join(",");
+      console.log("splitted_users", splitted_users);
+
+      let slug = "";
+      if (status == "true" || status == true) {
+        slug = "panic_status_enabled"
+      } else {
+        slug = "panic_status_disabled"
+      }
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: ''
+        })
+      if (template) {
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+            // to: "mansi.gyastelwala@openxcellinc.com, jagdish.banda@openxcelltechnolabs.com",
+            to: all_user_emails,
+            subject: "Panic Button"
+          }, function (err) {
+            console.log(err);
+          });
+      }
       if (!user) {
         return res
           .status(401)
@@ -78,6 +134,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log(error);
       await logger.error(error.message)
       return res
         .status(500)
@@ -336,5 +393,26 @@ module.exports = {
           });
         }
       });
+  },
+
+  testPanicStatus: async function (req, res) {
+    try {
+      var panicStatus = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'panic_status'
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("panic button status"),
+          "data": panicStatus.value
+        })
+    } catch (error) {
+      console.log(error);
+    }
   }
 };

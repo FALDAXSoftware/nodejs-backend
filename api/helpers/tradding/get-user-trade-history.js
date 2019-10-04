@@ -49,16 +49,16 @@ module.exports = {
       }
     }
 
-    if (data.toDate != undefined && data.toDate != null && data.fromDate != undefined && data.fromDate != null) {
+    if (data.toDate != undefined && data.toDate != null && data.toDate != '' && data.fromDate != '' && data.fromDate != undefined && data.fromDate != null) {
       q['created_at'] = {}
     }
 
-    if (data.toDate != undefined || data.toDate != null) {
+    if (data.toDate && (data.toDate != undefined || data.toDate != null && data.toDate != '')) {
       q['created_at']['<='] = moment(data.toDate)
         .endOf('day')
         .format();
     }
-    if (data.fromDate != undefined || data.fromDate != null) {
+    if (data.fromDate && (data.fromDate != undefined || data.fromDate != null && data.fromDate != '')) {
       q['created_at']['>='] = moment(data.fromDate).format();
     }
     q['or'] = [];
