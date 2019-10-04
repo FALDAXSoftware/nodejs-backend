@@ -37,12 +37,35 @@ module.exports = {
 
         // if (geo_fencing_data.response == true) {
         var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+        var coinDetails = await Coins.findOne({
+          where: {
+            deleted_at: null,
+            coin: data.digital_currency,
+            is_active: true
+          }
+        })
+
+        var createMsg = '';
+        var walletDetails = await Wallet.findOne({
+          where: {
+            deleted_at: null,
+            user_id: user_id,
+            coin_id: coinDetails.id
+          }
+        })
+
+        if (walletDetails == undefined) {
+          createMsg = 'Please create you address to continue'
+        }
         return res
           .status(200)
           .json({
             "status": 200,
             "message": sails.__("qoute details success"),
-            "data": qouteDetail
+            "data": qouteDetail,
+            walletDetails,
+            createMsg,
+            coinDetails
           });
 
         // } else {
