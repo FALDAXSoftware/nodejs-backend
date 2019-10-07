@@ -65,6 +65,7 @@ module.exports = {
     }
   },
 
+  //document upload to IDM Platform API
   tierDocumentUpload: async function (req, res) {
     try {
       let {

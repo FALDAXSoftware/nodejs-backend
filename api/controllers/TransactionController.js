@@ -68,8 +68,8 @@ module.exports = {
       query += " wallet_history.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -91,7 +91,7 @@ module.exports = {
       }
     });
 
-    let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email, coins.coin " + query, [])
+    let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email, coins.coin , coins.coin_code " + query, [])
     transactionData = transactionData.rows;
 
     let transactionCount = await sails.sendNativeQuery("Select COUNT(wallet_history.id)" + countQuery, [])
@@ -168,8 +168,8 @@ module.exports = {
       query += " wallet_history.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
