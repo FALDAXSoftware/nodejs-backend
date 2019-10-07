@@ -413,15 +413,15 @@ module.exports = {
       var fiatValue = {};
 
       fiatValue = [{
-          id: 1,
-          coin: "USD",
-          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
-        },
-        {
-          id: 2,
-          coin: "EUR",
-          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
-        }
+        id: 1,
+        coin: "USD",
+        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
+      },
+      {
+        id: 2,
+        coin: "EUR",
+        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
+      }
       ]
 
       var object = {
