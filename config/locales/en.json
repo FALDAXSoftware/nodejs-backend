@@ -344,5 +344,6 @@
   "account verify success": "Account has been verified Successfully with new IP",
   "coin list retrieve success": "coin list retrieve success",
   "panic button status": "Panic Status has been retrieved Successfully",
-  "User has been deleted": "Your account has been deleted. Please signup with new email to continue"
+  "User has been deleted": "Your account has been deleted. Please signup with new email to continue",
+  "account not not verified by admin": "User Account has been unverified by admin"
 }

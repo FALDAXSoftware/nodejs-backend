@@ -2440,7 +2440,7 @@ module.exports = {
             '!=': null
           }
         }
-      });
+      }).sort('created_at DESC');
 
       for (var i = 0; i < referredData.length; i++) {
         if (userIds.indexOf(referredData[i].referred_id) == -1) {

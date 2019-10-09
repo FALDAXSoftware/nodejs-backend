@@ -74,6 +74,8 @@ module.exports = {
       if ((data.buy == "false" && data.sell == "false") || (data.buy == "true" && data.sell == "true")) {
         q['user_id'] = data.user_id
       }
+
+      q['is_processed'] = true;
       console.log(q);
 
       userSimplexHistory = await SimplexTradeHistory

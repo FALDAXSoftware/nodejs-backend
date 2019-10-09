@@ -153,6 +153,7 @@ module.exports.policies = {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
     "checkPaymentStatus": true,
+    "deleteEvent": true
     // "getSimplexCoinList": true
   }
 };
