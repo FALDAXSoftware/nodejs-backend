@@ -421,7 +421,7 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log(error);
+      console.log('login ',error);
       await logger.error(error.message)
       return res
         .status(500)

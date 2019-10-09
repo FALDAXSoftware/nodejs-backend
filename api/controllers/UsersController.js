@@ -36,10 +36,17 @@ module.exports = {
 
       var existedUser = await Users.findOne({
         email,
-        deleted_at: null,
+        // deleted_at: null,
         is_active: true
       });
-      if (existedUser) {
+      if (existedUser && existedUser.deleted_at != null) {
+        return res
+          .status(401)
+          .json({
+            status: 401,
+            "err": sails.__("User has been deleted")
+          });
+      } else if (existedUser) {
         return res
           .status(401)
           .json({
@@ -177,18 +184,18 @@ module.exports = {
               .send("general-email", {
                 content: emailContent
               }, {
-                to: user_detail.email,
-                subject: "Signup Verification"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-                      sails.__("verification code") : sails.__("verification link"),
-                    email_verify_token
-                  });
-                }
-              });
+                  to: user_detail.email,
+                  subject: "Signup Verification"
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
+                        sails.__("verification code") : sails.__("verification link"),
+                      email_verify_token
+                    });
+                  }
+                });
           }
           // return res
           //   .json({
@@ -290,16 +297,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: existedUser.email,
-            subject: "New Email Confirmation"
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("confirm otp")
-              });
-            }
-          })
+              to: existedUser.email,
+              subject: "New Email Confirmation"
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("confirm otp")
+                });
+              }
+            })
       }
     } catch (error) {
       await logger.error(error.message)
@@ -371,17 +378,17 @@ module.exports = {
             .send("general-email", {
               content: emailContent
             }, {
-              to: requested_email,
-              subject: "New Email Verification"
-            }, function (err) {
-              if (!err) {
-                return res.json({
-                  "status": 200,
-                  "new_email_token": re_new_email_token,
-                  "message": sails.__("verification link")
-                });
-              }
-            })
+                to: requested_email,
+                subject: "New Email Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "new_email_token": re_new_email_token,
+                    "message": sails.__("verification link")
+                  });
+                }
+              })
         } else {
           return res
             .status(400)
@@ -467,18 +474,18 @@ module.exports = {
               .send("general-email", {
                 content: emailContent
               }, {
-                to: user.email,
-                subject: "New Email Updated"
-              }, function (err) {
-                if (!err) {
-                  return res.json({
-                    "status": 200,
-                    user,
-                    token,
-                    "message": "Welcome back, " + user.first_name + "!"
-                  });
-                }
-              })
+                  to: user.email,
+                  subject: "New Email Updated"
+                }, function (err) {
+                  if (!err) {
+                    return res.json({
+                      "status": 200,
+                      user,
+                      token,
+                      "message": "Welcome back, " + user.first_name + "!"
+                    });
+                  }
+                })
           } else {
             return res.json({
               "status": 200,
@@ -797,14 +804,14 @@ module.exports = {
                     .hubspot
                     .contacts
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                        ", " + user.street_address_2 :
-                        ''), user.country ?
-                      user.country :
-                      user_details["country"], user.state ?
-                      user.state :
-                      user_details["state"], user.city_town ?
-                      user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
+                        user.country :
+                        user_details["country"], user.state ?
+                        user.state :
+                        user_details["state"], user.city_town ?
+                        user.city_town :
+                        user_details["city_town"], user.postal_code);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -837,14 +844,14 @@ module.exports = {
                   .hubspot
                   .contacts
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                      ", " + user.street_address_2 :
-                      ''), user.country ?
-                    user.country :
-                    user_details["country"], user.state ?
-                    user.state :
-                    user_details["state"], user.city_town ?
-                    user.city_town :
-                    user_details["city_town"], user.postal_code);
+                    ", " + user.street_address_2 :
+                    ''), user.country ?
+                      user.country :
+                      user_details["country"], user.state ?
+                      user.state :
+                      user_details["state"], user.city_town ?
+                      user.city_town :
+                      user_details["city_town"], user.postal_code);
               }
 
               var updatedUsers = await Users
@@ -961,16 +968,16 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: (user_details.email).trim(),
-            subject: template.name
-          }, function (err) {
-            if (!err) {
-              return res.json({
-                "status": 200,
-                "message": sails.__("password change success")
-              });
-            }
-          })
+              to: (user_details.email).trim(),
+              subject: template.name
+            }, function (err) {
+              if (!err) {
+                return res.json({
+                  "status": 200,
+                  "message": sails.__("password change success")
+                });
+              }
+            })
       } else {
         return res
           .status(401)
@@ -1202,18 +1209,18 @@ module.exports = {
           .send("general-email", {
             content: emailContent
           }, {
-            to: (user.email).trim(),
-            subject: "2 Factor Authentication Enabled"
-          }, function (err) {
-            console.log("err", err);
-            if (!err || err == null) {
-              return res.json({
-                status: 200,
-                message: sails.__("2 factor enabled"),
-                twofactor_backup_code: random_string
-              });
-            }
-          })
+              to: (user.email).trim(),
+              subject: "2 Factor Authentication Enabled"
+            }, function (err) {
+              console.log("err", err);
+              if (!err || err == null) {
+                return res.json({
+                  status: 200,
+                  message: sails.__("2 factor enabled"),
+                  twofactor_backup_code: random_string
+                });
+              }
+            })
       } else {
         return res
           .status(401)
@@ -1299,16 +1306,16 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (user.email).trim(),
-          subject: "2 Factor Authentication Disabled"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              status: 200,
-              message: sails.__("2 factor disabled")
-            });
-          }
-        })
+            to: (user.email).trim(),
+            subject: "2 Factor Authentication Disabled"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                status: 200,
+                message: sails.__("2 factor disabled")
+              });
+            }
+          })
 
     } catch (error) {
       await logger.error(error.message)
@@ -1653,8 +1660,8 @@ module.exports = {
 
   getCountriesData: async function (req, res) {
     fetch(' https://restcountries.eu/rest/v2/all', {
-        method: "GET"
-      })
+      method: "GET"
+    })
       .then(resData => resData.json())
       .then(resData => {
         res.json({
@@ -2009,23 +2016,23 @@ module.exports = {
         .send("general-email", {
           content: emailContent
         }, {
-          to: (user_details[0].email).trim(),
-          subject: "Security Feature"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": message
-            });
-          } else {
-            return res
-              .status(500)
-              .json({
-                status: 500,
-                "err": sails.__("Something Wrong")
+            to: (user_details[0].email).trim(),
+            subject: "Security Feature"
+          }, function (err) {
+            if (!err) {
+              return res.json({
+                "status": 200,
+                "message": message
               });
-          }
-        })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("Something Wrong")
+                });
+            }
+          })
     } catch (error) {
       await logger.error(error.message)
       return res
@@ -2085,30 +2092,30 @@ module.exports = {
       .send("general-email", {
         content: emailContent
       }, {
-        to: (user_details[0].email).trim(),
-        subject: "IP Whitelist status changed"
-      }, function (err) {
-        if (!err) {
-          if (status == true || status == "true") {
-            res.json({
-              status: 200,
-              message: sails.__("Whitelist ip enabled")
-            });
+          to: (user_details[0].email).trim(),
+          subject: "IP Whitelist status changed"
+        }, function (err) {
+          if (!err) {
+            if (status == true || status == "true") {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip enabled")
+              });
+            } else {
+              res.json({
+                status: 200,
+                message: sails.__("Whitelist ip disabled")
+              });
+            }
           } else {
-            res.json({
-              status: 200,
-              message: sails.__("Whitelist ip disabled")
-            });
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
           }
-        } else {
-          return res
-            .status(500)
-            .json({
-              status: 500,
-              "err": sails.__("Something Wrong")
-            });
-        }
-      })
+        })
 
   },
   // Regenrate Backup code
@@ -2525,9 +2532,9 @@ module.exports = {
       } = req.allParams();
 
       var coins = await Coins.find({
-          is_active: true,
-          deleted_at: null
-        })
+        is_active: true,
+        deleted_at: null
+      })
         .select(["coin_code", "coin"])
         .sort('id DESC');
 
