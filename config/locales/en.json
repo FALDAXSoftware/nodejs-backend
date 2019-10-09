@@ -343,5 +343,6 @@
   "panic button enabled": "As Panic button in enable you are not allowed to trade for 24 hours.",
   "account verify success": "Account has been verified successfully with new IP",
   "coin list retrieve success": "coin list retrieve success",
-  "panic button status": "Panic Status has been retrieved successfully"
+  "panic button status": "Panic Status has been retrieved successfully",
+  "account not not verified by admin": "User Account has been unverified by admin"
 }

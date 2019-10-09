@@ -32,7 +32,8 @@ module.exports = {
     //Configuring bitgo API with access token
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
-      accessToken: access_token_value
+      accessToken: access_token_value,
+      enterprise: sails.config.local.BITGO_ENTERPRISE
     });
 
     //Fetching coin list
