@@ -86,6 +86,8 @@ module.exports = {
           console.log(walletCoinCode, coin.hot_receive_wallet_address, address_label)
           //Address generation for receiving coin
           let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
+
+          console.log(address)
           console.log(address);
           //Address generation for sending the coin
           let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);

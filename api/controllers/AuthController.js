@@ -421,7 +421,7 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log(error);
+      console.log('login ',error);
       await logger.error(error.message)
       return res
         .status(500)
@@ -476,6 +476,13 @@ module.exports = {
               "status": 403,
               err: sails.__('Deleted By User')
             });
+          }
+
+          if (user_detail.is_verified == false || user_detail.is_verified == "false") {
+            return res.status(403).json({
+              "status": 403,
+              err: sails.__("account not not verified by admin")
+            })
           }
 
           if (user_detail.is_twofactor && user_detail.twofactor_secret) {

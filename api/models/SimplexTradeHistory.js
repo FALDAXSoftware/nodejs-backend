@@ -56,6 +56,11 @@ module.exports = {
       type: 'string',
       columnName: 'symbol'
     },
+    is_processed: {
+      type: 'boolean',
+      columnName: 'is_processed',
+      defaultsTo: false
+    },
     user_id: {
       type: 'number',
       columnName: 'user_id',

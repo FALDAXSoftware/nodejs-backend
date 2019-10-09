@@ -1,3 +1,5 @@
+var simplex = require('../api/controllers/SimplexController');
+
 module.exports.cron = {
   newsUpdate: {
     schedule: '0 0 * * * *',
@@ -83,6 +85,17 @@ module.exports.cron = {
   //     }
   //   }
   // }
+
+  updateSimplexPaymentStatus: {
+    schedule: '* * * * *',
+    onTick: async function () {
+      console.log("INDSDE SIMPLEX")
+      if (sails.config.local.CRON_STATUS == "true") {
+        console.log("INSIDE THIS")
+        await simplex.checkPaymentStatus();
+      }
+    }
+  },
 
   updateJSTPrice: {
     schedule: '* * * * *',
