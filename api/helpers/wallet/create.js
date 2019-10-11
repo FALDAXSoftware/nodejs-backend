@@ -49,7 +49,8 @@ module.exports = {
       .wallets()
       .generateWallet({
         label: inputs.coin + '-wallet',
-        passphrase: passphrase_value
+        passphrase: passphrase_value,
+        enterprise: sails.config.local.BITGO_ENTERPRISE
       })
       .then(async newWallet => {
         console.log(newWallet);
@@ -58,7 +59,7 @@ module.exports = {
             id: requestedCoin[0].id
           })
           .set({
-            'warm_wallet_address': newWallet
+            'hot_send_wallet_address': newWallet
               .wallet
               .id()
           });
