@@ -714,3 +714,5 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-11T03:36:01.891Z","@version":0,"message":"currencyData is not defined"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-11T03:37:02.103Z","@version":0,"message":"currencyData is not defined"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-11T03:38:02.212Z","@version":0,"message":"currencyData is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-11T03:40:02.130Z","@version":0,"message":"currencyData is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-11T03:40:02.597Z","@version":0,"message":"currencyData is not defined"}
