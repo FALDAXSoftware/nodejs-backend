@@ -77,7 +77,8 @@ module.exports.policies = {
     "queryTest": true,
     "createWallet": true,
     "queryTestThresold": true,
-    "getEncryptKey": true
+    "getEncryptKey": true,
+    "testPanicStatus": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
@@ -152,6 +153,7 @@ module.exports.policies = {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
     "checkPaymentStatus": true,
+    "deleteEvent": true
     // "getSimplexCoinList": true
   }
 };

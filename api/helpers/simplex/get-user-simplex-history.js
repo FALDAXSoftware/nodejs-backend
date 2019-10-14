@@ -58,22 +58,24 @@ module.exports = {
         }
       }
 
-      if (data.toDate != undefined && data.toDate != null && data.fromDate != undefined && data.fromDate != null) {
+      if (data.toDate != undefined && data.toDate != null && data.toDate != '' && data.fromDate != '' && data.fromDate != undefined && data.fromDate != null) {
         q['created_at'] = {}
       }
 
-      if (data.toDate != undefined || data.toDate != null) {
+      if (data.toDate && (data.toDate != undefined || data.toDate != null || data.toDate != '')) {
         q['created_at']['<='] = moment(data.toDate)
           .endOf('day')
           .format();
       }
-      if (data.fromDate != undefined || data.fromDate != null) {
+      if (data.fromDate && (data.fromDate != undefined || data.fromDate != null && data.fromDate != '')) {
         q['created_at']['>='] = moment(data.fromDate).format();
       }
 
       if ((data.buy == "false" && data.sell == "false") || (data.buy == "true" && data.sell == "true")) {
         q['user_id'] = data.user_id
       }
+
+      q['is_processed'] = true;
       console.log(q);
 
       userSimplexHistory = await SimplexTradeHistory

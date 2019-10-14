@@ -14,6 +14,7 @@ module.exports.routes = {
   },
 
   'get /send': 'Dashboard.sendSMS',
+  'get /check-panic-status': 'RootController.testPanicStatus',
 
   // 'admin/*': { policy: 'isAdmin' }, Test Routes
   'get /users/get-conversion-data': 'WalletController.getConversionData',
@@ -72,6 +73,7 @@ module.exports.routes = {
   'post /admin/change-password': 'Admin.changePassword',
   'post /admin/employee-change-password': 'Admin.updateEmployeePassword',
   'get /admin/get-users': 'Users.getUserPaginate',
+  'get /admin/get-inactive-users': 'Users.getInactiveUserPaginate',
   'get /admin/referred-users': 'Users.getUserReferredAdmin',
   'post /admin/update-user-referal': 'Users.updateUserDetails',
   'post /admin/user-activate': 'Users.userActivate',
@@ -422,4 +424,5 @@ module.exports.routes = {
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
   'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
   'get /get-simplex-coin-list': 'SimplexController.getSimplexCoinList',
+  'get /delete-simplex-event': 'SimplexController.deleteEvent'
 };

@@ -76,18 +76,18 @@ module.exports = {
         // wallets.deleted_" +     "at IS NULL ORDER BY wallets.balance DESC LIMIT " +
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
-            deleted_at: null,
-            is_active: true,
-            or: [{
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
-            }]
-          })
+          deleted_at: null,
+          is_active: true,
+          or: [{
+            coin_name: {
+              contains: data
+            }
+          }, {
+            coin_code: {
+              contains: data
+            }
+          }]
+        })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -521,7 +521,7 @@ module.exports = {
               }
               var coins_detail = await Coins
                 .create({
-                  coin_icon: 'faldax/coin/' + req.body.coin_code,
+                  coin_icon: 'coin/' + req.body.coin_code,
                   coin_name: req.body.coin_name,
                   coin_code: req.body.coin_code,
                   min_limit: req.body.min_limit,

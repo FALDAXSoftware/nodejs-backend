@@ -7,6 +7,7 @@
 
 var requestIp = require('request-ip');
 const uuidv1 = require('uuid/v1');
+var request = require('request')
 
 module.exports = {
   // -------------------------- Web API ------------------------ //
@@ -37,12 +38,35 @@ module.exports = {
 
         // if (geo_fencing_data.response == true) {
         var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+        var coinDetails = await Coins.findOne({
+          where: {
+            deleted_at: null,
+            coin: data.digital_currency,
+            is_active: true
+          }
+        })
+
+        var createMsg = '';
+        var walletDetails = await Wallet.findOne({
+          where: {
+            deleted_at: null,
+            user_id: user_id,
+            coin_id: coinDetails.id
+          }
+        })
+
+        if (walletDetails == undefined) {
+          createMsg = 'Please create you address to continue'
+        }
         return res
           .status(200)
           .json({
             "status": 200,
             "message": sails.__("qoute details success"),
-            "data": qouteDetail
+            "data": qouteDetail,
+            walletDetails,
+            createMsg,
+            coinDetails
           });
 
         // } else {
@@ -150,7 +174,8 @@ module.exports = {
         // if (geo_fencing_data.response == true) {
 
         var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
-
+        console.log(dataUpdate);
+        console.log(main_details);
         if (dataUpdate.is_kyc_update_required == true) {
           console.log(user_id);
           var dataObject = {
@@ -171,28 +196,6 @@ module.exports = {
             "action": "https://sandbox.test-simplexcc.com/payments/new"
           }
           var now = new Date();
-          var tradeData = {
-            'payment_id': payment_id,
-            "quote_id": data.quote_id,
-            'currency': data.currency,
-            "settle_currency": data.fiat_currency,
-            "quantity": parseFloat(data.fiat_amount),
-            "user_id": user_id,
-            "symbol": data.currency + '-' + data.fiat_currency,
-            "side": 'Buy',
-            "created_at": now,
-            "updated_at": now,
-            "maximum_time": now,
-            "fill_price": parseFloat(data.total_amount),
-            "limit_price": 0,
-            "stop_price": 0,
-            "price": 0,
-            "simplex_payment_status": 1,
-            "trade_type": 3,
-            "order_status": "filled",
-            "order_type": "Market",
-            "address": data.address
-          }
 
           let tradeHistory = await SimplexTradeHistory.create({
             'payment_id': payment_id,
@@ -214,7 +217,8 @@ module.exports = {
             "trade_type": 3,
             "order_status": "filled",
             "order_type": "Market",
-            "address": data.address
+            "address": data.address,
+            "is_processed": false
           }).fetch();
 
           console.log(tradeHistory);
@@ -260,17 +264,45 @@ module.exports = {
     }
   },
 
+  deleteEvent: async function (event_id) {
+    try {
+      var key = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'access_token'
+        }
+      });
+      key = await sails.helpers.getDecryptData(key.value);
+      await request.delete('https://sandbox.test-simplexcc.com/wallet/merchant/v2/events/' + event_id, {
+        headers: {
+          'Authorization': 'ApiKey ' + key,
+          'Content-Type': 'application/json'
+        },
+      }, function (err, res, body) {
+        console.log(res.body);
+      });
+
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+    }
+  },
+
   // Passing events for checking the status of the payment
-  checkPaymentStatus: async function (req, res) {
+  checkPaymentStatus: async function () {
     try {
       var data = await sails.helpers.simplex.getEventData();
+      console.log(data);
       var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
           trade_type: 3,
-          simplex_payment_status: 1
+          simplex_payment_status: 1,
+          is_processed: false
         }
-      });
+      }).sort('id DESC');
+
+      console.log("Trade Data >>>>>", tradeData);
 
       for (var i = 0; i < tradeData.length; i++) {
         for (var j = 0; j < data.events.length; j++) {
@@ -341,8 +373,11 @@ module.exports = {
                   id: tradeData[i].id
                 })
                 .set({
-                  simplex_payment_status: 2
+                  simplex_payment_status: 2,
+                  is_processed: true
                 });
+
+              await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
             if (payment_data.status == "pending_simplexcc_approval") {
@@ -351,28 +386,28 @@ module.exports = {
                   id: tradeData[i].id
                 })
                 .set({
-                  simplex_payment_status: 2
+                  simplex_payment_status: 2,
+                  is_processed: true
                 });
+
+              await this.deleteEvent(data.events[j].event_id)
             } else if (payment_data.status == "cancelled") {
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
                 })
                 .set({
-                  simplex_payment_status: 3
+                  simplex_payment_status: 3,
+                  is_processed: true
                 });
+              await this.deleteEvent(data.events[j].event_id)
             }
           }
         }
       }
-      return res.status(200).json()
     } catch (err) {
       console.log(err);
       await logger.error(err.message)
-      return res.json({
-        status: 500,
-        "err": sails.__("Something Wrong")
-      });
     }
   },
 
@@ -392,12 +427,12 @@ module.exports = {
       fiatValue = [{
           id: 1,
           coin: "USD",
-          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
         },
         {
           id: 2,
           coin: "EUR",
-          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/defualt_coin.png"
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
         }
       ]
 
