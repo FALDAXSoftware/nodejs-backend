@@ -335,13 +335,14 @@ module.exports = {
                     deleted_at: null,
                     slug: 'login_new_ip'
                   })
+                  console.log(user_detail)
                   if (userNotification != undefined) {
                     if (userNotification.email == true || userNotification.email == "true") {
                       if (user_detail.email != undefined)
                         await sails.helpers.notification.send.email("login_new_ip", user_detail)
                     }
                     if (userNotification.text == true || userNotification.text == "true") {
-                      if (user_detail.phone_number != undefined || user_detail.phone_number != null || user_detail.phone_number != '')
+                      if (user_detail.phone_number && user_detail.phone_number != undefined && user_detail.phone_number != null && user_detail.phone_number != '')
                         await sails.helpers.notification.send.text("login_new_ip", user_detail)
                     }
                   }
