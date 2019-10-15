@@ -341,7 +341,7 @@ module.exports = {
                         await sails.helpers.notification.send.email("login_new_ip", user_detail)
                     }
                     if (userNotification.text == true || userNotification.text == "true") {
-                      if (user_detail.phone_number != undefined)
+                      if (user_detail.phone_number != undefined || user_detail.phone_number != null || user_detail.phone_number != '')
                         await sails.helpers.notification.send.text("login_new_ip", user_detail)
                     }
                   }
@@ -421,7 +421,7 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log('login ',error);
+      console.log('login ', error);
       await logger.error(error.message)
       return res
         .status(500)
