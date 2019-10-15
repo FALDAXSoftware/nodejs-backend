@@ -291,8 +291,8 @@ module.exports = {
   // Passing events for checking the status of the payment
   checkPaymentStatus: async function () {
     try {
+      console.log("Inside this method????????")
       var data = await sails.helpers.simplex.getEventData();
-      console.log(data);
       var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
@@ -308,6 +308,10 @@ module.exports = {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
+          console.log("Condition ??????", payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner")
+          console.log(payment_data.id == tradeData[i].payment_id);
+          console.log(payment_data.id)
+          console.log(tradeData[i].payment_id)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
@@ -375,12 +379,24 @@ module.exports = {
                 .set({
                   simplex_payment_status: 2,
                   is_processed: true
-                });
+                })
+                .fetch();
+
+              console.log("Trade History Data >>>>>>>>>>>.", tradeHistoryData);
+
+              let referredData = await sails
+                .helpers
+                .tradding
+                .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
+
+              console.log("Deleteing the event in if")
 
               await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
+            console.log("ELSE IF >>>>>>>>>>>>>")
             if (payment_data.status == "pending_simplexcc_approval") {
+              console.log("IF ????????????")
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
@@ -388,7 +404,25 @@ module.exports = {
                 .set({
                   simplex_payment_status: 2,
                   is_processed: true
-                });
+                }).fetch();
+
+              var referData = await Referral.findOne({
+                where: {
+                  deleted_at: null,
+                  txid: tradeData[i].id
+                }
+              })
+              console.log("Refer Data >>>>>>>>>", referData);
+
+              if (referData == undefined) {
+                let referredData = await sails
+                  .helpers
+                  .tradding
+                  .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
+
+              }
+
+              console.log("Deleteing the event in else")
 
               await this.deleteEvent(data.events[j].event_id)
             } else if (payment_data.status == "cancelled") {

@@ -68,7 +68,9 @@ module.exports = {
       console.log(all_user_emails);
       // console.log(usersEmail);
       var splitted_users = all_user_emails.join(",");
-      console.log("splitted_users", splitted_users);
+      // console.log("splitted_users", splitted_users);
+      console.log(Object.values(all_user_emails))
+      var value = Object.values(all_user_emails)
 
       let slug = "";
       if (status == "true" || status == true) {
@@ -93,7 +95,7 @@ module.exports = {
             content: emailContent
           }, {
             // to: "mansi.gyastelwala@openxcellinc.com, jagdish.banda@openxcelltechnolabs.com",
-            to: all_user_emails,
+            to: value,
             subject: "Panic Button"
           }, function (err) {
             console.log(err);
