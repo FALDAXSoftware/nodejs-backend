@@ -15,9 +15,23 @@ module.exports = {
       is_active: true
     });
     if (jobDetail) {
-      var uploadFileName = '';
-      var uploadCoverName = '';
+      
+      var uploadedFileName = (req.file('resume')._files[0].stream.filename)
+      let timestamp1 ="resume_"+new Date()
+                  .getTime()
+                  .toString();
+      var resume_uploaded_filename = uploadedFileName.substring(uploadedFileName.indexOf("."));
+      resume_uploaded_filename = timestamp1+resume_uploaded_filename;
+      // console.log("resume_uploaded_filename",timestamp1+resume_uploaded_filename);
 
+      var uploadCoverName = (req.file('cover_letter')._files[0].stream.filename)
+      let timestamp2 = "cover_"+new Date()
+                  .getTime()
+                  .toString();
+      var cover_uploaded_filename = uploadCoverName.substring(uploadCoverName.indexOf("."));
+      cover_uploaded_filename = timestamp2+cover_uploaded_filename;
+      // console.log("cover_uploaded_filename",timestamp2+cover_uploaded_filename);
+      // console.log("cover_letter", req.file('cover_letter') );
       if (req.file('resume')) {
         // Upload individually
         // console.log("files",req.files);
@@ -85,73 +99,75 @@ module.exports = {
         //   })
 
         // Upload ends
-
-        req
+        let timestamp = new Date()
+                  .getTime()
+                  .toString();
+        uploadFileName = timestamp;
+        var first_file = await req
           .file('resume')
           .upload(async function (err, uploadedDoc) {
             try {
               if (uploadedDoc.length > 0) {
                 let filename = uploadedDoc[0].filename;
                 var name = filename.substring(filename.indexOf("."));
-                let timestamp = new Date()
-                  .getTime()
-                  .toString();
+                
                 uploadFileName = timestamp + name;
-                var uploadResume = await UploadFiles.upload(uploadedDoc[0].fd, 'career/' + uploadFileName);
+                var uploadFileName = await UploadFiles.newUpload(uploadedDoc[0].fd, 'career/' + resume_uploaded_filename);
+                console.log("uploadFileName",uploadFileName)
+                return uploadFileName;
+                // if (req.file('cover_letter')) {
+                //   req
+                //     .file('cover_letter')
+                //     .upload(async function (err, uploadedLetter) {
+                //       try {
+                //         console.log('try', uploadedLetter, err)
+                //         if (uploadedLetter && uploadedLetter.length > 0) {
+                //           let cover_file = uploadedLetter[0].filename;
+                //           var coverName = cover_file.substring(cover_file.indexOf("."));
+                //           let timestamp = new Date()
+                //             .getTime()
+                //             .toString();
+                //           uploadCoverName = timestamp + coverName;
+                //           var cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'career/' + uploadCoverName);
+                //         }
 
-                if (req.file('cover_letter')) {
-                  req
-                    .file('cover_letter')
-                    .upload(async function (err, uploadedLetter) {
-                      try {
-                        console.log('try', uploadedLetter, err)
-                        if (uploadedLetter && uploadedLetter.length > 0) {
-                          let cover_file = uploadedLetter[0].filename;
-                          var coverName = cover_file.substring(cover_file.indexOf("."));
-                          let timestamp = new Date()
-                            .getTime()
-                            .toString();
-                          uploadCoverName = timestamp + coverName;
-                          var cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'career/' + uploadCoverName);
-                        }
+                //         let jobDetails = await Career.create({
+                //           first_name: req.body.first_name,
+                //           last_name: req.body.last_name,
+                //           email: req.body.email,
+                //           position: req.body.position,
+                //           phone_number: req.body.phone_number,
+                //           website_url: req.body.website_url,
+                //           linkedin_profile: req.body.linkedin_profile,
+                //           resume: 'career/' + uploadFileName,
+                //           job_id: req.body.job_id,
+                //           cover_letter: (uploadCoverName !== null ?
+                //             ('career/' + uploadCoverName) :
+                //             null),
+                //           created_at: new Date()
+                //         }).fetch();
 
-                        let jobDetails = await Career.create({
-                          first_name: req.body.first_name,
-                          last_name: req.body.last_name,
-                          email: req.body.email,
-                          position: req.body.position,
-                          phone_number: req.body.phone_number,
-                          website_url: req.body.website_url,
-                          linkedin_profile: req.body.linkedin_profile,
-                          resume: 'career/' + uploadFileName,
-                          job_id: req.body.job_id,
-                          cover_letter: (uploadCoverName !== null ?
-                            ('career/' + uploadCoverName) :
-                            null),
-                          created_at: new Date()
-                        }).fetch();
-
-                        if (jobDetails) {
-                          return res.json({
-                            status: 200,
-                            message: sails.__("job applied success")
-                          })
-                        } else {
-                          console.log('>>>')
-                          return res
-                            .status(500)
-                            .json({
-                              status: 500,
-                              "err": sails.__("Something Wrong")
-                            });
-                        }
-                      } catch (e) {
-                        await logger.error(e.message)
-                        console.log('>>>>>>>>thrown cover', e)
-                        throw e;
-                      }
-                    })
-                }
+                //         if (jobDetails) {
+                //           return res.json({
+                //             status: 200,
+                //             message: sails.__("job applied success")
+                //           })
+                //         } else {
+                //           console.log('>>>')
+                //           return res
+                //             .status(500)
+                //             .json({
+                //               status: 500,
+                //               "err": sails.__("Something Wrong")
+                //             });
+                //         }
+                //       } catch (e) {
+                //         await logger.error(e.message)
+                //         console.log('>>>>>>>>thrown cover', e)
+                //         throw e;
+                //       }
+                //     })
+                // }
               }
             } catch (e) {
               await logger.error(e.message)
@@ -159,6 +175,107 @@ module.exports = {
               throw e;
             }
           })
+          // var first_file =  await module.exports.returnFile1( req );
+          //Next
+          
+          if (req.file('cover_letter')) {
+            second_file = await req
+              .file('cover_letter')
+              .upload(async function (err, uploadedLetter) {
+                try {
+                  console.log('try', uploadedLetter, err)
+                  if (uploadedLetter && uploadedLetter.length > 0) {
+                    let cover_file = uploadedLetter[0].filename;
+                    var coverName = cover_file.substring(cover_file.indexOf("."));
+                    let timestamp = new Date()
+                      .getTime()
+                      .toString();
+                    uploadCoverName = timestamp + coverName;
+                    var cover_letter = await UploadFiles.newUpload(uploadedLetter[0].fd, 'career/' + cover_uploaded_filename);
+                    console.log("cover_letter",cover_letter)
+                    return cover_letter;
+                  }
+
+                  
+                } catch (e) {
+                  await logger.error(e.message)
+                  console.log('>>>>>>>>thrown cover', e)
+                  throw e;
+                }
+              })
+            // var second_file= '';
+            // setTimeout( async function(){
+              // second_file = await module.exports.returnFile2( req );
+            // }, 3000)
+            
+          }
+          // console.log("first_file",first_file);
+          // console.log("second_file",second_file);
+          // Promise.all([first_file, second_file]).then(async function(values) {
+          //   console.log(values);
+          //   let jobDetails = await Career.create({
+          //     first_name: req.body.first_name,
+          //     last_name: req.body.last_name,
+          //     email: req.body.email,
+          //     position: req.body.position,
+          //     phone_number: req.body.phone_number,
+          //     website_url: req.body.website_url,
+          //     linkedin_profile: req.body.linkedin_profile,
+          //     resume: 'career/' + first_file,
+          //     job_id: req.body.job_id,
+          //     cover_letter: (second_file !== null ?
+          //       ('career/' + second_file) :
+          //       null),
+          //     created_at: new Date()
+          //   }).fetch();
+  
+          //   if (jobDetails) {
+          //     return res.json({
+          //       status: 200,
+          //       message: sails.__("job applied success")
+          //     })
+          //   } else {
+          //     console.log('>>>')
+          //     return res
+          //       .status(500)
+          //       .json({
+          //         status: 500,
+          //         "err": sails.__("Something Wrong")
+          //       });
+          //   }
+          // });
+          let jobDetails = await Career.create({
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            email: req.body.email,
+            position: req.body.position,
+            phone_number: req.body.phone_number,
+            website_url: req.body.website_url,
+            linkedin_profile: req.body.linkedin_profile,
+            resume: 'career/' + resume_uploaded_filename,
+            job_id: req.body.job_id,
+            cover_letter: (cover_uploaded_filename !== null ?
+              ('career/' + cover_uploaded_filename) :
+              null),
+            created_at: new Date()
+          }).fetch();
+
+          if (jobDetails) {
+            return res.json({
+              status: 200,
+              message: sails.__("job applied success")
+            })
+          } else {
+            console.log('>>>')
+            return res
+              .status(500)
+              .json({
+                status: 500,
+                "err": sails.__("Something Wrong")
+              });
+          }
+
+
       } else {
         return res.json({
           "status": 400,
