@@ -247,7 +247,7 @@ module.exports = {
                       await sails.helpers.notification.send.email("kyc_approved", user_data)
                   }
                   if (userNotification.text == true || userNotification.text == "true") {
-                    if (user_data.phone_number != undefined || user_data.phone_number != null || user_data.phone_number != '')
+                    if (user_data.phone_number != undefined && user_data.phone_number != null && user_data.phone_number != '')
                       await sails.helpers.notification.send.text("kyc_approved", user_data)
                   }
                 }
