@@ -93,7 +93,11 @@ module.exports = {
         balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
         if (balanceWalletData.rows[i].quote.USD) {
           var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-          balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+          console.log(get_price)
+          if (get_price.length > 0)
+            balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+          else
+            balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION)
         }
       }
 

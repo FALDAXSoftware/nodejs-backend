@@ -41,6 +41,7 @@
     "moment-timezone": "^0.5.26",
     "node-blackcoin": "^1.0.2",
     "node-fetch": "^2.3.0",
+    "node-input-validator": "^4.1.0",
     "nodemon": "^1.18.10",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
