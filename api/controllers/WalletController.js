@@ -89,8 +89,12 @@ module.exports = {
         balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION);
-        balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
+        // balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
+        if (balanceWalletData.rows[i].quote.USD) {
+          var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+          balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+        }
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
@@ -435,7 +439,7 @@ module.exports = {
                                   await sails.helpers.notification.send.email("withdraw", userData)
                               }
                               if (userNotification.text == true || userNotification.text == "true") {
-                                if (userData.phone_number != undefined)
+                                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
                                   await sails.helpers.notification.send.text("withdraw", userData)
                               }
                             }
@@ -675,6 +679,11 @@ module.exports = {
         coin_id: coinData.id,
         deleted_at: null
       })
+
+      if (currencyConversionData.quote.USD) {
+        var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+        currencyConversionData.quote.USD.price = get_price[0].ask_price
+      }
 
       let walletUserData = await Wallet.findOne({
         user_id: req.user.id,

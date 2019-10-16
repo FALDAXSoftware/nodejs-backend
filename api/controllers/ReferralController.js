@@ -56,7 +56,7 @@ module.exports = {
                   await sails.helpers.notification.send.email("referal", userData)
               }
               if (userNotification.text == true || userNotification.text == "true") {
-                if (userData.phone_number != undefined)
+                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
                   await sails.helpers.notification.send.text("referal", userData)
               }
             }
