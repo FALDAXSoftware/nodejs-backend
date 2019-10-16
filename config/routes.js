@@ -424,5 +424,8 @@ module.exports.routes = {
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
   'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
   'get /get-simplex-coin-list': 'SimplexController.getSimplexCoinList',
-  'get /delete-simplex-event': 'SimplexController.deleteEvent'
+  'get /delete-simplex-event': 'SimplexController.deleteEvent',
+
+  // JST Conversion
+  'post /converion/jst-buy': 'JSTController.buy',
 };

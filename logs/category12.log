@@ -4648,3 +4648,4 @@
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-16T03:34:02.223Z","@version":0,"message":"currencyData is not defined"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-16T03:35:01.836Z","@version":0,"message":"currencyData is not defined"}
 {"name":"faldax","level":"ERROR","@timestamp":"2019-10-16T03:36:01.959Z","@version":0,"message":"currencyData is not defined"}
+{"name":"faldax","level":"ERROR","@timestamp":"2019-10-16T03:37:01.890Z","@version":0,"message":"currencyData is not defined"}

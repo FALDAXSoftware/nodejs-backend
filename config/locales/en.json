@@ -346,5 +346,8 @@
   "panic button status": "Panic Status has been retrieved Successfully",
   "User has been deleted": "Your account has been deleted. Please signup with new email to continue",
   "account not not verified by admin": "User Account has been unverified by admin",
-  "Please Enable 2FA to continue": "Please Enable 2FA to continue"
+  "Please Enable 2FA to continue": "Please Enable 2FA to continue",
+  "jst order created": "JST Order created",
+  "jst order not created": "JST Order not created",
+  "insufficent funds in wallet": "Insufficient funds in wallet"
 }
