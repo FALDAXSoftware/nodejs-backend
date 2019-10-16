@@ -1755,7 +1755,8 @@ module.exports = {
         end_date,
         sort_col,
         sort_order,
-        trade_type
+        trade_type,
+        simplex_payment_status
       } = req.allParams();
 
       var tradeCount;
@@ -1829,14 +1830,15 @@ module.exports = {
       } else if (trade_type == 2) {
         let query = " from simplex_trade_history LEFT JOIN users ON simplex_trade_history.user_id = users.id";
         let whereAppended = false;
-
+        query += " WHERE simplex_trade_history.is_processed = true"
+        whereAppended = true
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
-            query += " WHERE"
-            whereAppended = true;
-            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            // whereAppended = true;
+            query += ' AND'
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR simplex_trade_history.payment_id LIKE '%" + data + "%' OR simplex_trade_history.quote_id LIKE '%" + data + "%' OR simplex_trade_history.address LIKE '%" + data.toLowerCase() + " %'";
             if (!isNaN(data)) {
-              query += " OR quantity=" + data + " OR fill_price=" + data
+              query += " OR simplex_trade_history.quantity=" + data + " OR simplex_trade_history.fill_price=" + data
             }
             query += ")"
           }
@@ -1848,6 +1850,14 @@ module.exports = {
             " WHERE ";
           whereAppended = true;
           query += " simplex_trade_history.user_id=" + user_id
+        }
+
+        if (simplex_payment_status) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+          whereAppended = true;
+          query += " simplex_trade_history.simplex_payment_status=" + simplex_payment_status
         }
 
         if (t_type) {
@@ -1871,6 +1881,8 @@ module.exports = {
             .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
+
+        console.log(query)
 
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?
