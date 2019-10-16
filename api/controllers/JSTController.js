@@ -6,15 +6,108 @@
  */
 const moment = require('moment');
 var logger = require('../controllers/logger')
-const { Validator } = require('node-input-validator');
+const {
+  Validator
+} = require('node-input-validator');
 
 module.exports = {
 
   /**
-   * Buy Order
+   * Amount of coins he want
+   */
+  getJSTPriceValue: async function (req, res) {
+    try {
+      let req_body = req.body;
+      let flag = req_body.flag;
+      let validator = new Validator(req_body, {
+        Symbol: 'required',
+        Side: 'required|in:1,2', // 1:Buy, 2:Sell
+        OrderQty: 'required|decimal',
+        Currency: 'required',
+        OrdType: 'required|in:1,2'
+      });
+      var get_faldax_fee;
+      var get_network_fees;
+      var feesCurrency;
+      var usd_value = req_body.usd_value
+
+      if (flag == 1) {
+        let {
+          crypto,
+          currency
+        } = await sails
+          .helpers
+          .utilities
+          .getCurrencies((req_body.Symbol).replace("/", '-'));
+        console.log("currency", currency);
+        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+        console.log(get_jst_price)
+        var priceValue = 0;
+        if (req_body.Side == 1) {
+          priceValue = get_jst_price[0].ask_price;
+        } else {
+          priceValue = get_jst_price[0].bid_price;
+        }
+        var totalValue
+        if (!usd_value || usd_value == null || usd_value <= 0) {
+          totalValue = (req_body.OrderQty * priceValue);
+        } else {
+          console.log("Inside else")
+          var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+          console.log("ORice Value >>>>>>>", price_value)
+          var price_value_usd = 0;
+          if (req_body.Side == 1) {
+            price_value_usd = price_value[0].ask_price;
+          } else {
+            price_value_usd = price_value[0].bid_price;
+          }
+          console.log(price_value_usd)
+          totalValue = (price_value_usd * priceValue)
+        }
+
+        console.log(totalValue)
+
+        if (req_body.Side == 1) {
+          feesCurrency = crypto;
+          console.log(crypto)
+          get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+          console.log(get_network_fees)
+          var faldax_fee = await AdminSetting.findOne({
+            where: {
+              deleted_at: null,
+              slug: "faldax_fee"
+            }
+          })
+          console.log(((totalValue * (faldax_fee.value) / 100)))
+          get_faldax_fee = totalValue - get_network_fees - ((totalValue * (faldax_fee.value) / 100))
+        }
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Price retrieve success"),
+          "data": get_faldax_fee
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  /**
+   * Buy Order for creating Order
    *
    */
-  buy: async function (req, res) {
+  createOrder: async function (req, res) {
     try {
       let req_body = req.body;
 
@@ -59,13 +152,13 @@ module.exports = {
       }
 
       //Checking whether user can trade in the area selected in the KYC
-      console.log("user_id",user_id);
+      console.log("user_id", user_id);
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
       console.log("geo_fencing_data", geo_fencing_data);
 
-      if (geo_fencing_data.response != true ) {
+      if (geo_fencing_data.response != true) {
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg)
@@ -132,9 +225,10 @@ module.exports = {
                 "message": sails.__("Create Crypto Wallet")
               })
           }
+          console.log(req_body)
           // Get JST Price 
           var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
-          
+          console.log(get_jst_price)
           var priceValue = 0;
           if (req_body.Side == 1) {
             priceValue = get_jst_price[0].ask_price;
@@ -225,8 +319,8 @@ module.exports = {
               slug: "faldax_fee"
             });
             jst_response_data.SettlCurrAmt = jst_response_data.LastPx * jst_response_data.OrderQty; // temp
-            jst_response_data.SettlCurrency = req_body.Currency;// temp
-            jst_response_data.CumQty = jst_response_data.OrderQty;// temp
+            jst_response_data.SettlCurrency = req_body.Currency; // temp
+            jst_response_data.CumQty = jst_response_data.OrderQty; // temp
             var faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
             // console.log("get_faldax_fee",get_faldax_fee);
             // console.log("faldax_fees",faldax_fees);
@@ -256,15 +350,17 @@ module.exports = {
               network_fees: network_fees
             };
             var update_order = await JSTTradeHistory
-              .update({ id: create_order.id })
+              .update({
+                id: create_order.id
+              })
               .set(update_data).fetch();
             // Update wallet Balance
             let user_wallet = await Wallet.update({
-              id:walletCurrency.id
+              id: walletCurrency.id
             }).set({
-              balance:(walletCurrency.balance+jst_response_data.SettlCurrAmt)
+              balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
             });
-            
+
             return res.json({
               "status": 200,
               "message": sails.__("jst order created"),
@@ -290,5 +386,3 @@ module.exports = {
 
 
 };
-
-
