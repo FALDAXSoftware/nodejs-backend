@@ -16,15 +16,15 @@ module.exports = {
     await ThresoldController.addThresoldValue();
 
     // //Getting User Notification Details
-    // let user = await UserThresholds.find({
-    //   deleted_at: null
-    // });
+    let user = await UserThresholds.find({
+      deleted_at: null
+    });
 
-    // let priceValue = await ThresoldPrices.find({
-    //   where: {
-    //     deleted_at: null
-    //   }
-    // }).sort('id DESC').limit(7)
+    let priceValue = await ThresoldPrices.find({
+      where: {
+        deleted_at: null
+      }
+    }).sort('id DESC').limit(7)
 
     // for (let index = 0; index < user.length; index++) {
     //   const element = user[index];
