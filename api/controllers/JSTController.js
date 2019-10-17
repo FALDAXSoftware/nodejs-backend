@@ -12,6 +12,47 @@ const {
 
 module.exports = {
 
+  /** 
+   * get conversion pair list
+   */
+  getJSTPairList: async function (req, res) {
+    try {
+
+      var getJSTPair = await JSTPair.find({
+        where: {
+          deleted_at: null
+        }
+      });
+
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_jst_supported: true
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("jst pair retrieve success"),
+          getJSTPair,
+          coinList
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   /**
    * Amount of coins he want
    */
