@@ -115,6 +115,18 @@ module.exports = {
       type: 'number',
       columnName: 'network_fees'
     },
+    amount_after_fees_deduction: {
+      type: 'number',
+      columnName: 'amount_after_fees_deduction'
+    },
+    asset1_usd_value: {
+      type: 'number',
+      columnName: 'asset1_usd_value'
+    },
+    asset2_usd_value: {
+      type: 'number',
+      columnName: 'asset2_usd_value'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

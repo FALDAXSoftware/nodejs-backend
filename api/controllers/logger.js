@@ -5,7 +5,7 @@ var formatOut = bunyan_format({
     outputMode: 'bunyan',
     levelInString: true
   },
-  fs.createWriteStream('logs/category12.log', {
+  fs.createWriteStream('logs/faldax-api.log', {
     flags: 'a'
   })
 )
