@@ -428,5 +428,6 @@ module.exports.routes = {
 
   // JST Conversion
   'post /converion/jst-create-order': 'JSTController.createOrder',
-  'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue'
+  'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
+  'get /conversion/get-jst-pair': 'JSTController.getJSTPairList'
 };

@@ -32,7 +32,6 @@ module.exports = {
     // TODO
     try {
       var req_body = inputs.value_object;
-      console.log("REQ BODY IN HELPER ???????", req_body)
       var get_faldax_fee;
       var get_network_fees;
       var feesCurrency;
@@ -41,35 +40,36 @@ module.exports = {
       var priceValue = 0;
       var totalValue;
       var faldax_fee_value;
+      var usd_price;
+      var price_value_usd = 0;
+      var original_value = 0;
+      var {
+        crypto,
+        currency
+      } = await sails
+        .helpers
+        .utilities
+        .getCurrencies((req_body.original_pair).replace("/", '-'));
+      var returnData;
 
       // Checking for the pair and side
       if (req_body.original_pair == req_body.order_pair) {
         // Means The part which you want to send is being editable for flag = 1
         if (flag == 1) {
-          let {
-            crypto,
-            currency
-          } = await sails
-            .helpers
-            .utilities
-            .getCurrencies((req_body.Symbol).replace("/", '-'));
 
           var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
           if (req_body.Side == 1) {
             priceValue = (1 / get_jst_price[0].ask_price);
-          } else {
-            priceValue = (1 / get_jst_price[0].bid_price);
           }
 
-          if (!usd_value || usd_value == null || usd_value <= 0) {
+          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
             totalValue = (req_body.OrderQty * priceValue);
+            usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            usd_price = (req_body.OrderQty * usd_price[0].ask_price)
           } else {
             var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            var price_value_usd = 0;
             if (req_body.Side == 1) {
               price_value_usd = (1 / price_value[0].ask_price);
-            } else {
-              price_value_usd = (1 / price_value[0].bid_price);
             }
             price_value_usd = price_value_usd * usd_value;
             totalValue = (price_value_usd * priceValue)
@@ -86,17 +86,140 @@ module.exports = {
             })
             faldax_fee_value = (totalValue * ((faldax_fee.value) / 100))
             get_faldax_fee = totalValue - get_network_fees - ((totalValue * (faldax_fee.value) / 100))
+            original_value = totalValue;
           }
-        } else if (flag = 2) {
-
+          returnData = {
+            "network_fee": get_network_fees,
+            "faldax_fee": faldax_fee_value,
+            "total_value": get_faldax_fee,
+            "currency": feesCurrency,
+            "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : totalValue,
+            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? req_body.OrderQty : price_value_usd,
+            "original_value": original_value
+          }
+        } else if (flag == 2) {
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          if (req_body.Side == 1) {
+            priceValue = (get_jst_price[0].ask_price);
+          }
+          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
+            totalValue = (req_body.OrderQty * priceValue);
+            usd_price = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            usd_price = (req_body.OrderQty * usd_price[0].ask_price)
+          } else {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 1) {
+              price_value_usd = (1 / price_value[0].ask_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            totalValue = (price_value_usd * priceValue)
+          }
+          if (req_body.Side == 1) {
+            feesCurrency = crypto;
+            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+            var faldax_fee = await AdminSetting.findOne({
+              where: {
+                deleted_at: null,
+                slug: "faldax_fee"
+              }
+            })
+            faldax_fee_value = (req_body.OrderQty * ((faldax_fee.value) / 100))
+            get_faldax_fee = parseInt(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)));
+            original_value = req_body.OrderQty
+          }
+          returnData = {
+            "network_fee": get_network_fees,
+            "faldax_fee": faldax_fee_value,
+            "total_value": get_faldax_fee,
+            "currency": feesCurrency,
+            "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : usd_value,
+            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? totalValue : price_value_usd,
+            "original_value": original_value
+          }
         }
-      }
+      } else if (req_body.original_pair != req_body.order_pair) {
+        if (flag == 1) {
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          if (req_body.Side == 2) {
+            priceValue = (get_jst_price[0].bid_price);
+          }
+          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
+            totalValue = (req_body.OrderQty * priceValue);
+            usd_price = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            usd_price = (req_body.OrderQty * usd_price[0].bid_price)
+          } else {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 2) {
+              price_value_usd = (1 / price_value[0].bid_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            totalValue = (price_value_usd * priceValue)
+          }
 
-      var returnData = {
-        "network_fee": get_network_fees,
-        "faldax_fee": faldax_fee_value,
-        "total_value": get_faldax_fee,
-        "currency": feesCurrency
+          if (req_body.Side == 2) {
+            feesCurrency = currency;
+            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+            var faldax_fee = await AdminSetting.findOne({
+              where: {
+                deleted_at: null,
+                slug: "faldax_fee"
+              }
+            })
+            faldax_fee_value = (totalValue * ((faldax_fee.value) / 100))
+            get_faldax_fee = totalValue - get_network_fees - ((totalValue * (faldax_fee.value) / 100))
+            original_value = totalValue;
+          }
+          returnData = {
+            "network_fee": get_network_fees,
+            "faldax_fee": faldax_fee_value,
+            "total_value": get_faldax_fee,
+            "currency": feesCurrency,
+            "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : totalValue,
+            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? req_body.OrderQty : price_value_usd,
+            "original_value": original_value
+          }
+        } else if (flag == 2) {
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          if (req_body.Side == 2) {
+            priceValue = (1 / get_jst_price[0].bid_price);
+          }
+
+          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
+            totalValue = (req_body.OrderQty * priceValue);
+            usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            usd_price = (req_body.OrderQty * usd_price[0].bid_price)
+          } else {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 2) {
+              price_value_usd = (1 / price_value[0].bid_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            totalValue = (price_value_usd * priceValue)
+          }
+
+          if (req_body.Side == 2) {
+            feesCurrency = currency;
+            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+            var faldax_fee = await AdminSetting.findOne({
+              where: {
+                deleted_at: null,
+                slug: "faldax_fee"
+              }
+            })
+            faldax_fee_value = (totalValue * ((faldax_fee.value) / 100))
+            get_faldax_fee = totalValue + get_network_fees + ((totalValue * (faldax_fee.value) / 100))
+            original_value = totalValue;
+          }
+          returnData = {
+            "network_fee": get_network_fees,
+            "faldax_fee": faldax_fee_value,
+            "total_value": get_faldax_fee,
+            "currency": feesCurrency,
+            "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : totalValue,
+            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? req_body.OrderQty : price_value_usd,
+            "original_value": original_value
+          }
+        }
       }
 
       return exits.success(returnData);
