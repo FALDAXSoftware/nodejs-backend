@@ -26,69 +26,15 @@ module.exports = {
         Currency: 'required',
         OrdType: 'required|in:1,2'
       });
-      var get_faldax_fee;
-      var get_network_fees;
-      var feesCurrency;
-      var usd_value = req_body.usd_value
 
-      if (flag == 1) {
-        let {
-          crypto,
-          currency
-        } = await sails
-          .helpers
-          .utilities
-          .getCurrencies((req_body.Symbol).replace("/", '-'));
-        console.log("currency", currency);
-        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
-        console.log(get_jst_price)
-        var priceValue = 0;
-        if (req_body.Side == 1) {
-          priceValue = get_jst_price[0].ask_price;
-        } else {
-          priceValue = get_jst_price[0].bid_price;
-        }
-        var totalValue
-        if (!usd_value || usd_value == null || usd_value <= 0) {
-          totalValue = (req_body.OrderQty * priceValue);
-        } else {
-          console.log("Inside else")
-          var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-          console.log("ORice Value >>>>>>>", price_value)
-          var price_value_usd = 0;
-          if (req_body.Side == 1) {
-            price_value_usd = price_value[0].ask_price;
-          } else {
-            price_value_usd = price_value[0].bid_price;
-          }
-          console.log(price_value_usd)
-          totalValue = (price_value_usd * priceValue)
-        }
-
-        console.log(totalValue)
-
-        if (req_body.Side == 1) {
-          feesCurrency = crypto;
-          console.log(crypto)
-          get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
-          console.log(get_network_fees)
-          var faldax_fee = await AdminSetting.findOne({
-            where: {
-              deleted_at: null,
-              slug: "faldax_fee"
-            }
-          })
-          console.log(((totalValue * (faldax_fee.value) / 100)))
-          get_faldax_fee = totalValue - get_network_fees - ((totalValue * (faldax_fee.value) / 100))
-        }
-      }
+      var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
 
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("Price retrieve success"),
-          "data": get_faldax_fee
+          "data": jstResponseValue
         })
 
     } catch (error) {
