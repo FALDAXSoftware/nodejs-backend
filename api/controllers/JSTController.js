@@ -228,9 +228,6 @@ module.exports = {
             priceValue = get_jst_price[0].bid_price;                
           }
           
-          console.log("priceValue",get_jst_price[0]);
-          console.log("priceValue",priceValue);
-          
           // if (req_body.Side == 1) {
           //   priceValue = get_jst_price[0].ask_price;
           // } else {
@@ -247,11 +244,7 @@ module.exports = {
             .intercept("serverError", () => {
               return new Error("serverError")
             });
-          // console.log("priceValue",priceValue);  
-          // console.log("wallet",wallet);
-          // console.log("LS",(priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION));
-          // console.log((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))
-          // console.log("RS",(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION));
+          // Check wallet balance is sufficient or not
           if ((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             return res
               .status(500)
@@ -260,6 +253,7 @@ module.exports = {
                 "err": sails.__("insufficent funds in wallet")
               });
           }
+          
           let order_create = {
             currency: req_body.Currency,
             side: (req_body.Side == 1 ? "Buy" : "Sell"),
@@ -316,9 +310,40 @@ module.exports = {
             var get_faldax_fee = await AdminSetting.findOne({
               slug: "faldax_fee"
             });
-            jst_response_data.SettlCurrAmt = jst_response_data.LastPx * jst_response_data.OrderQty; // temp
-            jst_response_data.SettlCurrency = req_body.Currency; // temp
-            jst_response_data.CumQty = jst_response_data.OrderQty; // temp
+            // jst_response_data.SettlCurrAmt = jst_response_data.LastPx * jst_response_data.OrderQty; // temp
+            // jst_response_data.SettlCurrency = req_body.Currency; // temp
+            // jst_response_data.CumQty = jst_response_data.OrderQty; // temp
+            // var jst_calculations_object = {
+            //   "Symbol": req_body.Symbol,
+            //   "Side": req_body.Side,
+            //   "OrderQty": req_body.OrderQty,
+            //   "flag": req_body.flag,
+            //   "original_pair":req_body.original_pair,
+            //   "order_pair":req_body.order_pair
+            // };
+
+            // Calculate fees deduction 
+            var faldax_fees = 0;
+            var network_fees = 0;
+            if( req_body.original_pair == req_body.order_pair ){ // Buy order
+              var amount_settled = jst_response_data.LastPx; // Which price settled on   
+              var currency1_settled = amount_settled;  // First currency value on 1 quantity
+              var currency2_settled = 1/amount_settled; // Calculate second currency 
+              var currency2_quantity_amount = currency2_settled*req_body.OrderQty
+              faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (jst_response_data.CumQty), (jst_response_data.SettlCurrAmt));
+              network_fees = (jst_response_data.SettlCurrAmt) + (get_network_fees * (jst_response_data.SettlCurrAmt));
+            }else{
+              var amount_settled = jst_response_data.LastPx; // Which price settled on   
+              var currency1_settled = amount_settled;  // First currency value on 1 quantity
+              var currency2_settled = 1/amount_settled; // Calculate second currency 
+              var currency2_quantity_amount = currency2_settled*req_body.OrderQty
+              faldax_fees = (currency2_quantity_amount) + (((currency2_quantity_amount) * get_faldax_fee.value) / 100);
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (jst_response_data.CumQty), (currency2_quantity_amount));
+              network_fees = (currency2_quantity_amount) + (get_network_fees * (currency2_quantity_amount));
+            }
+
+            
             // var faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
             // var get_network_fees = await sails.helpers.feesCalculation((jst_response_data.SettlCurrency).toLowerCase(), (jst_response_data.CumQty), (jst_response_data.SettlCurrAmt));
             // var network_fees = (jst_response_data.SettlCurrAmt) + (get_network_fees * (jst_response_data.SettlCurrAmt));
@@ -331,8 +356,6 @@ module.exports = {
               quantity: jst_response_data.CumQty,
               settle_currency: jst_response_data.SettlCurrency,
               is_partially_filled: (jst_response_data.OrdStatus == 1 ? true : false),
-              // is_collected        : false,
-              // filled              : jst_response_data.filled,
               order_id: jst_response_data.OrderID,
               execution_report: jst_response_data,
               exec_id: jst_response_data.ExecID,
@@ -341,7 +364,7 @@ module.exports = {
               trade_date: jst_response_data.TradeDate,
               settl_curr_amt: jst_response_data.SettlCurrAmt,
               leaves_qty: jst_response_data.LeavesQty,
-              faldax_fees: faldax_fees,
+              faldax_fees: faldax_fee,
               network_fees: network_fees,
               asset1_usd_value: asset1_usd_value,
               asset2_usd_value: asset2_usd_value,
@@ -353,20 +376,20 @@ module.exports = {
               })
               .set(update_data).fetch();
             // Update wallet Balance
-            if( req_body.original_pair == req_body.order_pair ){ // Buy order
-              var update_user_wallet_asset1 = await Wallet.update({
-                id: walletCurrency.id
-              }).set({
-                balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
-              });  
-            }else{ // Sell order
-              var convert_to_exchange = jst_response_data.SettlCurrAmt;
-              var update_user_wallet_asset1 = await Wallet.update({
-                id: walletCurrency.id
-              }).set({
-                balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
-              });  
-            }
+            // if( req_body.original_pair == req_body.order_pair ){ // Buy order
+            //   var update_user_wallet_asset1 = await Wallet.update({
+            //     id: walletCurrency.id
+            //   }).set({
+            //     balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
+            //   });  
+            // }else{ // Sell order
+            //   var convert_to_exchange = jst_response_data.SettlCurrAmt;
+            //   var update_user_wallet_asset1 = await Wallet.update({
+            //     id: walletCurrency.id
+            //   }).set({
+            //     balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
+            //   });  
+            // }
             
 
             return res.json({
