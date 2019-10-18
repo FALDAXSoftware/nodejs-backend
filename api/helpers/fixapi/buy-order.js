@@ -96,7 +96,7 @@ module.exports = {
       if (err) {
         var data = {
           status:0,
-          data : err
+          data : body
         }
         return exits.error(data);
       }
@@ -104,20 +104,6 @@ module.exports = {
       //   return exits.error(body);
       // }
       console.log("body",body);
-      // if( body != null ){
-      //   var data = {
-      //     status:1,
-      //     data : body
-      //   }
-      // }else{
-      //   var data = {
-      //     status:0,
-      //     data : err
-      //   }
-      //   return exits.success(data);
-      // }
-      // Add data in table
-      //ends
       
       if( body.ExecType == "F"){
         var data = {
@@ -128,7 +114,7 @@ module.exports = {
       }else{
         var data = {
           status:0,
-          data : []
+          data : body
         }
       }
          

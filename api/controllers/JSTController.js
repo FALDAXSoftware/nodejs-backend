@@ -290,6 +290,24 @@ module.exports = {
                 "err": sails.__("jst order not created")
               });
           } else {
+            var jst_response_data = response.data;
+            // calculate fees 
+            var get_faldax_fee = await AdminSetting.findOne({
+              slug: "faldax_fee"
+            });
+            // Check cases for Order execution
+            // var order_completed = false;
+            // switch( jst_response_data.ExecType ){
+            //   case "F" :  
+            //             order_completed = true;
+            //             break;
+
+            //   case "F" :  
+            //             order_completed = true;
+            //             break;          
+
+            // }
+            
             // Get JST Fiat Value
             var currency_pair = (req_body.Symbol).split("/");
             if (req_body.original_pair == req_body.order_pair) {
@@ -304,11 +322,7 @@ module.exports = {
               var asset2_usd_value = asset2_value[0].bid_price;
             }
             
-            var jst_response_data = response.data;
-            // calculate fees 
-            var get_faldax_fee = await AdminSetting.findOne({
-              slug: "faldax_fee"
-            });
+           
 
             // Calculate fees deduction 
             var faldax_fees = 0;
