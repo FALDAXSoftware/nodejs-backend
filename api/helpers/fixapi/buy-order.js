@@ -80,6 +80,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
+    console.log("inputs.order_object",inputs.order_object);
     request({
       url: 'http://3.19.249.13:9010/api/Order/CreateOrder',
       method: "POST",
@@ -91,23 +92,32 @@ module.exports = {
       body: (inputs.order_object),
       json: true
     }, async function (err, httpResponse, body) {
+      console.log("eeerrrr",err);
       if (err) {
         var data = {
           status:0,
-          data : err
+          data : body
         }
-        return exits.error(err);
+        return exits.error(data);
       }
       // if (body.error) {
       //   return exits.error(body);
       // }
       console.log("body",body);
-      // Add data in table
-      //ends
-      var data = {
-        status:1,
-        data : body
+      
+      if( body.ExecType == "F"){
+        var data = {
+          status:1,
+          data : body
+        }
+        // return exits.error(data);
+      }else{
+        var data = {
+          status:0,
+          data : body
+        }
       }
+         
       return exits.success( data );
     });
 

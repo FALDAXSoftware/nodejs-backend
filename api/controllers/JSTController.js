@@ -6,15 +6,95 @@
  */
 const moment = require('moment');
 var logger = require('../controllers/logger')
-const { Validator } = require('node-input-validator');
+const {
+  Validator
+} = require('node-input-validator');
 
 module.exports = {
 
+  /** 
+   * get conversion pair list
+   */
+  getJSTPairList: async function (req, res) {
+    try {
+
+      var getJSTPair = await JSTPair.find({
+        where: {
+          deleted_at: null
+        }
+      });
+
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_jst_supported: true
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("jst pair retrieve success"),
+          getJSTPair,
+          coinList
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   /**
-   * Buy Order
+   * Amount of coins he want
+   */
+  getJSTPriceValue: async function (req, res) {
+    try {
+      let req_body = req.body;
+      let flag = req_body.flag;
+      let validator = new Validator(req_body, {
+        Symbol: 'required',
+        Side: 'required|in:1,2', // 1:Buy, 2:Sell
+        OrderQty: 'required|decimal',
+        Currency: 'required',
+        OrdType: 'required|in:1,2'
+      });
+
+      var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Price retrieve success"),
+          "data": jstResponseValue
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  /**
+   * Buy Order for creating Order
    *
    */
-  buy: async function (req, res) {
+  createOrder: async function (req, res) {
     try {
       let req_body = req.body;
 
@@ -59,13 +139,13 @@ module.exports = {
       }
 
       //Checking whether user can trade in the area selected in the KYC
-      console.log("user_id",user_id);
+      
       var geo_fencing_data = await sails
         .helpers
         .userTradeChecking(user_id);
-      console.log("geo_fencing_data", geo_fencing_data);
+      
 
-      if (geo_fencing_data.response != true ) {
+      if (geo_fencing_data.response != true) {
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg)
@@ -79,14 +159,14 @@ module.exports = {
           .helpers
           .utilities
           .getCurrencies((req_body.Symbol).replace("/", '-'));
-        console.log("currency", currency);
+        
         //Check for Asset1 Wallet
         let coinValue = await Coins.findOne({
           is_active: true,
           deleted_at: null,
           coin: currency
         })
-        console.log("coinValue", coinValue);
+        
 
         let walletCurrency = await Wallet.findOne({
           where: {
@@ -96,7 +176,7 @@ module.exports = {
             user_id: user_id
           }
         });
-        console.log("walletCurrency", walletCurrency);
+        
 
         if (walletCurrency == undefined) {
           return res
@@ -112,8 +192,7 @@ module.exports = {
             deleted_at: null,
             coin: crypto
           })
-          console.log("cryptoValue", cryptoValue);
-          console.log(user_id);
+          
           let walletCrypto = await Wallet.findOne({
             where: {
               deleted_at: null,
@@ -122,7 +201,7 @@ module.exports = {
               user_id: user_id
             }
           });
-          console.log("walletCrypto", walletCrypto);
+          
 
           if (walletCrypto == undefined) {
             return res
@@ -132,15 +211,28 @@ module.exports = {
                 "message": sails.__("Create Crypto Wallet")
               })
           }
+          console.log(req_body)
           // Get JST Price 
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
-          
           var priceValue = 0;
-          if (req_body.Side == 1) {
-            priceValue = get_jst_price[0].ask_price;
-          } else {
-            priceValue = get_jst_price[0].bid_price;
+          // if (req_body.original_pair == req_body.order_pair) {
+          //   req_body.Side = 1;
+          // }else{
+          //   req_body.Side = 2;
+          // }
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          if (req_body.original_pair == req_body.order_pair) { // Check if Pair same as original, then it should be Buy ELSE Sell 
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Buy");
+            priceValue = get_jst_price[0].ask_price;                
+          }else{
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Sell");
+            priceValue = get_jst_price[0].bid_price;                
           }
+          
+          // if (req_body.Side == 1) {
+          //   priceValue = get_jst_price[0].ask_price;
+          // } else {
+          //   priceValue = get_jst_price[0].bid_price;
+          // }
           // Check Wallet Balance 
           let wallet = await sails
             .helpers
@@ -152,11 +244,7 @@ module.exports = {
             .intercept("serverError", () => {
               return new Error("serverError")
             });
-          // console.log("priceValue",priceValue);  
-          // console.log("wallet",wallet);
-          // console.log("LS",(priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION));
-          // console.log((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))
-          // console.log("RS",(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION));
+          // Check wallet balance is sufficient or not
           if ((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             return res
               .status(500)
@@ -165,32 +253,15 @@ module.exports = {
                 "err": sails.__("insufficent funds in wallet")
               });
           }
+          
           let order_create = {
-            // fill_price:req_body.fill_price,
-            // price:req_body.price,
-            // quantity:req_body.quantity,
             currency: req_body.Currency,
-            // settle_currency:req_body.settle_currency,
             side: (req_body.Side == 1 ? "Buy" : "Sell"),
             order_type: "Market",
             order_status: "open",
-            // is_partially_filled:req_body.is_partially_filled,
             fix_quantity: parseFloat(req_body.OrderQty),
             symbol: req_body.Symbol,
-            user_id: user_id,
-            // is_collected:req_body.is_collected,
-            // filled:req_body.filled,
-            // order_id:req_body.order_id,
-            // execution_report:req_body.execution_report,
-            // cl_order_id:req_body.cl_order_id,
-            // exec_id:req_body.exec_id,
-            // transact_time:req_body.transact_time,
-            // settl_date:req_body.settl_date,
-            // trade_date:req_body.trade_date,
-            // settl_curr_amt:req_body.settl_curr_amt,
-            // leaves_qty:req_body.leaves_qty,
-            // faldax_fees:req_body.faldax_fees,
-            // network_fees:req_body.network_fees
+            user_id: user_id
           };
           // console.log("order_create",order_create);
           var create_order = await JSTTradeHistory.create(order_create).fetch();
@@ -199,7 +270,7 @@ module.exports = {
             ClOrdID: create_order.cl_order_id,
             HandlInst: "1",
             Symbol: req_body.Symbol,
-            Side: req_body.Side, // 1:Buy, 2:Sell
+            Side: (req_body.Side).toString(), // 1:Buy, 2:Sell
             OrderQty: req_body.OrderQty,
             OrdType: req_body.OrdType,
             Currency: req_body.Currency,
@@ -211,7 +282,7 @@ module.exports = {
           var response = await sails.helpers.fixapi.buyOrder(order_object);
           // var response = {};
           console.log("response", response);
-          if (response.status == 0) {
+          if (response == undefined || response.status == 0) {
             return res
               .status(500)
               .json({
@@ -224,17 +295,60 @@ module.exports = {
             var get_faldax_fee = await AdminSetting.findOne({
               slug: "faldax_fee"
             });
-            jst_response_data.SettlCurrAmt = jst_response_data.LastPx * jst_response_data.OrderQty; // temp
-            jst_response_data.SettlCurrency = req_body.Currency;// temp
-            jst_response_data.CumQty = jst_response_data.OrderQty;// temp
-            var faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
-            // console.log("get_faldax_fee",get_faldax_fee);
-            // console.log("faldax_fees",faldax_fees);
-            var get_network_fees = await sails.helpers.feesCalculation((jst_response_data.SettlCurrency).toLowerCase(), (jst_response_data.CumQty), (jst_response_data.SettlCurrAmt));
+            // Check cases for Order execution
+            // var order_completed = false;
+            // switch( jst_response_data.ExecType ){
+            //   case "F" :  
+            //             order_completed = true;
+            //             break;
 
-            // console.log("get_network_fees",get_network_fees);
-            var network_fees = (jst_response_data.SettlCurrAmt) + (get_network_fees * (jst_response_data.SettlCurrAmt));
-            // console.log("network_fees",network_fees);
+            //   case "F" :  
+            //             order_completed = true;
+            //             break;          
+
+            // }
+            
+            // Get JST Fiat Value
+            var currency_pair = (req_body.Symbol).split("/");
+            if (req_body.original_pair == req_body.order_pair) {
+              var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Buy" );
+              var asset1_usd_value = asset1_value[0].ask_price;
+              var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Buy" );
+              var asset2_usd_value = asset2_value[0].ask_price;
+            }else{
+              var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Sell" );
+              var asset1_usd_value = asset1_value[0].bid_price;
+              var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Sell" );
+              var asset2_usd_value = asset2_value[0].bid_price;
+            }
+            
+           
+
+            // Calculate fees deduction 
+            var faldax_fees = 0;
+            var network_fees = 0;
+            var final_value = 0;
+            var final_fees_deducted_crypto = 0;
+            var final_fees_currency = 0;
+            var final_faldax_fees = 0;
+            var final_ntwk_fees = 0;
+            if( req_body.original_pair == req_body.order_pair ){ // Buy order
+              var final_amount = jst_response_data.CumQty;
+              final_faldax_fees = (final_amount * ((get_faldax_fee.value)/100));
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
+              final_ntwk_fees = get_network_fees;
+              final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+              final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt)
+            }else{
+              final_fees_deducted_crypto = parseFloat(jst_response_data.CumQty);
+              var final_amount = jst_response_data.SettlCurrAmt;
+              final_faldax_fees = (final_amount * ((get_faldax_fee.value)/100));
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
+              final_ntwk_fees = get_network_fees;
+              final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            }
+
+            var amount_after_fees_deduction = (final_value)-(network_fees)-(faldax_fees);
             // update order
             var update_data = {
               fill_price: jst_response_data.SettlCurrAmt,
@@ -242,8 +356,6 @@ module.exports = {
               quantity: jst_response_data.CumQty,
               settle_currency: jst_response_data.SettlCurrency,
               is_partially_filled: (jst_response_data.OrdStatus == 1 ? true : false),
-              // is_collected        : false,
-              // filled              : jst_response_data.filled,
               order_id: jst_response_data.OrderID,
               execution_report: jst_response_data,
               exec_id: jst_response_data.ExecID,
@@ -252,29 +364,59 @@ module.exports = {
               trade_date: jst_response_data.TradeDate,
               settl_curr_amt: jst_response_data.SettlCurrAmt,
               leaves_qty: jst_response_data.LeavesQty,
-              faldax_fees: faldax_fees,
-              network_fees: network_fees
+              faldax_fees: final_faldax_fees,
+              network_fees: final_ntwk_fees,
+              asset1_usd_value: asset1_usd_value,
+              asset2_usd_value: asset2_usd_value,
+              amount_after_fees_deduction:(req_body.order_pair == req_body.original_pair) ? final_fees_deducted_crypto :final_fees_currency
             };
             var update_order = await JSTTradeHistory
-              .update({ id: create_order.id })
+              .update({
+                id: create_order.id
+              })
               .set(update_data).fetch();
             // Update wallet Balance
-            let user_wallet = await Wallet.update({
-              id:walletCurrency.id
-            }).set({
-              balance:(walletCurrency.balance+jst_response_data.SettlCurrAmt)
-            });
+            if( req_body.original_pair == req_body.order_pair ){ // Buy order
+              var update_user_wallet_asset1 = await Wallet.update({
+                id: walletCurrency.id
+              }).set({
+                balance: (walletCurrency.balance - final_fees_currency),
+                placed_balance: (walletCurrency.placed_balance) - final_fees_currency
+              }).fetch(); 
+             
+              var update_user_wallet_asset2 = await Wallet.update({
+                id: walletCrypto.id
+              }).set({
+                balance: (walletCrypto.balance + final_fees_deducted_crypto),
+                placed_balance: (walletCrypto.placed_balance + final_fees_deducted_crypto)
+              }).fetch(); 
+
+            }else{ // Sell order
+              // var convert_to_exchange = jst_response_data.SettlCurrAmt;
+              var update_user_wallet_asset1 = await Wallet.update({
+                id: walletCurrency.id
+              }).set({
+                balance: (walletCurrency.balance + final_fees_currency),
+                placed_balance: (walletCurrency.placed_balance + final_fees_currency)
+              }).fetch();  
+
+              var update_user_wallet_asset2 = await Wallet.update({
+                id: walletCrypto.id
+              }).set({
+                balance: (walletCrypto.balance - final_fees_deducted_crypto),
+                placed_balance: (walletCrypto.placed_balance - final_fees_deducted_crypto)
+              }).fetch(); 
+            }
             
+
             return res.json({
               "status": 200,
               "message": sails.__("jst order created"),
-              "data": update_order
+              "data": update_order[0]
             });
           }
         }
       }
-
-
 
     } catch (error) {
       console.log("error", error);
@@ -290,5 +432,3 @@ module.exports = {
 
 
 };
-
-

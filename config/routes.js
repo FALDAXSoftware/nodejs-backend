@@ -427,5 +427,7 @@ module.exports.routes = {
   'get /delete-simplex-event': 'SimplexController.deleteEvent',
 
   // JST Conversion
-  'post /converion/jst-buy': 'JSTController.buy',
+  'post /converion/jst-create-order': 'JSTController.createOrder',
+  'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
+  'get /conversion/get-jst-pair': 'JSTController.getJSTPairList'
 };

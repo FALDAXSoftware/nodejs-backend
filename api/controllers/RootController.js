@@ -297,7 +297,7 @@ module.exports = {
     var key = sails.config.local.key;
     console.log(sails.config.local.iv);
     var iv = sails.config.local.iv;
-    var textBytes = aesjs.utils.utf8.toBytes(sails.config.local.BITGO_ACCESS_TOKEN);
+    var textBytes = aesjs.utils.utf8.toBytes("AC358b41c63089b4b00ca48559c3f980ed");
 
     var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
     var encryptedBytes = aesOfb.encrypt(textBytes);
@@ -309,7 +309,7 @@ module.exports = {
     //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
 
     // When ready to decrypt the hex string, convert it back to bytes
-    var encryptedBytes = aesjs.utils.hex.toBytes(sails.config.local.BITGO_ACCESS_TOKEN);
+    var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
 
     // The output feedback mode of operation maintains internal state,
     // so to decrypt a new instance must be instantiated.
