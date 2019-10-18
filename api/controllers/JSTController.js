@@ -323,7 +323,30 @@ module.exports = {
             }
 
             
+
+            
             if( order_completed == false || order_status == 'cancelled' || order_status == 'failed' ){
+              var reason_text = '';
+              switch( jst_response_data.OrdStatus.OrdRejReason != "" ){
+                case 0 : reason_text = 'Unknown Error';
+                         break;
+                case 1 : reason_text = 'Currency pair is not supported';
+                        break;
+                case 2 : reason_text = 'Orders may not be entered while the venue is closed';
+                        break;
+                case 3 : reason_text = 'The order is not in the book';
+                       break;
+                case 4 : reason_text = 'Order quantity is outside of the allowable range';
+                       break;
+                case 5 : reason_text = 'Order price is outside of the allowable range';
+                      break;
+                case 6 : reason_text = 'Duplicate Order';
+                        break;
+                case 7 : reason_text = 'Duplicate of a verbally communicated order';
+                       break;
+                case 8 : reason_text = 'Term currency orders are not supported';
+                       break;
+              }
               var update_data = {
                 fill_price: jst_response_data.SettlCurrAmt,
                 quantity: jst_response_data.CumQty,
@@ -344,7 +367,7 @@ module.exports = {
 
               return res.json({
                 "status": 500,
-                "message": sails.__("jst order not created"),
+                "message": sails.__("jst order not created")+"Due to : "+(reason_text),
                 "data": update_order[0]
               });  
             }
