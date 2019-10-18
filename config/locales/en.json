@@ -347,7 +347,9 @@
   "User has been deleted": "Your account has been deleted. Please signup with new email to continue",
   "account not not verified by admin": "User Account has been unverified by admin",
   "Please Enable 2FA to continue": "Please Enable 2FA to continue",
-  "jst order created": "JST Order created",
-  "jst order not created": "JST Order not created",
-  "insufficent funds in wallet": "Insufficient funds in wallet"
+  "jst order created": "Congratulations, Order has been created successfully. Please check your wallet with updated balance.",
+  "jst order not created": "Oops, Unfortunately your order is not created. Please try again.",
+  "insufficent funds in wallet": "Insufficient funds in wallet",
+  "Price retrieve success": "Price has been retrieved successfully",
+  "jst pair retrieve success": "JST Pair has been retrieved successfully."
 }
