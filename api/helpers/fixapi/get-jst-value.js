@@ -27,9 +27,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    // Get jst value.
-    var jstValue;
-    // TODO
     try {
       var req_body = inputs.value_object;
       var get_faldax_fee;
@@ -235,9 +232,6 @@ module.exports = {
       await logger.error(error.message);
       return exits.error(error)
     }
-    // Send back the result through the success exit.
-    return jstValue;
-
   }
 
 
