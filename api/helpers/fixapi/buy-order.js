@@ -118,11 +118,20 @@ module.exports = {
       // }
       // Add data in table
       //ends
-         var data = {
+      
+      if( body.ExecType == "F"){
+        var data = {
           status:1,
           data : body
         }
-      
+        // return exits.error(data);
+      }else{
+        var data = {
+          status:0,
+          data : []
+        }
+      }
+         
       return exits.success( data );
     });
 

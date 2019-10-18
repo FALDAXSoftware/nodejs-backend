@@ -214,11 +214,11 @@ module.exports = {
           console.log(req_body)
           // Get JST Price 
           var priceValue = 0;
-          if (req_body.original_pair == req_body.order_pair) {
-            req_body.Side = 1;
-          }else{
-            req_body.Side = 2;
-          }
+          // if (req_body.original_pair == req_body.order_pair) {
+          //   req_body.Side = 1;
+          // }else{
+          //   req_body.Side = 2;
+          // }
           // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
           if (req_body.original_pair == req_body.order_pair) { // Check if Pair same as original, then it should be Buy ELSE Sell 
             var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Buy");
@@ -305,50 +305,36 @@ module.exports = {
             }
             
             var jst_response_data = response.data;
-            console.log("jst_response_data",jst_response_data);
             // calculate fees 
             var get_faldax_fee = await AdminSetting.findOne({
               slug: "faldax_fee"
             });
-            // jst_response_data.SettlCurrAmt = jst_response_data.LastPx * jst_response_data.OrderQty; // temp
-            // jst_response_data.SettlCurrency = req_body.Currency; // temp
-            // jst_response_data.CumQty = jst_response_data.OrderQty; // temp
-            // var jst_calculations_object = {
-            //   "Symbol": req_body.Symbol,
-            //   "Side": req_body.Side,
-            //   "OrderQty": req_body.OrderQty,
-            //   "flag": req_body.flag,
-            //   "original_pair":req_body.original_pair,
-            //   "order_pair":req_body.order_pair
-            // };
 
             // Calculate fees deduction 
             var faldax_fees = 0;
             var network_fees = 0;
+            var final_value = 0;
+            var final_fees_deducted_crypto = 0;
+            var final_fees_currency = 0;
+            var final_faldax_fees = 0;
+            var final_ntwk_fees = 0;
             if( req_body.original_pair == req_body.order_pair ){ // Buy order
-              var amount_settled = jst_response_data.LastPx; // Which price settled on   
-              var currency1_settled = amount_settled;  // First currency value on 1 quantity
-              var currency2_settled = 1/amount_settled; // Calculate second currency 
-              var currency2_quantity_amount = currency2_settled*req_body.OrderQty
-              faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
-              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (jst_response_data.CumQty), (jst_response_data.SettlCurrAmt));
-              network_fees = (jst_response_data.SettlCurrAmt) + (get_network_fees * (jst_response_data.SettlCurrAmt));
+              var final_amount = jst_response_data.CumQty;
+              final_faldax_fees = (final_amount * ((get_faldax_fee.value)/100));
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
+              final_ntwk_fees = get_network_fees;
+              final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+              final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt)
             }else{
-              var amount_settled = jst_response_data.LastPx; // Which price settled on   
-              var currency1_settled = amount_settled;  // First currency value on 1 quantity
-              var currency2_settled = 1/amount_settled; // Calculate second currency 
-              var currency2_quantity_amount = currency2_settled*req_body.OrderQty
-              faldax_fees = (currency2_quantity_amount) + (((currency2_quantity_amount) * get_faldax_fee.value) / 100);
-              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (jst_response_data.CumQty), (currency2_quantity_amount));
-              network_fees = (currency2_quantity_amount) + (get_network_fees * (currency2_quantity_amount));
+              final_fees_deducted_crypto = parseFloat(jst_response_data.CumQty);
+              var final_amount = jst_response_data.SettlCurrAmt;
+              final_faldax_fees = (final_amount * ((get_faldax_fee.value)/100));
+              var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
+              final_ntwk_fees = get_network_fees;
+              final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
             }
 
-            
-            // var faldax_fees = (jst_response_data.SettlCurrAmt) + (((jst_response_data.SettlCurrAmt) * get_faldax_fee.value) / 100);
-            // var get_network_fees = await sails.helpers.feesCalculation((jst_response_data.SettlCurrency).toLowerCase(), (jst_response_data.CumQty), (jst_response_data.SettlCurrAmt));
-            // var network_fees = (jst_response_data.SettlCurrAmt) + (get_network_fees * (jst_response_data.SettlCurrAmt));
-            var amount_after_fees_deduction = (jst_response_data.SettlCurrAmt)-(network_fees)-(faldax_fees);
-            console.log("amount_after_fees_deduction",amount_after_fees_deduction);
+            var amount_after_fees_deduction = (final_value)-(network_fees)-(faldax_fees);
             // update order
             var update_data = {
               fill_price: jst_response_data.SettlCurrAmt,
@@ -364,11 +350,11 @@ module.exports = {
               trade_date: jst_response_data.TradeDate,
               settl_curr_amt: jst_response_data.SettlCurrAmt,
               leaves_qty: jst_response_data.LeavesQty,
-              faldax_fees: faldax_fee,
-              network_fees: network_fees,
+              faldax_fees: final_faldax_fees,
+              network_fees: final_ntwk_fees,
               asset1_usd_value: asset1_usd_value,
               asset2_usd_value: asset2_usd_value,
-              amount_after_fees_deduction:amount_after_fees_deduction
+              amount_after_fees_deduction:(req_body.order_pair == req_body.original_pair) ? final_fees_deducted_crypto :final_fees_currency
             };
             var update_order = await JSTTradeHistory
               .update({
@@ -376,32 +362,47 @@ module.exports = {
               })
               .set(update_data).fetch();
             // Update wallet Balance
-            // if( req_body.original_pair == req_body.order_pair ){ // Buy order
-            //   var update_user_wallet_asset1 = await Wallet.update({
-            //     id: walletCurrency.id
-            //   }).set({
-            //     balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
-            //   });  
-            // }else{ // Sell order
-            //   var convert_to_exchange = jst_response_data.SettlCurrAmt;
-            //   var update_user_wallet_asset1 = await Wallet.update({
-            //     id: walletCurrency.id
-            //   }).set({
-            //     balance: (walletCurrency.balance + jst_response_data.SettlCurrAmt)
-            //   });  
-            // }
+            if( req_body.original_pair == req_body.order_pair ){ // Buy order
+              var update_user_wallet_asset1 = await Wallet.update({
+                id: walletCurrency.id
+              }).set({
+                balance: (walletCurrency.balance - final_fees_currency),
+                placed_balance: (walletCurrency.placed_balance) - final_fees_currency
+              }).fetch(); 
+             
+              var update_user_wallet_asset2 = await Wallet.update({
+                id: walletCrypto.id
+              }).set({
+                balance: (walletCrypto.balance + final_fees_deducted_crypto),
+                placed_balance: (walletCrypto.placed_balance + final_fees_deducted_crypto)
+              }).fetch(); 
+
+            }else{ // Sell order
+              // var convert_to_exchange = jst_response_data.SettlCurrAmt;
+              var update_user_wallet_asset1 = await Wallet.update({
+                id: walletCurrency.id
+              }).set({
+                balance: (walletCurrency.balance + final_fees_currency),
+                placed_balance: (walletCurrency.placed_balance + final_fees_currency)
+              }).fetch();  
+
+              var update_user_wallet_asset2 = await Wallet.update({
+                id: walletCrypto.id
+              }).set({
+                balance: (walletCrypto.balance - final_fees_deducted_crypto),
+                placed_balance: (walletCrypto.placed_balance - final_fees_deducted_crypto)
+              }).fetch(); 
+            }
             
 
             return res.json({
               "status": 200,
               "message": sails.__("jst order created"),
-              "data": update_order
+              "data": update_order[0]
             });
           }
         }
       }
-
-
 
     } catch (error) {
       console.log("error", error);
