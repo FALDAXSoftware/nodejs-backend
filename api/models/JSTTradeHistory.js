@@ -127,6 +127,10 @@ module.exports = {
       type: 'number',
       columnName: 'asset2_usd_value'
     },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

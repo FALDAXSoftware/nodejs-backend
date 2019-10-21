@@ -116,8 +116,9 @@ module.exports = {
             valueUSD = usd_value * (1 / price_value1[0].ask_price)
           }
           if (req_body.Side == 1) {
+            var qty = ((!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value))) ? ((req_body.OrderQty)) : (totalValue)
             feesCurrency = crypto;
-            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), qty, totalValue);
             var faldax_fee = await AdminSetting.findOne({
               where: {
                 deleted_at: null,
@@ -126,7 +127,7 @@ module.exports = {
             })
             faldax_fee_value = (req_body.OrderQty * ((faldax_fee.value) / 100))
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
-            original_value = req_body.OrderQty
+            original_value = get_faldax_fee
           }
           returnData = {
             "network_fee": get_network_fees,
@@ -134,7 +135,7 @@ module.exports = {
             "total_value": get_faldax_fee,
             "currency": feesCurrency,
             "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : usd_value,
-            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? totalValue : valueUSD,
+            "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? totalValue : totalValue,
             "original_value": original_value,
             "orderQuantity": get_faldax_fee
           }
