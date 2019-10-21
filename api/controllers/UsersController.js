@@ -441,7 +441,8 @@ module.exports = {
             .set({
               email: user.email,
               is_new_email_verified: true,
-              email_verify_token: null
+              email_verify_token: null,
+              is_verified: true,
             });
 
           var token = await sails
