@@ -75,7 +75,7 @@ module.exports = {
 
     try {
       let query = `SELECT
-                    coins.coin_name, coins.coin_code, coins.created_at, coins.id,
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id

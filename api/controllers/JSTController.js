@@ -296,17 +296,81 @@ module.exports = {
               slug: "faldax_fee"
             });
             // Check cases for Order execution
-            // var order_completed = false;
-            // switch( jst_response_data.ExecType ){
-            //   case "F" :  
-            //             order_completed = true;
-            //             break;
+            var order_completed = false;
+            console.log("OrderStatus", jst_response_data.ExecType);
+            var order_status = 'open';
+            switch( jst_response_data.ExecType ){
+              case "F" :order_completed = true;
+                        break;
 
-            //   case "F" :  
-            //             order_completed = true;
-            //             break;          
+              case "8" :order_completed = false;
+                        break;    
+            }
+            
 
-            // }
+            switch( jst_response_data.OrdStatus ){
+              case "1": order_status = 'partially_filled';
+                        break;
+
+              case "2": order_status = 'filled';
+                        break;   
+
+              case "4": order_status = 'cancelled';
+                        break;                       
+                        
+              case "8": order_status = 'failed';
+                        break;             
+            }
+
+            
+
+            
+            if( order_completed == false || order_status == 'cancelled' || order_status == 'failed' ){
+              var reason_text = '';
+              switch( jst_response_data.OrdStatus.OrdRejReason != "" ){
+                case 0 : reason_text = 'Unknown Error';
+                         break;
+                case 1 : reason_text = 'Currency pair is not supported';
+                        break;
+                case 2 : reason_text = 'Orders may not be entered while the venue is closed';
+                        break;
+                case 3 : reason_text = 'The order is not in the book';
+                       break;
+                case 4 : reason_text = 'Order quantity is outside of the allowable range';
+                       break;
+                case 5 : reason_text = 'Order price is outside of the allowable range';
+                      break;
+                case 6 : reason_text = 'Duplicate Order';
+                        break;
+                case 7 : reason_text = 'Duplicate of a verbally communicated order';
+                       break;
+                case 8 : reason_text = 'Term currency orders are not supported';
+                       break;
+              }
+              var update_data = {
+                fill_price: jst_response_data.SettlCurrAmt,
+                quantity: jst_response_data.CumQty,
+                is_partially_filled: (jst_response_data.OrdStatus == 1 ? true : false),
+                order_id: jst_response_data.OrderID,
+                execution_report: jst_response_data,
+                transact_time: jst_response_data.TransactTime,
+                settl_date: jst_response_data.SettlDate,
+                trade_date: jst_response_data.TradeDate,
+                order_status: order_status,
+                reason:(jst_response_data.Text ? jst_response_data.Text : "" ),
+              };
+              var update_order = await JSTTradeHistory
+                .update({
+                  id: create_order.id
+                })
+                .set(update_data).fetch();
+
+              return res.json({
+                "status": 500,
+                "message": sails.__("jst order not created")+"Due to : "+(reason_text),
+                "data": update_order[0]
+              });  
+            }
             
             // Get JST Fiat Value
             var currency_pair = (req_body.Symbol).split("/");
@@ -352,7 +416,7 @@ module.exports = {
             // update order
             var update_data = {
               fill_price: jst_response_data.SettlCurrAmt,
-              price: jst_response_data.price,
+              price: final_amount,
               quantity: jst_response_data.CumQty,
               settle_currency: jst_response_data.SettlCurrency,
               is_partially_filled: (jst_response_data.OrdStatus == 1 ? true : false),
@@ -368,6 +432,8 @@ module.exports = {
               network_fees: final_ntwk_fees,
               asset1_usd_value: asset1_usd_value,
               asset2_usd_value: asset2_usd_value,
+              order_status: order_status,
+              reason:(jst_response_data.Text ? jst_response_data.Text : "" ),
               amount_after_fees_deduction:(req_body.order_pair == req_body.original_pair) ? final_fees_deducted_crypto :final_fees_currency
             };
             var update_order = await JSTTradeHistory
@@ -406,8 +472,7 @@ module.exports = {
                 balance: (walletCrypto.balance - final_fees_deducted_crypto),
                 placed_balance: (walletCrypto.placed_balance - final_fees_deducted_crypto)
               }).fetch(); 
-            }
-            
+            }            
 
             return res.json({
               "status": 200,

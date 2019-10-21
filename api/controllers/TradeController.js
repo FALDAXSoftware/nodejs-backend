@@ -1260,11 +1260,16 @@ module.exports = {
           .helpers
           .tradding
           .getUserTradeHistory(data);
-      } else if (data.trade_type == 2) {
+      } else if (data.trade_type == 2) { // Simplex
         user_history_data = await sails
           .helpers
           .simplex
           .getUserSimplexHistory(data);
+      }else if (data.trade_type == 3) { // JST
+        user_history_data = await sails
+          .helpers
+          .fixapi
+          .getUserJstTradeHistory(data);
       }
       res.json({
         "status": 200,
@@ -1761,6 +1766,7 @@ module.exports = {
 
       var tradeCount;
       var tradeData;
+      
       if (trade_type == 1) {
         let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
         let whereAppended = false;
@@ -1827,7 +1833,7 @@ module.exports = {
         tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
 
-      } else if (trade_type == 2) {
+      } else if (trade_type == 2) { // Simplex
         let query = " from simplex_trade_history LEFT JOIN users ON simplex_trade_history.user_id = users.id";
         let whereAppended = false;
         query += " WHERE simplex_trade_history.is_processed = true"
@@ -1898,6 +1904,67 @@ module.exports = {
         tradeData = tradeData.rows;
 
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
+        tradeCount = tradeCount.rows[0].count;
+      }else if (trade_type == 3) { // JST
+        let query = " FROM jst_trade_history LEFT JOIN users ON jst_trade_history.user_id = users.id";
+        let whereAppended = false;
+
+        if ((data && data != "")) {
+          if (data && data != "" && data != null) {
+            query += " WHERE"
+            whereAppended = true;
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            if (!isNaN(data)) {
+              query += " OR quantity=" + data + " OR fill_price=" + data
+            }
+            query += ")"
+          }
+        }
+
+        if (user_id) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+          whereAppended = true;
+          query += " jst_trade_history.user_id=" + user_id
+        }
+
+        if (t_type) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+
+          whereAppended = true;
+          query += "  jst_trade_history.side='" + t_type + "'";
+        }
+
+        if (start_date && end_date) {
+          query += whereAppended ?
+            " AND " :
+            " WHERE ";
+
+          query += " jst_trade_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+        }
+        countQuery = query;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY " + sort_col + " " + sortVal;
+        }
+
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        tradeData = await sails.sendNativeQuery(`Select jst_trade_history.*,users.email` + query, [])
+
+        tradeData = tradeData.rows;
+
+        tradeCount = await sails.sendNativeQuery("Select COUNT(jst_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
       }
       if (tradeData) {
