@@ -89,18 +89,29 @@ module.exports = {
       timeout: 5000
     };
     try {
-      console.log("-------------", inputs.pair);
 
-      // status = await kraken.api('AddOrder', {
-      //   pair: inputs.pair,
-      //   type: inputs.type,
-      //   ordertype: inputs.ordertype,
-      //   volume: inputs.volume,
-      //   validate: true
-      // });
-      status = { "error": [], "result": { "descr": { "order": "buy 0.00200000 XBTUSD @ limit 2000.0 with 5:1 leverage" }, "txid": ["O3JQ5B-NWDT7-BIJX5O"] } };
+      status = await kraken.api('AddOrder', {
+        pair: inputs.pair,
+        type: inputs.type,
+        ordertype: inputs.ordertype,
+        volume: inputs.volume,
+        // validate: true
+      });
+      // console.log("add standard order", status);
+
+      // status = {
+      //   "error": [],
+      //   "result": {
+      //     "descr": {
+      //       "order": "buy 0.00200000 XBTUSD @ limit 2000.0 with 5:1 leverage"
+      //     },
+      //     "txid": ["O3JQ5B-NWDT7-BIJX5O"]
+      //   }
+      // };
       return exits.success(status);
     } catch (err) {
+      console.log("->>>>>>", err);
+
       return exits.orderError();
     }
   }

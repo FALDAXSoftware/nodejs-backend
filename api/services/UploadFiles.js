@@ -10,7 +10,7 @@ var mime = require('mime');
 var S3BucketName = "production-static-asset";
 
 function UploadFiles() {
-  return { upload: _upload };
+  return { upload: _upload, deleteFile: _deleteFile, newUpload:_newUpload };
 
   function _upload(filePath, uploadFileName) {
     return new Promise((resolve, reject) => {
@@ -43,6 +43,58 @@ function UploadFiles() {
         });
     })
   }
+
+  // Delete File from S3
+  function _deleteFile(key) {
+    return new Promise((resolve, reject) => {
+      var params = { Bucket: S3BucketName, Key: key };
+      s3.deleteObject(params, function (err, rese) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rese)
+        }
+      });
+    })
+  }
+
+
+  function _newUpload(filePath, uploadFileName) {
+    return new Promise((resolve, reject) => {
+
+      gm(filePath)
+        .noProfile()
+        .stream(function (err, stdout, stderr) {
+          var buf = new Buffer('');
+
+          stdout.on('data', function (data) {
+            buf = Buffer.concat([buf, data]);
+          });
+
+          var fs = require('fs');
+          var fileStream = fs.createReadStream(filePath);
+          stdout.on('end', function (data) {
+            var profile = {
+              Bucket: S3BucketName,
+              Key: uploadFileName,
+              ACL: 'public-read',
+              // Body: buf,
+              Body:fileStream,
+              // ContentType: mime.lookup(uploadFileName)
+            };
+            s3.putObject(profile, function (err, rese) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(uploadFileName)
+              }
+            });
+          });
+        });
+    })
+  }
 }
+
+
 
 module.exports = UploadFiles();

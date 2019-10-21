@@ -251,7 +251,7 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     onlyAllowOrigins: [
-      "https://dev.faldax.com", "https://www.faldax.com"
+      "https://dev.faldax.com", "https://www.faldax.com", "http://localhost"
     ],
 
 

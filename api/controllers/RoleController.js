@@ -4,14 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger")
 module.exports = {
   // Add New Role
   create: async function (req, res) {
     let params = req.body;
 
     try {
-      let existingRole = await Role.findOne({ name: req.body.name, deleted_at: null });
+      let existingRole = await Role.findOne({
+        name: req.body.name,
+        deleted_at: null
+      });
 
       if (existingRole) {
         return res
@@ -39,6 +42,7 @@ module.exports = {
         message: sails.__("Role added success")
       })
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -48,14 +52,21 @@ module.exports = {
     }
   },
 
-  get: async function (req, res) {
+  getRoles: async function (req, res) {
     try {
-      let { sortCol, sortOrder } = req.allParams();
+      let {
+        sortCol,
+        sortOrder,
+        status
+      } = req.allParams();
       let query = " from roles WHERE deleted_at IS NULL ";
+      if (status) {
+        query += "AND is_active = " + status
+      }
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -68,13 +79,17 @@ module.exports = {
 
       roleName = roleName.rows;
       roles = roles.rows;
-      return res.json({
-        status: 200,
-        message: sails.__("Role retrived success"),
-        roles,
-        roleName
-      })
+
+      if (roles) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Role retrived success"),
+          roles,
+          roleName
+        })
+      }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -86,7 +101,9 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      let role = await Role.findOne({ id: req.body.id });
+      let role = await Role.findOne({
+        id: req.body.id
+      });
       if (!role) {
         return res
           .status(500)
@@ -96,13 +113,16 @@ module.exports = {
           });
       }
       await Role
-        .update({ id: role.id })
+        .update({
+          id: role.id
+        })
         .set(req.body);
       return res.json({
         status: 200,
         message: sails.__("Role Updated success")
       })
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -114,7 +134,9 @@ module.exports = {
 
   delete: async function (req, res) {
     try {
-      let role = await Role.findOne({ id: req.body.id });
+      let role = await Role.findOne({
+        id: req.body.id
+      });
       if (!role) {
         return res
           .status(500)
@@ -124,14 +146,19 @@ module.exports = {
           });
       } else {
         await Role
-          .update({ id: role.id })
-          .set({ deleted_at: new Date() });
+          .update({
+            id: role.id
+          })
+          .set({
+            deleted_at: new Date()
+          });
         return res.json({
           status: 200,
           message: sails.__("Role Deleted success")
         })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

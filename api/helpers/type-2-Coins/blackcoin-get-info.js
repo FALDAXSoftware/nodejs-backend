@@ -35,12 +35,13 @@ module.exports = {
         timeout: 30000
       });
 
-      batch.push({method: 'getinfo'});
+      batch.push({
+        method: 'getinfo'
+      });
 
       await client.cmd(batch, function (err, info) {
-        if (err) 
+        if (err)
           return console.log(err);
-        console.log('Information:', info);
         return exits.success(info);
       });
     } catch (err) {

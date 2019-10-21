@@ -20,6 +20,10 @@ module.exports = {
       type: "string",
       columnName: "receive_address"
     },
+    send_address: {
+      type: "string",
+      columnName: "send_address"
+    },
     address_label: {
       type: "string",
       columnName: "address_label",
@@ -42,6 +46,11 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_active',
       defaultsTo: true
+    },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
     },
     created_at: {
       type: 'ref',

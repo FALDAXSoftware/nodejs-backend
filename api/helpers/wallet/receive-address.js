@@ -1,4 +1,6 @@
-var { map } = require('lodash');
+var {
+  map
+} = require('lodash');
 const BitGoJS = require('bitgo');
 
 module.exports = {
@@ -34,11 +36,20 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+
     //Configuring bitgo API with access token
-    var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+    var bitgo = new BitGoJS.BitGo({
+      env: sails.config.local.BITGO_ENV_MODE,
+      accessToken: access_token_value
+    });
 
     //Fetching coin list
-    const coinData = await Coins.find({ deleted_at: null, is_active: true, is_address_created_signup: true });
+    const coinData = await Coins.find({
+      deleted_at: null,
+      is_active: true,
+      is_address_created_signup: true
+    });
 
     let walletArray = [];
 
@@ -63,8 +74,9 @@ module.exports = {
           // For all type 1 (bitgo) coins
 
           let walletCoinCode = coin.coin_code;
-          let address_label = inputs.user.id.toString();
-
+          // let address_label = inputs.user.id.toString();
+          let address_label = await sails.helpers.bitgo.generateUniqueUserAddress( user_id.toString() );
+          
           // Address Labeling and coin name for erc20 token
           if (coin.isERC) {
             walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
@@ -74,16 +86,22 @@ module.exports = {
           if (wallet) {
             //Here chain =0 means testnet Generating wallet address
             // Create bitgo wallet address
+            //Address generation for receiving coin
             let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
+            //Address generation for sending the coin
+            let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);
             let obj = {
               wallet_id: "wallet",
               coin_id: parseInt(coin.id),
               receive_address: address.address,
+              send_address: sendAddress.address,
               user_id: parseInt(inputs.user.id),
               balance: 0.0,
               placed_balance: 0.0,
               address_label: address_label
             }
+
+
             // For Perfomance testing Add Balance to wallet
             if (inputs.test_key == sails.config.local.test_key) {
               obj = {
@@ -92,7 +110,9 @@ module.exports = {
                 placed_balance: 100000.0,
               }
             }
-            walletArray.push({ ...obj });
+            walletArray.push({
+              ...obj
+            });
           }
         }
       }

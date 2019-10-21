@@ -81,8 +81,13 @@ module.exports = {
         var userPlacedBalance = walletDetails.placed_balance + (pendingBookDetailsBuy.price * pendingBookDetailsBuy.quantity);
 
         var updateWalletDetails = await Wallet
-          .update({user_id: pendingBookDetailsBuy.user_id, coin_id: coinId.id})
-          .set({placed_balance: userPlacedBalance});
+          .update({
+            user_id: pendingBookDetailsBuy.user_id,
+            coin_id: coinId.id
+          })
+          .set({
+            placed_balance: userPlacedBalance
+          });
 
         if (pendingBookDetailsBuy.length === 0) {
           // throw("No buy limit order found.")
@@ -90,12 +95,20 @@ module.exports = {
         }
 
         var activityCancel = await ActivityTable
-          .update({id: pendingBookDetailsBuy.activity_id})
-          .set({is_cancel: true});
+          .update({
+            id: pendingBookDetailsBuy.activity_id
+          })
+          .set({
+            is_cancel: true
+          });
 
         deletePending = await BuyBook
-          .update({id: inputs.id})
-          .set({deleted_at: now})
+          .update({
+            id: inputs.id
+          })
+          .set({
+            deleted_at: now
+          })
           .fetch();
 
       } else if (inputs.type == "Limit" && inputs.side == "Sell") {
@@ -133,8 +146,13 @@ module.exports = {
         var userPlacedBalance = walletDetails.placed_balance + (pendingBookDetailsSell.quantity);
 
         var updateWalletDetails = await Wallet
-          .update({user_id: pendingBookDetailsSell.user_id, coin_id: coinId.id})
-          .set({placed_balance: userPlacedBalance});
+          .update({
+            user_id: pendingBookDetailsSell.user_id,
+            coin_id: coinId.id
+          })
+          .set({
+            placed_balance: userPlacedBalance
+          });
 
         if (pendingBookDetailsSell.length === 0) {
           // throw("No buy limit order found.")
@@ -143,12 +161,20 @@ module.exports = {
         }
 
         var activityCancel = await ActivityTable
-          .update({id: pendingBookDetailsSell.activity_id})
-          .set({is_cancel: true});
+          .update({
+            id: pendingBookDetailsSell.activity_id
+          })
+          .set({
+            is_cancel: true
+          });
 
         deletePending = await SellBook
-          .update({id: inputs.id})
-          .set({deleted_at: now})
+          .update({
+            id: inputs.id
+          })
+          .set({
+            deleted_at: now
+          })
           .fetch();
 
       } else {
@@ -169,9 +195,21 @@ module.exports = {
 
         }
 
+        var activityCancel = await ActivityTable
+          .update({
+            id: pendingDetails.activity_id
+          })
+          .set({
+            is_cancel: true
+          });
+
         deletePending = await PendingBook
-          .update({id: inputs.id})
-          .set({deleted_at: now})
+          .update({
+            id: inputs.id
+          })
+          .set({
+            deleted_at: now
+          })
           .fetch();
       }
       if (deletePending) {
