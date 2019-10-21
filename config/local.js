@@ -1,6 +1,11 @@
 const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
+  // An example 128-bit key
+  'key': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+
+  // The initialization vector (must be 16 bytes)
+  'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
   'test_key': 'nikita',
   'CURRENCY_LIST': process.env.CURRENCY,
   'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
@@ -27,7 +32,17 @@ module.exports.local = {
   "WEBHOOK_BASE_URL": process.env.WEBHOOK_BASE_URL,
   "IDM_URL": process.env.IDM_URL,
   "IDM_TOKEN": process.env.IDM_TOKEN,
+  "TOTAL_PRECISION": process.env.TOTAL_PRECISION,
+  "QUANTITY_PRECISION": process.env.QUANTITY_PRECISION,
+  "PRICE_PRECISION": process.env.PRICE_PRECISION,
+  "TWILLIO_ACCOUNT_SID": process.env.TWILLIO_ACCOUNT_SID,
+  "TWILLIO_ACCOUNT_AUTH_TOKEN": process.env.TWILLIO_ACCOUNT_AUTH_TOKEN,
+  "TWILLIO_ACCOUNT_FROM_NUMBER": process.env.TWILLIO_ACCOUNT_FROM_NUMBER,
   "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
+  "SIMPLEX_URL": process.env.SIMPLEX_URL,
+  "WALLET_ID": process.env.WALLET_ID,
+  "SUCCESS_URL": process.env.SUCCESS_URL,
+  "FAIL_URL": process.env.FAIL_URL,
   "COIN_TYPE_BITGO": 1,
   "coinArray": {
     'STRAT': {
@@ -185,5 +200,8 @@ module.exports.local = {
         getTicketsById: "/crm-objects/v1/objects/tickets/batch-read"
       }
     }
+  },
+  notifications: {
+
   }
 }

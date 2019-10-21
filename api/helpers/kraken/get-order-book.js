@@ -5,20 +5,7 @@ module.exports = {
 
   description: '',
 
-  inputs: {
-    pair: {
-      type: 'string',
-      example: 'XRPXBT',
-      description: 'Pair Name',
-      required: true
-    },
-    pair_value: {
-      type: 'string',
-      example: 'XRP-XBT',
-      description: 'Pair Value',
-      required: true
-    }
-  },
+  inputs: {},
 
   exits: {
 
@@ -74,24 +61,36 @@ module.exports = {
     };
 
     try {
-      var pair_name = await Pairs.findOne({
+      var pair_name = await Pairs.find({
         where: {
-          kraken_pair: inputs.pair_value,
+          kraken_pair: {
+            '!=': null
+          },
           deleted_at: null,
           is_active: true
         }
       })
-      status = await kraken.api('Depth', {pair: inputs.pair});
-      var value = pair_name.symbol;
-      var askValue = JSON.stringify(status.result[value].asks[0]);
-      var bidValue = JSON.stringify(status.result[value].bids[0])
-      askValue = JSON.parse(askValue);
-      bidValue = JSON.parse(bidValue);
+      for (let i = 0; i < pair_name.length; i++) {
+        status = await kraken.api('Depth', {
+          pair: pair_name[i].kraken_pair
+        });
+        var value = pair_name[i].symbol;
+        var askValue = JSON.stringify(status.result[value].asks[0]);
+        var bidValue = JSON.stringify(status.result[value].bids[0])
+        askValue = JSON.parse(askValue);
+        bidValue = JSON.parse(bidValue);
 
-      var updatedData = await Pairs
-        .update({kraken_pair: inputs.pair_value, symbol: pair_name.symbol})
-        .set({ask_price: askValue[0], bid_price: bidValue[0]})
-        .fetch();
+        var updatedData = await Pairs
+          .update({
+            kraken_pair: pair_name[i].kraken_pair,
+            symbol: pair_name[i].symbol
+          })
+          .set({
+            ask_price: askValue[0],
+            bid_price: bidValue[0]
+          })
+          .fetch();
+      }
       return exits.success(1);
     } catch (err) {
       console.log(err);

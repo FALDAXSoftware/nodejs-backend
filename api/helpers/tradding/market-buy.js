@@ -60,7 +60,10 @@ module.exports = {
     try {
       var userIds = [];
       userIds.push(inputs.user_id);
-      let {crypto, currency} = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -85,9 +88,13 @@ module.exports = {
         .utilities
         .getMakerTakerFees(crypto, currency);
 
+      var quantityFixed = inputs.orderQuantity
+      var quantityValue = (quantityFixed).toFixed(sails.config.local.QUANTITY_PRECISION)
+
       if (sellBook && sellBook.length > 0) {
         var availableQty = sellBook[0].quantity;
         var currentSellBookDetails = sellBook[0];
+        var fillPriceValue = (currentSellBookDetails.price).toFixed(sails.config.local.PRICE_PRECISION);
         var now = new Date();
         var orderData = {
           user_id: inputs.user_id,
@@ -97,11 +104,11 @@ module.exports = {
           created_at: now,
           updated_at: now,
           maximum_time: now,
-          fill_price: currentSellBookDetails.price,
+          fill_price: fillPriceValue,
           limit_price: 0,
           stop_price: 0,
           price: 0,
-          quantity: inputs.orderQuantity,
+          quantity: quantityValue,
           order_status: "partially_filled",
           currency: currency,
           settle_currency: crypto
@@ -112,7 +119,7 @@ module.exports = {
         }
 
         resultData.is_market = true;
-        resultData.fix_quantity = inputs.orderQuantity;
+        resultData.fix_quantity = quantityValue;
         resultData.maker_fee = fees.makerFee;
         resultData.taker_fee = fees.takerFee;
 
@@ -122,17 +129,17 @@ module.exports = {
           .activity
           .add(resultData);
 
-        if (inputs.orderQuantity <= availableQty) {
-          if ((currentSellBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+        if (quantityValue <= availableQty) {
+          if ((fillPriceValue * quantityValue).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var trade_history_data = {
               ...orderData
             };
-            trade_history_data.maker_fee = fees.makerFee;
-            trade_history_data.taker_fee = fees.takerFee;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.maker_fee = (fees.makerFee).toFixed(sails.config.local.TOTAL_PRECISION);
+            trade_history_data.taker_fee = (fees.takerFee).toFixed(sails.config.local.TOTAL_PRECISION);
+            trade_history_data.quantity = quantityValue;
             trade_history_data.requested_user_id = currentSellBookDetails.user_id;
             trade_history_data.created_at = now;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.fix_quantity = quantityValue;
             let updatedActivity = await sails
               .helpers
               .tradding
@@ -146,8 +153,8 @@ module.exports = {
               currency: currency,
               side: inputs.side,
               settle_currency: crypto,
-              quantity: inputs.orderQuantity,
-              fill_price: currentSellBookDetails.price
+              quantity: quantityValue,
+              fill_price: fillPriceValue
             }
             var tradingFees = await sails
               .helpers
@@ -161,8 +168,8 @@ module.exports = {
             // tradingFees.user_usd;
 
             var usd_value = resultData * (request.fill_price * request.quantity);
-            trade_history_data.user_fee = tradingFees.userFee;
-            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_fee = (tradingFees.userFee);
+            trade_history_data.requested_fee = (tradingFees.requestedFee);
             trade_history_data.user_coin = crypto;
             trade_history_data.requested_coin = currency;
             let tradeHistory = await sails
@@ -172,13 +179,15 @@ module.exports = {
               .add(trade_history_data);
             // Do Actual Tranasfer In Wallet Here
             //
-            let remainigQuantity = availableQty - inputs.orderQuantity;
+            let remainigQuantity = availableQty - quantityValue;
             if (remainigQuantity > 0) {
               let updatedBuyBook = await sails
                 .helpers
                 .tradding
                 .sell
-                .update(currentSellBookDetails.id, {quantity: remainigQuantity});
+                .update(currentSellBookDetails.id, {
+                  quantity: remainigQuantity
+                });
             } else {
               await sails
                 .helpers
@@ -191,17 +200,17 @@ module.exports = {
             return exits.insufficientBalance();
           }
         } else {
-          var remainingQty = inputs.orderQuantity - availableQty;
-          if ((currentSellBookDetails.price * inputs.orderQuantity) <= wallet.placed_balance) {
+          var remainingQty = quantityValue - availableQty;
+          if ((fillPriceValue * quantityValue).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var trade_history_data = {
               ...orderData
             };
-            trade_history_data.maker_fee = fees.makerFee;
-            trade_history_data.taker_fee = fees.takerFee;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.maker_fee = (fees.makerFee).toFixed(sails.config.local.TOTAL_PRECISION);
+            trade_history_data.taker_fee = (fees.takerFee).toFixed(sails.config.local.TOTAL_PRECISION);
+            trade_history_data.quantity = availableQty;
             trade_history_data.requested_user_id = currentSellBookDetails.user_id;
             trade_history_data.created_at = now;
-            trade_history_data.fix_quantity = inputs.orderQuantity;
+            trade_history_data.fix_quantity = quantityValue;
             let updatedActivity = await sails
               .helpers
               .tradding
@@ -215,7 +224,7 @@ module.exports = {
               side: inputs.side,
               settle_currency: crypto,
               quantity: availableQty,
-              fill_price: currentSellBookDetails.price
+              fill_price: fillPriceValue
             }
             var tradingFees = await sails
               .helpers
@@ -226,8 +235,8 @@ module.exports = {
               });
             // Adding USD value in database trade_history_data.usd_value =
             // tradingFees.user_usd;
-            trade_history_data.user_fee = tradingFees.userFee;
-            trade_history_data.requested_fee = tradingFees.requestedFee;
+            trade_history_data.user_fee = (tradingFees.userFee);
+            trade_history_data.requested_fee = (tradingFees.requestedFee);
             trade_history_data.user_coin = crypto;
             trade_history_data.requested_coin = currency;
             let tradeHistory = await sails
@@ -269,6 +278,31 @@ module.exports = {
         }
       } else {
         return exits.orderBookEmpty();
+      }
+      for (var i = 0; i < userIds.length; i++) {
+        // Notification Sending for users
+        var userNotification = await UserNotification.findOne({
+          user_id: userIds[i],
+          deleted_at: null,
+          slug: 'trade_execute'
+        })
+        var user_data = await Users.findOne({
+          deleted_at: null,
+          id: userIds[i],
+          is_active: true
+        });
+        if (user_data != undefined) {
+          if (userNotification != undefined) {
+            if (userNotification.email == true || userNotification.email == "true") {
+              if (user_data.email != undefined)
+                await sails.helpers.notification.send.email("trade_execute", user_data)
+            }
+            if (userNotification.text == true || userNotification.text == "true") {
+              if (user_data.phone_number != undefined)
+                await sails.helpers.notification.send.text("trade_execute", user_data)
+            }
+          }
+        }
       }
       await sails
         .helpers
