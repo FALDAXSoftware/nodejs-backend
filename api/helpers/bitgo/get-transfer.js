@@ -42,13 +42,13 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/transfer/${inputs.transferId}`,
       method: "GET",
       headers: {
         'cache-control': 'no-cache',
-        Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${access_token_value}`,
         'Content-Type': 'application/json'
       },
       json: true
@@ -65,4 +65,3 @@ module.exports = {
   }
 
 };
-

@@ -43,7 +43,7 @@ module.exports = {
     try {
       var batch = [];
       var userAddress;
-      
+
       //Blackcoin npm package connection
       var client = new blackcoin.Client({
         host: sails.config.local.coinArray[inputs.coin_code].url,
@@ -60,9 +60,8 @@ module.exports = {
       });
 
       await client.cmd(batch, function (err, info) {
-        if (err) 
+        if (err)
           return console.log(err);
-        console.log('Information:', info);
         return exits.success(info);
       });
 

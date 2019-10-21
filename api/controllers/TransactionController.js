@@ -23,7 +23,7 @@ module.exports = {
       sort_order
     } = req.allParams();
 
-    let query = " from wallet_history LEFT JOIN users ON wallet_history.user_id = users.id LEFT JOIN coins ON  wallet_history.coin_id = coins.id";
+    let query = " from wallet_history LEFT JOIN users ON wallet_history.user_id = users.id LEFT JOIN coins ON wallet_history.coin_id = coins.id";
     let whereAppended = false;
 
     if ((data && data != "")) {
@@ -75,16 +75,23 @@ module.exports = {
     countQuery = query;
 
     if (sort_col && sort_order) {
-      let sortVal = (sort_order == 'descend'
-        ? 'DESC'
-        : 'ASC');
+      let sortVal = (sort_order == 'descend' ?
+        'DESC' :
+        'ASC');
       query += " ORDER BY " + sort_col + " " + sortVal;
     } else {
       query += " ORDER BY wallet_history.id DESC";
     }
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-    let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email " + query, [])
+    let coinFee = await AdminSetting.findOne({
+      where: {
+        slug: 'default_send_coin_fee',
+        deleted_at: null
+      }
+    });
+
+    let transactionData = await sails.sendNativeQuery("Select wallet_history.*, users.email, coins.coin , coins.coin_code " + query, [])
     transactionData = transactionData.rows;
 
     let transactionCount = await sails.sendNativeQuery("Select COUNT(wallet_history.id)" + countQuery, [])
@@ -95,7 +102,8 @@ module.exports = {
         "status": 200,
         "message": sails.__("Transaction list"),
         "data": transactionData,
-        transactionCount
+        transactionCount,
+        'default_send_Coin_fee': parseFloat(coinFee.value)
       });
     }
   },
@@ -167,9 +175,9 @@ module.exports = {
     countQuery = query;
 
     if (sort_col && sort_order) {
-      let sortVal = (sort_order == 'descend'
-        ? 'DESC'
-        : 'ASC');
+      let sortVal = (sort_order == 'descend' ?
+        'DESC' :
+        'ASC');
       query += " ORDER BY " + sort_col + " " + sortVal;
     }
 

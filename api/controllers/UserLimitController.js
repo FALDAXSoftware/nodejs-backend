@@ -5,17 +5,20 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var moment = require('moment');
+var logger = require("./logger")
 module.exports = {
   // ---------------------------Web Api------------------------------
   // -------------------------------CMS Api--------------------------
   getAllUserLimit: async function (req, res) {
     try {
-      const { user_id } = req.allParams();
+      const {
+        user_id
+      } = req.allParams();
 
       if (user_id) {
         let query = 'FROM coins LEFT JOIN (SELECT * FROM user_limit WHERE user_id = ' + user_id + ' AND deleted_at IS NULL) AS specific_user_limit ON coins.id = specific_user_limit.coin_id WHERE coins.deleted_at IS NULL AND coins.is_active = true';
 
-        let limitData = await sails.sendNativeQuery("Select *" + query, [])
+        let limitData = await sails.sendNativeQuery("Select coins.id as coin_table_id,coins.coin_code,coins.coin,specific_user_limit.*" + query, [])
 
         limitData = limitData.rows;
 
@@ -40,8 +43,8 @@ module.exports = {
             "err": "User id not found"
           });
       }
-    }
-    catch (error) {
+    } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -54,13 +57,18 @@ module.exports = {
   updateUserLimit: async function (req, res) {
     try {
       if (req.body.user_id && req.body.coin_id) {
-        const limit_details = await UserLimit.findOne({ user_id: req.body.user_id, coin_id: req.body.coin_id, deleted_at: null });
+        const limit_details = await UserLimit.findOne({
+          user_id: req.body.user_id,
+          coin_id: req.body.coin_id,
+          deleted_at: null
+        });
         var updatedLimit;
-        if (limit_details == undefined || limit_details == null || !limit_details) {
-          if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
-            updatedLimit = await UserLimit
-              .create(req.body);
 
+        if (limit_details == undefined || limit_details == null || !limit_details) {
+          // if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
+          updatedLimit = await UserLimit.create({
+            ...req.body
+          }).fetch();
           if (!updatedLimit) {
             return res.json({
               "status": 500,
@@ -74,8 +82,13 @@ module.exports = {
         } else {
           if (req.body.monthly_withdraw_crypto == null && req.body.monthly_withdraw_fiat == null && req.body.daily_withdraw_crypto == null && req.body.daily_withdraw_fiat == null) {
             updatedLimit = await UserLimit
-              .update({ user_id: req.body.user_id, coin_id: req.body.coin_id })
-              .set({ deleted_at: moment().format() })
+              .update({
+                user_id: req.body.user_id,
+                coin_id: req.body.coin_id
+              })
+              .set({
+                deleted_at: moment().format()
+              })
               .fetch();
             if (!updatedLimit) {
               return res.json({
@@ -89,7 +102,10 @@ module.exports = {
             });
           } else {
             updatedLimit = await UserLimit
-              .update({ user_id: req.body.user_id, coin_id: req.body.coin_id })
+              .update({
+                user_id: req.body.user_id,
+                coin_id: req.body.coin_id
+              })
               .set(req.body)
               .fetch();
             if (!updatedLimit) {
@@ -98,10 +114,41 @@ module.exports = {
                 "message": sails.__("Something Wrong")
               });
             }
-            return res.json({
-              "status": 200,
-              "message": sails.__('Update User Limit')
+            // User Limit Increased/Decreased Information Email
+
+            let user = await Users.find({
+              select: ['first_name', 'email'],
+              where: {
+                id: req.body.user_id
+              }
             });
+
+            let slug = "user_limit_updation"
+            let template = await EmailTemplate.findOne({
+              slug
+            });
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(template.content, {
+                recipientName: user[0].first_name,
+              });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: user[0].email,
+                subject: "User Limit Updation"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("Update User Limit")
+                  });
+                }
+              })
           }
         }
       } else {
@@ -111,6 +158,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

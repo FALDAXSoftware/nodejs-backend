@@ -5,15 +5,17 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+var logger = require("./logger");
+
 module.exports = {
 
   /**
-    * API for getting coin list
-    * Renders this api when coin list needs to be fetched
-    *
-    * @param <>
-    *
-    * @return <Coin List and coins count or error data>
+   * API for getting coin list
+   * Renders this api when coin list needs to be fetched
+   *
+   * @param <>
+   *
+   * @return <Coin List and coins count or error data>
    */
 
   getAllCoinList: async function (req, res) {
@@ -45,7 +47,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(err);
-
+      await logger.error(err.message)
       res
         .status(500)
         .json({
@@ -58,7 +60,11 @@ module.exports = {
   //---------------------------Web Api------------------------------
   getAllCoins: async function (req, res) {
     try {
-      let { page, limit, data } = req.allParams();
+      let {
+        page,
+        limit,
+        data
+      } = req.allParams();
       var user_id = req.user.id;
 
       if (data) {
@@ -72,17 +78,15 @@ module.exports = {
         let balanceRes = await Coins.find({
           deleted_at: null,
           is_active: true,
-          or: [
-            {
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
+          or: [{
+            coin_name: {
+              contains: data
             }
-          ]
+          }, {
+            coin_code: {
+              contains: data
+            }
+          }]
         })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
@@ -105,17 +109,15 @@ module.exports = {
           where: {
             deleted_at: null,
             is_active: true,
-            or: [
-              {
-                coin_name: {
-                  contains: data
-                }
-              }, {
-                coin_code: {
-                  contains: data
-                }
+            or: [{
+              coin_name: {
+                contains: data
               }
-            ]
+            }, {
+              coin_code: {
+                contains: data
+              }
+            }]
           }
         });
         if (balanceRes) {
@@ -133,7 +135,10 @@ module.exports = {
         // coins.is_active = true AND coins.deleted_at IS NULL AND wallets.deleted_at IS
         // NULL ORDER BY wallets.balance DESC LIMIT ${limit} OFFSET ${page} `);
         let balanceRes = await Coins
-          .find({ deleted_at: null, is_active: true })
+          .find({
+            deleted_at: null,
+            is_active: true
+          })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -168,6 +173,7 @@ module.exports = {
         }
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -179,8 +185,14 @@ module.exports = {
 
   //Create Wallet
   createWallet: async function (req, res) {
-    let { coin_id } = req.allParams();
-    var requestedCoin = await Coins.find({ id: coin_id, deleted_at: null, is_active: true });
+    let {
+      coin_id
+    } = req.allParams();
+    var requestedCoin = await Coins.find({
+      id: coin_id,
+      deleted_at: null,
+      is_active: true
+    });
     await sails
       .helpers
       .wallet
@@ -207,10 +219,14 @@ module.exports = {
         "message": sails.__("wallet created success")
       });
     } catch (error) {
+      await logger.error(error.message)
       if (error.raw) {
         return res
           .status(500)
-          .json({ status: 500, "err": error.raw.err });
+          .json({
+            status: 500,
+            "err": error.raw.err
+          });
       } else {
         return res
           .status(500)
@@ -236,11 +252,19 @@ module.exports = {
             }
           }
         })
-        .select(["coin_icon", "coin_name", "coin"]);
+        .select(["coin_icon", "coin_name", "coin", "min_limit"]);
 
-      let feesDetails = await AdminSetting.find({ deleted_at: null })
-      let krakenFees = parseFloat(feesDetails[6].value);
-      let faldaxFees = parseFloat(feesDetails[7].value);
+      let feesDetails = await AdminSetting.findOne({
+        deleted_at: null,
+        slug: 'faldax_fee'
+      });
+      let faldaxFees = parseFloat(feesDetails.value);
+
+      let feesDetailsKraken = await AdminSetting.findOne({
+        deleted_at: null,
+        slug: 'kraken_fee'
+      });
+      let krakenFees = parseFloat(feesDetailsKraken.value);
 
       return res.json({
         "status": 200,
@@ -250,6 +274,7 @@ module.exports = {
         'faldax_fees': faldaxFees
       });
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -270,7 +295,6 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
-      console.log("pair", req.query.crypto, pair);
 
       let coinIds = [];
       for (let index = 0; index < pair.length; index++) {
@@ -296,6 +320,7 @@ module.exports = {
         "data": coins
       });
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({
@@ -307,8 +332,10 @@ module.exports = {
   },
 
   getPairDetails: async function (req, res) {
+
     try {
       let room = req.query.room;
+
       if (req.isSocket) {
         if (req.query.prevRoom) {
           let prevRoom = req.query.prevRoom;
@@ -327,6 +354,7 @@ module.exports = {
                   .sockets
                   .join(req.socket, room, async function (err) {
                     if (err) {
+                      console.log(err);
                       return res
                         .status(403)
                         .json({
@@ -334,13 +362,25 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-
-                      let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
-                      return res.json({
-                        status: 200,
-                        data: pair,
-                        "message": sails.__("Pair retrived success")
+                      let pair = await Pairs.findOne({
+                        name: room,
+                        is_active: true,
+                        deleted_at: null
                       });
+                      if (pair != undefined) {
+                        return res.json({
+                          status: 200,
+                          data: pair,
+                          "message": sails.__("Pair retrived success")
+                        });
+                      } else {
+                        return res
+                          .status(500)
+                          .json({
+                            status: 500,
+                            "err": sails.__("Something Wrong")
+                          });
+                      }
                     }
                   });
               }
@@ -357,12 +397,25 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let pair = await Pairs.findOne({ name: room, is_active: true, deleted_at: null });
-                return res.json({
-                  status: 200,
-                  data: pair,
-                  "message": sails.__("Pair retrived success")
+                let pair = await Pairs.findOne({
+                  name: room,
+                  is_active: true,
+                  deleted_at: null
                 });
+                if (pair != undefined) {
+                  return res.json({
+                    status: 200,
+                    data: pair,
+                    "message": sails.__("Pair retrived success")
+                  });
+                } else {
+                  return res
+                    .status(500)
+                    .json({
+                      status: 500,
+                      "err": sails.__("Something Wrong")
+                    });
+                }
               }
             });
         }
@@ -375,6 +428,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -386,7 +440,13 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getCoins: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order
+      } = req.allParams();
       let query = " from coins WHERE deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
@@ -399,9 +459,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id ASC ";
@@ -424,6 +484,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -444,13 +505,11 @@ module.exports = {
             if (req.body.coin_name && req.body.coin_code && req.body.min_limit) {
               let existingCoin = await Coins.find({
                 deleted_at: null,
-                or: [
-                  {
-                    coin_name: req.body.coin_name
-                  }, {
-                    coin_code: req.body.coin_code
-                  }
-                ]
+                or: [{
+                  coin_name: req.body.coin_name
+                }, {
+                  coin_code: req.body.coin_code
+                }]
               });
               if (existingCoin.length > 0) {
                 return res
@@ -462,7 +521,7 @@ module.exports = {
               }
               var coins_detail = await Coins
                 .create({
-                  coin_icon: 'faldax/coin/' + req.body.coin_code,
+                  coin_icon: 'coin/' + req.body.coin_code,
                   coin_name: req.body.coin_name,
                   coin_code: req.body.coin_code,
                   min_limit: req.body.min_limit,
@@ -514,7 +573,7 @@ module.exports = {
               });
           }
         } catch (error) {
-
+          await logger.error(error.message)
           return res
             .status(500)
             .json({
@@ -527,7 +586,9 @@ module.exports = {
 
   update: async function (req, res) {
     try {
-      const coin_details = await Coins.findOne({ id: req.body.coin_id });
+      const coin_details = await Coins.findOne({
+        id: req.body.coin_id
+      });
       if (!coin_details) {
         return res
           .status(401)
@@ -558,7 +619,9 @@ module.exports = {
         ...req.body
       }
       var updatedCoin = await Coins
-        .update({ id: req.body.coin_id })
+        .update({
+          id: req.body.coin_id
+        })
         .set(req.body)
         .fetch();
       if (!updatedCoin) {
@@ -573,6 +636,7 @@ module.exports = {
       });
     } catch (error) {
       console.log('error', error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -583,7 +647,9 @@ module.exports = {
   },
 
   delete: async function (req, res) {
-    let { id } = req.allParams();
+    let {
+      id
+    } = req.allParams();
     if (!id) {
       return res
         .status(500)
@@ -593,8 +659,12 @@ module.exports = {
         });
     }
     let coinData = await Coins
-      .update({ id: id })
-      .set({ deleted_at: new Date() })
+      .update({
+        id: id
+      })
+      .set({
+        deleted_at: new Date()
+      })
       .fetch();
     if (coinData) {
       return res
@@ -608,9 +678,13 @@ module.exports = {
 
   getCoinDetails: async function (req, res) {
     try {
-      let { id } = req.allParams();
+      let {
+        id
+      } = req.allParams();
 
-      let coin = await Coins.findOne({ id: id });
+      let coin = await Coins.findOne({
+        id: id
+      });
       if (coin) {
         return res
           .status(200)
@@ -628,6 +702,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

@@ -50,6 +50,7 @@ module.exports = {
       .subtract(inputs.month, 'months')
       .format();
 
+    // Get Trade completed data for particular user and pair
     completedData = await TradeHistory.find({
       select: [
         'id',
@@ -72,13 +73,11 @@ module.exports = {
         created_at: {
           '>=': yesterday
         },
-        or: [
-          {
-            user_id: inputs.user_id
-          }, {
-            requested_user_id: inputs.user_id
-          }
-        ]
+        or: [{
+          user_id: inputs.user_id
+        }, {
+          requested_user_id: inputs.user_id
+        }]
       },
       sort: 'id DESC'
     })

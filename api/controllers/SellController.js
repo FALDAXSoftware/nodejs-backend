@@ -4,17 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger")
 module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * API for getting sell book details
-    * Renders this api when sell book details need to be fetched
-    *
-    * @param <socket, room>
-    *
-    * @return <Sell book value or error>
+   * API for getting sell book details
+   * Renders this api when sell book details need to be fetched
+   *
+   * @param <socket, room>
+   *
+   * @return <Sell book value or error>
    */
 
   getSellBookDetails: async function (req, res) {
@@ -45,7 +45,10 @@ module.exports = {
                           "message": sails.__("error")
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -54,6 +57,12 @@ module.exports = {
                         .tradding
                         .sell
                         .getSellBookOrders(crypto, currency);
+
+                      // for (var i = 0; i < sellBookDetails.length; i++) {
+                      //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                      // }
 
                       if (sellBookDetails) {
                         return res.json({
@@ -78,7 +87,10 @@ module.exports = {
                     "message": sails.__("error")
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -87,6 +99,12 @@ module.exports = {
                   .tradding
                   .sell
                   .getSellBookOrders(crypto, currency);
+
+                // for (var i = 0; i < sellBookDetails.length; i++) {
+                //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                // }
 
                 if (sellBookDetails) {
                   return res.json({
@@ -108,6 +126,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>', err)
+      await logger.error(err.message)
     }
   },
 
@@ -115,10 +134,13 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', { 'message': 'test' });
+        .broadcast('test', {
+          'message': 'test'
+        });
 
     } catch (err) {
       console.log('>getData>>', err)
+      await logger.error(err.message)
     }
   },
 
@@ -159,9 +181,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -185,6 +207,7 @@ module.exports = {
       }
     } catch (err) {
       console.log('>err>>', err)
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
