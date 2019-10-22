@@ -1256,22 +1256,35 @@ module.exports = {
       var user_history_data;
       console.log(data);
       if (data.trade_type == 1) {
-        user_history_data = await sails
+        var user_history_data1 = await sails
           .helpers
-          .tradding
-          .getUserTradeHistory(data);
+          .fixapi
+          .getUserJstTradeHistory(data);
+
+        var user_history_data = []
+        for (var i = 0; i < user_history_data1.length; i++) {
+          if (Object.keys(user_history_data1[i].execution_report).length > 0) {
+            user_history_data.push(user_history_data1[i])
+          }
+        }
+
+        return res.json({
+          "status": 200,
+          "message": sails.__("Order Success"),
+          "data": user_history_data
+        });
       } else if (data.trade_type == 2) { // Simplex
         user_history_data = await sails
           .helpers
           .simplex
           .getUserSimplexHistory(data);
-      }else if (data.trade_type == 3) { // JST
+      } else if (data.trade_type == 3) { // JST
         user_history_data = await sails
           .helpers
-          .fixapi
-          .getUserJstTradeHistory(data);
+          .tradding
+          .getUserTradeHistory(data);
       }
-      res.json({
+      return res.json({
         "status": 200,
         "message": sails.__("Order Success"),
         "data": user_history_data
@@ -1766,18 +1779,18 @@ module.exports = {
 
       var tradeCount;
       var tradeData;
-      
+
       if (trade_type == 1) {
-        let query = " from trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requested_user ON trade_history.requested_user_id = requested_user.id";
+        let query = " from jst_trade_history LEFT JOIN users ON jst_trade_history.user_id = users.id ";
         let whereAppended = false;
 
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
             query += " WHERE"
             whereAppended = true;
-            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(requested_user.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
-              query += " OR quantity=" + data + " OR fill_price=" + data + " OR maker_fee=" + data + " OR taker_fee=" + data
+              query += " OR quantity=" + data + " OR fill_price=" + data
             }
             query += ")"
           }
@@ -1788,7 +1801,7 @@ module.exports = {
             " AND " :
             " WHERE ";
           whereAppended = true;
-          query += " trade_history.user_id=" + user_id
+          query += " jst_trade_history.user_id=" + user_id
         }
 
         if (t_type) {
@@ -1797,7 +1810,7 @@ module.exports = {
             " WHERE ";
 
           whereAppended = true;
-          query += "  trade_history.side='" + t_type + "'";
+          query += "  jst_trade_history.side='" + t_type + "'";
         }
 
         if (start_date && end_date) {
@@ -1805,9 +1818,9 @@ module.exports = {
             " AND " :
             " WHERE ";
 
-          query += " trade_history.created_at >= '" + await sails
+          query += " jst_trade_history.created_at >= '" + await sails
             .helpers
-            .dateFormat(start_date) + " 00:00:00' AND trade_history.created_at <= '" + await sails
+            .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
             .helpers
             .dateFormat(end_date) + " 23:59:59'";
         }
@@ -1822,15 +1835,14 @@ module.exports = {
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-        tradeData = await sails.sendNativeQuery("Select trade_history.id,trade_history.requested_user_id,trade_history.user_id,tr" +
-          "ade_history.symbol,trade_history.currency,trade_history.settle_currency,trade_hi" +
-          "story.side,trade_history.quantity,trade_history.fill_price, trade_history.price, trade_history.maker_" +
-          "fee, trade_history.taker_fee, trade_history.stop_price, trade_history.limit_price, users.email, requested_user.email as reqested_user" +
-          "_email, trade_history.created_at" + query, [])
+        tradeData = await sails.sendNativeQuery("Select jst_trade_history.id,jst_trade_history.user_id,jst_tr" +
+          "ade_history.symbol,jst_trade_history.currency,jst_trade_history.settle_currency,jst_trade_hi" +
+          "story.side,jst_trade_history.quantity,jst_trade_history.fill_price, jst_trade_history.price," +
+          " users.email, jst_trade_history.created_at, jst_trade_history.execution_report" + query, [])
 
         tradeData = tradeData.rows;
 
-        tradeCount = await sails.sendNativeQuery("Select COUNT(trade_history.id)" + countQuery, [])
+        tradeCount = await sails.sendNativeQuery("Select COUNT(jst_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
 
       } else if (trade_type == 2) { // Simplex
@@ -1905,7 +1917,7 @@ module.exports = {
 
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
-      }else if (trade_type == 3) { // JST
+      } else if (trade_type == 3) { // JST
         let query = " FROM jst_trade_history LEFT JOIN users ON jst_trade_history.user_id = users.id";
         let whereAppended = false;
 
