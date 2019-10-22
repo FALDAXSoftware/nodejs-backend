@@ -7,6 +7,9 @@
 
 module.exports = {
   tableName: 'coins',
+  meta: {
+    skipRecordVerification: false
+  },
   attributes: {
     coin_icon: {
       type: 'string',

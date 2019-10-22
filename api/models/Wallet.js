@@ -7,6 +7,9 @@
 
 module.exports = {
   tableName: 'wallets',
+  meta: {
+    skipRecordVerification: false
+  },
   attributes: {
     wallet_id: {
       type: "string",
