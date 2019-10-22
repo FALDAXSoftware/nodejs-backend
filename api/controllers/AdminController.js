@@ -2133,7 +2133,6 @@ module.exports = {
         all_coins.map(obj => {
           var singledata = {};
           let exisiting = assets.find(each_value => each_value['coin_id'] === obj.coin_id);
-          //console.log(exisiting);
           singledata.coin = obj.coin;
           singledata.coin_id = obj.coin_id;
           if (exisiting != undefined) {
@@ -2527,7 +2526,6 @@ module.exports = {
       let batch_count = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       batch_count = batch_count.rows[0].count;
       // var get_batchs = await Batches.find().sort("batch_date DESC")
-      // console.log("get_batchs",get_batchs);
       if (get_batches.rowCount > 0) {
         return res.status(200).json({
           "status": 200,

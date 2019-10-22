@@ -460,7 +460,6 @@ module.exports = {
               });
           }
         } else {
-          console.log("invalid pair");
           return res
             .status(500)
             .json({
