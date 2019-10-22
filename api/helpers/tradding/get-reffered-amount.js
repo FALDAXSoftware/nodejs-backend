@@ -159,6 +159,8 @@ module.exports = {
             addRefferalAddData.txid = inputs.transaction_id;
             addRefferalAddData.is_collected = false;
 
+            console.log(addRefferalAddData);
+
             var addedData = await Referral.create(addRefferalAddData);
           }
         }
