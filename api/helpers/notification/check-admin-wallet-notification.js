@@ -44,6 +44,11 @@ module.exports = {
         let exisiting = assets.find(each_value => each_value['coin_id'] === coinData[i].id);
         //console.log("COIN ID>>>>>>>>>>>>>>>", coinData[i].id)
         // if (exisiting != undefined) {
+        console.log("===============================");
+        console.log("COIN#", flag);
+        console.log("exisiting", exisiting);
+        console.log("COIN CODE >>>>>>>>", coinData[i].coin_code);
+        console.log("WARM WALLET ADDRESS ?????????????", coinData[i].warm_wallet_address);
 
         let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
         // let custodialWallet = await sails.helpers.bitgo.getWallet(obj.coin_code, obj.custody_wallet_address);
@@ -104,6 +109,7 @@ module.exports = {
           //   }
           // }
 
+          console.log("exisiting.is_email_notification", exisiting.is_email_notification);
           if (exisiting.is_email_notification == "true" || exisiting.is_email_notification == true) {
             // if (emailValue != undefined && emailValue.length > 0) {
             //   for (var i = 0; i < emailValue.length; i++) {
