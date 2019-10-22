@@ -24,7 +24,10 @@ module.exports.log = {
    *                                                                          *
    ***************************************************************************/
 
-  level: 'debug'
+  level: 'silent'//,
+
+  // Disable captain's log so it doesn't prefix or stringify our meta data.
+  // inspect: false
 
 
 };
