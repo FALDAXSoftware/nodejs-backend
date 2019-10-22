@@ -76,7 +76,7 @@ module.exports = {
           transaction_id: req.body.hash
         });
 
-        console.log("Wallet History Length >>>>>>>>>>", alreadyWalletHistory)
+        console.log(alreadyWalletHistory)
 
         if (alreadyWalletHistory.length == 0) {
           // Object Of receiver

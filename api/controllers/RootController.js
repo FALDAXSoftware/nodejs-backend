@@ -285,7 +285,9 @@ module.exports = {
   },
 
   getEncryptKey: async function (req, res) {
+    console.log(sails.config.local.key);
     var key = sails.config.local.key;
+    console.log(sails.config.local.iv);
     var iv = sails.config.local.iv;
     var textBytes = aesjs.utils.utf8.toBytes("AC358b41c63089b4b00ca48559c3f980ed");
 
