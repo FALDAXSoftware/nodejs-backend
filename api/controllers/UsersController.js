@@ -2435,14 +2435,12 @@ module.exports = {
   getJSTPrice: async function (req, res) {
     try {
       var req_body = req.body;
-      console.log(req.body)
       var symbol = req_body.symbol;
       var quantity = req_body.quantity;
       var side = req_body.side;
       var coin = symbol.split("/");
       var get_price = await sails.helpers.fixapi.getPrice(coin[0], side);
 
-      console.log(get_price[0].ask_price);
       get_price = get_price[0];
       var price;
       if (side == "Buy") {
@@ -2453,7 +2451,6 @@ module.exports = {
       var get_faldax_fee = await AdminSetting.findOne({
         slug: "faldax_fee"
       });
-      console.log(price)
 
       var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
       var actual_price = (price);
