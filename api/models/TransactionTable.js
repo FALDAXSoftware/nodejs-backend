@@ -7,9 +7,6 @@
 
 module.exports = {
   tableName: 'transaction_table',
-  meta: {
-    skipRecordVerification: false
-  },
   attributes: {
     source_address: {
       type: 'string',
