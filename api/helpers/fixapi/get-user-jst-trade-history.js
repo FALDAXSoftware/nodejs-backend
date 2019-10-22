@@ -43,9 +43,9 @@ module.exports = {
     }
 
     if (data.symbol != null || data.symbol != undefined) {
-      if (currency != "null" ) {
+      if (currency != "null") {
         q['currency'] = currency,
-        q['settle_currency'] = settle_currency
+          q['settle_currency'] = settle_currency
       }
     }
 
@@ -64,16 +64,16 @@ module.exports = {
     q['or'] = [];
     if (data.buy == "true" || data.buy == true) {
       q['or'].push({
-          user_id: data.user_id,
-          side: 'Buy'
-        })
+        user_id: data.user_id,
+        side: 'Buy'
+      })
     }
 
     if (data.sell == "true" || data.sell == true) {
       q['or'].push({
-          user_id: data.user_id,
-          side: 'Sell'
-        })
+        user_id: data.user_id,
+        side: 'Sell'
+      })
     }
 
     if (data.buy == "false" && data.sell == "false") {
