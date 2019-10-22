@@ -38,7 +38,6 @@ module.exports = {
         }
       });
       key = await sails.helpers.getDecryptData(key.value);
-      console.log(key);
       await request.post('https://sandbox.test-simplexcc.com/wallet/merchant/v2/payments/partner/data', {
         headers: {
           'Authorization': 'ApiKey ' + key,
@@ -46,7 +45,6 @@ module.exports = {
         },
         body: JSON.stringify(inputs.data)
       }, function (err, res, body) {
-        console.log(res.body)
         return exits.success(JSON.parse(res.body));
       });
     } catch (err) {

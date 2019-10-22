@@ -72,7 +72,6 @@ module.exports = {
         description,
         appId
       } = req.allParams();
-      console.log('>>>>if', description)
       req.file('document').upload(async function (err, uploadedFiles) {
         var fs = require("fs");
         let kycDocUploadDetails = {};
