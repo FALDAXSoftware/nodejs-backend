@@ -40,7 +40,6 @@ module.exports = {
     try {
       var coin = inputs.coin;
       var feesValue;
-      console.log("coin", coin);
       if (coin == 'btc') {
         var data = await AdminSetting.findOne({
           where: {
@@ -48,7 +47,6 @@ module.exports = {
             slug: 'btc_fee'
           }
         });
-        console.log("data", data);
         feesValue = (((inputs.quantity) / (25) * data.value));
       } else if (coin == 'bch') {
 
@@ -93,7 +91,6 @@ module.exports = {
 
         feesValue = data.value
       }
-      console.log("feesValue", feesValue);
       return exits.success(feesValue);
     } catch (err) {
       console.log(err);

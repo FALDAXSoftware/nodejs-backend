@@ -172,10 +172,7 @@ module.exports = {
         // if (geo_fencing_data.response == true) {
 
         var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
-        console.log(dataUpdate);
-        console.log(main_details);
         if (dataUpdate.is_kyc_update_required == true) {
-          console.log(user_id);
           var dataObject = {
             "version": 1,
             "partner": "faldax",
@@ -219,7 +216,6 @@ module.exports = {
             "is_processed": false
           }).fetch();
 
-          console.log(tradeHistory);
           return res
             .status(200)
             .json({
@@ -276,9 +272,7 @@ module.exports = {
           'Authorization': 'ApiKey ' + key,
           'Content-Type': 'application/json'
         },
-      }, function (err, res, body) {
-        console.log(res.body);
-      });
+      }, function (err, res, body) {});
 
     } catch (err) {
       console.log(err);
@@ -289,7 +283,6 @@ module.exports = {
   // Passing events for checking the status of the payment
   checkPaymentStatus: async function () {
     try {
-      console.log("Inside this method????????")
       var data = await sails.helpers.simplex.getEventData();
       var tradeData = await SimplexTradeHistory.find({
         where: {
@@ -300,16 +293,10 @@ module.exports = {
         }
       }).sort('id DESC');
 
-      console.log("Trade Data >>>>>", tradeData);
-
       for (var i = 0; i < tradeData.length; i++) {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
-          console.log("Condition ??????", payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner")
-          console.log(payment_data.id == tradeData[i].payment_id);
-          console.log(payment_data.id)
-          console.log(tradeData[i].payment_id)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
@@ -380,21 +367,15 @@ module.exports = {
                 })
                 .fetch();
 
-              console.log("Trade History Data >>>>>>>>>>>.", tradeHistoryData);
-
               let referredData = await sails
                 .helpers
                 .tradding
                 .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
 
-              console.log("Deleteing the event in if")
-
               await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
-            console.log("ELSE IF >>>>>>>>>>>>>")
             if (payment_data.status == "pending_simplexcc_approval") {
-              console.log("IF ????????????")
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
@@ -410,7 +391,6 @@ module.exports = {
                   txid: tradeData[i].id
                 }
               })
-              console.log("Refer Data >>>>>>>>>", referData);
 
               if (referData == undefined) {
                 let referredData = await sails
@@ -419,8 +399,6 @@ module.exports = {
                   .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
 
               }
-
-              console.log("Deleteing the event in else")
 
               await this.deleteEvent(data.events[j].event_id)
             } else if (payment_data.status == "cancelled") {
@@ -522,8 +500,6 @@ module.exports = {
       var data = req.body;
 
       var key_value = await sails.helpers.getEncryptData(data.access_token);
-
-      console.log(key_value);
 
       var updateTokenValue = await AdminSetting
         .update({
