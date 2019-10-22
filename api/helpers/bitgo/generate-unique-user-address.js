@@ -30,6 +30,7 @@ module.exports = {
       }
     });
 
+    console.log(user_data)
     var institutional_customer = user_data.account_class;
     var country_code = 1;
     var account_level = user_data.account_tier;
