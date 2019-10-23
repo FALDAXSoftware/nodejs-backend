@@ -29,6 +29,8 @@ module.exports = {
 
     try {
       var req_body = inputs.value_object;
+      console.log(req_body);
+      console.log("USD VALUE ?????????", req_body.usd_value);
       var get_faldax_fee;
       var get_network_fees;
       var feesCurrency;
@@ -82,9 +84,11 @@ module.exports = {
               }
             })
             faldax_fee_value = (totalValue * ((faldax_fee.value) / 100))
-            get_faldax_fee = totalValue - get_network_fees - ((totalValue * (faldax_fee.value) / 100))
+            get_faldax_fee = parseFloat(totalValue) - parseFloat(get_network_fees) - parseFloat((totalValue * (faldax_fee.value) / 100))
             original_value = totalValue;
           }
+
+          console.log(get_faldax_fee);
           returnData = {
             "network_fee": get_network_fees,
             "faldax_fee": faldax_fee_value,
@@ -129,6 +133,8 @@ module.exports = {
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
             original_value = get_faldax_fee
           }
+          console.log(((!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value))) == true)
+          console.log(get_faldax_fee)
           returnData = {
             "network_fee": get_network_fees,
             "faldax_fee": faldax_fee_value,
@@ -136,7 +142,7 @@ module.exports = {
             "currency": feesCurrency,
             "price_usd": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? usd_price : usd_value,
             "currency_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? totalValue : totalValue,
-            "original_value": original_value,
+            "original_value": (usd_value == null || !usd_value || usd_value == undefined || isNaN(usd_value)) ? req_body.OrderQty : price_value_usd,
             "orderQuantity": get_faldax_fee
           }
         }
