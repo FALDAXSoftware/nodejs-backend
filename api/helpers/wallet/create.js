@@ -59,7 +59,7 @@ module.exports = {
             id: requestedCoin[0].id
           })
           .set({
-            'hot_send_wallet_address': newWallet
+            'warm_wallet_address': newWallet
               .wallet
               .id()
           });
