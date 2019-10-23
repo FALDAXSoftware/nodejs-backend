@@ -13,7 +13,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    await ThresoldController.addThresoldValue();
+    // await ThresoldController.addThresoldValue();
 
     // //Getting User Notification Details
     let user = await UserThresholds.find({
