@@ -101,7 +101,6 @@ module.exports = {
 
       var data = req.body;
       var user_id = req.user.id;
-      console.log(data, user_id);
       // var user_id = 1712;
 
       var payment_id = uuidv1();
@@ -154,7 +153,6 @@ module.exports = {
       main_details.account_details = account_details;
       main_details.transaction_details = transaction_details;
 
-      console.log(main_details);
 
       // Checking for panic button details
       var panic_button_details = await AdminSetting.findOne({

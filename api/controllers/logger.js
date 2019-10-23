@@ -16,7 +16,6 @@ var logger = bunyan.createLogger({
 })
 
 logger._emit = (rec, noemit) => {
-  console.log(rec)
   delete rec.pid
   delete rec.hostname
   rec['@timestamp'] = rec.time

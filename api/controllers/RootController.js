@@ -55,21 +55,13 @@ module.exports = {
         }
       });
 
-      console.log(emailData);
-
       // var usersEmail = ((emailData.email).join(','));
       var all_user_emails = [];
       emailData.map(function (each) {
-        console.log(each)
         all_user_emails.push(each.email);
         return each;
       });
-      // console.log(usersEmail);
-      console.log(all_user_emails);
-      // console.log(usersEmail);
       var splitted_users = all_user_emails.join(",");
-      // console.log("splitted_users", splitted_users);
-      console.log(Object.values(all_user_emails))
       var value = Object.values(all_user_emails)
 
       let slug = "";
@@ -309,7 +301,7 @@ module.exports = {
     //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
 
     // When ready to decrypt the hex string, convert it back to bytes
-    var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
+    var encryptedBytes = aesjs.utils.hex.toBytes("77b4af3044d472f5e07456112f32a5ffa2c8fd27d353f112e315e4e53c7600c0a2e9d2479fcfd18446c348e060119d9d8ec78fb8fc8823a7ef67f575b6fa002fd4f298");
 
     // The output feedback mode of operation maintains internal state,
     // so to decrypt a new instance must be instantiated.
