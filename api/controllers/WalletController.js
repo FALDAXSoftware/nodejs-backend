@@ -701,7 +701,7 @@ module.exports = {
 
       if (currencyConversionData.quote.USD) {
         var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-        if (get_price[0].ask_price != undefined) {
+        if (get_price != undefined) {
           currencyConversionData.quote.USD.price = get_price[0].ask_price
         } else {
           currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
