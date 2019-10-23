@@ -336,7 +336,6 @@ module.exports = {
                     deleted_at: null,
                     slug: 'login_new_ip'
                   })
-                  console.log(user_detail)
                   if (userNotification != undefined) {
                     if (userNotification.email == true || userNotification.email == "true") {
                       if (user_detail.email != undefined)

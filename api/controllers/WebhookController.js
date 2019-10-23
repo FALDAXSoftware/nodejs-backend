@@ -65,8 +65,9 @@ module.exports = {
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     // res.end();
-
+    console.log(req.body.state)
     if (req.body.state == "confirmed") {
+      console.log("Transfer Value >>>>>>>>>>>>>.", req.body.transfer);
       let transferId = req.body.transfer;
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
       if (transfer.state == "confirmed") {
@@ -75,11 +76,16 @@ module.exports = {
           transaction_id: req.body.hash
         });
 
+        console.log(alreadyWalletHistory)
+
         if (alreadyWalletHistory.length == 0) {
           // Object Of receiver
           let dest = transfer.outputs[0];
           // Object of sender
           let source = transfer.outputs[1];
+
+          console.log("Destination >>>>>>>>>", dest);
+          console.log("Source >>>>>>>>>>", source);
 
           // receiver wallet
           let userWallet = await Wallet.findOne({
@@ -161,10 +167,10 @@ module.exports = {
                 if (userData.email != undefined)
                   await sails.helpers.notification.send.email("receive", userData)
               }
-              if (userNotification.text == true || userNotification.text == "true") {
-                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-                  await sails.helpers.notification.send.text("receive", userData)
-              }
+              // if (userNotification.text == true || userNotification.text == "true") {
+              //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+              //     await sails.helpers.notification.send.text("receive", userData)
+              // }
             }
 
 
@@ -175,6 +181,9 @@ module.exports = {
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
 
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
+
+            console.log("Warm Wallet >>>>>>>>>>", warmWallet);
+            console.log("Custodial Wallet >>>>>>>>>", custodialWallet);
             // check for wallet exist or not
             if (warmWallet.id && custodialWallet.id) {
 
@@ -222,6 +231,8 @@ module.exports = {
                 coin_id: coin.id,
                 is_executed: true,
               });
+
+              console.log("Transaction Log ???????????????", transactionLog);
 
               // Insert logs in taransaction table
               await TransactionTable.createEach([...transactionLog]);
