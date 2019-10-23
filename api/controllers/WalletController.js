@@ -81,7 +81,7 @@ module.exports = {
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                     WHERE wallets.user_id = ${req.user.id} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
-      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
+      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
 
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
@@ -93,15 +93,30 @@ module.exports = {
         balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
         if (balanceWalletData.rows[i].quote.USD) {
           var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-          console.log(get_price)
           if (get_price.length > 0)
             balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
           else
-            balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
         }
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
+
+      for (var i = 0; i < (nonBalanceWalletData.rows).length; i++) {
+        console.log(nonBalanceWalletData.rows[i])
+        if (nonBalanceWalletData.rows[i].quote != undefined) {
+          nonBalanceWalletData.rows[i].quote.EUR.price = ((nonBalanceWalletData.rows[i].quote.EUR.price) != null ? (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
+          // nonBalanceWalletData.rows[i].quote.USD.price = (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
+          nonBalanceWalletData.rows[i].quote.INR.price = ((nonBalanceWalletData.rows[i].quote.INR.price) != null ? (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
+          if (nonBalanceWalletData.rows[i].quote.USD) {
+            var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
+            if (get_price.length > 0)
+              nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            else
+              nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          }
+        }
+      }
 
       return res.json({
         status: 200,
@@ -686,7 +701,11 @@ module.exports = {
 
       if (currencyConversionData.quote.USD) {
         var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-        currencyConversionData.quote.USD.price = get_price[0].ask_price
+        if (get_price[0].ask_price != undefined) {
+          currencyConversionData.quote.USD.price = get_price[0].ask_price
+        } else {
+          currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+        }
       }
 
       let walletUserData = await Wallet.findOne({
