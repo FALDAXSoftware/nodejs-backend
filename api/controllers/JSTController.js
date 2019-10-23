@@ -244,7 +244,7 @@ module.exports = {
               return new Error("serverError")
             });
           // Check wallet balance is sufficient or not
-          if ((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
+          if ((priceValue * (req_body.OrderQty)).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             return res
               .status(500)
               .json({
