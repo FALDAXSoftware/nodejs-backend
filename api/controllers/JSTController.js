@@ -279,6 +279,8 @@ module.exports = {
             Product: "4"
           };
           var response = await sails.helpers.fixapi.buyOrder(order_object);
+
+          console.log(response)
           // var response = {};
           if (response == undefined || response.status == 0) {
             return res
