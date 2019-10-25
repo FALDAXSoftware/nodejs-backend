@@ -30,9 +30,9 @@ module.exports.security = {
 
   cors: {
     allRoutes: true,
-    allowOrigins: ['http://preprod-admin.faldax.com', 'https://dev.faldax.com', 'https://staging-admin.faldax.com', 'https://foo.com:8888'],
+    allowOrigins: '*',
     allowCredentials: false,
-    allowRequestHeaders: 'content-type, authorization, Access-Control-Request-Method',
+    allowRequestHeaders: 'content-type, authorization',
   },
 
 
