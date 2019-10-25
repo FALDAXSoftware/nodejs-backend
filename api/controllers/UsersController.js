@@ -637,7 +637,18 @@ module.exports = {
       let usersData = await sails.sendNativeQuery("Select * " + query, [])
 
       usersData = usersData.rows;
-      usersData[0].UUID = usersData[0].account_class + '-' + usersData[0].account_tier + '-' + usersData[0].id;
+
+      var walletData = await Wallet.find({
+        where: {
+          deleted_at: null,
+          user_id: usersData[0].id
+        }
+      });
+
+      console.log(walletData);
+      if (walletData.length > 0) {
+        usersData[0].UUID = walletData[0].address_label;
+      }
       if (usersData) {
         return res.json({
           "status": 200,
@@ -646,6 +657,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err);
       await logger.error(err.message)
       return res
         .status(500)
@@ -1413,6 +1425,74 @@ module.exports = {
       status: 200,
       message: sails.__("user_delete_success")
     });
+  },
+
+  userAccountDetailSummary: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var total = 0;
+      var walletArray = [];
+      var walletData = await Wallet.find({
+        where: {
+          deleted_at: null,
+          user_id: user_id
+        }
+      });
+      var usd_price = 0
+
+      if (walletData.length > 0) {
+        for (var i = 0; i < walletData.length; i++) {
+          console.log("Balance >>>>>>>>", walletData[i].balance)
+          if (walletData[i].balance > 0)
+            walletArray.push(walletData[i]);
+          total = total + walletData[i].balance
+          var coinData = await Coins.findOne({
+            where: {
+              deleted_at: null,
+              id: walletData[i].coin_id
+            }
+          })
+          walletData[i].coin = coinData.coin;
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
+          usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+        }
+        if (total > 0) {
+          res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("please remove your funds"),
+              data: walletArray,
+              usd_price
+            })
+        } else {
+          res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("no funds left")
+            })
+        }
+      } else {
+        res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("no funds left")
+          })
+      }
+
+
+
+    } catch (error) {
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   },
 
   getUserTickets: async function (req, res) {
