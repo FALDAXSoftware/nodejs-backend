@@ -351,5 +351,7 @@
   "jst order not created": "Oops, Unfortunately your order is not created. Please try again.",
   "insufficent funds in wallet": "Insufficient funds in wallet",
   "Price retrieve success": "Price has been retrieved successfully",
-  "jst pair retrieve success": "JST Pair has been retrieved successfully."
+  "jst pair retrieve success": "JST Pair has been retrieved successfully.",
+  "no funds left": "No funds are left in the user account.",
+  "please remove your funds": "Please remove your funds to continue."
 }

@@ -429,5 +429,8 @@ module.exports.routes = {
   // JST Conversion
   'post /converion/jst-create-order': 'JSTController.createOrder',
   'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
-  'get /conversion/get-jst-pair': 'JSTController.getJSTPairList'
+  'get /conversion/get-jst-pair': 'JSTController.getJSTPairList',
+
+  // Delete account checking value
+  'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
 };

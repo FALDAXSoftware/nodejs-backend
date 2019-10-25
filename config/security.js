@@ -32,7 +32,7 @@ module.exports.security = {
     allRoutes: true,
     allowOrigins: '*',
     allowCredentials: false,
-    allowRequestHeaders: 'content-type, authorization',
+    allowRequestHeaders: 'content-type, authorization, Access-Control-Request-Method',
   },
 
 
