@@ -1431,6 +1431,18 @@ module.exports = {
   userAccountDetailSummary: async function (req, res) {
     try {
       var user_id = req.user.id;
+      let user = await Users.findOne({
+        id: user_id,
+        deleted_at: null
+      });
+      var user2fastatus;
+
+      if (user.is_twofactor == false || user.is_twofactor == "false") {
+        user2fastatus = false;
+      } else {
+        user2fastatus = true;
+      }
+
       var total = 0;
       var walletArray = [];
       var walletData = await Wallet.find({
@@ -1467,14 +1479,16 @@ module.exports = {
               "status": 201,
               "message": sails.__("please remove your funds"),
               data: walletArray,
-              usd_price
+              usd_price,
+              user2fastatus
             })
         } else {
           res
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left")
+              "message": sails.__("no funds left"),
+              user2fastatus
             })
         }
       } else {
@@ -1482,7 +1496,8 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("no funds left")
+            "message": sails.__("no funds left"),
+            user2fastatus
           })
       }
     } catch (error) {
