@@ -307,6 +307,8 @@ module.exports = {
           SecurityType: "FOR",
           Product: "4"
         };
+
+        console.log("????????????", order_object)
         var response = await sails.helpers.fixapi.buyOrder(order_object);
         console.log(response.data.OrderID)
 

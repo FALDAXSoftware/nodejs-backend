@@ -640,7 +640,6 @@ module.exports = {
 
       var walletData = await Wallet.find({
         where: {
-          deleted_at: null,
           user_id: usersData[0].id
         }
       });
@@ -648,6 +647,8 @@ module.exports = {
       console.log(walletData);
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
+      } else {
+        usersData[0].UUID = '4-1-' + usersData[0].account_tier + '-' + usersData[0].id;
       }
       if (usersData) {
         return res.json({
@@ -1452,9 +1453,12 @@ module.exports = {
               id: walletData[i].coin_id
             }
           })
-          walletData[i].coin = coinData.coin;
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
-          usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+          if (coinData != undefined) {
+            walletData[i].coin = coinData.coin;
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
+            walletData[i].fiat = get_jst_price[0].bid_price;
+            usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+          }
         }
         if (total > 0) {
           res
@@ -1481,11 +1485,86 @@ module.exports = {
             "message": sails.__("no funds left")
           })
       }
-
-
-
     } catch (error) {
-      await logger.error(err.message)
+      console.log(error)
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  userAccountDetailSummaryAdmin: async function (req, res) {
+    try {
+      var {
+        user_id
+      } = req.allParams();
+      var total = 0;
+      var walletArray = [];
+      var walletData = await Wallet.find({
+        where: {
+          deleted_at: null,
+          user_id: user_id
+        }
+      });
+
+      var userData = await Users.findOne({
+        where: {
+          id: user_id
+        }
+      })
+      var deleteDate = userData.deleted_at
+      var usd_price = 0
+
+      if (walletData.length > 0) {
+        for (var i = 0; i < walletData.length; i++) {
+          if (walletData[i].balance > 0)
+            walletArray.push(walletData[i]);
+          total = total + walletData[i].balance
+          walletData[i].balance = parseFloat(walletData[i].balance).toFixed(8);
+          var coinData = await Coins.findOne({
+            where: {
+              deleted_at: null,
+              id: walletData[i].coin_id
+            }
+          })
+          walletData[i].coin = coinData.coin;
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
+          walletData[i].fiat = parseFloat(walletData[i].balance * get_jst_price[0].bid_price).toFixed(8);
+          usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+        }
+        if (total > 0) {
+          res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("please remove your funds"),
+              data: walletArray,
+              usd_price,
+              deleteDate
+            })
+        } else {
+          res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("no funds left")
+            })
+        }
+      } else {
+        res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("no funds left")
+          })
+      }
+    } catch (error) {
+      console.log(error)
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -1655,6 +1734,80 @@ module.exports = {
       }
     } catch (err) {
       await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getDeletedUserPaginate: async function (req, res) {
+    try {
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        country
+      } = req.allParams();
+      console.log(req.allParams());
+      let whereAppended = false;
+      let query = " from users ";
+      query += " WHERE users.deleted_at IS NOT NULL"
+      if ((data && data != "")) {
+        query += " AND"
+        whereAppended = true;
+        if (data && data != "" && data != null) {
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+        }
+        query += ")"
+      }
+
+      if (country && country != "") {
+        if (whereAppended) {
+          query += " AND "
+        } else {
+          query += " WHERE "
+        }
+        whereAppended = true;
+        query += "  users.country='" + country + "'";
+      }
+
+      countQuery = query;
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        query += " ORDER BY users." + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY users.created_at DESC";
+      }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      console.log(query);
+      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID" +
+        "f_referrals" + query, [])
+
+      usersData = usersData.rows;
+
+      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      userCount = userCount.rows[0].count;
+
+      if (usersData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Users list"),
+          "data": usersData,
+          userCount
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
