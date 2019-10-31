@@ -74,6 +74,7 @@ module.exports.routes = {
   'post /admin/employee-change-password': 'Admin.updateEmployeePassword',
   'get /admin/get-users': 'Users.getUserPaginate',
   'get /admin/get-inactive-users': 'Users.getInactiveUserPaginate',
+  'get /admin/get-deleted-users': 'Users.getDeletedUserPaginate',
   'get /admin/referred-users': 'Users.getUserReferredAdmin',
   'post /admin/update-user-referal': 'Users.updateUserDetails',
   'post /admin/user-activate': 'Users.userActivate',
@@ -433,4 +434,5 @@ module.exports.routes = {
 
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
+  'get /admin/deleteAccountCheck': 'UsersController.userAccountDetailSummaryAdmin',
 };
