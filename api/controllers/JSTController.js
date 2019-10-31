@@ -111,9 +111,9 @@ module.exports = {
 
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
-        quantityValue = req_body.Quantity
-      } else {
         quantityValue = req_body.OrderQty
+      } else {
+        quantityValue = req_body.Quantity
       }
 
       console.log("Quantity Vaslue >>>>>>>>", quantityValue);
