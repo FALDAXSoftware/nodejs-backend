@@ -44,9 +44,12 @@ module.exports = {
       // },
       json: true
     }, async function (err, httpResponse, body) {
+        console.log("JST Market Price");
+        console.log("JST Error",err);
       if (err) {
         return exits.error(err);
       }
+      console.log("JST Body",body);
       if (body.error) {
         return exits.error(body);
       }
