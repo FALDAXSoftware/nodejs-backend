@@ -287,11 +287,11 @@ module.exports = {
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
           order_type: "Market",
           order_status: "open",
-          fix_quantity: parseFloat(quantityValue),
+          fix_quantity: parseFloat(req_body.Quantity),
           symbol: req_body.Symbol,
           user_id: user_id
         };
-        // console.log("order_create",order_create);
+        console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
         let order_object = {
@@ -299,7 +299,7 @@ module.exports = {
           HandlInst: "1",
           Symbol: req_body.Symbol,
           Side: (req_body.Side).toString(), // 1:Buy, 2:Sell
-          OrderQty: quantityValue,
+          OrderQty: req_body.Quantity,
           OrdType: req_body.OrdType,
           Currency: req_body.Currency,
           ExecInst: "B",
