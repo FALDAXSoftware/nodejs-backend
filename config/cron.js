@@ -1,5 +1,4 @@
 var simplex = require('../api/controllers/SimplexController');
-console.log("First:",sails.config.local.CRON_STATUS);
 module.exports.cron = {
   newsUpdate: {
     schedule: '0 0 * * * *',
