@@ -353,5 +353,9 @@
   "Price retrieve success": "Price has been retrieved successfully",
   "jst pair retrieve success": "JST Pair has been retrieved successfully.",
   "no funds left": "No funds are left in the user account.",
-  "please remove your funds": "Please remove your funds to continue."
+  "please remove your funds": "Please remove your funds to continue.",
+  "Coin fees success": "Coin Fees List has been retrieved successfully.",
+  "slug retrive success": "Coin Fee Value has been retrieved successfully.",
+  "value updated successfully": "Coin Fee Value has been updated successfully.",
+  "value updated unsuccess": "No Value this slug has been found"
 }
