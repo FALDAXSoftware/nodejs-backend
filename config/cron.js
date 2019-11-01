@@ -1,5 +1,5 @@
 var simplex = require('../api/controllers/SimplexController');
-
+console.log("First:",sails.config.local.CRON_STATUS);
 module.exports.cron = {
   newsUpdate: {
     schedule: '0 0 * * * *',
@@ -100,6 +100,7 @@ module.exports.cron = {
   updateJSTPrice: {
     schedule: '* * * * *',
     onTick: async function () {
+        console.log("In:",sails.config.local.CRON_STATUS);
       if (sails.config.local.CRON_STATUS == "true") {
         // Updating Thresold Value according to the latest value
         await sails.helpers.fixapi.getMarketPrice("XRP/USD");
