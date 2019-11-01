@@ -31,6 +31,7 @@ module.exports = {
   */
 
   fn: async function (inputs, exits) {
+      console.log("JST Input:",inputs);
     request({
       url: 'http://3.19.249.13:8080/Market/GetQuote?symbol='+inputs.symbol,
       method: "POST",
