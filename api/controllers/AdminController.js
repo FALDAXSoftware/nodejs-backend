@@ -3481,4 +3481,130 @@ module.exports = {
     }
 
   },
+
+  getCoinFees: async function (req, res) {
+    try {
+      var feesValue = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          or: [{
+              'slug': 'btc_fee'
+            },
+            {
+              'slug': 'bch_fees'
+            },
+            {
+              'slug': 'eth_fees'
+            },
+            {
+              'slug': 'ltc_fees'
+            },
+            {
+              'slug': 'xrp_fees'
+            }
+          ]
+        }
+      });
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Coin fees success"),
+          feesValue
+        })
+    } catch (error) {
+      console.log("err", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getEachCoinFee: async function (req, res) {
+    try {
+      var {
+        slug
+      } = req.allParams();
+
+      var value = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: slug
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("slug retrive success"),
+          value
+        })
+    } catch (error) {
+      console.log("err", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  updateCoinFee: async function (req, res) {
+    try {
+
+      var body_value = req.body;
+
+      var feeValue = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: body_value.slug
+        }
+      });
+      var updateFeeValue;
+      if (feeValue != undefined) {
+        updateFeeValue = await AdminSetting
+          .update({
+            deleted_at: null,
+            slug: body_value.slug
+          })
+          .set({
+            value: body_value.value
+          })
+          .fetch()
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("value updated successfully"),
+            updateFeeValue
+          })
+      } else {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("value updated unsuccess")
+          })
+      }
+
+    } catch (error) {
+      console.log("err", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+  }
 };

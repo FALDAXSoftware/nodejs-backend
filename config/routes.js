@@ -29,6 +29,9 @@ module.exports.routes = {
   'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
   'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
+  'get /admin/get-coin-fees-coin': 'AdminController.getCoinFees',
+  'get /admin/get-slug-value/:slug': 'AdminController.getEachCoinFee',
+  'put /admin/update-fees-value': 'AdminController.updateCoinFee',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
