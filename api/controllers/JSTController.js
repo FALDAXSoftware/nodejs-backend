@@ -111,9 +111,9 @@ module.exports = {
 
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
-        quantityValue = req_body.OrderQty
-      } else {
         quantityValue = req_body.Quantity
+      } else {
+        quantityValue = req_body.OrderQty
       }
 
       console.log("Quantity Vaslue >>>>>>>>", quantityValue);
@@ -168,7 +168,7 @@ module.exports = {
         } = await sails
           .helpers
           .utilities
-          .getCurrencies((req_body.Symbol).replace("/", '-'));
+          .getCurrencies((req_body.original_pair).replace("/", '-'));
 
         console.log(crypto, currency)
 
@@ -273,7 +273,13 @@ module.exports = {
         console.log("Conditions ???????????", (quantityValue) <= wallet.placed_balance);
         // Check wallet balance is sufficient or not
         console.log(wallet.placed_balance);
-        if ((quantityValue) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
+        var balanceChecking = 0;
+        if (req_body.original_pair == req_body.order_pair) {
+          balanceChecking = req_body.OrderQty
+        } else {
+          balanceChecking = req_body.Quantity
+        }
+        if ((balanceChecking) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           return res
             .status(500)
             .json({
@@ -282,8 +288,10 @@ module.exports = {
             });
         }
 
+        console.log(quantityValue);
+
         let order_create = {
-          currency: req_body.Currency,
+          currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
           order_type: "Market",
           order_status: "open",
@@ -291,7 +299,7 @@ module.exports = {
           symbol: req_body.Symbol,
           user_id: user_id
         };
-        // console.log("order_create",order_create);
+        console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
         let order_object = {
@@ -301,7 +309,7 @@ module.exports = {
           Side: (req_body.Side).toString(), // 1:Buy, 2:Sell
           OrderQty: quantityValue,
           OrdType: req_body.OrdType,
-          Currency: req_body.Currency,
+          Currency: crypto,
           ExecInst: "B",
           TimeInForce: "0",
           SecurityType: "FOR",
