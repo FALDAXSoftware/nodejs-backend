@@ -1838,7 +1838,7 @@ module.exports = {
         tradeData = await sails.sendNativeQuery("Select jst_trade_history.id,jst_trade_history.user_id,jst_tr" +
           "ade_history.symbol,jst_trade_history.currency,jst_trade_history.settle_currency,jst_trade_hi" +
           "story.side,jst_trade_history.quantity,jst_trade_history.fill_price, jst_trade_history.price," +
-          " users.email, jst_trade_history.created_at, jst_trade_history.execution_report" + query, [])
+          " users.email, jst_trade_history.created_at, jst_trade_history.execution_report, jst_trade_history.order_id" + query, [])
 
         tradeData = tradeData.rows;
 
