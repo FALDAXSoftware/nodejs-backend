@@ -439,4 +439,15 @@ module.exports.routes = {
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
   'get /admin/deleteAccountCheck': 'UsersController.userAccountDetailSummaryAdmin',
+
+  // Compaigns CMS
+  'post /admin/campaigns/create': 'CompaignsController.create',
+  'post /admin/campaigns/list': 'CompaignsController.list',
+  'get /admin/campaigns/get/:id': 'CompaignsController.get',
+  'put /admin/campaigns/change-status/:id': 'CompaignsController.changeStatus',
+
+  'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
+  'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
+  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
+  
 };

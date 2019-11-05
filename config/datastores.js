@@ -51,10 +51,10 @@ module.exports.datastores = {
     adapter: 'sails-postgresql',
     //url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
     // url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
-    url: "postgresql://postgres:ymbmmMt9bNSoP6tQ@pre-prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+    // url: "postgresql://postgres:ymbmmMt9bNSoP6tQ@pre-prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     // url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax-2019-10-22-03-12.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
-    // url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/database",
-    //url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+    url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/database",
+    // url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     ssl: false,
     // pool: false
   },
