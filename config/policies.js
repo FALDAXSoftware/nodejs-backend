@@ -156,5 +156,8 @@ module.exports.policies = {
     "checkPaymentStatus": true,
     "deleteEvent": true
     // "getSimplexCoinList": true
+  },
+  "JSTController": {
+    "getJSTPriceValueAuth": true
   }
 };

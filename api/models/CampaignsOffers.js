@@ -1,36 +1,35 @@
 /**
- * Fees.js
+ * CampaignsOffers.js
  *
- * @description :: Represents a database table pairs.
+ * @description :: Represents a database table PriceHistory.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'jst_pair',
+  tableName: 'campaigns_offers',
   attributes: {
-    original_pair: {
+    code: {
       type: 'string',
-      columnName: 'original_pair'
+      columnName: 'code'
+    },    
+    campaign_id: {
+      // required: true,
+      model: 'campaigns',      
     },
-    order_pair: {
-      type: 'string',
-      columnName: 'order_pair',
-      required: true
+    no_of_transactions: {
+      type: 'ref',
+      columnType: 'number',
+      columnName: 'no_of_transactions'
     },
-    jst_min_limit: {
-      type: 'number',
-      columnName: 'jst_min_limit',
-      defaultsTo: 0
+    transaction_fees: {
+      type: 'ref',
+      columnType: 'number',
+      columnName: 'transaction_fees'
     },
-    crypto: {
-      type: 'string',
-      columnName: 'crypto',
-      required: true
-    },
-    currency: {
-      type: 'number',
-      columnName: 'currency',
-      required: true
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: true,
     },
     created_at: {
       type: 'ref',
