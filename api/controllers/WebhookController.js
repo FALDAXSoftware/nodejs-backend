@@ -192,6 +192,9 @@ module.exports = {
               let custodialWalletAmount = 0;
               warmWalletAmount = (dest.value * 80) / 100;
               custodialWalletAmount = (dest.value * 20) / 100;
+
+              console.log(warmWalletAmount);
+              console.log(custodialWalletAmount)
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
               //     // send 10% to warm wallet and 90% to custodial wallet
               //     warmWalletAmount = (dest.value * 10) / 100;
