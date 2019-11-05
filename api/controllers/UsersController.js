@@ -1436,6 +1436,7 @@ module.exports = {
         deleted_at: null
       });
       var user2fastatus;
+      console.log("User Value >>>>>>>>.", user)
 
       if (user.is_twofactor == false || user.is_twofactor == "false") {
         user2fastatus = false;
