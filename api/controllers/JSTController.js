@@ -90,6 +90,43 @@ module.exports = {
     }
   },
 
+  /** 
+   * Get JST value without auth
+   */
+  getJSTPriceValueAuth: async function (req, res) {
+    try {
+      let req_body = req.body;
+      let flag = req_body.flag;
+      let validator = new Validator(req_body, {
+        Symbol: 'required',
+        Side: 'required|in:1,2', // 1:Buy, 2:Sell
+        OrderQty: 'required|decimal',
+        Currency: 'required',
+        OrdType: 'required|in:1,2'
+      });
+
+      var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Price retrieve success"),
+          "data": jstResponseValue
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   /**
    * Buy Order for creating Order
    *
@@ -105,6 +142,7 @@ module.exports = {
         OrderQty: 'required|decimal',
         Quantity: 'required|decimal',
         Currency: 'required',
+        OriginalQuantity: 'required',
         // ExecInst: 'required|in:A,B',
         OrdType: 'required|in:1,2'
       });
@@ -186,8 +224,6 @@ module.exports = {
           }
         });
 
-        console.log(walletCurrency)
-
         if (walletCurrency == undefined) {
           return res
             .status(201)
@@ -219,6 +255,15 @@ module.exports = {
             .json({
               "status": 201,
               "message": sails.__("Create Crypto Wallet")
+            })
+        }
+
+        if (req_body.OriginalQuantity < cryptoValue.jst_min_coin_limit) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("Minimum Order Limit not satisfied")
             })
         }
         // Get JST Price 
@@ -478,7 +523,7 @@ module.exports = {
           var update_data = {
             fill_price: jst_response_data.SettlCurrAmt,
             price: final_amount,
-            quantity: jst_response_data.CumQty,
+            quantity: req_body.OriginalQuantity,
             settle_currency: jst_response_data.SettlCurrency,
             is_partially_filled: (jst_response_data.OrdStatus == 1 ? true : false),
             order_id: jst_response_data.OrderID,
@@ -495,7 +540,7 @@ module.exports = {
             asset2_usd_value: asset2_usd_value,
             order_status: order_status,
             reason: (jst_response_data.Text ? jst_response_data.Text : ""),
-            amount_after_fees_deduction: (req_body.order_pair == req_body.original_pair) ? final_fees_deducted_crypto : final_fees_currency
+            amount_after_fees_deduction: req_body.OriginalQuantity
           };
           var update_order = await JSTTradeHistory
             .update({
