@@ -111,7 +111,7 @@ module.exports = {
             admin_details.roles = role;
 
             // Role Not Active
-            if (!role.is_active) {
+            if (role.is_active == "false" | role.is_active == false) {
               res
                 .status(400)
                 .json({
