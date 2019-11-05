@@ -13,8 +13,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    // await ThresoldController.addThresoldValue();
-
     // //Getting User Notification Details
     let user = await UserThresholds.find({
       deleted_at: null
@@ -27,16 +25,6 @@ module.exports = {
 
     var values = allValue.rows;
 
-
-
-    console.log(allValue);
-
-    // let priceValue = await ThresoldPrices.find({
-    //   where: {
-    //     deleted_at: null
-    //   }
-    // }).sort('id DESC').limit(7)
-
     for (let index = 0; index < user.length; index++) {
       const element = user[index];
       var assetValue = element.asset;
@@ -48,9 +36,6 @@ module.exports = {
           is_verified: true
         }
       });
-
-      console.log(assetValue);
-      console.log(userData);
 
       for (var i = 0; i < assetValue.length; i++) {
         for (var k = 0; k < values.length; k++) {
