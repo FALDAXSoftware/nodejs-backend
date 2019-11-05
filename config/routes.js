@@ -433,9 +433,21 @@ module.exports.routes = {
   // JST Conversion
   'post /converion/jst-create-order': 'JSTController.createOrder',
   'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
+  'post /conversion/jst-price-value': 'JSTController.getJSTPriceValueAuth',
   'get /conversion/get-jst-pair': 'JSTController.getJSTPairList',
 
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
   'get /admin/deleteAccountCheck': 'UsersController.userAccountDetailSummaryAdmin',
+
+  // Compaigns CMS
+  'post /admin/campaigns/create': 'CompaignsController.create',
+  'post /admin/campaigns/list': 'CompaignsController.list',
+  'get /admin/campaigns/get/:id': 'CompaignsController.get',
+  'put /admin/campaigns/change-status/:id': 'CompaignsController.changeStatus',
+
+  'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
+  'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
+  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
+  
 };
