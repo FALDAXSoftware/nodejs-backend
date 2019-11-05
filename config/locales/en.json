@@ -357,5 +357,6 @@
   "Coin fees success": "Coin Fees List has been retrieved successfully.",
   "slug retrive success": "Coin Fee Value has been retrieved successfully.",
   "value updated successfully": "Coin Fee Value has been updated successfully.",
-  "value updated unsuccess": "No Value this slug has been found"
+  "value updated unsuccess": "No Value this slug has been found",
+  "Minimum Order Limit not satisfied": "Minimum order limit has not been satisified"
 }

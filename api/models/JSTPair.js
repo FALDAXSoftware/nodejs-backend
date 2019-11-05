@@ -17,6 +17,11 @@ module.exports = {
       columnName: 'order_pair',
       required: true
     },
+    jst_min_limit: {
+      type: 'number',
+      columnName: 'jst_min_limit',
+      defaultsTo: 0
+    },
     crypto: {
       type: 'string',
       columnName: 'crypto',
