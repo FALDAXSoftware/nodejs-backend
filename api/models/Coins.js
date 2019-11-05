@@ -23,6 +23,11 @@ module.exports = {
       columnName: 'min_thresold',
       defaultsTo: 0
     },
+    jst_min_coin_limit: {
+      type: 'number',
+      columnName: 'jst_min_coin_limit',
+      defaultsTo: 0
+    },
     coin_code: {
       type: 'string',
       columnName: 'coin_code',
