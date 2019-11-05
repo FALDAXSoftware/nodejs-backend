@@ -59,8 +59,6 @@ module.exports.cron = {
     schedule: '* * * * *',
     onTick: async function () {
       if (sails.config.local.CRON_STATUS == "true") {
-        // Updating Thresold Value according to the latest value
-        // await sails.controllers.ThresoldController.addThresoldValue();
 
         // Checking the condition for notification
         await sails.helpers.notification.checkTheresoldNotification();
@@ -152,11 +150,11 @@ module.exports.cron = {
   //         //     };
   //         //     let accountClass = TempCoinmarketcap.create(price_object);
   //         //   }
-            
+
   //         //   // 
   //         //   // return exits.success(resData);
   //         // });
-      
+
 
   //     for( var i=0;i<resData.length;i++){
   //       let price_object = {
