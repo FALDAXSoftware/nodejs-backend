@@ -310,26 +310,16 @@ module.exports = {
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
 
-          // if (parseFloat(amount) <= 0) {
-          //   return res
-          //     .status(400)
-          //     .json({
-          //       status: 400,
-          //       message: sails.__('amount greater than zero')
-          //     })
-          // }
-
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
             //If total amount + amount to be send is less than limited amount
             if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
-              //   //Checking monthly limit is greater than the total sum of month
+              //Checking monthly limit is greater than the total sum of month
               if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
-                //     // If total amount monthly + amount to be send is less than limited amount of
-                //     // month
+                // If total amount monthly + amount to be send is less than limited amount of month
                 if ((parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                   let wallet = await Wallet.findOne({
@@ -351,15 +341,15 @@ module.exports = {
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait === undefined) {
+
                           //Check for warm wallet minimum thresold
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
-                            //Execute Transaction
 
-                            // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
+                            // Wallet balance checking for admin notification
+                            await sails.helpers.notification.checkAdminWalletNotification();
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (total_fees * 1e8).toString());
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (total_fees * 1e8).toString());
 
                             var adminWalletDetails = await Wallet.findOne({
