@@ -104,7 +104,8 @@ module.exports.policies = {
   },
   "CoinsController": {
     "createWallet": true,
-    "createAllWallet": true
+    "createAllWallet": true,
+    "getWarmWalletBalance": true
   },
   "TradeController": {
     "stopLimitExecute": true
