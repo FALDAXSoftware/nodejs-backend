@@ -8,6 +8,7 @@
 var requestIp = require('request-ip');
 const uuidv1 = require('uuid/v1');
 var request = require('request')
+var logger = require("./logger")
 
 module.exports = {
   // -------------------------- Web API ------------------------ //
@@ -84,6 +85,50 @@ module.exports = {
             "message": sails.__("panic button enabled")
           })
       }
+
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  getQouteDetails: async function (req, res) {
+    try {
+      var data = req.body;
+      var ip = requestIp.getClientIp(req);
+      // var user_id = req.user.id;
+      // user_id = 1712;
+      data.client_ip = ip;
+      data.end_user_id = "14569251558";
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+
+      // if (geo_fencing_data.response == true) {
+      var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("qoute details success"),
+          "data": qouteDetail
+        });
+
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
 
     } catch (err) {
       console.log(err);
