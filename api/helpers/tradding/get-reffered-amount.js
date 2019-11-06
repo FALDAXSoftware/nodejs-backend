@@ -40,7 +40,6 @@ module.exports = {
       // Here when 1 user has refference the user 2 and user 2 does the trade then user1 earns the referral according to the amount and referral percentage mentioned in it
       var referral_percentage = 0;
       var trade_object = inputs.trade_object;
-
       var collectedAmount = 0;
       var collectCoin;
       var coinData;
@@ -56,7 +55,7 @@ module.exports = {
       });
       var addRefferalAddData = {};
 
-      if (referredUserData !== undefined) {
+      if (referredUserData !== undefined && referredUserData.referal_percentage > 0) {
         referral_percentage = parseFloat(referredUserData.referal_percentage);
       } else {
         var referal_data = await AdminSetting.findOne({
@@ -66,90 +65,99 @@ module.exports = {
         referral_percentage = parseFloat(referal_data.value);
       }
 
+
       if (referredUserData != undefined) {
-        if (trade_object.trade_type == 1) {
-          if (trade_object.user_id == inputs.user_id) {
-            if (trade_object.side == 'Buy') {
-              collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
-              collectCoin = trade_object.settle_currency;
-              coinData = await Coins.findOne({
-                is_active: true,
-                deleted_at: null,
-                coin: trade_object.settle_currency
-              });
-              addRefferalAddData.coin_id = coinData.id;
-              addRefferalAddData.amount = collectedAmount;
-              addRefferalAddData.coin_name = collectCoin;
-              addRefferalAddData.user_id = referredUserData.id;
-              addRefferalAddData.referred_user_id = referralData.id;
-              addRefferalAddData.txid = inputs.transaction_id;
-              addRefferalAddData.is_collected = false;
+        // if (trade_object.trade_type == 1) {
+        //   if (trade_object.user_id == inputs.user_id) {
+        //     if (trade_object.side == 'Buy') {
+        //       collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
+        //       collectCoin = trade_object.settle_currency;
+        //       coinData = await Coins.findOne({
+        //         is_active: true,
+        //         deleted_at: null,
+        //         coin: trade_object.settle_currency
+        //       });
+        //       addRefferalAddData.coin_id = coinData.id;
+        //       addRefferalAddData.amount = collectedAmount;
+        //       addRefferalAddData.coin_name = collectCoin;
+        //       addRefferalAddData.user_id = referredUserData.id;
+        //       addRefferalAddData.referred_user_id = referralData.id;
+        //       addRefferalAddData.txid = inputs.transaction_id;
+        //       addRefferalAddData.is_collected = false;
 
-              var addedData = await Referral.create(addRefferalAddData);
-            } else if (trade_object.side == 'Sell') {
-              collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
-              collectCoin = trade_object.currency;
-              coinData = await Coins.findOne({
-                is_active: true,
-                deleted_at: null,
-                coin: trade_object.currency
-              });
-              addRefferalAddData.coin_id = coinData.id;
-              addRefferalAddData.amount = collectedAmount;
-              addRefferalAddData.coin_name = collectCoin;
-              addRefferalAddData.user_id = referredUserData.id;
-              addRefferalAddData.referred_user_id = referralData.id;
-              addRefferalAddData.txid = inputs.transaction_id;
-              addRefferalAddData.is_collected = false;
+        //       var addedData = await Referral.create(addRefferalAddData);
+        //     } else if (trade_object.side == 'Sell') {
+        //       collectedAmount = parseFloat(trade_object.taker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.taker_fee * (referral_percentage / 100)))
+        //       collectCoin = trade_object.currency;
+        //       coinData = await Coins.findOne({
+        //         is_active: true,
+        //         deleted_at: null,
+        //         coin: trade_object.currency
+        //       });
+        //       addRefferalAddData.coin_id = coinData.id;
+        //       addRefferalAddData.amount = collectedAmount;
+        //       addRefferalAddData.coin_name = collectCoin;
+        //       addRefferalAddData.user_id = referredUserData.id;
+        //       addRefferalAddData.referred_user_id = referralData.id;
+        //       addRefferalAddData.txid = inputs.transaction_id;
+        //       addRefferalAddData.is_collected = false;
 
-              var addedData = await Referral.create(addRefferalAddData);
-            }
-          } else if (trade_object.requested_user_id == inputs.user_id) {
-            if (trade_object.side == 'Buy') {
-              collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
-              collectCoin = trade_object.currency;
-              coinData = await Coins.findOne({
-                is_active: true,
-                deleted_at: null,
-                coin: trade_object.currency
-              });
-              addRefferalAddData.coin_id = coinData.id;
-              addRefferalAddData.amount = collectedAmount;
-              addRefferalAddData.coin_name = collectCoin;
-              addRefferalAddData.user_id = referredUserData.id;
-              addRefferalAddData.referred_user_id = referralData.id;
-              addRefferalAddData.txid = inputs.transaction_id;
-              addRefferalAddData.is_collected = false;
+        //       var addedData = await Referral.create(addRefferalAddData);
+        //     }
+        //   } else if (trade_object.requested_user_id == inputs.user_id) {
+        //     if (trade_object.side == 'Buy') {
+        //       collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.fill_price * trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
+        //       collectCoin = trade_object.currency;
+        //       coinData = await Coins.findOne({
+        //         is_active: true,
+        //         deleted_at: null,
+        //         coin: trade_object.currency
+        //       });
+        //       addRefferalAddData.coin_id = coinData.id;
+        //       addRefferalAddData.amount = collectedAmount;
+        //       addRefferalAddData.coin_name = collectCoin;
+        //       addRefferalAddData.user_id = referredUserData.id;
+        //       addRefferalAddData.referred_user_id = referralData.id;
+        //       addRefferalAddData.txid = inputs.transaction_id;
+        //       addRefferalAddData.is_collected = false;
 
-              var addedData = await Referral.create(addRefferalAddData);
+        //       var addedData = await Referral.create(addRefferalAddData);
 
-            } else if (trade_object.side == 'Sell') {
-              collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
-              collectCoin = trade_object.settle_currency;
-              coinData = await Coins.findOne({
-                is_active: true,
-                deleted_at: null,
-                coin: trade_object.settle_currency
-              });
-              addRefferalAddData.coin_id = coinData.id;
-              addRefferalAddData.amount = collectedAmount;
-              addRefferalAddData.coin_name = collectCoin;
-              addRefferalAddData.user_id = referredUserData.id;
-              addRefferalAddData.referred_user_id = referralData.id;
-              addRefferalAddData.txid = inputs.transaction_id;
-              addRefferalAddData.is_collected = false;
+        //     } else if (trade_object.side == 'Sell') {
+        //       collectedAmount = parseFloat(trade_object.maker_fee + (trade_object.quantity * trade_object.maker_fee * (referral_percentage / 100)))
+        //       collectCoin = trade_object.settle_currency;
+        //       coinData = await Coins.findOne({
+        //         is_active: true,
+        //         deleted_at: null,
+        //         coin: trade_object.settle_currency
+        //       });
+        //       addRefferalAddData.coin_id = coinData.id;
+        //       addRefferalAddData.amount = collectedAmount;
+        //       addRefferalAddData.coin_name = collectCoin;
+        //       addRefferalAddData.user_id = referredUserData.id;
+        //       addRefferalAddData.referred_user_id = referralData.id;
+        //       addRefferalAddData.txid = inputs.transaction_id;
+        //       addRefferalAddData.is_collected = false;
 
-              var addedData = await Referral.create(addRefferalAddData);
-            }
-          }
-        } else if (trade_object.trade_type == 3) {
-          if (trade_object.side == 'Buy') {
-            collectedAmount = parseFloat((trade_object.quantity * (referral_percentage / 100)))
-            collectCoin = trade_object.currency;
+        //       var addedData = await Referral.create(addRefferalAddData);
+        //     }
+        //   }
+        // } else 
+        if (trade_object[0].flag == 1) {
+          if (trade_object[0].side == 'Buy') {
+            collectedAmount = parseFloat((trade_object[0].faldax_fees * (referral_percentage / 100)))
+            let {
+              crypto,
+              currency
+            } = await sails
+              .helpers
+              .utilities
+              .getCurrencies((trade_object[0].symbol).replace("/", '-'));
+            collectCoin = crypto
             coinData = await Coins.findOne({
               is_active: true,
               deleted_at: null,
-              coin: trade_object.currency
+              coin: collectCoin
             });
             addRefferalAddData.coin_id = coinData.id;
             addRefferalAddData.amount = collectedAmount;
@@ -159,7 +167,29 @@ module.exports = {
             addRefferalAddData.txid = inputs.transaction_id;
             addRefferalAddData.is_collected = false;
 
-            console.log(addRefferalAddData);
+            var addedData = await Referral.create(addRefferalAddData);
+          } else if (trade_object[0].side == 'Sell') {
+            collectedAmount = parseFloat((trade_object[0].faldax_fees * (referral_percentage / 100)))
+            let {
+              crypto,
+              currency
+            } = await sails
+              .helpers
+              .utilities
+              .getCurrencies((trade_object[0].symbol).replace("/", '-'));
+            collectCoin = currency
+            coinData = await Coins.findOne({
+              is_active: true,
+              deleted_at: null,
+              coin: collectCoin
+            });
+            addRefferalAddData.coin_id = coinData.id;
+            addRefferalAddData.amount = collectedAmount;
+            addRefferalAddData.coin_name = collectCoin;
+            addRefferalAddData.user_id = referredUserData.id;
+            addRefferalAddData.referred_user_id = referralData.id;
+            addRefferalAddData.txid = inputs.transaction_id;
+            addRefferalAddData.is_collected = false;
 
             var addedData = await Referral.create(addRefferalAddData);
           }
