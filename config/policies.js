@@ -156,7 +156,8 @@ module.exports.policies = {
     // "getPartnerData": true,
     "checkPaymentStatus": true,
     "deleteEvent": true,
-    "getSimplexList": true
+    "getSimplexList": true,
+    "getQouteDetails": true
     // "getSimplexCoinList": true
   },
   "JSTController": {
