@@ -155,10 +155,12 @@ module.exports.policies = {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
     "checkPaymentStatus": true,
-    "deleteEvent": true
+    "deleteEvent": true,
+    "getSimplexList": true
     // "getSimplexCoinList": true
   },
   "JSTController": {
-    "getJSTPriceValueAuth": true
+    "getJSTPriceValueAuth": true,
+    "getPairList": true
   }
 };
