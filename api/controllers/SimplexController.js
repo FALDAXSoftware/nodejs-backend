@@ -490,6 +490,52 @@ module.exports = {
     }
   },
 
+  getSimplexList: async function (req, res) {
+    try {
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_simplex_supported: true
+        }
+      });
+
+      var fiatValue = {};
+
+      fiatValue = [{
+          id: 1,
+          coin: "USD",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
+        },
+        {
+          id: 2,
+          coin: "EUR",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
+        }
+      ]
+
+      var object = {
+        coinList,
+        fiat: fiatValue
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("coin list retrieve success"),
+          object
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
   // ------------------------ CMS API -------------------------- //
   getSimplexTokenValue: async function (req, res) {
     try {
