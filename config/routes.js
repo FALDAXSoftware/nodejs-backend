@@ -20,6 +20,7 @@ module.exports.routes = {
   'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
+  'get /get/coin-warm-wallet-balance': 'CoinsController.getWarmWalletBalance',
   'get /query-test-thresold': 'RootController.queryTestThresold',
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /create-wallet': 'RootController.createWallet',
@@ -449,5 +450,5 @@ module.exports.routes = {
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
   'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
-  
+
 };
