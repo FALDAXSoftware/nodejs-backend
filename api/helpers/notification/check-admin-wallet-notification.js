@@ -22,6 +22,7 @@ module.exports = {
       }
     });
 
+    var flag = 0;
     // Limit for checking warm wallet balance
     let admin_thresholds = await AdminSetting.findOne({
       where: {
