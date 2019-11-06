@@ -429,6 +429,7 @@ module.exports.routes = {
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
   'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
   'get /get-simplex-coin-list': 'SimplexController.getSimplexCoinList',
+  'get /get-simplex-list': 'SimplexController.getSimplexList',
   'get /delete-simplex-event': 'SimplexController.deleteEvent',
 
   // JST Conversion
@@ -436,6 +437,7 @@ module.exports.routes = {
   'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
   'post /conversion/jst-price-value': 'JSTController.getJSTPriceValueAuth',
   'get /conversion/get-jst-pair': 'JSTController.getJSTPairList',
+  'get /conversion/jst-pair': 'JSTController.getPairList',
 
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
