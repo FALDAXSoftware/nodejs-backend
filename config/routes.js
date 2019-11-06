@@ -424,6 +424,7 @@ module.exports.routes = {
 
   // Simplex API
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
+  'post /get-simplex-qoute-details': 'SimplexController.getQouteDetails',
   'post /get-partner-data-info': 'SimplexController.getPartnerData',
   'get /get-event-data': 'SimplexController.checkPaymentStatus',
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
