@@ -169,7 +169,7 @@ module.exports = {
                   var coin_data = await Wallet.findOne({
                     select:["coin"],
                     where:{
-                      id: coin_id
+                      id: userWallet.coin_id
                     }                    
                   });
                   if( coin_data != undefined ){
