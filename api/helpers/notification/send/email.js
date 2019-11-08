@@ -41,7 +41,9 @@ module.exports = {
       .helpers
       .utilities
       .formatEmail(template.content, {
-        recipientName: user.first_name
+        recipientName: user.first_name,
+        coin: user.coinName,
+        limit: user.limitType
       });
 
     sails

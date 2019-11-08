@@ -389,6 +389,14 @@ module.exports = {
       });
   },
 
+  testMetabaseIntegrate: async function (req, res) {
+    var frameURL = await sails.helpers.metabaseSetup();
+    return res.json({
+      "status": 200,
+      "data": frameURL
+    })
+  },
+
   testPanicStatus: async function (req, res) {
     try {
       var panicStatus = await AdminSetting.findOne({

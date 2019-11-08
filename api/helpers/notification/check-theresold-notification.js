@@ -13,6 +13,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
+    console.log("Inside threshold notification >>>>>>>>>>>>>>");
     // //Getting User Notification Details
     let user = await UserThresholds.find({
       deleted_at: null
@@ -41,9 +42,11 @@ module.exports = {
         for (var k = 0; k < values.length; k++) {
           var coinValue = assetValue[i].coin + '/USD'
           if (values[k].coin == coinValue) {
+            userData.coinName = assetValue[i].coin
             if (assetValue[i].upper_limit != undefined && assetValue[i].upper_limit != null) {
               if (values[k].ask_price >= assetValue[i].upper_limit) {
                 if (userData) {
+                  userData.limitType = "Upper Limit"
                   if (assetValue[i].is_email_notification == true || assetValue[i].is_email_notification == "true") {
                     if (userData.email != undefined) {
                       await sails.helpers.notification.send.email("thresold_notification", userData)
@@ -60,6 +63,7 @@ module.exports = {
             if (assetValue[i].lower_limit != undefined && assetValue[i].lower_limit != null) {
               if (values[k].ask_price <= assetValue[i].lower_limit) {
                 if (userData) {
+                  userData.limitType = "Lower Limit";
                   if (assetValue[i].is_email_notification == true || assetValue[i].is_email_notification == "true") {
                     if (userData.email != undefined) {
                       await sails.helpers.notification.send.email("thresold_notification", userData)

@@ -33,6 +33,7 @@ module.exports.routes = {
   'get /admin/get-coin-fees-coin': 'AdminController.getCoinFees',
   'get /admin/get-slug-value/:slug': 'AdminController.getEachCoinFee',
   'put /admin/update-fees-value': 'AdminController.updateCoinFee',
+  'get /metabase-details': 'RootController.testMetabaseIntegrate',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
