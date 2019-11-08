@@ -66,7 +66,7 @@ module.exports = {
       .send("general-email", {
         content: emailContent
       }, {
-        to: user.email+',jagdish.banda@openxcelltechnolabs.com',
+        to: user.email,
         subject: template.name
       }, function (err) {
         if (!err) {
