@@ -31,7 +31,7 @@ module.exports = {
 
       var payload = {
         resource: {
-          dashboard: 1
+          dashboard: 2
         },
         params: {},
         exp: Math.round(Date.now() / 1000) + (10 * 60) // 10 minute expiration

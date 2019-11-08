@@ -194,8 +194,21 @@ module.exports = {
             var addedData = await Referral.create(addRefferalAddData);
           }
         }
-      }
+        var userNotification = await UserNotification.find({
+          user_id: referredUserData.id,
+          deleted_at: null,
+          slug: referal
+        });
 
+        if (userNotification && userNotification != undefined) {
+          if (userNotification.email == true || userNotification.email == "true") {
+            await sails.helpers.notification.send.email("thresold_notification", referredUserData)
+          }
+          if (userNotification.text == true || userNotification.text == "true") {
+            await sails.helpers.notification.send.text("thresold_notification", referredUserData)
+          }
+        }
+      }
       return exits.success(1)
 
     } catch (err) {

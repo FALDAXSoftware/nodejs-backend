@@ -263,7 +263,7 @@
   "pair already exist": "Pair Already Exist.",
   "Panic Status": "Panic status retrived Successfully",
   "Your session has been expired. Please Login again to continue.": "Your session has been expired. Please Login again to continue.",
-  "WhiteList IP Add Success": "Your White List IP has been added Successfully.",
+  "WhiteList IP Add Success": "Your whitelist IP has been added Successfully.",
   "WhiteList IP info Success": "White List IP has been retrieved Successfully.",
   "Unauthorized Access": "Unauthorized Access",
   "Minimum amount requiried": "You have not satisified minimum amount limit for placing the order.",
