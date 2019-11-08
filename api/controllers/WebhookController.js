@@ -166,17 +166,16 @@ module.exports = {
               if (userNotification.email == true || userNotification.email == "true") {
                 if (userData.email != undefined)
                   // Pass Amount
-                  // var coin_data = await Wallet.findOne({
-                  //   select:["coin"],
-                  //   where:{
-                  //     id: userWallet.coin_id
-                  //   }                    
-                  // });
-                  // if( coin_data != undefined ){
-                  //   userData.coin_name = coin_data.coin;
-                  // }
+                  var coin_data = await Wallet.findOne({
+                      id: userWallet.coin_id                    
+                  });
+                  if( coin_data != undefined ){
+                    userData.coinName = coin_data.coin;
+                  }else{
+                    userData.coinName = "-";
+                  }
                   userData.amountReceived = (amount).toFixed(8);
-                  userData.coinName = "COIN";
+                  
                   await sails.helpers.notification.send.email("receive", userData)
               }
               // if (userNotification.text == true || userNotification.text == "true") {
