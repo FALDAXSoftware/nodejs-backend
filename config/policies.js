@@ -79,7 +79,8 @@ module.exports.policies = {
     "createWallet": true,
     "queryTestThresold": true,
     "getEncryptKey": true,
-    "testPanicStatus": true
+    "testPanicStatus": true,
+    "testMetabaseIntegrate": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
@@ -104,7 +105,8 @@ module.exports.policies = {
   },
   "CoinsController": {
     "createWallet": true,
-    "createAllWallet": true
+    "createAllWallet": true,
+    "getWarmWalletBalance": true
   },
   "TradeController": {
     "stopLimitExecute": true
@@ -154,10 +156,13 @@ module.exports.policies = {
     // "getUserQouteDetails": true,
     // "getPartnerData": true,
     "checkPaymentStatus": true,
-    "deleteEvent": true
+    "deleteEvent": true,
+    "getSimplexList": true,
+    "getQouteDetails": true
     // "getSimplexCoinList": true
   },
   "JSTController": {
-    "getJSTPriceValueAuth": true
+    "getJSTPriceValueAuth": true,
+    "getPairList": true
   }
 };

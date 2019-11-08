@@ -8,6 +8,7 @@
 var requestIp = require('request-ip');
 const uuidv1 = require('uuid/v1');
 var request = require('request')
+var logger = require("./logger")
 
 module.exports = {
   // -------------------------- Web API ------------------------ //
@@ -84,6 +85,50 @@ module.exports = {
             "message": sails.__("panic button enabled")
           })
       }
+
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  getQouteDetails: async function (req, res) {
+    try {
+      var data = req.body;
+      var ip = requestIp.getClientIp(req);
+      // var user_id = req.user.id;
+      // user_id = 1712;
+      data.client_ip = ip;
+      data.end_user_id = "14569251558";
+
+      //Checking whether user can trade in the area selected in the KYC
+      // var geo_fencing_data = await sails
+      //   .helpers
+      //   .userTradeChecking(user_id);
+
+
+      // if (geo_fencing_data.response == true) {
+      var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("qoute details success"),
+          "data": qouteDetail
+        });
+
+      // } else {
+      //   // Whatever the response of user trade checking
+      //   res.json({
+      //     "status": 200,
+      //     "message": sails.__(geo_fencing_data.msg)
+      //   });
+      // }
 
     } catch (err) {
       console.log(err);
@@ -445,6 +490,52 @@ module.exports = {
 
   // get simplex supported coin list
   getSimplexCoinList: async function (req, res) {
+    try {
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_simplex_supported: true
+        }
+      });
+
+      var fiatValue = {};
+
+      fiatValue = [{
+          id: 1,
+          coin: "USD",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
+        },
+        {
+          id: 2,
+          coin: "EUR",
+          coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
+        }
+      ]
+
+      var object = {
+        coinList,
+        fiat: fiatValue
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("coin list retrieve success"),
+          object
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+  getSimplexList: async function (req, res) {
     try {
       var coinList = await Coins.find({
         where: {

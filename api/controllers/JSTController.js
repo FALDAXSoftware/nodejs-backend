@@ -53,6 +53,44 @@ module.exports = {
     }
   },
 
+  getPairList: async function (req, res) {
+    try {
+
+      var getJSTPair = await JSTPair.find({
+        where: {
+          deleted_at: null
+        }
+      });
+
+      var coinList = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_jst_supported: true
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("jst pair retrieve success"),
+          getJSTPair,
+          coinList
+        })
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   /**
    * Amount of coins he want
    */
@@ -154,8 +192,6 @@ module.exports = {
         quantityValue = req_body.OrderQty
       }
 
-      console.log("Quantity Vaslue >>>>>>>>", quantityValue);
-
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
@@ -208,8 +244,6 @@ module.exports = {
           .utilities
           .getCurrencies((req_body.original_pair).replace("/", '-'));
 
-        console.log(crypto, currency)
-
         var coinValue = await Coins.findOne({
           is_active: true,
           deleted_at: null,
@@ -246,8 +280,6 @@ module.exports = {
             user_id: user_id
           }
         });
-
-        console.log(walletCrypto);
 
         if (walletCrypto == undefined) {
           return res
@@ -312,12 +344,6 @@ module.exports = {
               return new Error("serverError")
             });
         }
-
-        console.log("Wallet Data >>>>>>>>>>", wallet)
-
-        console.log("Conditions ???????????", (quantityValue) <= wallet.placed_balance);
-        // Check wallet balance is sufficient or not
-        console.log(wallet.placed_balance);
         var balanceChecking = 0;
         if (req_body.original_pair == req_body.order_pair) {
           balanceChecking = req_body.OrderQty
@@ -333,8 +359,6 @@ module.exports = {
             });
         }
 
-        console.log(quantityValue);
-
         let order_create = {
           currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
@@ -344,7 +368,6 @@ module.exports = {
           symbol: req_body.Symbol,
           user_id: user_id
         };
-        console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
         let order_object = {
@@ -360,10 +383,7 @@ module.exports = {
           SecurityType: "FOR",
           Product: "4"
         };
-
-        console.log("????????????", order_object)
         var response = await sails.helpers.fixapi.buyOrder(order_object);
-        console.log(response.data.OrderID)
 
         var update_data = {
           order_id: response.data.OrderID
@@ -465,6 +485,8 @@ module.exports = {
               order_status: order_status,
               reason: (jst_response_data.Text ? jst_response_data.Text : ""),
             };
+
+
             var update_order = await JSTTradeHistory
               .update({
                 id: create_order.id
@@ -547,6 +569,13 @@ module.exports = {
               id: create_order.id
             })
             .set(update_data).fetch();
+
+          update_order[0].flag = 1;
+          //Adding Data in referral table
+          let referredData = await sails
+            .helpers
+            .tradding
+            .getRefferedAmount(update_order, update_order[0].user_id, update_order[0].order_id);
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({

@@ -1042,6 +1042,20 @@ module.exports = {
       deleted_at: null
     })
 
+    console.log("HERE >>>>>>>>");
+    var data = '/USD'
+
+    let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
+    console.log(query)
+    let allValue = await sails.sendNativeQuery("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query, [])
+
+    console.log(allValue)
+
+    var values = allValue.rows;
+
+    console.log(values);
+    console.log(leftReferredData)
+
     var m = 0;
     sum = [];
     for (var i = 0; i < referredData.length; i++) {
@@ -1052,11 +1066,27 @@ module.exports = {
       }
     }
 
+    for (var i = 0; i < referredData.length; i++) {
+      for (var j = 0; j < values.length; j++) {
+        if (referredData[i].coin_name + '/USD' == values[j].coin) {
+          referredData[i].quote.USD.price = values[j].ask_price;
+        }
+      }
+    }
+
     var sumValue = 0;
     for (var i = 0; i < leftReferredData.length; i++) {
       for (var j = 0; j < currencyData.length; j++) {
         if (leftReferredData[i].coin_id == currencyData[j].coin_id) {
           leftReferredData[i].quote = currencyData[j].quote;
+        }
+      }
+    }
+
+    for (var i = 0; i < leftReferredData.length; i++) {
+      for (var j = 0; j < values.length; j++) {
+        if (leftReferredData[i].coin_name + '/USD' == values[j].coin) {
+          leftReferredData[i].quote.USD.price = values[j].ask_price;
         }
       }
     }

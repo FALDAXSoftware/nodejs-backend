@@ -20,6 +20,7 @@ module.exports.routes = {
   'get /users/get-conversion-data': 'WalletController.getConversionData',
   'post /recieve-webhook-bitgo': 'RootController.webhookOnReciveBitgo',
   'get /query-test': 'RootController.queryTest',
+  'get /get/coin-warm-wallet-balance': 'CoinsController.getWarmWalletBalance',
   'get /query-test-thresold': 'RootController.queryTestThresold',
   'get /create-all-wallet': 'RootController.createAllWallet',
   'get /create-wallet': 'RootController.createWallet',
@@ -32,6 +33,7 @@ module.exports.routes = {
   'get /admin/get-coin-fees-coin': 'AdminController.getCoinFees',
   'get /admin/get-slug-value/:slug': 'AdminController.getEachCoinFee',
   'put /admin/update-fees-value': 'AdminController.updateCoinFee',
+  'get /metabase-details': 'RootController.testMetabaseIntegrate',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
@@ -423,11 +425,13 @@ module.exports.routes = {
 
   // Simplex API
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
+  'post /get-simplex-qoute-details': 'SimplexController.getQouteDetails',
   'post /get-partner-data-info': 'SimplexController.getPartnerData',
   'get /get-event-data': 'SimplexController.checkPaymentStatus',
   'get /get-token-value': 'SimplexController.getSimplexTokenValue',
   'put /update-token-value': 'SimplexController.updateSimplexTokenValue',
   'get /get-simplex-coin-list': 'SimplexController.getSimplexCoinList',
+  'get /get-simplex-list': 'SimplexController.getSimplexList',
   'get /delete-simplex-event': 'SimplexController.deleteEvent',
 
   // JST Conversion
@@ -435,6 +439,7 @@ module.exports.routes = {
   'post /conversion/get-jst-price-value': 'JSTController.getJSTPriceValue',
   'post /conversion/jst-price-value': 'JSTController.getJSTPriceValueAuth',
   'get /conversion/get-jst-pair': 'JSTController.getJSTPairList',
+  'get /conversion/jst-pair': 'JSTController.getPairList',
 
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
@@ -449,5 +454,5 @@ module.exports.routes = {
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
   'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
-  
+
 };

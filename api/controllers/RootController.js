@@ -166,7 +166,20 @@ module.exports = {
   },
 
   getContactInfo: async function (req, res) {
-    let adminSettingDetails = await AdminSetting.find();
+    let adminSettingDetails = await AdminSetting.find({
+      where: {
+        deleted_at: null,
+        or: [{
+            slug: 'fb_profile'
+          }, {
+            slug: 'linkedin_profile'
+          },
+          {
+            slug: 'twitter_profile'
+          }
+        ]
+      }
+    });
     let contacts = {};
     adminSettingDetails.forEach(element => {
       contacts[element.slug] = element.value;
@@ -387,6 +400,14 @@ module.exports = {
           });
         }
       });
+  },
+
+  testMetabaseIntegrate: async function (req, res) {
+    var frameURL = await sails.helpers.metabaseSetup();
+    return res.json({
+      "status": 200,
+      "data": frameURL
+    })
   },
 
   testPanicStatus: async function (req, res) {

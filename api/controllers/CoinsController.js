@@ -76,18 +76,18 @@ module.exports = {
         // wallets.deleted_" +     "at IS NULL ORDER BY wallets.balance DESC LIMIT " +
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
-          deleted_at: null,
-          is_active: true,
-          or: [{
-            coin_name: {
-              contains: data
-            }
-          }, {
-            coin_code: {
-              contains: data
-            }
-          }]
-        })
+            deleted_at: null,
+            is_active: true,
+            or: [{
+              coin_name: {
+                contains: data
+              }
+            }, {
+              coin_code: {
+                contains: data
+              }
+            }]
+          })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -710,5 +710,51 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
-  }
+  },
+
+  getWarmWalletBalance: async function (req, res) {
+    try {
+      var ss = await Coins.find();
+      console.log("ss");
+      var balance = [];
+      var coinData = await Coins.find({
+        select: [
+          'warm_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null
+        }
+      })
+
+      console.log(coinData)
+
+      for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i]);
+        let warmWalletData = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+        var object = {
+          "balance": warmWalletData.balance,
+          "coin_code": coinData[i].coin_code
+        }
+        console.log(object);
+        balance.push(object);
+      }
+
+      console.log(balance);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          balance
+        })
+
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
