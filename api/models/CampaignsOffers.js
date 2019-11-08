@@ -16,6 +16,15 @@ module.exports = {
       // required: true,
       model: 'campaigns',      
     },
+    description: {
+      type: 'string',
+      columnName: 'description'
+    },
+    is_default_values:{
+      type: 'boolean',
+      columnName: 'is_default_values',
+      defaultsTo: true,
+    },
     no_of_transactions: {
       type: 'ref',
       columnType: 'number',

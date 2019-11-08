@@ -11,7 +11,21 @@ module.exports = {
     label: {
       type: 'string',
       columnName: 'label'
-    },    
+    },  
+    description: {
+      type: 'string',
+      columnName: 'description'
+    },  
+    no_of_transactions: {
+      type: 'ref',
+      columnType: 'number',
+      columnName: 'no_of_transactions'
+    },
+    transaction_fees: {
+      type: 'ref',
+      columnType: 'number',
+      columnName: 'transaction_fees'
+    },  
     start_date: {
       type: 'ref',
       columnType: 'date',
@@ -21,6 +35,11 @@ module.exports = {
       type: 'ref',
       columnType: 'date',
       columnName: 'end_date'
+    },
+    usage: {
+      type: 'ref',
+      columnType: 'number', // 1:One time, 2:Multiple time
+      columnName: 'usage'
     },
     is_active: {
       type: 'boolean',

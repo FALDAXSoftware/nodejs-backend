@@ -100,8 +100,12 @@ module.exports = {
         });
       }
       let req_body = req.body;
-      let validator = new Validator(req_body, {
+      let validator = new Validator(req_body, { 
         label: 'required',
+        description: 'required',
+        no_of_transactions: 'required|integer',
+        transaction_fees: 'required|decimal',
+        usage: 'required|in:1,2',
         start_date: 'required|date',
         end_date: 'required|date'        
       });
@@ -119,12 +123,15 @@ module.exports = {
         }
       }
 
-      // var user_id = req.user.id;
       // create
       let data_object = {
         label: req_body.label,
+        description:req_body.description,
+        no_of_transactions: req_body.no_of_transactions,
+        transaction_fees: req_body.transaction_fees,
         start_date: req_body.start_date,
-        end_date: req_body.end_date
+        end_date: req_body.end_date,
+        usage:req_body.usage
       };
 
       let create_data = await Campaigns.create( data_object );

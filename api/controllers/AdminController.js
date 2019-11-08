@@ -2327,12 +2327,32 @@ module.exports = {
       let FeeData = await sails.sendNativeQuery(walletQuery, []);
       FeeData = FeeData.rows;
 
+      var coinQuery = `SELECT  sum(wallets.balance) as forfeit_funds , wallets.coin_id, coins.coin_code
+      from wallets LEFT JOIN users ON users.id = wallets.user_id 
+      LEFT JOIN coins ON wallets.coin_id = coins.id
+      WHERE users.deleted_at IS NULL 
+      GROUP BY wallets.coin_id,coins.coin_code
+      ORDER BY wallets.coin_id`
+
+      let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
+      forfeitFundData = forfeitFundData.rows;
+
+
+      for (var i = 0; i < forfeitFundData.length; i++) {
+        for (var j = 0; j < FeeData.length; j++) {
+          if (FeeData[j].coin_code == forfeitFundData[i].coin_code) {
+            FeeData[j].forfeit_funds = forfeitFundData[i].forfeit_funds;
+          }
+        }
+      }
+
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Wallet Details"),
         "data": FeeData
       });
     } catch (error) {
+      console.log(error)
       await logger.error(error.message)
       return res.json({
         "status": 500,

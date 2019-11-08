@@ -165,6 +165,17 @@ module.exports = {
             if (userNotification != undefined) {
               if (userNotification.email == true || userNotification.email == "true") {
                 if (userData.email != undefined)
+                  // Pass Amount
+                  var coin_data = await Wallet.findOne({
+                    select:["coin"],
+                    where:{
+                      id: coin_id
+                    }                    
+                  });
+                  if( coin_data != undefined ){
+                    userData.coin_name = coin_data.coin;
+                  }
+                  userData.amount_received = (amount).toFixed(8);
                   await sails.helpers.notification.send.email("receive", userData)
               }
               // if (userNotification.text == true || userNotification.text == "true") {
