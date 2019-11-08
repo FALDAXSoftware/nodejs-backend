@@ -100,7 +100,7 @@ module.exports = {
         });
       }
       let req_body = req.body;
-      let validator = new Validator(req_body, {
+      let validator = new Validator(req_body, { 
         label: 'required',
         description: 'required',
         no_of_transactions: 'required|integer',
