@@ -350,7 +350,7 @@ module.exports = {
         // } else {
         //   balanceChecking = req_body.Quantity
         // }
-        if ((balanceChecking) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
+        if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           return res
             .status(500)
             .json({
