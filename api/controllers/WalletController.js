@@ -689,13 +689,15 @@ module.exports = {
         deleted_at: null
       })
 
-      if (currencyConversionData.quote.USD) {
-        var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-        console.log(get_price)
-        if (get_price[0] != undefined) {
-          currencyConversionData.quote.USD.price = get_price[0].ask_price
-        } else {
-          currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+      if (currencyConversionData) {
+        if (currencyConversionData.quote.USD) {
+          var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+          console.log(get_price)
+          if (get_price[0] != undefined) {
+            currencyConversionData.quote.USD.price = get_price[0].ask_price
+          } else {
+            currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+          }
         }
       }
 

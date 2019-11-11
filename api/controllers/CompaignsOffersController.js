@@ -104,7 +104,8 @@ module.exports = {
         code: 'required',
         no_of_transactions: 'required|integer',
         transaction_fees: 'required|decimal',
-        campaign_id: 'required|integer'        
+        campaign_id: 'required|integer',
+        is_default_values:'required|boolean'        
       });
 
      
@@ -126,7 +127,8 @@ module.exports = {
         code: req_body.code,
         no_of_transactions: req_body.no_of_transactions,
         transaction_fees: req_body.transaction_fees,
-        campaign_id: req_body.campaign_id
+        campaign_id: req_body.campaign_id,
+        is_default_values:req_body.is_default_values
       };
 
       let create_data = await CampaignsOffers.create( data_object );

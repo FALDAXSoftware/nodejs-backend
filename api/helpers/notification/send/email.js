@@ -36,12 +36,31 @@ module.exports = {
     });
     // console.log("Email Template Value >>>>>>>>>>", template);
 
+    var object = {};
+    object.recipientName = user.first_name;
+    if (user.coinName && user.coinName != undefined && user.coinName != null)
+      object.coin = user.coinName
+
+    if (user.limitType && user.limitType != undefined && user.limitType != null)
+      object.limit = user.limitType
+
+    if (user.amountReceived && user.amountReceived != undefined && user.amountReceived != "") {
+      object.amountReceived = user.amountReceived
+    }
+
+    // if (user.coin_name && user.coin_name != undefined && user.coin_name != null){
+    //   object.coin_name = user.coin_name  
+    // }
+
+    console.log("user", user);
+    console.log("Object >>>>>>>>>>", object)
+
     //Sending Email to users for notification
     let emailContent = await sails
       .helpers
       .utilities
       .formatEmail(template.content, {
-        recipientName: user.first_name
+        object
       });
 
     sails
