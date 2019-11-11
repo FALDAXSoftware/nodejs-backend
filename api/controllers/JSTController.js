@@ -601,8 +601,8 @@ module.exports = {
             
             first_coin = crypto;
             second_coin = currency;
-            first_coin_balance = final_fees_currency;
-            second_coin_balance = final_fees_deducted_crypto;
+            first_coin_balance = final_fees_deducted_crypto;
+            second_coin_balance = final_fees_currency;
           } else { // Sell order
             // var convert_to_exchange = jst_response_data.SettlCurrAmt;
             var update_user_wallet_asset1 = await Wallet.update({
