@@ -620,8 +620,8 @@ module.exports = {
             }).fetch();
             first_coin = currency;
             second_coin = crypto;
-            first_coin_balance = final_fees_deducted_crypto;
-            second_coin_balance = final_fees_currency;
+            first_coin_balance = final_fees_currency;
+            second_coin_balance = final_fees_deducted_crypto;
           }
           // Send Email 
           var userData = await Users.findOne({
