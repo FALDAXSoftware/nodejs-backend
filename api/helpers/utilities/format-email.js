@@ -32,10 +32,15 @@ module.exports = {
     let { emailContent, data } = inputs
     let rex = /{{([^}]+)}}/g;
     let key;
-    while (key = rex.exec(emailContent)) {
-      emailContent = emailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');
+    if( "object" in data ){
+      data = data.object;
     }
-    exits.success(emailContent);
+    var tempEmailContent=emailContent;
+    while (key = rex.exec(emailContent)) {
+      // emailContent = emailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');      
+      tempEmailContent = tempEmailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');      
+    }
+    exits.success(tempEmailContent);
   }
 
 

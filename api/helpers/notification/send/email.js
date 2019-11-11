@@ -36,6 +36,7 @@ module.exports = {
     });
     // console.log("Email Template Value >>>>>>>>>>", template);
 
+    console.log("userdata", user);
     var object = {};
     object.recipientName = user.first_name;
 
@@ -46,13 +47,26 @@ module.exports = {
       object.amountReceived = user.amountReceived
     }
 
+    if (user.firstCoin && user.firstCoin != undefined && user.firstCoin != "") {
+      object.firstCoin = user.firstCoin
+    }
+
+    if (user.secondCoin && user.secondCoin != undefined && user.secondCoin != "") {
+      object.secondCoin = user.secondCoin
+    }
+
+    if (user.firstAmount && user.firstAmount != undefined && user.firstAmount != "") {
+      object.firstAmount = user.firstAmount
+    }
+
+    if (user.secondAmount && user.secondAmount != undefined && user.secondAmount != "") {
+      object.secondAmount = user.secondAmount
+    }
+
     if (user.coinName && user.coinName != undefined && user.coinName != null)
       object.coin = user.coinName
-    // if (user.coin_name && user.coin_name != undefined && user.coin_name != null){
-    //   object.coin_name = user.coin_name  
-    // }
+    
 
-    console.log("user", user);
     console.log("Object >>>>>>>>>>", object)
 
     //Sending Email to users for notification
