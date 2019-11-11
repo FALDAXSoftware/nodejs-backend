@@ -44,14 +44,17 @@ module.exports = {
     if (user.limitType && user.limitType != undefined && user.limitType != null)
       object.limit = user.limitType
 
-    if (user.amountReceived != "" ){
+    if (user.amountReceived && user.amountReceived != undefined && user.amountReceived != "") {
       object.amountReceived = user.amountReceived
-    }     
-    
+    }
+
     // if (user.coin_name && user.coin_name != undefined && user.coin_name != null){
     //   object.coin_name = user.coin_name  
     // }
-      
+
+    console.log("user", user);
+    console.log("Object >>>>>>>>>>", object)
+
     //Sending Email to users for notification
     let emailContent = await sails
       .helpers
