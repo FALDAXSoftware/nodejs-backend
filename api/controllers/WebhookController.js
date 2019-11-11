@@ -70,6 +70,7 @@ module.exports = {
       console.log("Transfer Value >>>>>>>>>>>>>.", req.body.transfer);
       let transferId = req.body.transfer;
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
+      console.log("Transfer State >>>>>>>>>>>", transfer.state)
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
@@ -93,6 +94,8 @@ module.exports = {
             deleted_at: null,
             is_active: true
           });
+
+          console.log("User Wallet with destination ????????/", userWallet)
           if (userWallet == undefined) {
             userWallet = await Wallet.findOne({
               receive_address: source.address,
@@ -108,6 +111,8 @@ module.exports = {
 
           // transaction amount
           let amount = (dest.value / 100000000);
+
+          console.log("Amount ??????????", amount)
           // user wallet exitence check
           if (userWallet) {
             // Set wallet history params
@@ -156,6 +161,8 @@ module.exports = {
               is_active: true,
               id: userWallet.user_id
             })
+
+            console.log("User Data >>>>>>>>>>>", userData)
 
             var userNotification = await UserNotification.findOne({
               user_id: userData.id,
