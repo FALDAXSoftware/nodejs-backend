@@ -59,7 +59,7 @@ module.exports = {
                 msg = "You are allowed to trade"
               } else {
                 response = false;
-                msg = 'You are not allowed to trade in this regoin'
+                msg = 'You are not allowed to trade in this regoin as your state is illegal'
 
               }
             } else {
@@ -68,7 +68,7 @@ module.exports = {
             }
           } else {
             response = false;
-            msg = 'You are not allowed to trade in this regoin'
+            msg = 'You are not allowed to trade in this regoin as country is illegal'
           }
         } else {
           response = false;
