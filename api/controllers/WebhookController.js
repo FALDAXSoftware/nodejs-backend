@@ -162,21 +162,25 @@ module.exports = {
               deleted_at: null,
               slug: 'receive'
             })
+
+            console.log("User Notification >>>>>>>>>>", userNotification)
             if (userNotification != undefined) {
               if (userNotification.email == true || userNotification.email == "true") {
                 if (userData.email != undefined)
                   // Pass Amount
-                  var coin_data = await Wallet.findOne({
-                      id: userWallet.coin_id                    
+                  var coin_data = await Coins.findOne({
+                    id: userWallet.coin_id
                   });
-                  if( coin_data != undefined ){
-                    userData.coinName = coin_data.coin;
-                  }else{
-                    userData.coinName = "-";
-                  }
-                  userData.amountReceived = (amount).toFixed(8);
-                  
-                  await sails.helpers.notification.send.email("receive", userData)
+                if (coin_data != undefined) {
+                  userData.coinName = coin_data.coin;
+                } else {
+                  userData.coinName = "-";
+                }
+                userData.amountReceived = (amount).toFixed(8);
+
+                console.log(userData)
+
+                await sails.helpers.notification.send.email("receive", userData)
               }
               // if (userNotification.text == true || userNotification.text == "true") {
               //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
