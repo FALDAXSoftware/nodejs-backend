@@ -576,6 +576,13 @@ module.exports = {
             .helpers
             .tradding
             .getRefferedAmount(update_order, update_order[0].user_id, update_order[0].order_id);
+          
+          var first_coin = crypto;  
+          var second_coin = currency;  
+          var first_coin_balance = '';  
+          var second_coin_balance = '';  
+          var coin1type = '';  
+          var coin2type = '';  
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({
@@ -591,7 +598,11 @@ module.exports = {
               balance: (walletCrypto.balance + final_fees_deducted_crypto),
               placed_balance: (walletCrypto.placed_balance + final_fees_deducted_crypto)
             }).fetch();
-
+            
+            first_coin = crypto;
+            second_coin = currency;
+            first_coin_balance = final_fees_deducted_crypto;
+            second_coin_balance = final_fees_currency;
           } else { // Sell order
             // var convert_to_exchange = jst_response_data.SettlCurrAmt;
             var update_user_wallet_asset1 = await Wallet.update({
@@ -607,8 +618,30 @@ module.exports = {
               balance: (walletCrypto.balance - final_fees_deducted_crypto),
               placed_balance: (walletCrypto.placed_balance - final_fees_deducted_crypto)
             }).fetch();
+            first_coin = currency;
+            second_coin = crypto;
+            first_coin_balance = final_fees_currency;
+            second_coin_balance = final_fees_deducted_crypto;
           }
-
+          // Send Email 
+          var userData = await Users.findOne({
+            select:['email','first_name','phone_number'],
+            where:{
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }            
+          })
+          
+          if( userData != undefined ){
+            userData.firstCoin = first_coin;
+            userData.secondCoin = second_coin;
+            userData.firstAmount = first_coin_balance;
+            userData.secondAmount = second_coin_balance;
+            console.log("Acc userData",userData);
+            await sails.helpers.notification.send.email("jst_order_success", userData)
+          }
+          
           return res.json({
             "status": 200,
             "message": sails.__("jst order created"),
@@ -620,6 +653,21 @@ module.exports = {
     } catch (error) {
       console.log("error", error);
       await logger.error(error.message)
+      
+       // Send Email 
+       var user_id = req.user.id;
+       var userData = await Users.findOne({
+        select:['email','first_name','phone_number'],
+        where:{
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }            
+      })
+      
+      if( userData != undefined ){
+        await sails.helpers.notification.send.email("jst_order_failed", userData)
+      }
       return res
         .status(500)
         .json({
