@@ -197,7 +197,7 @@ module.exports = {
         var userNotification = await UserNotification.find({
           user_id: referredUserData.id,
           deleted_at: null,
-          slug: referal
+          slug: 'referal'
         });
 
         if (userNotification && userNotification != undefined) {

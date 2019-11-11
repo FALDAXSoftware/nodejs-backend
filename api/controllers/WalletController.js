@@ -386,7 +386,7 @@ module.exports = {
                               source_address: wallet.send_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: (amount),
+                              amount: (total_fees),
                               transaction_type: 'send',
                               transaction_id: transaction.txid,
                               is_executed: false
@@ -403,8 +403,8 @@ module.exports = {
                                 id: wallet.id
                               })
                               .set({
-                                balance: (wallet.balance - amount).toFixed(sails.config.local.TOTAL_PRECISION),
-                                placed_balance: (wallet.placed_balance - amount).toFixed(sails.config.local.TOTAL_PRECISION)
+                                balance: (wallet.balance - total_fees).toFixed(sails.config.local.TOTAL_PRECISION),
+                                placed_balance: (wallet.placed_balance - total_fees).toFixed(sails.config.local.TOTAL_PRECISION)
                               });
 
                             // Adding the transaction details in transaction table This is entry for sending
@@ -414,7 +414,7 @@ module.exports = {
                               source_address: warmWalletData.receiveAddress.address,
                               destination_address: wallet.send_address,
                               user_id: user_id,
-                              amount: (amount),
+                              amount: (total_fees),
                               transaction_type: 'send',
                               is_executed: true
                             }
@@ -428,7 +428,7 @@ module.exports = {
                               source_address: wallet.send_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: (amount),
+                              amount: (total_fees),
                               transaction_type: 'send',
                               is_executed: false
                             }
@@ -481,7 +481,7 @@ module.exports = {
                               source_address: warmWalletData.receiveAddress.address,
                               destination_address: wallet.send_address,
                               user_id: user_id,
-                              amount: (amount),
+                              amount: (total_fees),
                               transaction_type: 'send',
                               coin_id: coin.id,
                               is_executed: false
