@@ -48,8 +48,12 @@ module.exports = {
         // Find object on the basis of coin
         let exisiting = assets.find(each_value => each_value['coin_id'] == coinData[i].id);
 
+        console.log("Coin Data ???????????", coinData[i]);
+        console.log("existing >>>>>>>>>>>", exisiting)
         // Getting warm wallet balance
         let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
+
+        console.log(warmWallet)
 
         var slug;
 
@@ -63,6 +67,8 @@ module.exports = {
             slug = "first_limit_low"
           }
         }
+
+        console.log(slug)
 
         // Sending email and sms to the admins
         if (slug != undefined) {
