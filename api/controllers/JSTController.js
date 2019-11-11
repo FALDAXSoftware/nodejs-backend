@@ -345,11 +345,11 @@ module.exports = {
             });
         }
         var balanceChecking = 0;
-        if (req_body.original_pair == req_body.order_pair) {
-          balanceChecking = req_body.OrderQty
-        } else {
-          balanceChecking = req_body.Quantity
-        }
+        // if (req_body.original_pair == req_body.order_pair) {
+        balanceChecking = req_body.OrderQty
+        // } else {
+        //   balanceChecking = req_body.Quantity
+        // }
         if ((balanceChecking) >= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           return res
             .status(500)
