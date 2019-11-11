@@ -736,9 +736,11 @@ module.exports = {
           .helpers
           .wallet
           .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+        // console.log(warmWalletData)
         var object = {
           "balance": warmWalletData.balance,
-          "coin_code": coinData[i].coin_code
+          "coin_code": coinData[i].coin_code,
+          "address": warmWalletData.receiveAddress.address
         }
         console.log(object);
         balance.push(object);

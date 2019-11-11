@@ -39,8 +39,6 @@ module.exports = {
     console.log("userdata", user);
     var object = {};
     object.recipientName = user.first_name;
-    if (user.coinName && user.coinName != undefined && user.coinName != null)
-      object.coin = user.coinName
 
     if (user.limitType && user.limitType != undefined && user.limitType != null)
       object.limit = user.limitType
@@ -65,9 +63,9 @@ module.exports = {
       object.secondAmount = user.secondAmount
     }
 
-    // if (user.coin_name && user.coin_name != undefined && user.coin_name != null){
-    //   object.coin_name = user.coin_name  
-    // }
+    if (user.coinName && user.coinName != undefined && user.coinName != null)
+      object.coin = user.coinName
+    
 
     console.log("Object >>>>>>>>>>", object)
 
@@ -78,6 +76,8 @@ module.exports = {
       .formatEmail(template.content, {
         object
       });
+
+    console.log(emailContent)
 
     sails
       .hooks

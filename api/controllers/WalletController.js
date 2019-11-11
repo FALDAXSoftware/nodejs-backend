@@ -350,7 +350,7 @@ module.exports = {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (total_fees * 1e8).toString());
+                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
@@ -442,6 +442,8 @@ module.exports = {
                               deleted_at: null,
                               slug: 'withdraw'
                             })
+                            userData.coinName = coin.coin_code;
+                            userData.amountReceived = amount;
                             if (userNotification != undefined) {
                               if (userNotification.email == true || userNotification.email == "true") {
                                 if (userData.email != undefined)
