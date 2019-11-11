@@ -1489,6 +1489,7 @@ module.exports = {
           console.log("Balance >>>>>>>>", walletData[i].balance)
           if (walletData[i].balance > 0)
             walletArray.push(walletData[i]);
+          console.log(walletData[i])
           total = total + walletData[i].balance
           var coinData = await Coins.findOne({
             where: {
@@ -1496,11 +1497,13 @@ module.exports = {
               id: walletData[i].coin_id
             }
           })
+          console.log("Coin Data ???????????", coinData);
           if (coinData != undefined) {
             walletData[i].coin = coinData.coin;
-            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
-            walletData[i].fiat = get_jst_price[0].bid_price;
-            usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Buy");
+            walletData[i].fiat = get_jst_price[0].ask_price;
+            console.log("JST PRICE >>>>>>>>>>>>>> for the coin ?????????????", coinData.coin, get_jst_price[0].ask_price)
+            usd_price = usd_price + (walletData[i].balance * get_jst_price[0].ask_price);
           }
         }
         if (total > 0) {
