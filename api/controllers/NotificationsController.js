@@ -11,9 +11,10 @@ module.exports = {
     try {
       var user_id = req.user.id;
       var notificationList = await UserNotification.find({
-        deleted_at: null,
-        user_id: user_id
-      })
+          deleted_at: null,
+          user_id: user_id
+        })
+        .sort('id DESC')
 
       return res
         .status(200)
@@ -67,7 +68,7 @@ module.exports = {
       var notificationUpdateData = await UserNotification.find({
         deleted_at: null,
         user_id: user_id
-      })
+      }).sort('id DESC')
 
       return res
         .status(200)
