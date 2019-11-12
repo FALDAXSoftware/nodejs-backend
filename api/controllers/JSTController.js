@@ -350,13 +350,8 @@ module.exports = {
         // } else {
         //   balanceChecking = req_body.Quantity
         // }
-        console.log("user_id",user_id);
-        console.log("balanceChecking",balanceChecking);
-        console.log("wallet.placed_balance",wallet.placed_balance);
-        console.log("Wallet decimal",(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION));
-        console.log("condition1",(balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION));
-        console.log("condition2",(parseFloat(balanceChecking)) > parseFloat(( wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))) ;
-        if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
+        // if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
+        if ( parseFloat(balanceChecking) > parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) ) {  
           return res
             .status(500)
             .json({
