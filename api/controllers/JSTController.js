@@ -637,8 +637,8 @@ module.exports = {
           if( userData != undefined ){
             userData.firstCoin = first_coin;
             userData.secondCoin = second_coin;
-            userData.firstAmount = first_coin_balance;
-            userData.secondAmount = second_coin_balance;
+            userData.firstAmount = first_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
+            userData.secondAmount = second_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
             console.log("Acc userData",userData);
             await sails.helpers.notification.send.email("jst_order_success", userData)
           }
