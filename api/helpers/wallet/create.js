@@ -59,7 +59,7 @@ module.exports = {
             id: requestedCoin[0].id
           })
           .set({
-            'warm_wallet_address': newWallet
+            'custody_wallet_address': newWallet
               .wallet
               .id()
           });
