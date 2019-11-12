@@ -416,7 +416,8 @@ module.exports = {
                               user_id: user_id,
                               amount: (total_fees),
                               transaction_type: 'send',
-                              is_executed: true
+                              is_executed: true,
+                              transaction_id: transaction.txid,
                             }
 
                             await TransactionTable.create({
@@ -430,7 +431,8 @@ module.exports = {
                               user_id: user_id,
                               amount: (total_fees),
                               transaction_type: 'send',
-                              is_executed: false
+                              is_executed: false,
+                              transaction_id: transaction.txid,
                             }
 
                             await TransactionTable.create({
