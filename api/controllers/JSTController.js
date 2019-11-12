@@ -353,6 +353,7 @@ module.exports = {
         console.log("user_id",user_id);
         console.log("balanceChecking",balanceChecking);
         console.log("wallet.placed_balance",wallet.placed_balance);
+        console.log("condition",(balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION));
         if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           return res
             .status(500)
