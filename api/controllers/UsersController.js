@@ -1475,36 +1475,31 @@ module.exports = {
       }
 
       var total = 0;
+      var usd_price = 0;
+      var referTotal = 0;
       var walletArray = [];
-      var walletData = await Wallet.find({
-        where: {
-          deleted_at: null,
-          user_id: user_id
-        }
-      });
-      var usd_price = 0
+      var query = `SELECT referral.coin_name, sum(referral.amount) as amount, referral.user_id, referral.coin_id, referral.is_collected, wallets.balance, wallets.coin_id
+                      FROM public.referral 
+                      LEFT JOIN wallets
+                      ON wallets.coin_id = referral.coin_id
+                      WHERE referral.user_id = ${user_id} AND referral.is_collected = 'false' AND referral.deleted_at IS NULL 
+                      AND wallets.deleted_at IS NULL AND wallets.user_id = ${user_id}
+                      GROUP BY referral.coin_id, referral.coin_name, referral.user_id, referral.is_collected, wallets.balance, wallets.coin_id`
 
-      if (walletData.length > 0) {
-        for (var i = 0; i < walletData.length; i++) {
-          console.log("Balance >>>>>>>>", walletData[i].balance)
-          if (walletData[i].balance > 0)
-            walletArray.push(walletData[i]);
-          console.log(walletData[i])
-          total = total + walletData[i].balance
-          var coinData = await Coins.findOne({
-            where: {
-              deleted_at: null,
-              id: walletData[i].coin_id
-            }
-          })
-          console.log("Coin Data ???????????", coinData);
-          if (coinData != undefined) {
-            walletData[i].coin = coinData.coin;
-            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Buy");
-            walletData[i].fiat = get_jst_price[0].ask_price;
-            console.log("JST PRICE >>>>>>>>>>>>>> for the coin ?????????????", coinData.coin, get_jst_price[0].ask_price)
-            usd_price = usd_price + (walletData[i].balance * get_jst_price[0].ask_price);
-          }
+      let userCount = await sails.sendNativeQuery(query, [])
+
+      referData = userCount.rows;
+
+      if (referData.length > 0) {
+        for (var i = 0; i < referData.length; i++) {
+          var totalAmount = 0;
+          walletArray.push(referData[i]);
+          total = total + referData[i].balance
+          total = total + referData[i].amount
+          referData[i].totalAmount = referData[i].balance + referData[i].amount
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referData[i].coin_name + '/USD', "Buy");
+          referData[i].fiat = get_jst_price[0].ask_price;
+          usd_price = usd_price + ((referData[i].balance + referData[i].amount) * get_jst_price[0].ask_price);
         }
         if (total > 0) {
           res
@@ -1526,13 +1521,90 @@ module.exports = {
             })
         }
       } else {
-        res
-          .status(200)
-          .json({
+        var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
+                            FROM public.referral 
+                            WHERE user_id = ${user_id} AND is_collected = 'false'
+                            GROUP BY coin_id, coin_name`
+
+        var referCount = await sails.sendNativeQuery(referQuery, [])
+        referCount = referCount.rows;
+
+        let walletQuery = `SELECT coins.coin as coin_name,wallets.balance 
+                            FROM public.wallets
+                            LEFT JOIN coins
+                            ON coins.id = wallets.coin_id
+                            WHERE wallets.user_id = ${user_id} AND wallets.deleted_at IS NULL
+                            AND coins.is_active = true AND coins.deleted_at IS NULL AND wallets.balance > 0
+                            GROUP BY coins.id, wallets.coin_id, wallets.balance`
+
+        var walletCount = await sails.sendNativeQuery(walletQuery, []);
+        walletCount = walletCount.rows;
+
+        if (walletCount.length > 0) {
+          for (var i = 0; i < walletCount.length; i++) {
+            var totalAmount = 0;
+            walletArray.push(walletCount[i]);
+            total = total + walletCount[i].balance;
+            walletCount[i].totalAmount = walletCount[i].balance
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+            walletCount[i].fiat = get_jst_price[0].ask_price;
+            usd_price = usd_price + ((walletCount[i].balance) * get_jst_price[0].ask_price);
+          }
+
+          if (total > 0) {
+            res
+              .status(201)
+              .json({
+                "status": 201,
+                "message": sails.__("please remove your funds"),
+                data: walletArray,
+                usd_price,
+                user2fastatus
+              })
+          } else {
+            res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("no funds left"),
+                user2fastatus
+              })
+          }
+        } else if (referCount.length > 0) {
+          for (var i = 0; i < referCount.length; i++) {
+            var totalAmount = 0;
+            walletArray.push(referCount[i]);
+            total = total + referCount[i].amount
+            referCount[i].totalAmount = referCount[i].amount
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+            referCount[i].fiat = get_jst_price[0].ask_price;
+            usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
+          }
+          if (total > 0) {
+            res
+              .status(201)
+              .json({
+                "status": 201,
+                "message": sails.__("please remove your funds"),
+                data: walletArray,
+                usd_price,
+                user2fastatus
+              })
+          } else {
+            res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("no funds left"),
+                user2fastatus
+              })
+          }
+        } else {
+          return res.json({
             "status": 200,
-            "message": sails.__("no funds left"),
-            user2fastatus
+            "message": sails.__("no funds left")
           })
+        }
       }
     } catch (error) {
       console.log(error)
