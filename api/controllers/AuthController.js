@@ -134,7 +134,7 @@ module.exports = {
           if (user_detail.deleted_at && user_detail.deleted_by == 1) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By Admin')
+              err: sails.__('Deleted By User')
             });
           }
 
