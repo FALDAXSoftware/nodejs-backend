@@ -718,17 +718,17 @@ module.exports = {
       console.log("ss");
       var balance = [];
       var coinData = await Coins.find({
-        select: [
-          'warm_wallet_address',
-          'coin_code'
-        ],
-        where: {
-          is_active: true,
-          deleted_at: null
-        }
-      })
-
-      console.log(coinData)
+          select: [
+            'warm_wallet_address',
+            'coin_code',
+            'custody_wallet_address'
+          ],
+          where: {
+            is_active: true,
+            deleted_at: null
+          }
+        })
+        .sort('id ASC')
 
       for (var i = 0; i < coinData.length; i++) {
         console.log(coinData[i]);
@@ -736,11 +736,23 @@ module.exports = {
           .helpers
           .wallet
           .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+        var coldWalletData
+        if (coinData[i].custody_wallet_address != null) {
+          coldWalletData = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
+          coldWalletData = coldWalletData.receiveAddress.address
+        } else {
+          coldWalletData = ''
+        }
+        console.log(coldWalletData);
         // console.log(warmWalletData)
         var object = {
           "balance": warmWalletData.balance,
           "coin_code": coinData[i].coin_code,
-          "address": warmWalletData.receiveAddress.address
+          "address": warmWalletData.receiveAddress.address,
+          "cold_wallet": coldWalletData
         }
         console.log(object);
         balance.push(object);
