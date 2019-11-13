@@ -103,16 +103,16 @@ module.exports = {
       let validator = new Validator(req_body, { 
         label: 'required',
         description: 'string',
-        no_of_transactions: 'required|integer',
-        fees_allowed: 'required|decimal',
+        no_of_transactions: 'required|integer|min:1',
+        fees_allowed: 'required|decimal|min:10.0',
         usage: 'required|in:1,2',
         start_date: 'required|date',
         end_date: 'required|date',
         campaign_offers:'required|array|arrayUniqueObjects:code',        
         'campaign_offers.*.code': 'required',        
         'campaign_offers.*.is_default_values': 'required|boolean',        
-        'campaign_offers.*.no_of_transactions': 'required|integer',        
-        'campaign_offers.*.fees_allowed': 'required|decimal',
+        'campaign_offers.*.no_of_transactions': 'required|integer|min:1',        
+        'campaign_offers.*.fees_allowed': 'required|decimal|min:10.0',
         'campaign_offers.*.user_id': 'integer'
       }
       // ,{
@@ -211,8 +211,8 @@ module.exports = {
         campaign_offers_new:'array|arrayUniqueObjects:code',        
         'campaign_offers_new.*.code': 'required',        
         'campaign_offers_new.*.is_default_values': 'required|boolean',        
-        'campaign_offers_new.*.no_of_transactions': 'required|integer',        
-        'campaign_offers_new.*.fees_allowed': 'required|decimal',
+        'campaign_offers_new.*.no_of_transactions': 'required|integer|min:1',        
+        'campaign_offers_new.*.fees_allowed': 'required|decimal|min:10.0',
         'campaign_offers_new.*.user_id': 'integer'
       });
 
