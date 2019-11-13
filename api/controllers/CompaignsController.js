@@ -106,14 +106,16 @@ module.exports = {
         no_of_transactions: 'required|integer|min:1',
         fees_allowed: 'required|decimal|min:10.0',
         usage: 'required|in:1,2',
-        start_date: 'required|date',
-        end_date: 'required|date',
+        start_date: 'date',
+        end_date: 'date',
         campaign_offers:'required|array|arrayUniqueObjects:code',        
         'campaign_offers.*.code': 'required',        
         'campaign_offers.*.is_default_values': 'required|boolean',        
         'campaign_offers.*.no_of_transactions': 'required|integer|min:1',        
         'campaign_offers.*.fees_allowed': 'required|decimal|min:10.0',
-        'campaign_offers.*.user_id': 'integer'
+        'campaign_offers.*.user_id': 'integer',
+        'campaign_offers.*.start_date': 'date',        
+        'campaign_offers.*.end_date': 'date',        
       }
       // ,{
       //   "usage":"Usage field must be either Onetime or Mutiple",
