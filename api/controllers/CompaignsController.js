@@ -102,7 +102,7 @@ module.exports = {
       let req_body = req.body;
       let validator = new Validator(req_body, { 
         label: 'required',
-        description: 'required',
+        description: 'string',
         no_of_transactions: 'required|integer',
         fees_allowed: 'required|decimal',
         usage: 'required|in:1,2',
@@ -161,6 +161,111 @@ module.exports = {
       return res.json({
         "status": 200,
         "message": sails.__("campaign created"),
+        "data": all_data
+      });
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+
+  /**
+   * Update Compaign
+   *
+   */
+  update: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      let validator1 = new Validator(req.params, { 
+        id: 'required'
+      });
+      let matched1 = await validator1.check();
+      if (!matched1) {
+        for (var key in validator1.errors) {
+          return res
+            .status(400)
+            .json({
+              status: 400,
+              "message": validator1.errors[key].message
+            });
+        }
+      }
+      let campaign_id = req.params.id;
+      let req_body = req.body;
+      let validator = new Validator(req_body, { 
+        label: 'required',
+        description: 'string',
+        campaign_offers:'required|array',        
+        campaign_offers_new:'array|arrayUniqueObjects:code',        
+        'campaign_offers_new.*.code': 'required',        
+        'campaign_offers_new.*.is_default_values': 'required|boolean',        
+        'campaign_offers_new.*.no_of_transactions': 'required|integer',        
+        'campaign_offers_new.*.fees_allowed': 'required|decimal',
+        'campaign_offers_new.*.user_id': 'integer'
+      });
+
+      
+      let matched = await validator.check();
+      if (!matched) {
+        for (var key in validator.errors) {
+          return res
+            .status(400)
+            .json({
+              status: 400,
+              "message": validator.errors[key].message
+            });
+        }
+      }
+
+      // create
+      let data_object = {
+        label: req_body.label,
+        description:req_body.description        
+      };
+
+      let create_data = await Campaigns.updateOne({id:campaign_id}).set(data_object);
+      
+      // Update Offers
+      var updated_offers=[];
+      if( (req_body.campaign_offers).length > 0 ){
+        // (req_body.campaign_offers).map( async function(each, index){
+        var campaign_offers_data = req_body.campaign_offers;
+        for( var i=0; i<(req_body.campaign_offers).length; i++ ){  
+            var each_object = {
+              description:campaign_offers_data[i].description
+            };
+            updated_offers = await CampaignsOffers.updateOne({id:campaign_offers_data[i].id}).set(each_object);                 
+        }
+      }
+      
+      // Store Offers Code in tables
+      var insert_offers = [];
+      if( (req_body.campaign_offers_new) && (req_body.campaign_offers_new).length > 0 ){
+        var campaign_offers_new_object = (req_body.campaign_offers_new).map( function(each, index){
+            each.campaign_id = campaign_id;                       
+            return each;
+        })
+        insert_offers = await CampaignsOffers.createEach( campaign_offers_new_object ).fetch();
+      }
+      
+      var get_campaign_offers = await CampaignsOffers.find({campaign_id:campaign_id}).sort('created_at DESC');
+      create_data.campaign_offers = get_campaign_offers;
+      var all_data = create_data;
+      return res.json({
+        "status": 200,
+        "message": sails.__("campaign updated"),
         "data": all_data
       });
     } catch (error) {
