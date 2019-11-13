@@ -21,10 +21,10 @@ module.exports = {
       columnType: 'number',
       columnName: 'no_of_transactions'
     },
-    transaction_fees: {
+    fees_allowed: {
       type: 'ref',
       columnType: 'number',
-      columnName: 'transaction_fees'
+      columnName: 'fees_allowed'
     },  
     start_date: {
       type: 'ref',
