@@ -104,13 +104,24 @@ module.exports = {
         label: 'required',
         description: 'required',
         no_of_transactions: 'required|integer',
-        transaction_fees: 'required|decimal',
+        fees_allowed: 'required|decimal',
         usage: 'required|in:1,2',
         start_date: 'required|date',
-        end_date: 'required|date'        
-      });
+        end_date: 'required|date',
+        campaign_offers:'required|array|arrayUniqueObjects:code',        
+        'campaign_offers.*.code': 'required',        
+        'campaign_offers.*.is_default_values': 'required|boolean',        
+        'campaign_offers.*.no_of_transactions': 'required|integer',        
+        'campaign_offers.*.fees_allowed': 'required|decimal',
+        'campaign_offers.*.user_id': 'integer'
+      }
+      // ,{
+      //   "usage":"Usage field must be either Onetime or Mutiple",
+      //   "campaign_offers":"Offers should be array of object"
+      // }
+      );
 
-     
+      
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
@@ -128,17 +139,29 @@ module.exports = {
         label: req_body.label,
         description:req_body.description,
         no_of_transactions: req_body.no_of_transactions,
-        transaction_fees: req_body.transaction_fees,
+        fees_allowed: req_body.fees_allowed,
         start_date: req_body.start_date,
         end_date: req_body.end_date,
         usage:req_body.usage
       };
 
-      let create_data = await Campaigns.create( data_object );
+      let create_data = await Campaigns.create( data_object ).fetch();
+      // Store Offers Code in tables
+      var insert_offers = [];
+      if( (req_body.campaign_offers).length > 0 ){
+        var campaign_offers_object = (req_body.campaign_offers).map( function(each, index){
+            each.campaign_id = create_data.id;           
+            return each;
+        })
+        insert_offers = await CampaignsOffers.createEach( campaign_offers_object ).fetch();
+      }
+      create_data.campaign_offers = insert_offers;
+      var all_data = create_data;
+      
       return res.json({
         "status": 200,
         "message": sails.__("campaign created"),
-        "data": []
+        "data": all_data
       });
     } catch (error) {
       console.log("error", error);
