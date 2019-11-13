@@ -210,6 +210,7 @@ module.exports = {
         label: 'required',
         description: 'string',
         campaign_offers:'required|array',        
+        'campaign_offers.*.is_active': 'boolean',        
         campaign_offers_new:'array|arrayUniqueObjects:code',        
         'campaign_offers_new.*.code': 'required',        
         'campaign_offers_new.*.is_default_values': 'required|boolean',        
@@ -242,11 +243,11 @@ module.exports = {
       // Update Offers
       var updated_offers=[];
       if( (req_body.campaign_offers).length > 0 ){
-        // (req_body.campaign_offers).map( async function(each, index){
         var campaign_offers_data = req_body.campaign_offers;
         for( var i=0; i<(req_body.campaign_offers).length; i++ ){  
             var each_object = {
-              description:campaign_offers_data[i].description
+              description:campaign_offers_data[i].description,
+              is_active:campaign_offers_data[i].is_active
             };
             updated_offers = await CampaignsOffers.updateOne({id:campaign_offers_data[i].id}).set(each_object);                 
         }
