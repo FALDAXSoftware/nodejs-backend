@@ -186,13 +186,17 @@ module.exports = {
         faldax_fees: 'required|decimal',
         network_fees: 'required|decimal'
       });
-
+      var final_faldax_fees = 0;
+      var final_ntwk_fees = 0;
+      final_faldax_fees = req_body.faldax_fees;
+      final_ntwk_fees = req_body.network_fees;
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
-        quantityValue = req_body.Quantity
+        quantityValue = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees))
       } else {
         quantityValue = req_body.OrderQty
       }
+      quantityValue = parseFloat(quantityValue).toFixed(sails.config.local.TOTAL_PRECISION)
 
       let matched = await validator.check();
       if (!matched) {
@@ -527,24 +531,24 @@ module.exports = {
           var final_value = 0;
           var final_fees_deducted_crypto = 0;
           var final_fees_currency = 0;
-          var final_faldax_fees = 0;
-          var final_ntwk_fees = 0;
-          final_faldax_fees = req_body.faldax_fees;
-          final_ntwk_fees = req_body.network_fees;
+          
           if (req_body.original_pair == req_body.order_pair) { // Buy order
-            var final_amount = req_body.OriginalQuantity;
+            var final_amount = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees));
             // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
             // var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (req_body.OriginalQuantity), (final_amount));
             // final_ntwk_fees = get_network_fees;
+
+            console.log(final_amount)
             final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            console.log("Currency >>>>>>>>>>", jst_response_data.SettlCurrAmt)
             final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt)
           } else {
-            final_fees_deducted_crypto = parseFloat(jst_response_data.SettlCurrAmt);
-            var final_amount = jst_response_data.SettlCurrAmt;
+            final_fees_deducted_crypto = parseFloat(req_body.OriginalQuantity);
+            var final_amount = parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees);
             // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
             // var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (req_body.OriginalQuantity), (final_amount));
             // final_ntwk_fees = get_network_fees;
-            final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);            
+            final_fees_currency = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);            
           }
 
           var amount_after_fees_deduction = (final_value) - (network_fees) - (faldax_fees);
@@ -596,8 +600,8 @@ module.exports = {
             var update_user_wallet_asset1 = await Wallet.update({
               id: walletCurrency.id
             }).set({
-              balance: (walletCurrency.balance - final_fees_currency),
-              placed_balance: (walletCurrency.placed_balance) - final_fees_currency
+              balance: (walletCurrency.balance - (final_fees_currency)),
+              placed_balance: (walletCurrency.placed_balance) - (final_fees_currency)
             }).fetch();
 
             var update_user_wallet_asset2 = await Wallet.update({
