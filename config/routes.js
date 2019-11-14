@@ -440,6 +440,7 @@ module.exports.routes = {
   'post /conversion/jst-price-value': 'JSTController.getJSTPriceValueAuth',
   'get /conversion/get-jst-pair': 'JSTController.getJSTPairList',
   'get /conversion/jst-pair': 'JSTController.getPairList',
+  'post /conversion/apply-offer-code': 'JSTController.checkCampaignOfferStatus',
 
   // Delete account checking value
   'get /user/deleteAccountCheck': 'UsersController.userAccountDetailSummary',
@@ -455,7 +456,5 @@ module.exports.routes = {
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
-  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
-  
-
+  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get'  
 };

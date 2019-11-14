@@ -1595,6 +1595,7 @@ module.exports = {
       }
 
     } catch (error) {
+      console.log("error",error);
       await logger.error(error.message)
       return res
         .status(500)
