@@ -107,7 +107,8 @@ module.exports = {
 
             let role = await Role.findOne({
               id: admin_details.role_id
-            })
+            });
+
             admin_details.roles = role;
 
             // Role Not Active
@@ -1595,6 +1596,7 @@ module.exports = {
       }
 
     } catch (error) {
+      console.log("error",error);
       await logger.error(error.message)
       return res
         .status(500)

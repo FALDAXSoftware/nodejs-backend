@@ -58,6 +58,14 @@ module.exports = {
       columnName: 'user_id',
       required: true
     },
+    campaign_id: {
+      type: 'number',
+      columnName: 'campaign_id'
+    },
+    campaign_offer_id: {
+      type: 'number',
+      columnName: 'campaign_offer_id'
+    },
     is_collected: {
       type: 'boolean',
       columnName: 'is_collected'
@@ -111,6 +119,10 @@ module.exports = {
       type: 'number',
       columnName: 'faldax_fees'
     },
+    faldax_fees_actual: {
+      type: 'number',
+      columnName: 'faldax_fees_actual'
+    },    
     network_fees: {
       type: 'number',
       columnName: 'network_fees'
