@@ -1,24 +1,22 @@
 /**
- * permissions.js
+ * admin_permissions.js
  *
- * @description :: A model definition. Represents a database of permissions.
+ * @description :: A model definition. Represents a database of admin_permissions.
  * @docs :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'role_permissions',
+  tableName: 'admin_permissions',
   attributes: {
-    display_name: {
+    role_id: {
       type: 'string',
-      columnName: 'display_name'
+      columnName: 'role_id',
+      allowNull: true
     },
-    module_name: {
+    permission_id: {
       type: 'string',
-      columnName: 'module_name'
-    },
-    route_name: {
-      type: 'string',
-      columnName: 'route_name'
+      columnName: 'permission_id',
+      allowNull: true
     },
     created_at: {
       type: 'ref',

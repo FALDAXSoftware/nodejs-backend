@@ -182,7 +182,9 @@ module.exports = {
         Currency: 'required',
         OriginalQuantity: 'required',
         // ExecInst: 'required|in:A,B',
-        OrdType: 'required|in:1,2'
+        OrdType: 'required|in:1,2',
+        faldax_fees: 'required|decimal',
+        network_fees: 'required|decimal'
       });
 
       var quantityValue = 0;
@@ -367,7 +369,9 @@ module.exports = {
           order_status: "open",
           fix_quantity: parseFloat(quantityValue),
           symbol: req_body.Symbol,
-          user_id: user_id
+          user_id: user_id,
+          faldax_fees:req_body.faldax_fees,
+          network_fees:req_body.network_fees
         };
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
@@ -525,20 +529,22 @@ module.exports = {
           var final_fees_currency = 0;
           var final_faldax_fees = 0;
           var final_ntwk_fees = 0;
+          final_faldax_fees = req_body.faldax_fees;
+          final_ntwk_fees = req_body.network_fees;
           if (req_body.original_pair == req_body.order_pair) { // Buy order
-            var final_amount = jst_response_data.CumQty;
-            final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
-            var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
-            final_ntwk_fees = get_network_fees;
+            var final_amount = req_body.OriginalQuantity;
+            // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
+            // var get_network_fees = await sails.helpers.feesCalculation((currency_pair[0]).toLowerCase(), (req_body.OriginalQuantity), (final_amount));
+            // final_ntwk_fees = get_network_fees;
             final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
             final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt)
           } else {
-            final_fees_deducted_crypto = parseFloat(jst_response_data.CumQty);
+            final_fees_deducted_crypto = parseFloat(jst_response_data.SettlCurrAmt);
             var final_amount = jst_response_data.SettlCurrAmt;
-            final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
-            var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (jst_response_data.CumQty), (final_amount));
-            final_ntwk_fees = get_network_fees;
-            final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
+            // var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (req_body.OriginalQuantity), (final_amount));
+            // final_ntwk_fees = get_network_fees;
+            final_fees_currency = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);            
           }
 
           var amount_after_fees_deduction = (final_value) - (network_fees) - (faldax_fees);
@@ -558,6 +564,7 @@ module.exports = {
             settl_curr_amt: jst_response_data.SettlCurrAmt,
             leaves_qty: jst_response_data.LeavesQty,
             faldax_fees: final_faldax_fees,
+            faldax_fees_actual: final_faldax_fees,
             network_fees: final_ntwk_fees,
             asset1_usd_value: asset1_usd_value,
             asset2_usd_value: asset2_usd_value,
@@ -678,5 +685,42 @@ module.exports = {
     }
   },
 
+
+  // Check Offercode is valid or not 
+  checkCampaignOfferStatus: async function(req, res){
+    let req_body = req.body;
+    let validator = new Validator(req_body, {
+      offer_code: 'required'        
+    });
+
+    let matched = await validator.check();
+    if (!matched) {
+      for (var key in validator.errors) {
+        return res
+          .status(400)
+          .json({
+            status: 400,
+            "message": validator.errors[key].message
+          });
+      }
+    }
+    var user_id = req.user.id;
+    let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( req_body.offer_code, user_id );
+    console.log("check_offer_status",check_offer_status);
+    if( check_offer_status.status == true ){
+      return res.json({
+        "status": 200,
+        "message": check_offer_status.message,
+        "data": []
+      });
+    }else{
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": check_offer_status.message
+        });
+    }
+  }
 
 };
