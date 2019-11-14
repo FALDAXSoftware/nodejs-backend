@@ -49,12 +49,6 @@ module.exports.routes = {
   'post /admin/create': 'Admin.create',
   'put /admin/update': 'Admin.update',
   'put /admin/reset-password': 'Admin.resetPassword',
-  'post /admin/add-employee': 'Admin.addEmployee',
-  'get /admin/get-employees': 'Admin.getAllEmployee',
-  'delete /admin/delete-employee': 'Admin.deleteEmployee',
-  'delete /admin/delete-user': 'Admin.deleteUser',
-  'put /admin/update-employee': 'Admin.updateEmployee',
-  'get /admin/get-employee-details': 'Admin.getEmployeeDetails',
   'post /admin/setup-two-factor': 'Admin.setupTwoFactor',
   'post /admin/verify-two-factor': 'Admin.verifyTwoFactor',
   'post /admin/disable-two-factor': 'Admin.disableTwoFactor',
@@ -67,6 +61,12 @@ module.exports.routes = {
   'delete /admin/delete-user-whitelist-ip': 'Admin.deleteUserWhitelistIP',
   'post /admin/whitelist-ip-status-change': 'Admin.changeWhitelistIPStatus',
   'post /admin/user-whitelist-ip-status-change': 'Admin.changeUserWhitelistIPStatus',
+  'post /admin/add-employee': 'Admin.addEmployee',
+  'get /admin/get-employees': 'Admin.getAllEmployee',
+  'delete /admin/delete-employee': 'Admin.deleteEmployee',
+  'delete /admin/delete-user': 'Admin.deleteUser',
+  'put /admin/update-employee': 'Admin.updateEmployee',
+  'get /admin/get-employee-details': 'Admin.getEmployeeDetails',
 
   // Role
   'post /admin/role/create': 'RoleController.create',
@@ -456,6 +456,6 @@ module.exports.routes = {
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
   'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
-  
+
 
 };
