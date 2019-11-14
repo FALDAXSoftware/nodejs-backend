@@ -75,6 +75,7 @@ module.exports = {
       }
       let check_offercode_in_transactions = await JSTTradeHistory
           .find( get_data_object ); 
+      return check_offercode_in_transactions;    
     }
 
 
@@ -88,15 +89,17 @@ module.exports = {
         }
         return exits.success(response)
       }
-      // Get Conversion history to check Offercode applied or not
-      let get_data_object = {
-        user_id: user_id,
-        campaign_offer_id:campaign_offer_id,
-        or: [{ order_status: 'filled'},{order_status: 'partially_filled'}]
-      };
-      let check_offercode_in_transactions = await JSTTradeHistory
-          .find( get_data_object ); 
+      // Get Conversion history to check Offercode applied or not // Function
+      // let get_data_object = {
+      //   user_id: user_id,
+      //   campaign_offer_id:campaign_offer_id,
+      //   or: [{ order_status: 'filled'},{order_status: 'partially_filled'}]
+      // };
+      // let check_offercode_in_transactions = await JSTTradeHistory
+      //     .find( get_data_object ); 
 
+      
+      let check_offercode_in_transactions = getPastTransactions( user_id, campaign_offer_id );
       console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       if( check_offercode_in_transactions.length == 0 ){
         

@@ -154,6 +154,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'simplex_token',
     },
+    offers: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'offers',
+    },
     is_active: {
       type: 'boolean',
       columnName: 'is_active',
