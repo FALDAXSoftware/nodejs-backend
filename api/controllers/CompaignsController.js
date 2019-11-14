@@ -102,15 +102,28 @@ module.exports = {
       let req_body = req.body;
       let validator = new Validator(req_body, { 
         label: 'required',
-        description: 'required',
-        no_of_transactions: 'required|integer',
-        transaction_fees: 'required|decimal',
+        description: 'string',
+        no_of_transactions: 'required|integer|min:1',
+        fees_allowed: 'required|decimal|min:10.0',
         usage: 'required|in:1,2',
-        start_date: 'required|date',
-        end_date: 'required|date'        
-      });
+        start_date: 'date',
+        end_date: 'date',
+        campaign_offers:'required|array|arrayUniqueObjects:code',        
+        'campaign_offers.*.code': 'required',        
+        'campaign_offers.*.is_default_values': 'required|boolean',        
+        'campaign_offers.*.no_of_transactions': 'required|integer|min:1',        
+        'campaign_offers.*.fees_allowed': 'required|decimal|min:10.0',
+        'campaign_offers.*.user_id': 'integer',
+        'campaign_offers.*.start_date': 'date',        
+        'campaign_offers.*.end_date': 'date',        
+      }
+      // ,{
+      //   "usage":"Usage field must be either Onetime or Mutiple",
+      //   "campaign_offers":"Offers should be array of object"
+      // }
+      );
 
-     
+      
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
@@ -128,17 +141,135 @@ module.exports = {
         label: req_body.label,
         description:req_body.description,
         no_of_transactions: req_body.no_of_transactions,
-        transaction_fees: req_body.transaction_fees,
+        fees_allowed: req_body.fees_allowed,
         start_date: req_body.start_date,
         end_date: req_body.end_date,
         usage:req_body.usage
       };
 
-      let create_data = await Campaigns.create( data_object );
+      let create_data = await Campaigns.create( data_object ).fetch();
+      // Store Offers Code in tables
+      var insert_offers = [];
+      if( (req_body.campaign_offers).length > 0 ){
+        var campaign_offers_object = (req_body.campaign_offers).map( function(each, index){
+            each.campaign_id = create_data.id;           
+            return each;
+        })
+        insert_offers = await CampaignsOffers.createEach( campaign_offers_object ).fetch();
+      }
+      create_data.campaign_offers = insert_offers;
+      var all_data = create_data;
+      
       return res.json({
         "status": 200,
         "message": sails.__("campaign created"),
-        "data": []
+        "data": all_data
+      });
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+
+  /**
+   * Update Compaign
+   *
+   */
+  update: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      let validator1 = new Validator(req.params, { 
+        id: 'required'
+      });
+      let matched1 = await validator1.check();
+      if (!matched1) {
+        for (var key in validator1.errors) {
+          return res
+            .status(400)
+            .json({
+              status: 400,
+              "message": validator1.errors[key].message
+            });
+        }
+      }
+      let campaign_id = req.params.id;
+      let req_body = req.body;
+      let validator = new Validator(req_body, { 
+        label: 'required',
+        description: 'string',
+        campaign_offers:'required|array',        
+        'campaign_offers.*.is_active': 'boolean',        
+        campaign_offers_new:'array|arrayUniqueObjects:code',        
+        'campaign_offers_new.*.code': 'required',        
+        'campaign_offers_new.*.is_default_values': 'required|boolean',        
+        'campaign_offers_new.*.no_of_transactions': 'required|integer|min:1',        
+        'campaign_offers_new.*.fees_allowed': 'required|decimal|min:10.0',
+        'campaign_offers_new.*.user_id': 'integer'
+      });
+
+      
+      let matched = await validator.check();
+      if (!matched) {
+        for (var key in validator.errors) {
+          return res
+            .status(400)
+            .json({
+              status: 400,
+              "message": validator.errors[key].message
+            });
+        }
+      }
+
+      // create
+      let data_object = {
+        label: req_body.label,
+        description:req_body.description        
+      };
+
+      let create_data = await Campaigns.updateOne({id:campaign_id}).set(data_object);
+      
+      // Update Offers
+      var updated_offers=[];
+      if( (req_body.campaign_offers).length > 0 ){
+        var campaign_offers_data = req_body.campaign_offers;
+        for( var i=0; i<(req_body.campaign_offers).length; i++ ){  
+            var each_object = {
+              description:campaign_offers_data[i].description,
+              is_active:campaign_offers_data[i].is_active
+            };
+            updated_offers = await CampaignsOffers.updateOne({id:campaign_offers_data[i].id}).set(each_object);                 
+        }
+      }
+      
+      // Store Offers Code in tables
+      var insert_offers = [];
+      if( (req_body.campaign_offers_new) && (req_body.campaign_offers_new).length > 0 ){
+        var campaign_offers_new_object = (req_body.campaign_offers_new).map( function(each, index){
+            each.campaign_id = campaign_id;                       
+            return each;
+        })
+        insert_offers = await CampaignsOffers.createEach( campaign_offers_new_object ).fetch();
+      }
+      
+      var get_campaign_offers = await CampaignsOffers.find({campaign_id:campaign_id}).sort('created_at DESC');
+      create_data.campaign_offers = get_campaign_offers;
+      var all_data = create_data;
+      return res.json({
+        "status": 200,
+        "message": sails.__("campaign updated"),
+        "data": all_data
       });
     } catch (error) {
       console.log("error", error);

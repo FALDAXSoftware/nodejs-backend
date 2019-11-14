@@ -16,6 +16,9 @@ module.exports = {
       // required: true,
       model: 'campaigns',      
     },
+    user_id: {
+      type: 'number'
+    },
     description: {
       type: 'string',
       columnName: 'description'
@@ -30,10 +33,10 @@ module.exports = {
       columnType: 'number',
       columnName: 'no_of_transactions'
     },
-    transaction_fees: {
+    fees_allowed: {
       type: 'ref',
       columnType: 'number',
-      columnName: 'transaction_fees'
+      columnName: 'fees_allowed'
     },
     is_active: {
       type: 'boolean',
@@ -54,6 +57,16 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    start_date: {
+      type: 'ref',
+      columnType: 'date',
+      columnName: 'start_date'
+    },
+    end_date: {
+      type: 'ref',
+      columnType: 'date',
+      columnName: 'end_date'
     }
   },
   beforeCreate: (values, next) => {

@@ -3627,5 +3627,38 @@ module.exports = {
           "message": sails.__("Something Wrong")
         });
     }
+  },
+  // Get User's list 
+  userList: async function( req, res){
+    if (!req.user.isAdmin) {
+      return res.status(403).json({
+        status: 403,
+        err: 'Unauthorized access'
+      });
+    }
+    var user_data = await Users.find({
+      select:["first_name","last_name","email","id"],
+      where: {
+        deleted_at: null,
+        is_active: true
+      }
+    }).sort('created_at DESC');
+    if( user_data.length > 0 ){
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Record found"),
+          "data":user_data
+        })
+    }else{
+      return res
+        .status(400)
+        .json({
+          "status": 400,
+          "message": sails.__("No record found")          
+        })
+    }
+
   }
 };

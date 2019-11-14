@@ -450,9 +450,12 @@ module.exports.routes = {
   'post /admin/campaigns/list': 'CompaignsController.list',
   'get /admin/campaigns/get/:id': 'CompaignsController.get',
   'put /admin/campaigns/change-status/:id': 'CompaignsController.changeStatus',
+  'put /admin/campaigns/update/:id': 'CompaignsController.update',
+  'get /admin/users/list': 'AdminController.userList',
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
   'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
+  
 
 };

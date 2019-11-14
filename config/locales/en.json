@@ -359,6 +359,7 @@
   "value updated successfully": "Coin Fee Value has been updated successfully.",
   "value updated unsuccess": "No Value this slug has been found",
   "campaign created": "New Campaign has been created successfully.",
+  "campaign updated": "Campaign has been updated successfully.",
   "campaign not created": "Oops, Unfortunately Campaign is not created. Please try again.",
   "campaigns retrieve success": "Campaigns has been retrieved successfully.",
   "campaigns not found": "No Campaigns found.",
