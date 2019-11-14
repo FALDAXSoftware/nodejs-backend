@@ -61,26 +61,30 @@ module.exports = {
     if (data.fromDate && (data.fromDate != undefined || data.fromDate != null && data.fromDate != '')) {
       q['created_at']['>='] = moment(data.fromDate).format();
     }
-    q['or'] = [];
-    if (data.buy == "true" || data.buy == true) {
+    if (data.buy == data.sell) {
+      q['or'] = [];
       q['or'].push({
         user_id: data.user_id,
         side: 'Buy'
       })
-    }
 
-    if (data.sell == "true" || data.sell == true) {
       q['or'].push({
         user_id: data.user_id,
         side: 'Sell'
       })
+    } else {
+      if (data.buy == "true" || data.buy == true) {
+        q['side'] = 'Buy';
+        q['user_id'] = data.user_id
+      }
+
+      if (data.sell == "true" || data.sell == true) {
+        q['side'] = 'Sell';
+        q['user_id'] = data.user_id
+      }
     }
 
-    if (data.buy == "false" && data.sell == "false") {
-      q['or'].push({
-        user_id: data.user_id
-      });
-    }
+    console.log(q)
 
     userTradeHistory = await JSTTradeHistory
       .find({
