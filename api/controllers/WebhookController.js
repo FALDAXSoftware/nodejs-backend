@@ -138,6 +138,7 @@ module.exports = {
               user_id: userWallet.user_id,
               amount: (amount).toFixed(8),
               transaction_type: 'receive',
+              transaction_id: req.body.hash
             }
 
             await TransactionTable.create({
@@ -240,6 +241,7 @@ module.exports = {
                 transaction_type: "receive",
                 coin_id: coin.id,
                 is_executed: true,
+                transaction_id: req.body.hash
               });
 
 
@@ -255,6 +257,7 @@ module.exports = {
                 transaction_type: "receive",
                 coin_id: coin.id,
                 is_executed: true,
+                transaction_id: req.body.hash
               });
 
               console.log("Transaction Log ???????????????", transactionLog);
