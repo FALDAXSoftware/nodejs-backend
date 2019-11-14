@@ -99,6 +99,11 @@ module.exports = {
       columnName: 'news',
       defaultsTo: false,
     },
+    network_fee: {
+      type: "boolean",
+      columnName: 'network_fee',
+      defaultsTo: false,
+    },
     add_user: {
       type: "boolean",
       columnName: 'add_user',

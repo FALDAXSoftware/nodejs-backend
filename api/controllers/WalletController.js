@@ -348,6 +348,7 @@ module.exports = {
                             // Wallet balance checking for admin notification
                             await sails.helpers.notification.checkAdminWalletNotification();
 
+                            console.log("Amount >>>>>>>>>", amount)
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
@@ -386,7 +387,7 @@ module.exports = {
                               source_address: wallet.send_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: (total_fees),
+                              amount: (amount),
                               transaction_type: 'send',
                               transaction_id: transaction.txid,
                               is_executed: false
@@ -445,7 +446,7 @@ module.exports = {
                               slug: 'withdraw'
                             })
                             userData.coinName = coin.coin_code;
-                            userData.amountReceived = amount;
+                            userData.amountReceived = total_fees;
                             if (userNotification != undefined) {
                               if (userNotification.email == true || userNotification.email == "true") {
                                 if (userData.email != undefined)

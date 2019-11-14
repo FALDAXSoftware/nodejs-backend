@@ -1452,10 +1452,90 @@ module.exports = {
         deleted_at: new Date()
       });
 
-    res.json({
-      status: 200,
-      message: sails.__("user_delete_success")
+    var total = 0;
+    var usd_price = 0;
+    var walletArray = [];
+    var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
+                            FROM public.referral 
+                            WHERE user_id = ${user_id} AND is_collected = 'false'
+                            GROUP BY coin_id, coin_name`
+
+    var referCount = await sails.sendNativeQuery(referQuery, [])
+    referCount = referCount.rows;
+
+    let walletQuery = `SELECT coins.coin as coin_name,wallets.balance 
+                            FROM public.wallets
+                            LEFT JOIN coins
+                            ON coins.id = wallets.coin_id
+                            WHERE wallets.user_id = ${user_id} AND wallets.deleted_at IS NULL
+                            AND coins.is_active = true AND coins.deleted_at IS NULL AND wallets.balance > 0
+                            GROUP BY coins.id, wallets.coin_id, wallets.balance`
+
+    var walletCount = await sails.sendNativeQuery(walletQuery, []);
+    walletCount = walletCount.rows;
+
+    if (walletCount.length > 0) {
+      for (var i = 0; i < walletCount.length; i++) {
+        walletArray.push(walletCount[i]);
+        total = total + walletCount[i].balance;
+        walletCount[i].totalAmount = walletCount[i].balance
+        if (referCount.length > 0) {
+          for (var j = 0; j < referCount.length; j++) {
+            if (referCount[j].coin_name == walletCount[i].coin_name) {
+              walletCount[i].totalAmount = walletCount[i].totalAmount + referCount[j].amount
+            }
+          }
+        }
+        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+        walletCount[i].fiat = get_jst_price[0].ask_price;
+        usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+      }
+    } else if (referCount.length > 0) {
+      for (var i = 0; i < referCount.length; i++) {
+        walletArray.push(referCount[i]);
+        total = total + referCount[i].amount
+        referCount[i].totalAmount = referCount[i].amount
+        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+        referCount[i].fiat = get_jst_price[0].ask_price;
+        usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
+      }
+    }
+
+    console.log(walletArray)
+    var valueEmail = {};
+    valueEmail.recipientName = user.first_name;
+    if (walletArray.length > 0)
+      valueEmail.object = walletArray;
+
+    slug = 'deactivate_user';
+
+    let template = await EmailTemplate.findOne({
+      slug
     });
+    let emailContent = await sails
+      .helpers
+      .utilities
+      .formatEmail(template.content, {
+        valueEmail
+      })
+    if (template) {
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: user.email,
+          subject: "Delete Account Summary"
+        }, function (err) {
+          if (!err) {
+            return res.json({
+              status: 200,
+              message: sails.__("user_delete_success")
+            });
+          }
+        });
+    }
   },
 
   userAccountDetailSummary: async function (req, res) {
@@ -1466,7 +1546,6 @@ module.exports = {
         deleted_at: null
       });
       var user2fastatus;
-      console.log("User Value >>>>>>>>.", user)
 
       if (user.is_twofactor == false || user.is_twofactor == "false") {
         user2fastatus = false;
@@ -1566,7 +1645,8 @@ module.exports = {
       } else {
         return res.json({
           "status": 200,
-          "message": sails.__("no funds left")
+          "message": sails.__("no funds left"),
+          user2fastatus
         })
       }
     } catch (error) {
