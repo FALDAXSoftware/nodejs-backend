@@ -144,89 +144,108 @@ module.exports = {
             is_active: true
           });
 
-          //Checking if wallet data is found or not
-          if (wallet) {
+          var userData = await Users.findOne({
+            where: {
+              id: user_id,
+              deleted_at: null
+            }
+          })
 
-            //If placed balance is greater than the amount to be send
-            if (wallet.placed_balance >= parseFloat(amount)) {
+          console.log(userData)
 
-              //Checking Coin type
-              if (coin.type == 1) {
+          if (userData != undefined) {
 
-                //Check for warm wallet minimum thresold
-                if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
-                  //Execute Transaction
-                  // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+            //Checking if wallet data is found or not
+            if (wallet) {
+
+              //If placed balance is greater than the amount to be send
+              if (wallet.placed_balance >= parseFloat(amount)) {
+
+                //Checking Coin type
+                if (coin.type == 1) {
+
+                  //Check for warm wallet minimum thresold
+                  if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
+                    //Execute Transaction
+                    // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
 
-                  // Send to hot warm wallet and make entry in diffrent table for both warm to
-                  // receive and receive to destination
-                  let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8)
-                  //Here remainning entry as well as address change
-                  let walletHistory = {
-                    coin_id: wallet.coin_id,
-                    source_address: sendWalletData.receiveAddress.address,
-                    destination_address: destination_address,
-                    user_id: user_id,
-                    amount: amount,
-                    transaction_type: 'send',
-                    transaction_id: transaction.id,
-                    is_executed: false,
-                    is_approve: true
-                  }
+                    // Send to hot warm wallet and make entry in diffrent table for both warm to
+                    // receive and receive to destination
+                    let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8)
+                    //Here remainning entry as well as address change
+                    let walletHistory = {
+                      coin_id: wallet.coin_id,
+                      source_address: sendWalletData.receiveAddress.address,
+                      destination_address: destination_address,
+                      user_id: user_id,
+                      amount: amount,
+                      transaction_type: 'send',
+                      transaction_id: transaction.id,
+                      is_executed: false,
+                      is_approve: true
+                    }
 
-                  // Make changes in code for receive webhook and then send to receive address
-                  // Entry in wallet history
-                  await WalletHistory.create({
-                    ...walletHistory
-                  });
-                  // update wallet balance
-                  await Wallet
-                    .update({
-                      id: wallet.id
-                    })
-                    .set({
-                      balance: wallet.balance - amount,
-                      placed_balance: wallet.placed_balance - amount
+                    // Make changes in code for receive webhook and then send to receive address
+                    // Entry in wallet history
+                    await WalletHistory.create({
+                      ...walletHistory
+                    });
+                    // update wallet balance
+                    await Wallet
+                      .update({
+                        id: wallet.id
+                      })
+                      .set({
+                        balance: wallet.balance - amount,
+                        placed_balance: wallet.placed_balance - amount
+                      });
+
+                    // Adding the transaction details in transaction table This is entry for sending
+                    // from warm wallet to hot send wallet
+                    let addObject = {
+                      coin_id: coin.id,
+                      source_address: warmWalletData.receiveAddress.address,
+                      destination_address: sendWalletData.receiveAddress.address,
+                      user_id: user_id,
+                      amount: amount,
+                      transaction_type: 'send',
+                      is_executed: true
+                    }
+
+                    await TransactionTable.create({
+                      ...addObject
                     });
 
-                  // Adding the transaction details in transaction table This is entry for sending
-                  // from warm wallet to hot send wallet
-                  let addObject = {
-                    coin_id: coin.id,
-                    source_address: warmWalletData.receiveAddress.address,
-                    destination_address: sendWalletData.receiveAddress.address,
-                    user_id: user_id,
-                    amount: amount,
-                    transaction_type: 'send',
-                    is_executed: true
+                    // //This is for sending from hot send wallet to destination address let
+                    // addObjectSendData = {   coin_id: coin.id,   source_address:
+                    // sendWalletData.receiveAddress.address,   destination_address:
+                    // destination_address,   user_id: user_id,   amount: amount,
+                    // transaction_type: 'send',   is_executed: false } await
+                    // TransactionTable.create({   ...addObjectSendData });
+
+                    return res
+                      .json
+                      .status(200)({
+                        status: 200,
+                        message: sails.__("Token send success")
+                      });
                   }
-
-                  await TransactionTable.create({
-                    ...addObject
-                  });
-
-                  // //This is for sending from hot send wallet to destination address let
-                  // addObjectSendData = {   coin_id: coin.id,   source_address:
-                  // sendWalletData.receiveAddress.address,   destination_address:
-                  // destination_address,   user_id: user_id,   amount: amount,
-                  // transaction_type: 'send',   is_executed: false } await
-                  // TransactionTable.create({   ...addObjectSendData });
-
-                  return res
-                    .json
-                    .status(200)({
-                      status: 200,
-                      message: sails.__("Token send success")
-                    });
                 }
+              } else {
+                return res
+                  .status(400)
+                  .json({
+                    status: 400,
+                    message: sails.__("Insufficent balance wallet user")
+                  });
               }
             } else {
               return res
                 .status(400)
                 .json({
                   status: 400,
-                  message: sails.__("Insufficent balance wallet user")
+                  message: sails.__("Wallet Not Found")
                 });
             }
           } else {
@@ -234,7 +253,7 @@ module.exports = {
               .status(400)
               .json({
                 status: 400,
-                message: sails.__("Wallet Not Found")
+                message: sails.__("User has been deleted, So funds cannot be transferred")
               });
           }
         } else {
