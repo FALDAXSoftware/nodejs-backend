@@ -333,7 +333,8 @@ module.exports = {
         await Wallet
           .update({
             coin_id: coinObject.id,
-            address_label: addressLable
+            address_label: addressLable,
+            deleted_at: null
           })
           .set({
             receive_address: address.address

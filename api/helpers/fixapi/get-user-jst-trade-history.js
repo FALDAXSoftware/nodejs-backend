@@ -32,22 +32,22 @@ module.exports = {
 
     var currency,
       settle_currency;
-    if (data.symbol != null || data.symbol != undefined) {
-      var values = await sails
-        .helpers
-        .utilities
-        .getCurrencies(data.symbol);
+    // if (data.symbol != null || data.symbol != undefined) {
+    //   var values = await sails
+    //     .helpers
+    //     .utilities
+    //     .getCurrencies(data.symbol);
 
-      settle_currency = values.crypto;
-      currency = values.currency;
-    }
+    //   settle_currency = values.crypto;
+    //   currency = values.currency;
+    // }
 
-    if (data.symbol != null || data.symbol != undefined) {
-      if (currency != "null") {
-        q['currency'] = currency,
-          q['settle_currency'] = settle_currency
-      }
-    }
+    // if (data.symbol != null || data.symbol != undefined) {
+    //   if (currency != "null") {
+    //     q['currency'] = currency,
+    //       q['settle_currency'] = settle_currency
+    //   }
+    // }
 
     if (data.toDate != undefined && data.toDate != null && data.toDate != '' && data.fromDate != '' && data.fromDate != undefined && data.fromDate != null) {
       q['created_at'] = {}
@@ -82,6 +82,10 @@ module.exports = {
         q['side'] = 'Sell';
         q['user_id'] = data.user_id
       }
+    }
+
+    if (data.symbol) {
+      q['symbol'] = data.symbol;
     }
 
     console.log(q)
