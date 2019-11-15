@@ -79,9 +79,10 @@ module.exports = {
     }
 
     // To check past transactions using Offer
-    async function getPastTransactions( user_id=0, campaign_offer_id ){
+    async function getPastTransactions( user_id=0, campaign_id, campaign_offer_id ){
       // Get Conversion history to check Offercode applied or not
       let get_data_object = {
+        campaign_id:campaign_id,
         campaign_offer_id:campaign_offer_id,
         or: [{ order_status: 'filled'},{order_status: 'partially_filled'}]
       };
@@ -176,12 +177,23 @@ module.exports = {
         fiat_faldax_fees += (fiat_value * faldax_fees_actual);     
         
       }
+      
       console.log("offer_transaction_fees",offer_transaction_fees);
       console.log("Total fiat_faldax_fees",fiat_faldax_fees);
+      
       if( parseFloat(offer_transaction_fees) <= parseFloat(fiat_faldax_fees) ){
         response.status = false;
         response.message = 'You have already exceeded total amount of fees for this Offer';
-        return exits.success(response)
+        return exits.success(response)     
+      }else{
+        var remaining_fees = parseFloat(offer_transaction_fees)-parseFloat(fiat_faldax_fees); // Remaining fees in Fiat
+        console.log("remaining_fees",remaining_fees);
+        if( remaining_fees > 0 ){
+          response.status = "truefalse";
+          response.discount_values = remaining_fees;
+          response.message = `You will get $${remaining_fees} as discount in your fees` ;
+          return exits.success(response)
+        }
       }
     }
     // To check if offercode is not of Same Campaign
@@ -211,7 +223,7 @@ module.exports = {
         return exits.success(response)
       }
       // Get Conversion history to check Offercode applied or not // Function
-      let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_offer_id );
+      let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_id, campaign_offer_id );
       console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       if( check_offercode_in_transactions.length == 0 ){
         // No block of code
