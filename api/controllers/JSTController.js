@@ -186,10 +186,10 @@ module.exports = {
         faldax_fees: 'required|decimal',
         network_fees: 'required|decimal'
       });
-      var final_faldax_fees = 0;
-      var final_ntwk_fees = 0;
-      final_faldax_fees = req_body.faldax_fees;
-      final_ntwk_fees = req_body.network_fees;
+      var final_faldax_fees = req_body.faldax_fees;
+      var final_ntwk_fees = req_body.network_fees;
+      var final_faldax_fees_actual = req_body.faldax_fees;
+
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
         quantityValue = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees))
@@ -523,7 +523,25 @@ module.exports = {
             var asset2_usd_value = asset2_value[0].bid_price;
           }
 
-
+          // Check for Offercode and if it is proper, don't add Faldax fees
+          let offer_code = req_body.offer_code;
+          let campaign_id=0;
+          let campaign_offer_id=0;
+          let offer_message="";
+          let offer_applied=false;
+          if( offer_code && offer_code != "" ){
+            let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( offer_code, user_id, false );   
+            console.log("check_offer_status",check_offer_status);       
+            campaign_id = check_offer_status.data.campaign_id;
+            campaign_offer_id = check_offer_status.data.id;
+            offer_message = check_offer_status.message;
+            offer_applied = false;
+            if( check_offer_status.status == true ){
+              offer_applied = true;
+              final_faldax_fees = 0.0;
+            }
+          }
+          
 
           // Calculate fees deduction 
           var faldax_fees = 0;
@@ -552,6 +570,8 @@ module.exports = {
           }
 
           var amount_after_fees_deduction = (final_value) - (network_fees) - (faldax_fees);
+
+          
           // update order
           var update_data = {
             fill_price: jst_response_data.SettlCurrAmt,
@@ -568,13 +588,18 @@ module.exports = {
             settl_curr_amt: jst_response_data.SettlCurrAmt,
             leaves_qty: jst_response_data.LeavesQty,
             faldax_fees: final_faldax_fees,
-            faldax_fees_actual: final_faldax_fees,
+            faldax_fees_actual: final_faldax_fees_actual,
             network_fees: final_ntwk_fees,
             asset1_usd_value: asset1_usd_value,
             asset2_usd_value: asset2_usd_value,
             order_status: order_status,
             reason: (jst_response_data.Text ? jst_response_data.Text : ""),
-            amount_after_fees_deduction: req_body.OriginalQuantity
+            amount_after_fees_deduction: req_body.OriginalQuantity,
+            offer_code:offer_code,
+            campaign_id:campaign_id,
+            campaign_offer_id:campaign_offer_id,
+            offer_message:offer_message,
+            offer_applied:offer_applied,
           };
           var update_order = await JSTTradeHistory
             .update({
@@ -709,13 +734,14 @@ module.exports = {
       }
     }
     var user_id = req.user.id;
-    let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( req_body.offer_code, user_id );
+    
+    let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( req_body.offer_code, user_id, true );
     console.log("check_offer_status",check_offer_status);
     if( check_offer_status.status == true ){
       return res.json({
         "status": 200,
         "message": check_offer_status.message,
-        "data": []
+        "data": check_offer_status.data
       });
     }else{
       return res
