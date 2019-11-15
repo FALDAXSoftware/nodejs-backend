@@ -73,12 +73,112 @@ module.exports = {
       if( user_id != 0 ){
         get_data_object.user_id = user_id;
       }
+      console.log("get_data_object",get_data_object);
       let check_offercode_in_transactions = await JSTTradeHistory
           .find( get_data_object ); 
       return check_offercode_in_transactions;    
     }
+    // To Check if Offercode active or not
+    async function checkOffercodeStatus(get_campaign_offer_data){
+      // Check Offercode is active or not
+      if( get_campaign_offer_data[0].is_active == false ){
+        response = {
+          status:false,
+          message:'Sorry, Offer code is not active now',
+          data : check_offercode_in_transactions
+        }
+        return exits.success(response)
+      }                  
+    }
 
+    // To check validity of Offercode
+    async function checkValidityOfOffercode(get_campaign_offer_data, check_offercode_in_transactions){
+      if( moment( current_date ).isBetween(get_campaign_offer_data[0].start_date, get_campaign_offer_data[0].end_date) ){
 
+      }else{
+        response = {
+          status:false,
+          message:'Sorry, Offer code is already expired',
+          data : check_offercode_in_transactions
+        }
+        return exits.success(response)
+      }
+    }
+
+    // Check number of Transactions
+    async function checkNumberOfTransaction(get_campaign_offer_data, check_offercode_in_transactions){
+      let total_transactions = check_offercode_in_transactions.length;
+      let offer_no_of_transactions = get_campaign_offer_data[0].no_of_transactions;
+      // let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
+      if( get_campaign_offer_data[0].is_default_values == true ){
+        offer_no_of_transactions = get_campaign_data[0].no_of_transactions;         
+      }
+      if( total_transactions >= offer_no_of_transactions ){
+        response = {
+          status:false,
+          message:'You have already exceeded Number of transactions for this Offer',
+          data : check_offercode_in_transactions
+        }
+        return exits.success(response)
+      }
+    }
+
+    // Check total fees already deducted using Offer
+    async function checkTotalFeesDeducted(get_campaign_offer_data, check_offercode_in_transactions){
+      let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
+      
+      if( get_campaign_offer_data[0].is_default_values == true ){
+        offer_transaction_fees = get_campaign_data[0].fees_allowed;
+      }
+      console.log("offer_transaction_fees",offer_transaction_fees);
+
+      // Check total fees 
+      let all_transaction = check_offercode_in_transactions;
+      var fiat_faldax_fees = 0;
+      for( var ii=0; ii<(check_offercode_in_transactions.length); ii++ ){
+        var side = all_transaction[ii].side;
+        var coin_pair = all_transaction[ii].symbol;
+        var faldax_fees_actual = all_transaction[ii].faldax_fees_actual;
+        var each_coin = coin_pair.split("/");
+        var query={};
+        if( side == "Buy" ){
+          query.coin = each_coin[0]+"/USD";
+          query.ask_price ={'>':0} ;
+        }else{
+          query.coin = each_coin[1]+"/USD";
+          query.bid_price ={'>':0};
+        }
+        var get_price = await PriceHistory.find({
+          where: query,
+        }).sort('id DESC').limit(1)
+
+        
+        let fiat_value = 0;
+        if( side == "Buy" ){
+          fiat_value = get_price[0].ask_price;
+        }else{
+          fiat_value = get_price[0].bid_price;
+        }
+        console.log("Transaction#",all_transaction[ii].order_id);
+        console.log("Fiat_value", fiat_value);
+        console.log("faldax_fees_actual",faldax_fees_actual);
+        console.log("fiat_faldax_fees",fiat_faldax_fees);
+        // calculate faldax fees in Fiat                
+        fiat_faldax_fees += (fiat_value * faldax_fees_actual);     
+        
+      }
+      console.log("offer_transaction_fees",offer_transaction_fees);
+      console.log("Total fiat_faldax_fees",fiat_faldax_fees);
+      console.log("dsdsd",parseFloat(offer_transaction_fees) <= parseFloat(fiat_faldax_fees));
+      if( parseFloat(offer_transaction_fees) <= parseFloat(fiat_faldax_fees) ){
+        response = {
+          status:false,
+          message:'You have already exceeded total amount of fees for this Offer',
+          data : check_offercode_in_transactions
+        }
+        return exits.success(response)
+      }
+    }
     // Check type of Campaign
     if( get_campaign_data[0].usage == 1 ){
       // Check code is applied by valid user
@@ -99,87 +199,88 @@ module.exports = {
       //     .find( get_data_object ); 
 
       
-      let check_offercode_in_transactions = getPastTransactions( user_id, campaign_offer_id );
+      let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_offer_id );
       console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       if( check_offercode_in_transactions.length == 0 ){
         
       }else{
-        // Check Offercode is active or not
-        if( get_campaign_offer_data[0].is_active == false ){
-          response = {
-            status:false,
-            message:'Sorry, Offer code is not active now',
-            data : check_offercode_in_transactions
-          }
-          return exits.success(response)
-        }
+        // Check Offercode is active or not // Function
+        // if( get_campaign_offer_data[0].is_active == false ){
+        //   response = {
+        //     status:false,
+        //     message:'Sorry, Offer code is not active now',
+        //     data : check_offercode_in_transactions
+        //   }
+        //   return exits.success(response)
+        // }
+        let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
         // Check Offercode is expired or not
-        if( moment( current_date ).isBetween(get_campaign_offer_data[0].start_date, get_campaign_offer_data[0].end_date) ){
+        let check_offer_validity = checkValidityOfOffercode( get_campaign_offer_data );
+        // if( moment( current_date ).isBetween(get_campaign_offer_data[0].start_date, get_campaign_offer_data[0].end_date) ){
           // Get Number of transactions and Total fees of old transactions
-          let total_transactions = check_offercode_in_transactions.length;
-          let offer_no_of_transactions = get_campaign_offer_data[0].no_of_transactions;
-          let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
-          if( get_campaign_offer_data[0].is_default_values == true ){
-            offer_no_of_transactions = get_campaign_data[0].no_of_transactions; 
-            offer_transaction_fees = get_campaign_data[0].fees_allowed;
-          }
-          if( total_transactions >= offer_no_of_transactions ){
-            response = {
-              status:false,
-              message:'You have already exceeded Number of transactions for this Offer',
-              data : check_offercode_in_transactions
-            }
-            return exits.success(response)
-          }
-          // Check total fees 
-          let all_transaction = check_offercode_in_transactions;
-          var fiat_faldax_fees = 0;
-          for( var ii=0; ii<(check_offercode_in_transactions.length); ii++ ){
-            var side = all_transaction[ii].side;
-            var coin_pair = all_transaction[ii].symbol;
-            var faldax_fees_actual = all_transaction[ii].faldax_fees_actual;
-            var each_coin = coin_pair.split("/");
-            var query={};
-            if( side == "Buy" ){
-              query.coin = each_coin[0]+"/USD";
-              query.ask_price ={'>':0} ;
-            }else{
-              query.coin = each_coin[1]+"/USD";
-              query.bid_price ={'>':0};
-            }
-            var get_price = await PriceHistory.find({
-              where: query,
-            }).sort('id DESC').limit(1)
+          let check_total_transaction = checkNumberOfTransaction(get_campaign_offer_data, check_offercode_in_transactions);
+          // let total_transactions = check_offercode_in_transactions.length;
+          // let offer_no_of_transactions = get_campaign_offer_data[0].no_of_transactions;
+          // let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
+          // if( get_campaign_offer_data[0].is_default_values == true ){
+          //   // offer_no_of_transactions = get_campaign_data[0].no_of_transactions; 
+          //   offer_transaction_fees = get_campaign_data[0].fees_allowed;
+          // }
+          // if( total_transactions >= offer_no_of_transactions ){
+          //   response = {
+          //     status:false,
+          //     message:'You have already exceeded Number of transactions for this Offer',
+          //     data : check_offercode_in_transactions
+          //   }
+          //   return exits.success(response)
+          // }
+          // Check total fees // Function
+          // let all_transaction = check_offercode_in_transactions;
+          // var fiat_faldax_fees = 0;
+          // for( var ii=0; ii<(check_offercode_in_transactions.length); ii++ ){
+          //   var side = all_transaction[ii].side;
+          //   var coin_pair = all_transaction[ii].symbol;
+          //   var faldax_fees_actual = all_transaction[ii].faldax_fees_actual;
+          //   var each_coin = coin_pair.split("/");
+          //   var query={};
+          //   if( side == "Buy" ){
+          //     query.coin = each_coin[0]+"/USD";
+          //     query.ask_price ={'>':0} ;
+          //   }else{
+          //     query.coin = each_coin[1]+"/USD";
+          //     query.bid_price ={'>':0};
+          //   }
+          //   var get_price = await PriceHistory.find({
+          //     where: query,
+          //   }).sort('id DESC').limit(1)
 
             
-            let fiat_value = 0;
-            if( side == "Buy" ){
-              fiat_value = get_price.ask_price;
-            }else{
-              fiat_value = get_price.bid_price;
-            }
-            // calculate faldax fees in Fiat
-            fiat_faldax_fees += (fiat_value * faldax_fees_actual);     
-          }
-          if( offer_transaction_fees <= fiat_faldax_fees ){
-            response = {
-              status:false,
-              message:'You have already exceeded total amount of fees for this Offer',
-              data : check_offercode_in_transactions
-            }
-            return exits.success(response)
-          }
-        }else{
-          response = {
-            status:false,
-            message:'Sorry, Offer code is already expired',
-            data : check_offercode_in_transactions
-          }
-          return exits.success(response)
-        }
-        
-
-        
+          //   let fiat_value = 0;
+          //   if( side == "Buy" ){
+          //     fiat_value = get_price.ask_price;
+          //   }else{
+          //     fiat_value = get_price.bid_price;
+          //   }
+          //   // calculate faldax fees in Fiat
+          //   fiat_faldax_fees += (fiat_value * faldax_fees_actual);     
+          // }
+          // if( offer_transaction_fees <= fiat_faldax_fees ){
+          //   response = {
+          //     status:false,
+          //     message:'You have already exceeded total amount of fees for this Offer',
+          //     data : check_offercode_in_transactions
+          //   }
+          //   return exits.success(response)
+          // }
+        // }else{
+        //   response = {
+        //     status:false,
+        //     message:'Sorry, Offer code is already expired',
+        //     data : check_offercode_in_transactions
+        //   }
+        //   return exits.success(response)
+        // }
+        let check_total_fees = await checkTotalFeesDeducted( get_campaign_offer_data, check_offercode_in_transactions);        
       }      
     }else{
 
@@ -191,8 +292,6 @@ module.exports = {
     }
     return exits.success(response)
 
-
-    return exits.success(response);
   }
 
 
