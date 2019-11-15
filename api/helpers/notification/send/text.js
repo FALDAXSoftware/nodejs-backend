@@ -38,9 +38,12 @@ module.exports = {
       slug: inputs.slug
     })
 
+    console.log(bodyValue)
+
     //Twilio Integration
     var client = new twilio(accountSid, authToken);
 
+    console.log(inputs.user.phone_number)
     //Sending SMS to users 
     client.messages.create({
         body: bodyValue.content,

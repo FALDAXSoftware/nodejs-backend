@@ -357,7 +357,7 @@ module.exports = {
         //   balanceChecking = req_body.Quantity
         // }
         // if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
-        if ( parseFloat(balanceChecking) > parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) ) {  
+        if (parseFloat(balanceChecking) > parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))) {
           return res
             .status(500)
             .json({
@@ -374,8 +374,8 @@ module.exports = {
           fix_quantity: parseFloat(quantityValue),
           symbol: req_body.Symbol,
           user_id: user_id,
-          faldax_fees:req_body.faldax_fees,
-          network_fees:req_body.network_fees
+          faldax_fees: req_body.faldax_fees,
+          network_fees: req_body.network_fees
         };
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
@@ -549,7 +549,7 @@ module.exports = {
           var final_value = 0;
           var final_fees_deducted_crypto = 0;
           var final_fees_currency = 0;
-          
+
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var final_amount = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees));
             // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
@@ -566,7 +566,7 @@ module.exports = {
             // final_faldax_fees = (final_amount * ((get_faldax_fee.value) / 100));
             // var get_network_fees = await sails.helpers.feesCalculation((currency_pair[1]).toLowerCase(), (req_body.OriginalQuantity), (final_amount));
             // final_ntwk_fees = get_network_fees;
-            final_fees_currency = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);            
+            final_fees_currency = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
           }
 
           var amount_after_fees_deduction = (final_value) - (network_fees) - (faldax_fees);
@@ -613,13 +613,13 @@ module.exports = {
             .helpers
             .tradding
             .getRefferedAmount(update_order, update_order[0].user_id, update_order[0].order_id);
-          
-          var first_coin = crypto;  
-          var second_coin = currency;  
-          var first_coin_balance = '';  
-          var second_coin_balance = '';  
-          var coin1type = '';  
-          var coin2type = '';  
+
+          var first_coin = crypto;
+          var second_coin = currency;
+          var first_coin_balance = '';
+          var second_coin_balance = '';
+          var coin1type = '';
+          var coin2type = '';
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({
@@ -635,7 +635,7 @@ module.exports = {
               balance: (walletCrypto.balance + final_fees_deducted_crypto),
               placed_balance: (walletCrypto.placed_balance + final_fees_deducted_crypto)
             }).fetch();
-            
+
             first_coin = crypto;
             second_coin = currency;
             first_coin_balance = final_fees_deducted_crypto;
@@ -662,23 +662,23 @@ module.exports = {
           }
           // Send Email 
           var userData = await Users.findOne({
-            select:['email','first_name','phone_number'],
-            where:{
+            select: ['email', 'first_name', 'phone_number'],
+            where: {
               deleted_at: null,
               is_active: true,
               id: user_id
-            }            
+            }
           })
-          
-          if( userData != undefined ){
+
+          if (userData != undefined) {
             userData.firstCoin = first_coin;
             userData.secondCoin = second_coin;
             userData.firstAmount = first_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
             userData.secondAmount = second_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
-            console.log("Acc userData",userData);
+            console.log("Acc userData", userData);
             await sails.helpers.notification.send.email("jst_order_success", userData)
           }
-          
+
           return res.json({
             "status": 200,
             "message": sails.__("jst order created"),
@@ -690,19 +690,19 @@ module.exports = {
     } catch (error) {
       console.log("error", error);
       await logger.error(error.message)
-      
-       // Send Email 
-       var user_id = req.user.id;
-       var userData = await Users.findOne({
-        select:['email','first_name','phone_number'],
-        where:{
+
+      // Send Email 
+      var user_id = req.user.id;
+      var userData = await Users.findOne({
+        select: ['email', 'first_name', 'phone_number'],
+        where: {
           deleted_at: null,
           is_active: true,
           id: user_id
-        }            
+        }
       })
-      
-      if( userData != undefined ){
+
+      if (userData != undefined) {
         await sails.helpers.notification.send.email("jst_order_failed", userData)
       }
       return res
@@ -716,10 +716,10 @@ module.exports = {
 
 
   // Check Offercode is valid or not 
-  checkCampaignOfferStatus: async function(req, res){
+  checkCampaignOfferStatus: async function (req, res) {
     let req_body = req.body;
     let validator = new Validator(req_body, {
-      offer_code: 'required'        
+      offer_code: 'required'
     });
 
     let matched = await validator.check();
@@ -743,7 +743,7 @@ module.exports = {
         "message": check_offer_status.message,
         "data": check_offer_status.data
       });
-    }else{
+    } else {
       return res
         .status(500)
         .json({
