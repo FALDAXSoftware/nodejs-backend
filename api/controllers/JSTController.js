@@ -511,16 +511,19 @@ module.exports = {
 
           // Get JST Fiat Value
           var currency_pair = (req_body.Symbol).split("/");
+          let calculate_offer_amount = 0;
           if (req_body.original_pair == req_body.order_pair) {
             var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Buy");
             var asset1_usd_value = asset1_value[0].ask_price;
             var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Buy");
             var asset2_usd_value = asset2_value[0].ask_price;
+            calculate_offer_amount = asset1_usd_value;
           } else {
             var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Sell");
             var asset1_usd_value = asset1_value[0].bid_price;
             var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Sell");
             var asset2_usd_value = asset2_value[0].bid_price;
+            calculate_offer_amount = asset2_usd_value;
           }
 
           // Check for Offercode and if it is proper, don't add Faldax fees
@@ -536,12 +539,22 @@ module.exports = {
             campaign_offer_id = check_offer_status.data.id;
             offer_message = check_offer_status.message;
             offer_applied = false;
-            if( check_offer_status.status == true ){
+            if( check_offer_status.status == "truefalse" ){    
+              final_faldax_fees = 0.0;          
+              // Check Partially fees calulations
+              var current_order_faldax_fees = parseFloat(final_faldax_fees_actual)*parseFloat(calculate_offer_amount);
+              if( parseFloat(check_offer_status.discount_values) <  parseFloat(current_order_faldax_fees) ){
+                offer_applied = true;
+                var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
+                var final_faldax_fees_crypto = remaining_fees_fiat/calculate_offer_amount;
+                final_faldax_fees = final_faldax_fees_crypto;
+              }
+            }else if( check_offer_status.status == true ){
               offer_applied = true;
               final_faldax_fees = 0.0;
             }
-          }
-          
+            console.log("final_faldax_fees",final_faldax_fees);
+          }          
 
           // Calculate fees deduction 
           var faldax_fees = 0;
@@ -737,7 +750,7 @@ module.exports = {
     
     let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( req_body.offer_code, user_id, true );
     console.log("check_offer_status",check_offer_status);
-    if( check_offer_status.status == true ){
+    if( check_offer_status.status == true || check_offer_status.status == "truefalse" ){
       return res.json({
         "status": 200,
         "message": check_offer_status.message,
