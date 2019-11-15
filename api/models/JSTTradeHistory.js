@@ -58,6 +58,18 @@ module.exports = {
       columnName: 'user_id',
       required: true
     },
+    offer_message: {
+      type: 'string',
+      columnName: 'offer_message'
+    },
+    offer_code: {
+      type: 'string',
+      columnName: 'offer_code'
+    },
+    offer_applied: {
+      type: 'boolean',
+      columnName: 'offer_applied'
+    },
     campaign_id: {
       type: 'number',
       columnName: 'campaign_id'
