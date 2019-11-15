@@ -2028,20 +2028,29 @@ module.exports = {
         send_coin_fee
       } = req.body;
 
-      updateCoinFee = await AdminSetting
-        .update({
-          slug: 'default_send_coin_fee'
-        })
-        .set({
-          value: send_coin_fee
-        })
-        .fetch();
+      if (parseFloat(send_coin_fee) > 0) {
+        updateCoinFee = await AdminSetting
+          .update({
+            slug: 'default_send_coin_fee'
+          })
+          .set({
+            value: send_coin_fee
+          })
+          .fetch();
 
-      if (updateCoinFee) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Withdrawal fee update success")
-        });
+        if (updateCoinFee) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Withdrawal fee update success")
+          });
+        }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("fees greater than 0")
+          })
       }
     } catch (err) {
       await logger.error(err.message)
@@ -2355,7 +2364,8 @@ module.exports = {
             user_id: generatedUser.id
           });
         }
-        if (generate_wallet_coins.length > 0) {
+        console.log(generate_wallet_coins);
+        if (generate_wallet_coins && generate_wallet_coins.length > 0) {
           // create receive address
           for (let index = 0; index < generate_wallet_coins.length; index++) {
             const element = generate_wallet_coins[index];

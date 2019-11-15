@@ -373,5 +373,6 @@
   "offer deactivated": "Campaign Offer has been deactivated.",
   "compaigns retrieve success": "compaigns retrieve success",
   "compaigns not found": "compaigns not found",
-  "Minimum Order Limit not satisfied": "Minimum order limit has not been satisified"
+  "Minimum Order Limit not satisfied": "Minimum order limit has not been satisified",
+  "fees greater than 0": "Withdrawl Fees must be greater than zero"
 }
