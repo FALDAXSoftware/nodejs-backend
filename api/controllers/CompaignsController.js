@@ -108,6 +108,7 @@ module.exports = {
         usage: 'required|in:1,2',
         start_date: 'date',
         end_date: 'date',
+        is_active: 'required|boolean',        
         campaign_offers:'required|array|arrayUniqueObjects:code',        
         'campaign_offers.*.code': 'required',        
         'campaign_offers.*.is_default_values': 'required|boolean',        
@@ -116,6 +117,7 @@ module.exports = {
         'campaign_offers.*.user_id': 'integer',
         'campaign_offers.*.start_date': 'date',        
         'campaign_offers.*.end_date': 'date',        
+        'campaign_offers.*.is_active': 'required|boolean',        
       }
       // ,{
       //   "usage":"Usage field must be either Onetime or Mutiple",
@@ -144,7 +146,8 @@ module.exports = {
         fees_allowed: req_body.fees_allowed,
         start_date: req_body.start_date,
         end_date: req_body.end_date,
-        usage:req_body.usage
+        usage:req_body.usage,
+        is_active:req_body.is_active
       };
 
       let create_data = await Campaigns.create( data_object ).fetch();
@@ -209,6 +212,7 @@ module.exports = {
       let validator = new Validator(req_body, { 
         label: 'required',
         description: 'string',
+        is_active: 'required|boolean',        
         campaign_offers:'required|array',        
         'campaign_offers.*.is_active': 'boolean',        
         campaign_offers_new:'array|arrayUniqueObjects:code',        
@@ -216,7 +220,8 @@ module.exports = {
         'campaign_offers_new.*.is_default_values': 'required|boolean',        
         'campaign_offers_new.*.no_of_transactions': 'required|integer|min:1',        
         'campaign_offers_new.*.fees_allowed': 'required|decimal|min:10.0',
-        'campaign_offers_new.*.user_id': 'integer'
+        'campaign_offers_new.*.user_id': 'integer',
+        'campaign_offers_new.*.is_active': 'required|boolean'       
       });
 
       
@@ -235,7 +240,8 @@ module.exports = {
       // create
       let data_object = {
         label: req_body.label,
-        description:req_body.description        
+        description:req_body.description,
+        is_active:req_body.is_active                
       };
 
       let create_data = await Campaigns.updateOne({id:campaign_id}).set(data_object);
