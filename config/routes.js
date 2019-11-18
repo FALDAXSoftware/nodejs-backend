@@ -87,6 +87,7 @@ module.exports.routes = {
   'get /admin/get-user-details': 'Users.getAllUserDetails',
   'get /admin/get-referred-amount-details': 'ReferralController.getUserReferredAmounts',
   'post /admin/update-send-coin-fee': 'Users.updateSendCoinFee',
+  'post /admin/update-faldax-fee': "Users.updateFaldaxFee",
   'post /admin/add-user': 'Users.addUser',
   'post /admin/update-user': 'Admin.updateUser',
   'post /admin/get-user-tickets': 'Users.getTicketsAdmin',
@@ -456,5 +457,7 @@ module.exports.routes = {
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
-  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get'  
+  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
+
+  'get /admin/get-withdrawl-faldax-fee': 'WalletController.getWithdrawlFee'
 };
