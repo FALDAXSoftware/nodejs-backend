@@ -429,9 +429,10 @@ module.exports = {
         status
       } = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
-      let whereAppended = false;
+      // let whereAppended = false;
+      query += ' WHERE kyc.deleted_at IS NULL'
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
           query += " (LOWER(kyc.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.mtid) LIKE '%" + data.toLowerCase() + "%'OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(kyc.direct_response) LIKE '%" + data.toLowerCase() + "%')";
@@ -464,6 +465,8 @@ module.exports = {
           'DESC' :
           'ASC');
         query += " ORDER BY kyc." + sortCol + " " + sortVal;
+      } else {
+        query += " ORDER BY kyc.id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
