@@ -17,7 +17,7 @@ module.exports = {
     if (jobDetail) {
       // console.log("req.file('resume')",req.file('resume'));
       // console.log("req.file('resume')._files[0]",req.file('resume')._files[0]);
-      var uploadedFileName = (req.file('resume')._files[0].stream.filename)
+      var uploadedFileName = await (req.file('resume')._files[0].stream.filename)
       console.log("uploadedFileName",uploadedFileName);
       let timestamp1 = "resume_" + new Date()
         .getTime()
