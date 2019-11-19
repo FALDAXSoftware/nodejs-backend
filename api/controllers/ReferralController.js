@@ -124,5 +124,35 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  getReferalDetails: async function (req, res) {
+    try {
+      var referData = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'default_referral_percentage'
+        }
+      });
+
+      console.log(referData);
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "Referral Percentage has been retrieved successfully",
+          data: referData
+        })
+    } catch (error) {
+      console.log('err', error)
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
 };

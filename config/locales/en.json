@@ -377,5 +377,7 @@
 	"fees greater than 0": "Withdrawl Fees must be greater than zero",
 	"Faldax fee update success": "Faldax Fee has been updated successfully.",
 	"faldax fees greater than 0": "Faldax Fees must be greater than zero",
-	"User has been deleted, So funds cannot be transferred": "User has been deleted, So funds cannot be transferred"
+	"User has been deleted, So funds cannot be transferred": "User has been deleted, So funds cannot be transferred",
+	"Coin minimum limit for the coin ": "Coin minimum limit for the coin ",
+	"Minimum limit for the coin ": "Minimum limit for the coin "
 }
