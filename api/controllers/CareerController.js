@@ -15,16 +15,19 @@ module.exports = {
       is_active: true
     });
     if (jobDetail) {
-      console.log("req.file('resume')",req.file('resume'));
+      // console.log("req.file('resume')",req.file('resume'));
       console.log("req.file('resume')._files[0]",req.file('resume')._files[0]);
-      var uploadedFileName = (req.file('resume')._files[0].stream.filename)
+      console.log("req.file('cover_letter')._files[0]",req.file('cover_letter')._files[0]);
+      var uploadedFileName = await (req.file('resume')._files[0].stream.filename)
+      console.log("uploadedFileName",uploadedFileName);
       let timestamp1 = "resume_" + new Date()
         .getTime()
         .toString();
       var resume_uploaded_filename = uploadedFileName.substring(uploadedFileName.indexOf("."));
       resume_uploaded_filename = timestamp1 + resume_uploaded_filename;
 
-      var uploadCoverName = (req.file('cover_letter')._files[0].stream.filename)
+      var uploadCoverName = await (req.file('cover_letter')._files[0].stream.filename)
+      console.log("uploadCoverName",uploadCoverName);
       let timestamp2 = "cover_" + new Date()
         .getTime()
         .toString();
