@@ -26,9 +26,12 @@ module.exports = {
 
     var values = allValue.rows;
 
+    console.log(values)
+
     for (let index = 0; index < user.length; index++) {
       const element = user[index];
       var assetValue = element.asset;
+      console.log(assetValue)
       var userData = await Users.findOne({
         where: {
           id: element.user_id,
