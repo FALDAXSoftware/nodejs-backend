@@ -26,6 +26,9 @@ module.exports = {
       var resume_uploaded_filename = uploadedFileName.substring(uploadedFileName.indexOf("."));
       resume_uploaded_filename = timestamp1 + resume_uploaded_filename;
 
+      setTimeout( function(){
+
+     
       var uploadCoverName = await (req.file('cover_letter')._files[0].stream.filename)
       console.log("uploadCoverName",uploadCoverName);
       let timestamp2 = "cover_" + new Date()
@@ -278,6 +281,7 @@ module.exports = {
           "message": sails.__("Resume is not present.")
         });
       }
+    }, 3000)
     } else {
       return res.json({
         "status": 400,
