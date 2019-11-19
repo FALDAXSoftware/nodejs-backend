@@ -1666,39 +1666,77 @@ module.exports = {
       var {
         user_id
       } = req.allParams();
-      var total = 0;
-      var walletArray = [];
-      var walletData = await Wallet.find({
-        where: {
-          deleted_at: null,
-          user_id: user_id
-        }
+      let user = await Users.findOne({
+        id: user_id
       });
+      var total = 0;
+      var usd_price = 0;
+      var referTotal = 0;
+      var walletArray = [];
+      var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
+                            FROM public.referral 
+                            WHERE user_id = ${user_id} AND is_collected = 'false'
+                            GROUP BY coin_id, coin_name`
 
-      var userData = await Users.findOne({
-        where: {
-          id: user_id
-        }
-      })
-      var deleteDate = userData.deleted_at
-      var usd_price = 0
+      var referCount = await sails.sendNativeQuery(referQuery, [])
+      referCount = referCount.rows;
 
-      if (walletData.length > 0) {
-        for (var i = 0; i < walletData.length; i++) {
-          if (walletData[i].balance > 0)
-            walletArray.push(walletData[i]);
-          total = total + walletData[i].balance
-          walletData[i].balance = parseFloat(walletData[i].balance).toFixed(8);
-          var coinData = await Coins.findOne({
-            where: {
-              deleted_at: null,
-              id: walletData[i].coin_id
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, wallets.receive_address 
+                            FROM public.wallets
+                            LEFT JOIN coins
+                            ON coins.id = wallets.coin_id
+                            WHERE wallets.user_id = ${user_id} AND wallets.deleted_at IS NULL
+                            AND coins.is_active = true AND coins.deleted_at IS NULL AND wallets.balance > 0
+                            GROUP BY coins.id, wallets.coin_id, wallets.balance, wallets.receive_address `
+
+      var walletCount = await sails.sendNativeQuery(walletQuery, []);
+      walletCount = walletCount.rows;
+
+      if (walletCount.length > 0) {
+        for (var i = 0; i < walletCount.length; i++) {
+          var totalAmount = 0;
+          walletArray.push(walletCount[i]);
+          total = total + walletCount[i].balance;
+          walletCount[i].totalAmount = walletCount[i].balance
+          if (referCount.length > 0) {
+            for (var j = 0; j < referCount.length; j++) {
+              if (referCount[j].coin_name == walletCount[i].coin_name) {
+                walletCount[i].totalAmount = walletCount[i].totalAmount + referCount[j].amount
+              }
             }
-          })
-          walletData[i].coin = coinData.coin;
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(coinData.coin + '/USD', "Sell");
-          walletData[i].fiat = parseFloat(walletData[i].balance * get_jst_price[0].bid_price).toFixed(8);
-          usd_price = usd_price + (walletData[i].balance * get_jst_price[0].bid_price);
+          }
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+          walletCount[i].fiat = get_jst_price[0].ask_price;
+          usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+        }
+
+        if (total > 0) {
+          res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("please remove your funds"),
+              data: walletArray,
+              usd_price,
+              user
+            })
+        } else {
+          res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("no funds left")
+            })
+        }
+      } else if (referCount.length > 0) {
+        for (var i = 0; i < referCount.length; i++) {
+          var totalAmount = 0;
+          walletArray.push(referCount[i]);
+          total = total + referCount[i].amount
+          referCount[i].totalAmount = referCount[i].amount
+          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+          referCount[i].fiat = get_jst_price[0].ask_price;
+          usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
         }
         if (total > 0) {
           res
@@ -1708,7 +1746,7 @@ module.exports = {
               "message": sails.__("please remove your funds"),
               data: walletArray,
               usd_price,
-              deleteDate
+              user
             })
         } else {
           res
@@ -1719,12 +1757,10 @@ module.exports = {
             })
         }
       } else {
-        res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("no funds left")
-          })
+        return res.json({
+          "status": 200,
+          "message": sails.__("no funds left")
+        })
       }
     } catch (error) {
       console.log(error)
@@ -1776,8 +1812,9 @@ module.exports = {
       let whereAppended = false;
       let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
+      query += " WHERE users.deleted_at IS NULL"
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
           query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
@@ -1824,6 +1861,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err)
       await logger.error(err.message)
       return res
         .status(500)
@@ -1847,7 +1885,7 @@ module.exports = {
       let whereAppended = false;
       let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
-      query += " WHERE users.is_active = false AND is_verified = false"
+      query += " WHERE users.is_active = false AND is_verified = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
@@ -2050,6 +2088,48 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("fees greater than 0")
+          })
+      }
+    } catch (err) {
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  updateFaldaxFee: async function (req, res) {
+    try {
+      let {
+        send_coin_fee
+      } = req.body;
+
+      if (parseFloat(send_coin_fee) > 0) {
+        updateCoinFee = await AdminSetting
+          .update({
+            slug: 'faldax_fee',
+            deleted_at: null
+          })
+          .set({
+            value: parseFloat(send_coin_fee)
+          })
+          .fetch();
+
+        if (updateCoinFee) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Faldax fee update success")
+          });
+        }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("faldax fees greater than 0")
           })
       }
     } catch (err) {

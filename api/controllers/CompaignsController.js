@@ -300,11 +300,12 @@ module.exports = {
           err: 'Unauthorized access'
         });
       }
+      console.log(req.params.id);
       var data_object = {
         id:req.params.id
       };
       var get_data = await Campaigns.findOne( data_object );
-      
+      console.log("get_data",get_data);
       if ( get_data != undefined ) {
         var get_campaign_offers = await CampaignsOffers.find({campaign_id:get_data.id}).sort('created_at DESC');
         get_data.campaign_offers = get_campaign_offers;

@@ -71,6 +71,7 @@ module.exports = {
               price_value_usd = (1 / price_value[0].ask_price);
             }
             price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
             totalValue = (price_value_usd * priceValue)
           }
 
@@ -115,6 +116,7 @@ module.exports = {
               price_value_usd = (1 / price_value[0].ask_price);
             }
             price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
             totalValue = (price_value_usd * priceValue)
             var price_value1 = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             valueUSD = usd_value * (1 / price_value1[0].ask_price)
@@ -162,6 +164,7 @@ module.exports = {
               price_value_usd = (1 / price_value[0].bid_price);
             }
             price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
             totalValue = (price_value_usd * priceValue)
           }
 
@@ -204,6 +207,7 @@ module.exports = {
               price_value_usd = (1 / price_value[0].bid_price);
             }
             price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
             totalValue = (price_value_usd * priceValue)
           }
 
