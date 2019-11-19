@@ -9,16 +9,21 @@ var requestIp = require('request-ip');
 const uuidv1 = require('uuid/v1');
 var request = require('request')
 var logger = require("./logger")
+const iplocation = require("iplocation").default;
 
 module.exports = {
   // -------------------------- Web API ------------------------ //
+  getLatitude: async function (ip) {
+    var value = await iplocation(ip);
+    return value;
+  },
+
   // Get Value for the coin on the basis of the amount passed
   getUserQouteDetails: async function (req, res) {
     try {
       var data = req.body;
       var ip = requestIp.getClientIp(req);
       var user_id = req.user.id;
-      // user_id = 1712;
       data.client_ip = ip;
       data.end_user_id = user_id;
 
@@ -146,6 +151,7 @@ module.exports = {
 
       var data = req.body;
       var user_id = req.user.id;
+      var ip = requestIp.getClientIp(req);
       // var user_id = 1712;
 
       var payment_id = uuidv1();
@@ -156,12 +162,16 @@ module.exports = {
       account_details.app_provider_id = 'faldax';
       account_details.app_version_id = '1.3.1';
       account_details.app_end_user_id = JSON.stringify(user_id);
+      var dataValue = await module.exports.getLatitude(ip);
+      var latValue = dataValue.latitude + ',' + dataValue.longitude;
 
       var signupDetails = {
-        "ip": "203.88.135.122", // Write req.ip here
-        "location": "21.1667,72.8333", // Here Langtitude and Longtitude location
+        "ip": ip, // Write req.ip here
+        "location": latValue, // Here Langtitude and Longtitude location
         "timestamp": new Date()
       }
+
+      console.log(signupDetails);
 
       account_details.signup_login = signupDetails;
 
@@ -191,7 +201,7 @@ module.exports = {
       pay_details.fiat_total_amount = fiat_details;
       pay_details.requested_digital_amount = requested_details;
       pay_details.destination_wallet = destination_wallet;
-      pay_details.original_http_ref_url = "https://www.wallex.com/";
+      pay_details.original_http_ref_url = "https://preprod.faldax.com/";
 
       transaction_details.payment_details = pay_details;
 
