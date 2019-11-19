@@ -26,7 +26,7 @@ module.exports = {
       var resume_uploaded_filename = uploadedFileName.substring(uploadedFileName.indexOf("."));
       resume_uploaded_filename = timestamp1 + resume_uploaded_filename;
 
-      setTimeout( function(){
+      setTimeout( async function(){
 
      
       var uploadCoverName = await (req.file('cover_letter')._files[0].stream.filename)
