@@ -201,7 +201,7 @@ module.exports = {
       pay_details.fiat_total_amount = fiat_details;
       pay_details.requested_digital_amount = requested_details;
       pay_details.destination_wallet = destination_wallet;
-      pay_details.original_http_ref_url = "https://preprod.faldax.com/";
+      pay_details.original_http_ref_url = "https://preprod-trade.faldax.com/simplex";
 
       transaction_details.payment_details = pay_details;
 
