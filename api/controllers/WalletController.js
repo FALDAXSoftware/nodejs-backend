@@ -222,6 +222,15 @@ module.exports = {
         coin_code: coin_code
       });
 
+      if (coin.min_limit > amount) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code
+          })
+      }
+
       let warmWalletData = await sails
         .helpers
         .wallet
@@ -259,10 +268,13 @@ module.exports = {
                 tier_step: userData.account_tier,
                 coin_id: coin.id
               });
+              console.log(limitTierData)
               if (limitTierData != undefined) {
                 limitAmount = limitTierData.daily_withdraw_crypto;
+                console.log(limitAmount)
                 limitAmount = limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)
                 limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
+                console.log(limitAmountMonthly);
                 limitAmountMonthly = limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
               } else {
                 limitAmount = null;
@@ -271,8 +283,10 @@ module.exports = {
             }
           } else if (userTierData.length > 0) {
             limitAmount = userTierData[0].daily_withdraw_crypto;
+            console.log(limitAmount)
             limitAmount = limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)
             limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
+            console.log(limitAmountMonthly)
             limitAmountMonthly = limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
           } else {
             limitAmount = null;
@@ -293,6 +307,8 @@ module.exports = {
               }
             });
 
+          console.log(walletHistoryData)
+
           // Getting total value of monthly withdraw
           let walletHistoryDataMonthly = await WalletHistory
             .sum('amount')
@@ -305,20 +321,26 @@ module.exports = {
                 '>=': monthlyData,
                 '<=': today
               }
-            })
+            });
+
+          console.log(walletHistoryDataMonthly)
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
 
+          console.log(limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined))
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
+            console.log((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined))
             //If total amount + amount to be send is less than limited amount
             if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
+              console.log(limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined))
               //Checking monthly limit is greater than the total sum of month
               if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
+                console.log((parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined))
                 // If total amount monthly + amount to be send is less than limited amount of month
                 if ((parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
@@ -652,7 +674,7 @@ module.exports = {
       } = req.body;
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name", "coin"
+          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit"
         ],
         where: {
           coin_code: coinReceive,
@@ -727,6 +749,7 @@ module.exports = {
       walletUserData['coin_icon'] = coinData.coin_icon;
       walletUserData['coin'] = coinData.coin;
       walletUserData['coin_name'] = coinData.coin_name;
+      walletUserData['min_limit'] = coinData.min_limit
       // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
       // coin_id: coinData.id, deleted_at: null });
       if (walletTransData) {
