@@ -16,8 +16,8 @@ module.exports = async function (req, res, next) {
     let urlArray = req.url.split("/");
     let urlSplit = req.url.split(":")
     urlValue = urlSplit[0];
-    let urlSplit = req.url.split("?")
-    urlValue = urlSplit[0];
+    // let urlSplit = req.url.split("?")
+    // urlValue = urlSplit[0];
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
       if (req.user.isAdmin) {
