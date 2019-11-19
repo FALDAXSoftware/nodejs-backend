@@ -938,7 +938,7 @@ module.exports = {
         destination_address,
         coin_code
       } = req.allParams();
-
+      
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -960,12 +960,13 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-
+      console.log("===============Send Coin================");
+      console.log("coin",coin);
       let warmWalletData = await sails
         .helpers
         .wallet
         .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-
+        console.log("warmWalletData",warmWalletData);
       let sendWalletData = await sails
         .helpers
         .wallet
@@ -983,7 +984,8 @@ module.exports = {
 
         //Checking if wallet is found or not
         if (wallet) {
-
+          console.log("wallet",wallet);
+          console.log("wallet.placed_balance >= parseFloat(amount)",wallet.placed_balance >= parseFloat(amount));
           //If placed balance is greater than the amount to be send
           if (wallet.placed_balance >= parseFloat(amount)) {
 
@@ -1001,7 +1003,7 @@ module.exports = {
               // receive and receive to destination
               // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
               let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-
+              console.log("transaction",transaction);
               //Here remainning ebtry as well as address change
               let walletHistory = {
                 coin_id: wallet.coin_id,
@@ -1067,6 +1069,7 @@ module.exports = {
               });
             }
           } else {
+            console.log("First");
             return res
               .status(400)
               .json({
@@ -1076,6 +1079,7 @@ module.exports = {
 
           }
         } else {
+          console.log("second");
           return res
             .status(400)
             .json({
@@ -1084,6 +1088,7 @@ module.exports = {
             });
         }
       } else {
+        console.log("Third");
         return res
           .status(400)
           .json({
@@ -1092,6 +1097,7 @@ module.exports = {
           });
       }
     } catch (err) {
+      console.log("Error");
       console.log(err);
       await logger.error(err.message)
       return res
