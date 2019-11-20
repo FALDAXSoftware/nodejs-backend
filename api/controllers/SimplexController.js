@@ -246,7 +246,7 @@ module.exports = {
             "fiat_total_amount[currency]": data.fiat_currency,
             "digital_total_amount[amount]": parseFloat(data.total_amount),
             "digital_total_amount[currency]": data.currency,
-            "action": "https://sandbox.test-simplexcc.com/payments/new"
+            "action": sails.config.local.ACTION_URL
           }
           var now = new Date();
 
@@ -326,7 +326,7 @@ module.exports = {
         }
       });
       key = await sails.helpers.getDecryptData(key.value);
-      await request.delete('https://sandbox.test-simplexcc.com/wallet/merchant/v2/events/' + event_id, {
+      await request.delete(sails.config.local.SIMPLEX_URL + "events/" + event_id, {
         headers: {
           'Authorization': 'ApiKey ' + key,
           'Content-Type': 'application/json'
@@ -355,16 +355,10 @@ module.exports = {
         }
       }).sort('id DESC');
 
-      console.log("Trade Data >>>>>", tradeData);
-
       for (var i = 0; i < tradeData.length; i++) {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
-          console.log("Condition ??????", payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner")
-          console.log(payment_data.id == tradeData[i].payment_id);
-          console.log(payment_data.id)
-          console.log(tradeData[i].payment_id)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
