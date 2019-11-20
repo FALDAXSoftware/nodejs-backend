@@ -38,7 +38,7 @@ module.exports = {
         }
       });
       key = await sails.helpers.getDecryptData(key.value);
-      await request.post('https://sandbox.test-simplexcc.com/wallet/merchant/v2/quote', {
+      await request.post(sails.config.local.SIMPLEX_URL + 'quote', {
         headers: {
           'Authorization': 'ApiKey ' + key,
           'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ module.exports = {
           "requested_amount": inputs.data.requested_amount,
           "end_user_id": (inputs.data.end_user_id).toString(),
           "wallet_id": sails.config.local.WALLET_ID,
-          "client_ip": "203.88.135.122"
+          "client_ip": (inputs.data.client_ip)
         }),
 
       }, function (err, res, body) {
