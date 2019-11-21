@@ -13,7 +13,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    console.log("Inside threshold notification >>>>>>>>>>>>>>");
     // //Getting User Notification Details
     let user = await UserThresholds.find({
       deleted_at: null
@@ -26,12 +25,9 @@ module.exports = {
 
     var values = allValue.rows;
 
-    console.log(values)
-
     for (let index = 0; index < user.length; index++) {
       const element = user[index];
       var assetValue = element.asset;
-      console.log(assetValue)
       var userData = await Users.findOne({
         where: {
           id: element.user_id,
