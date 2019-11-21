@@ -87,9 +87,7 @@ module.exports.cron = {
   updateSimplexPaymentStatus: {
     schedule: '* * * * *',
     onTick: async function () {
-      console.log("INDSDE SIMPLEX")
       if (sails.config.local.CRON_STATUS == "true") {
-        console.log("INSIDE THIS")
         await simplex.checkPaymentStatus();
       }
     }

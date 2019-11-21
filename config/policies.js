@@ -158,7 +158,8 @@ module.exports.policies = {
     "checkPaymentStatus": true,
     "deleteEvent": true,
     "getSimplexList": true,
-    "getQouteDetails": true
+    "getQouteDetails": true,
+    "deleteAllEvents": true
     // "getSimplexCoinList": true
   },
   "JSTController": {
