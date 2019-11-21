@@ -460,5 +460,7 @@ module.exports.routes = {
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
   'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
 
-  'get /admin/get-withdrawl-faldax-fee': 'WalletController.getWithdrawlFee'
+  'get /admin/get-withdrawl-faldax-fee': 'WalletController.getWithdrawlFee',
+
+  'delete /delete-all-events': 'SimplexController.deleteAllEvents'
 };

@@ -346,6 +346,7 @@ module.exports = {
     try {
       console.log("Inside this method????????")
       var data = await sails.helpers.simplex.getEventData();
+      console.log(data);
       var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
@@ -359,6 +360,7 @@ module.exports = {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
+          console.log(payment_data)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
@@ -438,6 +440,7 @@ module.exports = {
 
               console.log("Deleteing the event in if")
 
+              console.log(data.events[j].id);
               await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
@@ -453,6 +456,10 @@ module.exports = {
                   is_processed: true
                 }).fetch();
 
+              console.log("Deleteing the event in else", data.events[j].event_id)
+
+              await this.deleteEvent(data.events[j].event_id)
+
               var referData = await Referral.findOne({
                 where: {
                   deleted_at: null,
@@ -461,17 +468,13 @@ module.exports = {
               })
               console.log("Refer Data >>>>>>>>>", referData);
 
-              if (referData == undefined) {
+              if (referData != undefined) {
                 let referredData = await sails
                   .helpers
                   .tradding
                   .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
 
               }
-
-              console.log("Deleteing the event in else")
-
-              await this.deleteEvent(data.events[j].event_id)
             } else if (payment_data.status == "cancelled") {
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
@@ -481,6 +484,7 @@ module.exports = {
                   simplex_payment_status: 3,
                   is_processed: true
                 });
+              console.log("deleting thsi event further>>>>", data.events[j].event_id);
               await this.deleteEvent(data.events[j].event_id)
             }
           }
@@ -644,5 +648,16 @@ module.exports = {
         "err": sails.__("Something Wrong")
       });
     }
-  }
+  },
+
+  // deleteAllEvents: async function (req, res) {
+  //   try {
+  //     var data = await sails.helpers.simplex.getEventData();
+  //     for (var i = 0; i < data.length; i++) {
+  //       await this.deleteEvent(data.events[i].event_id)
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 }
