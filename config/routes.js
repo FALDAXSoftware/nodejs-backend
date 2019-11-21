@@ -462,5 +462,7 @@ module.exports.routes = {
 
   'get /admin/get-withdrawl-faldax-fee': 'WalletController.getWithdrawlFee',
 
+  //simplexAPICall
+  'get /call-simplex': 'SimplexController.simplexAPICall',
   'delete /delete-all-events': 'SimplexController.deleteAllEvents'
 };

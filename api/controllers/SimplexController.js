@@ -21,75 +21,83 @@ module.exports = {
   // Get Value for the coin on the basis of the amount passed
   getUserQouteDetails: async function (req, res) {
     try {
+      
       var data = req.body;
       var ip = requestIp.getClientIp(req);
       var user_id = req.user.id;
       data.client_ip = ip;
       data.end_user_id = user_id;
+      
+      // Call SImplex 
+      data.action='/simplex/simplex-details';
+      data.method='POST';
+      console.log("data",data);
+      var call_simplex = await sails.helpers.simplex.sbBackend(data);      
+      // var panic_button_details = await AdminSetting.findOne({
+      //   where: {
+      //     deleted_at: null,
+      //     slug: 'panic_status'
+      //   }
+      // });
 
-      var panic_button_details = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'panic_status'
-        }
-      });
-
-      // Checking for if panic button in one or not
-      if (panic_button_details.value == false || panic_button_details.value == "false") {
-        //Checking whether user can trade in the area selected in the KYC
-        // var geo_fencing_data = await sails
-        //   .helpers
-        //   .userTradeChecking(user_id);
+      // // Checking for if panic button in one or not
+      // if (panic_button_details.value == false || panic_button_details.value == "false") {
+      //   //Checking whether user can trade in the area selected in the KYC
+      //   // var geo_fencing_data = await sails
+      //   //   .helpers
+      //   //   .userTradeChecking(user_id);
 
 
-        // if (geo_fencing_data.response == true) {
-        var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
-        var coinDetails = await Coins.findOne({
-          where: {
-            deleted_at: null,
-            coin: data.digital_currency,
-            is_active: true
-          }
-        })
+      //   // if (geo_fencing_data.response == true) {
+      //   var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+      //   var coinDetails = await Coins.findOne({
+      //     where: {
+      //       deleted_at: null,
+      //       coin: data.digital_currency,
+      //       is_active: true
+      //     }
+      //   })
 
-        var createMsg = '';
-        var walletDetails = await Wallet.findOne({
-          where: {
-            deleted_at: null,
-            user_id: user_id,
-            coin_id: coinDetails.id
-          }
-        })
+      //   var createMsg = '';
+      //   var walletDetails = await Wallet.findOne({
+      //     where: {
+      //       deleted_at: null,
+      //       user_id: user_id,
+      //       coin_id: coinDetails.id
+      //     }
+      //   })
 
-        if (walletDetails == undefined) {
-          createMsg = 'Please create you address to continue'
-        }
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("qoute details success"),
-            "data": qouteDetail,
-            walletDetails,
-            createMsg,
-            coinDetails
-          });
+      //   if (walletDetails == undefined) {
+      //     createMsg = 'Please create you address to continue'
+      //   }
+      //   return res
+      //     .status(200)
+      //     .json({
+      //       "status": 200,
+      //       "message": sails.__("qoute details success"),
+      //       "data": qouteDetail,
+      //       walletDetails,
+      //       createMsg,
+      //       coinDetails
+      //     });
 
-        // } else {
-        //   // Whatever the response of user trade checking
-        //   res.json({
-        //     "status": 200,
-        //     "message": sails.__(geo_fencing_data.msg)
-        //   });
-        // }
-      } else {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "message": sails.__("panic button enabled")
-          })
-      }
+      //   // } else {
+      //   //   // Whatever the response of user trade checking
+      //   //   res.json({
+      //   //     "status": 200,
+      //   //     "message": sails.__(geo_fencing_data.msg)
+      //   //   });
+      //   // }
+      // } else {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       "status": 500,
+      //       "message": sails.__("panic button enabled")
+      //     })
+      // }
+
+      return res.json(call_simplex);
 
     } catch (err) {
       console.log(err);
@@ -148,7 +156,7 @@ module.exports = {
   // Get partner data value on the basis of the information passed by the user
   getPartnerData: async function (req, res) {
     try {
-
+      
       var data = req.body;
       var user_id = req.user.id;
       var ip = requestIp.getClientIp(req);
@@ -171,8 +179,7 @@ module.exports = {
         "timestamp": new Date()
       }
 
-      console.log(signupDetails);
-
+      
       account_details.signup_login = signupDetails;
 
       var pay_details = {};
@@ -207,105 +214,112 @@ module.exports = {
 
       main_details.account_details = account_details;
       main_details.transaction_details = transaction_details;
-
-
+      
+      
+      // Call SImplex 
+      data.main_details = main_details;
+      data.action='/simplex/get-partner-data';
+      data.method='POST';
+      console.log("data",data);
+      var call_simplex = await sails.helpers.simplex.sbBackend(data);     
+      return res.json(call_simplex);
       // Checking for panic button details
-      var panic_button_details = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'panic_status'
-        }
-      })
+      // var panic_button_details = await AdminSetting.findOne({
+      //   where: {
+      //     deleted_at: null,
+      //     slug: 'panic_status'
+      //   }
+      // })
 
-      if (panic_button_details.value == false || panic_button_details.value == "false") {
-        //Checking whether user can trade in the area selected in the KYC
-        // var geo_fencing_data = await sails
-        //   .helpers
-        //   .userTradeChecking(user_id);
+      // if (panic_button_details.value == false || panic_button_details.value == "false") {
+      //   //Checking whether user can trade in the area selected in the KYC
+      //   // var geo_fencing_data = await sails
+      //   //   .helpers
+      //   //   .userTradeChecking(user_id);
 
 
-        // if (geo_fencing_data.response == true) {
+      //   // if (geo_fencing_data.response == true) {
 
-        var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
-        console.log(dataUpdate);
-        console.log(main_details);
-        if (dataUpdate.is_kyc_update_required == true) {
-          console.log(user_id);
-          var dataObject = {
-            "version": 1,
-            "partner": "faldax",
-            "payment_flow_type": "wallet",
-            "return_url_success": sails.config.local.SUCCESS_URL,
-            "return_url_fail": sails.config.local.FAIL_URL,
-            "payment_id": payment_id,
-            "quote_id": data.quote_id,
-            "user_id": user_id,
-            "destination_wallet[address]": data.address,
-            "destination_wallet[currency]": data.currency,
-            "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
-            "fiat_total_amount[currency]": data.fiat_currency,
-            "digital_total_amount[amount]": parseFloat(data.total_amount),
-            "digital_total_amount[currency]": data.currency,
-            "action": sails.config.local.ACTION_URL
-          }
-          var now = new Date();
+      //   var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
+      //   console.log(dataUpdate);
+      //   console.log(main_details);
+      //   if (dataUpdate.is_kyc_update_required == true) {
+      //     console.log(user_id);
+      //     var dataObject = {
+      //       "version": 1,
+      //       "partner": "faldax",
+      //       "payment_flow_type": "wallet",
+      //       "return_url_success": sails.config.local.SUCCESS_URL,
+      //       "return_url_fail": sails.config.local.FAIL_URL,
+      //       "payment_id": payment_id,
+      //       "quote_id": data.quote_id,
+      //       "user_id": user_id,
+      //       "destination_wallet[address]": data.address,
+      //       "destination_wallet[currency]": data.currency,
+      //       "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
+      //       "fiat_total_amount[currency]": data.fiat_currency,
+      //       "digital_total_amount[amount]": parseFloat(data.total_amount),
+      //       "digital_total_amount[currency]": data.currency,
+      //       "action": sails.config.local.ACTION_URL
+      //     }
+      //     var now = new Date();
 
-          let tradeHistory = await SimplexTradeHistory.create({
-            'payment_id': payment_id,
-            "quote_id": data.quote_id,
-            'currency': data.currency,
-            "settle_currency": data.fiat_currency,
-            "quantity": parseFloat(data.fiat_amount),
-            "user_id": user_id,
-            "symbol": data.currency + '-' + data.fiat_currency,
-            "side": 'Buy',
-            "created_at": now,
-            "updated_at": now,
-            "maximum_time": now,
-            "fill_price": parseFloat(data.total_amount),
-            "limit_price": 0,
-            "stop_price": 0,
-            "price": 0,
-            "simplex_payment_status": 1,
-            "trade_type": 3,
-            "order_status": "filled",
-            "order_type": "Market",
-            "address": data.address,
-            "is_processed": false
-          }).fetch();
+      //     let tradeHistory = await SimplexTradeHistory.create({
+      //       'payment_id': payment_id,
+      //       "quote_id": data.quote_id,
+      //       'currency': data.currency,
+      //       "settle_currency": data.fiat_currency,
+      //       "quantity": parseFloat(data.fiat_amount),
+      //       "user_id": user_id,
+      //       "symbol": data.currency + '-' + data.fiat_currency,
+      //       "side": 'Buy',
+      //       "created_at": now,
+      //       "updated_at": now,
+      //       "maximum_time": now,
+      //       "fill_price": parseFloat(data.total_amount),
+      //       "limit_price": 0,
+      //       "stop_price": 0,
+      //       "price": 0,
+      //       "simplex_payment_status": 1,
+      //       "trade_type": 3,
+      //       "order_status": "filled",
+      //       "order_type": "Market",
+      //       "address": data.address,
+      //       "is_processed": false
+      //     }).fetch();
 
-          console.log(tradeHistory);
-          return res
-            .status(200)
-            .json({
-              "status": 200,
-              "message": sails.__("payment details success"),
-              "data": dataObject
-            })
-        } else {
-          return res
-            .status(400)
-            .json({
-              "status": 400,
-              "message": sails.__("payment fail")
-            })
-        }
+      //     console.log(tradeHistory);
+      //     return res
+      //       .status(200)
+      //       .json({
+      //         "status": 200,
+      //         "message": sails.__("payment details success"),
+      //         "data": dataObject
+      //       })
+      //   } else {
+      //     return res
+      //       .status(400)
+      //       .json({
+      //         "status": 400,
+      //         "message": sails.__("payment fail")
+      //       })
+      //   }
 
-        // } else {
-        //   // Whatever the response of user trade checking
-        //   res.json({
-        //     "status": 200,
-        //     "message": sails.__(geo_fencing_data.msg)
-        //   });
-        // }
-      } else {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "message": sails.__("panic button enabled")
-          })
-      }
+      //   // } else {
+      //   //   // Whatever the response of user trade checking
+      //   //   res.json({
+      //   //     "status": 200,
+      //   //     "message": sails.__(geo_fencing_data.msg)
+      //   //   });
+      //   // }
+      // } else {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       "status": 500,
+      //       "message": sails.__("panic button enabled")
+      //     })
+      // }
 
     } catch (err) {
       console.log(err);
@@ -649,6 +663,42 @@ module.exports = {
       });
     }
   },
+
+  /* Test */
+  simplexAPICall: async function (req, res) {
+ 
+    try {
+      var key_value = await sails.helpers.simplex.sbBackend({id:1434, res:res});      
+      
+
+      console.log("key_value",(key_value));
+      // return key_value.data;
+      // console.log("key_value",JSON.parse(key_value));
+      // if( key_value == "OK")
+      // {
+        return res
+          .status(200)
+          .json({
+            status: key_value.status,
+            message: "Simplex api call",
+            data:key_value.data
+          })
+      // }      
+      
+      
+      // return res.send({status:1})
+
+
+    } catch (err) {
+      // console.log(err);
+      await logger.error(err.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
 
   // deleteAllEvents: async function (req, res) {
   //   try {
