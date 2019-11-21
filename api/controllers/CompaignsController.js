@@ -213,15 +213,21 @@ module.exports = {
         label: 'required',
         description: 'string',
         is_active: 'required|boolean',        
+        start_date: 'date',
+        end_date: 'date',
         campaign_offers:'required|array',        
         'campaign_offers.*.is_active': 'boolean',        
+        'campaign_offers.*.start_date': 'date',        
+        'campaign_offers.*.end_date': 'date',        
         campaign_offers_new:'array|arrayUniqueObjects:code',        
         'campaign_offers_new.*.code': 'required',        
         'campaign_offers_new.*.is_default_values': 'required|boolean',        
         'campaign_offers_new.*.no_of_transactions': 'required|integer|min:1',        
         'campaign_offers_new.*.fees_allowed': 'required|decimal|min:10.0',
         'campaign_offers_new.*.user_id': 'integer',
-        'campaign_offers_new.*.is_active': 'required|boolean'       
+        'campaign_offers_new.*.is_active': 'required|boolean',
+        'campaign_offers_new.*.start_date': 'date',
+        'campaign_offers_new.*.end_date': 'date',       
       });
 
       
@@ -241,7 +247,9 @@ module.exports = {
       let data_object = {
         label: req_body.label,
         description:req_body.description,
-        is_active:req_body.is_active                
+        is_active:req_body.is_active,
+        start_date:req_body.start_date,
+        end_date:req_body.end_date                
       };
 
       let create_data = await Campaigns.updateOne({id:campaign_id}).set(data_object);
@@ -253,6 +261,8 @@ module.exports = {
         for( var i=0; i<(req_body.campaign_offers).length; i++ ){  
             var each_object = {
               description:campaign_offers_data[i].description,
+              start_date:campaign_offers_data[i].start_date,
+              end_date:campaign_offers_data[i].end_date,
               is_active:campaign_offers_data[i].is_active
             };
             updated_offers = await CampaignsOffers.updateOne({id:campaign_offers_data[i].id}).set(each_object);                 
