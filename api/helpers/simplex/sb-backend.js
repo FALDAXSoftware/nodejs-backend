@@ -15,7 +15,11 @@ module.exports = {
     success: {
       outputFriendlyName: 'Simplex API Call from Backend',
     },
+    error:{
+      outputFriendlyName: 'Simplex API Call from Backend Error',
+    }
   },
+  
 
 
   fn: async function (inputs, exits) {
@@ -23,20 +27,19 @@ module.exports = {
     try {
 
       var req_body = inputs.value_object;
-      console.log("req_body",req_body);
-      console.log("sails.config.local.SIMPLEX_BACKEND_URL+req_body.action",sails.config.local.SIMPLEX_BACKEND_URL+req_body.action);
       await request({
         url: sails.config.local.SIMPLEX_BACKEND_URL+req_body.action,
         method: req_body.method,
         headers: {
           // 'cache-control': 'no-cache',
           // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+          'x-token':'faldax-simplex-backend',
           'Content-Type': 'application/json'
         },
         body: req_body,
         json: true
       },function (err, httpResponse, body) {
-        
+      
         if (err) {
           return exits.error(err);
         }

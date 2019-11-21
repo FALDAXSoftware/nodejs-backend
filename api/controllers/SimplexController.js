@@ -21,6 +21,7 @@ module.exports = {
   // Get Value for the coin on the basis of the amount passed
   getUserQouteDetails: async function (req, res) {
     try {
+      
       var data = req.body;
       var ip = requestIp.getClientIp(req);
       var user_id = req.user.id;
@@ -110,6 +111,9 @@ module.exports = {
 
   getQouteDetails: async function (req, res) {
     try {
+      return res.json({
+        status:1
+      })
       var data = req.body;
       var ip = requestIp.getClientIp(req);
       // var user_id = req.user.id;
@@ -155,7 +159,7 @@ module.exports = {
   // Get partner data value on the basis of the information passed by the user
   getPartnerData: async function (req, res) {
     try {
-
+      
       var data = req.body;
       var user_id = req.user.id;
       var ip = requestIp.getClientIp(req);
