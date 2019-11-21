@@ -50,7 +50,6 @@ module.exports = {
       if (body.error) {
         return exits.error(body);
       }
-      console.log("body",body);
       // Add data in table
       let object_data = {
         coin:inputs.symbol,
