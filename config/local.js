@@ -204,5 +204,6 @@ module.exports.local = {
   },
   notifications: {
 
-  }
+  },
+  "SIMPLEX_BACKEND_URL":process.env.SIMPLEX_BACKEND_URL
 }
