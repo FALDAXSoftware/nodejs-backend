@@ -650,5 +650,42 @@ module.exports = {
         "err": sails.__("Something Wrong")
       });
     }
-  }
+  },
+
+  /* Test */
+  simplexAPICall: async function (req, res) {
+ 
+    try {
+      var key_value = await sails.helpers.simplex.sbBackend({id:1434, res:res});      
+      
+
+      console.log("key_value",(key_value));
+      // return key_value.data;
+      // console.log("key_value",JSON.parse(key_value));
+      // if( key_value == "OK")
+      // {
+        return res
+          .status(200)
+          .json({
+            status: key_value.status,
+            message: "Simplex api call",
+            data:key_value.data
+          })
+      // }      
+      
+      
+      // return res.send({status:1})
+
+
+    } catch (err) {
+      // console.log(err);
+      await logger.error(err.message)
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong")
+      });
+    }
+  },
+
+
 }
