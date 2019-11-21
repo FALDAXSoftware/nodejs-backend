@@ -26,70 +26,77 @@ module.exports = {
       var user_id = req.user.id;
       data.client_ip = ip;
       data.end_user_id = user_id;
+      
+      // Call SImplex 
+      data.action='/simplex/simplex-details';
+      data.method='POST';
+      console.log("data",data);
+      var call_simplex = await sails.helpers.simplex.sbBackend(data);      
+      // var panic_button_details = await AdminSetting.findOne({
+      //   where: {
+      //     deleted_at: null,
+      //     slug: 'panic_status'
+      //   }
+      // });
 
-      var panic_button_details = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'panic_status'
-        }
-      });
-
-      // Checking for if panic button in one or not
-      if (panic_button_details.value == false || panic_button_details.value == "false") {
-        //Checking whether user can trade in the area selected in the KYC
-        // var geo_fencing_data = await sails
-        //   .helpers
-        //   .userTradeChecking(user_id);
+      // // Checking for if panic button in one or not
+      // if (panic_button_details.value == false || panic_button_details.value == "false") {
+      //   //Checking whether user can trade in the area selected in the KYC
+      //   // var geo_fencing_data = await sails
+      //   //   .helpers
+      //   //   .userTradeChecking(user_id);
 
 
-        // if (geo_fencing_data.response == true) {
-        var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
-        var coinDetails = await Coins.findOne({
-          where: {
-            deleted_at: null,
-            coin: data.digital_currency,
-            is_active: true
-          }
-        })
+      //   // if (geo_fencing_data.response == true) {
+      //   var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+      //   var coinDetails = await Coins.findOne({
+      //     where: {
+      //       deleted_at: null,
+      //       coin: data.digital_currency,
+      //       is_active: true
+      //     }
+      //   })
 
-        var createMsg = '';
-        var walletDetails = await Wallet.findOne({
-          where: {
-            deleted_at: null,
-            user_id: user_id,
-            coin_id: coinDetails.id
-          }
-        })
+      //   var createMsg = '';
+      //   var walletDetails = await Wallet.findOne({
+      //     where: {
+      //       deleted_at: null,
+      //       user_id: user_id,
+      //       coin_id: coinDetails.id
+      //     }
+      //   })
 
-        if (walletDetails == undefined) {
-          createMsg = 'Please create you address to continue'
-        }
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("qoute details success"),
-            "data": qouteDetail,
-            walletDetails,
-            createMsg,
-            coinDetails
-          });
+      //   if (walletDetails == undefined) {
+      //     createMsg = 'Please create you address to continue'
+      //   }
+      //   return res
+      //     .status(200)
+      //     .json({
+      //       "status": 200,
+      //       "message": sails.__("qoute details success"),
+      //       "data": qouteDetail,
+      //       walletDetails,
+      //       createMsg,
+      //       coinDetails
+      //     });
 
-        // } else {
-        //   // Whatever the response of user trade checking
-        //   res.json({
-        //     "status": 200,
-        //     "message": sails.__(geo_fencing_data.msg)
-        //   });
-        // }
-      } else {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "message": sails.__("panic button enabled")
-          })
-      }
+      //   // } else {
+      //   //   // Whatever the response of user trade checking
+      //   //   res.json({
+      //   //     "status": 200,
+      //   //     "message": sails.__(geo_fencing_data.msg)
+      //   //   });
+      //   // }
+      // } else {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       "status": 500,
+      //       "message": sails.__("panic button enabled")
+      //     })
+      // }
+
+      return res.json(call_simplex);
 
     } catch (err) {
       console.log(err);
@@ -171,8 +178,7 @@ module.exports = {
         "timestamp": new Date()
       }
 
-      console.log(signupDetails);
-
+      
       account_details.signup_login = signupDetails;
 
       var pay_details = {};
@@ -207,105 +213,112 @@ module.exports = {
 
       main_details.account_details = account_details;
       main_details.transaction_details = transaction_details;
-
-
+      
+      
+      // Call SImplex 
+      data.main_details = main_details;
+      data.action='/simplex/get-partner-data';
+      data.method='POST';
+      console.log("data",data);
+      var call_simplex = await sails.helpers.simplex.sbBackend(data);     
+      return res.json(call_simplex);
       // Checking for panic button details
-      var panic_button_details = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'panic_status'
-        }
-      })
+      // var panic_button_details = await AdminSetting.findOne({
+      //   where: {
+      //     deleted_at: null,
+      //     slug: 'panic_status'
+      //   }
+      // })
 
-      if (panic_button_details.value == false || panic_button_details.value == "false") {
-        //Checking whether user can trade in the area selected in the KYC
-        // var geo_fencing_data = await sails
-        //   .helpers
-        //   .userTradeChecking(user_id);
+      // if (panic_button_details.value == false || panic_button_details.value == "false") {
+      //   //Checking whether user can trade in the area selected in the KYC
+      //   // var geo_fencing_data = await sails
+      //   //   .helpers
+      //   //   .userTradeChecking(user_id);
 
 
-        // if (geo_fencing_data.response == true) {
+      //   // if (geo_fencing_data.response == true) {
 
-        var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
-        console.log(dataUpdate);
-        console.log(main_details);
-        if (dataUpdate.is_kyc_update_required == true) {
-          console.log(user_id);
-          var dataObject = {
-            "version": 1,
-            "partner": "faldax",
-            "payment_flow_type": "wallet",
-            "return_url_success": sails.config.local.SUCCESS_URL,
-            "return_url_fail": sails.config.local.FAIL_URL,
-            "payment_id": payment_id,
-            "quote_id": data.quote_id,
-            "user_id": user_id,
-            "destination_wallet[address]": data.address,
-            "destination_wallet[currency]": data.currency,
-            "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
-            "fiat_total_amount[currency]": data.fiat_currency,
-            "digital_total_amount[amount]": parseFloat(data.total_amount),
-            "digital_total_amount[currency]": data.currency,
-            "action": "https://sandbox.test-simplexcc.com/payments/new"
-          }
-          var now = new Date();
+      //   var dataUpdate = await sails.helpers.simplex.getPartnerDataInfo(main_details);
+      //   console.log(dataUpdate);
+      //   console.log(main_details);
+      //   if (dataUpdate.is_kyc_update_required == true) {
+      //     console.log(user_id);
+      //     var dataObject = {
+      //       "version": 1,
+      //       "partner": "faldax",
+      //       "payment_flow_type": "wallet",
+      //       "return_url_success": sails.config.local.SUCCESS_URL,
+      //       "return_url_fail": sails.config.local.FAIL_URL,
+      //       "payment_id": payment_id,
+      //       "quote_id": data.quote_id,
+      //       "user_id": user_id,
+      //       "destination_wallet[address]": data.address,
+      //       "destination_wallet[currency]": data.currency,
+      //       "fiat_total_amount[amount]": parseFloat(data.fiat_amount),
+      //       "fiat_total_amount[currency]": data.fiat_currency,
+      //       "digital_total_amount[amount]": parseFloat(data.total_amount),
+      //       "digital_total_amount[currency]": data.currency,
+      //       "action": sails.config.local.ACTION_URL
+      //     }
+      //     var now = new Date();
 
-          let tradeHistory = await SimplexTradeHistory.create({
-            'payment_id': payment_id,
-            "quote_id": data.quote_id,
-            'currency': data.currency,
-            "settle_currency": data.fiat_currency,
-            "quantity": parseFloat(data.fiat_amount),
-            "user_id": user_id,
-            "symbol": data.currency + '-' + data.fiat_currency,
-            "side": 'Buy',
-            "created_at": now,
-            "updated_at": now,
-            "maximum_time": now,
-            "fill_price": parseFloat(data.total_amount),
-            "limit_price": 0,
-            "stop_price": 0,
-            "price": 0,
-            "simplex_payment_status": 1,
-            "trade_type": 3,
-            "order_status": "filled",
-            "order_type": "Market",
-            "address": data.address,
-            "is_processed": false
-          }).fetch();
+      //     let tradeHistory = await SimplexTradeHistory.create({
+      //       'payment_id': payment_id,
+      //       "quote_id": data.quote_id,
+      //       'currency': data.currency,
+      //       "settle_currency": data.fiat_currency,
+      //       "quantity": parseFloat(data.fiat_amount),
+      //       "user_id": user_id,
+      //       "symbol": data.currency + '-' + data.fiat_currency,
+      //       "side": 'Buy',
+      //       "created_at": now,
+      //       "updated_at": now,
+      //       "maximum_time": now,
+      //       "fill_price": parseFloat(data.total_amount),
+      //       "limit_price": 0,
+      //       "stop_price": 0,
+      //       "price": 0,
+      //       "simplex_payment_status": 1,
+      //       "trade_type": 3,
+      //       "order_status": "filled",
+      //       "order_type": "Market",
+      //       "address": data.address,
+      //       "is_processed": false
+      //     }).fetch();
 
-          console.log(tradeHistory);
-          return res
-            .status(200)
-            .json({
-              "status": 200,
-              "message": sails.__("payment details success"),
-              "data": dataObject
-            })
-        } else {
-          return res
-            .status(400)
-            .json({
-              "status": 400,
-              "message": sails.__("payment fail")
-            })
-        }
+      //     console.log(tradeHistory);
+      //     return res
+      //       .status(200)
+      //       .json({
+      //         "status": 200,
+      //         "message": sails.__("payment details success"),
+      //         "data": dataObject
+      //       })
+      //   } else {
+      //     return res
+      //       .status(400)
+      //       .json({
+      //         "status": 400,
+      //         "message": sails.__("payment fail")
+      //       })
+      //   }
 
-        // } else {
-        //   // Whatever the response of user trade checking
-        //   res.json({
-        //     "status": 200,
-        //     "message": sails.__(geo_fencing_data.msg)
-        //   });
-        // }
-      } else {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "message": sails.__("panic button enabled")
-          })
-      }
+      //   // } else {
+      //   //   // Whatever the response of user trade checking
+      //   //   res.json({
+      //   //     "status": 200,
+      //   //     "message": sails.__(geo_fencing_data.msg)
+      //   //   });
+      //   // }
+      // } else {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       "status": 500,
+      //       "message": sails.__("panic button enabled")
+      //     })
+      // }
 
     } catch (err) {
       console.log(err);
@@ -326,7 +339,7 @@ module.exports = {
         }
       });
       key = await sails.helpers.getDecryptData(key.value);
-      await request.delete('https://sandbox.test-simplexcc.com/wallet/merchant/v2/events/' + event_id, {
+      await request.delete(sails.config.local.SIMPLEX_URL + "events/" + event_id, {
         headers: {
           'Authorization': 'ApiKey ' + key,
           'Content-Type': 'application/json'
@@ -346,6 +359,7 @@ module.exports = {
     try {
       console.log("Inside this method????????")
       var data = await sails.helpers.simplex.getEventData();
+      console.log(data);
       var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
@@ -355,16 +369,11 @@ module.exports = {
         }
       }).sort('id DESC');
 
-      console.log("Trade Data >>>>>", tradeData);
-
       for (var i = 0; i < tradeData.length; i++) {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
-          console.log("Condition ??????", payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner")
-          console.log(payment_data.id == tradeData[i].payment_id);
-          console.log(payment_data.id)
-          console.log(tradeData[i].payment_id)
+          console.log(payment_data)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
@@ -444,6 +453,7 @@ module.exports = {
 
               console.log("Deleteing the event in if")
 
+              console.log(data.events[j].id);
               await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
@@ -459,6 +469,10 @@ module.exports = {
                   is_processed: true
                 }).fetch();
 
+              console.log("Deleteing the event in else", data.events[j].event_id)
+
+              await this.deleteEvent(data.events[j].event_id)
+
               var referData = await Referral.findOne({
                 where: {
                   deleted_at: null,
@@ -467,17 +481,13 @@ module.exports = {
               })
               console.log("Refer Data >>>>>>>>>", referData);
 
-              if (referData == undefined) {
+              if (referData != undefined) {
                 let referredData = await sails
                   .helpers
                   .tradding
                   .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
 
               }
-
-              console.log("Deleteing the event in else")
-
-              await this.deleteEvent(data.events[j].event_id)
             } else if (payment_data.status == "cancelled") {
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
@@ -487,6 +497,7 @@ module.exports = {
                   simplex_payment_status: 3,
                   is_processed: true
                 });
+              console.log("deleting thsi event further>>>>", data.events[j].event_id);
               await this.deleteEvent(data.events[j].event_id)
             }
           }
@@ -688,4 +699,14 @@ module.exports = {
   },
 
 
+  // deleteAllEvents: async function (req, res) {
+  //   try {
+  //     var data = await sails.helpers.simplex.getEventData();
+  //     for (var i = 0; i < data.length; i++) {
+  //       await this.deleteEvent(data.events[i].event_id)
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 }

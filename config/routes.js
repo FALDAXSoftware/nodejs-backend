@@ -464,4 +464,5 @@ module.exports.routes = {
 
   //simplexAPICall
   'get /call-simplex': 'SimplexController.simplexAPICall',
+  'delete /delete-all-events': 'SimplexController.deleteAllEvents'
 };

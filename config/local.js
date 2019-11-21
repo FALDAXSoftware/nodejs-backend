@@ -43,6 +43,7 @@ module.exports.local = {
   "WALLET_ID": process.env.WALLET_ID,
   "SUCCESS_URL": process.env.SUCCESS_URL,
   "FAIL_URL": process.env.FAIL_URL,
+  "ACTION_URL": process.env.ACTION_URL,
   "COIN_TYPE_BITGO": 1,
   "coinArray": {
     'STRAT': {
