@@ -89,7 +89,7 @@ module.exports = {
       if( user_id != 0 ){
         get_data_object.user_id = user_id;
       }
-      // console.log("get_data_object",get_data_object);
+      console.log("get_data_object",get_data_object);
       let check_offercode_in_transactions = await JSTTradeHistory
           .find( get_data_object ); 
       return check_offercode_in_transactions;    
@@ -206,9 +206,9 @@ module.exports = {
         get_data_object.user_id = user_id;
       }
       let check_offercode_campaign = await JSTTradeHistory
-          .findOne( get_data_object );
-
-      if( check_offercode_campaign != undefined && check_offercode_campaign.campaign_offer_id != campaign_offer_id ){
+          .find( get_data_object ).orderBy("id", "desc").limit(1);
+      console.log("check_offercode_campaign",check_offercode_campaign);
+      if( check_offercode_campaign.length > 0 && check_offercode_campaign[0].campaign_offer_id != campaign_offer_id ){
         response.status = false;
         response.message = 'Sorry, You can not use offercode with same campaign';
         return exits.success(response)
