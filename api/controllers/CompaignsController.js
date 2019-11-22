@@ -469,4 +469,48 @@ module.exports = {
     }
   },
 
+
+  /** 
+   * get Verify Offer Code
+   */
+  verifyOfferCode: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      var data_object = {
+        code:req.params.code
+      };
+      var get_data = await CampaignsOffers.count( data_object );
+      if ( get_data > 0 ) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("Offercode is exist")            
+          })
+      }else{
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            "message": sails.__("Offercode is notexist")
+          });
+      }
+     
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
 };
