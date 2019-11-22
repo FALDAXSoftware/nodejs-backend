@@ -32,7 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     const moment = require('moment');
-    
+    var error_message =`Sorry! The offer code you entered is either expired or not applicable for your account.`;
     var current_date = moment(new Date()).format("YYYY-MM-DD")
     // console.log(current_date);
     var offer_code = inputs.offer_code;
@@ -47,7 +47,7 @@ module.exports = {
     // console.log("get_campaign_offer_data",get_campaign_offer_data);
     if( get_campaign_offer_data.length == 0 ){
       response.status = false;
-      response.message = 'Invalid offer code';
+      response.message = error_message;
       return exits.success(response)
     }
     // Check Campaign 
@@ -74,10 +74,18 @@ module.exports = {
     
     if( get_campaign_data.length == 0 ){
       response.status = false;
-      response.message = 'Campaign does not exist for this Offer code';
+      response.message = error_message;
       return exits.success(response)
     }
 
+    let total_fees_allowed = get_campaign_data[0].fees_allowed;
+    let total_transaction_allowed = get_campaign_data[0].no_of_transactions;
+    if( get_campaign_offer_data[0].is_default_values ){
+      total_fees_allowed = get_campaign_data[0].fees_allowed;
+      total_transaction_allowed = get_campaign_data[0].no_of_transactions;
+    }
+    var success_message = `Success! up to $${total_fees_allowed} total in FALDAX Transaction Fees are waived for your next ${total_transaction_allowed} Transactions!`;
+    
     // To check past transactions using Offer
     async function getPastTransactions( user_id=0, campaign_id, campaign_offer_id ){
       // Get Conversion history to check Offercode applied or not
@@ -99,7 +107,7 @@ module.exports = {
       // Check Offercode is active or not
       if( get_campaign_offer_data[0].is_active == false ){
         response.status = false;
-        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
+        response.message = error_message;
         return exits.success(response)
       }                  
     }
@@ -112,7 +120,7 @@ module.exports = {
 
       }else{
         response.status = false;
-        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
+        response.message = error_message;
         return exits.success(response)
       }
     }
@@ -129,7 +137,7 @@ module.exports = {
       // console.log("total_transactions",total_transactions);
       if( total_transactions >= offer_no_of_transactions ){
         response.status = false;
-        response.message = 'You have already exceeded Number of transactions for this Offer';
+        response.message = error_message;
         return exits.success(response)
       }
     }
@@ -184,7 +192,7 @@ module.exports = {
       
       if( parseFloat(offer_transaction_fees) <= parseFloat(fiat_faldax_fees) ){
         response.status = false;
-        response.message = 'You have already exceeded total amount of fees for this Offer';
+        response.message = error_message;
         return exits.success(response)     
       }else{
         var remaining_fees = parseFloat(offer_transaction_fees)-parseFloat(fiat_faldax_fees); // Remaining fees in Fiat
@@ -192,7 +200,9 @@ module.exports = {
         if( remaining_fees > 0 ){
           response.status = "truefalse";
           response.discount_values = remaining_fees;
-          response.message = `You will get $${remaining_fees} as discount in your fees` ;
+          // response.message = `You will get $${remaining_fees} as discount in your fees` ;
+          
+          response.message = success_message;
           return exits.success(response)
         }
       }
@@ -211,7 +221,7 @@ module.exports = {
       console.log("check_offercode_campaign",check_offercode_campaign);
       if( check_offercode_campaign.length > 0 && check_offercode_campaign[0].campaign_offer_id != campaign_offer_id ){
         response.status = false;
-        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
+        response.message = error_message;
         return exits.success(response)
       }
     }
@@ -220,7 +230,7 @@ module.exports = {
       // Check code is applied by valid user
       if( get_campaign_offer_data[0].user_id != user_id ){
         response.status = false;
-        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
+        response.message = error_message;
         return exits.success(response)
       }
       // Get Conversion history to check Offercode applied or not // Function
@@ -254,17 +264,17 @@ module.exports = {
       let check_offercode_same_campaign = await checkOffercodeCampaign(user_id, campaign_id, campaign_offer_id);
     }  
     // For valid only
-    let total_fees_allowed = get_campaign_data[0].fees_allowed;
-    let total_transaction_allowed = get_campaign_data[0].no_of_transactions;
-    if( get_campaign_offer_data[0].is_default_values ){
-      total_fees_allowed = get_campaign_data[0].fees_allowed;
-      total_transaction_allowed = get_campaign_data[0].no_of_transactions;
-    }
+    // let total_fees_allowed = get_campaign_data[0].fees_allowed;
+    // let total_transaction_allowed = get_campaign_data[0].no_of_transactions;
+    // if( get_campaign_offer_data[0].is_default_values ){
+    //   total_fees_allowed = get_campaign_data[0].fees_allowed;
+    //   total_transaction_allowed = get_campaign_data[0].no_of_transactions;
+    // }
     
     get_campaign_offer_data[0].campaign_data = get_campaign_data[0];
     response = {
       status:true,
-      message:`Success! up to $${total_fees_allowed} total in FALDAX Transaction Fees are waived for your next ${total_transaction_allowed} Transactions!`,
+      message:success_message,
       data: get_campaign_offer_data[0]
     }
     return exits.success(response)
