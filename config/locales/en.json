@@ -373,6 +373,8 @@
 	"offer deactivated": "Campaign Offer has been deactivated.",
 	"compaigns retrieve success": "compaigns retrieve success",
 	"compaigns not found": "compaigns not found",
+	"Offercode is exist":"This Offer code is already exist",
+	"Offercode is notexist":"This Offer code is not exist",
 	"Minimum Order Limit not satisfied": "Minimum order limit has not been satisified",
 	"fees greater than 0": "Withdrawl Fees must be greater than zero",
 	"Faldax fee update success": "Faldax Fee has been updated successfully.",
