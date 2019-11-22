@@ -133,7 +133,7 @@ module.exports = {
       let campaign_offer_id=0;
       let offer_message="";
       let offer_applied=false;
-      var final_faldax_fees = 0.0
+      var final_faldax_fees = jstResponseValue.faldax_fee
       var final_faldax_fees_actual = jstResponseValue.faldax_fee;
       console.log("Offer COde >>>>>>.",offer_code);
       if( offer_code && offer_code != "" ){
@@ -146,7 +146,8 @@ module.exports = {
         // offer_applied = false;
         if( check_offer_status.status == "truefalse"){ 
           console.log("INSIDE ANOTHER IF >>>>>>>>>")   
-          final_faldax_fees = 0.0;          
+          final_faldax_fees = 0.0;     
+               
           // Check Partially fees calulations
           var current_order_faldax_fees = parseFloat(final_faldax_fees_actual)*parseFloat(calculate_offer_amount);
           console.log("Current faldax FEE",current_order_faldax_fees);
@@ -157,11 +158,11 @@ module.exports = {
             var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
             var final_faldax_fees_crypto = remaining_fees_fiat/calculate_offer_amount;
             final_faldax_fees = final_faldax_fees_crypto;
-            console.log("Faladax Fee >>>>>>>>>>>>>",jstResponseValue.faldax_fee);
-            var value = jstResponseValue.totalValue;
-            jstResponseValue.totalValue = parseFloat(jstResponseValue.totalValue) - parseFloat(jstResponseValue.faldax_fee);
-            console.log("INSIDE CONDITIUN >>>>>>>>", jstResponseValue.totalValue);
-            jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(jstResponseValue.faldax_fee);
+            // console.log("Faladax Fee >>>>>>>>>>>>>",jstResponseValue.faldax_fee);
+            var value = jstResponseValue.total_value;
+            jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(final_faldax_fees);
+            console.log("INSIDE CONDITIUN >>>>>>>>", jstResponseValue.total_value);
+            jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(final_faldax_fees);
             console.log("QUANTITY >>>>>>>", jstResponseValue.orderQuantity);
           }
         }else if( check_offer_status.status == true ){
