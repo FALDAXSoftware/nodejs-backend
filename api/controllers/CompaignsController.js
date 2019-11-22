@@ -119,10 +119,23 @@ module.exports = {
         'campaign_offers.*.end_date': 'date',        
         'campaign_offers.*.is_active': 'required|boolean',        
       }
-      // ,{
-      //   "usage":"Usage field must be either Onetime or Mutiple",
-      //   "campaign_offers":"Offers should be array of object"
-      // }
+      ,{
+        "usage":sails.__("Campaign usage"),
+        "label":sails.__("Campaign label"),
+        "no_of_transactions":sails.__("Campaign no_of_transactions"),
+        "fees_allowed":sails.__("Campaign fees_allowed"),
+        "start_date":sails.__("Campaign start_date"),
+        "end_date":sails.__("Campaign end_date"),
+        "is_active":sails.__("Campaign is_active"),
+        "campaign_offers.*.code":sails.__("Campaign code"),
+        "campaign_offers.*.is_default_values":sails.__("Campaign is_default_values"),
+        "campaign_offers.*.no_of_transactions":sails.__("Campaign no_of_transactions"),
+        "campaign_offers.*.fees_allowed":sails.__("Campaign fees_allowed"),
+        "campaign_offers.*.user_id":sails.__("Campaign user_id"),
+        "campaign_offers.*.start_date":sails.__("Campaign start_date"),
+        "campaign_offers.*.end_date":sails.__("Campaign end_date"),
+        "campaign_offers.*.is_active":sails.__("Campaign is_active"),
+      }
       );
 
       
@@ -228,6 +241,24 @@ module.exports = {
         'campaign_offers_new.*.is_active': 'required|boolean',
         'campaign_offers_new.*.start_date': 'date',
         'campaign_offers_new.*.end_date': 'date',       
+      },
+      {
+        "label":sails.__("Campaign label"),
+        "no_of_transactions":sails.__("Campaign no_of_transactions"),        
+        "start_date":sails.__("Campaign start_date"),
+        "end_date":sails.__("Campaign end_date"),
+        "is_active":sails.__("Campaign is_active"),
+        "campaign_offers.*.start_date":sails.__("Campaign start_date"),
+        "campaign_offers.*.end_date":sails.__("Campaign end_date"),
+        "campaign_offers.*.is_active":sails.__("Campaign is_active"),
+        "campaign_offers_new.*.code":sails.__("Campaign code"),
+        "campaign_offers_new.*.is_default_values":sails.__("Campaign is_default_values"),
+        "campaign_offers_new.*.no_of_transactions":sails.__("Campaign no_of_transactions"),
+        "campaign_offers_new.*.fees_allowed":sails.__("Campaign fees_allowed"),
+        "campaign_offers_new.*.user_id":sails.__("Campaign user_id"),
+        "campaign_offers_new.*.start_date":sails.__("Campaign start_date"),
+        "campaign_offers_new.*.end_date":sails.__("Campaign end_date"),
+        "campaign_offers_new.*.is_active":sails.__("Campaign is_active"),
       });
 
       

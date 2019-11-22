@@ -99,7 +99,7 @@ module.exports = {
       // Check Offercode is active or not
       if( get_campaign_offer_data[0].is_active == false ){
         response.status = false;
-        response.message = 'Sorry, Offer code is not active now';
+        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
         return exits.success(response)
       }                  
     }
@@ -112,7 +112,7 @@ module.exports = {
 
       }else{
         response.status = false;
-        response.message = 'Sorry, Offer code is already expired';
+        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
         return exits.success(response)
       }
     }
@@ -210,7 +210,7 @@ module.exports = {
 
       if( check_offercode_campaign != undefined && check_offercode_campaign.campaign_offer_id != campaign_offer_id ){
         response.status = false;
-        response.message = 'Sorry, You can not use offercode with same campaign';
+        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
         return exits.success(response)
       }
     }
@@ -219,7 +219,7 @@ module.exports = {
       // Check code is applied by valid user
       if( get_campaign_offer_data[0].user_id != user_id ){
         response.status = false;
-        response.message = 'Sorry, Offer code is not applicable for you';
+        response.message = 'Sorry! The offer code you entered is either expired or not applicable for your account.';
         return exits.success(response)
       }
       // Get Conversion history to check Offercode applied or not // Function
@@ -261,7 +261,7 @@ module.exports = {
     get_campaign_offer_data[0].campaign_data = get_campaign_data[0];
     response = {
       status:true,
-      message:`Success! Upto $${total_fees_allowed} total in FALDAX Transaction Fees are waived for your next ${total_transaction_allowed} Transactions!`,
+      message:`Success! up to $${total_fees_allowed} total in FALDAX Transaction Fees are waived for your next ${total_transaction_allowed} Transactions!`,
       data: get_campaign_offer_data[0]
     }
     return exits.success(response)
