@@ -318,7 +318,15 @@ module.exports = {
       console.log("get_data",get_data);
       if ( get_data != undefined ) {
         var get_campaign_offers = await CampaignsOffers.find({campaign_id:get_data.id}).sort('created_at DESC');
+        if( get_campaign_offers.length > 0 ){
+          for( var i=0; i< get_campaign_offers.length; i++){
+            // Count Offercodes used by any user
+            var get_used_offercodes = await JSTTradeHistory.count({campaign_offer_id:get_campaign_offers[i].id, offer_applied:true})
+            get_campaign_offers[i].offercode_used = get_used_offercodes;            
+          }
+        }
         get_data.campaign_offers = get_campaign_offers;
+        
         return res
           .status(200)
           .json({

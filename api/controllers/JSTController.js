@@ -108,6 +108,38 @@ module.exports = {
 
       var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
 
+      // Check for Offercode and if it is proper, don't add Faldax fees
+      var user_id = req.user.id;
+      let offer_code = req_body.offer_code;
+      let campaign_id=0;
+      let campaign_offer_id=0;
+      let offer_message="";
+      let offer_applied=false;
+      if( offer_code && offer_code != "" ){
+        
+        let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus( offer_code, user_id, false );   
+        console.log("check_offer_status",check_offer_status);       
+        campaign_id = check_offer_status.data.campaign_id;
+        campaign_offer_id = check_offer_status.data.id;
+        offer_message = check_offer_status.message;
+        // offer_applied = false;
+        if( check_offer_status.status == "truefalse" ){    
+          final_faldax_fees = 0.0;          
+          // Check Partially fees calulations
+          var current_order_faldax_fees = parseFloat(final_faldax_fees_actual)*parseFloat(calculate_offer_amount);
+          if( parseFloat(check_offer_status.discount_values) <  parseFloat(current_order_faldax_fees) ){
+            // offer_applied = true;
+            var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
+            var final_faldax_fees_crypto = remaining_fees_fiat/calculate_offer_amount;
+            final_faldax_fees = final_faldax_fees_crypto;
+          }
+        }else if( check_offer_status.status == true ){
+          // offer_applied = true;
+          final_faldax_fees = 0.0;
+        }
+        console.log("final_faldax_fees",final_faldax_fees);
+      }
+      jstResponseValue.faldax_fee = final_faldax_fees;
       return res
         .status(200)
         .json({
