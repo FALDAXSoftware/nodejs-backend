@@ -66,10 +66,11 @@ module.exports = {
           })
       }else{
         return res
-          .status(500)
+          .status(200)
           .json({
-            status: 500,
-            "err": sails.__("compaigns not found")
+            status: 200,
+            "message": sails.__("compaigns not found"),
+            data:[]
           });
       }
      
