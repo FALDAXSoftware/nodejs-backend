@@ -114,10 +114,11 @@ module.exports = {
 
     // To check validity of Offercode
     async function checkValidityOfOffercode(get_campaign_offer_data, check_offercode_in_transactions){
-      // console.log("current_date",current_date);
-      // console.log("get_campaign_offer_data",get_campaign_offer_data);
+      console.log("get_campaign_offer_data",get_campaign_offer_data);
+      console.log("current_date",current_date);
+      console.log("start_date",get_campaign_offer_data[0].start_date);
+      console.log("end_date",get_campaign_offer_data[0].end_date);
       if( moment( current_date ).isBetween(get_campaign_offer_data[0].start_date, get_campaign_offer_data[0].end_date) ){
-
       }else{
         response.status = false;
         response.message = error_message;
@@ -235,9 +236,10 @@ module.exports = {
       }
       // Get Conversion history to check Offercode applied or not // Function
       let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_id, campaign_offer_id );
-      // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       if( check_offercode_in_transactions.length == 0 ){
         // No block of code
+        let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
+        let check_offer_validity = checkValidityOfOffercode( get_campaign_offer_data );
       }else{
         // Check Offercode is active or not // Function        
         let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
@@ -253,7 +255,9 @@ module.exports = {
       // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       // console.log("check_offercode_in_transactions.length",check_offercode_in_transactions.length);
       if( check_offercode_in_transactions.length == 0 ){      
-        // No block of code          
+        // No block of code 
+        let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
+        let check_offer_validity = checkValidityOfOffercode( get_campaign_offer_data );         
       }else{
         let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
         let check_offer_validity = checkValidityOfOffercode( get_campaign_data );
