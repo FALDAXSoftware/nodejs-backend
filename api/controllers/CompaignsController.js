@@ -66,10 +66,11 @@ module.exports = {
           })
       }else{
         return res
-          .status(500)
+          .status(200)
           .json({
-            status: 500,
-            "err": sails.__("compaigns not found")
+            status: 200,
+            "message": sails.__("compaigns not found"),
+            data:[]
           });
       }
      
@@ -351,6 +352,24 @@ module.exports = {
         var get_campaign_offers = await CampaignsOffers.find({campaign_id:get_data.id}).sort('created_at DESC');
         if( get_campaign_offers.length > 0 ){
           for( var i=0; i< get_campaign_offers.length; i++){
+            // Get User data
+            console.log("get_campaign_offers[i]",get_campaign_offers[i]);
+            let user_data={};
+            
+            if( get_campaign_offers[i].user_id > 0 ){
+              user_data = await module.exports.getOffercodeUserDetails(get_campaign_offers[i].user_id)
+              console.log("user_data",user_data);
+              if( user_data != undefined ){
+                console.log("yes");                
+                user_data = user_data;
+              }else{
+                user_data = {};
+              }
+            }else{
+              user_data = {};
+            }
+            
+            get_campaign_offers[i].user_data = user_data;            
             // Count Offercodes used by any user
             var get_used_offercodes = await JSTTradeHistory.count({campaign_offer_id:get_campaign_offers[i].id, offer_applied:true})
             get_campaign_offers[i].offercode_used = get_used_offercodes;            
@@ -512,5 +531,10 @@ module.exports = {
         });
     }
   },
+
+  getOffercodeUserDetails: async function( user_id ){
+    let get_user = await Users.findOne({id:user_id}).select(["id","first_name","last_name", "email"])
+    return get_user;
+  }
 
 };
