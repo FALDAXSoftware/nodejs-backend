@@ -379,5 +379,15 @@
 	"faldax fees greater than 0": "Faldax Fees must be greater than zero",
 	"User has been deleted, So funds cannot be transferred": "User has been deleted, So funds cannot be transferred",
 	"Coin minimum limit for the coin ": "Coin minimum limit for the coin ",
-	"Minimum limit for the coin ": "Minimum limit for the coin "
+	"Minimum limit for the coin ": "Minimum limit for the coin ",
+	"Campaign usage":"Please enter usage field and it should be either Onetime or Mutiple",
+	"Campaign label":"Please enter label",
+	"Campaign no_of_transactions":"Please enter number of transactions and it should be number",
+	"Campaign fees_allowed":"Please enter fees allowed and it should be number",
+	"Campaign start_date":"Please select Start Date and it should be date",
+	"Campaign end_date":"Please select End Date and it should be date",
+	"Campaign is_active":"Please select status",
+	"Campaign code":"Please enter code field and it should be unique",
+	"Campaign is_default_values":"Please select default values",
+	"Campaign user_id":"Please select User"
 }
