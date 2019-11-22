@@ -180,6 +180,17 @@ module.exports = {
         }else if( check_offer_status.status == true ){
           // offer_applied = true;
           final_faldax_fees = 0.0;
+          if(flag == 2){
+            var total_value = jstResponseValue.total_value;
+            jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee);
+            jstResponseValue.faldax_fee = 0.0;
+            jstResponseValue.orderQuantity = jstResponseValue.total_value;
+          }else if(flag ==1){
+            var total_value = jstResponseValue.original_value;
+            jstResponseValue.original_value = parseFloat(jstResponseValue.original_value) - parseFloat(jstResponseValue.faldax_fee);
+            jstResponseValue.faldax_fee = 0.0;
+            jstResponseValue.orderQuantity = jstResponseValue.original_value;
+          }
          
         }
         console.log("final_faldax_fees",final_faldax_fees);
