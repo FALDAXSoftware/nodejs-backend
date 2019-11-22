@@ -27,13 +27,11 @@ module.exports = {
       columnName: 'fees_allowed'
     },  
     start_date: {
-      type: 'ref',
-      columnType: 'date',
+      type: 'string',
       columnName: 'start_date'
     },
     end_date: {
-      type: 'ref',
-      columnType: 'date',
+      type: 'string',
       columnName: 'end_date'
     },
     usage: {
