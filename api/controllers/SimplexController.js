@@ -111,9 +111,6 @@ module.exports = {
 
   getQouteDetails: async function (req, res) {
     try {
-      return res.json({
-        status:1
-      })
       var data = req.body;
       var ip = requestIp.getClientIp(req);
       // var user_id = req.user.id;
