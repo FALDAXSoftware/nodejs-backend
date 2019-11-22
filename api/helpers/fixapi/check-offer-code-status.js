@@ -136,6 +136,7 @@ module.exports = {
 
     // Check total fees already deducted using Offer
     async function checkTotalFeesDeducted(get_campaign_offer_data, check_offercode_in_transactions){
+      console.log("checkTotalFeesDeducted",checkTotalFeesDeducted);
       let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
       
       if( get_campaign_offer_data[0].is_default_values == true ){
@@ -206,7 +207,7 @@ module.exports = {
         get_data_object.user_id = user_id;
       }
       let check_offercode_campaign = await JSTTradeHistory
-          .find( get_data_object ).orderBy("id", "desc").limit(1);
+          .find( get_data_object ).sort("id DESC").limit(1);
       console.log("check_offercode_campaign",check_offercode_campaign);
       if( check_offercode_campaign.length > 0 && check_offercode_campaign[0].campaign_offer_id != campaign_offer_id ){
         response.status = false;
@@ -224,7 +225,7 @@ module.exports = {
       }
       // Get Conversion history to check Offercode applied or not // Function
       let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_id, campaign_offer_id );
-      console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
+      // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
       if( check_offercode_in_transactions.length == 0 ){
         // No block of code
       }else{
@@ -238,15 +239,17 @@ module.exports = {
         let check_total_fees = await checkTotalFeesDeducted( get_campaign_offer_data, check_offercode_in_transactions);        
       }      
     }else{ // If Multiple usage
-      let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_offer_id );
+      let check_offercode_in_transactions = await getPastTransactions( user_id, campaign_id, campaign_offer_id );
       // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
+      // console.log("check_offercode_in_transactions.length",check_offercode_in_transactions.length);
       if( check_offercode_in_transactions.length == 0 ){      
         // No block of code          
       }else{
         let check_offer_status = checkOffercodeStatus(get_campaign_offer_data);
         let check_offer_validity = checkValidityOfOffercode( get_campaign_data );
         let check_total_transaction = checkNumberOfTransaction(get_campaign_offer_data, check_offercode_in_transactions);
-        let check_total_fees = await checkTotalFeesDeducted( get_campaign_offer_data, check_offercode_in_transactions);        
+        let check_total_fees = await checkTotalFeesDeducted( get_campaign_offer_data, check_offercode_in_transactions);    
+        // console.log("check_total_fees",check_total_fees);    
       }
       let check_offercode_same_campaign = await checkOffercodeCampaign(user_id, campaign_id, campaign_offer_id);
     }  
