@@ -105,36 +105,36 @@ module.exports = {
               }
             }
 
-              let role = await Role.findOne({
-                id: admin_details.role_id
-              });
+            let role = await Role.findOne({
+              id: admin_details.role_id
+            });
 
-              admin_details.roles = role;
+            admin_details.roles = role;
 
             var roleArray = [];
 
-            var roleQuery = `SELECT  r.module_name, r.main_module
-                                FROM public.admin_permissions as a
-                                INNER JOIN role_permissions as r
-                                ON a.permission_id = r.id
-                                WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
-                                ORDER BY a.permission_id`
+            // var roleQuery = `SELECT  r.module_name, r.main_module
+            //                     FROM public.admin_permissions as a
+            //                     INNER JOIN role_permissions as r
+            //                     ON a.permission_id = r.id
+            //                     WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
+            //                     ORDER BY a.permission_id`
 
-            var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
-            roleAllowedData = roleAllowedData.rows;
+            // var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
+            // roleAllowedData = roleAllowedData.rows;
 
             // console.log(permissionDetail);
 
             // Role Not Active
-            // if (role.is_active == "false" | role.is_active == false) {
-            //   res
-            //     .status(400)
-            //     .json({
-            //       "status": 400,
-            //       "err": sails.__("Contact Admin")
-            //     });
-            //   return;
-            // }
+            if (role.is_active == "false" | role.is_active == false) {
+              res
+                .status(400)
+                .json({
+                  "status": 400,
+                  "err": sails.__("Contact Admin")
+                });
+              return;
+            }
 
             if (admin_details.is_twofactor) {
               if (!req.body.otp) {
@@ -1612,7 +1612,7 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("error",error);
+      console.log("error", error);
       await logger.error(error.message)
       return res
         .status(500)
@@ -3646,7 +3646,7 @@ module.exports = {
     }
   },
   // Get User's list 
-  userList: async function( req, res){
+  userList: async function (req, res) {
     if (!req.user.isAdmin) {
       return res.status(403).json({
         status: 403,
@@ -3654,26 +3654,26 @@ module.exports = {
       });
     }
     var user_data = await Users.find({
-      select:["first_name","last_name","email","id"],
+      select: ["first_name", "last_name", "email", "id"],
       where: {
         deleted_at: null,
         is_active: true
       }
     }).sort('created_at DESC');
-    if( user_data.length > 0 ){
+    if (user_data.length > 0) {
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("Record found"),
-          "data":user_data
+          "data": user_data
         })
-    }else{
+    } else {
       return res
         .status(400)
         .json({
           "status": 400,
-          "message": sails.__("No record found")          
+          "message": sails.__("No record found")
         })
     }
 
