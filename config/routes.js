@@ -456,7 +456,7 @@ module.exports.routes = {
   'put /admin/campaigns/update/:id': 'CompaignsController.update',
   'get /admin/users/list': 'AdminController.userList',
   'get /admin/campaigns/verify-offercode/:code': 'CompaignsController.verifyOfferCode',
-  
+
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
@@ -466,5 +466,8 @@ module.exports.routes = {
 
   //simplexAPICall
   'get /call-simplex': 'SimplexController.simplexAPICall',
-  'delete /delete-all-events': 'SimplexController.deleteAllEvents'
+  'delete /delete-all-events': 'SimplexController.deleteAllEvents',
+
+  // Get Users Wallet Data
+  'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue'
 };
