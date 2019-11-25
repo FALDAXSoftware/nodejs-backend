@@ -13,8 +13,8 @@ module.exports = async function (req, res, next) {
     // TODO
     console.log(req.url);
     let urlValue = req.url.trim();
-    // let urlArray = req.url.split("/");
-    // console.log(urlArray);
+    let urlArray = req.url.split("/");
+    console.log(urlArray);
     // let urlSplit = req.url.split(":")
     // console.log(urlSplit);
     // urlValue = urlSplit[0];
@@ -28,7 +28,7 @@ module.exports = async function (req, res, next) {
     // urlValue = (urlValue[0] != '/') ? (urlValue) : ('/' + urlValue)
     // let urlSplit = req.url.split("?")
     // urlValue = urlSplit[0];
-    let urlPrefix = urlArray[1];
+    // let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
       if (req.user.isAdmin) {
         var userData = await Admin.findOne({
