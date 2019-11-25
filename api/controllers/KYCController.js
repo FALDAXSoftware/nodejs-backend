@@ -429,8 +429,9 @@ module.exports = {
         status
       } = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
-      // let whereAppended = false;
+      
       query += ' WHERE kyc.deleted_at IS NULL'
+      let whereAppended = false;
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
@@ -439,18 +440,20 @@ module.exports = {
         }
       }
 
-      if (status && data != "") {
-        query += whereAppended ?
-          " AND " :
-          " WHERE ";
+      if (status && status != "") {
+        query += " AND"
+        // query += whereAppended ?
+        //   " WHERE " :
+        //   " AND ";
         query += " kyc.direct_response = '" + status + "'";
         whereAppended = true;
       }
 
       if (start_date && end_date) {
-        query += whereAppended ?
-          " AND " :
-          " WHERE ";
+        query += " AND"
+        // query += whereAppended ?
+        //   " AND " :
+        //   " WHERE ";
 
         query += " kyc.created_at >= '" + await sails
           .helpers
@@ -486,6 +489,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log("err",err);
       await logger.error(err.message)
       return res
         .status(500)
