@@ -12,6 +12,71 @@ var logger = require("./logger")
 
 
 module.exports = {
+
+  getMonthlyDailyValue: async function (req, res) {
+    try {
+      var {
+        user_id,
+        coin_code
+      } = req.allParams();
+
+      var today = moment().utc().format();
+
+      var yesterday = moment()
+        .startOf('day')
+        .format();
+
+      var monthlyData = moment()
+        .startOf('month')
+        .format();
+
+      let coin = await Coins.findOne({
+        deleted_at: null,
+        is_active: true,
+        coin_code: coin_code
+      });
+
+      //Getting total value of daily withdraw
+      let walletHistoryData = await WalletHistory
+        .sum('amount')
+        .where({
+          user_id: user_id,
+          deleted_at: null,
+          coin_id: coin.id,
+          transaction_type: 'send',
+          created_at: {
+            '>=': yesterday,
+            '<=': today
+          }
+        });
+
+      console.log(walletHistoryData)
+
+      // Getting total value of monthly withdraw
+      let walletHistoryDataMonthly = await WalletHistory
+        .sum('amount')
+        .where({
+          user_id: user_id,
+          deleted_at: null,
+          coin_id: coin.id,
+          transaction_type: 'send',
+          created_at: {
+            '>=': monthlyData,
+            '<=': today
+          }
+        });
+
+      return res.json({
+        walletHistoryData,
+        walletHistoryDataMonthly
+      })
+
+      console.log(walletHistoryDataMonthly)
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   // call currency conversion helper
   getConversionData: async function (req, res) {
     // var currencyData = await sails
@@ -332,9 +397,9 @@ module.exports = {
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
-            console.log((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined))
+            console.log((parseFloat(walletHistoryData) + parseFloat(total_fees)) <= limitAmount || (limitAmount == null || limitAmount == undefined))
             //If total amount + amount to be send is less than limited amount
-            if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
+            if ((parseFloat(walletHistoryData) + parseFloat(total_fees)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
               console.log(limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined))
               //Checking monthly limit is greater than the total sum of month
@@ -938,7 +1003,7 @@ module.exports = {
         destination_address,
         coin_code
       } = req.allParams();
-      
+
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -961,12 +1026,12 @@ module.exports = {
         coin_code: coin_code
       });
       console.log("===============Send Coin================");
-      console.log("coin",coin);
+      console.log("coin", coin);
       let warmWalletData = await sails
         .helpers
         .wallet
         .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-        console.log("warmWalletData",warmWalletData);
+      console.log("warmWalletData", warmWalletData);
       let sendWalletData = await sails
         .helpers
         .wallet
@@ -984,8 +1049,8 @@ module.exports = {
 
         //Checking if wallet is found or not
         if (wallet) {
-          console.log("wallet",wallet);
-          console.log("wallet.placed_balance >= parseFloat(amount)",wallet.placed_balance >= parseFloat(amount));
+          console.log("wallet", wallet);
+          console.log("wallet.placed_balance >= parseFloat(amount)", wallet.placed_balance >= parseFloat(amount));
           //If placed balance is greater than the amount to be send
           if (wallet.placed_balance >= parseFloat(amount)) {
 
@@ -1003,7 +1068,7 @@ module.exports = {
               // receive and receive to destination
               // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
               let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-              console.log("transaction",transaction);
+              console.log("transaction", transaction);
               //Here remainning ebtry as well as address change
               let walletHistory = {
                 coin_id: wallet.coin_id,
