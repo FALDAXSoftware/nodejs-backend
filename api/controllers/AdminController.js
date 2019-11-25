@@ -193,7 +193,7 @@ module.exports = {
                   res.json({
                     user: admin_details,
                     token,
-                    roleAllowedData
+                    // roleAllowedData
                   });
                 }
               });
