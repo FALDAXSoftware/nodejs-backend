@@ -11,24 +11,22 @@ var requestIp = require('request-ip');
 module.exports = async function (req, res, next) {
   try {
     // TODO
-    console.log(req.url);
     let urlValue = req.url.trim();
     let urlArray = req.url.split("/");
     console.log(urlArray);
-    // let urlSplit = req.url.split(":")
-    // console.log(urlSplit);
-    // urlValue = urlSplit[0];
+    let urlSplit = req.url.split(":")
+    console.log(urlSplit);
+    urlValue = urlSplit[0];
     // console.log(urlValue)
-    // urlValue = urlValue.replace("/", "")
-    // urlValue = '/' + urlValue;
     // urlSplit = req.url.split("?");
     // urlValue = urlSplit[0];
+    urlValue = urlValue.replace("/", "")
     // console.log(urlValue[0]);
     // console.log(urlValue[0] != '/')
     // urlValue = (urlValue[0] != '/') ? (urlValue) : ('/' + urlValue)
     // let urlSplit = req.url.split("?")
     // urlValue = urlSplit[0];
-    // let urlPrefix = urlArray[1];
+    let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
       if (req.user.isAdmin) {
         var userData = await Admin.findOne({
