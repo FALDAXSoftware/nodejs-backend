@@ -710,6 +710,7 @@ module.exports = {
             .set(update_data).fetch();
 
           update_order[0].flag = 1;
+          update_order[0].faldax_fees = final_faldax_fees_actual;
           //Adding Data in referral table
           let referredData = await sails
             .helpers
