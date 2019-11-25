@@ -2977,16 +2977,57 @@ module.exports = {
   getReferralList: async function (req, res) {
     try {
 
-      var userIds = [];
-      var referredData = await Users.find({
-        where: {
-          deleted_at: null,
-          is_active: true,
-          referred_id: {
-            '!=': null
-          }
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        country
+      } = req.allParams();
+      let whereAppended = false;
+      let query = " from users";
+      query += " WHERE deleted_at IS NULL and is_active=true and referred_id IS NOT NULL"
+      if ((data && data != "")) {
+        query += " AND "
+        whereAppended = true;
+        if (data && data != "" && data != null) {
+          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
         }
-      }).sort('created_at DESC');
+        query += ")"
+      }
+      limit = (limit!= undefined && limit!="" ? limit : "50")
+      page = (page!= undefined && page!="" ? page : "1")
+      // countQuery = query;
+      // if (sort_col && sort_order) {
+      //   let sortVal = (sort_order == 'descend' ?
+      //     'DESC' :
+      //     'ASC');
+      //   query += " ORDER BY " + sort_col + " " + sortVal;
+      // } else {
+      //   query += " ORDER BY created_at DESC";
+      // }
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      
+      let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
+      
+
+      // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      // userCount = userCount.rows[0].count;
+
+      // Old
+
+      var userIds = [];
+      // var referredData = await Users.find({
+      //   where: {
+      //     deleted_at: null,
+      //     is_active: true,
+      //     referred_id: {
+      //       '!=': null
+      //     }
+      //   }
+      // }).sort('created_at DESC');
+      referredData = user_details.rows;
 
       for (var i = 0; i < referredData.length; i++) {
         if (userIds.indexOf(referredData[i].referred_id) == -1) {
@@ -3027,7 +3068,8 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("referal data success"),
-          "data": usersData
+          "data": usersData,
+          "referralCount":user_details.rowCount
         })
     } catch (err) {
       console.log(err);
