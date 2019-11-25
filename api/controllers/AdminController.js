@@ -105,22 +105,36 @@ module.exports = {
               }
             }
 
-            let role = await Role.findOne({
-              id: admin_details.role_id
-            });
+              let role = await Role.findOne({
+                id: admin_details.role_id
+              });
 
-            admin_details.roles = role;
+              admin_details.roles = role;
+
+            var roleArray = [];
+
+            var roleQuery = `SELECT  r.module_name, r.main_module
+                                FROM public.admin_permissions as a
+                                INNER JOIN role_permissions as r
+                                ON a.permission_id = r.id
+                                WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
+                                ORDER BY a.permission_id`
+
+            var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
+            roleAllowedData = roleAllowedData.rows;
+
+            // console.log(permissionDetail);
 
             // Role Not Active
-            if (role.is_active == "false" | role.is_active == false) {
-              res
-                .status(400)
-                .json({
-                  "status": 400,
-                  "err": sails.__("Contact Admin")
-                });
-              return;
-            }
+            // if (role.is_active == "false" | role.is_active == false) {
+            //   res
+            //     .status(400)
+            //     .json({
+            //       "status": 400,
+            //       "err": sails.__("Contact Admin")
+            //     });
+            //   return;
+            // }
 
             if (admin_details.is_twofactor) {
               if (!req.body.otp) {
@@ -178,7 +192,8 @@ module.exports = {
                     .jwtIssue(admin_details.id, true, true);
                   res.json({
                     user: admin_details,
-                    token
+                    token,
+                    roleAllowedData
                   });
                 }
               });
@@ -207,6 +222,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log(error)
       await logger.error(error.message)
       return res
         .status(500)
