@@ -2992,7 +2992,7 @@ module.exports = {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%'";
         }
         query += ")"
       }
