@@ -11,15 +11,16 @@ var requestIp = require('request-ip');
 module.exports = async function (req, res, next) {
   try {
     // TODO
+    console.log(req.url);
     let urlValue = req.url.trim();
     let urlArray = req.url.split("/");
     console.log(urlArray);
     let urlSplit = req.url.split(":")
     console.log(urlSplit);
     urlValue = urlSplit[0];
-    // console.log(urlValue)
-    // urlSplit = req.url.split("?");
-    // urlValue = urlSplit[0];
+    console.log(urlValue)
+    urlSplit = req.url.split("?");
+    urlValue = urlSplit[0];
     urlValue = urlValue.replace("/", "")
     // console.log(urlValue[0]);
     // console.log(urlValue[0] != '/')
@@ -35,38 +36,38 @@ module.exports = async function (req, res, next) {
 
         if (userData != undefined) {
           if (userData.deleted_at == null) {
-            // var permissionData = await Permissions.findOne({
-            //   where: {
-            //     route_name: (urlValue).trim(),
-            //     deleted_at: null
-            //   }
-            // })
-            // if (permissionData != undefined) {
-            //   var role_permission = await AdminPermission.find({
-            //     where: {
-            //       permission_id: permissionData.id,
-            //       role_id: userData.role_id,
-            //       deleted_at: null
-            //     }
-            //   });
-            //   if (role_permission != undefined && role_permission.length > 0) {
-            return next()
-            //   } else {
-            //     return res
-            //       .status(403)
-            //       .json({
-            //         status: 403,
-            //         err: 'You are not allowed to access this route'
-            //       })
-            //   }
-            // } else {
-            //   return res
-            //     .status(403)
-            //     .json({
-            //       status: 403,
-            //       err: 'You are not allowed to access this route'
-            //     })
-            // }
+            var permissionData = await Permissions.findOne({
+              where: {
+                route_name: (urlValue).trim(),
+                deleted_at: null
+              }
+            })
+            if (permissionData != undefined) {
+              var role_permission = await AdminPermission.find({
+                where: {
+                  permission_id: permissionData.id,
+                  role_id: userData.role_id,
+                  deleted_at: null
+                }
+              });
+              if (role_permission != undefined && role_permission.length > 0) {
+                return next()
+              } else {
+                return res
+                  .status(403)
+                  .json({
+                    status: 403,
+                    err: 'You are not allowed to access this route'
+                  })
+              }
+            } else {
+              return res
+                .status(403)
+                .json({
+                  status: 403,
+                  err: 'You are not allowed to access this route'
+                })
+            }
 
           } else if (userData.deleted_at != null) {
             return res
