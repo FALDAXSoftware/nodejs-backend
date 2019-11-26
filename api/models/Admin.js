@@ -101,7 +101,7 @@ module.exports = {
   },
   beforeCreate: (values, next) => {
     Admin
-      .findOne({ 'email': values.email })
+      .findOne({ 'email': values.email,'deleted_at': null })
       .exec(function (err, found) {
         if (!found) {
           bcrypt
@@ -123,7 +123,7 @@ module.exports = {
   },
   beforeUpdate: (values, next) => {
     Admin
-      .findOne({ 'email': values.email })
+      .findOne({ 'email': values.email,'deleted_at': null })
       .exec(async function (err, found) {
         if (err) {
           next(err);
