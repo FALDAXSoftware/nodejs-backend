@@ -40,6 +40,7 @@ module.exports = {
     sails
       .sockets
       .broadcast(inputs.crypto + "-" + inputs.currency, "buybookUpdate", buyBookDetails);
+
     let sellBookDetails = await sails
       .helpers
       .tradding

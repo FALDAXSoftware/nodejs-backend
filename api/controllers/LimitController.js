@@ -4,14 +4,16 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger");
 module.exports = {
   // ---------------------------Web Api------------------------------
   // -------------------------------CMS Api--------------------------
   getAllLimit: async function (req, res) {
     try {
       // req.setLocale('en')
-      let { coin_id } = req.allParams();
+      let {
+        coin_id
+      } = req.allParams();
       let limitData = await Limit
         .find({
           where: {
@@ -36,13 +38,24 @@ module.exports = {
       }
     } catch (err) {
       console.log('>>>>>', err)
+      await logger.error(err.message)
+      res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+      return;
     }
   },
 
   updateLimit: async function (req, res) {
     try {
       if (req.body.id) {
-        const limit_details = await Limit.findOne({ id: req.body.id, deleted_at: null });
+        const limit_details = await Limit.findOne({
+          id: req.body.id,
+          deleted_at: null
+        });
         if (!limit_details) {
           return res
             .status(401)
@@ -57,7 +70,9 @@ module.exports = {
             .create(req.body);
         } else {
           updatedLimit = await Limit
-            .update({ id: req.body.id })
+            .update({
+              id: req.body.id
+            })
             .set(req.body)
             .fetch();
         }
@@ -82,6 +97,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       res
         .status(500)
         .json({

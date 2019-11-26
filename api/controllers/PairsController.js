@@ -4,17 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger");
 module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * API for getting instrument pair data
-    * Renders this api when instrument data needs to be fetched
-    *
-    * @param <coin name, room, previous room>
-    *
-    * @return <Instruments data or error data>
+   * API for getting instrument pair data
+   * Renders this api when instrument data needs to be fetched
+   *
+   * @param <coin name, room, previous room>
+   *
+   * @return <Instruments data or error data>
    */
 
   getInstrumentPair: async function (req, res) {
@@ -55,6 +55,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -67,7 +68,14 @@ module.exports = {
   //-------------------------------CMS Api--------------------------
   getAllPairs: async function (req, res) {
     try {
-      let { page, limit, data, sort_col, sort_order, filter_val } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        filter_val
+      } = req.allParams();
       let query = " from pairs";
       let whereAppended = false;
       if ((data && data != "")) {
@@ -88,9 +96,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id ASC";
@@ -121,6 +129,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      await logger.error(err.message)
       return res
         .status(500)
         .json({
@@ -133,8 +142,12 @@ module.exports = {
   createPair: async function (req, res) {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code2) {
-        let coinID_1 = await Coins.findOne({ coin: req.body.coin_code1 });
-        let coinID_2 = await Coins.findOne({ coin: req.body.coin_code2 });
+        let coinID_1 = await Coins.findOne({
+          coin: req.body.coin_code1
+        });
+        let coinID_2 = await Coins.findOne({
+          coin: req.body.coin_code2
+        });
         let existingPair = await Pairs.find({
           coin_code1: coinID_1.id,
           coin_code2: coinID_2.id,
@@ -179,6 +192,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -191,7 +205,9 @@ module.exports = {
   updatePair: async function (req, res) {
     try {
       if (req.body.id) {
-        const pair_details = await Pairs.findOne({ id: req.body.id });
+        const pair_details = await Pairs.findOne({
+          id: req.body.id
+        });
         if (!pair_details) {
           return res
             .status(401)
@@ -201,7 +217,9 @@ module.exports = {
             });
         }
         var updatedPair = await Pairs
-          .update({ id: req.body.id })
+          .update({
+            id: req.body.id
+          })
           .set(req.body)
           .fetch();
         if (!updatedPair) {
@@ -225,6 +243,7 @@ module.exports = {
           })
       }
     } catch (error) {
+      await logger.error(error.message)
       return res
         .status(500)
         .json({

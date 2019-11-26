@@ -27,7 +27,8 @@ module.exports = {
     },
     is_approve: {
       type: 'boolean',
-      columnName: 'is_approve'
+      columnName: 'is_approve',
+      allowNull: true
     },
     transaction_type: {
       type: 'string',
@@ -44,6 +45,10 @@ module.exports = {
     is_executed: {
       type: 'boolean',
       columnName: 'is_executed'
+    },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
     },
     created_at: {
       type: 'ref',

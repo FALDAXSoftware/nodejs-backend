@@ -49,22 +49,25 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
       headers: {
         'cache-control': 'no-cache',
-        Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${access_token_value}`,
         'Content-Type': 'application/json'
       },
       body: {
         address: inputs.address,
-        amount: inputs.amount,
-        walletPassphrase: sails.config.local.BITGO_PASSPHRASE
+        amount: parseFloat(inputs.amount),
+        walletPassphrase: passphrase_value
       },
       json: true
     }, function (err, httpResponse, body) {
       if (err) {
+        console.log(err)
         return exits.error(err);
       }
       if (body.error) {
@@ -76,4 +79,3 @@ module.exports = {
 
 
 };
-

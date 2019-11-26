@@ -85,7 +85,7 @@ module.exports = {
           if (sellBook[0].quantity >= buyLimitOrderData.quantity) {
             buyLimitOrderData.fill_price = sellBook[0].price;
             delete buyLimitOrderData.id;
-            if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity) <= wallet.placed_balance) {
+            if ((buyLimitOrderData.fill_price * buyLimitOrderData.quantity).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
               var buyAddedData = {
                 ...buyLimitOrderData
               }
@@ -148,7 +148,35 @@ module.exports = {
                   .helpers
                   .tradding
                   .sell
-                  .update(sellBook[0].id, {'quantity': remainingQty});
+                  .update(sellBook[0].id, {
+                    'quantity': remainingQty
+                  });
+
+                for (var i = 0; i < userIds.length; i++) {
+                  // Notification Sending for users
+                  var userNotification = await UserNotification.findOne({
+                    user_id: userIds[i],
+                    deleted_at: null,
+                    slug: 'trade_execute'
+                  })
+                  var user_data = await Users.findOne({
+                    deleted_at: null,
+                    id: userIds[i],
+                    is_active: true
+                  });
+                  if (user_data != undefined) {
+                    if (userNotification != undefined) {
+                      if (userNotification.email == true || userNotification.email == "true") {
+                        if (user_data.email != undefined)
+                          await sails.helpers.notification.send.email("trade_execute", user_data)
+                      }
+                      if (userNotification.text == true || userNotification.text == "true") {
+                        if (user_data.phone_number != undefined)
+                          await sails.helpers.notification.send.text("trade_execute", user_data)
+                      }
+                    }
+                  }
+                }
                 //Emit the socket
                 await sails
                   .helpers
@@ -162,6 +190,32 @@ module.exports = {
                   .sell
                   .deleteOrder(sellBook[0].id);
 
+                for (var i = 0; i < userIds.length; i++) {
+                  // Notification Sending for users
+                  var userNotification = await UserNotification.findOne({
+                    user_id: userIds[i],
+                    deleted_at: null,
+                    slug: 'trade_execute'
+                  })
+                  var user_data = await Users.findOne({
+                    deleted_at: null,
+                    id: userIds[i],
+                    is_active: true
+                  });
+                  if (user_data != undefined) {
+                    if (userNotification != undefined) {
+                      if (userNotification.email == true || userNotification.email == "true") {
+                        if (user_data.email != undefined)
+                          await sails.helpers.notification.send.email("trade_execute", user_data)
+                      }
+                      if (userNotification.text == true || userNotification.text == "true") {
+                        if (user_data.phone_number != undefined)
+                          await sails.helpers.notification.send.text("trade_execute", user_data)
+                      }
+                    }
+                  }
+                }
+
                 //Emit the socket here
                 await sails
                   .helpers
@@ -174,6 +228,7 @@ module.exports = {
             }
           } else {
             var remainingQty = buyLimitOrderData.quantity - sellBook[0].quantity;
+            remainingQty = (remainingQty).toFixed(sails.config.local.QUANTITY_PRECISION);
             var feeResult = await sails
               .helpers
               .utilities
@@ -186,6 +241,9 @@ module.exports = {
               var resendData = {
                 ...buyLimitOrderData
               };
+
+              sellBook[0].quantity = (sellBook[0].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+              sellBook[0].price = (sellBook[0].price).toFixed(sails.config.local.PRICE_PRECISION);
 
               buyLimitOrderData.quantity = sellBook[0].quantity;
               buyLimitOrderData.order_status = "partially_filled";
@@ -250,6 +308,39 @@ module.exports = {
                 .tradding
                 .sell
                 .deleteOrder(sellBook[0].id);
+
+              for (var i = 0; i < userIds.length; i++) {
+                // Notification Sending for users
+                var userNotification = await UserNotification.findOne({
+                  user_id: userIds[i],
+                  deleted_at: null,
+                  slug: 'trade_execute'
+                })
+                var user_data = await Users.findOne({
+                  deleted_at: null,
+                  id: userIds[i],
+                  is_active: true
+                });
+                if (user_data != undefined) {
+                  if (userNotification != undefined) {
+                    if (userNotification.email == true || userNotification.email == "true") {
+                      if (user_data.email != undefined)
+                        await sails.helpers.notification.send.email("trade_execute", user_data)
+                    }
+                    if (userNotification.text == true || userNotification.text == "true") {
+                      if (user_data.phone_number != undefined)
+                        await sails.helpers.notification.send.text("trade_execute", user_data)
+                    }
+                  }
+                }
+              }
+
+              //Emit the socket here
+              await sails
+                .helpers
+                .sockets
+                .tradeEmit(buyLimitOrderData.settle_currency, buyLimitOrderData.currency, userIds);
+
               //Emit socket here
               var resendDataLimit = {
                 ...buyLimitOrderData
@@ -284,7 +375,7 @@ module.exports = {
           }
         } else {
 
-          if (buyLimitOrderData.quantity * buyLimitOrderData.limit_price <= wallet.placed_balance) {
+          if ((buyLimitOrderData.quantity * buyLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
             var buyAddedData = {
               ...buyLimitOrderData
             }
@@ -306,6 +397,32 @@ module.exports = {
               .tradding
               .buy
               .addBuyOrder(buyAddedData);
+
+            for (var i = 0; i < userIds.length; i++) {
+              // Notification Sending for users
+              var userNotification = await UserNotification.findOne({
+                user_id: userIds[i],
+                deleted_at: null,
+                slug: 'trade_execute'
+              })
+              var user_data = await Users.findOne({
+                deleted_at: null,
+                id: userIds[i],
+                is_active: true
+              });
+              if (user_data != undefined) {
+                if (userNotification != undefined) {
+                  if (userNotification.email == true || userNotification.email == "true") {
+                    if (user_data.email != undefined)
+                      await sails.helpers.notification.send.email("order_added", user_data)
+                  }
+                  if (userNotification.text == true || userNotification.text == "true") {
+                    if (user_data.phone_number != undefined)
+                      await sails.helpers.notification.send.text("order_added", user_data)
+                  }
+                }
+              }
+            }
             await sails
               .helpers
               .sockets
@@ -318,7 +435,7 @@ module.exports = {
           }
         }
       } else {
-        if (buyLimitOrderData.quantity * buyLimitOrderData.limit_price <= wallet.placed_balance) {
+        if ((buyLimitOrderData.quantity * buyLimitOrderData.limit_price).toFixed(sails.config.local.TOTAL_PRECISION) <= (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
           var buyAddedData = {
             ...buyLimitOrderData
           }
@@ -340,6 +457,32 @@ module.exports = {
             .tradding
             .buy
             .addBuyOrder(buyAddedData);
+
+          for (var i = 0; i < userIds.length; i++) {
+            // Notification Sending for users
+            var userNotification = await UserNotification.findOne({
+              user_id: userIds[i],
+              deleted_at: null,
+              slug: 'trade_execute'
+            })
+            var user_data = await Users.findOne({
+              deleted_at: null,
+              id: userIds[i],
+              is_active: true
+            });
+            if (user_data != undefined) {
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (user_data.email != undefined)
+                    await sails.helpers.notification.send.email("order_added", user_data)
+                }
+                if (userNotification.text == true || userNotification.text == "true") {
+                  if (user_data.phone_number != undefined)
+                    await sails.helpers.notification.send.text("order_added", user_data)
+                }
+              }
+            }
+          }
 
           await sails
             .helpers
@@ -369,5 +512,4 @@ module.exports = {
       return exits.serverError();
     }
   }
-
 };

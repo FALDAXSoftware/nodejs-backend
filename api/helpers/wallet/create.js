@@ -25,13 +25,23 @@ module.exports = {
 
   },
 
-  fn: async function (inputs) {
+  fn: async function (inputs, exits) {
 
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     //Configuring bitgo API with access token
-    var bitgo = new BitGoJS.BitGo({env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN});
+    var bitgo = new BitGoJS.BitGo({
+      env: sails.config.local.BITGO_ENV_MODE,
+      accessToken: access_token_value,
+      enterprise: sails.config.local.BITGO_ENTERPRISE
+    });
 
     //Fetching coin list
-    var requestedCoin = await Coins.find({deleted_at: null, is_active: true, coin_code: inputs.coin})
+    var requestedCoin = await Coins.find({
+      deleted_at: null,
+      is_active: true,
+      coin_code: inputs.coin
+    })
 
     //Generating wallet id for particular coin
     bitgo
@@ -39,13 +49,17 @@ module.exports = {
       .wallets()
       .generateWallet({
         label: inputs.coin + '-wallet',
-        passphrase: sails.config.local.BITGO_PASSPHRASE
+        passphrase: passphrase_value,
+        enterprise: sails.config.local.BITGO_ENTERPRISE
       })
       .then(async newWallet => {
+        console.log(newWallet);
         await Coins
-          .update({id: requestedCoin.id})
+          .update({
+            id: requestedCoin[0].id
+          })
           .set({
-            'wallet_address': newWallet
+            'custody_wallet_address': newWallet
               .wallet
               .id()
           });
