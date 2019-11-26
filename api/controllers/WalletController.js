@@ -758,93 +758,101 @@ module.exports = {
           deleted_at: null
         }
       });
-      // Explicitly call toJson of Model
-      coinData = JSON.parse(JSON.stringify(coinData));
+      if (coinData != undefined) {
+        // Explicitly call toJson of Model
+        coinData = JSON.parse(JSON.stringify(coinData));
 
-      var walletTransData
-      if (is_admin) {
-        walletTransData = await TransactionTable
-          .find({
-            user_id: req.user.id,
-            coin_id: coinData.id,
-            deleted_at: null,
-            is_admin: true
-          })
-          .sort('id DESC');
-      } else {
-        walletTransData = await TransactionTable
-          .find({
-            user_id: req.user.id,
-            coin_id: coinData.id,
-            deleted_at: null
-          })
-          .sort('id DESC');
-      }
-
-      let coinFee = await AdminSetting.findOne({
-        where: {
-          slug: 'default_send_coin_fee',
-          deleted_at: null
+        var walletTransData
+        if (is_admin) {
+          walletTransData = await TransactionTable
+            .find({
+              user_id: req.user.id,
+              coin_id: coinData.id,
+              deleted_at: null,
+              is_admin: true
+            })
+            .sort('id DESC');
+        } else {
+          walletTransData = await TransactionTable
+            .find({
+              user_id: req.user.id,
+              coin_id: coinData.id,
+              deleted_at: null
+            })
+            .sort('id DESC');
         }
-      });
 
-      var currencyConversionData = await CurrencyConversion.findOne({
-        coin_id: coinData.id,
-        deleted_at: null
-      })
+        let coinFee = await AdminSetting.findOne({
+          where: {
+            slug: 'default_send_coin_fee',
+            deleted_at: null
+          }
+        });
 
-      if (currencyConversionData) {
-        if (currencyConversionData.quote.USD) {
-          var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-          console.log(get_price)
-          if (get_price[0] != undefined) {
-            currencyConversionData.quote.USD.price = get_price[0].ask_price
-          } else {
-            currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+        var currencyConversionData = await CurrencyConversion.findOne({
+          coin_id: coinData.id,
+          deleted_at: null
+        })
+
+        if (currencyConversionData) {
+          if (currencyConversionData.quote.USD) {
+            var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+            console.log(get_price)
+            if (get_price[0] != undefined) {
+              currencyConversionData.quote.USD.price = get_price[0].ask_price
+            } else {
+              currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+            }
           }
         }
-      }
 
-      let walletUserData = await Wallet.findOne({
-        user_id: req.user.id,
-        coin_id: coinData.id,
-        deleted_at: null,
-        is_active: true
-      })
-      if (walletUserData) {
-        if (walletUserData.receive_address === '') {
-          walletUserData['flag'] = 1;
+        let walletUserData = await Wallet.findOne({
+          user_id: req.user.id,
+          coin_id: coinData.id,
+          deleted_at: null,
+          is_active: true
+        })
+        if (walletUserData) {
+          if (walletUserData.receive_address === '') {
+            walletUserData['flag'] = 1;
+          } else {
+            walletUserData['flag'] = 0;
+          }
+
         } else {
-          walletUserData['flag'] = 0;
+          walletUserData = {};
+          walletUserData["flag"] = 2;
         }
-
+        walletUserData['coin_code'] = coinData.coin_code;
+        walletUserData['coin_icon'] = coinData.coin_icon;
+        walletUserData['coin'] = coinData.coin;
+        walletUserData['coin_name'] = coinData.coin_name;
+        walletUserData['min_limit'] = coinData.min_limit
+        // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
+        // coin_id: coinData.id, deleted_at: null });
+        if (walletTransData) {
+          return res.json({
+            status: 200,
+            message: sails.__("wallet data retrieved success"),
+            walletTransData,
+            // walletTransCount,
+            walletUserData,
+            'default_send_Coin_fee': parseFloat(coinFee.value),
+            currencyConversionData
+          });
+        } else {
+          return res.json({
+            status: 200,
+            message: sails.__("No Data")
+          })
+        }
       } else {
-        walletUserData = {};
-        walletUserData["flag"] = 2;
-      }
-      walletUserData['coin_code'] = coinData.coin_code;
-      walletUserData['coin_icon'] = coinData.coin_icon;
-      walletUserData['coin'] = coinData.coin;
-      walletUserData['coin_name'] = coinData.coin_name;
-      walletUserData['min_limit'] = coinData.min_limit
-      // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
-      // coin_id: coinData.id, deleted_at: null });
-      if (walletTransData) {
         return res.json({
-          status: 200,
-          message: sails.__("wallet data retrieved success"),
-          walletTransData,
-          // walletTransCount,
-          walletUserData,
-          'default_send_Coin_fee': parseFloat(coinFee.value),
-          currencyConversionData
-        });
-      } else {
-        return res.json({
-          status: 200,
-          message: sails.__("No Data")
+          status: 500,
+          err: sails.__("No Data")
         })
       }
+
     } catch (err) {
       console.log('err', err)
       await logger.error(err.message)
@@ -1213,10 +1221,10 @@ module.exports = {
       var placed_amount = parseInt(walletData.placed_balance) + balance
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: amount,
             placed_balance: placed_amount
@@ -1263,10 +1271,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: balance,
             placed_balance: balance
@@ -1292,17 +1300,17 @@ module.exports = {
   getWithdrawlFee: async function (req, res) {
     try {
       var withdrawFee = await AdminSetting.find({
-          where: {
-            deleted_at: null,
-            or: [{
-                slug: 'default_send_coin_fee'
-              },
-              {
-                slug: 'faldax_fee'
-              }
-            ]
+        where: {
+          deleted_at: null,
+          or: [{
+            slug: 'default_send_coin_fee'
+          },
+          {
+            slug: 'faldax_fee'
           }
-        })
+          ]
+        }
+      })
         .sort('id DESC')
       return res.status(200)
         .json({
