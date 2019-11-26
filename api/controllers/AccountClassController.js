@@ -23,6 +23,8 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
+      sort_col = (sort_col!=undefined && sort_col != "" ? sort_col : "id")
+      sort_order = (sort_order!=undefined && sort_order != "" ? sort_order : "descend")
       let sortVal = (sort_order == 'descend' ?
         'DESC' :
         'ASC');
