@@ -477,7 +477,8 @@ module.exports = {
           OrdType: req_body.OrdType,
           Currency: crypto,
           ExecInst: "B",
-          TimeInForce: "0",
+          // TimeInForce: "0",
+          TimeInForce: "4",
           SecurityType: "FOR",
           Product: "4"
         };

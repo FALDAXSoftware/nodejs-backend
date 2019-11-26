@@ -3090,9 +3090,15 @@ module.exports = {
         id
       } = req.allParams();
 
-      var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, to_char(sum(referral.amount),'FM9999999999999999D99999999') as Earned FROM users " +
+      var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
         "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
-
+      if( get_reffered_data.rowCount > 0 ){
+        var filter_data = (get_reffered_data.rows).map( function(each){
+          each.earned = each.earned.toFixed(sails.config.local.TOTAL_PRECISION);
+          return each;
+        })
+        get_reffered_data.rows = filter_data;
+      }
       return res
         .status(200)
         .json({
