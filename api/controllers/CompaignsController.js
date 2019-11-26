@@ -169,6 +169,10 @@ module.exports = {
       var insert_offers = [];
       if( (req_body.campaign_offers).length > 0 ){
         var campaign_offers_object = (req_body.campaign_offers).map( function(each, index){
+            if( each.is_default_values == true ){
+              each.no_of_transactions = req_body.no_of_transactions;
+              each.fees_allowed = req_body.fees_allowed;
+            }
             each.campaign_id = create_data.id;           
             return each;
         })
@@ -305,6 +309,10 @@ module.exports = {
       var insert_offers = [];
       if( (req_body.campaign_offers_new) && (req_body.campaign_offers_new).length > 0 ){
         var campaign_offers_new_object = (req_body.campaign_offers_new).map( function(each, index){
+            if( each.is_default_values == true ){
+              each.no_of_transactions = create_data.no_of_transactions;
+              each.fees_allowed = create_data.fees_allowed;
+            }
             each.campaign_id = campaign_id;                       
             return each;
         })
