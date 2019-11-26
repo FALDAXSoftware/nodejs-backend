@@ -113,15 +113,15 @@ module.exports = {
 
             var roleArray = [];
 
-            // var roleQuery = `SELECT  r.module_name, r.main_module
-            //                     FROM public.admin_permissions as a
-            //                     INNER JOIN role_permissions as r
-            //                     ON a.permission_id = r.id
-            //                     WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
-            //                     ORDER BY a.permission_id`
+            var roleQuery = `SELECT  r.module_name, r.main_module
+                                FROM public.admin_permissions as a
+                                INNER JOIN role_permissions as r
+                                ON a.permission_id = r.id
+                                WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
+                                ORDER BY a.permission_id`
 
-            // var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
-            // roleAllowedData = roleAllowedData.rows;
+            var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
+            roleAllowedData = roleAllowedData.rows;
 
             // console.log(permissionDetail);
 
@@ -193,7 +193,7 @@ module.exports = {
                   res.json({
                     user: admin_details,
                     token,
-                    // roleAllowedData
+                    roleAllowedData
                   });
                 }
               });

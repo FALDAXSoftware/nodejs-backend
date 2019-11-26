@@ -11,15 +11,16 @@ var requestIp = require('request-ip');
 module.exports = async function (req, res, next) {
   try {
     // TODO
+    console.log(req.url);
     let urlValue = req.url.trim();
     let urlArray = req.url.split("/");
     console.log(urlArray);
     let urlSplit = req.url.split(":")
     console.log(urlSplit);
     urlValue = urlSplit[0];
-    // console.log(urlValue)
-    // urlSplit = req.url.split("?");
-    // urlValue = urlSplit[0];
+    console.log(urlValue)
+    urlSplit = req.url.split("?");
+    urlValue = urlSplit[0];
     urlValue = urlValue.replace("/", "")
     // console.log(urlValue[0]);
     // console.log(urlValue[0] != '/')
@@ -50,7 +51,7 @@ module.exports = async function (req, res, next) {
             //     }
             //   });
             //   if (role_permission != undefined && role_permission.length > 0) {
-            return next()
+                return next()
             //   } else {
             //     return res
             //       .status(403)
