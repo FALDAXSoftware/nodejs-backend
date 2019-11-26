@@ -2578,7 +2578,11 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "err": sails.__("No record found")
+            "message": sails.__("No record found"),
+            "data": {
+              batches: get_batches.rows,
+              batch_count
+            }
           });
       }
 
