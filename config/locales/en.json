@@ -31,6 +31,7 @@
 	"Invalid Token": "Verification link expired",
 	"Verify User": "Your Account Verified Successfully. Please Login to continue.",
 	"Contact Admin": "Contact the admin to activate your account.",
+	"Contact Admin for Role":"Your role has been inactivated. Please contact the admin.",
 	"Activate Account": "Activate your account for logging in.",
 	"Invalid Email": "Invalid Email Address",
 	"Something Wrong": "An unknown error occurred while processing your request. Please contact support or try again.",
