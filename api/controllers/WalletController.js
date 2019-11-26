@@ -26,9 +26,13 @@ module.exports = {
         .startOf('day')
         .format();
 
+      console.log(yesterday);
+
       var monthlyData = moment()
         .startOf('month')
         .format();
+
+      console.log(monthlyData);
 
       let coin = await Coins.findOne({
         deleted_at: null,
@@ -65,6 +69,8 @@ module.exports = {
             '<=': today
           }
         });
+
+      console.log(walletHistoryDataMonthly);
 
       return res.json({
         walletHistoryData,
@@ -227,9 +233,13 @@ module.exports = {
         .startOf('day')
         .format();
 
+      console.log(yesterday)
+
       var monthlyData = moment()
         .startOf('month')
         .format();
+
+      console.log(monthlyData);
 
       var userData = await Users.findOne({
         deleted_at: null,
@@ -372,7 +382,7 @@ module.exports = {
               }
             });
 
-          console.log(walletHistoryData)
+          console.log("Daily >>>>>>>>", walletHistoryData)
 
           // Getting total value of monthly withdraw
           let walletHistoryDataMonthly = await WalletHistory
@@ -388,7 +398,9 @@ module.exports = {
               }
             });
 
-          console.log(walletHistoryDataMonthly)
+          console.log("Monthly >>>>>>>>", walletHistoryDataMonthly)
+          console.log("Addittion daily >>>>>>>>", (parseFloat(walletHistoryData) + parseFloat(total_fees)))
+          console.log("Additton Monthly >>>>>>>>>>", (parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)))
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
