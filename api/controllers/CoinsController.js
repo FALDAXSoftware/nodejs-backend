@@ -530,7 +530,8 @@ module.exports = {
                   kraken_coin_name: req.body.kraken_coin_name,
                   isERC: req.body.isERC,
                   //wallet_address: req.body.wallet_address,
-                  created_at: new Date()
+                  created_at: new Date(),
+                  coin: (req.body.coin_code).toUpperCase(),
                 })
                 .fetch();
               var assetTierLimits = [];
