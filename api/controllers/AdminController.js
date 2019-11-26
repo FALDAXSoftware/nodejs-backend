@@ -2575,9 +2575,9 @@ module.exports = {
         });
       } else {
         return res
-          .status(500)
+          .status(200)
           .json({
-            "status": 500,
+            "status": 200,
             "err": sails.__("No record found")
           });
       }
