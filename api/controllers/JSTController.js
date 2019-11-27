@@ -273,7 +273,9 @@ module.exports = {
         // ExecInst: 'required|in:A,B',
         OrdType: 'required|in:1,2',
         faldax_fees: 'required|decimal',
-        network_fees: 'required|decimal'
+        network_fees: 'required|decimal',
+        buy_currency_amount:'required|decimal',
+        sell_currency_amount:'required|decimal'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
@@ -464,7 +466,9 @@ module.exports = {
           symbol: req_body.Symbol,
           user_id: user_id,
           faldax_fees: req_body.faldax_fees,
-          network_fees: req_body.network_fees
+          network_fees: req_body.network_fees,
+          buy_currency_amount:req_body.buy_currency_amount,
+          sell_currency_amount:req_body.sell_currency_amount
         };
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
