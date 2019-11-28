@@ -130,7 +130,7 @@ module.exports = {
                 .status(400)
                 .json({
                   "status": 400,
-                  "err": sails.__("Contact Admin for Role")
+                  "err": sails.__("Contact Admin")
                 });
               return;
             }
@@ -767,12 +767,11 @@ module.exports = {
     try {
       if (req.body.email && req.body.roles) {
 
-        var existedEmployee = await Admin.find({
+        let existedEmployee = await Admin.findOne({
           email: req.body.email,
-          deleted_at:null
-        }).limit(1);
-        
-        if ( existedEmployee.length != 0 ) {
+        });
+
+        if (existedEmployee) {
           return res
             .status(401)
             .json({
@@ -2578,11 +2577,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("No record found"),
-            "data": {
-              batches: get_batches.rows,
-              batch_count
-            }
+            "err": sails.__("No record found")
           });
       }
 
