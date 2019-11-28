@@ -49,14 +49,6 @@ module.exports = {
       type: 'number',
       columnName: 'fix_quantity'
     },
-    buy_currency_amount: {
-      type: 'number',
-      columnName: 'buy_currency_amount'
-    },
-    sell_currency_amount: {
-      type: 'number',
-      columnName: 'sell_currency_amount'
-    },
     symbol: {
       type: 'string',
       columnName: 'symbol'
