@@ -531,7 +531,8 @@ module.exports = {
                   isERC: req.body.isERC,
                   is_active: false,
                   //wallet_address: req.body.wallet_address,
-                  created_at: new Date()
+                  created_at: new Date(),
+                  coin: (req.body.coin_code).toUpperCase(),
                 })
                 .fetch();
               var assetTierLimits = [];

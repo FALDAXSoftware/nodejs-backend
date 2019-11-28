@@ -1527,8 +1527,29 @@ module.exports = {
         }, {
           to: user.email,
           subject: "Delete Account Summary"
-        }, function (err) {
+        }, async function (err) {
           if (!err) {
+            // Check if user has requested for 2FA Forgot Request, then close it
+            var get_data = await UserForgotTwofactors.find({
+              user_id: user_id,
+              status: 'open'
+            });
+            if (get_data.length > 0) {
+              for (var i = 0; i < get_data.length; i++) {
+                if (get_data[i].uploaded_file) {
+                  await UploadFiles.deleteFile(get_data[i].uploaded_file); // delete the file
+                }
+                console.log(" user_id", user_id);
+                await UserForgotTwofactors
+                  .update({
+                    id: get_data[i].id
+                  })
+                  .set({
+                    status: "closed"
+                  });
+              }
+            }
+
             return res.json({
               status: 200,
               message: sails.__("user_delete_success")
@@ -2990,12 +3011,12 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let query = " from users";
-      query += " WHERE deleted_at IS NULL and is_active=true and referred_id IS NOT NULL"
+      query += " WHERE deleted_at IS NULL and is_active=true and referred_id NOTNULL"
       if ((data && data != "")) {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR email LIKE '%" + data.toLowerCase() + "%'";
         }
         query += ")"
       }
@@ -3013,7 +3034,7 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
-
+      console.log("Query:", "Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query);
 
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
