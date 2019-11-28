@@ -277,7 +277,7 @@
 	"Panic status Update": "Panic status changed Successfully.",
 	"Change_Password_Email": "Change Password Email Sent Successfully",
 	"Time for whitelist has been expired.": "Your IP whitelist's session is expired. Try by adding new whitelist.",
-	"IP in whitelist exists": "IP address is already exists in your whitelist",
+	"IP in whitelist exists": "IP address already exists in your whitelist",
 	"Email is already verified": "Email is already verified.",
 	"Image Required": "Please Provide Image to continue",
 	"SF Status Enabled": "Security feature is enabled.",
