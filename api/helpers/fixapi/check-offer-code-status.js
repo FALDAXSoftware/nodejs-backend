@@ -81,8 +81,8 @@ module.exports = {
       return exits.success(response)
     }
 
-    let total_fees_allowed = get_campaign_data[0].fees_allowed;
-    let total_transaction_allowed = get_campaign_data[0].no_of_transactions;
+    let total_fees_allowed = get_campaign_offer_data[0].fees_allowed;
+    let total_transaction_allowed = get_campaign_offer_data[0].no_of_transactions;
     if( get_campaign_offer_data[0].is_default_values ){
       total_fees_allowed = get_campaign_data[0].fees_allowed;
       total_transaction_allowed = get_campaign_data[0].no_of_transactions;
