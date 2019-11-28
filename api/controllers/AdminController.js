@@ -111,18 +111,17 @@ module.exports = {
 
             admin_details.roles = role;
 
-            var roleArray = [];
+            // var roleQuery = `SELECT  r.module_name, r.main_module
+            //                     FROM public.admin_permissions as a
+            //                     INNER JOIN role_permissions as r
+            //                     ON a.permission_id = r.id
+            //                     WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
+            //                     ORDER BY a.permission_id`
 
-            var roleQuery = `SELECT  r.module_name, r.main_module
-                                FROM public.admin_permissions as a
-                                INNER JOIN role_permissions as r
-                                ON a.permission_id = r.id
-                                WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
-                                ORDER BY a.permission_id`
+            // var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
+            // roleAllowedData = roleAllowedData.rows;
 
-            var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
-            roleAllowedData = roleAllowedData.rows;
-
+            // admin_details.roleAllowedData = roleAllowedData;
             // console.log(permissionDetail);
 
             // Role Not Active
@@ -183,7 +182,7 @@ module.exports = {
                       "err": sails.__("Invalid email or password")
                     });
                 } else {
-                  if (admin_details.is_twofactor) {}
+                  if (admin_details.is_twofactor) { }
 
                   delete admin_details.password;
                   // Token Issue
@@ -192,8 +191,8 @@ module.exports = {
                     .jwtIssue(admin_details.id, true, true);
                   res.json({
                     user: admin_details,
-                    token,
-                    roleAllowedData
+                    token
+                    // roleAllowedData
                   });
                 }
               });
@@ -2154,13 +2153,13 @@ module.exports = {
           singledata.coin = obj.coin;
           singledata.coin_id = obj.coin_id;
           if (exisiting != undefined) {
-            singledata.fist_limit = exisiting.fist_limit;
+            singledata.first_limit = exisiting.first_limit;
             singledata.second_limit = exisiting.second_limit;
             singledata.third_limit = exisiting.third_limit;
             singledata.is_sms_notification = exisiting.is_sms_notification;
             singledata.is_email_notification = exisiting.is_email_notification;
           } else {
-            singledata.fist_limit = 0;
+            singledata.first_limit = 0;
             singledata.second_limit = 0;
             singledata.third_limit = 0;
             singledata.is_sms_notification = false;
@@ -2174,7 +2173,7 @@ module.exports = {
           var singledata = {};
           singledata.coin_id = obj.coin_id;
           singledata.coin = obj.coin;
-          singledata.fist_limit = 0;
+          singledata.first_limit = 0;
           singledata.second_limit = 0;
           singledata.third_limit = 0;
           singledata.is_sms_notification = false;
@@ -2641,13 +2640,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                  currency: details.coin,
-                  side: 'Buy',
-                },
-                {
-                  settle_currency: details.coin,
-                  side: 'Sell',
-                }
+                currency: details.coin,
+                side: 'Buy',
+              },
+              {
+                settle_currency: details.coin,
+                side: 'Sell',
+              }
               ],
               trade_type: 1
             });
@@ -2662,13 +2661,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                  currency: details.coin,
-                  side: 'Buy',
-                },
-                {
-                  settle_currency: details.coin,
-                  side: 'Sell',
-                }
+                currency: details.coin,
+                side: 'Buy',
+              },
+              {
+                settle_currency: details.coin,
+                side: 'Sell',
+              }
               ],
               trade_type: 1
             });
@@ -2682,13 +2681,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                  currency: details.coin,
-                  side: 'Sell',
-                },
-                {
-                  settle_currency: details.coin,
-                  side: 'Buy',
-                }
+                currency: details.coin,
+                side: 'Sell',
+              },
+              {
+                settle_currency: details.coin,
+                side: 'Buy',
+              }
               ],
               trade_type: 1
             });
@@ -2702,13 +2701,13 @@ module.exports = {
                 '>=': transaction_start
               },
               or: [{
-                  currency: details.coin,
-                  side: 'Sell',
-                },
-                {
-                  settle_currency: details.coin,
-                  side: 'Buy',
-                }
+                currency: details.coin,
+                side: 'Sell',
+              },
+              {
+                settle_currency: details.coin,
+                side: 'Buy',
+              }
               ],
               trade_type: 1
             });
@@ -3192,13 +3191,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                        currency: details.coin,
-                        side: 'Buy',
-                      },
-                      {
-                        settle_currency: details.coin,
-                        side: 'Sell',
-                      }
+                      currency: details.coin,
+                      side: 'Buy',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Sell',
+                    }
                     ],
                     trade_type: 1
                   });
@@ -3213,13 +3212,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                        currency: details.coin,
-                        side: 'Buy',
-                      },
-                      {
-                        settle_currency: details.coin,
-                        side: 'Sell',
-                      }
+                      currency: details.coin,
+                      side: 'Buy',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Sell',
+                    }
                     ],
                     trade_type: 1
                   });
@@ -3233,13 +3232,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                        currency: details.coin,
-                        side: 'Sell',
-                      },
-                      {
-                        settle_currency: details.coin,
-                        side: 'Buy',
-                      }
+                      currency: details.coin,
+                      side: 'Sell',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Buy',
+                    }
                     ],
                     trade_type: 1
                   });
@@ -3253,13 +3252,13 @@ module.exports = {
                       '>=': transaction_start
                     },
                     or: [{
-                        currency: details.coin,
-                        side: 'Sell',
-                      },
-                      {
-                        settle_currency: details.coin,
-                        side: 'Buy',
-                      }
+                      currency: details.coin,
+                      side: 'Sell',
+                    },
+                    {
+                      settle_currency: details.coin,
+                      side: 'Buy',
+                    }
                     ],
                     trade_type: 1
                   });
@@ -3526,20 +3525,20 @@ module.exports = {
         where: {
           deleted_at: null,
           or: [{
-              'slug': 'btc_fee'
-            },
-            {
-              'slug': 'bch_fees'
-            },
-            {
-              'slug': 'eth_fees'
-            },
-            {
-              'slug': 'ltc_fees'
-            },
-            {
-              'slug': 'xrp_fees'
-            }
+            'slug': 'btc_fee'
+          },
+          {
+            'slug': 'bch_fees'
+          },
+          {
+            'slug': 'eth_fees'
+          },
+          {
+            'slug': 'ltc_fees'
+          },
+          {
+            'slug': 'xrp_fees'
+          }
           ]
         }
       });

@@ -335,7 +335,11 @@ module.exports = {
             user_id: user_id,
             coin_id: coin.id
           })
-          if (userTierData.length == 0 || userTierData == undefined) {
+          console.log(userTierData);
+          console.log(userTierData.length)
+          if (userTierData.length == 0) {
+            // if (userTierData.monthly_withdraw_crypto == 0 && userTierData.daily_withdraw_crypto == 0) {
+            console.log("INSIDENIFN::::")
             if (userData != undefined) {
               //If user wise limit is not found than search according to tier wise
               let limitTierData = await Limit.findOne({
@@ -356,6 +360,7 @@ module.exports = {
                 limitAmountMonthly = null;
               }
             }
+            // }
           } else if (userTierData.length > 0) {
             limitAmount = userTierData[0].daily_withdraw_crypto;
             console.log(limitAmount)
@@ -398,6 +403,9 @@ module.exports = {
               }
             });
 
+          console.log(limitAmount);
+          console.log(limitAmountMonthly);
+
           console.log("Monthly >>>>>>>>", walletHistoryDataMonthly)
           console.log("Addittion daily >>>>>>>>", (parseFloat(walletHistoryData) + parseFloat(total_fees)))
           console.log("Additton Monthly >>>>>>>>>>", (parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)))
@@ -405,6 +413,7 @@ module.exports = {
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
 
+          console.log(limitAmount >= walletHistoryData)
           console.log(limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined))
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
@@ -1059,110 +1068,119 @@ module.exports = {
           user_id: user_id
         });
 
-        //Checking if wallet is found or not
-        if (wallet) {
-          console.log("wallet", wallet);
-          console.log("wallet.placed_balance >= parseFloat(amount)", wallet.placed_balance >= parseFloat(amount));
-          //If placed balance is greater than the amount to be send
-          if (wallet.placed_balance >= parseFloat(amount)) {
+        if (warmWalletData.balance >= parseFloat(amount)) {
+          //Checking if wallet is found or not
+          if (wallet) {
+            console.log("wallet", wallet);
+            console.log("wallet.placed_balance >= parseFloat(amount)", wallet.placed_balance >= parseFloat(amount));
+            //If placed balance is greater than the amount to be send
+            if (wallet.placed_balance >= parseFloat(amount)) {
 
-            //If coin is of bitgo type
-            if (coin.type == 1) {
-              //Check for warm wallet minimum thresold
-              // console.log(warmWalletData.balance)
-              // console.log(coin.min_thresold);
-              // console.log(warmWalletData.balance >= coin.min_thresold)
-              //Execute Transaction
+              //If coin is of bitgo type
+              if (coin.type == 1) {
+                //Check for warm wallet minimum thresold
+                // console.log(warmWalletData.balance)
+                // console.log(coin.min_thresold);
+                // console.log(warmWalletData.balance >= coin.min_thresold)
+                //Execute Transaction
 
-              // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
+                // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
-              // Send to hot warm wallet and make entry in diffrent table for both warm to
-              // receive and receive to destination
-              // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
-              let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-              console.log("transaction", transaction);
-              //Here remainning ebtry as well as address change
-              let walletHistory = {
-                coin_id: wallet.coin_id,
-                source_address: wallet.send_address,
-                destination_address: destination_address,
-                user_id: user_id,
-                amount: amount,
-                transaction_type: 'send',
-                transaction_id: transaction.txid,
-                is_executed: false
-              }
+                // Send to hot warm wallet and make entry in diffrent table for both warm to
+                // receive and receive to destination
+                // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
+                let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
+                console.log("transaction", transaction);
+                //Here remainning ebtry as well as address change
+                let walletHistory = {
+                  coin_id: wallet.coin_id,
+                  source_address: wallet.send_address,
+                  destination_address: destination_address,
+                  user_id: user_id,
+                  amount: amount,
+                  transaction_type: 'send',
+                  transaction_id: transaction.txid,
+                  is_executed: false
+                }
 
-              // Make changes in code for receive webhook and then send to receive address
-              // Entry in wallet history
-              await WalletHistory.create({
-                ...walletHistory
-              });
-              // update wallet balance
-              await Wallet
-                .update({
-                  id: wallet.id
-                })
-                .set({
-                  balance: wallet.balance - amount,
-                  placed_balance: wallet.placed_balance - amount
+                // Make changes in code for receive webhook and then send to receive address
+                // Entry in wallet history
+                await WalletHistory.create({
+                  ...walletHistory
+                });
+                // update wallet balance
+                await Wallet
+                  .update({
+                    id: wallet.id
+                  })
+                  .set({
+                    balance: wallet.balance - amount,
+                    placed_balance: wallet.placed_balance - amount
+                  });
+
+                // Adding the transaction details in transaction table This is entry for sending
+                // from warm wallet to hot send wallet
+                let addObject = {
+                  coin_id: coin.id,
+                  source_address: warmWalletData.receiveAddress.address,
+                  destination_address: wallet.send_address,
+                  user_id: user_id,
+                  amount: amount,
+                  transaction_type: 'send',
+                  is_executed: true,
+                  is_admin: true
+                }
+
+                await TransactionTable.create({
+                  ...addObject
                 });
 
-              // Adding the transaction details in transaction table This is entry for sending
-              // from warm wallet to hot send wallet
-              let addObject = {
-                coin_id: coin.id,
-                source_address: warmWalletData.receiveAddress.address,
-                destination_address: wallet.send_address,
-                user_id: user_id,
-                amount: amount,
-                transaction_type: 'send',
-                is_executed: true,
-                is_admin: true
+                let addObject2 = {
+                  coin_id: coin.id,
+                  source_address: wallet.send_address,
+                  destination_address: destination_address,
+                  user_id: user_id,
+                  amount: amount,
+                  transaction_type: 'send',
+                  is_executed: false,
+                  is_admin: true
+                }
+
+                await TransactionTable.create({
+                  ...addObject2
+                })
+
+                return res.json({
+                  status: 200,
+                  message: sails.__("Token send success")
+                });
               }
+            } else {
+              console.log("First");
+              return res
+                .status(400)
+                .json({
+                  status: 400,
+                  message: sails.__("Insufficent balance wallet")
+                });
 
-              await TransactionTable.create({
-                ...addObject
-              });
-
-              let addObject2 = {
-                coin_id: coin.id,
-                source_address: wallet.send_address,
-                destination_address: destination_address,
-                user_id: user_id,
-                amount: amount,
-                transaction_type: 'send',
-                is_executed: false,
-                is_admin: true
-              }
-
-              await TransactionTable.create({
-                ...addObject2
-              })
-
-              return res.json({
-                status: 200,
-                message: sails.__("Token send success")
-              });
             }
           } else {
-            console.log("First");
+            console.log("second");
             return res
               .status(400)
               .json({
                 status: 400,
-                message: sails.__("Insufficent balance wallet")
+                message: sails.__("Wallet Not Found")
               });
-
           }
         } else {
-          console.log("second");
           return res
             .status(400)
             .json({
               status: 400,
-              message: sails.__("Wallet Not Found")
-            });
+              message: sails.__("Warm Wallet Balance Low")
+            })
         }
       } else {
         console.log("Third");
@@ -1213,10 +1231,10 @@ module.exports = {
       var placed_amount = parseInt(walletData.placed_balance) + balance
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: amount,
             placed_balance: placed_amount
@@ -1263,10 +1281,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: balance,
             placed_balance: balance
@@ -1292,17 +1310,17 @@ module.exports = {
   getWithdrawlFee: async function (req, res) {
     try {
       var withdrawFee = await AdminSetting.find({
-          where: {
-            deleted_at: null,
-            or: [{
-                slug: 'default_send_coin_fee'
-              },
-              {
-                slug: 'faldax_fee'
-              }
-            ]
+        where: {
+          deleted_at: null,
+          or: [{
+            slug: 'default_send_coin_fee'
+          },
+          {
+            slug: 'faldax_fee'
           }
-        })
+          ]
+        }
+      })
         .sort('id DESC')
       return res.status(200)
         .json({

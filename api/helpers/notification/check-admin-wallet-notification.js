@@ -40,6 +40,8 @@ module.exports = {
       }
     })
 
+    console.log(admin_thresholds);
+
     // Admin Thresholds checking
     if (admin_thresholds != undefined && (admin_thresholds.value != null || admin_thresholds.value != "") && (JSON.parse(admin_thresholds.value)).length > 0) {
       var assets = JSON.parse(admin_thresholds.value);
@@ -53,25 +55,26 @@ module.exports = {
         // Getting warm wallet balance
         let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
 
-        console.log(warmWallet)
+        console.log("Warm Wallet ??????", warmWallet)
 
-        var slug;
+        var slug = '';
+        console.log("Warm Wallet Balance >>>>>>>", warmWallet.balance)
 
         // Checking whether which limit matched the warm wallet balance lower condition
         if (warmWallet.balance != undefined) {
-          if (warmWallet.balance <= exisiting.third_limit) {
+          if (warmWallet.balance <= exisiting.third_limit && warmWallet.balance < exisiting.second_limit && warmWallet.balance < exisiting.first_limit) {
             slug = "third_limit_low";
-          } else if (warmWallet.balance <= exisiting.second_limit) {
+          } else if (warmWallet.balance <= exisiting.second_limit && warmWallet.balance < exisiting.first_limit) {
             slug = "second_limit_low";
           } else if (warmWallet.balance <= exisiting.first_limit) {
             slug = "first_limit_low"
           }
         }
 
-        console.log(slug)
+        console.log("Slug >>>>>>>>", slug)
 
         // Sending email and sms to the admins
-        if (slug != undefined) {
+        if (slug && slug != undefined && slug != null) {
           var data = JSON.parse(adminNotifyData.value)
           var phoneValue = data.phone.split(",");
           var emailValue = data.email.split(",")

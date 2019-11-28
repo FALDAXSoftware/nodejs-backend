@@ -76,18 +76,18 @@ module.exports = {
         // wallets.deleted_" +     "at IS NULL ORDER BY wallets.balance DESC LIMIT " +
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
-            deleted_at: null,
-            is_active: true,
-            or: [{
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
-            }]
-          })
+          deleted_at: null,
+          is_active: true,
+          or: [{
+            coin_name: {
+              contains: data
+            }
+          }, {
+            coin_code: {
+              contains: data
+            }
+          }]
+        })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -529,6 +529,7 @@ module.exports = {
                   deposit_method: req.body.deposit_method,
                   kraken_coin_name: req.body.kraken_coin_name,
                   isERC: req.body.isERC,
+                  is_active: false,
                   //wallet_address: req.body.wallet_address,
                   created_at: new Date()
                 })
@@ -718,16 +719,16 @@ module.exports = {
       console.log("ss");
       var balance = [];
       var coinData = await Coins.find({
-          select: [
-            'warm_wallet_address',
-            'coin_code',
-            'custody_wallet_address'
-          ],
-          where: {
-            is_active: true,
-            deleted_at: null
-          }
-        })
+        select: [
+          'warm_wallet_address',
+          'coin_code',
+          'custody_wallet_address'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null
+        }
+      })
         .sort('id ASC')
 
       for (var i = 0; i < coinData.length; i++) {

@@ -145,7 +145,11 @@ module.exports = {
         // } else 
         if (trade_object[0].flag == 1) {
           if (trade_object[0].side == 'Buy') {
+            console.log(trade_object[0].faldax_fees)
+            console.log(referral_percentage);
             collectedAmount = parseFloat((trade_object[0].faldax_fees * (referral_percentage / 100)))
+            collectedAmount = collectedAmount.toFixed(8);
+            console.log(collectedAmount)
             let {
               crypto,
               currency
@@ -166,6 +170,8 @@ module.exports = {
             addRefferalAddData.referred_user_id = referralData.id;
             addRefferalAddData.txid = inputs.transaction_id;
             addRefferalAddData.is_collected = false;
+
+            console.log(addRefferalAddData);
 
             var addedData = await Referral.create(addRefferalAddData);
           } else if (trade_object[0].side == 'Sell') {

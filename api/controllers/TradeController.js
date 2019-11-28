@@ -1748,7 +1748,7 @@ module.exports = {
               }
             });
         }
-      } else {}
+      } else { }
     } catch (error) {
       await logger.error(error.message)
       return res
@@ -1821,8 +1821,8 @@ module.exports = {
           query += " jst_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
@@ -1854,7 +1854,7 @@ module.exports = {
           if (data && data != "" && data != null) {
             // whereAppended = true;
             query += ' AND'
-            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR simplex_trade_history.payment_id LIKE '%" + data + "%' OR simplex_trade_history.quote_id LIKE '%" + data + "%' OR simplex_trade_history.address LIKE '%" + data.toLowerCase() + " %'";
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR simplex_trade_history.payment_id LIKE '%" + data + "%' OR simplex_trade_history.quote_id LIKE '%" + data + "%' OR simplex_trade_history.address LIKE '%" + (data).trim() + "%'";
             if (!isNaN(data)) {
               query += " OR simplex_trade_history.quantity=" + data + " OR simplex_trade_history.fill_price=" + data
             }
@@ -1895,8 +1895,8 @@ module.exports = {
           query += " simplex_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND simplex_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
@@ -1958,8 +1958,8 @@ module.exports = {
           query += " jst_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
