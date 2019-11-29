@@ -165,12 +165,49 @@ module.exports = {
             jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(final_faldax_fees);
             console.log("QUANTITY >>>>>>>", jstResponseValue.orderQuantity);
           }else{
-            if(flag == 2){
-              var total_value = jstResponseValue.total_value;
-              jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee);
-              jstResponseValue.faldax_fee = 0.0;
-              jstResponseValue.orderQuantity = jstResponseValue.total_value;
-            }else if(flag ==1){
+            // if(flag == 2){
+            //   var total_value = jstResponseValue.total_value;
+            //   jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee);
+            //   jstResponseValue.faldax_fee = 0.0;
+            //   jstResponseValue.orderQuantity = jstResponseValue.total_value;
+            // }else if(flag ==1){
+            //   var total_value = jstResponseValue.original_value;
+            //   jstResponseValue.original_value = parseFloat(jstResponseValue.original_value) - parseFloat(jstResponseValue.faldax_fee);
+            //   jstResponseValue.faldax_fee = 0.0;
+            //   jstResponseValue.orderQuantity = jstResponseValue.original_value;
+            // }
+            if (flag == 2) {
+              console.log("INSIDE IF >>>>>>")
+              var total_value = parseFloat(jstResponseValue.total_value).toFixed(8);
+              if (req_body.Side == 1) {
+                jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
+                jstResponseValue.faldax_fee = 0.0;
+                jstResponseValue.orderQuantity = parseFloat(jstResponseValue.total_value).toFixed(8);
+                console.log("QUANTITY >>>>>>>>>", jstResponseValue.orderQuantity)
+                console.log(req_body.Symbol);
+                console.log(req_body)
+                var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+                var priceValue = 0;
+                priceValue = (1 / get_jst_price[0].ask_price)
+                jstResponseValue.currency_value = parseFloat(jstResponseValue.orderQuantity / priceValue).toFixed(8);
+              } else if (req_body.Side == 2) {
+                jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
+                jstResponseValue.faldax_fee = 0.0;
+                jstResponseValue.orderQuantity = parseFloat(jstResponseValue.total_value).toFixed(8);
+                console.log("QUANTITY >>>>>>>>>", jstResponseValue.orderQuantity)
+                console.log(req_body.Symbol);
+                console.log(req_body)
+                var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+                var priceValue = 0;
+                priceValue = (1 / get_jst_price[0].bid_price);
+                console.log(priceValue)
+                jstResponseValue.currency_value = parseFloat(jstResponseValue.orderQuantity * priceValue).toFixed(8);
+              }
+              console.log("Ptice Value >>>>>>>", priceValue)
+              console.log("Quantity >>>>>>>>>", jstResponseValue.orderQuantity);
+              console.log(jstResponseValue.currency_value)
+            } else if (flag == 1) {
+              console.log("INSIDE ELSE >>>>>>>")
               var total_value = jstResponseValue.original_value;
               jstResponseValue.original_value = parseFloat(jstResponseValue.original_value) - parseFloat(jstResponseValue.faldax_fee);
               jstResponseValue.faldax_fee = 0.0;
@@ -456,11 +493,11 @@ module.exports = {
               "message": sails.__("insufficent funds in wallet")
             });
         }
-
+        // req_body.OrdType = '2';
         let order_create = {
           currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
-          order_type: "Market",
+          order_type: (req_body.OrdType == '2' ? "Limit": "Market"),
           order_status: "open",
           fix_quantity: parseFloat(quantityValue),
           symbol: req_body.Symbol,
@@ -470,6 +507,7 @@ module.exports = {
           buy_currency_amount:req_body.buy_currency_amount,
           sell_currency_amount:req_body.sell_currency_amount
         };
+        console.log("order_create",order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
         let order_object = {
@@ -484,7 +522,9 @@ module.exports = {
           // TimeInForce: "0",
           TimeInForce: "4",
           SecurityType: "FOR",
-          Product: "4"
+          Product: "4",
+          Price: 0.00003055
+          // MinQty:quantityValue+10          
         };
         var response = await sails.helpers.fixapi.buyOrder(order_object);
 
@@ -517,6 +557,10 @@ module.exports = {
             case "F":
               order_completed = true;
               break;
+            
+            case "4":
+              order_completed = false;
+              break; 
 
             case "8":
               order_completed = false;
