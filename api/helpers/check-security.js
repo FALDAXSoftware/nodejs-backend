@@ -79,16 +79,22 @@ module.exports = {
     
     console.log("userData.security_feature",userData.security_feature);
     if (userData.security_feature) {
-      var today = moment().utc().format();
-      // console.log("today",today);
-      // console.log("userData.security_feature_expired_time",userData.security_feature_expired_time);
-      // console.log(userData.security_feature_expired_time.isAfter(today));
-      // console.log(moment("2019-11-29T04:50:19.268").diff("2019-11-29T04:51:51Z"));
-      // console.log("Diff",formatTime(userData.security_feature_expired_time));
-      //2019-11-29T04:50:19.268 // security
-      //2019-11-29T04:51:51Z // today
-      // if (!moment(userData.security_feature_expired_time).isAfter(today)) {
-      if (moment(userData.security_feature_expired_time).diff(today) > 0) {    
+      var today = moment().utc().format("YYYY-MM-DD hh:mm");
+      console.log("today",today);
+      var expired_date = new Date(userData.security_feature_expired_time);
+      console.log("security_feature_expired_time_exist",(userData.security_feature_expired_time));
+      console.log("security_feature_expired_time",moment(userData.security_feature_expired_time).format());
+      var timeformat = moment(userData.security_feature_expired_time).format("hh:mm");
+      var dateformat = moment(userData.security_feature_expired_time).format("YYYY-MM-DD");
+      console.log("timeformat",(timeformat));
+      console.log("dateformat",(dateformat));
+      var newdatetime = moment(dateformat+" "+timeformat);
+      console.log("newdatetime",(newdatetime));
+      console.log("sdsdsd", Date.parse(newdatetime));
+      console.log("ewewe", Date.parse(today));
+      console.log("Compare", Date.parse(newdatetime) > Date.parse(today) );
+      if (newdatetime.isAfter(today)) {
+      // if ((userData.security_feature_expired_time).isAfter(today) ) {    
         var existing = moment(userData.security_feature_expired_time);
         console.log("Till",existing.tz(tz));
         var tz = moment.tz.guess();

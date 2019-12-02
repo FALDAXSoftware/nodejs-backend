@@ -346,6 +346,26 @@ module.exports = {
           "message": sails.__(geo_fencing_data.msg)
         });
       } else {
+        // Check Security
+        let check_security = await sails.helpers.checkSecurity(user_id,'','');
+        if( check_security.status != 200 ){
+          return res
+            // .status(check_security.status)
+            .status(500)
+            .json({
+            "status": check_security.status,
+            "message": check_security.message
+          });          
+        }else{
+          return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__(geo_fencing_data.msg)
+          });
+        } 
+
+
         // Check for User Wallet
         let {
           crypto,
@@ -663,6 +683,9 @@ module.exports = {
                 var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
                 var final_faldax_fees_crypto = remaining_fees_fiat / calculate_offer_amount;
                 final_faldax_fees = final_faldax_fees_crypto;
+              }else{
+                offer_applied = true;
+                final_faldax_fees = 0.0;
               }
             } else if (check_offer_status.status == true) {
               offer_applied = true;
