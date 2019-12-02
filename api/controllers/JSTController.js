@@ -140,8 +140,8 @@ module.exports = {
         console.log("INSIDE IF >>>>>>")
         let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
         console.log("check_offer_status", check_offer_status);
-        campaign_id = check_offer_status.data.campaign_id;
-        campaign_offer_id = check_offer_status.data.id;
+        // campaign_id = check_offer_status.data.campaign_id;
+        // campaign_offer_id = check_offer_status.data.id;
         offer_message = check_offer_status.message;
         // offer_applied = false;
         if (check_offer_status.status == "truefalse") {
@@ -664,8 +664,10 @@ module.exports = {
           if (offer_code && offer_code != "") {
             let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
             console.log("check_offer_status", check_offer_status);
-            campaign_id = check_offer_status.data.campaign_id;
-            campaign_offer_id = check_offer_status.data.id;
+            if( check_offer_status.status != false ){
+              campaign_id = check_offer_status.data.campaign_id;
+              campaign_offer_id = check_offer_status.data.id;
+            }
             offer_message = check_offer_status.message;
             offer_applied = false;
             if (check_offer_status.status == "truefalse") {
