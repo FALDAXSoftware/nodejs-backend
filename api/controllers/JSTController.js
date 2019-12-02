@@ -347,23 +347,17 @@ module.exports = {
         });
       } else {
         // Check Security
-        let check_security = await sails.helpers.checkSecurity(user_id,'','');
-        if( check_security.status != 200 ){
+        let check_security = await sails.helpers.checkSecurity(user_id, req_body.otp);
+        console.log("Check  >>>>>>>...", check_security);
+        if (check_security.status != 200) {
           return res
             // .status(check_security.status)
             .status(500)
             .json({
-            "status": check_security.status,
-            "message": check_security.message
-          });          
-        }else{
-          return res
-          .status(500)
-          .json({
-            "status": 500,
-            "message": sails.__(geo_fencing_data.msg)
-          });
-        } 
+              "status": check_security.status,
+              "message": check_security.message
+            });
+        }
 
 
         // Check for User Wallet
@@ -494,7 +488,7 @@ module.exports = {
         let order_create = {
           currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
-          order_type: (req_body.OrdType == '2' ? "Limit": "Market"),
+          order_type: (req_body.OrdType == '2' ? "Limit" : "Market"),
           order_status: "open",
           fix_quantity: parseFloat(quantityValue),
           symbol: req_body.Symbol,
@@ -504,7 +498,7 @@ module.exports = {
           buy_currency_amount: req_body.buy_currency_amount,
           sell_currency_amount: req_body.sell_currency_amount
         };
-        console.log("order_create",order_create);
+        console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         // console.log("create_o/rder",create_order);
         let order_object = {
@@ -554,10 +548,10 @@ module.exports = {
             case "F":
               order_completed = true;
               break;
-            
+
             case "4":
               order_completed = false;
-              break; 
+              break;
 
             case "8":
               order_completed = false;
@@ -683,7 +677,7 @@ module.exports = {
                 var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
                 var final_faldax_fees_crypto = remaining_fees_fiat / calculate_offer_amount;
                 final_faldax_fees = final_faldax_fees_crypto;
-              }else{
+              } else {
                 offer_applied = true;
                 final_faldax_fees = 0.0;
               }
