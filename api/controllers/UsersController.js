@@ -2313,8 +2313,29 @@ module.exports = {
 
       usersData = usersData.rows;
 
+      console.log(usersData.length)
       let referralCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+
+
       referralCount = referralCount.rows[0].count;
+
+      for (var i = 0; i < usersData.length; i++) {
+        console.log(usersData[i]);
+        var referalQuery = `SELECT users.id, users.email, referral.coin_name, SUM(referral.amount) as collectedAmount
+                              FROM users LEFT JOIN referral ON users.id = referral.user_id
+                              WHERE users.email = '${usersData[i].refered_by}' AND referral.is_collected = 'true'
+                              GROUP BY referral.coin_name, users.id`
+
+        console.log(referalQuery);
+
+        var userValue = await sails.sendNativeQuery(referalQuery, []);
+        var value = ''
+        // for (var j = 0; j < userValue.rows.length; j++) {
+        //   console.log(userValue.rows[j]);
+        //   value = value + "\n" + userValue.rows[j].collectedamount + " " + userValue.rows[j].coin_name;
+        // }
+        usersData[i].collected_amount = userValue.rows;
+      }
 
       if (usersData) {
         return res.json({
@@ -2325,6 +2346,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err);
       await logger.error(err.message)
       return res
         .status(500)
