@@ -135,6 +135,7 @@ module.exports = {
       let offer_applied = false;
       var final_faldax_fees = jstResponseValue.faldax_fee
       var final_faldax_fees_actual = jstResponseValue.faldax_fee;
+      jstResponseValue.faldax_fees_actual = final_faldax_fees_actual;
       console.log("Offer COde >>>>>>.", offer_code);
       if (offer_code && offer_code != "") {
         console.log("INSIDE IF >>>>>>")
@@ -147,6 +148,7 @@ module.exports = {
         if (check_offer_status.status == "truefalse") {
           console.log("INSIDE ANOTHER IF >>>>>>>>>")
           final_faldax_fees = 0.0;
+          
 
           // Check Partially fees calulations
           var current_order_faldax_fees = parseFloat(final_faldax_fees_actual) * parseFloat(calculate_offer_amount);
@@ -163,6 +165,7 @@ module.exports = {
             jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(final_faldax_fees);
             console.log("INSIDE CONDITIUN >>>>>>>>", jstResponseValue.total_value);
             jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(final_faldax_fees);
+            
             console.log("QUANTITY >>>>>>>", jstResponseValue.orderQuantity);
           } else {
             if (flag == 2) {
@@ -293,7 +296,7 @@ module.exports = {
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
-      var final_faldax_fees_actual = req_body.faldax_fees;
+      var final_faldax_fees_actual = req_body.faldax_fees_actual;
 
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
