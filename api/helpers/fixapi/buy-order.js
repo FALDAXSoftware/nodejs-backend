@@ -106,7 +106,7 @@ module.exports = {
       // }
       console.log("body", body);
 
-      if (body.ExecType == "F") {
+      if (body.ExecType == "F" || body.ExecType == "4" ) {
         var data = {
           status: 1,
           data: body

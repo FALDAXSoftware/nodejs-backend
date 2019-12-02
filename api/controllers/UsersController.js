@@ -818,8 +818,8 @@ module.exports = {
                     .hubspot
                     .contacts
                     .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                        ", " + user.street_address_2 :
-                        ''), user.country ?
+                      ", " + user.street_address_2 :
+                      ''), user.country ?
                       user.country :
                       user_details["country"], user.state ?
                       user.state :
@@ -858,8 +858,8 @@ module.exports = {
                   .hubspot
                   .contacts
                   .update(user_details["hubspot_id"], user.first_name, user.last_name, user.street_address + (user.street_address_2 ?
-                      ", " + user.street_address_2 :
-                      ''), user.country ?
+                    ", " + user.street_address_2 :
+                    ''), user.country ?
                     user.country :
                     user_details["country"], user.state ?
                     user.state :
@@ -1532,22 +1532,22 @@ module.exports = {
             // Check if user has requested for 2FA Forgot Request, then close it
             var get_data = await UserForgotTwofactors.find({
               user_id: user_id,
-              status:'open'
+              status: 'open'
             });
-            if( get_data.length > 0 ){
-              for(var i=0;i<get_data.length;i++){
+            if (get_data.length > 0) {
+              for (var i = 0; i < get_data.length; i++) {
                 if (get_data[i].uploaded_file) {
                   await UploadFiles.deleteFile(get_data[i].uploaded_file); // delete the file
                 }
                 console.log(" user_id", user_id);
                 await UserForgotTwofactors
-                .update({
-                  id: get_data[i].id
-                })
-                .set({
-                  status: "closed"
-                });
-              }      
+                  .update({
+                    id: get_data[i].id
+                  })
+                  .set({
+                    status: "closed"
+                  });
+              }
             }
 
             return res.json({
@@ -1631,7 +1631,8 @@ module.exports = {
             .json({
               "status": 200,
               "message": sails.__("no funds left"),
-              user2fastatus
+              user2fastatus,
+              user
             })
         }
       } else if (referCount.length > 0) {
@@ -1660,14 +1661,16 @@ module.exports = {
             .json({
               "status": 200,
               "message": sails.__("no funds left"),
-              user2fastatus
+              user2fastatus,
+              user
             })
         }
       } else {
         return res.json({
           "status": 200,
           "message": sails.__("no funds left"),
-          user2fastatus
+          user2fastatus,
+          user
         })
       }
     } catch (error) {
@@ -2219,8 +2222,8 @@ module.exports = {
 
   getCountriesData: async function (req, res) {
     fetch(' https://restcountries.eu/rest/v2/all', {
-        method: "GET"
-      })
+      method: "GET"
+    })
       .then(resData => resData.json())
       .then(resData => {
         res.json({
@@ -2310,8 +2313,29 @@ module.exports = {
 
       usersData = usersData.rows;
 
+      console.log(usersData.length)
       let referralCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+
+
       referralCount = referralCount.rows[0].count;
+
+      for (var i = 0; i < usersData.length; i++) {
+        console.log(usersData[i]);
+        var referalQuery = `SELECT users.id, users.email, referral.coin_name, SUM(referral.amount) as collectedAmount
+                              FROM users LEFT JOIN referral ON users.id = referral.user_id
+                              WHERE users.email = '${usersData[i].refered_by}' AND referral.is_collected = 'true'
+                              GROUP BY referral.coin_name, users.id`
+
+        console.log(referalQuery);
+
+        var userValue = await sails.sendNativeQuery(referalQuery, []);
+        var value = ''
+        // for (var j = 0; j < userValue.rows.length; j++) {
+        //   console.log(userValue.rows[j]);
+        //   value = value + "\n" + userValue.rows[j].collectedamount + " " + userValue.rows[j].coin_name;
+        // }
+        usersData[i].collected_amount = userValue.rows;
+      }
 
       if (usersData) {
         return res.json({
@@ -2322,6 +2346,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err);
       await logger.error(err.message)
       return res
         .status(500)
@@ -3017,8 +3042,8 @@ module.exports = {
         }
         query += ")"
       }
-      limit = (limit!= undefined && limit!="" ? limit : "50")
-      page = (page!= undefined && page!="" ? page : "1")
+      limit = (limit != undefined && limit != "" ? limit : "50")
+      page = (page != undefined && page != "" ? page : "1")
       // countQuery = query;
       // if (sort_col && sort_order) {
       //   let sortVal = (sort_order == 'descend' ?
@@ -3029,9 +3054,9 @@ module.exports = {
       //   query += " ORDER BY created_at DESC";
       // }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      
+
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
-      console.log("Query:","Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query);
+      console.log("Query:", "Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query);
 
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
@@ -3090,7 +3115,7 @@ module.exports = {
           "status": 200,
           "message": sails.__("referal data success"),
           "data": usersData,
-          "referralCount":user_details.rowCount
+          "referralCount": user_details.rowCount
         })
     } catch (err) {
       console.log(err);
@@ -3113,8 +3138,8 @@ module.exports = {
 
       var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
         "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
-      if( get_reffered_data.rowCount > 0 ){
-        var filter_data = (get_reffered_data.rows).map( function(each){
+      if (get_reffered_data.rowCount > 0) {
+        var filter_data = (get_reffered_data.rows).map(function (each) {
           each.earned = each.earned.toFixed(sails.config.local.TOTAL_PRECISION);
           return each;
         })
@@ -3147,9 +3172,9 @@ module.exports = {
       } = req.allParams();
 
       var coins = await Coins.find({
-          is_active: true,
-          deleted_at: null
-        })
+        is_active: true,
+        deleted_at: null
+      })
         .select(["coin_code", "coin"])
         .sort('id DESC');
 
