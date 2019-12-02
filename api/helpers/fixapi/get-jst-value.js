@@ -198,6 +198,9 @@ module.exports = {
           }
 
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
+            console.log((req_body.OrderQty * priceValue))
+            console.log(req_body.orderQuantity);
+            console.log(priceValue);
             totalValue = (req_body.OrderQty * priceValue);
             usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             usd_price = (req_body.OrderQty * usd_price[0].bid_price)
@@ -236,6 +239,14 @@ module.exports = {
           }
         }
       }
+
+      returnData.network_fee = parseFloat(returnData.network_fee).toFixed(8);
+      returnData.faldax_fee = parseFloat(returnData.faldax_fee).toFixed(8);
+      returnData.total_value = parseFloat(returnData.total_value).toFixed(8);
+      returnData.price_usd = parseFloat(returnData.price_usd).toFixed(8);
+      returnData.currency_value = parseFloat(returnData.currency_value).toFixed(8);
+      returnData.original_value = parseFloat(returnData.original_value).toFixed(8);
+      returnData.orderQuantity = parseFloat(returnData.orderQuantity).toFixed(8);
 
       return exits.success(returnData);
     } catch (error) {
