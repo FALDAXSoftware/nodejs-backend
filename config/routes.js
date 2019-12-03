@@ -469,5 +469,8 @@ module.exports.routes = {
   'delete /delete-all-events': 'SimplexController.deleteAllEvents',
 
   // Get Users Wallet Data
-  'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue'
+  'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue',
+
+  // Role Data
+  'get /admin/get-role-permission': 'AdminController.getRoutePermission'
 };
