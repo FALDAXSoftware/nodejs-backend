@@ -1,3 +1,4 @@
+var logger = require("../../controllers/logger");
 module.exports = {
 
 
@@ -26,7 +27,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-
+    
     try {
       var req_body = inputs.value_object;
       console.log(req_body);
@@ -52,11 +53,14 @@ module.exports = {
       var returnData;
 
       // Checking for the pair and side
+      var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
       if (req_body.original_pair == req_body.order_pair) {
         // Means The part which you want to send is being editable for flag = 1
         if (flag == 1) {
 
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
+          console.log("get_jst_price",get_jst_price);
           if (req_body.Side == 1) {
             priceValue = (1 / get_jst_price[0].ask_price);
           }
@@ -102,7 +106,8 @@ module.exports = {
           }
         } else if (flag == 2) {
           var valueUSD
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 1) {
             priceValue = (get_jst_price[0].ask_price);
           }
@@ -134,6 +139,7 @@ module.exports = {
             faldax_fee_value = (req_body.OrderQty * ((faldax_fee.value) / 100))
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
             original_value = get_faldax_fee
+            totalValue = get_faldax_fee * priceValue
           }
           console.log(((!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value))) == true)
           console.log(get_faldax_fee)
@@ -150,7 +156,8 @@ module.exports = {
         }
       } else if (req_body.original_pair != req_body.order_pair) {
         if (flag == 1) {
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 2) {
             priceValue = (get_jst_price[0].bid_price);
           }
@@ -192,7 +199,8 @@ module.exports = {
             "orderQuantity": req_body.OrderQty
           }
         } else if (flag == 2) {
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
+          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 2) {
             priceValue = (1 / get_jst_price[0].bid_price);
           }
@@ -225,7 +233,7 @@ module.exports = {
             })
             faldax_fee_value = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100))) : parseFloat(((price_value_usd * (faldax_fee.value) / 100)))
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
-            original_value = totalValue;
+            original_value = get_faldax_fee * priceValue;
           }
           returnData = {
             "network_fee": get_network_fees,
@@ -240,13 +248,14 @@ module.exports = {
         }
       }
 
-      returnData.network_fee = parseFloat(returnData.network_fee).toFixed(8);
-      returnData.faldax_fee = parseFloat(returnData.faldax_fee).toFixed(8);
-      returnData.total_value = parseFloat(returnData.total_value).toFixed(8);
-      returnData.price_usd = parseFloat(returnData.price_usd).toFixed(8);
-      returnData.currency_value = parseFloat(returnData.currency_value).toFixed(8);
-      returnData.original_value = parseFloat(returnData.original_value).toFixed(8);
-      returnData.orderQuantity = parseFloat(returnData.orderQuantity).toFixed(8);
+      returnData.network_fee = parseFloat(returnData.network_fee).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.faldax_fee = parseFloat(returnData.faldax_fee).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.total_value = parseFloat(returnData.total_value).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.price_usd = parseFloat(returnData.price_usd).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.currency_value = parseFloat(returnData.currency_value).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.original_value = parseFloat(returnData.original_value).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.orderQuantity = parseFloat(returnData.orderQuantity).toFixed(sails.config.local.TOTAL_PRECISION);
+      returnData.limit_price = parseFloat(get_jst_price[0].limit_price).toFixed(sails.config.local.TOTAL_PRECISION)
 
       return exits.success(returnData);
     } catch (error) {

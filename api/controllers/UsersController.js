@@ -3214,4 +3214,52 @@ module.exports = {
     }
   },
 
+
+  // Get Total earning from Assets
+  getReferredAssets: async function (req, res) {
+    try {
+
+      var {
+        id
+      } = req.allParams();
+
+      // var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
+      //   "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
+      var get_reffered_data = await sails.sendNativeQuery(
+        ` SELECT ref.coin_id, ref.user_id, ref.referred_user_id, co.id, co.coin_name, sum(ref.amount) as totalearned, u.email FROM referral ref 
+          INNER JOIN coins co 
+          ON ref.coin_id = co.id 
+          INNER JOIN users u 
+          ON ref.referred_user_id = u.id 
+          WHERE ref.user_id = ${id} and u.referred_id = ${id}
+          GROUP BY ref.coin_id,co.id, ref.user_id,  co.coin_name, ref.referred_user_id, u.email`);
+        // console.log("get_reffered_data",get_reffered_data);
+      if (get_reffered_data.rowCount > 0) {
+        var all_unique = [];
+        var filter_data = (get_reffered_data.rows).map(function (each) {
+          each.totalearned = each.totalearned.toFixed(sails.config.local.TOTAL_PRECISION);
+          return each;
+        })
+        get_reffered_data.rows = filter_data;
+      }
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("refer data retrieve"),
+          "data": get_reffered_data.rows
+        });
+
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
 };
