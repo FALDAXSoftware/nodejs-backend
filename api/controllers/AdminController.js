@@ -3684,5 +3684,63 @@ module.exports = {
         })
     }
 
+  },
+
+  // Get Route for display
+  getRoutePermission: async function (req, res) {
+    try {
+
+      var {
+        role_id
+      } = req.allParams();
+
+      var permission = [];
+
+      var userPermission = await AdminPermission.find({
+        select: [
+          'permission_id'
+        ],
+        where: {
+          role_id: role_id,
+          deleted_at: null
+        }
+      })
+
+      var getPermissionData = await Permissions.find({
+        select: [
+          'module_name',
+          'route_name',
+          'display_name',
+          'main_module'
+        ],
+        where: {
+          deleted_at: null
+        }
+      });
+
+      if (userPermission.length > 0) {
+        userPermission.map(key => {
+          permission.push(parseInt(key.permission_id))
+        });
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Permission data has been retrieved"),
+          permission,
+          getPermissionData
+        })
+    } catch (error) {
+      console.log("err", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
   }
 };
