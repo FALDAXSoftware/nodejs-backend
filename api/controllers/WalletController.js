@@ -229,17 +229,25 @@ module.exports = {
       let user_id = req.user.id;
       var today = moment().utc().format();
 
+      var dateTime = moment(today).local().format();
+      var localTime = moment.utc(dateTime).toDate();
+      localTime = moment(localTime).format()
+
       var yesterday = moment()
         .startOf('day')
         .format();
 
-      console.log(yesterday)
+      var dateTimeMonthly = moment(yesterday).local().format();
+      var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
+      localTimeMonthly = moment(localTimeMonthly).format()
 
       var monthlyData = moment()
         .startOf('month')
         .format();
 
-      console.log(monthlyData);
+      var dateTimeDaily = moment(yesterday).local().format();
+      var localTimeDaily = moment.utc(dateTimeDaily).toDate();
+      localTimeDaily = moment(localTimeDaily).format()
 
       var userData = await Users.findOne({
         deleted_at: null,
@@ -377,12 +385,10 @@ module.exports = {
               coin_id: coin.id,
               transaction_type: 'send',
               created_at: {
-                '>=': yesterday,
-                '<=': today
+                '>=': (localTimeMonthly),
+                '<=': (localTime)
               }
             });
-
-          console.log("Daily >>>>>>>>", walletHistoryData)
 
           // Getting total value of monthly withdraw
           let walletHistoryDataMonthly = await WalletHistory
@@ -393,14 +399,10 @@ module.exports = {
               coin_id: coin.id,
               transaction_type: 'send',
               created_at: {
-                '>=': monthlyData,
-                '<=': today
+                '>=': (localTimeDaily),
+                '<=': (localTime)
               }
             });
-
-          console.log("Monthly >>>>>>>>", walletHistoryDataMonthly)
-          console.log("Addittion daily >>>>>>>>", (parseFloat(walletHistoryData) + parseFloat(total_fees)))
-          console.log("Additton Monthly >>>>>>>>>>", (parseFloat(walletHistoryDataMonthly) + parseFloat(total_fees)))
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
@@ -634,7 +636,7 @@ module.exports = {
                     .status(400)
                     .json({
                       status: 400,
-                      message: sails.__("Monthly Limit Exceeded Using Amount")
+                      message: sails.__("Monthly Limit Exceeded Using Amount") + (limitAmountMonthly - (parseFloat(walletHistoryDataMonthly)))
                     })
                 }
               } else {
@@ -650,7 +652,7 @@ module.exports = {
                 .status(400)
                 .json({
                   status: 400,
-                  message: sails.__("Daily Limit Exceeded Using Amount")
+                  message: sails.__("Daily Limit Exceeded Using Amount") + (limitAmount - (parseFloat(walletHistoryData)))
                 })
             }
           } else {
