@@ -394,5 +394,6 @@
 	"Campaign is_default_values": "Please select default values",
 	"Campaign user_id": "Please select User",
 	"You are allowed to trade": "You are allowed to trade",
-	"tier data retrieve": "tier data retrieve"
+	"tier data retrieve": "tier data retrieve",
+	"Permission data has been retrieved": "Permission Data has been retrieved successfully."
 }

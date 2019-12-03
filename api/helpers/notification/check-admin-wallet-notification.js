@@ -57,11 +57,19 @@ module.exports = {
 
         var slug;
 
+        // console.log(warmWallet.balance);
+        // console.log(exisiting.first_limit);
+        // console.log(exisiting.third_limit);
+        // console.log(exisiting.second_limit);
+        // console.log("Third Limti >>>>>>>>>>>", warmWallet.balance <= exisiting.third_limit && warmWallet.balance < exisiting.second_limit && warmWallet.balance < exisiting.first_limit)
+        // console.log("Secong Limit >>>>>>>>>", warmWallet.balance <= exisiting.second_limit && warmWallet.balance < exisiting.first_limit)
+        // console.log("First Limit >>>>>>>>>", warmWallet.balance <= exisiting.first_limit)
+
         // Checking whether which limit matched the warm wallet balance lower condition
         if (warmWallet.balance != undefined) {
-          if (warmWallet.balance <= exisiting.third_limit) {
+          if (warmWallet.balance <= exisiting.third_limit && warmWallet.balance < exisiting.second_limit && warmWallet.balance < exisiting.first_limit) {
             slug = "third_limit_low";
-          } else if (warmWallet.balance <= exisiting.second_limit) {
+          } else if (warmWallet.balance <= exisiting.second_limit && warmWallet.balance < exisiting.first_limit) {
             slug = "second_limit_low";
           } else if (warmWallet.balance <= exisiting.first_limit) {
             slug = "first_limit_low"
