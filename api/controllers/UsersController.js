@@ -1442,15 +1442,15 @@ module.exports = {
         });
     }
 
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        email: user.email,
-        deleted_by: 1, //deleted by user
-        deleted_at: new Date()
-      });
+    // await Users
+    //   .update({
+    //     id: user.id
+    //   })
+    //   .set({
+    //     email: user.email,
+    //     deleted_by: 1, //deleted by user
+    //     deleted_at: new Date()
+    //   });
 
     var total = 0;
     var usd_price = 0;
@@ -1501,11 +1501,14 @@ module.exports = {
       }
     }
 
-    console.log(walletArray)
+    // console.log(walletArray)
     var valueEmail = {};
     valueEmail.recipientName = user.first_name;
     if (walletArray.length > 0)
       valueEmail.object = walletArray;
+
+    console.log(valueEmail.object)
+    var value = valueEmail.object
 
     slug = 'deactivate_user';
 
@@ -1516,7 +1519,7 @@ module.exports = {
       .helpers
       .utilities
       .formatEmail(template.content, {
-        valueEmail
+        value
       })
     if (template) {
       sails
@@ -1699,7 +1702,7 @@ module.exports = {
       var walletArray = [];
       var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
                             FROM public.referral 
-                            WHERE user_id = ${user_id} AND is_collected = 'false'
+                            WHERE user_id = ${user_id}
                             GROUP BY coin_id, coin_name`
 
       var referCount = await sails.sendNativeQuery(referQuery, [])
@@ -1777,13 +1780,15 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left")
+              "message": sails.__("no funds left"),
+              user
             })
         }
       } else {
         return res.json({
           "status": 200,
-          "message": sails.__("no funds left")
+          "message": sails.__("no funds left"),
+          user
         })
       }
     } catch (error) {

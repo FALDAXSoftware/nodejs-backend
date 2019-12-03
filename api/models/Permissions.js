@@ -16,6 +16,14 @@ module.exports = {
       type: 'string',
       columnName: 'module_name'
     },
+    main_module: {
+      type: 'string',
+      columnName: 'main_module'
+    },
+    sub_module_name: {
+      type: 'string',
+      columnName: 'sub_module_name'
+    },
     route_name: {
       type: 'string',
       columnName: 'route_name'
