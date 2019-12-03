@@ -225,13 +225,13 @@
 	"Class id is not sent": "Account Class Id is not provided",
 	"Class deleted success": "Account Class deleted Successfully.",
 	"Wallet Not Found": "User Wallet has not been found",
-	"Daily Limit Exceeded": "The amount you wish to withdraw exceeds daily limit. Increase your account limits by following the steps on this page",
-	"Daily Limit Exceeded Using Amount": "You exceed you daily limit by sending this amount",
+	"Daily Limit Exceeded": "The amount you wish to withdraw exceeds daily limit.",
+	"Daily Limit Exceeded Using Amount": "You exceed you daily limit by sending this amount.  Please send amount less than ",
 	"withdraw request confirm": "Your Withdrawl request may take 24-28 hours to process due to its size. Do you wish to proceed?",
 	"Request sumbit success": "Your withdraw request has been submitted Successfully. We will update you soon.",
 	"Insufficent balance wallet": "Your account balance is lower than the amount you wish to withdraw. If you believe this is incorrect, please contact support immediately. Otherwise please try again",
-	"Monthly Limit Exceeded Using Amount": "You exceed you monthly limit by sending this amount",
-	"Monthly Limit Exceeded": "The amount you wish to withdraw exceeds monthly limit. Increase your account limits by following the steps on this page",
+	"Monthly Limit Exceeded Using Amount": "You exceed you monthly limit by sending this amount. Please send amount less than ",
+	"Monthly Limit Exceeded": "The amount you wish to withdraw exceeds monthly limit.",
 	"No Limit Data List": "No Limit Data has been found for this asset.",
 	"Address Create Success": "Address has been created Successfully",
 	"Address Not Create Success": "Address has not been created",
@@ -393,5 +393,6 @@
 	"Campaign code": "Please enter code field and it should be unique",
 	"Campaign is_default_values": "Please select default values",
 	"Campaign user_id": "Please select User",
-	"You are allowed to trade": "You are allowed to trade"
+	"You are allowed to trade": "You are allowed to trade",
+	"tier data retrieve": "tier data retrieve"
 }
