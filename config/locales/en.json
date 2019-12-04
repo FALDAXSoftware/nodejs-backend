@@ -395,5 +395,7 @@
 	"Campaign user_id": "Please select User",
 	"You are allowed to trade": "You are allowed to trade",
 	"tier data retrieve": "tier data retrieve",
-	"Permission data has been retrieved": "Permission Data has been retrieved successfully."
+	"Permission data has been retrieved": "Permission Data has been retrieved successfully.",
+	"Role Updated Success": "Role Access has been updated Successfully",
+	"No Role data found": "No Role Permission has been found."
 }

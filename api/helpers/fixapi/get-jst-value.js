@@ -27,7 +27,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    
+
     try {
       var req_body = inputs.value_object;
       console.log(req_body);
@@ -53,14 +53,23 @@ module.exports = {
       var returnData;
 
       // Checking for the pair and side
-      var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
       if (req_body.original_pair == req_body.order_pair) {
         // Means The part which you want to send is being editable for flag = 1
         if (flag == 1) {
+          if (usd_value) {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 1) {
+              price_value_usd = (1 / price_value[0].ask_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
+            totalValue = (price_value_usd * priceValue)
+          }
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
 
           // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
           // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
-          console.log("get_jst_price",get_jst_price);
+          console.log("get_jst_price", get_jst_price);
           if (req_body.Side == 1) {
             priceValue = (1 / get_jst_price[0].ask_price);
           }
@@ -108,6 +117,15 @@ module.exports = {
           var valueUSD
           // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
           // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
+          if (usd_value) {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 1) {
+              price_value_usd = (1 / price_value[0].ask_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
+          }
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 1) {
             priceValue = (get_jst_price[0].ask_price);
           }
@@ -158,6 +176,15 @@ module.exports = {
         if (flag == 1) {
           // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
           // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
+          if (usd_value) {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 2) {
+              price_value_usd = (1 / price_value[0].bid_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
+          }
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 2) {
             priceValue = (get_jst_price[0].bid_price);
           }
@@ -201,6 +228,15 @@ module.exports = {
         } else if (flag == 2) {
           // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
           // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
+          if (usd_value) {
+            var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            if (req_body.Side == 2) {
+              price_value_usd = (1 / price_value[0].bid_price);
+            }
+            price_value_usd = price_value_usd * usd_value;
+            req_body.OrderQty = price_value_usd;
+          }
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (req_body.Side == 2) {
             priceValue = (1 / get_jst_price[0].bid_price);
           }

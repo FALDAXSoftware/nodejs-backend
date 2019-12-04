@@ -294,7 +294,7 @@ module.exports = {
         network_fees: 'required|decimal',
         buy_currency_amount: 'required|decimal',
         sell_currency_amount: 'required|decimal',
-        limit_price : 'required|decimal'
+        limit_price: 'required|decimal'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
@@ -504,7 +504,7 @@ module.exports = {
           network_fees: req_body.network_fees,
           buy_currency_amount: req_body.buy_currency_amount,
           sell_currency_amount: req_body.sell_currency_amount,
-          limit_price : req_body.limit_price
+          limit_price: req_body.limit_price
         };
         console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
@@ -776,10 +776,10 @@ module.exports = {
           var second_coin_balance = '';
           var coin1type = '';
           var coin2type = '';
-          console.log("walletCurrency.balance",walletCurrency.balance);
-          console.log("walletCrypto.balance",walletCrypto.balance);
-          console.log("final_fees_currency",final_fees_currency)
-          console.log("final_fees_deducted_crypto",final_fees_deducted_crypto)
+          console.log("walletCurrency.balance", walletCurrency.balance);
+          console.log("walletCrypto.balance", walletCrypto.balance);
+          console.log("final_fees_currency", final_fees_currency)
+          console.log("final_fees_deducted_crypto", final_fees_deducted_crypto)
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({
@@ -909,6 +909,66 @@ module.exports = {
         .json({
           status: 500,
           "err": check_offer_status.message
+        });
+    }
+  },
+
+  getSocketJSTValue: async function (req, res) {
+    try {
+
+      var socket = req.socket;
+      var io = sails.io;
+
+      var Symbol = req.query.Symbol;
+      var Side = req.query.Side;
+      var OrderQty = req.query.OrderQty;
+      var Currency = req.query.Currency;
+      var OrdType = req.query.OrdType;
+      var flag = req.query.flag;
+      var offer_code = req.query.offer_code;
+      var order_pair = req.query.order_pair;
+      var original_pair = req.query.original_pair;
+      var usd_value = req.query.usd_value;
+      var event = 'connection'
+      var req_body = {
+        "Symbol": Symbol,
+        "Side": Side,
+        "OrderQty": OrderQty,
+        "Currency": Currency,
+        "OrdType": OrdType,
+        "flag": flag,
+        "offer_code": offer_code,
+        "order_pair": order_pair,
+        "original_pair": original_pair,
+        "usd_value": usd_value
+      }
+      console.log(req_body)
+
+      if (req.isSocket) {
+        var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
+        return res.json({
+          status: 200,
+          data: jstResponseValue,
+          "message": sails.__("User Trade Success")
+        });
+      } else {
+        return res
+          .status(403)
+          .json({
+            status: 403,
+            "message": sails.__("error")
+          });
+      }
+
+
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
         });
     }
   }
