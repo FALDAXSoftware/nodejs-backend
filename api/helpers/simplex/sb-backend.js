@@ -1,5 +1,6 @@
 const request = require('request');
 var http = require("http");
+var logger = require("../../controllers/logger");
 
 // var rp = require('request-promise');
 module.exports = {

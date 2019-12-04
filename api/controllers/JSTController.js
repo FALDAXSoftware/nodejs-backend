@@ -136,6 +136,7 @@ module.exports = {
       var final_faldax_fees = jstResponseValue.faldax_fee
       var final_faldax_fees_actual = jstResponseValue.faldax_fee;
       jstResponseValue.faldax_fees_actual = final_faldax_fees_actual;
+      jstResponseValue.limit_price = jstResponseValue.limit_price;
       console.log("Offer COde >>>>>>.", offer_code);
       if (offer_code && offer_code != "") {
         console.log("INSIDE IF >>>>>>")
@@ -292,7 +293,8 @@ module.exports = {
         faldax_fees: 'required|decimal',
         network_fees: 'required|decimal',
         buy_currency_amount: 'required|decimal',
-        sell_currency_amount: 'required|decimal'
+        sell_currency_amount: 'required|decimal',
+        limit_price : 'required|decimal'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
@@ -435,10 +437,12 @@ module.exports = {
         // }
         // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
         if (req_body.original_pair == req_body.order_pair) { // Check if Pair same as original, then it should be Buy ELSE Sell 
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Buy");
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Buy");
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, "Buy", quantityValue);
           priceValue = get_jst_price[0].ask_price;
         } else {
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Sell");
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, "Sell");
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, "Sell", quantityValue);
           priceValue = get_jst_price[0].bid_price;
         }
 
@@ -487,7 +491,7 @@ module.exports = {
               "message": sails.__("insufficent funds in wallet")
             });
         }
-        // req_body.OrdType = '2';
+        req_body.OrdType = '2';
         let order_create = {
           currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
@@ -499,7 +503,8 @@ module.exports = {
           faldax_fees: req_body.faldax_fees,
           network_fees: req_body.network_fees,
           buy_currency_amount: req_body.buy_currency_amount,
-          sell_currency_amount: req_body.sell_currency_amount
+          sell_currency_amount: req_body.sell_currency_amount,
+          limit_price : req_body.limit_price
         };
         console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
@@ -517,7 +522,7 @@ module.exports = {
           TimeInForce: "4",
           SecurityType: "FOR",
           Product: "4",
-          Price: 0.00003055
+          Price: req_body.limit_price
           // MinQty:quantityValue+10          
         };
         var response = await sails.helpers.fixapi.buyOrder(order_object);
@@ -771,6 +776,10 @@ module.exports = {
           var second_coin_balance = '';
           var coin1type = '';
           var coin2type = '';
+          console.log("walletCurrency.balance",walletCurrency.balance);
+          console.log("walletCrypto.balance",walletCrypto.balance);
+          console.log("final_fees_currency",final_fees_currency)
+          console.log("final_fees_deducted_crypto",final_fees_deducted_crypto)
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({

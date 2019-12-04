@@ -57,6 +57,10 @@ module.exports = {
       type: 'number',
       columnName: 'sell_currency_amount'
     },
+    limit_price: {
+      type: 'number',
+      columnName: 'limit_price'
+    },
     symbol: {
       type: 'string',
       columnName: 'symbol'

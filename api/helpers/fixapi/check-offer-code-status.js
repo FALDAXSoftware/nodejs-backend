@@ -184,7 +184,6 @@ module.exports = {
 
     // Check total fees already deducted using Offer
     async function checkTotalFeesDeducted(get_campaign_offer_data, check_offercode_in_transactions) {
-      console.log("checkTotalFeesDeducted", checkTotalFeesDeducted);
       let offer_transaction_fees = get_campaign_offer_data[0].fees_allowed;
 
       if (get_campaign_offer_data[0].is_default_values == true) {
