@@ -457,6 +457,7 @@ module.exports.routes = {
   'put /admin/campaigns/update/:id': 'CompaignsController.update',
   'get /admin/users/list': 'AdminController.userList',
   'get /admin/campaigns/verify-offercode/:code': 'CompaignsController.verifyOfferCode',
+  'post /admin/campaigns/offercode-used/:id': 'CompaignsController.getOffercodeUsed',  
 
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
