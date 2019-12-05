@@ -477,5 +477,27 @@ module.exports.routes = {
   'post /admin/update-role-permission': 'AdminController.updateRolePermission',
 
   // Socket for Conversion
-  'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue'
+  'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue',
+
+  // Metabase Routes
+  'get /admin/get-account-report': 'MetabaseController.getAccountClassReport',
+  'get /admin/get-account-tier-report': 'MetabaseController.getAccountTierReport',
+  'get /admin/get-referral-report': 'MetabaseController.getReferralReport',
+  'get /admin/get-assets-report': 'MetabaseController.getAssetsReport',
+  'get /admin/get-batch-report': 'MetabaseController.getBatchBalanceReport',
+  "get /admin/get-career-report": 'MetabaseController.getCareerReport',
+  "get /admin/get-country-report": 'MetabaseController.getCountryReport',
+  "get /admin/get-employee-report": 'MetabaseController.getEmployeeReport',
+  "get /admin/get-fees-report": 'MetabaseController.getFeesReport',
+  "get /admin/get-history-report": "MetabaseController.getHistoryReport",
+  "get /admin/get-dashboard-report": "MetabaseController.getDashboardReport",
+  "get /admin/get-kyc-report": "MetabaseController.getKYCReport",
+  "get /admin/get-news-report": "MetabaseController.getNewsReport",
+  "get /admin/get-offers-report": "MetabaseController.getOffersReport",
+  "get /admin/get-pairs-report": "MetabaseController.getPairsReport",
+  "get /admin/get-roles-report": "MetabaseController.getRolesReport",
+  "get /admin/get-transaction-history-report": "MetabaseController.getTransactionHistoryReport",
+  "get /admin/get-two-factor-request-report": "MetabaseController.getTwoFactorRequestReport",
+  "get /admin/get-users-report": "MetabaseController.getUsersReport",
+  "get /admin/get-withdraw-request-report": "MetabaseController.getWithdrawRequestReport"
 };
