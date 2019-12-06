@@ -323,7 +323,10 @@ module.exports = {
       }
 
       const user_details = await Admin.findOne({
-        email
+        where: {
+          email: email,
+          deleted_at: null
+        }
       });
       if (!user_details) {
         return res
@@ -348,7 +351,8 @@ module.exports = {
       // Update New Password
       var adminUpdates = await Admin
         .update({
-          email
+          'email': email,
+          deleted_at: null
         })
         .set({
           email,
@@ -432,7 +436,10 @@ module.exports = {
       }
 
       const user_details = await Admin.findOne({
-        email
+        where: {
+          email: email,
+          deleted_at: null
+        }
       });
       if (!user_details) {
         return res
@@ -520,6 +527,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log(error)
       await logger.error(error.message)
       return res
         .status(500)
