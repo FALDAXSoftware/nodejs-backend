@@ -18,6 +18,11 @@ module.exports = {
       example: '10',
       description: 'Buy or Sell',
       required: true
+    },flag: {
+      type: 'string',
+      example: '1',
+      description: 'Flag for which asset is editable',
+      required: true
     }
   },
   exits: {
@@ -100,29 +105,55 @@ module.exports = {
         for(var i=0; i<MDEntries.length;i++){
           if( inputs.side == "Buy" ){
             if( MDEntries[i].MDEntryType == 1 || MDEntries[i].MDEntryType == "1"  ){
-              total += parseFloat(MDEntries[i].MDEntrySize);
-              // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
-              if( total > parseFloat(inputs.order_quantity) ){  
-                response_data[0].ask_price = MDEntries[i].MDEntryPx;
-                response_data[0].limit_price = MDEntries[i].MDEntryPx;
-                break;
+              if( inputs.flag == 1 || inputs.flag == "1"){ // BTC Editable
+                if( i == 0){
+                  calculate_quantity = parseFloat(inputs.order_quantity)/MDEntries[i].MDEntryPx;
+                }              
+                total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize); 
+                total += parseFloat(MDEntries[i].MDEntrySize);
+                if( total > calculate_quantity ){  
+                // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
+                  response_data[0].ask_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  break;
+                }
+              }else{
+                total += parseFloat(MDEntries[i].MDEntrySize);
+                // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
+                if( total > parseFloat(inputs.order_quantity) ){  
+                  response_data[0].ask_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  break;
+                }
               }
+              
             }
           }
           if( inputs.side == "Sell" ){
             if( MDEntries[i].MDEntryType == 0 || MDEntries[i].MDEntryType == "0"  ){
-              if( i == 0){
-                calculate_quantity = parseFloat(inputs.order_quantity)/MDEntries[i].MDEntryPx;
+              if( inputs.flag == 2 || inputs.flag == "2"){ // BTC Editable
+                if( i == 0){
+                  calculate_quantity = parseFloat(inputs.order_quantity)/MDEntries[i].MDEntryPx;
+                }              
+                total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize); 
+                total += parseFloat(MDEntries[i].MDEntrySize);
+                if( total > calculate_quantity ){  
+                // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
+                  response_data[0].bid_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  break;
+                }
+              }else{
+                total += parseFloat(MDEntries[i].MDEntrySize);
+                // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
+                if( total > parseFloat(inputs.order_quantity) ){  
+                  response_data[0].bid_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  break;
+                }
               }
               
-            total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize); 
-              total += parseFloat(MDEntries[i].MDEntrySize);
-              if( total > calculate_quantity ){  
-              // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
-                response_data[0].bid_price = MDEntries[i].MDEntryPx;
-                response_data[0].limit_price = MDEntries[i].MDEntryPx;
-                break;
-              }
+              
             }
           }
         }

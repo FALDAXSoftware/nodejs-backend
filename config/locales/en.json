@@ -300,7 +300,7 @@
 	"Wait for 24 hours": "Due to security feature you cannot withdraw coin for 24 hour",
 	"Favourites List Success": "Favourites List has been retrieved successfully",
 	"This email id is verified.": "Your email id has not been verified. Please verify your email id",
-	"Deleted By User": "User has been deleted by you. Please contact support to activate your account.",
+	"Deleted By User": "The account has been deleted by you. Please contact support to activate your account.",
 	"Twofactor Request rejected": "Twofactor Request rejected",
 	"Threshold updated": "Threshold limits updated Successfully",
 	"Threshold listed": "Thresholds has been listed Successfully",
@@ -396,5 +396,7 @@
 	"You are allowed to trade": "You are allowed to trade",
 	"tier data retrieve": "tier data retrieve",
 	"Permission data has been retrieved": "Permission Data has been retrieved successfully.",
-	"No records for offercode":"No records found for offercode attempted/applied."
+	"No records for offercode":"No records found for offercode attempted/applied.",
+	"Role Updated Success": "Role Access has been updated Successfully",
+	"No Role data found": "No Role Permission has been found."
 }

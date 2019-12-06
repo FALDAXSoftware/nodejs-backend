@@ -474,5 +474,9 @@ module.exports.routes = {
   'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue',
 
   // Role Data
-  'get /admin/get-role-permission': 'AdminController.getRoutePermission'
+  'get /admin/get-role-permission': 'AdminController.getRoutePermission',
+  'post /admin/update-role-permission': 'AdminController.updateRolePermission',
+
+  // Socket for Conversion
+  'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue'
 };
