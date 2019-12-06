@@ -7,6 +7,7 @@
 
 module.exports = {
   tableName: 'role_permissions',
+  primaryKey: 'id',
   attributes: {
     display_name: {
       type: 'string',

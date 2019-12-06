@@ -543,6 +543,158 @@ module.exports = {
   getOffercodeUserDetails: async function( user_id ){
     let get_user = await Users.findOne({id:user_id}).select(["id","first_name","last_name", "email"])
     return get_user;
-  }
+  },
+
+
+  /** 
+   * Get Offer code used
+   */
+  getOffercodeUsed: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: 'Unauthorized access'
+        });
+      }
+      console.log(req.params.id);
+      var id = req.params.id;
+      var data_object = {
+        id:req.params.id
+      };
+      var all_data = {};
+      var get_campaign_offers = await CampaignsOffers.find(data_object).sort('created_at DESC');
+      console.log("get_campaign_offers",get_campaign_offers);
+      if ( get_campaign_offers.length > 0 ) {
+        // get_campaign_offers = get_campaign_offers[0];
+        let {
+          sortCol,
+          sortOrder,
+          data,
+          page,
+          limit,
+          action_type
+        } = req.allParams();
+        
+        let query ='';
+        let filter='';
+        
+        let from = '';
+        let order_by_field =  selected_data = select=  '';
+        var total='';
+        if (action_type && action_type != "") {
+          if( action_type == 'attempted'){
+            if ((data && data != "")) {
+              if (data && data != "" && data != null) {
+                filter = " AND (uch.code LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' )";
+              }
+              console.log("filter",filter);
+            }
+            // from += ' from users_campaign_history INNER JOIN users ON users_campaign_history.user_id = users.id where campaign_offer_id='+id;
+            select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted 
+                      from users_campaign_history AS uch
+                      INNER JOIN users
+                      on uch.user_id=users.id
+                      where uch.campaign_offer_id='${id}' AND wrong_attempted=true`+filter
+            
+            // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at ';
+            total = await sails.sendNativeQuery( select + query, [])
+            total = total.rowCount;        
+          }
+          if( action_type == 'applied'){
+            if ((data && data != "")) {
+              if (data && data != "" && data != null) {
+                filter = " AND (jth.order_id LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' )";
+              }
+            }
+            // from += ' from jst_trade_history INNER JOIN users ON jst_trade_history.user_id = users.id where campaign_offer_id='+id;
+            select = `select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted  
+                      from jst_trade_history AS jth
+                      INNER JOIN users
+                      on jth.user_id=users.id
+                      where jth.campaign_offer_id='${id}'`+filter
+            // selected_data = ' jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id ';
+            total = await sails.sendNativeQuery( select + query, [])
+            total = total.rowCount;        
+          }          
+        }else{
+          let filter1 = filter2= '';
+          if ((data && data != "")) {
+            if (data && data != "" && data != null) {
+              filter1 = " AND (LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' )";
+              filter2 = " AND (order_id LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' )";
+            }
+          }
+          select = "select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted   from users_campaign_history AS uch INNER JOIN users on uch.user_id=users.id where uch.campaign_offer_id='"+id+"'"+filter1+" AND uch.wrong_attempted=true  UNION ALL select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted from jst_trade_history AS jth INNER JOIN users on jth.user_id=users.id where jth.campaign_offer_id="+id+filter2;          
+          // console.log("select",select);
+          // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at,jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id';          
+          total = await sails.sendNativeQuery( select + query, [])
+          total = total.rowCount;        
+        }
+        
+        // countQuery = select + query;
+  
+        if (sortCol && sortOrder) {
+          let sortVal = (sortOrder == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY " + sortCol + " " + sortVal;
+        } else {
+          query += " ORDER BY created_at DESC";
+        }
+  
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+        // console.log(select + query);
+        // let get_data = await sails.sendNativeQuery("Select  "+selected_data+",users.first_name, users.last_name, users.email " + from +  query, [])
+        let get_data = await sails.sendNativeQuery( select + query, [])
+        
+        // get_campaign_offers[0].offer_used_data = get_data.rows;
+        // var total = await sails.sendNativeQuery( countQuery, [])
+        // total = total.rows[0].count;        
+        if (get_data.rowCount > 0) {
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("compaigns retrieve success"),
+              "data":{
+                used_data : get_data.rows,
+                // campaigns: get_data.rows,
+                total
+              }
+            })
+        }else{
+          return res
+            .status(200)
+            .json({
+              status: 200,
+              "message": sails.__("No records for offercode"),
+              "data":{
+                used_data : [],
+                // campaigns: get_data.rows,
+                total
+              }
+            });
+        }
+      }else{
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("No records for offercode")
+          });
+      }
+     
+    } catch (error) {
+      console.log("error", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 
 };

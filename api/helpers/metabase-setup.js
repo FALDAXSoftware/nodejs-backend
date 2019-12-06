@@ -10,7 +10,12 @@ module.exports = {
 
 
   inputs: {
-
+    dashboardValue: {
+      type: 'number',
+      example: 1,
+      description: 'Dahsboard Value',
+      required: true
+    }
   },
 
 
@@ -26,22 +31,24 @@ module.exports = {
   fn: async function (inputs, exits) {
     // TODO
     try {
-      var METABASE_SITE_URL = "http://18.190.46.86:80";
-      var METABASE_SECRET_KEY = "dbeb99a40641d0d53d1630bc52e4e154f0d0d5a74a1e672b9f035feb0213d0fb";
+      var METABASE_SITE_URL = sails.config.local.METABASE_SITE_URL;
+      var METABASE_SECRET_KEY = await sails.helpers.getDecryptData(sails.config.local.METABASE_SECRET_KEY);
+
+      console.log(inputs.dashboardValue)
 
       var payload = {
         resource: {
-          dashboard: 2
+          dashboard: inputs.dashboardValue
         },
         params: {},
         exp: Math.round(Date.now() / 1000) + (10 * 60) // 10 minute expiration
       };
       var token = jwt.sign(payload, METABASE_SECRET_KEY);
 
-      var iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token + "#theme=night&bordered=true&titled=true";
+      var iframeUrl = METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=true&titled=true";
       exits.success(iframeUrl)
     } catch (error) {
-
+      console.log(error);
     }
   }
 

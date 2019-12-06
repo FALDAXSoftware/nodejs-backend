@@ -170,13 +170,13 @@ module.exports = {
       where: {
         deleted_at: null,
         or: [{
-            slug: 'fb_profile'
-          }, {
-            slug: 'linkedin_profile'
-          },
-          {
-            slug: 'twitter_profile'
-          }
+          slug: 'fb_profile'
+        }, {
+          slug: 'linkedin_profile'
+        },
+        {
+          slug: 'twitter_profile'
+        }
         ]
       }
     });
@@ -302,7 +302,7 @@ module.exports = {
     var key = sails.config.local.key;
     console.log(sails.config.local.iv);
     var iv = sails.config.local.iv;
-    var textBytes = aesjs.utils.utf8.toBytes("AC358b41c63089b4b00ca48559c3f980ed");
+    var textBytes = aesjs.utils.utf8.toBytes("dbeb99a40641d0d53d1630bc52e4e154f0d0d5a74a1e672b9f035feb0213d0fb");
 
     var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
     var encryptedBytes = aesOfb.encrypt(textBytes);
@@ -314,7 +314,7 @@ module.exports = {
     //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
 
     // When ready to decrypt the hex string, convert it back to bytes
-    var encryptedBytes = aesjs.utils.hex.toBytes("77b4af3044d472f5e07456112f32a5ffa2c8fd27d353f112e315e4e53c7600c0a2e9d2479fcfd18446c348e060119d9d8ec78fb8fc8823a7ef67f575b6fa002fd4f298");
+    var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
 
     // The output feedback mode of operation maintains internal state,
     // so to decrypt a new instance must be instantiated.
