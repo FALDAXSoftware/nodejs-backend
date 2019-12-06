@@ -55,12 +55,15 @@ module.exports = {
 
         // Checking whether which limit matched the warm wallet balance lower condition
         if (warmWallet.balance != undefined) {
-          if (warmWallet.balance <= exisiting.third_limit) {
-            slug = "third_limit_low";
+          if (warmWallet.balance <= exisiting.first_limit) {
+              console.log("INSIDE FIRST");
+            slug = "first_limit_low";
           } else if (warmWallet.balance <= exisiting.second_limit) {
+              console.log("INSIDE SECOND");
             slug = "second_limit_low";
-          } else if (warmWallet.balance <= exisiting.first_limit) {
-            slug = "first_limit_low"
+          } else if (warmWallet.balance <= exisiting.third_limit) {
+              console.log("INSIDE THIRD");
+            slug = "third_limit_low"
           }
         }
 
