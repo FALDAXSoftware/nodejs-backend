@@ -387,8 +387,8 @@ module.exports = {
             user_id: user_id
           }
         });
-
-        if (walletCurrency == undefined) {
+        
+        if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address )) {
           return res
             .status(201)
             .json({
@@ -410,8 +410,7 @@ module.exports = {
             user_id: user_id
           }
         });
-
-        if (walletCrypto == undefined) {
+        if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address )) {
           return res
             .status(201)
             .json({
