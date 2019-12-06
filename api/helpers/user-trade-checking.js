@@ -32,7 +32,13 @@ module.exports = {
       var msg;
       var sendInfo;
 
+      console.log(userKyc)
+
       if (userKyc) {
+        if (userKyc.direct_response == null && userKyc.webhook_response == null) {
+          response = false;
+          msg = 'Your KYC is under process. Please wait until KYC is approved'
+        }
         countryData = await Countries.find({
           where: {
             name: userKyc.country

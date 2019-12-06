@@ -7,6 +7,8 @@ module.exports.local = {
   // The initialization vector (must be 16 bytes)
   'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
   'test_key': 'nikita',
+  "METABASE_SITE_URL": process.env.METABASE_SITE_URL,
+  "METABASE_SECRET_KEY": process.env.METABASE_SECRET_KEY,
   'CURRENCY_LIST': process.env.CURRENCY,
   'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
   'EMAIL_USER': process.env.EMAIL_USER,
@@ -205,5 +207,5 @@ module.exports.local = {
   notifications: {
 
   },
-  "SIMPLEX_BACKEND_URL":process.env.SIMPLEX_BACKEND_URL
+  "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL
 }

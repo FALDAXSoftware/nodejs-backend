@@ -27,6 +27,47 @@ module.exports = async function (req, res, next) {
     // urlValue = (urlValue[0] != '/') ? (urlValue) : ('/' + urlValue)
     // let urlSplit = req.url.split("?")
     // urlValue = urlSplit[0];
+    var routeArray = [
+      "admin/login",
+      "admin/reset-password",
+      "admin/forgot-password",
+      "admin/setup-two-factor",
+      "admin/update",
+      "admin/verify-two-factor",
+      "admin/disable-two-factor",
+      "admin/get-details",
+      "admin/change-password",
+      "admin/get-user-whitelist-ip",
+      "admin/add-whitelist-ip",
+      "admin/get-all-whitelist-ip",
+      "admin/delete-whitelist-ip",
+      "admin/add-user-ip-whitelist",
+      "admin/whitelist-ip-status-change",
+      // Remove 
+      "admin/get-account-report",
+      "admin/get-account-tier-report",
+      "admin/get-referral-report",
+      "admin/get-assets-report",
+      "admin/get-batch-report",
+      "admin/get-career-report",
+      "admin/get-country-report",
+      "admin/get-employee-report",
+      "admin/get-fees-report",
+      "admin/get-history-report",
+      "admin/get-dashboard-report",
+      "admin/get-kyc-report",
+      "admin/get-news-report",
+      "admin/get-offers-report",
+      "admin/get-pairs-report",
+      "admin/get-roles-report",
+      "admin/get-transaction-history-report",
+      "admin/get-two-factor-request-report",
+      "admin/get-users-report",
+      "admin/get-withdraw-request-report"
+    ]
+
+    console.log(urlValue);
+
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
       if (req.user.isAdmin) {
@@ -36,38 +77,43 @@ module.exports = async function (req, res, next) {
 
         if (userData != undefined) {
           if (userData.deleted_at == null) {
-            // var permissionData = await Permissions.findOne({
-            //   where: {
-            //     route_name: (urlValue).trim(),
-            //     deleted_at: null
-            //   }
-            // })
-            // if (permissionData != undefined) {
-            //   var role_permission = await AdminPermission.find({
-            //     where: {
-            //       permission_id: permissionData.id,
-            //       role_id: userData.role_id,
-            //       deleted_at: null
-            //     }
-            //   });
-            //   if (role_permission != undefined && role_permission.length > 0) {
-                return next()
-            //   } else {
-            //     return res
-            //       .status(403)
-            //       .json({
-            //         status: 403,
-            //         err: 'You are not allowed to access this route'
-            //       })
-            //   }
-            // } else {
-            //   return res
-            //     .status(403)
-            //     .json({
-            //       status: 403,
-            //       err: 'You are not allowed to access this route'
-            //     })
-            // }
+            if (routeArray.indexOf(urlValue) > -1) {
+              console.log("INSIDE IF >>>>>>")
+              return next();
+            } else {
+              var permissionData = await Permissions.findOne({
+                where: {
+                  route_name: (urlValue).trim(),
+                  deleted_at: null
+                }
+              })
+              if (permissionData != undefined) {
+                var role_permission = await AdminPermission.find({
+                  where: {
+                    permission_id: permissionData.id,
+                    role_id: userData.role_id,
+                    deleted_at: null
+                  }
+                });
+                if (role_permission != undefined && role_permission.length > 0) {
+                  return next()
+                } else {
+                  return res
+                    .status(403)
+                    .json({
+                      status: 403,
+                      err: 'You are not allowed to access this route'
+                    })
+                }
+              } else {
+                return res
+                  .status(403)
+                  .json({
+                    status: 403,
+                    err: 'You are not allowed to access this route'
+                  })
+              }
+            }
 
           } else if (userData.deleted_at != null) {
             return res
