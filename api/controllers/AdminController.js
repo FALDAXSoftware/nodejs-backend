@@ -117,7 +117,7 @@ module.exports = {
                                 FROM public.admin_permissions as a
                                 INNER JOIN role_permissions as r
                                 ON a.permission_id = r.id
-                                WHERE r.deleted_at IS NULL AND a.role_id = 1 AND a.deleted_at IS NULL
+                                WHERE r.deleted_at IS NULL AND a.role_id = ${admin_details.role_id} AND a.deleted_at IS NULL
                                 ORDER BY a.permission_id`
 
             var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
@@ -395,6 +395,7 @@ module.exports = {
           });
       }
     } catch (error) {
+      console.log(error)
       await logger.error(error.message)
       res
         .status(500)
@@ -3696,6 +3697,17 @@ module.exports = {
 
       var permission = [];
 
+      var roleValue = await Role.findOne({
+        select: [
+          'name',
+          'created_at'
+        ],
+        where: {
+          deleted_at: null,
+          id: role_id
+        }
+      })
+
       var userPermission = await AdminPermission.find({
         select: [
           'permission_id'
@@ -3716,7 +3728,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      });
+      }).sort('main_module ASC');
 
       if (userPermission.length > 0) {
         userPermission.map(key => {
@@ -3730,8 +3742,87 @@ module.exports = {
           "status": 200,
           "message": sails.__("Permission data has been retrieved"),
           permission,
-          getPermissionData
+          getPermissionData,
+          roleValue
         })
+    } catch (error) {
+      console.log("err", error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  updateRolePermission: async function (req, res) {
+    try {
+
+      var data = req.body.permissions;
+      var role_id = req.body.role_id;
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var permissionValue = await AdminPermission.findOne({
+            where: {
+              role_id: role_id,
+              permission_id: data[i].id
+            }
+          });
+          console.log(permissionValue)
+          if (data[i].isChecked == "true" || data[i].isChecked == true) {
+            if (!permissionValue) {
+              var updatePermission = await AdminPermission.create({
+                role_id: role_id,
+                permission_id: data[i].id,
+                created_at: new Date(),
+                deleted_at: null
+              })
+            } else if (permissionValue.deleted_at != null) {
+              var updatePermission = await AdminPermission
+                .update({
+                  role_id: role_id,
+                  permission_id: data[i].id
+                })
+                .set({
+                  deleted_at: null
+                })
+            }
+          } else if (data[i].isChecked == "false" || data[i].isChecked == false) {
+            if (permissionValue) {
+              if (permissionValue.deleted_at == null) {
+                var updatePermission = await AdminPermission
+                  .update({
+                    role_id: role_id,
+                    permission_id: data[i].id
+                  })
+                  .set({
+                    deleted_at: new Date()
+                  })
+              }
+            }
+          }
+        }
+      }
+
+      if (data.length > 0) {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Role Updated Success")
+          })
+      } else {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("No Role data found")
+          })
+      }
+
     } catch (error) {
       console.log("err", error);
       await logger.error(error.message)

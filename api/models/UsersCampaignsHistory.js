@@ -23,6 +23,11 @@ module.exports = {
       type: 'number',
       columnName: 'campaign_offer_id'
     },
+    wrong_attempted:{
+      type: 'boolean',
+      columnName: 'wrong_attempted',
+      defaultsTo: false
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

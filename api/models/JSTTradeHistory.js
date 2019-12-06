@@ -57,6 +57,14 @@ module.exports = {
       type: 'number',
       columnName: 'sell_currency_amount'
     },
+    limit_price: {
+      type: 'number',
+      columnName: 'limit_price'
+    },
+    difference_faldax_commission:{
+      type: 'number',
+      columnName: 'difference_faldax_commission'
+    },
     symbol: {
       type: 'string',
       columnName: 'symbol'
