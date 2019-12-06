@@ -43,6 +43,7 @@ module.exports = async function (req, res, next) {
       "admin/delete-whitelist-ip",
       "admin/add-user-ip-whitelist",
       "admin/whitelist-ip-status-change",
+      "admin/campaigns/offercode-used/",
       // Remove 
       "admin/get-account-report",
       "admin/get-account-tier-report",
