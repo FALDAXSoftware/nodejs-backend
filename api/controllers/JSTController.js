@@ -388,7 +388,7 @@ module.exports = {
           }
         });
         
-        if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address )) {
+        if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address=="" )) {
           return res
             .status(201)
             .json({
@@ -410,7 +410,7 @@ module.exports = {
             user_id: user_id
           }
         });
-        if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address )) {
+        if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address=="" )) {
           return res
             .status(201)
             .json({
