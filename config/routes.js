@@ -452,12 +452,12 @@ module.exports.routes = {
   // Compaigns CMS
   'post /admin/campaigns/create': 'CompaignsController.create',
   'post /admin/campaigns/list': 'CompaignsController.list',
-  'get /admin/campaigns/get/:id': 'CompaignsController.get',
+  'get /admin/campaigns/get': 'CompaignsController.get',
   'put /admin/campaigns/change-status/:id': 'CompaignsController.changeStatus',
   'put /admin/campaigns/update/:id': 'CompaignsController.update',
   'get /admin/users/list': 'AdminController.userList',
   'get /admin/campaigns/verify-offercode/:code': 'CompaignsController.verifyOfferCode',
-  'post /admin/campaigns/offercode-used/:id': 'CompaignsController.getOffercodeUsed',  
+  'post /admin/campaigns/offercode-used': 'CompaignsController.getOffercodeUsed',  
 
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
