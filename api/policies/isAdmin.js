@@ -44,13 +44,13 @@ module.exports = async function (req, res, next) {
       "admin/add-user-ip-whitelist",
       "admin/whitelist-ip-status-change",
       "admin/campaigns/offercode-used/",
-      "admin/campaigns/get/",
+      "admin/campaigns/get",
       "admin/campaigns/list",
       "admin/campaigns/create",
       "admin/campaigns/change-status/",
       "admin/campaigns/update/",
       "admin/campaigns/verify-offercode/",
-      "admin/campaigns/offercode-used/",
+      "admin/campaigns/offercode-used",
       "admin/campaigns-offers/create",
       "admin/campaigns-offers/list",
       "admin/campaigns-offers/get/",
@@ -77,7 +77,7 @@ module.exports = async function (req, res, next) {
       "admin/get-withdraw-request-report"
     ]
 
-    console.log(urlValue);
+    console.log("dsdssdd"+urlValue);
 
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
