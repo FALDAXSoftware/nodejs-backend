@@ -453,8 +453,8 @@ module.exports.routes = {
   'post /admin/campaigns/create': 'CompaignsController.create',
   'post /admin/campaigns/list': 'CompaignsController.list',
   'get /admin/campaigns/get': 'CompaignsController.get',
-  'put /admin/campaigns/change-status/:id': 'CompaignsController.changeStatus',
-  'put /admin/campaigns/update/:id': 'CompaignsController.update',
+  'put /admin/campaigns/change-status': 'CompaignsController.changeStatus',
+  'put /admin/campaigns/update': 'CompaignsController.update',
   'get /admin/users/list': 'AdminController.userList',
   'get /admin/campaigns/verify-offercode/:code': 'CompaignsController.verifyOfferCode',
   'post /admin/campaigns/offercode-used': 'CompaignsController.getOffercodeUsed',  
@@ -462,7 +462,7 @@ module.exports.routes = {
 
   'post /admin/campaigns-offers/create': 'CompaignsOffersController.create',
   'post /admin/campaigns-offers/list': 'CompaignsOffersController.list',
-  'get /admin/campaigns-offers/get/:id': 'CompaignsOffersController.get',
+  'get /admin/campaigns-offers/get': 'CompaignsOffersController.get',
 
   'get /admin/get-withdrawl-faldax-fee': 'WalletController.getWithdrawlFee',
 

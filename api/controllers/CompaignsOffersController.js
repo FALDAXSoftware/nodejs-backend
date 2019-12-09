@@ -161,7 +161,7 @@ module.exports = {
         });
       }
       var data_object = {
-        id:req.params.id
+        id:req.param("id")
       };
       var get_data = await CampaignsOffers.findOne( data_object ).populate('campaign_id');;
       if ( get_data != undefined ) {
