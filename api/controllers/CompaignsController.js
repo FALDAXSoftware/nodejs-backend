@@ -211,21 +211,21 @@ module.exports = {
           err: 'Unauthorized access'
         });
       }
-      let validator1 = new Validator(req.params, { 
-        id: 'required'
-      });
-      let matched1 = await validator1.check();
-      if (!matched1) {
-        for (var key in validator1.errors) {
-          return res
-            .status(400)
-            .json({
-              status: 400,
-              "message": validator1.errors[key].message
-            });
-        }
-      }
-      let campaign_id = req.params.id;
+      // let validator1 = new Validator(req.params, { 
+      //   id: 'required'
+      // });
+      // let matched1 = await validator1.check();
+      // if (!matched1) {
+      //   for (var key in validator1.errors) {
+      //     return res
+      //       .status(400)
+      //       .json({
+      //         status: 400,
+      //         "message": validator1.errors[key].message
+      //       });
+      //   }
+      // }
+      let campaign_id = req.param("id");
       let req_body = req.body;
       let validator = new Validator(req_body, { 
         label: 'required',
@@ -445,7 +445,7 @@ module.exports = {
         }
       }
       var data_object = {
-        id:req.params.id
+        id:req.param('id')
       };
       var get_data = await Campaigns.findOne( data_object );
       if ( get_data == undefined ) {
