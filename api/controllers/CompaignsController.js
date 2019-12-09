@@ -350,9 +350,10 @@ module.exports = {
           err: 'Unauthorized access'
         });
       }
-      console.log(req.params.id);
+      var id = req.param('id');
+      
       var data_object = {
-        id:req.params.id
+        id:id
       };
       var get_data = await Campaigns.findOne( data_object );
       console.log("get_data",get_data);
@@ -558,7 +559,7 @@ module.exports = {
         });
       }
       console.log(req.params.id);
-      var id = req.params.id;
+      var id = req.param('id');
       var data_object = {
         id:req.params.id
       };
