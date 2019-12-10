@@ -349,7 +349,7 @@
 	"account not not verified by admin": "User Account has been unverified by admin",
 	"Please Enable 2FA to continue": "Please Enable 2FA to continue",
 	"jst order created": "Congratulations, Order has been created successfully. Please check your wallet with updated balance.",
-	"jst order not created": "Oops, Unfortunately your order is not created. Please try again.",
+	"jst order not created": "Oops, Unfortunately your order can not be fulfilled. Please try again later.",
 	"insufficent funds in wallet": "Insufficient funds in wallet",
 	"Price retrieve success": "Price has been retrieved successfully",
 	"jst pair retrieve success": "JST Pair has been retrieved successfully.",

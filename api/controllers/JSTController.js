@@ -641,7 +641,8 @@ module.exports = {
 
             return res.json({
               "status": 500,
-              "message": sails.__("jst order not created") + "Due to : " + (reason_text),
+              // "message": sails.__("jst order not created") + "Due to : " + (reason_text),
+              "message": sails.__("jst order not created"),
               "data": update_order[0]
             });
           }
