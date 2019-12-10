@@ -1442,15 +1442,15 @@ module.exports = {
         });
     }
 
-    // await Users
-    //   .update({
-    //     id: user.id
-    //   })
-    //   .set({
-    //     email: user.email,
-    //     deleted_by: 1, //deleted by user
-    //     deleted_at: new Date()
-    //   });
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_by: 1, //deleted by user
+        deleted_at: new Date()
+      });
 
     var total = 0;
     var usd_price = 0;
