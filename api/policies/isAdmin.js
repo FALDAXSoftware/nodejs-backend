@@ -49,7 +49,7 @@ module.exports = async function (req, res, next) {
       "admin/campaigns/create",
       "admin/campaigns/change-status",
       "admin/campaigns/update",
-      "admin/campaigns/verify-offercode/",
+      "admin/campaigns/verify-offercode",
       "admin/campaigns/offercode-used",
       "admin/campaigns-offers/create",
       "admin/campaigns-offers/list",
