@@ -51,12 +51,13 @@ module.exports = {
         // Getting warm wallet balance
         let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
 
-        var slug;
+        var slug = '';
 
-        console.log(warmWallet.balance);
+        console.log("Warm Wallet Balance >>>>>>", warmWallet.balance);
+        console.log("Conditiomn >>>>>>>> ", warmWallet.balance != undefined && warmWallet.balance > 0 && warmWallet.balance != null)
 
         // Checking whether which limit matched the warm wallet balance lower condition
-        if (warmWallet.balance != undefined) {
+        if (warmWallet.balance != undefined && warmWallet.balance > 0 && warmWallet.balance != null) {
           console.log("Existing First Limit >>>>>>>", exisiting.fist_limit)
           console.log("Second ????????", exisiting.second_limit);
           console.log("Third >>>>>>>>>>>", exisiting.third_limit);
@@ -72,10 +73,11 @@ module.exports = {
           }
         }
 
-        console.log(slug)
+        console.log("Slug Value >>>>>>>>>>>", slug)
+        console.log("fgdgrsg", slug && slug != undefined && slug != null && slug != '')
 
         // Sending email and sms to the admins
-        if (slug != undefined) {
+        if (slug && slug != undefined && slug != null && slug != '') {
           var data = JSON.parse(adminNotifyData.value)
           var phoneValue = data.phone.split(",");
           var emailValue = data.email.split(",")

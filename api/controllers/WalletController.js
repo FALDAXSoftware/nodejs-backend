@@ -446,13 +446,16 @@ module.exports = {
                           //Check for warm wallet minimum thresold
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
 
-                            // Wallet balance checking for admin notification
-                            await sails.helpers.notification.checkAdminWalletNotification();
 
                             console.log("Amount >>>>>>>>>", amount)
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
+
+                            console.log(transaction);
+
+                            // Wallet balance checking for admin notification
+                            await sails.helpers.notification.checkAdminWalletNotification();
 
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
@@ -491,7 +494,8 @@ module.exports = {
                               amount: (amount),
                               transaction_type: 'send',
                               transaction_id: transaction.txid,
-                              is_executed: false
+                              is_executed: false,
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
                             }
 
                             // Make changes in code for receive webhook and then send to receive address
@@ -520,6 +524,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
                             }
 
                             await TransactionTable.create({
@@ -535,6 +540,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: false,
                               transaction_id: transaction.txid,
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
                             }
 
                             await TransactionTable.create({
