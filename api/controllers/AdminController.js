@@ -3773,22 +3773,23 @@ module.exports = {
 
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
-          var permissionValue = await AdminPermission.findOne({
+          var permissionValue = await AdminPermission.find({
             where: {
               role_id: role_id,
               permission_id: data[i].id
             }
-          });
+          }).limit(1);
           console.log(permissionValue)
           if (data[i].isChecked == "true" || data[i].isChecked == true) {
-            if (!permissionValue) {
+            // if (!permissionValue) {
+            if (permissionValue.length == 0 ) {
               var updatePermission = await AdminPermission.create({
                 role_id: role_id,
                 permission_id: data[i].id,
                 created_at: new Date(),
                 deleted_at: null
               })
-            } else if (permissionValue.deleted_at != null) {
+            } else if (permissionValue[0].deleted_at != null) {
               var updatePermission = await AdminPermission
                 .update({
                   role_id: role_id,
@@ -3799,8 +3800,10 @@ module.exports = {
                 })
             }
           } else if (data[i].isChecked == "false" || data[i].isChecked == false) {
-            if (permissionValue) {
-              if (permissionValue.deleted_at == null) {
+            // if (!permissionValue) {
+            if (permissionValue.length > 0 ) {
+              
+              if (permissionValue[0].deleted_at == null) {
                 var updatePermission = await AdminPermission
                   .update({
                     role_id: role_id,
