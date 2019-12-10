@@ -510,7 +510,7 @@ module.exports = {
         });
       }
       var data_object = {
-        code:req.params.code
+        code:req.param("code")
       };
       var get_data = await CampaignsOffers.count( data_object );
       if ( get_data > 0 ) {
