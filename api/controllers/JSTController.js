@@ -747,7 +747,7 @@ module.exports = {
             campaign_offer_id: campaign_offer_id,
             offer_message: offer_message,
             offer_applied: offer_applied,
-            difference_faldax_commission:difference_faldax_commission
+            difference_faldax_commission:difference_faldax_commission.toFixed(sails.config.local.TOTAL_PRECISION)
           };
           var update_order = await JSTTradeHistory
             .update({
