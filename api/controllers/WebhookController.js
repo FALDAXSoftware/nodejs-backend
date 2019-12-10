@@ -313,8 +313,8 @@ module.exports = {
     console.log("Address >>>>>>>>>>", req.body.address);
     console.log("wallet Id >>>>>", req.body.walletId);
     console.log("Body >>>>>>>>>", req.body);
-    if (req.body.address && req.body.walletId) {
-      let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+    if (req.body.address && req.body.wallet) {
+      let address = await sails.helpers.bitgo.getAddress("teth", req.body.wallet, req.body.address);
       console.log("Address >>>>>>", address);
       let addressLable = address.label;
       console.log("address label ????????????", addressLable);
@@ -357,8 +357,8 @@ module.exports = {
     console.log("Address >>>>>>>>>>", req.body.address);
     console.log("wallet Id >>>>>", req.body.walletId);
     console.log("Body >>>>>>>>>", req.body);
-    if (req.body.address && req.body.walletId) {
-      let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+    if (req.body.address && req.body.wallet) {
+      let address = await sails.helpers.bitgo.getAddress("teth", req.body.wallet, req.body.address);
       console.log("Address >>>>>>", address);
       let addressLable = address.label;
       console.log("address label ????????????", addressLable);
