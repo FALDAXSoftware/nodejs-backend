@@ -452,6 +452,8 @@ module.exports = {
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
+                            console.log(transaction);
+
                             // Wallet balance checking for admin notification
                             await sails.helpers.notification.checkAdminWalletNotification();
 
