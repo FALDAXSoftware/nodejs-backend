@@ -76,18 +76,18 @@ module.exports = {
         // wallets.deleted_" +     "at IS NULL ORDER BY wallets.balance DESC LIMIT " +
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
-            deleted_at: null,
-            is_active: true,
-            or: [{
-              coin_name: {
-                contains: data
-              }
-            }, {
-              coin_code: {
-                contains: data
-              }
-            }]
-          })
+          deleted_at: null,
+          is_active: true,
+          or: [{
+            coin_name: {
+              contains: data
+            }
+          }, {
+            coin_code: {
+              contains: data
+            }
+          }]
+        })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
             where: {
@@ -719,16 +719,16 @@ module.exports = {
       console.log("ss");
       var balance = [];
       var coinData = await Coins.find({
-          select: [
-            'warm_wallet_address',
-            'coin_code',
-            'custody_wallet_address'
-          ],
-          where: {
-            is_active: true,
-            deleted_at: null
-          }
-        })
+        select: [
+          'warm_wallet_address',
+          'coin_code',
+          'custody_wallet_address'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null
+        }
+      })
         .sort('id ASC')
 
       for (var i = 0; i < coinData.length; i++) {
@@ -738,22 +738,25 @@ module.exports = {
           .wallet
           .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
         var coldWalletData
+        var balanceColdWallet;
         if (coinData[i].custody_wallet_address != null) {
           coldWalletData = await sails
             .helpers
             .wallet
             .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
+          balanceColdWallet = coldWalletData;
           coldWalletData = coldWalletData.receiveAddress.address
         } else {
           coldWalletData = ''
         }
-        console.log(coldWalletData);
-        // console.log(warmWalletData)
+        console.log(balanceColdWallet);
+        console.log(warmWalletData)
         var object = {
-          "balance": warmWalletData.balance,
+          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
           "coin_code": coinData[i].coin_code,
           "address": warmWalletData.receiveAddress.address,
-          "cold_wallet": coldWalletData
+          "cold_wallet": coldWalletData,
+          "cold_wallet_balance": (balanceColdWallet.balance) ? (balanceColdWallet.balance) : balanceColdWallet.balanceString
         }
         console.log(object);
         balance.push(object);

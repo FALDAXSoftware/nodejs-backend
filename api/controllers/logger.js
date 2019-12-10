@@ -2,9 +2,9 @@ var bunyan = require('bunyan')
 var bunyan_format = require('bunyan-format')
 var fs = require('fs')
 var formatOut = bunyan_format({
-    outputMode: 'bunyan',
-    levelInString: true
-  },
+  outputMode: 'bunyan',
+  levelInString: true
+},
   fs.createWriteStream('logs/faldax-api.log', {
     flags: 'a'
   })
