@@ -319,9 +319,9 @@ module.exports = {
       let addressLable = address.label;
       console.log("address label ????????????", addressLable);
       let coin = address.coin;
-      if (addressLable.includes("-")) {
-        coin = addressLable.split("-")[0];
-      }
+      // if (addressLable.includes("-")) {
+      //   coin = addressLable.split("-")[0];
+      // }
       let coinObject = await Coins.findOne({
         coin_code: coin,
         deleted_at: null,
