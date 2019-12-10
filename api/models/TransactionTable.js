@@ -20,6 +20,10 @@ module.exports = {
       type: 'string',
       columnName: 'amount'
     },
+    faldax_fee: {
+      type: "number",
+      columnName: "faldax_fee"
+    },
     user_id: {
       type: 'string',
       columnName: 'user_id',
