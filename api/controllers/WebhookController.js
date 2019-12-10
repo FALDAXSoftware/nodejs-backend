@@ -280,6 +280,7 @@ module.exports = {
       deleted_at: null,
       is_active: true
     });
+    console.log("coin Value >>>>>>>>>>>", coin)
     if (coin) {
       // remove Existing webhooks
       let webhookres = await sails.helpers.bitgo.listWebhooks(coin.coin_code, coin.hot_receive_wallet_address);
