@@ -40,6 +40,7 @@ module.exports = async function (req, res, next) {
       "admin/get-user-whitelist-ip",
       "admin/add-whitelist-ip",
       "admin/get-all-whitelist-ip",
+      "admin/user-whitelist-ip-status-change",
       "admin/delete-whitelist-ip",
       "admin/add-user-ip-whitelist",
       "admin/whitelist-ip-status-change",
@@ -77,7 +78,7 @@ module.exports = async function (req, res, next) {
       "admin/get-withdraw-request-report"
     ]
 
-    console.log("dsdssdd"+urlValue);
+    console.log("dsdssdd" + urlValue);
 
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
