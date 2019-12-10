@@ -53,6 +53,8 @@ module.exports = {
       },
       json: true
     }, function (err, httpResponse, body) {
+      console.log(err);
+      console.log(body)
       if (err) {
         return exits.error(err);
       }
