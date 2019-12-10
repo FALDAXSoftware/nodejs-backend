@@ -313,8 +313,8 @@ module.exports = {
     console.log("Address >>>>>>>>>>", req.body.address);
     console.log("wallet Id >>>>>", req.body.walletId);
     console.log("Body >>>>>>>>>", req.body);
-    if (req.body.address && req.body.wallet) {
-      let address = await sails.helpers.bitgo.getAddress("teth", req.body.wallet, req.body.address);
+    if (req.body.address && req.body.walletId) {
+      let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
       console.log("Address >>>>>>", address);
       let addressLable = address.label;
       console.log("address label ????????????", addressLable);
@@ -327,9 +327,10 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
+      console.log(coinObject);
       if (coinObject) {
 
-        console.log("CoinObject >>>>>>>>>", coinObject)
+        console.log("CoinObject Receive >>>>>>>>>", coinObject)
 
         await Wallet
           .update({
@@ -354,14 +355,9 @@ module.exports = {
   // Webhook for address confiramtion
   webhookOnSendAddress: async function (req, res) {
 
-    console.log("Address >>>>>>>>>>", req.body.address);
-    console.log("wallet Id >>>>>", req.body.walletId);
-    console.log("Body >>>>>>>>>", req.body);
     if (req.body.address && req.body.walletId) {
       let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
-      console.log("Address INSIDE  >>>>>>", address);
       let addressLable = address.label;
-      console.log("address label ????????????", addressLable);
       let coin = address.coin;
       // if (addressLable.includes("-")) {
       //   coin = addressLable.split("-")[0];
@@ -371,11 +367,7 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
-
-      console.log(coinObject);
       if (coinObject) {
-
-        console.log("CoinObject >>>>>>>>>", coinObject)
 
         await Wallet
           .update({
