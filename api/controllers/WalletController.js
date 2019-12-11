@@ -492,6 +492,7 @@ module.exports = {
                               transaction_type: 'send',
                               transaction_id: transaction.txid,
                               is_executed: false,
+                              is_admin: false,
                               faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
                             }
 
@@ -1106,8 +1107,11 @@ module.exports = {
                 amount: amount,
                 transaction_type: 'send',
                 transaction_id: transaction.txid,
-                is_executed: false
+                is_executed: false,
+                is_admin: true
               }
+
+              console.log(WalletHistory)
 
               // Make changes in code for receive webhook and then send to receive address
               // Entry in wallet history
@@ -1133,6 +1137,7 @@ module.exports = {
                 user_id: user_id,
                 amount: amount,
                 transaction_type: 'send',
+                transaction_id: transaction.txid,
                 is_executed: true,
                 is_admin: true
               }
@@ -1147,6 +1152,7 @@ module.exports = {
                 destination_address: destination_address,
                 user_id: user_id,
                 amount: amount,
+                transaction_id: transaction.txid,
                 transaction_type: 'send',
                 is_executed: false,
                 is_admin: true
@@ -1326,6 +1332,62 @@ module.exports = {
           "message": "Withdraw Fee has been retrieved successfully",
           withdrawFee
         })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getWalletCoinTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code
+      } = req.allParams();
+
+      var walletLogs = `SELECT wallet_history.source_address, wallet_history.destination_address, wallet_history.amount, 
+                          wallet_history.transaction_id, wallet_history.faldax_fee
+                          FROM public.wallet_history LEFT JOIN coins
+                          ON wallet_history.coin_id = coins.id
+                          WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL 
+                          AND coins.coin_code = '${coin_code}' AND wallet_history.transaction_type = 'send'
+                          ORDER BY wallet_history.id DESC`
+
+      var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+      walletValue = walletValue.rows
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("wallet Fee Data success"),
+          walletValue
+        })
+
+
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getWalletAdminTransaction: async function (req, res) {
+    try {
+      var user_id = req.user.id
+
+      var walletHistoryAdminData = await WalletHistory
     } catch (error) {
       console.log(error);
       await logger.error(error.message)
