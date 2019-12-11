@@ -544,8 +544,8 @@ module.exports = {
                               ...addObject2
                             })
 
-                            // Wallet balance checking for admin notification
-                            await sails.helpers.notification.checkAdminWalletNotification();
+                            // // Wallet balance checking for admin notification
+                            // await sails.helpers.notification.checkAdminWalletNotification();
 
                             var userNotification = await UserNotification.findOne({
                               user_id: userData.id,
