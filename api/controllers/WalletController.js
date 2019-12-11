@@ -454,9 +454,6 @@ module.exports = {
 
                             console.log(transaction);
 
-                            // Wallet balance checking for admin notification
-                            await sails.helpers.notification.checkAdminWalletNotification();
-
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -546,6 +543,9 @@ module.exports = {
                             await TransactionTable.create({
                               ...addObject2
                             })
+
+                            // Wallet balance checking for admin notification
+                            await sails.helpers.notification.checkAdminWalletNotification();
 
                             var userNotification = await UserNotification.findOne({
                               user_id: userData.id,
