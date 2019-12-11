@@ -42,6 +42,7 @@ module.exports.routes = {
   'post /webhook-on-send-address': 'WebhookController.webhookOnSendAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
   'post /webhook-on-send': 'WebhookController.webhookOnSend',
+  'post /webhook-on-warm-send': 'WebhookController.webhookOnWarmSend',
 
   // CMS Routes/////////////////////////////////////////// Admin
   'post /admin/login': 'Admin.login',
