@@ -51,7 +51,7 @@ module.exports = {
         // Getting warm wallet balance
         let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
 
-        var slug = '';
+        let slug = '';
 
         console.log("Warm Wallet Balance >>>>>>", warmWallet.balance);
         console.log("Conditiomn >>>>>>>> ", warmWallet.balance != undefined && warmWallet.balance > 0 && warmWallet.balance != null)
