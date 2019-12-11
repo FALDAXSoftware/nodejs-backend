@@ -294,7 +294,8 @@ module.exports = {
         network_fees: 'required|decimal',
         buy_currency_amount: 'required|decimal',
         sell_currency_amount: 'required|decimal',
-        limit_price: 'required|decimal'
+        limit_price: 'required|decimal',
+        flag: 'required|in:1,2'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
@@ -491,6 +492,11 @@ module.exports = {
               "message": sails.__("insufficent funds in wallet")
             });
         }
+        if (req_body.original_pair != req_body.order_pair && req_body.Side==2 && req_body.flag ==1) { 
+          req_body.buy_currency_amount = (parseFloat(req_body.Quantity) + parseFloat(req_body.faldax_fees_actual) + parseFloat(req_body.network_fees));
+        }
+       
+        
         req_body.OrdType = '2';
         let order_create = {
           currency: crypto,
@@ -508,6 +514,9 @@ module.exports = {
         };
         console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
+        if (req_body.original_pair != req_body.order_pair && req_body.Side==2 && req_body.flag ==2) { 
+          req_body.buy_currency_amount = parseFloat(req_body.Quantity);
+        }
         // console.log("create_o/rder",create_order);
         let order_object = {
           ClOrdID: create_order.cl_order_id,
@@ -525,6 +534,7 @@ module.exports = {
           Price: req_body.limit_price
           // MinQty:quantityValue+10          
         };
+        var get_market_snapshotfor_execution = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), quantityValue, req_body.flag, "create_order");
         var response = await sails.helpers.fixapi.buyOrder(order_object);
 
         var update_data = {
@@ -706,7 +716,7 @@ module.exports = {
           var final_fees_deducted_crypto = 0;
           var final_fees_currency = 0;
           let difference_faldax_commission = 0;
-
+          
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var final_amount = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees));
             final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
@@ -719,6 +729,7 @@ module.exports = {
             final_fees_currency = parseFloat(req_body.Quantity) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
             difference_faldax_commission = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(req_body.buy_currency_amount);
           }
+          
 
           // update order
           var update_data = {
