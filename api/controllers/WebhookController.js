@@ -393,6 +393,7 @@ module.exports = {
 
     // Check Status of Transaction
     if (req.body.state == "confirmed") {
+
       let transferId = req.body.transfer;
       // get transaction details
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
@@ -430,5 +431,22 @@ module.exports = {
     res.json({
       success: true
     });
+  },
+
+  webhookOnWarmSend: async function (req, res) {
+    console.log("Warm Wallet Send", req.body)
+    if (req.body.state == "confirmed") {
+      console.log("Transfer Value >>>>>>>>>>>>>.", req.body.transfer);
+      let transferId = req.body.transfer;
+      let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
+      if (transfer.type == "send" && transfer.state == "confirmed") {
+        console.log("INSIDE WALLET THRESHOLD NOTIFICATION>>>>>>>>")
+        // Wallet balance checking for admin notification
+        await sails.helpers.notification.checkAdminWalletNotification();
+      }
+    }
+    res.send({
+      success: true
+    })
   }
 };
