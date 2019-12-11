@@ -38,6 +38,11 @@ module.exports = {
       columnName: 'md_entries',
       defaultsTo: {}
     },
+    type_of: {
+      type: 'string',
+      columnName: 'type_of',
+      allowNull:true
+    },   
     created_at: {
       type: 'ref',
       columnType: 'datetime',

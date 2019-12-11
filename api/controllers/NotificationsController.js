@@ -74,17 +74,22 @@ module.exports = {
         }
       }
 
-      var notificationUpdateData = await UserNotification.find({
-        deleted_at: null,
-        user_id: user_id
-      }).sort('id DESC')
+      var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at, 
+        user_notifications.user_id, notifications.title
+        FROM public.user_notifications LEFT JOIN notifications
+        ON user_notifications.slug = notifications.slug
+        WHERE user_notifications.user_id=${user_id}`
+
+      let notificationList = await sails.sendNativeQuery(query, []);
+      notificationList = notificationList.rows;
+
 
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("notification update success"),
-          "data": notificationUpdateData
+          "data": notificationList
         })
 
     } catch (err) {

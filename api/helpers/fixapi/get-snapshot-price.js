@@ -23,6 +23,11 @@ module.exports = {
       example: '1',
       description: 'Flag for which asset is editable',
       required: true
+    },type_of:{
+      type: 'string',
+      example: 'create_order',
+      description: 'Flag for which asset is editable',
+      required: false
     }
   },
   exits: {
@@ -85,7 +90,8 @@ module.exports = {
         product: body.Product,
         maturity_date: body.MaturityDate,
         md_entries: { MDEntries: body.MDEntries },
-        limit_price: 0.0
+        limit_price: 0.0,
+        type_of: (inputs.type_of == "create_order"?"order":"check")
       };
       await MarketSnapshotPrices.create(object_data);
       let ask_price = bid_size = limit_price = 0.0;
