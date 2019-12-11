@@ -565,7 +565,7 @@ module.exports = {
       };
       var all_data = {};
       var get_campaign_offers = await CampaignsOffers.find(data_object).sort('created_at DESC');
-      console.log("get_campaign_offers",get_campaign_offers);
+      
       if ( get_campaign_offers.length > 0 ) {
         // get_campaign_offers = get_campaign_offers[0];
         let {
@@ -609,7 +609,7 @@ module.exports = {
               }
             }
             // from += ' from jst_trade_history INNER JOIN users ON jst_trade_history.user_id = users.id where campaign_offer_id='+id;
-            select = `select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted  
+            select = `select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (jth.faldax_fees_actual-jth.faldax_fees), (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees  
                       from jst_trade_history AS jth
                       INNER JOIN users
                       on jth.user_id=users.id
@@ -626,8 +626,8 @@ module.exports = {
               filter2 = " AND (order_id LIKE '%" + data.toLowerCase() + "%' OR LOWER(full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(email) LIKE '%" + data.toLowerCase() + "%' )";
             }
           }
-          select = "select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted   from users_campaign_history AS uch INNER JOIN users on uch.user_id=users.id where uch.campaign_offer_id='"+id+"'"+filter1+" AND uch.wrong_attempted=true  UNION ALL select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted from jst_trade_history AS jth INNER JOIN users on jth.user_id=users.id where jth.campaign_offer_id="+id+filter2;          
-          // console.log("select",select);
+          select = "select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees   from users_campaign_history AS uch INNER JOIN users on uch.user_id=users.id where uch.campaign_offer_id='"+id+"'"+filter1+" AND uch.wrong_attempted=true  UNION ALL select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees from jst_trade_history AS jth INNER JOIN users on jth.user_id=users.id where jth.campaign_offer_id="+id+filter2;          
+          console.log("select",select);
           // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at,jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id';          
           total = await sails.sendNativeQuery( select + query, [])
           total = total.rowCount;        
