@@ -435,11 +435,11 @@ module.exports = {
 
   webhookOnWarmSend: async function (req, res) {
     console.log("Warm Wallet Send", req.body)
-    if (req.body.state == "confirmed") {
+    if (req.body.state == "unconfirmed") {
       console.log("Transfer Value >>>>>>>>>>>>>.", req.body.transfer);
       let transferId = req.body.transfer;
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-      if (transfer.type == "send" && transfer.state == "confirmed") {
+      if (transfer.type == "send" && transfer.state == "unconfirmed") {
         console.log("INSIDE WALLET THRESHOLD NOTIFICATION>>>>>>>>")
         // Wallet balance checking for admin notification
         await sails.helpers.notification.checkAdminWalletNotification();

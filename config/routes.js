@@ -501,5 +501,8 @@ module.exports.routes = {
   "get /admin/get-transaction-history-report": "MetabaseController.getTransactionHistoryReport",
   "get /admin/get-two-factor-request-report": "MetabaseController.getTwoFactorRequestReport",
   "get /admin/get-users-report": "MetabaseController.getUsersReport",
-  "get /admin/get-withdraw-request-report": "MetabaseController.getWithdrawRequestReport"
+  "get /admin/get-withdraw-request-report": "MetabaseController.getWithdrawRequestReport",
+
+  // Wallet Dashboard
+  "get /admin/get-wallet-dashboard": "WalletController.getWalletCoinTransaction"
 };
