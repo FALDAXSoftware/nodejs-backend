@@ -54,7 +54,8 @@ module.exports = async function (req, res, next) {
       "admin/campaigns/offercode-used",
       "admin/campaigns-offers/create",
       "admin/campaigns-offers/list",
-      "admin/campaigns-offers/get"
+      "admin/campaigns-offers/get",
+      "admin/get-wallet-dashboard"
     ]
 
     console.log("dsdssdd" + urlValue);

@@ -396,7 +396,7 @@
 	"You are allowed to trade": "You are allowed to trade",
 	"tier data retrieve": "tier data has been retrieved successfully",
 	"Permission data has been retrieved": "Permission Data has been retrieved successfully.",
-	"No records for offercode":"No records found for offercode attempted/applied.",
+	"No records for offercode": "No records found for offercode attempted/applied.",
 	"Role Updated Success": "Role Access has been updated successfully",
 	"No Role data found": "No Role Permission has been found.",
 	"Account Report Success": "Account Class report has been retrieved successfully.",
@@ -418,5 +418,6 @@
 	"Transaction History Report Success": "Transaction History report has been retrieved successfully.",
 	"Two Factor Request Report Success": "Two Factor Request report has been retrieved successfully.",
 	"Users Report Success": "Users report has been retrieved successfully.",
-	"Withdraw Request Report Success": "Withdraw Request report has been retrieved successfully."
+	"Withdraw Request Report Success": "Withdraw Request report has been retrieved successfully.",
+	"wallet Fee Data success": "Faldax Wallet Fee Data has been retrieved successfully."
 }

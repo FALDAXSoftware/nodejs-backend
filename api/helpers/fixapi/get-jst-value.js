@@ -56,6 +56,8 @@ module.exports = {
       if (req_body.original_pair == req_body.order_pair) {
         // Means The part which you want to send is being editable for flag = 1
         if (flag == 1) {
+          var totalValue = 0;
+          var priceValue = 0;
           if (usd_value) {
             var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             if (req_body.Side == 1) {
@@ -63,29 +65,18 @@ module.exports = {
             }
             price_value_usd = price_value_usd * usd_value;
             req_body.OrderQty = price_value_usd;
-            totalValue = (price_value_usd * priceValue)
           }
-          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
 
-          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
-          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
-          console.log("get_jst_price", get_jst_price);
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 1) {
             priceValue = (1 / get_jst_price[0].ask_price);
           }
+          totalValue = (req_body.OrderQty * priceValue)
 
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
             totalValue = (req_body.OrderQty * priceValue);
             usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             usd_price = (req_body.OrderQty * usd_price[0].ask_price)
-          } else {
-            var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            if (req_body.Side == 1) {
-              price_value_usd = (1 / price_value[0].ask_price);
-            }
-            price_value_usd = price_value_usd * usd_value;
-            req_body.OrderQty = price_value_usd;
-            totalValue = (price_value_usd * priceValue)
           }
 
           if (req_body.Side == 1) {
@@ -102,7 +93,6 @@ module.exports = {
             original_value = totalValue;
           }
 
-          console.log(get_faldax_fee);
           returnData = {
             "network_fee": get_network_fees,
             "faldax_fee": faldax_fee_value,
@@ -113,10 +103,12 @@ module.exports = {
             "original_value": original_value,
             "orderQuantity": original_value
           }
+
         } else if (flag == 2) {
           var valueUSD
-          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"));
-          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
+          var totalValue = 0;
+          var priceValue = 0;
+          var price_value_usd = 0;
           if (usd_value) {
             var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             if (req_body.Side == 1) {
@@ -129,20 +121,13 @@ module.exports = {
           if (req_body.Side == 1) {
             priceValue = (get_jst_price[0].ask_price);
           }
+
+          totalValue = priceValue * req_body.OrderQty;
+
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
             totalValue = (req_body.OrderQty * priceValue);
             usd_price = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             usd_price = (req_body.OrderQty * usd_price[0].ask_price)
-          } else {
-            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            if (req_body.Side == 1) {
-              price_value_usd = (1 / price_value[0].ask_price);
-            }
-            price_value_usd = price_value_usd * usd_value;
-            req_body.OrderQty = price_value_usd;
-            totalValue = (price_value_usd * priceValue)
-            var price_value1 = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            valueUSD = usd_value * (1 / price_value1[0].ask_price)
           }
           if (req_body.Side == 1) {
             var qty = ((!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value))) ? ((req_body.OrderQty)) : (totalValue)
@@ -159,8 +144,7 @@ module.exports = {
             original_value = get_faldax_fee
             totalValue = get_faldax_fee * priceValue
           }
-          console.log(((!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value))) == true)
-          console.log(get_faldax_fee)
+
           returnData = {
             "network_fee": get_network_fees,
             "faldax_fee": faldax_fee_value,
@@ -174,8 +158,6 @@ module.exports = {
         }
       } else if (req_body.original_pair != req_body.order_pair) {
         if (flag == 1) {
-          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
-          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (usd_value) {
             var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             if (req_body.Side == 2) {
@@ -184,22 +166,15 @@ module.exports = {
             price_value_usd = price_value_usd * usd_value;
             req_body.OrderQty = price_value_usd;
           }
-          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty,flag);
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 2) {
             priceValue = (get_jst_price[0].bid_price);
           }
+          totalValue = (req_body.OrderQty * priceValue)
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
             totalValue = (req_body.OrderQty * priceValue);
             usd_price = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             usd_price = (req_body.OrderQty * usd_price[0].bid_price)
-          } else {
-            var price_value = await sails.helpers.fixapi.getLatestPrice(crypto + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            if (req_body.Side == 2) {
-              price_value_usd = (1 / price_value[0].bid_price);
-            }
-            price_value_usd = price_value_usd * usd_value;
-            req_body.OrderQty = price_value_usd;
-            totalValue = (price_value_usd * priceValue)
           }
 
           if (req_body.Side == 2) {
@@ -226,8 +201,6 @@ module.exports = {
             "orderQuantity": req_body.OrderQty
           }
         } else if (flag == 2) {
-          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice((req_body.original_pair), (req_body.Side == 1 ? "Buy" : "Sell"));
-          // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty);
           if (usd_value) {
             var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             if (req_body.Side == 2) {
@@ -236,26 +209,17 @@ module.exports = {
             price_value_usd = price_value_usd * usd_value;
             req_body.OrderQty = price_value_usd;
           }
-          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty,flag);
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 2) {
             priceValue = (1 / get_jst_price[0].bid_price);
           }
 
+          totalValue = (req_body.OrderQty * priceValue)
+
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
-            console.log((req_body.OrderQty * priceValue))
-            console.log(req_body.orderQuantity);
-            console.log(priceValue);
             totalValue = (req_body.OrderQty * priceValue);
             usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             usd_price = (req_body.OrderQty * usd_price[0].bid_price)
-          } else {
-            var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            if (req_body.Side == 2) {
-              price_value_usd = (1 / price_value[0].bid_price);
-            }
-            price_value_usd = price_value_usd * usd_value;
-            req_body.OrderQty = price_value_usd;
-            totalValue = (price_value_usd * priceValue)
           }
 
           if (req_body.Side == 2) {
