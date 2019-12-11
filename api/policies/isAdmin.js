@@ -54,28 +54,7 @@ module.exports = async function (req, res, next) {
       "admin/campaigns/offercode-used",
       "admin/campaigns-offers/create",
       "admin/campaigns-offers/list",
-      "admin/campaigns-offers/get",
-      // Remove 
-      "admin/get-account-report",
-      "admin/get-account-tier-report",
-      "admin/get-referral-report",
-      "admin/get-assets-report",
-      "admin/get-batch-report",
-      "admin/get-career-report",
-      "admin/get-country-report",
-      "admin/get-employee-report",
-      "admin/get-fees-report",
-      "admin/get-history-report",
-      "admin/get-dashboard-report",
-      "admin/get-kyc-report",
-      "admin/get-news-report",
-      "admin/get-offers-report",
-      "admin/get-pairs-report",
-      "admin/get-roles-report",
-      "admin/get-transaction-history-report",
-      "admin/get-two-factor-request-report",
-      "admin/get-users-report",
-      "admin/get-withdraw-request-report"
+      "admin/campaigns-offers/get"
     ]
 
     console.log("dsdssdd" + urlValue);
