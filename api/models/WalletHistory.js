@@ -24,6 +24,11 @@ module.exports = {
       type: "string",
       columnName: "destination_address"
     },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
+    },
     user_id: {
       columnName: "user_id",
       model: "users"
