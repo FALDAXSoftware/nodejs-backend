@@ -1347,28 +1347,259 @@ module.exports = {
   getWalletCoinTransaction: async function (req, res) {
     try {
       var {
-        coin_code
+        coin_code,
+        wallet_type,
+        sort_col,
+        sort_order,
+        page,
+        limit,
+        data,
+        start_date,
+        end_date
       } = req.allParams();
 
-      var walletLogs = `SELECT wallet_history.source_address, wallet_history.destination_address, wallet_history.amount, 
-                          wallet_history.transaction_id, wallet_history.faldax_fee
+      var user_id = req.user.id;
+      var filter = ''
+      if (wallet_type == 1) {
+        var queryAppended = false;
+        if (coin_code && coin_code != '' && coin_code != null) {
+          filter += ` AND coins.coin_code = '${coin_code}'`
+          queryAppended = true;
+        }
+        if (data && data != '' && data != null) {
+          filter += ' AND'
+          filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
+        }
+        var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, wallet_history.amount, 
+                          wallet_history.transaction_id, wallet_history.faldax_fee, wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
                           WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL 
-                          AND coins.coin_code = '${coin_code}' AND wallet_history.transaction_type = 'send'
-                          ORDER BY wallet_history.id DESC`
+                           AND wallet_history.transaction_type = 'send'${filter}`
 
-      var walletValue = await sails.sendNativeQuery(walletLogs, []);
+        if (start_date && end_date) {
+          walletLogs += " AND "
 
-      walletValue = walletValue.rows
+          walletLogs += " wallet_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
 
-      return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": sails.__("wallet Fee Data success"),
-          walletValue
-        })
+        countQuery = walletLogs;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          walletLogs += " ORDER BY wallet_history." + sort_col + " " + sortVal;
+        }
+
+        walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+        walletValue = walletValue.rows
+
+        tradeCount = await sails.sendNativeQuery(countQuery, [])
+        tradeCount = tradeCount.rows.length;
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("wallet Fee Data success"),
+            walletValue,
+            tradeCount
+          })
+      } else if (wallet_type == 2) {
+        if (coin_code && coin_code != '' && coin_code != null) {
+          filter += ` AND coins.coin_code = '${coin_code}'`
+        }
+        if (data && data != '' && data != null) {
+          filter += ' AND'
+          filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
+        }
+        var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address, wallet_history.amount, 
+                            wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
+                            FROM public.wallet_history LEFT JOIN coins
+                            ON wallet_history.coin_id = coins.id
+                            WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL 
+                            AND user_id = ${user_id} AND is_admin = 'true'${filter}`
+
+        if (start_date && end_date) {
+          walletLogs += " AND "
+
+          walletLogs += " wallet_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        countQuery = walletLogs;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          walletLogs += " ORDER BY wallet_history." + sort_col + " " + sortVal;
+        }
+
+        walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+        walletValue = walletValue.rows
+
+        tradeCount = await sails.sendNativeQuery(countQuery, [])
+        tradeCount = tradeCount.rows.length;
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Admin wallet history success"),
+            walletValue,
+            tradeCount
+          })
+      } else if (wallet_type == 3) {
+
+        var queryAppended = false;
+
+        if (coin_code && coin_code != '' && coin_code != null) {
+          filter += ` WHERE coins.coin_code = '${coin_code}'`
+          queryAppended = true
+        }
+
+        if (data && data != '' && data != null) {
+          if (queryAppended == true) {
+            filter += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.order_id) LIKE '%" + data.toLowerCase() + "%' OR jst_trade_history.exec_id LIKE '%" + data.trim() + "%' OR LOWER(jst_trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'";
+            if (!isNaN(data)) {
+              filter += " OR quantity=" + data + " OR fill_price=" + data
+            }
+            filter += ")"
+          } else {
+            filter += " WHERE (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.order_id) LIKE '%" + data.toLowerCase() + "%' OR jst_trade_history.exec_id LIKE '%" + data.trim() + "%' OR LOWER(jst_trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'";
+            if (!isNaN(data)) {
+              filter += " OR quantity=" + data + " OR fill_price=" + data
+            }
+            filter += ")"
+          }
+        }
+
+        var walletLogs = `SELECT CONCAT((jst_trade_history.fill_price), ' ',(jst_trade_history.settle_currency)) as fill_price,
+                              CONCAT((jst_trade_history.quantity), ' ',(jst_trade_history.currency)) as quantity, 
+                              jst_trade_history.order_status, jst_trade_history.symbol,
+                              jst_trade_history.settle_currency, jst_trade_history.currency, jst_trade_history.limit_price,
+                              jst_trade_history.order_id, jst_trade_history.execution_report, jst_trade_history.exec_id, jst_trade_history.transact_time, 
+                              CONCAT((jst_trade_history.faldax_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as faldax_fees, 
+                              CONCAT((jst_trade_history.network_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as network_fees, 
+                              CONCAT((jst_trade_history.difference_faldax_commission), ' ',(jst_trade_history.settle_currency)) as comission,
+                              users.email,jst_trade_history.exec_id, coins.coin_code
+                              FROM public.jst_trade_history LEFT JOIN coins
+                              ON coins.coin = jst_trade_history.currency OR coins.coin = jst_trade_history.settle_currency 
+                              LEFT JOIN users ON users.id = jst_trade_history.user_id
+                              ${filter}`
+
+        if (start_date && end_date) {
+          walletLogs += " AND "
+
+          walletLogs += " jst_trade_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        countQuery = walletLogs;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          walletLogs += " ORDER BY jst_trade_history." + sort_col + " " + sortVal;
+        }
+
+        walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+        walletValue = walletValue.rows
+
+        tradeCount = await sails.sendNativeQuery(countQuery, [])
+        tradeCount = tradeCount.rows.length;
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Admin wallet history success"),
+            walletValue,
+            tradeCount
+          })
+      } else if (wallet_type == 4) {
+
+        if (coin_code && coin_code != '' && coin_code != null) {
+          filter += ` AND coins.coin_code = '${coin_code}'`
+          queryAppended = true
+        }
+
+        if (data && data != '' && data != null) {
+          filter += ' AND'
+          filter += " (LOWER(wallets.receive_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallets.send_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%')";
+        }
+
+        var walletLogs = `SELECT users.email, users.created_at, users.deleted_at,
+                            CONCAT ((wallets.balance), ' ', coins.coin) as balance, 
+                            CONCAT ((wallets.placed_balance), ' ', coins.coin) as placed_balance, 
+                            wallets.receive_address, coins.coin_code
+                            wallets.send_address, users.full_name, coins.coin
+                            FROM public.wallets LEFT JOIN users
+                            ON users.id = wallets.user_id
+                            LEFT JOIN coins ON wallets.coin_id = coins.id
+                            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL${filter}`
+
+        if (start_date && end_date) {
+          walletLogs += " AND "
+
+          walletLogs += " users.deleted_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND users.deleted_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        countQuery = walletLogs;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          walletLogs += " ORDER BY wallets." + sort_col + " " + sortVal;
+        } else {
+          walletLogs += " ORDER BY wallets.id DESC"
+        }
+
+        walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+        walletValue = walletValue.rows
+
+        tradeCount = await sails.sendNativeQuery(countQuery, [])
+        tradeCount = tradeCount.rows.length;
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Admin wallet history success"),
+            walletValue,
+            tradeCount
+          })
+      }
 
 
     } catch (error) {
@@ -1383,11 +1614,196 @@ module.exports = {
     }
   },
 
-  getWalletAdminTransaction: async function (req, res) {
+  getWarmWalletInfo: async function (req, res) {
     try {
-      var user_id = req.user.id
+      var balance = [];
+      var coinData = await Coins.find({
+        select: [
+          'warm_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null
+        }
+      })
+        .sort('id ASC')
 
-      var walletHistoryAdminData = await WalletHistory
+      for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i]);
+        let warmWalletData = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+        var object = {
+          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
+          "coin_code": coinData[i].coin_code,
+          "address": warmWalletData.receiveAddress.address
+        }
+        balance.push(object);
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          balance
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getWarmWalletTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code
+      } = req.allParams();
+      var coinData = await Coins.findOne({
+        select: [
+          'warm_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin_code
+        }
+      });
+
+      let warmWalletData = await sails
+        .helpers
+        .bitgo
+        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address);
+
+      var data = warmWalletData.transfers
+      var balance = [];
+      for (var i = 0; i < data.length; i++) {
+        let object = {
+          "wallet_id": data[i].wallet,
+          "transaction_id": data[i].txid,
+          "type": data[i].type,
+          "history": data[i].history,
+          "normalizedTxHash": data[i].normalizedTxHash,
+          "inputs": data[i].inputs
+        }
+        balance.push(object)
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          balance
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getColdWalletInfo: async function (req, res) {
+    try {
+      var balance = [];
+      var coinData = await Coins.find({
+        select: [
+          'custody_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null
+        }
+      })
+        .sort('id ASC')
+
+      for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i]);
+        let warmWalletData = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
+        var object = {
+          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
+          "coin_code": coinData[i].coin_code,
+          "address": warmWalletData.receiveAddress.address
+        }
+        balance.push(object);
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          balance
+        })
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  getColdWalletTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code
+      } = req.allParams();
+      var coinData = await Coins.findOne({
+        select: [
+          'custody_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin_code
+        }
+      });
+
+      let warmWalletData = await sails
+        .helpers
+        .bitgo
+        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address);
+
+      var data = warmWalletData.transfers
+      var balance = [];
+      for (var i = 0; i < data.length; i++) {
+        let object = {
+          "wallet_id": data[i].wallet,
+          "transaction_id": data[i].txid,
+          "type": data[i].type,
+          "history": data[i].history,
+          "normalizedTxHash": data[i].normalizedTxHash,
+          "inputs": data[i].inputs
+        }
+        balance.push(object)
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          balance
+        })
     } catch (error) {
       console.log(error);
       await logger.error(error.message)
