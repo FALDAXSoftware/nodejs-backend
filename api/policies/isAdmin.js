@@ -60,7 +60,8 @@ module.exports = async function (req, res, next) {
       "admin/get-warm-wallet-data",
       "admin/get-warm-wallet-transaction",
       "admin/get-cold-wallet-data",
-      "admin/get-cold-wallet-transaction"
+      "admin/get-cold-wallet-transaction",
+      "admin-wallet-fees-details"
     ]
 
     console.log("dsdssdd" + urlValue);

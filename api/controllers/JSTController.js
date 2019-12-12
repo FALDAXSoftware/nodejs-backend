@@ -618,6 +618,7 @@ module.exports = {
               trade_date: jst_response_data.TradeDate,
               order_status: order_status,
               reason: (jst_response_data.Text ? jst_response_data.Text : ""),
+              exec_id: jst_response_data.ExecID
             };
 
 
