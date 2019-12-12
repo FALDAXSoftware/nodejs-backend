@@ -2376,6 +2376,15 @@ module.exports = {
         }
       }
 
+      // Get JST conversion total faldax earns
+      var query_jst = `SELECT SUM(faldax_fees+network_fees) as total_from_jst FROM public.jst_trade_history 
+                      LEFT JOIN coins
+                      ON coins.coin = jst_trade_history.currency OR coins.coin = jst_trade_history.settle_currency 
+                      WHERE coins.coin_code = 'tbtc'
+                      GROUP BY jst_trade_history.id,coins.coin_code
+                      ORDER BY jst_trade_history.id DESC`;
+      let jst_fees = await sails.sendNativeQuery(query_jst, []);
+      console.log("jst_fees",jst_fees);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Wallet Details"),
