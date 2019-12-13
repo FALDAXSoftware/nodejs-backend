@@ -1343,7 +1343,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Wallet Coin Transaction
   getWalletCoinTransaction: async function (req, res) {
     try {
       var {
@@ -1613,7 +1613,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Warmwallet Information
   getWarmWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1629,8 +1629,7 @@ module.exports = {
       })
         .sort('id ASC')
 
-      for (var i = 0; i < coinData.length; i++) {
-        console.log(coinData[i]);
+      for (var i = 0; i < coinData.length; i++) {        
         let warmWalletData = await sails
           .helpers
           .wallet
@@ -1660,7 +1659,7 @@ module.exports = {
         });
     }
   },
-
+ // Get Warm Wallet Transaction list
   getWarmWalletTransaction: async function (req, res) {
     try {
       var {
@@ -1714,7 +1713,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Cold Wallet Information
   getColdWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1761,7 +1760,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Cold Wallet Transaction
   getColdWalletTransaction: async function (req, res) {
     try {
       var {
