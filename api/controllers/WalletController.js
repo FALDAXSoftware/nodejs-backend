@@ -12,7 +12,9 @@ var logger = require("./logger")
 
 
 module.exports = {
-
+  /**
+  Get Monthly/Daily Value
+  **/
   getMonthlyDailyValue: async function (req, res) {
     try {
       var {
@@ -82,8 +84,9 @@ module.exports = {
       console.log(error);
     }
   },
-
-  // call currency conversion helper
+  /**
+  Call currency conversion helper
+  **/
   getConversionData: async function (req, res) {
     // var currencyData = await sails
     //   .helpers
@@ -938,8 +941,9 @@ module.exports = {
         });
     }
   },
-
-  // Create receive address for one coin
+  /**
+  Create receive address for one coin
+  **/
   createAdminReceiveAddressCoin: async function (req, res) {
     try {
       var {
@@ -1014,8 +1018,9 @@ module.exports = {
         });
     }
   },
-
-  // Create receive address for one coin for admin
+  /**
+  Create receive address for one coin for admin
+  **/
   createAdminReceiveAddressCoinForAdmin: async function (req, res) {
     try {
       var {
@@ -1089,8 +1094,9 @@ module.exports = {
         });
     }
   },
-
-  // Admin Send Funds API
+  /**
+  Admin Send Funds API
+  **/
   sendCoinAdmin: async function (req, res) {
     try {
 
@@ -1274,8 +1280,9 @@ module.exports = {
         });
     }
   },
-
-  // Just for QA testing
+  /**
+  Just for QA testing
+  **/
   addWalletBalance: async function (req, res) {
     try {
       var {
@@ -1325,8 +1332,9 @@ module.exports = {
         });
     }
   },
-
-  // Update Wallet Balance
+  /**
+  Update Wallet Balance
+  **/
   updateWalletBalance: async function (req, res) {
     try {
 
@@ -1377,7 +1385,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Withrawls Fees
+  **/
   getWithdrawlFee: async function (req, res) {
     try {
       var withdrawFee = await AdminSetting.find({
@@ -1410,7 +1420,9 @@ module.exports = {
         });
     }
   },
-  // Get Wallet Coin Transaction
+  /**
+  Get Wallet Coin Transaction
+  **/
   getWalletCoinTransaction: async function (req, res) {
     try {
       var {
@@ -1689,7 +1701,9 @@ module.exports = {
         });
     }
   },
-  // Get Warmwallet Information
+  /**
+  Get Warmwallet Information
+  **/
   getWarmWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1735,7 +1749,9 @@ module.exports = {
         });
     }
   },
- // Get Warm Wallet Transaction list
+  /**
+  Get Warm Wallet Transaction list
+  /**/
   getWarmWalletTransaction: async function (req, res) {
     try {
       var {
@@ -1789,7 +1805,9 @@ module.exports = {
         });
     }
   },
-  // Get Cold Wallet Information
+  /**
+  Get Cold Wallet Information
+  **/
   getColdWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1836,7 +1854,9 @@ module.exports = {
         });
     }
   },
-  // Get Cold Wallet Transaction
+  /**
+  Get Cold Wallet Transaction
+  **/
   getColdWalletTransaction: async function (req, res) {
     try {
       var {
