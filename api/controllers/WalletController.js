@@ -952,16 +952,83 @@ module.exports = {
         is_active: true,
         id: user_id
       });
-      if (!userData) {
-        userData = await Admin.findOne({
-          deleted_at: null,
-          is_active: true,
-          id: user_id
+
+      userData.flag = false;
+      var walletDataCreate = await sails
+        .helpers
+        .wallet
+        .receiveOneAddress(coin_code, userData);
+
+      if (walletDataCreate == 1) {
+        return res.json({
+          status: 500,
+          message: sails.__("Address already Create Success"),
+          data: walletDataCreate
+        })
+      } else if (walletDataCreate) {
+        //Sending email to user for wallet Address Creation
+        let slug = "user_wallet_address_creation"
+        let template = await EmailTemplate.findOne({
+          slug
         });
-        userData.flag = true;
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: userData.first_name,
+            coin: coin_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+            to: userData.email,
+            subject: "User Wallet Address has been Created"
+          }, function (err) {
+            if (!err) {
+
+            }
+          })
+        return res.json({
+          status: 200,
+          message: sails.__("Address Create Success"),
+          data: walletDataCreate
+        })
       } else {
-        userData.flag = false;
+        return res.json({
+          status: 500,
+          message: sails.__("Address Not Create Success"),
+          data: walletDataCreate
+        })
       }
+    } catch (error) {
+      console.log(error)
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Create receive address for one coin for admin
+  createAdminReceiveAddressCoinForAdmin: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        user_id
+      } = req.allParams();
+      var userData = [];
+      userData = await Admin.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: user_id
+      });
+      userData.flag = true;
       var walletDataCreate = await sails
         .helpers
         .wallet
@@ -1343,7 +1410,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Wallet Coin Transaction
   getWalletCoinTransaction: async function (req, res) {
     try {
       var {
@@ -1371,7 +1438,8 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, wallet_history.amount, 
-                          wallet_history.transaction_id, wallet_history.faldax_fee, wallet_history.created_at, coins.coin_code
+                          wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin),
+                          wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
                           WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL 
@@ -1421,7 +1489,8 @@ module.exports = {
           filter += ' AND'
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
-        var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address, wallet_history.amount, 
+        var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address, 
+                            (CONCAT(wallet_history.amount) , ' ', coins.coin), 
                             wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
                             FROM public.wallet_history LEFT JOIN coins
                             ON wallet_history.coin_id = coins.id
@@ -1492,7 +1561,8 @@ module.exports = {
         var walletLogs = `SELECT CONCAT((jst_trade_history.fill_price), ' ',(jst_trade_history.settle_currency)) as fill_price,
                               CONCAT((jst_trade_history.quantity), ' ',(jst_trade_history.currency)) as quantity, 
                               jst_trade_history.order_status, jst_trade_history.symbol,
-                              jst_trade_history.settle_currency, jst_trade_history.currency, jst_trade_history.limit_price,
+                              jst_trade_history.settle_currency, jst_trade_history.currency, 
+                              (CONCAT(jst_trade_history.limit_price), ' ', (jst_trade_history.settle_currency)) as limit_price,
                               jst_trade_history.order_id, jst_trade_history.execution_report, jst_trade_history.exec_id, jst_trade_history.transact_time, 
                               CONCAT((jst_trade_history.faldax_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as faldax_fees, 
                               CONCAT((jst_trade_history.network_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as network_fees, 
@@ -1554,12 +1624,14 @@ module.exports = {
         var walletLogs = `SELECT users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance, 
                             CONCAT ((wallets.placed_balance), ' ', coins.coin) as placed_balance, 
-                            wallets.receive_address, coins.coin_code
+                            wallets.receive_address, coins.coin_code,
                             wallets.send_address, users.full_name, coins.coin
                             FROM public.wallets LEFT JOIN users
                             ON users.id = wallets.user_id
                             LEFT JOIN coins ON wallets.coin_id = coins.id
                             WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL${filter}`
+
+        console.log(walletLogs);
 
         if (start_date && end_date) {
           walletLogs += " AND "
@@ -1573,6 +1645,7 @@ module.exports = {
 
         countQuery = walletLogs;
 
+        console.log(sort_col, sort_order);
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
@@ -1582,7 +1655,10 @@ module.exports = {
           walletLogs += " ORDER BY wallets.id DESC"
         }
 
+        console.log(walletLogs)
+
         walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        console.log(walletLogs);
 
         var walletValue = await sails.sendNativeQuery(walletLogs, []);
 
@@ -1613,7 +1689,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Warmwallet Information
   getWarmWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1629,8 +1705,7 @@ module.exports = {
       })
         .sort('id ASC')
 
-      for (var i = 0; i < coinData.length; i++) {
-        console.log(coinData[i]);
+      for (var i = 0; i < coinData.length; i++) {        
         let warmWalletData = await sails
           .helpers
           .wallet
@@ -1660,7 +1735,7 @@ module.exports = {
         });
     }
   },
-
+ // Get Warm Wallet Transaction list
   getWarmWalletTransaction: async function (req, res) {
     try {
       var {
@@ -1714,7 +1789,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Cold Wallet Information
   getColdWalletInfo: async function (req, res) {
     try {
       var balance = [];
@@ -1761,7 +1836,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Cold Wallet Transaction
   getColdWalletTransaction: async function (req, res) {
     try {
       var {
