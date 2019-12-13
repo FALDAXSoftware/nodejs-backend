@@ -30,7 +30,9 @@ var logger = require("../controllers/logger");
 
 
 module.exports = {
-  // CMS Login
+  /**
+  CMS Login
+  **/
   login: async function (req, res) {
     try {
       // Parameter Existence
@@ -235,7 +237,9 @@ module.exports = {
     }
   },
 
-  // Create Admin
+  /** 
+  Create Admin
+  **/
   create: async function (req, res) {
     try {
       // Parameter Existence
@@ -285,8 +289,9 @@ module.exports = {
         });
     }
   },
-
-  // Change Password Admin
+  /**
+  Change Password Admin
+  **/
   changePassword: async function (req, res) {
     let {
       email,
@@ -410,7 +415,9 @@ module.exports = {
       return;
     }
   },
-
+  /**
+  Update Employee Password
+  **/
   updateEmployeePassword: async function (req, res) {
     let {
       email,
@@ -538,7 +545,9 @@ module.exports = {
     }
   },
 
-  // Update Profile Details Admin
+  /**
+  Update Profile Details Admin
+  **/
   update: async function (req, res) {
     try {
       const admin_details = await Admin.findOne({
@@ -579,7 +588,9 @@ module.exports = {
     }
   },
 
-  // Reset Passsword
+  /**
+  Reset Passsword
+  **/
   resetPassword: async function (req, res) {
     try {
       var reset_token = req.body.reset_token;
@@ -652,8 +663,9 @@ module.exports = {
       return;
     }
   },
-
-  // Forgot Password request Admin
+  /**
+  Forgot Password request Admin
+  **/
   forgotPassword: async function (req, res) {
     try {
       const admin_details = await Admin.findOne({
@@ -716,7 +728,9 @@ module.exports = {
     }
   },
 
-  //get all employees function
+  /**
+  get all employees function
+  **/
   getAllEmployee: async function (req, res) {
     try {
       let {
@@ -773,8 +787,9 @@ module.exports = {
         });
     }
   },
-
-  //add employee controller function
+  /**
+  add employee controller function
+  **/
   addEmployee: async function (req, res) {
     try {
       if (req.body.email && req.body.roles) {
@@ -831,8 +846,9 @@ module.exports = {
         });
     }
   },
-
-  // Delete Employee
+  /**
+  Delete Employee
+  **/
   deleteEmployee: async function (req, res) {
     try {
       if (req.body.id) {
@@ -886,7 +902,9 @@ module.exports = {
     }
   },
 
-  // Update Employee Details
+  /**
+  Update Employee Details
+  **/
   updateEmployee: async function (req, res) {
     try {
       if (req.body.id) {
@@ -946,7 +964,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Employee Details
+  **/
   getEmployeeDetails: async function (req, res) {
     let {
       emp_id
@@ -986,8 +1006,9 @@ module.exports = {
         });
     }
   },
-
-  //Setup Two Factor
+  /**
+  Setup Two Factor
+  **/
   setupTwoFactor: async function (req, res) {
     try {
       let {
@@ -1040,8 +1061,9 @@ module.exports = {
         });
     }
   },
-
-  //Verify 2 factor
+  /**
+  Verify 2 factor
+  **/
   verifyTwoFactor: async function (req, res) {
     try {
       let {
@@ -1108,8 +1130,9 @@ module.exports = {
         });
     }
   },
-
-  //Disable 2 factor
+  /**
+  Disable 2 factor
+  **/
   disableTwoFactor: async function (req, res) {
     try {
       let {
@@ -1160,7 +1183,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Admin User Details
+  **/
   getAdminDetails: async function (req, res) {
     try {
       const {
@@ -1187,7 +1212,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Add IP of Admin in Whitelist
+  **/
   addAdminIPs: async function (req, res) {
     try {
       // const {
@@ -1287,7 +1314,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Add IP is user's Whitelist
+  **/
   addUserIpWhitelist: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -1374,7 +1403,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Admin Whitelist IP
+  **/
   getAdminWhiteListIP: async function (req, res) {
     try {
       const {
@@ -1425,7 +1456,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get User's IP Whitelist
+  **/
   getUserWhiteListIP: async function (req, res) {
     try {
       const {
@@ -1479,7 +1512,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Delete IP from Whitelist
+  **/
   deleteWhitelistIP: async function (req, res) {
     try {
       var user_id = req.user.id;
@@ -1514,7 +1549,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Delete User Whitelist IP
+  **/
   deleteUserWhitelistIP: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -1553,7 +1590,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Delete User
+  **/
   deleteUser: async function (req, res) {
     try {
       let {
@@ -1601,7 +1640,9 @@ module.exports = {
         });
     }
   },
-  // Update user data
+  /**
+  Update user data
+  **/
   updateUser: async function (req, res) {
     try {
       var req_data = req.body;
@@ -1634,8 +1675,9 @@ module.exports = {
         });
     }
   },
-
-  // Change Whitelist IP status
+  /**
+  Change Whitelist IP status
+  **/
   changeWhitelistIPStatus: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -1720,8 +1762,9 @@ module.exports = {
         });
     }
   },
-
-  // Change Whitelist IP status for User
+  /**
+  Change Whitelist IP status for User
+  **/
   changeUserWhitelistIPStatus: async function (req, res) {
     try {
       let {
@@ -1805,7 +1848,9 @@ module.exports = {
         });
     }
   },
-  // Get Twofactors requests
+  /**
+  Get Twofactors requests
+  **/
   getTwoFactorsRequests: async function (req, res) {
     try {
 
@@ -1915,8 +1960,9 @@ module.exports = {
         });
     }
   },
-
-  // Approve User's Twofactor request status
+  /**
+  Approve User's Twofactor request status
+  **/
   approveUserTwofactorRequest: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -2034,8 +2080,9 @@ module.exports = {
       });
     }
   },
-
-  // Reject User's Twofactor request status
+  /**
+  Reject User's Twofactor request status
+  **/
   rejectUserTwofactorRequest: async function (req, res) {
     try {
       let user_id = req.user.id;
@@ -2139,7 +2186,9 @@ module.exports = {
       });
     }
   },
-  // Admin Thresholds lists
+  /**
+  Admin Thresholds lists
+  **/
   adminThresholdLists: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2209,7 +2258,9 @@ module.exports = {
     }
 
   },
-  // Add or Update Admin Thresholds
+  /**
+  Add or Update Admin Thresholds
+  **/
   addOrUpdateAdminThresholds: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2252,7 +2303,9 @@ module.exports = {
         });
     }
   },
-  // Add or Update Admin Thresholds Contacts list
+  /**
+  Add or Update Admin Thresholds Contacts list
+  **/
   addThresholdContacts: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2295,8 +2348,9 @@ module.exports = {
         });
     }
   },
-
-  // Admin Thresholds Contact lists
+  /**
+  Admin Thresholds Contact lists
+  **/
   adminThresholdContactList: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2335,7 +2389,9 @@ module.exports = {
       });
     }
   },
+  /**
   // Get Admin Wallet Details
+  **/
   getAdminWalletDetails: async function (req, res) {
     try {
       let {
@@ -2462,9 +2518,9 @@ module.exports = {
             })
           }          
         assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-        assets_data[i].total = (assets_data[i].total_earned_from_wallets)+(assets_data[i].total_earned_from_forfeit)+(assets_data[i].total_earned_from_jst);
+        assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets)+(assets_data[i].total_earned_from_forfeit)+(assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
         }
-        
+
         return res.status(200).json({
           "status": 200,
           "message": sails.__("Wallet Details"),
@@ -2489,7 +2545,9 @@ module.exports = {
       });
     }
   },
-  // Create Batch
+  /**
+  Create Batch
+  **/
   createBatch: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2794,7 +2852,13 @@ module.exports = {
               deleted_at: null,
               id: {
                 '<=': transaction_end,
-                '>=': transaction_start
+                '>=': transacti
+                // // Check Wallet Balance
+                // checkWalletBalance: async function (req, res) {
+                //   try {
+              
+                //     var coinData = await Coins.find({
+                //       deletedn_start
               },
               or: [{
                 currency: details.coin,
@@ -3634,7 +3698,7 @@ module.exports = {
     }
 
   },
-
+  // Get Asset Fees
   getCoinFees: async function (req, res) {
     try {
       var feesValue = await AdminSetting.find({
@@ -3677,7 +3741,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Each Coin Fees
   getEachCoinFee: async function (req, res) {
     try {
       var {
@@ -3709,7 +3773,7 @@ module.exports = {
         });
     }
   },
-
+  // Update Coin Fees
   updateCoinFee: async function (req, res) {
     try {
 
@@ -3835,7 +3899,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('main_module ASC');
+      }).sort([{ main_module: "ASC" }, { display_name: "ASC" }]);
 
       if (userPermission.length > 0) {
         userPermission.map(key => {
@@ -3863,7 +3927,7 @@ module.exports = {
         });
     }
   },
-
+  // Update Role Permission
   updateRolePermission: async function (req, res) {
     try {
 
