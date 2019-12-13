@@ -952,16 +952,83 @@ module.exports = {
         is_active: true,
         id: user_id
       });
-      if (!userData) {
-        userData = await Admin.findOne({
-          deleted_at: null,
-          is_active: true,
-          id: user_id
+
+      userData.flag = false;
+      var walletDataCreate = await sails
+        .helpers
+        .wallet
+        .receiveOneAddress(coin_code, userData);
+
+      if (walletDataCreate == 1) {
+        return res.json({
+          status: 500,
+          message: sails.__("Address already Create Success"),
+          data: walletDataCreate
+        })
+      } else if (walletDataCreate) {
+        //Sending email to user for wallet Address Creation
+        let slug = "user_wallet_address_creation"
+        let template = await EmailTemplate.findOne({
+          slug
         });
-        userData.flag = true;
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: userData.first_name,
+            coin: coin_code
+          });
+        sails
+          .hooks
+          .email
+          .send("general-email", {
+            content: emailContent
+          }, {
+            to: userData.email,
+            subject: "User Wallet Address has been Created"
+          }, function (err) {
+            if (!err) {
+
+            }
+          })
+        return res.json({
+          status: 200,
+          message: sails.__("Address Create Success"),
+          data: walletDataCreate
+        })
       } else {
-        userData.flag = false;
+        return res.json({
+          status: 500,
+          message: sails.__("Address Not Create Success"),
+          data: walletDataCreate
+        })
       }
+    } catch (error) {
+      console.log(error)
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
+  // Create receive address for one coin for admin
+  createAdminReceiveAddressCoinForAdmin: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        user_id
+      } = req.allParams();
+      var userData = [];
+      userData = await Admin.findOne({
+        deleted_at: null,
+        is_active: true,
+        id: user_id
+      });
+      userData.flag = true;
       var walletDataCreate = await sails
         .helpers
         .wallet
