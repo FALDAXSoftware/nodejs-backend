@@ -2377,31 +2377,31 @@ module.exports = {
       // }
       // Get Asset Details 
       var assets_data = await Coins
-          .find({            
-            where:{
-              deleted_at: null,
-              is_active:true
-            },
-            select:['id','coin_icon','coin_name','coin_code','coin']
-          })
-          .sort('created_at DESC');
-      console.log("assets_data",assets_data);
-      if( assets_data.length > 0 ){
-        for( var i=0;i<assets_data.length; i++ ){
+        .find({
+          where: {
+            deleted_at: null,
+            is_active: true
+          },
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin']
+        })
+        .sort('created_at DESC');
+      console.log("assets_data", assets_data);
+      if (assets_data.length > 0) {
+        for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
           let asset_id = assets_data[i].id;
           var wallet_details = await Wallet
             .findOne({
               is_active: true,
-              is_admin:true,
-              coin_id:asset_id
+              is_admin: true,
+              coin_id: asset_id
             });
-          assets_data[i].send_address = '';  
-          assets_data[i].receive_address = ''; 
-          if( wallet_details != undefined ){
+          assets_data[i].send_address = '';
+          assets_data[i].receive_address = '';
+          if (wallet_details != undefined) {
             assets_data[i].send_address = wallet_details.send_address;
-            assets_data[i].receive_address = wallet_details.receive_address;  
-          }        
+            assets_data[i].receive_address = wallet_details.receive_address;
+          }
           // Get Wallet Data
           // walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
           //     (sum(th.user_fee)+sum(th.requested_fee)) as Fee
@@ -2436,42 +2436,42 @@ module.exports = {
           //     }
           //   }
           // }
-          
-          
+
+
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history 
                           WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}' 
                           ORDER BY id DESC`;
           let jst_fees = await sails.sendNativeQuery(query_jst, []);
           var temp_total = 0;
-          if(jst_fees.rowCount > 0 ){
-            (jst_fees.rows).forEach( function(each, index){
-              if( each.currency == asset_name && each.side == 'Buy' ){
-                temp_total += parseFloat(each.faldax_fees)+parseFloat(each.network_fees)
+          if (jst_fees.rowCount > 0) {
+            (jst_fees.rows).forEach(function (each, index) {
+              if (each.currency == asset_name && each.side == 'Buy') {
+                temp_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
               }
-              if( each.settle_currency == asset_name && each.side == 'Sell' ){
-                temp_total += parseFloat(each.faldax_fees)+parseFloat(each.network_fees)
+              if (each.settle_currency == asset_name && each.side == 'Sell') {
+                temp_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
               }
             })
-          }            
+          }
           assets_data[i].total_earned_from_jst = parseFloat(temp_total.toFixed(sails.config.local.TOTAL_PRECISION))
         }
-        console.log("assets_data",assets_data);
+        console.log("assets_data", assets_data);
         return res.status(200).json({
           "status": 200,
           "message": sails.__("Wallet Details"),
           // "data": FeeData
           "data": assets_data
         });
-      }else{
+      } else {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("No record found"),
           "data": []
         });
       }
-      
-      
+
+
     } catch (error) {
       console.log(error)
       await logger.error(error.message)
@@ -3827,7 +3827,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('main_module ASC');
+      }).sort([{ main_module: "ASC" }, { display_name: "ASC" }]);
 
       if (userPermission.length > 0) {
         userPermission.map(key => {
@@ -3873,7 +3873,7 @@ module.exports = {
           console.log(permissionValue)
           if (data[i].isChecked == "true" || data[i].isChecked == true) {
             // if (!permissionValue) {
-            if (permissionValue.length == 0 ) {
+            if (permissionValue.length == 0) {
               var updatePermission = await AdminPermission.create({
                 role_id: role_id,
                 permission_id: data[i].id,
@@ -3892,8 +3892,8 @@ module.exports = {
             }
           } else if (data[i].isChecked == "false" || data[i].isChecked == false) {
             // if (!permissionValue) {
-            if (permissionValue.length > 0 ) {
-              
+            if (permissionValue.length > 0) {
+
               if (permissionValue[0].deleted_at == null) {
                 var updatePermission = await AdminPermission
                   .update({
