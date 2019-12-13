@@ -2652,8 +2652,9 @@ module.exports = {
         });
     }
   },
-
-  // Add or Update Admin Thresholds
+  /**
+  Add or Update Admin Thresholds
+  **/
   updateBatch: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2691,8 +2692,9 @@ module.exports = {
         });
     }
   },
-
-  // Batch lists
+  /**
+  Batch lists
+  **/
   getBatchListing: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -2765,8 +2767,9 @@ module.exports = {
     }
 
   },
-
-  // Get Transaction Value for batch
+  /**
+  Get Transaction Value for batch
+  **/
   GetBatchValue: async function (req, res) {
     try {
 
@@ -3139,8 +3142,9 @@ module.exports = {
         });
     }
   },
-
-  // Get Each Transaction Value for batch
+  /**
+  Get Each Transaction Value for batch
+  **/
   getTransactionBatchValue: async function (req, res) {
 
     try {
@@ -3247,8 +3251,9 @@ module.exports = {
     }
 
   },
-
-  // Download file
+  /**
+  Download file
+  **/
   downloadBatchFile: async function (req, res) {
     try {
       var batch_id = req.body.batch_id;
@@ -3567,8 +3572,9 @@ module.exports = {
     }
 
   },
-
-  // Get Batch Details
+  /**
+  Get Batch Details
+  **/
   getBatchDetails: async function (req, res) {
     try {
 
@@ -3617,7 +3623,9 @@ module.exports = {
         });
     }
   },
-  // Upload file
+  /**
+  Upload file
+  **/
   uploadBatchFile: async function (req, res) {
     try {
       if (!req.user.isAdmin) {
@@ -3698,7 +3706,9 @@ module.exports = {
     }
 
   },
-  // Get Asset Fees
+  /**
+  Get Asset Fees
+  **/
   getCoinFees: async function (req, res) {
     try {
       var feesValue = await AdminSetting.find({
@@ -3741,7 +3751,9 @@ module.exports = {
         });
     }
   },
-  // Get Each Coin Fees
+  /**
+  Get Each Coin Fees
+  **/
   getEachCoinFee: async function (req, res) {
     try {
       var {
@@ -3773,7 +3785,9 @@ module.exports = {
         });
     }
   },
-  // Update Coin Fees
+  /**
+  Update Coin Fees
+  **/
   updateCoinFee: async function (req, res) {
     try {
 
@@ -3824,7 +3838,9 @@ module.exports = {
         });
     }
   },
-  // Get User's list 
+  /**
+  Get User's list 
+  **/
   userList: async function (req, res) {
     if (!req.user.isAdmin) {
       return res.status(403).json({
@@ -3857,8 +3873,9 @@ module.exports = {
     }
 
   },
-
-  // Get Route for display
+  /**
+  Get Route for display
+  **/
   getRoutePermission: async function (req, res) {
     try {
 
@@ -3927,7 +3944,9 @@ module.exports = {
         });
     }
   },
-  // Update Role Permission
+  /**
+  Update Role Permission
+  **/
   updateRolePermission: async function (req, res) {
     try {
 
@@ -4007,5 +4026,32 @@ module.exports = {
           "message": sails.__("Something Wrong")
         });
     }
+  }, 
+  // Temp Get MarketSnapshot
+  getTempMarketsnapshot: async function( req, res){
+    var order_id = req.param("order_id");
+    
+    var query = `SELECT order_id,jth.symbol, md_entries FROM jst_trade_history jth
+                LEFT JOIN market_snapshot_prices msp
+                ON jth.symbol=msp.symbol
+                WHERE jth.order_id='${order_id}' AND msp.type_of='order' LIMIT 1`;
+    var data = await sails.sendNativeQuery(query,[]);
+    var record = data.rows;
+    var get_data_snapshot = await MarketSnapshotPrices.find({
+      symbol:record[0].symbol,
+      type_of:"check"
+    }).sort("id desc").limit(1)
+    var all_data={};
+    all_data.order_id = order_id;
+    all_data.symbol = record[0].symbol;
+    all_data.before = record[0].md_entries;
+    all_data.after = get_data_snapshot[0].md_entries;
+    return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "Data found",
+          "data":all_data
+        });
   }
 };

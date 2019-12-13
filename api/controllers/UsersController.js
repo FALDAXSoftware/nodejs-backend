@@ -1442,15 +1442,18 @@ module.exports = {
         });
     }
 
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        email: user.email,
-        deleted_by: 1, //deleted by user
-        deleted_at: new Date()
-      });
+    var email = "deleted_" + user.email;
+    console.log("EMail >>>>>>>>", email);
+
+    // await Users
+    //   .update({
+    //     id: user.id
+    //   })
+    //   .set({
+    //     email: email,
+    //     deleted_by: 1, //deleted by user
+    //     deleted_at: new Date()
+    //   });
 
     var total = 0;
     var usd_price = 0;
@@ -1519,7 +1522,8 @@ module.exports = {
       .helpers
       .utilities
       .formatEmail(template.content, {
-        value
+        summary: value,
+        recipientName: user.first_name
       })
     if (template) {
       sails
@@ -3238,7 +3242,7 @@ module.exports = {
           ON ref.referred_user_id = u.id 
           WHERE ref.user_id = ${id} and u.referred_id = ${id}
           GROUP BY ref.coin_id,co.id, ref.user_id,  co.coin_name, ref.referred_user_id, u.email`);
-        // console.log("get_reffered_data",get_reffered_data);
+      // console.log("get_reffered_data",get_reffered_data);
       if (get_reffered_data.rowCount > 0) {
         var all_unique = [];
         var filter_data = (get_reffered_data.rows).map(function (each) {

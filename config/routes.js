@@ -509,5 +509,7 @@ module.exports.routes = {
   "get /admin/get-warm-wallet-data": "WalletController.getWarmWalletInfo",
   "get /admin/get-warm-wallet-transaction": "WalletController.getWarmWalletTransaction",
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
-  "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction"
+  "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
+  // Temp 
+  "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot"
 };
