@@ -41,7 +41,7 @@ module.exports = {
     var tempEmailContent = emailContent;
     while (key = rex.exec(emailContent)) {
       // emailContent = emailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');  
-      var temp_var;
+      var temp_var = '';
       if (Array.isArray(data[key[1]])) {
         temp_var = ''
         data[key[1]].forEach(function (each, index) {
