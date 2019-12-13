@@ -2520,7 +2520,7 @@ module.exports = {
         assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
         assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets)+(assets_data[i].total_earned_from_forfeit)+(assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
         }
-        
+
         return res.status(200).json({
           "status": 200,
           "message": sails.__("Wallet Details"),
@@ -3899,7 +3899,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('main_module ASC');
+      }).sort([{ main_module: "ASC" }, { display_name: "ASC" }]);
 
       if (userPermission.length > 0) {
         userPermission.map(key => {
