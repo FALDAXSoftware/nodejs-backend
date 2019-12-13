@@ -2335,10 +2335,9 @@ module.exports = {
       });
     }
   },
-
+  // Get Admin Wallet Details
   getAdminWalletDetails: async function (req, res) {
     try {
-      var walletQuery;
       let {
         search
       } = req.allParams();
@@ -2376,102 +2375,111 @@ module.exports = {
       //   }
       // }
       // Get Asset Details 
-      var assets_data = await Coins
-          .find({            
-            where:{
-              deleted_at: null,
-              is_active:true
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [
+            {
+              coin: {
+                contains: search
+              }
             },
-            select:['id','coin_icon','coin_name','coin_code','coin']
-          })
-          .sort('created_at DESC');
-      console.log("assets_data",assets_data);
-      if( assets_data.length > 0 ){
-        for( var i=0;i<assets_data.length; i++ ){
+            {
+              coin_name: {
+                contains: search
+              }
+            }
+          ]
+        }
+      }
+      query.deleted_at = null
+      query.is_active = true
+
+      var assets_data = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin']
+        })
+        .sort('created_at DESC');
+
+      if (assets_data.length > 0) {
+        for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
           let asset_id = assets_data[i].id;
           var wallet_details = await Wallet
             .findOne({
               is_active: true,
-              is_admin:true,
-              coin_id:asset_id
+              is_admin: true,
+              coin_id: asset_id
             });
-          assets_data[i].send_address = '';  
-          assets_data[i].receive_address = ''; 
-          if( wallet_details != undefined ){
+          assets_data[i].send_address = '';
+          assets_data[i].receive_address = '';
+          if (wallet_details != undefined) {
             assets_data[i].send_address = wallet_details.send_address;
-            assets_data[i].receive_address = wallet_details.receive_address;  
-          }        
+            assets_data[i].receive_address = wallet_details.receive_address;
+          }
           // Get Wallet Data
-          // walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
-          //     (sum(th.user_fee)+sum(th.requested_fee)) as Fee
-          //     from coins c
-          //     LEFT JOIN trade_history th
-          //     ON c.coin=th.user_coin
-          //     LEFT JOIN wallets w
-          //     ON c.id=w.coin_id
-          //     WHERE w.is_admin=TRUE AND c.is_active=TRUE
-          //     ${(search && search != "" && search != null) ? `AND LOWER(c.coin) LIKE '%${search.toLowerCase()}%'` : ''}
-          //     GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance`;
-
-          //     let FeeData = await sails.sendNativeQuery(walletQuery, []);
-          //     FeeData = FeeData.rows;
+          var walletQuery = `SELECT * FROM wallet_history WHERE deleted_at IS NULL AND transaction_type = 'send' AND coin_id='${asset_id}'`;
+          let FeeData = await sails.sendNativeQuery(walletQuery, []);
+          var temp_wallet_total = 0;
+          if (FeeData.rowCount > 0) {
+            (FeeData.rows).forEach(function (each, index) {
+              if (each.faldax_fee != null) {
+                temp_wallet_total += parseFloat(each.faldax_fee)
+              }
+            })
+          }
+          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
           // Get Forfiet Data
-          // var coinQuery = `SELECT users.email, users.created_at, users.deleted_at,
-          // CONCAT ((wallets.balance)) as balance, 
-          // CONCAT ((wallets.placed_balance)) as placed_balance, 
-          // wallets.receive_address,wallets.send_address, users.full_name
-          // FROM public.wallets LEFT JOIN users
-          // ON users.id = wallets.user_id
-          // WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
-          // console.log(coinQuery);
-          // let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
-          // // forfeitFundData = forfeitFundData.rows;
+          var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
+            FROM public.wallets LEFT JOIN users
+            ON users.id = wallets.user_id
+            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
+          let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
 
-          // console.log("forfeitFundData",forfeitFundData);
-          // for (var i = 0; i < forfeitFundData.length; i++) {
-          //   for (var j = 0; j < FeeData.length; j++) {
-          //     if (FeeData[j].coin_code == forfeitFundData[i].coin_code) {
-          //       FeeData[j].forfeit_funds = forfeitFundData[i].forfeit_funds;
-          //     }
-          //   }
-          // }
-          
-          
+          var temp_forfeit_total = 0;
+          if (forfeitFundData.rowCount > 0) {
+            (forfeitFundData.rows).forEach(function (each, index) {
+              temp_forfeit_total += parseFloat(each.balance) + parseFloat(each.placed_balance)
+            })
+          }
+          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total.toFixed(sails.config.local.TOTAL_PRECISION))
+
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history 
                           WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}' 
                           ORDER BY id DESC`;
           let jst_fees = await sails.sendNativeQuery(query_jst, []);
-          var temp_total = 0;
-          if(jst_fees.rowCount > 0 ){
-            (jst_fees.rows).forEach( function(each, index){
-              if( each.currency == asset_name && each.side == 'Buy' ){
-                temp_total += parseFloat(each.faldax_fees)+parseFloat(each.network_fees)
+          var temp_jst_total = 0;
+          if (jst_fees.rowCount > 0) {
+            (jst_fees.rows).forEach(function (each, index) {
+              if (each.currency == asset_name && each.side == 'Buy') {
+                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
               }
-              if( each.settle_currency == asset_name && each.side == 'Sell' ){
-                temp_total += parseFloat(each.faldax_fees)+parseFloat(each.network_fees)
+              if (each.settle_currency == asset_name && each.side == 'Sell') {
+                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
               }
             })
-          }            
-          assets_data[i].total_earned_from_jst = parseFloat(temp_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          }          
+        assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
+        assets_data[i].total = (assets_data[i].total_earned_from_wallets)+(assets_data[i].total_earned_from_forfeit)+(assets_data[i].total_earned_from_jst);
         }
-        console.log("assets_data",assets_data);
+        
         return res.status(200).json({
           "status": 200,
           "message": sails.__("Wallet Details"),
           // "data": FeeData
           "data": assets_data
         });
-      }else{
+      } else {
         return res.status(200).json({
           "status": 200,
           "message": sails.__("No record found"),
           "data": []
         });
       }
-      
-      
+
+
     } catch (error) {
       console.log(error)
       await logger.error(error.message)
@@ -3873,7 +3881,7 @@ module.exports = {
           console.log(permissionValue)
           if (data[i].isChecked == "true" || data[i].isChecked == true) {
             // if (!permissionValue) {
-            if (permissionValue.length == 0 ) {
+            if (permissionValue.length == 0) {
               var updatePermission = await AdminPermission.create({
                 role_id: role_id,
                 permission_id: data[i].id,
@@ -3892,8 +3900,8 @@ module.exports = {
             }
           } else if (data[i].isChecked == "false" || data[i].isChecked == false) {
             // if (!permissionValue) {
-            if (permissionValue.length > 0 ) {
-              
+            if (permissionValue.length > 0) {
+
               if (permissionValue[0].deleted_at == null) {
                 var updatePermission = await AdminPermission
                   .update({
