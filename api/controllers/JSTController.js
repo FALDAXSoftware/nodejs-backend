@@ -52,7 +52,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Asset Pair List
+  **/
   getPairList: async function (req, res) {
     try {
 
@@ -858,8 +860,9 @@ module.exports = {
     }
   },
 
-
-  // Check Offercode is valid or not 
+  /**
+  Check Offercode is valid or not 
+  **/
   checkCampaignOfferStatus: async function (req, res) {
     let req_body = req.body;
     let validator = new Validator(req_body, {
@@ -896,7 +899,9 @@ module.exports = {
         });
     }
   },
-
+  /**
+  Get Socket value of JST 
+  **/
   getSocketJSTValue: async function (req, res) {
     try {
 
