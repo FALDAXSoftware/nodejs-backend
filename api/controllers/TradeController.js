@@ -1836,7 +1836,7 @@ module.exports = {
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
         tradeData = await sails.sendNativeQuery("Select jst_trade_history.id,jst_trade_history.user_id,jst_tr" +
-          "ade_history.symbol,jst_trade_history.currency,jst_trade_history.settle_currency,jst_trade_hi" +
+          "ade_history.symbol,jst_trade_history.currency,jst_trade_history.order_status,jst_trade_history.settle_currency,jst_trade_hi" +
           "story.side,jst_trade_history.quantity,jst_trade_history.fill_price,jst_trade_history.is_partially_filled, jst_trade_history.price," +
           " users.email, jst_trade_history.created_at, jst_trade_history.execution_report,jst_trade_history.faldax_fees, jst_trade_history.network_fees ,jst_trade_history.order_id, jst_trade_history.buy_currency_amount, jst_trade_history.sell_currency_amount, jst_trade_history.faldax_fees_actual, jst_trade_history.difference_faldax_commission, jst_trade_history.offer_applied, jst_trade_history.limit_price, jst_trade_history.asset1_usd_value, jst_trade_history.asset2_usd_value" + query, [])
 

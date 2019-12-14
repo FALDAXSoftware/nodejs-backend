@@ -39,7 +39,7 @@ module.exports = {
         // deleted_at: null,
         is_active: true
       });
-      if (existedUser && existedUser.deleted_at != null) {
+      if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
         return res
           .status(401)
           .json({
@@ -1441,19 +1441,16 @@ module.exports = {
           "err": sails.__("User not found")
         });
     }
-
-    var email = "deleted_" + user.email;
-    console.log("EMail >>>>>>>>", email);
-
-    // await Users
-    //   .update({
-    //     id: user.id
-    //   })
-    //   .set({
-    //     email: email,
-    //     deleted_by: 1, //deleted by user
-    //     deleted_at: new Date()
-    //   });
+    // Update to deleted
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_by: 1, //deleted by user
+        deleted_at: new Date()
+      });
 
     var total = 0;
     var usd_price = 0;
