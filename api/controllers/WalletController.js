@@ -1706,37 +1706,50 @@ module.exports = {
   **/
   getWarmWalletInfo: async function (req, res) {
     try {
-      var balance = [];
-      var coinData = await Coins.find({
-        select: [
-          'warm_wallet_address',
-          'coin_code'
-        ],
-        where: {
-          is_active: true,
-          deleted_at: null
+      let {
+        search
+      } = req.allParams();
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [
+            {
+              coin: {
+                contains: search
+              }
+            },
+            {
+              coin_name: {
+                contains: search
+              }
+            }
+          ]
         }
-      })
-        .sort('id ASC')
+      }
+      query.deleted_at = null
+      query.is_active = true
+
+      var coinData = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin','warm_wallet_address']
+        })
+        .sort('id ASC');
 
       for (var i = 0; i < coinData.length; i++) {        
         let warmWalletData = await sails
           .helpers
           .wallet
-          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
-        var object = {
-          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
-          "coin_code": coinData[i].coin_code,
-          "address": warmWalletData.receiveAddress.address
-        }
-        balance.push(object);
+          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);       
+        coinData[i].balance = (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString);
+        coinData[i].address = warmWalletData.receiveAddress.address;
       }
-
       return res
         .status(200)
         .json({
-          "status": 200,
-          balance
+          status: 200,
+          data:coinData,
+          message:sails.__("Warm wallet retrieve")          
         })
     } catch (error) {
       console.log(error);
@@ -1810,38 +1823,50 @@ module.exports = {
   **/
   getColdWalletInfo: async function (req, res) {
     try {
-      var balance = [];
-      var coinData = await Coins.find({
-        select: [
-          'custody_wallet_address',
-          'coin_code'
-        ],
-        where: {
-          is_active: true,
-          deleted_at: null
+      let {
+        search
+      } = req.allParams();
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [
+            {
+              coin: {
+                contains: search
+              }
+            },
+            {
+              coin_name: {
+                contains: search
+              }
+            }
+          ]
         }
-      })
-        .sort('id ASC')
+      }
+      query.deleted_at = null
+      query.is_active = true
 
+      var coinData = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin','custody_wallet_address']
+        })
+        .sort('id ASC');
+      
       for (var i = 0; i < coinData.length; i++) {
-        console.log(coinData[i]);
-        let warmWalletData = await sails
+        let wallet_data = await sails
           .helpers
           .wallet
           .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
-        var object = {
-          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
-          "coin_code": coinData[i].coin_code,
-          "address": warmWalletData.receiveAddress.address
-        }
-        balance.push(object);
+        coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+        coinData[i].address = wallet_data.receiveAddress.address;
       }
-
       return res
         .status(200)
         .json({
-          "status": 200,
-          balance
+          status: 200,
+          data:coinData,
+          message:sails.__("Custodial wallet retrieve")          
         })
     } catch (error) {
       console.log(error);
