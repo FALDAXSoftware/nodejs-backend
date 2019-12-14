@@ -39,7 +39,7 @@ module.exports = {
         // deleted_at: null,
         is_active: true
       });
-      if (existedUser && existedUser.deleted_at != null) {
+      if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
         return res
           .status(401)
           .json({
@@ -1441,19 +1441,16 @@ module.exports = {
           "err": sails.__("User not found")
         });
     }
-
-    var email = "deleted_" + user.email;
-    console.log("EMail >>>>>>>>", email);
-
-    // await Users
-    //   .update({
-    //     id: user.id
-    //   })
-    //   .set({
-    //     email: email,
-    //     deleted_by: 1, //deleted by user
-    //     deleted_at: new Date()
-    //   });
+    // Update to deleted
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_by: 1, //deleted by user
+        deleted_at: new Date()
+      });
 
     var total = 0;
     var usd_price = 0;
@@ -3145,15 +3142,15 @@ module.exports = {
         id
       } = req.allParams();
 
-      var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
-        "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
-      if (get_reffered_data.rowCount > 0) {
-        var filter_data = (get_reffered_data.rows).map(function (each) {
-          each.earned = each.earned.toFixed(sails.config.local.TOTAL_PRECISION);
-          return each;
-        })
-        get_reffered_data.rows = filter_data;
-      }
+      var get_reffered_data = await sails.sendNativeQuery(`SELECT sum(referral.amount) as amount, referral.coin_name, coins.coin_icon
+                                FROM referral LEFT JOIN users
+                                ON users.id = referral.user_id
+                                LEFT JOIN coins
+                                ON referral.coin_name = coins.coin
+                                WHERE referral.is_collected = 'true' AND user_id = ${id} 
+                                AND users.deleted_at IS NULL
+                                GROUP BY referral.coin_name,coins.coin_icon, coins.id
+                                ORDER BY coins.id ASC`);
       return res
         .status(200)
         .json({
@@ -3173,6 +3170,66 @@ module.exports = {
         });
     }
   },
+
+  // Get Each User Refer Data 
+  getUserReferData: async function (req, res) {
+    try {
+      var {
+        user_id,
+        coin_code,
+        limit,
+        page,
+        data
+      } = req.allParams();
+
+      console.log(data);
+
+      var filter = ''
+      if (data && data != '' && data != null) {
+        data = data.trim();
+        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' "
+      }
+
+      var get_reffered_data = (`SELECT referral.amount , referral.coin_name, coins.coin_icon, users.email, referral.txid
+                                    FROM referral LEFT JOIN users
+                                    ON (users.id = referral.user_id OR users.id=referral.referred_user_id)
+                                    LEFT JOIN coins
+                                    ON referral.coin_name = coins.coin
+                                    WHERE referral.is_collected = 'true' AND referral.user_id = ${user_id}${filter} 
+                                    AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid
+                                    ORDER BY coins.id ASC`);
+
+      console.log(get_reffered_data);
+
+      countQuery = get_reffered_data
+
+      get_reffered_data += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      var data = await sails.sendNativeQuery(get_reffered_data, []);
+      var count = await sails.sendNativeQuery(countQuery, []);
+      count = count.rows.length
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("refer data retrieve"),
+          "data": data.rows,
+          count
+        });
+
+    } catch (error) {
+      console.log(error);
+      await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+
   // For Get Login History
   getUserWalletAddresses: async function (req, res) {
     try {

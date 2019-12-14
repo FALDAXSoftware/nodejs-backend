@@ -1450,7 +1450,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, wallet_history.amount, 
-                          wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin),
+                          wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
@@ -1502,7 +1502,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address, 
-                            (CONCAT(wallet_history.amount) , ' ', coins.coin), 
+                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount, 
                             wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
                             FROM public.wallet_history LEFT JOIN coins
                             ON wallet_history.coin_id = coins.id
@@ -1732,15 +1732,15 @@ module.exports = {
       var coinData = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin','warm_wallet_address']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'warm_wallet_address']
         })
         .sort('id ASC');
 
-      for (var i = 0; i < coinData.length; i++) {        
+      for (var i = 0; i < coinData.length; i++) {
         let warmWalletData = await sails
           .helpers
           .wallet
-          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);       
+          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
         coinData[i].balance = (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString);
         coinData[i].address = warmWalletData.receiveAddress.address;
       }
@@ -1748,8 +1748,8 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          data:coinData,
-          message:sails.__("Warm wallet retrieve")          
+          data: coinData,
+          message: sails.__("Warm wallet retrieve")
         })
     } catch (error) {
       console.log(error);
@@ -1768,7 +1768,10 @@ module.exports = {
   getWarmWalletTransaction: async function (req, res) {
     try {
       var {
-        coin_code
+        coin_code,
+        limit,
+        prevId,
+        searchLabel
       } = req.allParams();
       var coinData = await Coins.findOne({
         select: [
@@ -1782,30 +1785,24 @@ module.exports = {
         }
       });
 
+      var data = {
+        prevId: prevId,
+        limit: limit,
+        searchLabel: searchLabel
+      }
+
       let warmWalletData = await sails
         .helpers
         .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address);
+        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address, data);
 
       var data = warmWalletData.transfers
-      var balance = [];
-      for (var i = 0; i < data.length; i++) {
-        let object = {
-          "wallet_id": data[i].wallet,
-          "transaction_id": data[i].txid,
-          "type": data[i].type,
-          "history": data[i].history,
-          "normalizedTxHash": data[i].normalizedTxHash,
-          "inputs": data[i].inputs
-        }
-        balance.push(object)
-      }
 
       return res
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": warmWalletData
         })
     } catch (error) {
       console.log(error);
@@ -1849,10 +1846,10 @@ module.exports = {
       var coinData = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin','custody_wallet_address']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'custody_wallet_address']
         })
         .sort('id ASC');
-      
+
       for (var i = 0; i < coinData.length; i++) {
         let wallet_data = await sails
           .helpers
@@ -1865,8 +1862,8 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          data:coinData,
-          message:sails.__("Custodial wallet retrieve")          
+          data: coinData,
+          message: sails.__("Custodial wallet retrieve")
         })
     } catch (error) {
       console.log(error);
@@ -1885,7 +1882,10 @@ module.exports = {
   getColdWalletTransaction: async function (req, res) {
     try {
       var {
-        coin_code
+        coin_code,
+        prevId,
+        limit,
+        searchLabel
       } = req.allParams();
       var coinData = await Coins.findOne({
         select: [
@@ -1899,30 +1899,22 @@ module.exports = {
         }
       });
 
+      var data = {
+        limit: limit,
+        prevId: prevId,
+        searchLabel: searchLabel
+      }
+
       let warmWalletData = await sails
         .helpers
         .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address);
-
-      var data = warmWalletData.transfers
-      var balance = [];
-      for (var i = 0; i < data.length; i++) {
-        let object = {
-          "wallet_id": data[i].wallet,
-          "transaction_id": data[i].txid,
-          "type": data[i].type,
-          "history": data[i].history,
-          "normalizedTxHash": data[i].normalizedTxHash,
-          "inputs": data[i].inputs
-        }
-        balance.push(object)
-      }
+        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address, data);
 
       return res
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": warmWalletData
         })
     } catch (error) {
       console.log(error);
