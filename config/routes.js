@@ -424,6 +424,7 @@ module.exports.routes = {
   // Referral Admin API
   'get /admin/get-referal-list': 'UsersController.getReferralList',
   'get /admin/get-referred-id-data': 'UsersController.getReferredData',
+  'get /admin/get-referred-user-data': 'UsersController.getUserReferData',
   'get /admin/get-referred-id-assets': 'UsersController.getReferredAssets',
 
   'get /get-encrypt-data': 'RootController.getEncryptKey',
