@@ -3,7 +3,10 @@ var bunyan_format = require('bunyan-format')
 var fs = require('fs')
 var formatOut = bunyan_format({
   outputMode: 'bunyan',
-  levelInString: true
+  type: 'raw',
+  levelInString: true,
+  host: 'graylog-udp.graylog.svc.cluster.local',
+  port: 12201
 },
   fs.createWriteStream('logs/faldax-api.log', {
     flags: 'a'
