@@ -420,5 +420,7 @@
 	"Users Report Success": "Users report has been retrieved successfully.",
 	"Withdraw Request Report Success": "Withdraw Request report has been retrieved successfully.",
 	"wallet Fee Data success": "Faldax Wallet Fee Data has been retrieved successfully.",
-	"Admin wallet history success": "Admin Wallet History has been retrieved successfully"
+	"Admin wallet history success": "Admin Wallet History has been retrieved successfully",
+	"Warm wallet retrieve": "Warm wallet details has been retrieved successfully",
+	"Custodial wallet retrieve": "Warm wallet details has been retrieved successfully"
 }
