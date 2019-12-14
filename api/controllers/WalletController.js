@@ -1719,7 +1719,7 @@ module.exports = {
       })
         .sort('id ASC')
 
-      for (var i = 0; i < coinData.length; i++) {        
+      for (var i = 0; i < coinData.length; i++) {
         let warmWalletData = await sails
           .helpers
           .wallet
@@ -1736,7 +1736,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": balance
         })
     } catch (error) {
       console.log(error);
@@ -1755,7 +1755,10 @@ module.exports = {
   getWarmWalletTransaction: async function (req, res) {
     try {
       var {
-        coin_code
+        coin_code,
+        limit,
+        prevId,
+        searchLabel
       } = req.allParams();
       var coinData = await Coins.findOne({
         select: [
@@ -1769,30 +1772,24 @@ module.exports = {
         }
       });
 
+      var data = {
+        prevId: prevId,
+        limit: limit,
+        searchLabel: searchLabel
+      }
+
       let warmWalletData = await sails
         .helpers
         .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address);
+        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address, data);
 
       var data = warmWalletData.transfers
-      var balance = [];
-      for (var i = 0; i < data.length; i++) {
-        let object = {
-          "wallet_id": data[i].wallet,
-          "transaction_id": data[i].txid,
-          "type": data[i].type,
-          "history": data[i].history,
-          "normalizedTxHash": data[i].normalizedTxHash,
-          "inputs": data[i].inputs
-        }
-        balance.push(object)
-      }
 
       return res
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": warmWalletData
         })
     } catch (error) {
       console.log(error);
@@ -1841,7 +1838,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": balance
         })
     } catch (error) {
       console.log(error);
@@ -1860,7 +1857,10 @@ module.exports = {
   getColdWalletTransaction: async function (req, res) {
     try {
       var {
-        coin_code
+        coin_code,
+        prevId,
+        limit,
+        searchLabel
       } = req.allParams();
       var coinData = await Coins.findOne({
         select: [
@@ -1874,30 +1874,22 @@ module.exports = {
         }
       });
 
+      var data = {
+        limit: limit,
+        prevId: prevId,
+        searchLabel: searchLabel
+      }
+
       let warmWalletData = await sails
         .helpers
         .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address);
-
-      var data = warmWalletData.transfers
-      var balance = [];
-      for (var i = 0; i < data.length; i++) {
-        let object = {
-          "wallet_id": data[i].wallet,
-          "transaction_id": data[i].txid,
-          "type": data[i].type,
-          "history": data[i].history,
-          "normalizedTxHash": data[i].normalizedTxHash,
-          "inputs": data[i].inputs
-        }
-        balance.push(object)
-      }
+        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address, data);
 
       return res
         .status(200)
         .json({
           "status": 200,
-          balance
+          "data": warmWalletData
         })
     } catch (error) {
       console.log(error);
