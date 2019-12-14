@@ -6,17 +6,15 @@ var formatOut = bunyan_format({
   type: 'raw',
   levelInString: true,
   host: 'graylog-udp.graylog.svc.cluster.local',
-  port: 12201
-},
-  fs.createWriteStream('logs/faldax-api.log', {
-    flags: 'a'
-  })
-)
+  port: 12201,
+  protocol: 'UDP'
+})
 
 var logger = bunyan.createLogger({
   name: 'faldax',
   stream: formatOut
 })
+
 
 logger._emit = (rec, noemit) => {
   delete rec.pid

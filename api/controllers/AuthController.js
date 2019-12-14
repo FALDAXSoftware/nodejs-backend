@@ -1015,6 +1015,7 @@ module.exports = {
     if (req.body.email) {
       let user = await Users.findOne({
         email: req.body.email,
+        deleted_at:null
         // is_verified: false
         // is_new_email_verified: true
       });
@@ -1031,7 +1032,7 @@ module.exports = {
         let email_verify_code = randomize('0', 6);
         await Users
           .update({
-            email: user.email
+            email: user.id
           })
           .set({
             email_verify_token: email_verify_code

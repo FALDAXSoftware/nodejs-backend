@@ -104,34 +104,35 @@ module.exports = {
       }]
       var total = 0.0;
       var MDEntries = body.MDEntries;
-      console.log("MD ENTRIES >>>>>>>>>", MDEntries);
+      
       var total_sell = 0.0;
       var calculate_quantity = 0.0;
-      console.log("LENGTH ????????/", MDEntries.length)
+      
       if (MDEntries.length > 0) {
-
+        var last_price=0;
         for (var i = 0; i < MDEntries.length; i++) {
           console.log("SIDE <<<<<<<", inputs.side)
           if (inputs.side == "Buy") {
             if (MDEntries[i].MDEntryType == 1 || MDEntries[i].MDEntryType == "1") {
               if (inputs.flag == 1 || inputs.flag == "1") { // BTC Editable
-                console.log("INSIDE FLAG CHECKING >>>>", MDEntries[i])
+                
                 if (i == 0) {
                   calculate_quantity = parseFloat(inputs.order_quantity) / MDEntries[i].MDEntryPx;
                 }
-                console.log("calculate quantity", calculate_quantity);
+                
                 total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize);
-                console.log("Total Sel >>>>", total_sell)
                 total += parseFloat(MDEntries[i].MDEntrySize);
-                console.log(total);
-                console.log("Condition :::::::", total > calculate_quantity)
                 if (total > calculate_quantity) {
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                   response_data[0].ask_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
                   break;
                 }
-                console.log("response Data >>>>>>", response_data[0])
+                last_price = MDEntries[i].MDEntryPx;
+                
+                response_data[0].ask_price = last_price;
+                response_data[0].limit_price = last_price;              
+                
               } else {
                 total += parseFloat(MDEntries[i].MDEntrySize);
                 // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
@@ -140,6 +141,10 @@ module.exports = {
                   response_data[0].limit_price = MDEntries[i].MDEntryPx;
                   break;
                 }
+                last_price = MDEntries[i].MDEntryPx;
+                response_data[0].ask_price = last_price;
+                response_data[0].limit_price = last_price;
+              
               }
 
             }
@@ -155,20 +160,26 @@ module.exports = {
                 if (total > calculate_quantity) {
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                   response_data[0].bid_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
                   break;
                 }
+                last_price = MDEntries[i].MDEntryPx;                
+                response_data[0].bid_price = last_price;
+                response_data[0].limit_price = last_price;
+              
               } else {
                 total += parseFloat(MDEntries[i].MDEntrySize);
                 // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                 if (total > parseFloat(inputs.order_quantity)) {
                   response_data[0].bid_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
                   break;
                 }
+                last_price = MDEntries[i].MDEntryPx;                
+                response_data[0].bid_price = last_price;
+                response_data[0].limit_price = last_price;
+              
               }
-
-
             }
           }
         }

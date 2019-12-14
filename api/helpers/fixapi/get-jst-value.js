@@ -179,7 +179,7 @@ module.exports = {
 
           if (req_body.Side == 2) {
             feesCurrency = currency;
-            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
+            get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), totalValue, totalValue);
             var faldax_fee = await AdminSetting.findOne({
               where: {
                 deleted_at: null,
