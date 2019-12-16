@@ -50,7 +50,8 @@ module.exports.datastores = {
         ***************************************************************************/
         adapter: 'sails-postgresql',
         //url: 'postgresql://postgres:admin@123@18.191.87.133/faldax', //developer 
-        url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+        //url: "postgresql://root:vceqxN5hZPyfWz9Z@prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
+         url: "postgresql://root:xDiEMp99pYC1MFHW@prod-faldax-pg.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
         //url: "postgresql://root:RXJSwBGZ7KdP9X4e@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
         //url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
         ssl: false,
