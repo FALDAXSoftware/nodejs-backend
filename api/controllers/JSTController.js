@@ -17,7 +17,7 @@ module.exports = {
    */
   getJSTPairList: async function (req, res) {
     try {
-
+      await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       var getJSTPair = await JSTPair.find({
         where: {
           deleted_at: null
@@ -31,7 +31,7 @@ module.exports = {
           is_jst_supported: true
         }
       })
-
+      await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, "JST Pair List")
       return res
         .status(200)
         .json({
@@ -43,7 +43,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      await logger.error({ "user_id": "user_" + req.user.id, "module": "JST", "url": req.url, "type": "Error" }, error.message)
       return res
         .status(500)
         .json({
@@ -98,6 +98,7 @@ module.exports = {
    */
   getJSTPriceValue: async function (req, res) {
     try {
+      await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       let req_body = req.body;
       let flag = req_body.flag;
       let validator = new Validator(req_body, {
@@ -217,6 +218,7 @@ module.exports = {
       }
       jstResponseValue.faldax_fee = final_faldax_fees;
       console.log(jstResponseValue);
+      await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("Price retrieve success"))
       return res
         .status(200)
         .json({
@@ -227,7 +229,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      await logger.error({ "user_id": "user_" + req.user.id, "module": "JST", "url": req.url, "type": "Error" }, error.message)
       return res
         .status(500)
         .json({
@@ -280,6 +282,7 @@ module.exports = {
    */
   createOrder: async function (req, res) {
     try {
+      await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       let req_body = req.body;
 
       let validator = new Validator(req_body, {
@@ -314,6 +317,7 @@ module.exports = {
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
+          await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, validator.errors[key].message)
           return res
             .status(400)
             .json({
@@ -333,6 +337,7 @@ module.exports = {
       });
 
       if (panic_button_details.value == true || panic_button_details.value == "true") {
+        await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Panic Button", "url": req.url, "type": "Error" }, sails.__("panic button enabled"))
         return res
           .status(500)
           .json({
@@ -349,6 +354,7 @@ module.exports = {
 
 
       if (geo_fencing_data.response != true) {
+        await logger.error({ "user_id": "user_" + req.user.id, "module": "JST GeoFencing", "url": req.url, "type": "Error" }, sails.__(geo_fencing_data.msg))
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg)
@@ -358,6 +364,7 @@ module.exports = {
         let check_security = await sails.helpers.checkSecurity(user_id, req_body.otp);
         console.log("Check  >>>>>>>...", check_security);
         if (check_security.status != 200) {
+          await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Security Status", "url": req.url, "type": "Error" }, check_security.message)
           return res
             // .status(check_security.status)
             .status(500)
@@ -392,6 +399,7 @@ module.exports = {
         });
         console.log("walletCurrency", walletCurrency);
         if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "")) {
+          await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("Create Currency Wallet"))
           return res
             .status(201)
             .json({
@@ -415,6 +423,7 @@ module.exports = {
         });
         console.log("walletCrypto", walletCrypto);
         if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address == "")) {
+          await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("Create Crypto Wallet"))
           return res
             .status(201)
             .json({
@@ -424,6 +433,7 @@ module.exports = {
         }
 
         if (req_body.OriginalQuantity < cryptoValue.jst_min_coin_limit) {
+          await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Create Order", "url": req.url, "type": "Error" }, sails.__("Minimum Order Limit not satisfied"))
           return res
             .status(500)
             .json({
@@ -465,6 +475,7 @@ module.exports = {
         // }
         // if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
         if (parseFloat(balanceChecking) > parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))) {
+          await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Create Order", "url": req.url, "type": "Error" }, sails.__("insufficent funds in wallet"))
           return res
             .status(500)
             .json({
@@ -527,6 +538,20 @@ module.exports = {
           .set(update_data).fetch();
         // var response = {};
         if (response == undefined || response.status == 0) {
+          var user_id = req.user.id;
+          var userData = await Users.findOne({
+            select: ['email', 'first_name', 'phone_number'],
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }
+          })
+
+          if (userData != undefined) {
+            await sails.helpers.notification.send.email("jst_order_failed", userData)
+          }
+          await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Create Order", "url": req.url, "type": "Error" }, sails.__("jst order not created"))
           return res
             .status(500)
             .json({
@@ -630,6 +655,20 @@ module.exports = {
               })
               .set(update_data).fetch();
 
+            var user_id = req.user.id;
+            var userData = await Users.findOne({
+              select: ['email', 'first_name', 'phone_number'],
+              where: {
+                deleted_at: null,
+                is_active: true,
+                id: user_id
+              }
+            })
+
+            if (userData != undefined) {
+              await sails.helpers.notification.send.email("jst_order_failed", userData)
+            }
+            await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Create Order", "url": req.url, "type": "Error" }, sails.__("jst order not created"))
             return res.json({
               "status": 500,
               // "message": sails.__("jst order not created") + "Due to : " + (reason_text),
@@ -825,6 +864,7 @@ module.exports = {
             await sails.helpers.notification.send.email("jst_order_success", userData)
           }
 
+          await logger.info({ "module": "JST Create Order", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("jst order created"))
           return res.json({
             "status": 200,
             "message": sails.__("jst order created"),
@@ -851,6 +891,8 @@ module.exports = {
       if (userData != undefined) {
         await sails.helpers.notification.send.email("jst_order_failed", userData)
       }
+      await logger.error({ "user_id": "user_" + req.user.id, "module": "JST Create Order", "url": req.url, "type": "Error" }, sails.__("Something Wrong"))
+
       return res
         .status(500)
         .json({
@@ -864,6 +906,7 @@ module.exports = {
   Check Offercode is valid or not 
   **/
   checkCampaignOfferStatus: async function (req, res) {
+    await logger.info({ "module": "Campaign", "user_id": "user_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
     let req_body = req.body;
     let validator = new Validator(req_body, {
       offer_code: 'required'
@@ -884,6 +927,7 @@ module.exports = {
 
     let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(req_body.offer_code, user_id, true);
     console.log("check_offer_status", check_offer_status);
+    await logger.info({ "module": "Campaigns", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, check_offer_status.message)
     if (check_offer_status.status == true || check_offer_status.status == "truefalse") {
       return res.json({
         "status": 200,
@@ -891,6 +935,7 @@ module.exports = {
         "data": check_offer_status.data
       });
     } else {
+      await logger.error({ "user_id": "user_" + req.user.id, "module": "Campaigns", "url": req.url, "type": "Error" }, check_offer_status.message)
       return res
         .status(500)
         .json({
@@ -904,9 +949,7 @@ module.exports = {
   **/
   getSocketJSTValue: async function (req, res) {
     try {
-
-      var socket = req.socket;
-      var io = sails.io;
+      await logger.info({ "module": "JST Socket Value", "user_id": "user_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
 
       var Symbol = req.query.Symbol;
       var Side = req.query.Side;
@@ -918,7 +961,6 @@ module.exports = {
       var order_pair = req.query.order_pair;
       var original_pair = req.query.original_pair;
       var usd_value = req.query.usd_value;
-      var event = 'connection'
       var req_body = {
         "Symbol": Symbol,
         "Side": Side,
@@ -1040,12 +1082,14 @@ module.exports = {
           // console.log("final_faldax_fees", final_faldax_f/ees);
         }
         jstResponseValue.faldax_fee = final_faldax_fees;
+        await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("User Trade Success"))
         return res.json({
           status: 200,
           data: jstResponseValue,
           "message": sails.__("User Trade Success")
         });
       } else {
+        await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("error"))
         return res
           .status(403)
           .json({
@@ -1057,7 +1101,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      await logger.error({ "user_id": "user_" + req.user.id, "module": "JST", "url": req.url, "type": "Error" }, error.message)
       return res
         .status(500)
         .json({
