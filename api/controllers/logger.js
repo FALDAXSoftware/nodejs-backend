@@ -1,33 +1,27 @@
 var bunyan = require('bunyan')
-var bunyan_format = require('bunyan-format')
-var fs = require('fs')
-var formatOut = bunyan_format({
-  outputMode: 'bunyan',
-  type: 'raw',
-  levelInString: true,
-  host: 'graylog-udp.graylog.svc.cluster.local',
-  port: 12201,
-  protocol: 'UDP'
-})
+const name = 'faldax-backend'
 
-var logger = bunyan.createLogger({
-  name: 'faldax',
-  stream: formatOut
-})
-
-
-logger._emit = (rec, noemit) => {
-  delete rec.pid
-  delete rec.hostname
-  rec['@timestamp'] = rec.time
-  delete rec.time
-  rec['@version'] = rec.v
-  delete rec.v
-  rec['message'] = rec.msg
-  delete rec.msg
-  bunyan.prototype._emit.call(logger, rec, noemit);
+const configs = {
+  src: true,
+  name,
+  streams: []
 }
 
+const stream = require('gelf-stream').forBunyan(
+  'logs.orderhive.plus',
+  12201
+)
+configs.streams.push({
+  type: 'raw',
+  stream: stream,
+  level: 'info'
+})
+configs.streams.push({
+  type: 'stream',
+  stream: process.stderr,
+  level: 'error'
+})
 
+const logger = bunyan.createLogger(configs)
 
 module.exports = logger

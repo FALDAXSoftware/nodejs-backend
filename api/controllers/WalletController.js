@@ -776,7 +776,7 @@ module.exports = {
 
         var walletTransData
         if (is_admin) {
-          walletTransData = await TransactionTable
+          walletTransData = await WalletHistory
             .find({
               user_id: req.user.id,
               coin_id: coinData.id,
@@ -785,7 +785,7 @@ module.exports = {
             })
             .sort('id DESC');
         } else {
-          walletTransData = await TransactionTable
+          walletTransData = await WalletHistory
             .find({
               user_id: req.user.id,
               coin_id: coinData.id,
@@ -1449,7 +1449,7 @@ module.exports = {
           filter += ' AND'
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
-        var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, wallet_history.amount, 
+        var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, (cast(wallet_history.amount as decimal(8,8))) as amount, 
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
@@ -1502,7 +1502,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address, 
-                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount, 
+                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,8))) as amount,
                             wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
                             FROM public.wallet_history LEFT JOIN coins
                             ON wallet_history.coin_id = coins.id
@@ -1635,13 +1635,13 @@ module.exports = {
 
         var walletLogs = `SELECT users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance, 
-                            CONCAT ((wallets.placed_balance), ' ', coins.coin) as placed_balance, 
                             wallets.receive_address, coins.coin_code,
                             wallets.send_address, users.full_name, coins.coin
                             FROM public.wallets LEFT JOIN users
                             ON users.id = wallets.user_id
                             LEFT JOIN coins ON wallets.coin_id = coins.id
-                            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL${filter}`
+                            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.balance > 0
+                            AND wallets.placed_balance IS NOT NULL${filter}`
 
         console.log(walletLogs);
 
