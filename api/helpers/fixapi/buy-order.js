@@ -92,9 +92,9 @@ module.exports = {
       body: (inputs.order_object),
       json: true
     }, async function (err, httpResponse, body) {
-      console.log(body);
-      console.log("eeerrrr", err);
-      if (err) {
+      console.log("err", err);
+      console.log("body", body);
+      if (err || body == null) {
         var data = {
           status: 0,
           data: body
@@ -104,7 +104,7 @@ module.exports = {
       // if (body.error) {
       //   return exits.error(body);
       // }
-      console.log("body", body);
+      
 
       if (body.ExecType == "F" || body.ExecType == "4" ) {
         var data = {

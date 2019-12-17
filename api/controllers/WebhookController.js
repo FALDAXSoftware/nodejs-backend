@@ -391,22 +391,35 @@ module.exports = {
 
   webhookOnSend: async function (req, res) {
 
+    console.log("SEND BODY >>>>>>>>>>>", req.body)
     // Check Status of Transaction
+
     if (req.body.state == "confirmed") {
 
       let transferId = req.body.transfer;
+      console.log("SEND TRANSFER Id>>>>>>>>>", transferId)
       // get transaction details
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
+
+      let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+      console.log("Warm Wallet >>>>>>>>>>", warmWallet);
+      console.log("Wallet Balance ??????????", warmWallet.balance)
+      console.log("SEND ??????????", transfer);
       // check status of transaction in transaction details
       if (transfer.state == "confirmed") {
         let walletHistory = await WalletHistory.findOne({
           transaction_id: req.body.hash,
           is_executed: false
         });
+        console.log(walletHistory)
         if (walletHistory) {
 
           // Send To user's destination address
           let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, walletHistory.amount * 1e8)
+          console.log("sendTransfer", sendTransfer)
+          let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+          console.log("After Send Warm Wallet >>>>>>>>>>", warmWallet);
+          console.log("After Send Wallet Balance ??????????", warmWallet.balance)
           // Update in wallet history
           await WalletHistory.update({
             id: walletHistory.id
