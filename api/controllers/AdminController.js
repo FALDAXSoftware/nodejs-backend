@@ -758,7 +758,11 @@ module.exports = {
         query += " ORDER BY admin.id DESC";
       }
 
+      console.log(req.allParams())
+
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      console.log(query)
 
       let allEmployees = await sails.sendNativeQuery("Select admin.*, roles.name as role " + query, [])
 
@@ -2085,6 +2089,7 @@ module.exports = {
   **/
   rejectUserTwofactorRequest: async function (req, res) {
     try {
+      await logger.info({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       let user_id = req.user.id;
       let adminData = await Admin.findOne({
         id: user_id,
@@ -2092,6 +2097,7 @@ module.exports = {
       });
 
       if (!adminData) {
+        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Employee not found"))
         res
           .status(401)
           .json({
@@ -2100,6 +2106,7 @@ module.exports = {
           });
       }
       if (adminData.role_id != 1) {
+        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Unauthorized Access"))
         res
           .status(403)
           .json({
@@ -2115,6 +2122,7 @@ module.exports = {
         id: id
       });
       if (!get_data) {
+        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("No record found"))
         return res
           .status(500)
           .json({
@@ -2124,6 +2132,7 @@ module.exports = {
       }
 
       if (get_data.status == "closed") {
+        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Twofactor request closed"))
         return res
           .status(500)
           .json({
@@ -2169,8 +2178,9 @@ module.exports = {
         }, {
           to: user.email,
           subject: template.name
-        }, function (err) {
+        }, async function (err) {
           if (!err) {
+            await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("Twofactor Request rejected"))
             return res.json({
               "status": 200,
               "message": sails.__("Twofactor Request rejected")
@@ -2179,7 +2189,7 @@ module.exports = {
         })
     } catch (err) {
       console.log("err", err);
-      await logger.error(err.message)
+      await logger.error({ "user_id": "admin_" + req.user.id, "module": "Two Factor Request", "url": req.url, "type": "Error" }, err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2191,6 +2201,7 @@ module.exports = {
   **/
   adminThresholdLists: async function (req, res) {
     try {
+      await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2243,14 +2254,14 @@ module.exports = {
           newarray.push(singledata);
         })
       }
+      await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Success" }, "Success")
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Threshold listed"),
         "data": newarray
       });
     } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+      await logger.error({ "requestId": "admin_" + req.user.id, "module": "Notifications", "url": req.url, "type": "Error" }, err.message)
       return res.json({
         "status": 500,
         "message": sails.__("Something Wrong")
@@ -2516,9 +2527,9 @@ module.exports = {
                 temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
               }
             })
-          }          
-        assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-        assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets)+(assets_data[i].total_earned_from_forfeit)+(assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
+          }
+          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
         }
 
         return res.status(200).json({
@@ -2859,7 +2870,7 @@ module.exports = {
                 // // Check Wallet Balance
                 // checkWalletBalance: async function (req, res) {
                 //   try {
-              
+
                 //     var coinData = await Coins.find({
                 //       deletedn_start
               },
@@ -4026,32 +4037,32 @@ module.exports = {
           "message": sails.__("Something Wrong")
         });
     }
-  }, 
+  },
   // Temp Get MarketSnapshot
-  getTempMarketsnapshot: async function( req, res){
+  getTempMarketsnapshot: async function (req, res) {
     var order_id = req.param("order_id");
-    
+
     var query = `SELECT order_id,jth.symbol, md_entries FROM jst_trade_history jth
                 LEFT JOIN market_snapshot_prices msp
                 ON jth.symbol=msp.symbol
                 WHERE jth.order_id='${order_id}' AND msp.type_of='order' LIMIT 1`;
-    var data = await sails.sendNativeQuery(query,[]);
+    var data = await sails.sendNativeQuery(query, []);
     var record = data.rows;
     var get_data_snapshot = await MarketSnapshotPrices.find({
-      symbol:record[0].symbol,
-      type_of:"check"
+      symbol: record[0].symbol,
+      type_of: "check"
     }).sort("id desc").limit(1)
-    var all_data={};
+    var all_data = {};
     all_data.order_id = order_id;
     all_data.symbol = record[0].symbol;
     all_data.before = record[0].md_entries;
     all_data.after = get_data_snapshot[0].md_entries;
     return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": "Data found",
-          "data":all_data
-        });
+      .status(200)
+      .json({
+        "status": 200,
+        "message": "Data found",
+        "data": all_data
+      });
   }
 };
