@@ -50,6 +50,7 @@ module.exports = {
         });
         console.log("data", data);
         feesValue = (((inputs.quantity) / (25) * data.value));
+        console.log("quantity >>>>>>", inputs.quantity, feesValue)
       } else if (coin == 'bch') {
 
         var data = await AdminSetting.findOne({
