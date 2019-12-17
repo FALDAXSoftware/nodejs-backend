@@ -306,6 +306,8 @@ module.exports = {
       var final_ntwk_fees = req_body.network_fees;
       var final_faldax_fees_actual = req_body.faldax_fees_actual;
 
+      console.log("req_body >>>>>>", req_body);
+
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
         quantityValue = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees))

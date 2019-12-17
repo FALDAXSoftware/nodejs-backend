@@ -776,7 +776,7 @@ module.exports = {
 
         var walletTransData
         if (is_admin) {
-          walletTransData = await TransactionTable
+          walletTransData = await WalletHistory
             .find({
               user_id: req.user.id,
               coin_id: coinData.id,
@@ -785,7 +785,7 @@ module.exports = {
             })
             .sort('id DESC');
         } else {
-          walletTransData = await TransactionTable
+          walletTransData = await WalletHistory
             .find({
               user_id: req.user.id,
               coin_id: coinData.id,
