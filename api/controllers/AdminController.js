@@ -108,7 +108,7 @@ module.exports = {
             }
 
             let role = await Role.findOne({
-              id: admin_details.role_id,
+              id: admin_details.role_id
             });
 
             admin_details.roles = role;
