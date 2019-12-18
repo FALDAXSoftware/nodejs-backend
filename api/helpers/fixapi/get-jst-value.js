@@ -30,8 +30,7 @@ module.exports = {
 
     try {
       var req_body = inputs.value_object;
-      console.log(req_body);
-      console.log("USD VALUE ?????????", req_body.usd_value);
+      console.log("Body in get-jst-value====>", req_body);
       var get_faldax_fee;
       var get_network_fees;
       var feesCurrency;
@@ -58,7 +57,7 @@ module.exports = {
         if (flag == 1) {
           var totalValue = 0;
           var priceValue = 0;
-          if (usd_value) {
+          if (usd_value) { // if USD Value has entered
             var price_value = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             if (req_body.Side == 1) {
               price_value_usd = (1 / price_value[0].ask_price);
@@ -213,7 +212,6 @@ module.exports = {
           if (req_body.Side == 2) {
             priceValue = (1 / get_jst_price[0].bid_price);
           }
-          console.log(priceValue)
           totalValue = (req_body.OrderQty * priceValue)
 
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
@@ -233,7 +231,6 @@ module.exports = {
             })
             faldax_fee_value = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100))) : parseFloat(((price_value_usd * (faldax_fee.value) / 100)))
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
-            console.log("Faldax Fee Value >>>>>>>>", get_faldax_fee);
             original_value = get_faldax_fee * priceValue;
           }
           returnData = {
