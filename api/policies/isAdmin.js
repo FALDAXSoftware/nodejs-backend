@@ -52,8 +52,6 @@ module.exports = async function (req, res, next) {
       "admin/users/list"
     ]
 
-    console.log("dsdssdd" + urlValue);
-
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
       if (req.user.isAdmin) {
@@ -64,7 +62,6 @@ module.exports = async function (req, res, next) {
         if (userData != undefined) {
           if (userData.deleted_at == null) {
             if (routeArray.indexOf(urlValue) > -1) {
-              console.log("INSIDE IF >>>>>>")
               return next();
             } else {
               var permissionData = await Permissions.findOne({

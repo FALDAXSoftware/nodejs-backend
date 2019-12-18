@@ -108,9 +108,9 @@ module.exports = {
         Currency: 'required',
         OrdType: 'required|in:1,2'
       });
-
+      console.log("getJSTPriceValue===>",req_body);
       var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
-      console.log(jstResponseValue);
+      console.log("jstResponseValue=====>",jstResponseValue);
 
       // Check for Offercode and if it is proper, don't add Faldax fees
       var user_id = req.user.id;
@@ -142,23 +142,17 @@ module.exports = {
       jstResponseValue.limit_price = jstResponseValue.limit_price;
       console.log("Offer COde >>>>>>.", offer_code);
       if (offer_code && offer_code != "") {
-        console.log("INSIDE IF >>>>>>")
         let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
-        console.log("check_offer_status", check_offer_status);
         // campaign_id = check_offer_status.data.campaign_id;
         // campaign_offer_id = check_offer_status.data.id;
         offer_message = check_offer_status.message;
         // offer_applied = false;
         if (check_offer_status.status == "truefalse") {
-          console.log("INSIDE ANOTHER IF >>>>>>>>>")
           final_faldax_fees = 0.0;
 
 
           // Check Partially fees calulations
           var current_order_faldax_fees = parseFloat(final_faldax_fees_actual) * parseFloat(calculate_offer_amount);
-          console.log("Current faldax FEE", current_order_faldax_fees);
-          console.log(parseFloat(check_offer_status.discount_values))
-          console.log(parseFloat(check_offer_status.discount_values) < parseFloat(current_order_faldax_fees))
           if (parseFloat(check_offer_status.discount_values) < parseFloat(current_order_faldax_fees)) {
             // offer_applied = true;
             var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
@@ -167,10 +161,7 @@ module.exports = {
             // console.log("Faladax Fee >>>>>>>>>>>>>",jstResponseValue.faldax_fee);
             var value = jstResponseValue.total_value;
             jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(final_faldax_fees);
-            console.log("INSIDE CONDITIUN >>>>>>>>", jstResponseValue.total_value);
             jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(final_faldax_fees);
-
-            console.log("QUANTITY >>>>>>>", jstResponseValue.orderQuantity);
           } else {
             if (flag == 2) {
               var total_value = parseFloat(jstResponseValue.total_value).toFixed(8);
@@ -217,7 +208,6 @@ module.exports = {
         // console.log("final_faldax_fees", final_faldax_f/ees);
       }
       jstResponseValue.faldax_fee = final_faldax_fees;
-      console.log(jstResponseValue);
       await logger.info({ "module": "JST", "user_id": "user_" + req.user.id, "url": req.url, "type": "Success" }, sails.__("Price retrieve success"))
       return res
         .status(200)
@@ -300,7 +290,8 @@ module.exports = {
         buy_currency_amount: 'required|decimal',
         sell_currency_amount: 'required|decimal',
         limit_price: 'required|decimal',
-        flag: 'required|in:1,2'
+        flag: 'required|in:1,2',
+        subtotal:'required|decimal'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
@@ -490,7 +481,7 @@ module.exports = {
         // }
 
 
-        req_body.OrdType = '2';
+        req_body.OrdType = '2'; // Make Limit Order Only
         let order_create = {
           currency: crypto,
           side: (req_body.Side == 1 ? "Buy" : "Sell"),
@@ -503,7 +494,8 @@ module.exports = {
           network_fees: req_body.network_fees,
           buy_currency_amount: req_body.buy_currency_amount,
           sell_currency_amount: req_body.sell_currency_amount,
-          limit_price: req_body.limit_price
+          limit_price: req_body.limit_price,
+          subtotal:parseFloat(req_body.subtotal)
         };
         console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
@@ -561,11 +553,7 @@ module.exports = {
               "message": sails.__("jst order not created")
             });
         } else {
-          var jst_response_data = response.data;
-          // calculate fees 
-          var get_faldax_fee = await AdminSetting.findOne({
-            slug: "faldax_fee"
-          });
+          var jst_response_data = response.data;         
           // Check cases for Order execution
           var order_completed = false;
           var order_status = 'open';
@@ -975,10 +963,11 @@ module.exports = {
         "original_pair": original_pair,
         "usd_value": usd_value
       }
-      console.log(req_body)
+      console.log("getSocketJSTValue====>>",req_body)
 
       if (req.isSocket) {
         var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
+        console.log("jstResponseValue===>>>",jstResponseValue);
         // Check for Offercode and if it is proper, don't add Faldax fees
         var user_id = req.user.id;
         let offer_code = req_body.offer_code;
