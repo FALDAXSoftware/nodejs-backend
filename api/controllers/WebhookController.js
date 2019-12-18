@@ -85,6 +85,8 @@ module.exports = {
           // Object of sender
           let source = transfer.outputs[1];
 
+          console.log("Transfer Output ??????????", transfer)
+
           console.log("Destination >>>>>>>>>", dest);
           console.log("Source >>>>>>>>>>", source);
 

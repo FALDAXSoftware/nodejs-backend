@@ -10,6 +10,8 @@ module.exports.local = {
   "METABASE_SITE_URL": process.env.METABASE_SITE_URL,
   "METABASE_SECRET_KEY": process.env.METABASE_SECRET_KEY,
   "PRE_PROD_URL": process.env.PRE_PROD_URL,
+  "JST_MARKET_URL": process.env.JST_MARKET_URL,
+  "JST_ORDER_URL": process.env.JST_ORDER_URL,
   // "PROD_URL": process.env.PROD_URL,
   // "DEV_URL": process.env.DEV_URL,
   'CURRENCY_LIST': process.env.CURRENCY,

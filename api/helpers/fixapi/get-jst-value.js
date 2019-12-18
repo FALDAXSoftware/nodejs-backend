@@ -213,7 +213,7 @@ module.exports = {
           if (req_body.Side == 2) {
             priceValue = (1 / get_jst_price[0].bid_price);
           }
-
+          console.log(priceValue)
           totalValue = (req_body.OrderQty * priceValue)
 
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
@@ -233,6 +233,7 @@ module.exports = {
             })
             faldax_fee_value = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100))) : parseFloat(((price_value_usd * (faldax_fee.value) / 100)))
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) + parseFloat(get_network_fees) + parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(price_value_usd) + parseFloat(get_network_fees) + parseFloat(((price_value_usd * (faldax_fee.value) / 100))));
+            console.log("Faldax Fee Value >>>>>>>>", get_faldax_fee);
             original_value = get_faldax_fee * priceValue;
           }
           returnData = {
