@@ -31,7 +31,6 @@ module.exports = {
   */
 
   fn: async function (inputs, exits) {
-    console.log("JST Input:", inputs);
     request({
       url: sails.config.local.JST_MARKET_URL + '/Market/GetQuote?symbol=' + inputs.symbol,
       method: "POST",
@@ -45,12 +44,9 @@ module.exports = {
       // },
       json: true
     }, async function (err, httpResponse, body) {
-      console.log("JST Market Price");
-      console.log("JST Error", err);
       if (err) {
         return exits.error(err);
       }
-      console.log("JST Body", body);
       if (body.error) {
         return exits.error(body);
       }
