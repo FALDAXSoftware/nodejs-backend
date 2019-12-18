@@ -11,17 +11,17 @@ var requestIp = require('request-ip');
 module.exports = async function (req, res, next) {
   try {
     // TODO
-    console.log(req.url);
+    console.log(req.url, req.route);
     let urlValue = req.url.trim();
-    let urlArray = req.url.split("/");
+    let urlArray = req.route.path.split("/");
     console.log(urlArray);
-    let urlSplit = req.url.split(":")
+    let urlSplit = req.route.path.split(":")
     console.log(urlSplit);
     urlValue = urlSplit[0];
-    console.log(urlValue)
-    urlSplit = req.url.split("?");
+    console.log("----", urlValue)
+    urlSplit = urlValue.split("?");
     urlValue = urlSplit[0];
-    urlValue = urlValue.replace("/", "")
+    urlValue = urlValue.replace(/^\/|\/$/g, '')
     // console.log(urlValue[0]);
     // console.log(urlValue[0] != '/')
     // urlValue = (urlValue[0] != '/') ? (urlValue) : ('/' + urlValue)
@@ -44,27 +44,12 @@ module.exports = async function (req, res, next) {
       "admin/delete-whitelist-ip",
       "admin/add-user-ip-whitelist",
       "admin/whitelist-ip-status-change",
-      "admin/campaigns/offercode-used",
-      "admin/campaigns/get",
-      "admin/campaigns/list",
-      "admin/campaigns/create",
-      "admin/campaigns/change-status",
-      "admin/campaigns/update",
       "admin/campaigns/verify-offercode",
-      "admin/campaigns/offercode-used",
-      "admin/campaigns-offers/create",
-      "admin/campaigns-offers/list",
-      "admin/campaigns-offers/get",
-      "admin/get-wallet-dashboard",
       "admin/get-admin-wallet-history",
-      "admin/get-warm-wallet-data",
-      "admin/get-warm-wallet-transaction",
-      "admin/get-cold-wallet-data",
-      "admin/get-cold-wallet-transaction",
-      "admin-wallet-fees-details",
       "admin/get-all-news",
       "admin/get-market-snapshot",
-      "admin/get-referred-user-data"
+      "admin/get-referred-user-data",
+      "admin/users/list"
     ]
 
     console.log("dsdssdd" + urlValue);
