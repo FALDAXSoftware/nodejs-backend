@@ -81,7 +81,6 @@ module.exports = {
       if (body.error) {
         return exits.error(body);
       }
-      console.log("body", body);
       // Add data in table
       let object_data = {
         symbol: body.Symbol,
@@ -111,7 +110,6 @@ module.exports = {
       if (MDEntries.length > 0) {
         var last_price = 0;
         for (var i = 0; i < MDEntries.length; i++) {
-          console.log("SIDE <<<<<<<", inputs.side)
           if (inputs.side == "Buy") {
             if (MDEntries[i].MDEntryType == 1 || MDEntries[i].MDEntryType == "1") {
               if (inputs.flag == 1 || inputs.flag == "1") { // BTC Editable
@@ -184,9 +182,7 @@ module.exports = {
           }
         }
       }
-      console.log("response_data", response_data);
       //ends
-
       return exits.success(response_data);
     });
 
