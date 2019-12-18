@@ -49,6 +49,10 @@ module.exports = {
       type: 'number',
       columnName: 'fix_quantity'
     },
+    subtotal: {
+      type: 'number',
+      columnName: 'subtotal'
+    },
     buy_currency_amount: {
       type: 'number',
       columnName: 'buy_currency_amount'

@@ -31,9 +31,9 @@ module.exports = {
   */
 
   fn: async function (inputs, exits) {
-      console.log("JST Input:",inputs);
+    console.log("JST Input:", inputs);
     request({
-      url: 'http://3.19.249.13:8080/Market/GetQuote?symbol='+inputs.symbol,
+      url: sails.config.local.JST_MARKET_URL + '/Market/GetQuote?symbol=' + inputs.symbol,
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',
@@ -45,24 +45,24 @@ module.exports = {
       // },
       json: true
     }, async function (err, httpResponse, body) {
-        console.log("JST Market Price");
-        console.log("JST Error",err);
+      console.log("JST Market Price");
+      console.log("JST Error", err);
       if (err) {
         return exits.error(err);
       }
-      console.log("JST Body",body);
+      console.log("JST Body", body);
       if (body.error) {
         return exits.error(body);
       }
       // Add data in table
       let object_data = {
-        coin:inputs.symbol,
-        ask_price:body.Ask,
-        ask_size:body.AskSize,
-        bid_price:body.Bid,
-        bid_size:body.BidSize,
+        coin: inputs.symbol,
+        ask_price: body.Ask,
+        ask_size: body.AskSize,
+        bid_price: body.Bid,
+        bid_size: body.BidSize,
       };
-      await PriceHistory.create( object_data );
+      await PriceHistory.create(object_data);
       //ends
 
       return exits.success(body);
