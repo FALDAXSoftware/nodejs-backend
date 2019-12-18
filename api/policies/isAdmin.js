@@ -11,17 +11,17 @@ var requestIp = require('request-ip');
 module.exports = async function (req, res, next) {
   try {
     // TODO
-    console.log(req.url);
+    console.log(req.url, req.route);
     let urlValue = req.url.trim();
-    let urlArray = req.url.split("/");
+    let urlArray = req.route.path.split("/");
     console.log(urlArray);
-    let urlSplit = req.url.split(":")
+    let urlSplit = req.route.path.split(":")
     console.log(urlSplit);
     urlValue = urlSplit[0];
-    console.log(urlValue)
-    urlSplit = req.url.split("?");
+    console.log("----", urlValue)
+    urlSplit = urlValue.split("?");
     urlValue = urlSplit[0];
-    urlValue = urlValue.replace("/", "")
+    urlValue = urlValue.replace(/^\/|\/$/g, '')
     // console.log(urlValue[0]);
     // console.log(urlValue[0] != '/')
     // urlValue = (urlValue[0] != '/') ? (urlValue) : ('/' + urlValue)
