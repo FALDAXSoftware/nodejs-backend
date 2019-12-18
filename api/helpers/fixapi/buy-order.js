@@ -82,7 +82,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     console.log("inputs.order_object", inputs.order_object);
     request({
-      url: 'http://3.19.249.13:9010/api/Order/CreateOrder',
+      url: sails.config.local.JST_ORDER_URL + '/api/Order/CreateOrder',
       method: "POST",
       headers: {
         // 'cache-control': 'no-cache',
@@ -104,9 +104,9 @@ module.exports = {
       // if (body.error) {
       //   return exits.error(body);
       // }
-      
 
-      if (body.ExecType == "F" || body.ExecType == "4" ) {
+
+      if (body.ExecType == "F" || body.ExecType == "4") {
         var data = {
           status: 1,
           data: body

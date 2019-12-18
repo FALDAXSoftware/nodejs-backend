@@ -485,9 +485,9 @@ module.exports = {
               "message": sails.__("insufficent funds in wallet")
             });
         }
-        if (req_body.original_pair != req_body.order_pair && req_body.Side == 2 && req_body.flag == 1) {
-          req_body.buy_currency_amount = (parseFloat(req_body.Quantity) + parseFloat(req_body.faldax_fees_actual) + parseFloat(req_body.network_fees));
-        }
+        // if (req_body.original_pair != req_body.order_pair && req_body.Side == 2 && req_body.flag == 1) {
+        //   req_body.buy_currency_amount = (parseFloat(req_body.Quantity) + parseFloat(req_body.faldax_fees_actual) + parseFloat(req_body.network_fees));
+        // }
 
 
         req_body.OrdType = '2';
@@ -749,7 +749,7 @@ module.exports = {
             var final_amount = parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees);
             final_fees_deducted_crypto = parseFloat(req_body.OriginalQuantity);
             final_fees_currency = parseFloat(req_body.Quantity) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
-            difference_faldax_commission = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(req_body.buy_currency_amount);
+            difference_faldax_commission = parseFloat(jst_response_data.SettlCurrAmt) - ( parseFloat(req_body.buy_currency_amount) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees) );
           }
 
 

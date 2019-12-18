@@ -23,7 +23,7 @@ module.exports = {
       example: '1',
       description: 'Flag for which asset is editable',
       required: true
-    },type_of:{
+    }, type_of: {
       type: 'string',
       example: 'create_order',
       description: 'Flag for which asset is editable',
@@ -65,7 +65,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     var md_entry_type = (inputs.side == "Buy" ? 1 : 0);
     request({
-      url: 'http://3.19.249.13:8080/Market/GetQuoteSnapshot?symbol=' + inputs.symbol + '&mdEntyType=' + md_entry_type,
+      url: sails.config.local.JST_MARKET_URL + '/Market/GetQuoteSnapshot?symbol=' + inputs.symbol + '&mdEntyType=' + md_entry_type,
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ module.exports = {
         maturity_date: body.MaturityDate,
         md_entries: { MDEntries: body.MDEntries },
         limit_price: 0.0,
-        type_of: (inputs.type_of == "create_order"?"order":"check")
+        type_of: (inputs.type_of == "create_order" ? "order" : "check")
       };
       await MarketSnapshotPrices.create(object_data);
       let ask_price = bid_size = limit_price = 0.0;
@@ -104,35 +104,35 @@ module.exports = {
       }]
       var total = 0.0;
       var MDEntries = body.MDEntries;
-      
+
       var total_sell = 0.0;
       var calculate_quantity = 0.0;
-      
+
       if (MDEntries.length > 0) {
-        var last_price=0;
+        var last_price = 0;
         for (var i = 0; i < MDEntries.length; i++) {
           console.log("SIDE <<<<<<<", inputs.side)
           if (inputs.side == "Buy") {
             if (MDEntries[i].MDEntryType == 1 || MDEntries[i].MDEntryType == "1") {
               if (inputs.flag == 1 || inputs.flag == "1") { // BTC Editable
-                
+
                 if (i == 0) {
                   calculate_quantity = parseFloat(inputs.order_quantity) / MDEntries[i].MDEntryPx;
                 }
-                
+
                 total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize);
                 total += parseFloat(MDEntries[i].MDEntrySize);
                 if (total > calculate_quantity) {
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                   response_data[0].ask_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
                   break;
                 }
                 last_price = MDEntries[i].MDEntryPx;
-                
+
                 response_data[0].ask_price = last_price;
-                response_data[0].limit_price = last_price;              
-                
+                response_data[0].limit_price = last_price;
+
               } else {
                 total += parseFloat(MDEntries[i].MDEntrySize);
                 // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
@@ -144,7 +144,7 @@ module.exports = {
                 last_price = MDEntries[i].MDEntryPx;
                 response_data[0].ask_price = last_price;
                 response_data[0].limit_price = last_price;
-              
+
               }
 
             }
@@ -160,25 +160,25 @@ module.exports = {
                 if (total > calculate_quantity) {
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                   response_data[0].bid_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
                   break;
                 }
-                last_price = MDEntries[i].MDEntryPx;                
+                last_price = MDEntries[i].MDEntryPx;
                 response_data[0].bid_price = last_price;
                 response_data[0].limit_price = last_price;
-              
+
               } else {
                 total += parseFloat(MDEntries[i].MDEntrySize);
                 // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
                 if (total > parseFloat(inputs.order_quantity)) {
                   response_data[0].bid_price = MDEntries[i].MDEntryPx;
-                  response_data[0].limit_price = MDEntries[i].MDEntryPx;                  
+                  response_data[0].limit_price = MDEntries[i].MDEntryPx;
                   break;
                 }
-                last_price = MDEntries[i].MDEntryPx;                
+                last_price = MDEntries[i].MDEntryPx;
                 response_data[0].bid_price = last_price;
                 response_data[0].limit_price = last_price;
-              
+
               }
             }
           }
