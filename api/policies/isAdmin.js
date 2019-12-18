@@ -64,7 +64,8 @@ module.exports = async function (req, res, next) {
       "admin-wallet-fees-details",
       "admin/get-all-news",
       "admin/get-market-snapshot",
-      "admin/get-referred-user-data"
+      "admin/get-referred-user-data",
+      "admin/users/list"
     ]
 
     console.log("dsdssdd" + urlValue);
