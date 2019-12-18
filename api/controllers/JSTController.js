@@ -575,9 +575,7 @@ module.exports = {
         };
         console.log("order_create", order_create);
         var create_order = await JSTTradeHistory.create(order_create).fetch();
-        if (req_body.original_pair != req_body.order_pair && req_body.Side == 2 && req_body.flag == 2) {
-          req_body.buy_currency_amount = parseFloat(req_body.Quantity);
-        }
+        
         // console.log("create_o/rder",create_order);
         let order_object = {
           ClOrdID: create_order.cl_order_id,
@@ -634,7 +632,7 @@ module.exports = {
               "message": sails.__("jst order not created")
             });
         } else {
-          var jst_response_data = response.data;         
+          var jst_response_data = response.data; // JST Response Success Data         
           // Check cases for Order execution
           var order_completed = false;
           var order_status = 'open';
@@ -718,8 +716,8 @@ module.exports = {
               reason: (jst_response_data.Text ? jst_response_data.Text : ""),
               exec_id: jst_response_data.ExecID
             };
-
-
+            
+            
             var update_order = await JSTTradeHistory
               .update({
                 id: create_order.id
@@ -815,18 +813,59 @@ module.exports = {
 
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var final_amount = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees));
-            final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            // final_fees_deducted_crypto = parseFloat(final_amount) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            final_fees_deducted_crypto = parseFloat(req_body.buy_currency_amount);
             final_fees_currency = parseFloat(req_body.sell_currency_amount);
+            // difference_faldax_commission = parseFloat(req_body.sell_currency_amount) - parseFloat(jst_response_data.SettlCurrAmt);
             difference_faldax_commission = parseFloat(req_body.sell_currency_amount) - parseFloat(jst_response_data.SettlCurrAmt);
           } else {
             // var final_amount = parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees);
             var final_amount = parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees);
-            final_fees_deducted_crypto = parseFloat(req_body.OriginalQuantity);
-            final_fees_currency = parseFloat(req_body.Quantity) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
-            difference_faldax_commission = parseFloat(jst_response_data.SettlCurrAmt) - (parseFloat(req_body.buy_currency_amount) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees));
+            final_fees_deducted_crypto = parseFloat(req_body.sell_currency_amount);
+            // final_fees_currency = parseFloat(req_body.Quantity) - parseFloat(final_faldax_fees) - parseFloat(final_ntwk_fees);
+            final_fees_currency = parseFloat(req_body.buy_currency_amount);
+            difference_faldax_commission = parseFloat(jst_response_data.SettlCurrAmt) - parseFloat(req_body.subtotal);
           }
 
-
+          // Update Faldax Wallet Address with Fees and Commission, if any
+          // If buy order
+          if( req_body.original_pair == req_body.order_pair ){
+            // Update Crypto wallet
+            let wallet_data = {
+              id:cryptoValue.id,
+              type:'add',
+              amount:parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees)
+            }
+            await sails.helpers.wallet.updateAdminWallets(wallet_data);              
+            // Update Currency wallet
+            if( difference_faldax_commission > 0 ){
+              let wallet_data = {
+                id:coinValue.id,
+                type:'add',
+                amount:parseFloat(difference_faldax_commission)
+              }
+              await sails.helpers.wallet.updateAdminWallets(wallet_data);           
+            }               
+          }else{
+            console.log("FEES===>>",parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees));
+            console.log("Commission===>>",parseFloat(difference_faldax_commission));
+            // Update Currency wallet
+            let wallet_data = {
+              id:coinValue.id,
+              type:'add',
+              amount:parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees)
+            }
+            await sails.helpers.wallet.updateAdminWallets(wallet_data);              
+            // Update Currency wallet
+            if( difference_faldax_commission > 0 ){
+              let wallet_data = {
+                id:coinValue.id,
+                type:'add',
+                amount:parseFloat(difference_faldax_commission)
+              }
+              await sails.helpers.wallet.updateAdminWallets(wallet_data);           
+            } 
+          }
           // update order
           var update_data = {
             fill_price: jst_response_data.SettlCurrAmt,

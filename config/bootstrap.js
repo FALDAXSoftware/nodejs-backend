@@ -8,7 +8,7 @@
  * For more information on bootstrapping your app, check out:
  * https://sailsjs.com/config/bootstrap
  */
-
+var logger = require("../api/controllers/logger");
 module.exports.bootstrap = async function (done) {
 
   // By convention, this is a good place to set up fake data during development.
