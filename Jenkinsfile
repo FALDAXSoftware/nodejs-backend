@@ -27,6 +27,10 @@ volumes: [
               imageTag = shortGitCommit
               namespace = getNamespace(myRepo.GIT_BRANCH);
               if (namespace){
+              withAWS(credentials:'jenkins_s3_upload') {
+                s3Download(file:'.env', bucket:'env.faldax', path:"${namespace}/.env", force:true)
+              }
+              sh "ls -a"
               sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
               sh "docker push  ${imageRepo}/backend:${imageTag}"
               sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag},ingress.hosts[0]=${namespace}-backend.faldax.com ${namespace}-backend -f chart/values.yaml chart/"                
