@@ -8,7 +8,7 @@ const configs = {
 }
 
 const stream = require('gelf-stream').forBunyan(
-  'graylog-udp.graylog.svc.cluster.local',
+  'logs.orderhive.plus',
   12201
 )
 configs.streams.push({
