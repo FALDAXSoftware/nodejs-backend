@@ -1852,7 +1852,7 @@ module.exports = {
         var queryAppended = false;
 
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` WHERE coins.coin_code = '${coin_code}'`
+          filter += ` AND coins.coin_code = '${coin_code}'`
           queryAppended = true
         }
 
@@ -1864,7 +1864,7 @@ module.exports = {
             }
             filter += ")"
           } else {
-            filter += " WHERE (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.order_id) LIKE '%" + data.toLowerCase() + "%' OR jst_trade_history.exec_id LIKE '%" + data.trim() + "%' OR LOWER(jst_trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'";
+            filter += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.order_id) LIKE '%" + data.toLowerCase() + "%' OR jst_trade_history.exec_id LIKE '%" + data.trim() + "%' OR LOWER(jst_trade_history.currency) LIKE '%" + data.toLowerCase() + "%' OR LOWER(jst_trade_history.settle_currency) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
               filter += " OR quantity=" + data + " OR fill_price=" + data
             }
@@ -1885,6 +1885,7 @@ module.exports = {
                               FROM public.jst_trade_history LEFT JOIN coins
                               ON coins.coin = jst_trade_history.currency OR coins.coin = jst_trade_history.settle_currency 
                               LEFT JOIN users ON users.id = jst_trade_history.user_id
+                              WHERE jst_trade_history.order_status='filled' 
                               ${filter}`
 
         if (start_date && end_date) {
