@@ -48,6 +48,7 @@ def getNamespace(branch){
         case 'master' : return "prod";
         case 'development' :  return "dev";
         case 'pre-prod' : return "pre-prod";
+        case 'qa' : return "qa";
         default : return null;
     }
 }
