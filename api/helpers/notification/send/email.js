@@ -92,6 +92,7 @@ module.exports = {
           exits.success(template.name)
         } else {
           console.log("Error >>>>>>>>>>>>>", err);
+          exits.success(template.name)
         }
       })
   }
