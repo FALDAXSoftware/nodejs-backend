@@ -260,6 +260,7 @@ module.exports = {
     // To check if offercode is not of Same Campaign
     async function checkOffercodeCampaign(usage, user_id, campaign_id, campaign_offer_id, store_offercode_history,get_campaign_offer_data ) {
       // console.log("Entered......");
+      
       let get_data_object = {
         campaign_id: campaign_id,
         or: [{ order_status: 'filled' }, { order_status: 'partially_filled' }]
@@ -267,12 +268,22 @@ module.exports = {
       if (user_id != 0) {
         get_data_object.user_id = user_id;
       }
-      let check_offercode_campaign = await JSTTradeHistory
-        .find(get_data_object).sort("id DESC").limit(1);
-      //console.log("check_offercode_campaign", check_offercode_campaign);
-      // console.log("check_offercode_campaign[0].campaign_offer_id != campaign_offer_id",check_offercode_campaign[0].campaign_offer_id != campaign_offer_id);
-      // console.log("inputs.check_only",inputs.check_only)
+      console.log("get_data_object",get_data_object);
+      let check_offercode_campaign;
+      if( usage == 1 ){
+        check_offercode_campaign = await CampaignsOffers.find({campaign_id:campaign_id, user_id:user_id}).sort('id DESC').limit(1);
+      }else{
+        check_offercode_campaign = await JSTTradeHistory
+          .find(get_data_object).sort("id DESC").limit(1);
+      }
+      
       // console.log("usage",usage);
+      // console.log("inputs.check_only",inputs.check_only);
+      // console.log("check_offercode_campaign.length",check_offercode_campaign.length);
+      // console.log("check_offercode_campaign[0]",check_offercode_campaign[0]);
+      // console.log("campaign_id",campaign_id);
+      // console.log("get_campaign_offer_data",get_campaign_offer_data);
+      // console.log("user_id",user_id);
       
       if ( usage == 0 && check_offercode_campaign.length > 0 && check_offercode_campaign[0].campaign_offer_id != campaign_offer_id) {        
         if (inputs.check_only) {
@@ -281,7 +292,8 @@ module.exports = {
         response.status = false;
         response.message = error_message;
         return exits.success(response)
-      }else if(usage == 1 && check_offercode_campaign.length > 0 && (check_offercode_campaign[0].campaign_offer_id != campaign_offer_id) && check_offercode_campaign[0].user_id != user_id  ){
+      // }else if(usage == 1 && check_offercode_campaign.length > 0 && (check_offercode_campaign[0].campaign_offer_id != campaign_offer_id) && check_offercode_campaign[0].user_id != user_id  ){
+      }else if(usage == 1 && check_offercode_campaign.length > 0 && (check_offercode_campaign[0].campaign_id == campaign_id) && get_campaign_offer_data[0].user_id != user_id  ){
         if (inputs.check_only) {
           await UsersCampaignsHistory.updateOne({id:store_offercode_history.id}).set({wrong_attempted:true});                 
         }
