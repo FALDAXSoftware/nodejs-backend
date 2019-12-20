@@ -333,8 +333,7 @@ module.exports = {
       var final_ntwk_fees = req_body.network_fees;
       var final_faldax_fees_actual = req_body.faldax_fees_actual;
 
-      console.log("req_body >>>>>>", req_body);
-
+      
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
         quantityValue = (req_body.OriginalQuantity != req_body.Quantity) ? (req_body.Quantity) : (parseFloat(req_body.Quantity) + parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees))
@@ -406,7 +405,7 @@ module.exports = {
       } else {
         // Check Security
         let check_security = await sails.helpers.checkSecurity(user_id, req_body.otp);
-        console.log("Check  >>>>>>>...", check_security);
+        
         if (check_security.status != 200) {
           await logger.error({
             "user_id": "user_" + req.user.id,
@@ -446,7 +445,7 @@ module.exports = {
             user_id: user_id
           }
         });
-        console.log("walletCurrency", walletCurrency);
+        
         if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "")) {
           await logger.info({
             "module": "JST",
@@ -475,7 +474,7 @@ module.exports = {
             user_id: user_id
           }
         });
-        console.log("walletCrypto", walletCrypto);
+        
         if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address == "")) {
           await logger.info({
             "module": "JST",
@@ -573,7 +572,7 @@ module.exports = {
           limit_price: req_body.limit_price,
           subtotal:parseFloat(req_body.subtotal)
         };
-        console.log("order_create", order_create);
+        
         var create_order = await JSTTradeHistory.create(order_create).fetch();
         
         // console.log("create_o/rder",create_order);
@@ -776,7 +775,6 @@ module.exports = {
           let offer_applied = false;
           if (offer_code && offer_code != "") {
             let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
-            console.log("check_offer_status", check_offer_status);
             if (check_offer_status.status != false) {
               campaign_id = check_offer_status.data.campaign_id;
               campaign_offer_id = check_offer_status.data.id;
@@ -799,8 +797,7 @@ module.exports = {
             } else if (check_offer_status.status == true) {
               offer_applied = true;
               final_faldax_fees = 0.0;
-            }
-            console.log("final_faldax_fees", final_faldax_fees);
+            }            
           }
 
           // Calculate fees deduction 
@@ -847,8 +844,6 @@ module.exports = {
               await sails.helpers.wallet.updateAdminWallets(wallet_data);           
             }               
           }else{
-            console.log("FEES===>>",parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees));
-            console.log("Commission===>>",parseFloat(difference_faldax_commission));
             // Update Currency wallet
             let wallet_data = {
               id:coinValue.id,
@@ -916,10 +911,10 @@ module.exports = {
           var second_coin_balance = '';
           var coin1type = '';
           var coin2type = '';
-          console.log("walletCurrency.balance", walletCurrency.balance);
-          console.log("walletCrypto.balance", walletCrypto.balance);
-          console.log("final_fees_currency", final_fees_currency)
-          console.log("final_fees_deducted_crypto", final_fees_deducted_crypto)
+          // console.log("walletCurrency.balance", walletCurrency.balance);
+          // console.log("walletCrypto.balance", walletCrypto.balance);
+          // console.log("final_fees_currency", final_fees_currency)
+          // console.log("final_fees_deducted_crypto", final_fees_deducted_crypto)
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({
@@ -975,7 +970,6 @@ module.exports = {
             userData.secondCoin = second_coin;
             userData.firstAmount = first_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
             userData.secondAmount = second_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
-            console.log("Acc userData", userData);
             await sails.helpers.notification.send.email("jst_order_success", userData)
           }
 
