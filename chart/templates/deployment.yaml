@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: CRON_STATUS
-            value: "true"
+            value: "false"
           volumeMounts:
           - name: config-value
             mountPath: {{ .Values.configuration.pod_directory }}

@@ -40,14 +40,14 @@ module.exports = {
           email_verify_token: req.body.email_verify_token
         });
         if (user) {
-          let hubspotcontact = await sails
-            .helpers
-            .hubspot
-            .contacts
-            .create(user.first_name, user.last_name, user.email)
-            .tolerate("serverError", () => {
-              throw new Error("serverError");
-            });
+          // let hubspotcontact = await sails
+          //   .helpers
+          //   .hubspot
+          //   .contacts
+          //   .create(user.first_name, user.last_name, user.email)
+          //   .tolerate("serverError", () => {
+          //     throw new Error("serverError");
+          //   });
           await Users
             .update({
               id: user.id,
