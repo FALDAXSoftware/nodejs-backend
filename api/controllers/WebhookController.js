@@ -97,13 +97,30 @@ module.exports = {
             is_active: true
           });
 
-          console.log("User Wallet with destination ????????/", userWallet)
           if (userWallet == undefined) {
-            userWallet = await Wallet.findOne({
+            var userSendWallet = await Wallet.findOne({
+              send_address: dest.address,
+              deleted_at: null,
+              is_active: true
+            });
+          }
+
+          console.log("User Wallet with destination ????????/", userWallet)
+          if (userWallet == undefined && userSendWallet == undefined) {
+            var userWalletAddress = await Wallet.findOne({
               receive_address: source.address,
               deleted_at: null,
               is_active: true
             });
+
+            if (userWalletAddress == undefined) {
+              userWalletAddress = await Wallet.findOne({
+                send_address: source.address,
+                deleted_at: null,
+                is_active: true
+              });
+            }
+            
             if (userWallet) {
               let temp = dest;
               dest = source;
@@ -232,7 +249,7 @@ module.exports = {
 
               // send amount to warm wallet
 
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              // await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
               let transactionLog = [];
               // Log Transafer in transaction table
               transactionLog.push({
@@ -248,7 +265,7 @@ module.exports = {
 
 
               // send amount to custodial wallet
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
+              // await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
 
               // Log Transafer in transaction table
               transactionLog.push({
@@ -416,8 +433,12 @@ module.exports = {
         console.log(walletHistory)
         if (walletHistory) {
 
+          console.log(walletHistory.faldax_fee)
+          console.log((walletHistory.amount - walletHistory.faldax_fee))
           // Send To user's destination address
-          let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, walletHistory.amount * 1e8)
+          var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(2);
+          console.log(amount);
+          let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount)
           console.log("sendTransfer", sendTransfer)
           let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
           console.log("After Send Warm Wallet >>>>>>>>>>", warmWallet);
