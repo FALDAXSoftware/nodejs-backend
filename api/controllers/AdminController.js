@@ -2409,38 +2409,6 @@ module.exports = {
         search
       } = req.allParams();
 
-      // walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
-      // (sum(th.user_fee)+sum(th.requested_fee)) as Fee
-      // from coins c
-      // LEFT JOIN trade_history th
-      // ON c.coin=th.user_coin
-      // LEFT JOIN wallets w
-      // ON c.id=w.coin_id
-      // WHERE w.is_admin=TRUE AND c.is_active=TRUE
-      // ${(search && search != "" && search != null) ? `AND LOWER(c.coin) LIKE '%${search.toLowerCase()}%'` : ''}
-      // GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance`;
-
-      // let FeeData = await sails.sendNativeQuery(walletQuery, []);
-      // FeeData = FeeData.rows;
-
-      // var coinQuery = `SELECT  sum(wallets.balance) as forfeit_funds , wallets.coin_id, coins.coin_code
-      // from wallets LEFT JOIN users ON users.id = wallets.user_id 
-      // LEFT JOIN coins ON wallets.coin_id = coins.id
-      // WHERE users.deleted_at IS NULL 
-      // GROUP BY wallets.coin_id,coins.coin_code
-      // ORDER BY wallets.coin_id`
-
-      // let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
-      // forfeitFundData = forfeitFundData.rows;
-
-      // console.log("forfeitFundData",forfeitFundData);
-      // for (var i = 0; i < forfeitFundData.length; i++) {
-      //   for (var j = 0; j < FeeData.length; j++) {
-      //     if (FeeData[j].coin_code == forfeitFundData[i].coin_code) {
-      //       FeeData[j].forfeit_funds = forfeitFundData[i].forfeit_funds;
-      //     }
-      //   }
-      // }
       // Get Asset Details 
       var query = {};
       if (search && search != "" && search != null) {
