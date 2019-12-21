@@ -67,7 +67,7 @@ module.exports = {
           var asset2_usd_value = asset2_value[0].bid_price;
           calculate_offer_amount = asset2_usd_value;
         }
-
+        
         var final_faldax_fees = faldax_fee_value
         var final_faldax_fees_actual = faldax_fee_value;
         faldax_fees_actual = final_faldax_fees_actual;
