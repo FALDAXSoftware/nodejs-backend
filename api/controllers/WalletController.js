@@ -486,7 +486,8 @@ module.exports = {
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
 
 
-                            console.log("Amount >>>>>>>>>", amount)
+                            console.log(amount)
+                            console.log("Amount >>>>>>>>>", coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString())
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
@@ -521,6 +522,7 @@ module.exports = {
                                 .fetch();
                             }
 
+                            console.log(wallet.send_address);
                             //Here remainning ebtry as well as address change
                             let walletHistory = {
                               coin_id: wallet.coin_id,
@@ -557,7 +559,7 @@ module.exports = {
                               source_address: warmWalletData.receiveAddress.address,
                               destination_address: wallet.send_address,
                               user_id: user_id,
-                              amount: (total_fees),
+                              amount: (amount),
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
@@ -573,7 +575,7 @@ module.exports = {
                               source_address: wallet.send_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: (total_fees),
+                              amount: (amount),
                               transaction_type: 'send',
                               is_executed: false,
                               transaction_id: transaction.txid,
@@ -915,7 +917,7 @@ module.exports = {
       } = req.body;
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit"
+          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit"
         ],
         where: {
           coin_code: coinReceive,
@@ -991,7 +993,8 @@ module.exports = {
         walletUserData['coin_icon'] = coinData.coin_icon;
         walletUserData['coin'] = coinData.coin;
         walletUserData['coin_name'] = coinData.coin_name;
-        walletUserData['min_limit'] = coinData.min_limit
+        walletUserData['min_limit'] = coinData.min_limit;
+        walletUserData['max_limit'] = coinData.max_limit;
         // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
         // coin_id: coinData.id, deleted_at: null });
         if (walletTransData) {
@@ -1594,10 +1597,10 @@ module.exports = {
       var placed_amount = parseInt(walletData.placed_balance) + balance
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: amount,
             placed_balance: placed_amount
@@ -1645,10 +1648,10 @@ module.exports = {
 
       if (walletData != undefined) {
         var updateWalletData = await Wallet.update({
-            deleted_at: null,
-            coin_id: coinData.id,
-            user_id: user_id
-          })
+          deleted_at: null,
+          coin_id: coinData.id,
+          user_id: user_id
+        })
           .set({
             balance: balance,
             placed_balance: balance
@@ -1682,17 +1685,17 @@ module.exports = {
         "type": "Entry"
       }, "Entered the function")
       var withdrawFee = await AdminSetting.find({
-          where: {
-            deleted_at: null,
-            or: [{
-                slug: 'default_send_coin_fee'
-              },
-              {
-                slug: 'faldax_fee'
-              }
-            ]
+        where: {
+          deleted_at: null,
+          or: [{
+            slug: 'default_send_coin_fee'
+          },
+          {
+            slug: 'faldax_fee'
           }
-        })
+          ]
+        }
+      })
         .sort('id DESC')
       await logger.info({
         "module": "Wallet Faldax Fee",
@@ -1765,8 +1768,8 @@ module.exports = {
           walletLogs += " wallet_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
 
         countQuery = walletLogs;
@@ -1817,8 +1820,8 @@ module.exports = {
           walletLogs += " wallet_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
 
         countQuery = walletLogs;
@@ -1894,8 +1897,8 @@ module.exports = {
           walletLogs += " jst_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
 
         countQuery = walletLogs;
@@ -1954,8 +1957,8 @@ module.exports = {
           walletLogs += " users.deleted_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND users.deleted_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
 
         countQuery = walletLogs;
@@ -2016,15 +2019,15 @@ module.exports = {
       if (search && search != "" && search != null) {
         query = {
           or: [{
-              coin: {
-                contains: search
-              }
-            },
-            {
-              coin_name: {
-                contains: search
-              }
+            coin: {
+              contains: search
             }
+          },
+          {
+            coin_name: {
+              contains: search
+            }
+          }
           ]
         }
       }
@@ -2129,15 +2132,15 @@ module.exports = {
       if (search && search != "" && search != null) {
         query = {
           or: [{
-              coin: {
-                contains: search
-              }
-            },
-            {
-              coin_name: {
-                contains: search
-              }
+            coin: {
+              contains: search
             }
+          },
+          {
+            coin_name: {
+              contains: search
+            }
+          }
           ]
         }
       }
