@@ -164,7 +164,7 @@ module.exports = {
       var user_id;
       var filter = ''
       if (req.user.isAdmin) {
-        user_id = req.user.id;
+        user_id = 36;
         filter = ` wallets.user_id = ${user_id} AND wallets.is_admin = true `
       } else {
         user_id = req.user.id;
@@ -926,6 +926,9 @@ module.exports = {
         coinReceive,
         is_admin
       } = req.body;
+      if (is_admin == true && is_admin == "true") {
+        req.user.id = 36
+      }
       let coinData = await Coins.findOne({
         select: [
           "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit"
@@ -943,7 +946,7 @@ module.exports = {
         if (is_admin) {
           walletTransData = await WalletHistory
             .find({
-              user_id: req.user.id,
+              user_id: 36,
               coin_id: coinData.id,
               deleted_at: null,
               is_admin: true
@@ -983,12 +986,27 @@ module.exports = {
           }
         }
 
-        let walletUserData = await Wallet.findOne({
-          user_id: req.user.id,
-          coin_id: coinData.id,
-          deleted_at: null,
-          is_active: true
-        })
+        var object
+        var walletUserData;
+        if (req.user.isAdmin) {
+          walletUserData = await Wallet.findOne({
+            user_id: (36),
+            coin_id: coinData.id,
+            deleted_at: null,
+            is_active: true,
+            is_admin: true
+          });
+        } else {
+          walletUserData = await Wallet.findOne({
+            user_id: (req.user.id),
+            coin_id: coinData.id,
+            deleted_at: null,
+            is_active: true,
+            is_admin: true
+          });
+        }
+
+
         if (walletUserData) {
           if (walletUserData.receive_address === '') {
             walletUserData['flag'] = 1;
