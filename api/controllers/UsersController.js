@@ -3197,7 +3197,7 @@ module.exports = {
                                     ON referral.coin_name = coins.coin
                                     WHERE referral.is_collected = 'true' AND referral.user_id = ${user_id}${filter} 
                                     AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.id
                                     ORDER BY referral.id DESC`);
 
       console.log(get_reffered_data);
