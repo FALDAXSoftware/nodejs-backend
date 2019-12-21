@@ -73,25 +73,27 @@ module.exports = {
       let template = await EmailTemplate.findOne({
         slug
       });
-      let emailContent = await sails
-        .helpers
-        .utilities
-        .formatEmail(template.content, {
-          recipientName: ''
-        })
-      if (template) {
-        sails
-          .hooks
-          .email
-          .send("general-email", {
-            content: emailContent
-          }, {
-            // to: "mansi.gyastelwala@openxcellinc.com, jagdish.banda@openxcelltechnolabs.com",
-            to: value,
-            subject: "Panic Button"
-          }, function (err) {
-            console.log(err);
-          });
+      for (var i = 0; i < all_user_emails.length; i++) {
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: ''
+          })
+        if (template) {
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+              to: all_user_emails[i],
+              to: value,
+              subject: "Panic Button"
+            }, function (err) {
+              console.log("err", err);
+            });
+        }
       }
       if (!user) {
         return res
