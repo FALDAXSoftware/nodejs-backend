@@ -240,6 +240,8 @@ module.exports = {
             if (req_body.offer_code && req_body.offer_code != '') {
               get_faldax_fee = parseFloat(get_faldax_fee) - parseFloat(faldax_fee_value);
             }
+            console.log(get_faldax_fee)
+            console.log("((req_body.offer_code && req_body.offer_code != '') ? dataValue : priceValue)", ((req_body.offer_code && req_body.offer_code != '') ? dataValue : priceValue))
             totalValue = get_faldax_fee * ((req_body.offer_code && req_body.offer_code != '') ? dataValue : priceValue)
             faldax_fee_value = (dataValue > 0 && req_body.offer_code && req_body.offer_code != '') ? 0.0 : faldax_fee_value;
           }

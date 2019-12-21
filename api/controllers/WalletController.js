@@ -161,15 +161,26 @@ module.exports = {
         "url": req.url,
         "type": "Entry"
       }, "Entered the function")
+      var user_id;
+      var filter = ''
+      if (req.user.isAdmin) {
+        user_id = req.user.id;
+        filter = ` wallets.user_id = ${user_id} AND wallets.is_admin = true `
+      } else {
+        user_id = req.user.id;
+        filter = ` wallets.user_id = ${user_id}`
+      }
+      console.log(filter)
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE wallets.user_id = ${req.user.id} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
+                    WHERE ${filter} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
 
+      console.log("query", query)
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
