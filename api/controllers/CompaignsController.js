@@ -592,7 +592,7 @@ module.exports = {
               console.log("filter",filter);
             }
             // from += ' from users_campaign_history INNER JOIN users ON users_campaign_history.user_id = users.id where campaign_offer_id='+id;
-            select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted 
+            select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees 
                       from users_campaign_history AS uch
                       INNER JOIN users
                       on uch.user_id=users.id

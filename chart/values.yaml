@@ -39,6 +39,7 @@ ingress:
     kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   path: /*
+
   hosts:
     - backend.faldax.com
   tls: []
