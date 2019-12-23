@@ -81,5 +81,5 @@ controller:
     enabled: true
     minReplicas: 1
     maxReplicas: 4
-    targetCPUUtilizationPercentage: 50
-    targetMemoryUtilizationPercentage: 70 
+    targetCPUUtilizationPercentage: 5
+    targetMemoryUtilizationPercentage: 5 
