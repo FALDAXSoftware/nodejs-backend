@@ -241,6 +241,7 @@ module.exports = {
       //   }
       // }
       let campaign_id = req.param("id");
+      var get_campaign_data = await Campaigns.findOne({ id: campaign_id });
       let req_body = req.body;
       let validator = new Validator(req_body, {
         label: 'required',
@@ -310,6 +311,10 @@ module.exports = {
       if ((req_body.campaign_offers).length > 0) {
         var campaign_offers_data = req_body.campaign_offers;
         for (var i = 0; i < (req_body.campaign_offers).length; i++) {
+          if (get_campaign_data.usage == 2) {
+            campaign_offers_data[i].start_date = req_body.start_date
+            campaign_offers_data[i].end_date = req_body.end_date
+          }
           var each_object = {
             description: campaign_offers_data[i].description,
             start_date: campaign_offers_data[i].start_date,
@@ -324,6 +329,10 @@ module.exports = {
       var insert_offers = [];
       if ((req_body.campaign_offers_new) && (req_body.campaign_offers_new).length > 0) {
         var campaign_offers_new_object = (req_body.campaign_offers_new).map(function (each, index) {
+          if (get_campaign_data.usage == 2) {
+            each.start_date = req_body.start_date
+            each.end_date = req_body.end_date
+          }
           if (each.is_default_values == true) {
             each.no_of_transactions = create_data.no_of_transactions;
             each.fees_allowed = create_data.fees_allowed;
