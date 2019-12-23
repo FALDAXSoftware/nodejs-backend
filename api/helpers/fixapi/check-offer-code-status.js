@@ -250,6 +250,7 @@ module.exports = {
         if (remaining_fees > 0) {
           response.status = "truefalse";
           response.discount_values = remaining_fees;
+          response.fiat_faldax_fees = fiat_faldax_fees;
           // response.message = `You will get $${remaining_fees} as discount in your fees` ;
 
           response.message = success_message;
