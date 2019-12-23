@@ -3187,19 +3187,19 @@ module.exports = {
       var filter = ''
       if (data && data != '' && data != null) {
         data = data.trim();
-        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' "
+        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.txid) LIKE '%" + data.toLowerCase() + "%'";
       }
 
       var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, 
                                     users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
-                                    ON (users.id = referral.user_id OR users.id=referral.referred_user_id)
+                                    ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
-                                    WHERE referral.is_collected = 'true' AND referral.user_id = ${user_id}${filter} 
+                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter} 
                                     AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid
-                                    ORDER BY coins.id DESC`);
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
+                                    ORDER BY coins.id , referral.updated_at DESC`);
 
       console.log(get_reffered_data);
 
