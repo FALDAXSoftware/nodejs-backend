@@ -27,4 +27,3 @@ spec:
         targetAverageUtilization: {{ . }}
 {{- end }}
 {{- end }}
-{{- end }}
