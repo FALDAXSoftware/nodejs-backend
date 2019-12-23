@@ -943,7 +943,8 @@ module.exports = {
         coinData = JSON.parse(JSON.stringify(coinData));
 
         var walletTransData
-        if (is_admin) {
+        console.log("is_admin", is_admin)
+        if (is_admin && is_admin != undefined) {
           walletTransData = await WalletHistory
             .find({
               user_id: 36,
@@ -988,7 +989,7 @@ module.exports = {
 
         var object
         var walletUserData;
-        if (req.user.isAdmin) {
+        if (is_admin && is_admin != undefined) {
           walletUserData = await Wallet.findOne({
             user_id: (36),
             coin_id: coinData.id,
@@ -1001,8 +1002,7 @@ module.exports = {
             user_id: (req.user.id),
             coin_id: coinData.id,
             deleted_at: null,
-            is_active: true,
-            is_admin: true
+            is_active: true
           });
         }
 
