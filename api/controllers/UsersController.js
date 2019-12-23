@@ -3190,7 +3190,8 @@ module.exports = {
         filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' "
       }
 
-      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, users.email, referral.txid
+      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, 
+                                    users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
                                     ON (users.id = referral.user_id OR users.id=referral.referred_user_id)
                                     LEFT JOIN coins
