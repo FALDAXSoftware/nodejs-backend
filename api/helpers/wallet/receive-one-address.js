@@ -49,8 +49,6 @@ module.exports = {
       coin: inputs.coin
     });
 
-    console.log(coin);
-
 
     var walletData = await Wallet.findOne({
       deleted_at: null,
@@ -63,15 +61,13 @@ module.exports = {
 
       let walletCoinCode = coin.coin_code;
       // let address_label = inputs.user.id.toString();
-      let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(),(inputs.user.flag == true ? true : false));
+      let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
 
       // Address Labeling and coin name for erc20 token
       if (coin.isERC) {
         walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
         address_label = coin.coin_code + '-' + address_label;
       }
-
-      console.log(walletCoinCode, coin.hot_receive_wallet_address)
       var wallet = await sails.helpers.bitgo.getWallet(walletCoinCode, coin.hot_receive_wallet_address);
 
 
@@ -80,15 +76,11 @@ module.exports = {
           // Here chain =0 means testnet Generating wallet address Create bitgo wallet
           // address
 
-
-          console.log(walletCoinCode, coin.hot_receive_wallet_address, address_label)
           //Address generation for receiving coin
           let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
 
-          console.log(address)
           //Address generation for sending the coin
           let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);
-          console.log(sendAddress);
           let obj = {
             wallet_id: "wallet",
             coin_id: parseInt(coin.id),

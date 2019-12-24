@@ -716,7 +716,6 @@ module.exports = {
   getWarmWalletBalance: async function (req, res) {
     try {
       var ss = await Coins.find();
-      console.log("ss");
       var balance = [];
       var coinData = await Coins.find({
         select: [
@@ -732,7 +731,6 @@ module.exports = {
         .sort('id ASC')
 
       for (var i = 0; i < coinData.length; i++) {
-        console.log(coinData[i]);
         let warmWalletData = await sails
           .helpers
           .wallet
@@ -749,8 +747,6 @@ module.exports = {
         } else {
           coldWalletData = ''
         }
-        console.log(balanceColdWallet);
-        console.log(warmWalletData)
         var object = {
           "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
           "coin_code": coinData[i].coin_code,
@@ -758,11 +754,9 @@ module.exports = {
           "cold_wallet": coldWalletData,
           "cold_wallet_balance": (balanceColdWallet.balance) ? (balanceColdWallet.balance) : balanceColdWallet.balanceString
         }
-        console.log(object);
         balance.push(object);
       }
 
-      console.log(balance);
 
       return res
         .status(200)

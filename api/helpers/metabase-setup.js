@@ -34,8 +34,6 @@ module.exports = {
       var METABASE_SITE_URL = sails.config.local.METABASE_SITE_URL;
       var METABASE_SECRET_KEY = await sails.helpers.getDecryptData(sails.config.local.METABASE_SECRET_KEY);
 
-      console.log(inputs.dashboardValue)
-
       var payload = {
         resource: {
           dashboard: inputs.dashboardValue

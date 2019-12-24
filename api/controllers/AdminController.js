@@ -124,7 +124,6 @@ module.exports = {
 
             var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
             roleAllowedData = roleAllowedData.rows;
-            console.log(roleAllowedData);
             admin_details.roleAllowedData = roleAllowedData;
 
             // console.log(permissionDetail);
@@ -758,11 +757,7 @@ module.exports = {
         query += " ORDER BY admin.id DESC";
       }
 
-      console.log(req.allParams())
-
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
-      console.log(query)
 
       let allEmployees = await sails.sendNativeQuery("Select admin.*, roles.name as role " + query, [])
 
@@ -1872,7 +1867,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      
+
 
       // var get_data = await UserForgotTwofactors.getOpenRequests();
       // if (get_data.rowCount > 0) {
@@ -1976,7 +1971,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      
+
       let {
         id
       } = req.body;
@@ -2091,7 +2086,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      
+
       let {
         id,
         reason
@@ -3918,7 +3913,6 @@ module.exports = {
               permission_id: data[i].id
             }
           }).limit(1);
-          console.log(permissionValue)
           if (data[i].isChecked == "true" || data[i].isChecked == true) {
             // if (!permissionValue) {
             if (permissionValue.length == 0) {
