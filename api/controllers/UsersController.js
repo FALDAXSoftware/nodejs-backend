@@ -3328,5 +3328,51 @@ module.exports = {
         });
     }
   },
+  /*
+   To update Terms status
+   */
+  updateTermsStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var is_terms_agreed = req.body.is_terms_agreed;
+      var userData = await Users.findOne({
+        id: user_id,
+        deleted_at: null,
+        is_active: true
+      });
+
+      if (userData != undefined) {
+        var emailData = await Users.update({
+          id: user_id,
+          deleted_at: null,
+          is_active: true
+        }).set({
+          is_terms_agreed: is_terms_agreed
+        });
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Terms status accept"),
+          "data": []
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
 
 };
