@@ -31,9 +31,9 @@ module.exports.http = {
 
     order: [
       'cookieParser',
-      'session',
-      'bodyParser',
+      'session',      
       'requestLogger',
+      'bodyParser',
       'responseLogger',
       'compress',
       'poweredBy',
@@ -62,29 +62,33 @@ module.exports.http = {
     })(),
     // Logs each request to Graylog
     requestLogger: function (req, res, next) {
+      // console.log("req.user",req);
       if (req.method == 'OPTIONS') {
         return next();
       }
-      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
-      req.headers['Logid'] = generate_unique_string;
-      var logger = require('../api/controllers/logger')
-      var object = {
-        module: "Request",
-        url: req.url,
-        type: "Success",
-        log_id: req.headers['Logid']
-      };
-      if (req.user && req.user.id) {
-        object.user_id = "user_" + req.user.id;
-      }
-      if (req.body) {
-        // object.body = JSON.stringify(req.body);
-      }
-      if (req.query) {
-        object.params = req.query;
-      }
+      // if( req.user ){
+        var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+        req.headers['Logid'] = generate_unique_string;
+        var logger = require('../api/controllers/logger')
+        var object = {
+          module: "Request",
+          url: req.url,
+          type: "Success",
+          log_id: req.headers['Logid']
+        };
+        if (req.user && req.user.id) {
+          object.user_id = "user_" + req.user.id;
+        }
+        if (req.body) {
+          // object.body = JSON.stringify(req.body);
+        }
+        if (req.query) {
+          object.params = req.query;
+        // }
 
-      logger.info(object, "Request success");
+        logger.info(object, "Request success");
+      }
+      
       return next();
     },
     // Logs each response to Graylog
@@ -122,7 +126,7 @@ module.exports.http = {
           }
         }
         if( res.statusCode != 200 && res.statusCode >= 201 ){
-          object.responseData = JSON.stringify(response);
+          object.responseData = JSON.stringify(body);
         }
         if (req.user && req.user.id) {
           object.user_id = "user_" + req.user.id;

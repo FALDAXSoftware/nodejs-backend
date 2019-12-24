@@ -428,7 +428,7 @@ module.exports.routes = {
   'get /admin/get-referred-user-data': 'UsersController.getUserReferData',
   'get /admin/get-referred-id-assets': 'UsersController.getReferredAssets',
 
-  'get /get-encrypt-data': 'RootController.getEncryptKey',
+  'post /get-encrypt-data': 'RootController.getEncryptKey',
 
   // Simplex API
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',

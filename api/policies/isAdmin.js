@@ -10,6 +10,32 @@ var requestIp = require('request-ip');
 
 module.exports = async function (req, res, next) {
   try {
+    // Logger
+    // console.log("req.user",req);
+    if (req.method == 'OPTIONS') {
+      return next();
+    }
+    var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+    req.headers['Logid'] = generate_unique_string;
+    var logger = require('../controllers/logger')
+    var object = {
+      module: "Request",
+      url: req.url,
+      type: "Success",
+      log_id: req.headers['Logid']
+    };
+    if (req.user && req.user.id) {
+      object.user_id = "user_" + req.user.id;
+    }
+    if (req.body) {
+      // object.body = JSON.stringify(req.body);
+    }
+    if (req.query) {
+      object.params = req.query;
+    }
+
+    logger.info(object, "Request success");
+    // Ends
     // TODO
     let urlValue = req.url.trim();
     let urlArray = req.route.path.split("/");

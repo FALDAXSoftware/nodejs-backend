@@ -4059,7 +4059,7 @@ module.exports = {
               });
           }
           if (uploadedFiles.length > 0) {
-            var uploadedFilesRes = await UploadFiles.upload(uploadedFiles[0].fd, pdfObject.value);
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
             if (uploadedFilesRes) {
               return res
                 .status(200)
@@ -4085,6 +4085,7 @@ module.exports = {
           }
         })
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({

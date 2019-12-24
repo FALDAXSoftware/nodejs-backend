@@ -31,13 +31,8 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     try {
-      var key = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'access_token'
-        }
-      });
-      key = await sails.helpers.getDecryptData(key.value);
+      var keyValue = sails.config.local.ACCESS_TOKEN
+      key = await sails.helpers.getDecryptData(keyValue);
       await request.post(sails.config.local.SIMPLEX_URL + 'quote', {
         headers: {
           'Authorization': 'ApiKey ' + key,
