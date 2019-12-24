@@ -67,27 +67,27 @@ module.exports.http = {
         return next();
       }
       // if( req.user ){
-        // var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
-        // req.headers['Logid'] = generate_unique_string;
-        // var logger = require('../api/controllers/logger')
-        // var object = {
-        //   module: "Request",
-        //   url: req.url,
-        //   type: "Success",
-        //   log_id: req.headers['Logid']
-        // };
-        // if (req.user && req.user.id) {
-        //   object.user_id = "user_" + req.user.id;
+        var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+        req.headers['Logid'] = generate_unique_string;
+        var logger = require('../api/controllers/logger')
+        var object = {
+          module: "Request",
+          url: req.url,
+          type: "Success",
+          log_id: req.headers['Logid']
+        };
+        if (req.user && req.user.id) {
+          object.user_id = "user_" + req.user.id;
+        }
+        if (req.body) {
+          // object.body = JSON.stringify(req.body);
+        }
+        if (req.query) {
+          object.params = req.query;
         // }
-        // if (req.body) {
-        //   // object.body = JSON.stringify(req.body);
-        // }
-        // if (req.query) {
-        //   object.params = req.query;
-        // // }
 
-        // logger.info(object, "Request success");
-      // }
+        logger.info(object, "Request success");
+      }
       
       return next();
     },
