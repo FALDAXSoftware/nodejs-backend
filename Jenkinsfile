@@ -35,7 +35,6 @@ volumes: [
               sh "docker push  ${imageRepo}/backend:${imageTag}"
               sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag},ingress.hosts[0]=${namespace}-backend.faldax.com ${namespace}-backend -f chart/values.yaml chart/"                
                  }
-
          }
          }
 
