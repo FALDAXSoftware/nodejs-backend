@@ -269,6 +269,10 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_whitelist_ip'
     },
+    is_terms_agreed: {
+      type: 'boolean',
+      columnName: 'is_terms_agreed'
+    },
   },
   beforeCreate: (values, next) => {
     Users
