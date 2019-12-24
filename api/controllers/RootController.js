@@ -427,5 +427,33 @@ module.exports = {
     } catch (error) {
       console.log(error);
     }
+  },
+
+
+  checkSystemHealth: async function (req, res) {
+    try {
+      var system_health = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'system_health'
+        }
+      })
+
+      if (system_health && system_health.value == "ok_from_db") {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("system_health_ok"),
+        })
+      }
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
+    } catch (error) {
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
+    }
   }
 };
