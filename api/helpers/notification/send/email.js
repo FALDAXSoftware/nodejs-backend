@@ -35,8 +35,6 @@ module.exports = {
       slug: slug
     });
     // console.log("Email Template Value >>>>>>>>>>", template);
-
-    console.log("userdata", user);
     var object = {};
     object.recipientName = user.first_name;
 
@@ -65,9 +63,6 @@ module.exports = {
 
     if (user.coinName && user.coinName != undefined && user.coinName != null)
       object.coin = user.coinName
-    
-
-    console.log("Object >>>>>>>>>>", object)
 
     //Sending Email to users for notification
     let emailContent = await sails
@@ -76,8 +71,6 @@ module.exports = {
       .formatEmail(template.content, {
         object
       });
-
-    console.log(emailContent)
 
     sails
       .hooks
@@ -88,6 +81,7 @@ module.exports = {
         to: user.email,
         subject: template.name
       }, function (err) {
+        console.log("err",err);
         if (!err) {
           exits.success(template.name)
         } else {

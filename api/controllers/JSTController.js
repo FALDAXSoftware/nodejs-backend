@@ -136,9 +136,7 @@ module.exports = {
         Currency: 'required',
         OrdType: 'required|in:1,2'
       });
-      console.log("getJSTPriceValue===>", req_body);
       var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
-      console.log("jstResponseValue=====>", jstResponseValue);
 
       // Check for Offercode and if it is proper, don't add Faldax fees
       var user_id = req.user.id;
@@ -168,7 +166,6 @@ module.exports = {
       var final_faldax_fees_actual = jstResponseValue.faldax_fee;
       jstResponseValue.faldax_fees_actual = final_faldax_fees_actual;
       jstResponseValue.limit_price = jstResponseValue.limit_price;
-      console.log("Offer COde >>>>>>.", offer_code);
       if (offer_code && offer_code != "") {
         let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
         // campaign_id = check_offer_status.data.campaign_id;
@@ -236,7 +233,6 @@ module.exports = {
         // console.log("final_faldax_fees", final_faldax_f/ees);
       }
       jstResponseValue.faldax_fee = final_faldax_fees;
-      console.log(jstResponseValue);
       await logger.info({
         "module": "JST",
         "user_id": "user_" + req.user.id,
@@ -1058,7 +1054,6 @@ module.exports = {
     var user_id = req.user.id;
 
     let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(req_body.offer_code, user_id, true);
-    console.log("check_offer_status", check_offer_status);
     await logger.info({
       "module": "Campaigns",
       "user_id": "user_" + req.user.id,

@@ -1254,7 +1254,6 @@ module.exports = {
       let user_id = req.user.id;
       data.user_id = user_id;
       var user_history_data;
-      console.log(data);
       if (data.trade_type == 1) {
         var user_history_data1 = await sails
           .helpers
@@ -1400,7 +1399,6 @@ module.exports = {
 
   getAllTradeHistory: async function (req, res) {
     var room = req.query.room;
-    // console.log("Inside this method ::::: ", room);
     try {
       if (req.isSocket) {
         if (req.query.prevRoom) {
@@ -1901,8 +1899,6 @@ module.exports = {
               .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
-
-        console.log(query)
 
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?

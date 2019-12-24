@@ -26,19 +26,17 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var coin = inputs.coin
-    var which_price={};
+    var which_price = {};
     var query = {};
     query.coin = coin;
-    if( inputs.side == "Buy" ){
-      query.ask_price ={'>':0} ;
-    }else{
-      query.bid_price ={'>':0};
+    if (inputs.side == "Buy") {
+      query.ask_price = { '>': 0 };
+    } else {
+      query.bid_price = { '>': 0 };
     }
-    console.log("coin",coin);
     var get_price = await PriceHistory.find({
       where: query,
     }).sort('id DESC').limit(1)
-console.log("get_price",get_price);
     // TODO Send back the result through the success exit.
     return exits.success(get_price);
   }

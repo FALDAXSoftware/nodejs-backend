@@ -77,10 +77,10 @@ module.exports = {
         });
       } else {
         return res.status(400).
-        json({
-          "status": 400,
-          "message": sails.__("No Referral Data found")
-        });
+          json({
+            "status": 400,
+            "message": sails.__("No Referral Data found")
+          });
       }
     } catch (err) {
       await logger.error(err.message)
@@ -134,8 +134,6 @@ module.exports = {
           slug: 'default_referral_percentage'
         }
       });
-
-      console.log(referData);
 
       return res
         .status(200)

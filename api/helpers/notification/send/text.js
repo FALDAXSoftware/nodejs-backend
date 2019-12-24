@@ -38,20 +38,16 @@ module.exports = {
       slug: inputs.slug
     })
 
-    console.log(bodyValue)
-
     //Twilio Integration
     var client = new twilio(accountSid, authToken);
-
-    console.log(inputs.user.phone_number)
     //Sending SMS to users 
     client.messages.create({
-        body: bodyValue.content,
-        to: inputs.user.phone_number, // Text this number
-        from: sails.config.local.TWILLIO_ACCOUNT_FROM_NUMBER // From a valid Twilio number
-      }).then((message) => {
-        return exits.success();
-      })
+      body: bodyValue.content,
+      to: inputs.user.phone_number, // Text this number
+      from: sails.config.local.TWILLIO_ACCOUNT_FROM_NUMBER // From a valid Twilio number
+    }).then((message) => {
+      return exits.success();
+    })
       .catch((err) => {
         console.log("ERROR >>>>>>>>>>>", err)
       })

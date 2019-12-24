@@ -149,7 +149,6 @@ module.exports = async function (req, res, next) {
           return next();
         }
       } else {
-        console.log("dsdsd");
         return res.status(403).json({
           status: 403,
           err: 'Unauthorized access'
@@ -159,7 +158,6 @@ module.exports = async function (req, res, next) {
 
     return next();
   } catch (err) {
-    console.log("DSDSDSDDSDSDD");
     console.log(err);
   }
 
