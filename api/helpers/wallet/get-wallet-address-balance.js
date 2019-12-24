@@ -34,12 +34,14 @@ module.exports = {
 
       var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
 
+      console.log(sails.config.local.BITGO_PROXY_URL + '/' + inputs.coin_code + '/wallet/' + inputs.wallet_address);
+
       fetch(sails.config.local.BITGO_PROXY_URL + '/' + inputs.coin_code + '/wallet/' + inputs.wallet_address, {
-          method: "GET",
-          headers: {
-            Authorization: 'Bearer ' + access_token_value
-          }
-        })
+        method: "GET",
+        headers: {
+          Authorization: 'Bearer ' + access_token_value
+        }
+      })
         .then(resData => resData.json())
         .then(resData => {
           walletAddressData = resData;

@@ -39,7 +39,6 @@ module.exports = async function (req, res, next) {
       "admin/get-admin-wallet-history",
       "admin/get-all-news",
       "admin/get-market-snapshot",
-      "admin/get-referred-user-data",
       "admin/users/list"
     ]
 
