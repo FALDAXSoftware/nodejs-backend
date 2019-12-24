@@ -88,8 +88,6 @@ module.exports = {
       q['symbol'] = data.symbol;
     }
 
-    console.log(q)
-
     userTradeHistory = await JSTTradeHistory
       .find({
         ...q

@@ -183,6 +183,7 @@ module.exports.routes = {
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
+  'put /users/terms-status-update': "UsersController.updateTermsStatus",
   'post /users/verify-user': "AuthController.verifyUser",
   'post /users/verify-new-ip': "AuthController.verifyNewIp",
   'post /users/send-verification-email': "AuthController.sendVerificationCodeEmail",
@@ -512,5 +513,9 @@ module.exports.routes = {
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
   // Temp 
-  "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot"
+  "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
+
+
+
+  "get /health-check": "RootController.checkSystemHealth"
 };

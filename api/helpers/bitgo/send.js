@@ -49,7 +49,6 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    console.log("INSPUTES ::::::", inputs);
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     request({
@@ -74,7 +73,6 @@ module.exports = {
       if (body.error) {
         return exits.error(body);
       }
-      console.log("ISNIDE BODY >>>>>>>>>", body)
       return exits.success(body);
     });
   }

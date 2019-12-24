@@ -643,8 +643,6 @@ module.exports = {
           user_id: usersData[0].id
         }
       });
-
-      console.log(walletData);
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
       } else {
@@ -1041,20 +1039,12 @@ module.exports = {
     var currencyData = await CurrencyConversion.find({
       deleted_at: null
     })
-
-    console.log("HERE >>>>>>>>");
     var data = '/USD'
 
     let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
-    console.log(query)
     let allValue = await sails.sendNativeQuery("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query, [])
 
-    console.log(allValue)
-
     var values = allValue.rows;
-
-    console.log(values);
-    console.log(leftReferredData)
 
     var m = 0;
     sum = [];
@@ -1501,13 +1491,11 @@ module.exports = {
       }
     }
 
-    // console.log(walletArray)
     var valueEmail = {};
     valueEmail.recipientName = user.first_name;
     if (walletArray.length > 0)
       valueEmail.object = walletArray;
 
-    console.log(valueEmail.object)
     var value = valueEmail.object
 
     slug = 'deactivate_user';
@@ -1543,7 +1531,6 @@ module.exports = {
                 if (get_data[i].uploaded_file) {
                   await UploadFiles.deleteFile(get_data[i].uploaded_file); // delete the file
                 }
-                console.log(" user_id", user_id);
                 await UserForgotTwofactors
                   .update({
                     id: get_data[i].id
@@ -1947,7 +1934,6 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      console.log(query);
       let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
@@ -1985,7 +1971,6 @@ module.exports = {
         sort_order,
         country
       } = req.allParams();
-      console.log(req.allParams());
       let whereAppended = false;
       let query = " from users ";
       query += " WHERE users.deleted_at IS NOT NULL"
@@ -2020,7 +2005,6 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      console.log(query);
       let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals" + query, [])
 
@@ -2319,20 +2303,17 @@ module.exports = {
 
       usersData = usersData.rows;
 
-      console.log(usersData.length)
       let referralCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
 
 
       referralCount = referralCount.rows[0].count;
 
       for (var i = 0; i < usersData.length; i++) {
-        console.log(usersData[i]);
         var referalQuery = `SELECT users.id, users.email, referral.coin_name, SUM(referral.amount) as collectedAmount
                               FROM users LEFT JOIN referral ON users.id = referral.user_id
                               WHERE users.email = '${usersData[i].refered_by}' AND referral.is_collected = 'true'
                               GROUP BY referral.coin_name, users.id`
 
-        console.log(referalQuery);
 
         var userValue = await sails.sendNativeQuery(referalQuery, []);
         var value = ''
@@ -2496,7 +2477,7 @@ module.exports = {
             user_id: generatedUser.id
           });
         }
-        console.log(generate_wallet_coins);
+
         if (generate_wallet_coins && generate_wallet_coins.length > 0) {
           // create receive address
           for (let index = 0; index < generate_wallet_coins.length; index++) {
@@ -2981,14 +2962,12 @@ module.exports = {
   getJSTPrice: async function (req, res) {
     try {
       var req_body = req.body;
-      console.log(req.body)
       var symbol = req_body.symbol;
       var quantity = req_body.quantity;
       var side = req_body.side;
       var coin = symbol.split("/");
       var get_price = await sails.helpers.fixapi.getPrice(coin[0], side);
 
-      console.log(get_price[0].ask_price);
       get_price = get_price[0];
       var price;
       if (side == "Buy") {
@@ -2999,7 +2978,6 @@ module.exports = {
       var get_faldax_fee = await AdminSetting.findOne({
         slug: "faldax_fee"
       });
-      console.log(price)
 
       var get_fees = await sails.helpers.feesCalculation(coin[0].toLowerCase(), quantity, price);
       var actual_price = (price);
@@ -3008,7 +2986,6 @@ module.exports = {
       var faldax_fees = actual_price + ((actual_price * get_faldax_fee.value) / 100);
       get_price.network_fees = parseFloat(network_fees).toFixed(process.env.TOTAL_PRECISION);
       get_price.faldax_fees = parseFloat(faldax_fees).toFixed(process.env.TOTAL_PRECISION);
-      console.log(get_price);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Price listed"),
@@ -3062,8 +3039,6 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
-      console.log("Query:", "Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query);
-
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
 
@@ -3182,26 +3157,22 @@ module.exports = {
         data
       } = req.allParams();
 
-      console.log(data);
-
       var filter = ''
       if (data && data != '' && data != null) {
         data = data.trim();
-        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' "
+        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.txid) LIKE '%" + data.toLowerCase() + "%'";
       }
 
       var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, 
                                     users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
-                                    ON (users.id = referral.user_id OR users.id=referral.referred_user_id)
+                                    ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
-                                    WHERE referral.is_collected = 'true' AND referral.user_id = ${user_id}${filter} 
+                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter} 
                                     AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid
-                                    ORDER BY coins.id DESC`);
-
-      console.log(get_reffered_data);
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
+                                    ORDER BY coins.id , referral.updated_at DESC`);
 
       countQuery = get_reffered_data
 
@@ -3317,6 +3288,52 @@ module.exports = {
           "data": get_reffered_data.rows
         });
 
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+  /*
+   To update Terms status
+   */
+  updateTermsStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var is_terms_agreed = req.body.status;
+      var userData = await Users.findOne({
+        id: user_id,
+        deleted_at: null,
+        is_active: true
+      });
+
+      if (userData != undefined) {
+        var emailData = await Users.update({
+          id: user_id,
+          deleted_at: null,
+          is_active: true
+        }).set({
+          is_terms_agreed: is_terms_agreed
+        });
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Terms status accept"),
+          "data": []
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
     } catch (err) {
       console.log(err);
       await logger.error(err.message)

@@ -28,13 +28,9 @@ module.exports = {
         .startOf('day')
         .format();
 
-      console.log(yesterday);
-
       var monthlyData = moment()
         .startOf('month')
         .format();
-
-      console.log(monthlyData);
 
       let coin = await Coins.findOne({
         deleted_at: null,
@@ -56,8 +52,6 @@ module.exports = {
           }
         });
 
-      console.log(walletHistoryData)
-
       // Getting total value of monthly withdraw
       let walletHistoryDataMonthly = await WalletHistory
         .sum('amount')
@@ -72,14 +66,10 @@ module.exports = {
           }
         });
 
-      console.log(walletHistoryDataMonthly);
-
       return res.json({
         walletHistoryData,
         walletHistoryDataMonthly
       })
-
-      console.log(walletHistoryDataMonthly)
     } catch (error) {
       console.log(error);
     }
@@ -137,7 +127,6 @@ module.exports = {
               .fetch();
           }
         } else {
-          console.log('>>>>>>>>>>>>else');
         }
       }
     }
@@ -170,7 +159,6 @@ module.exports = {
         user_id = req.user.id;
         filter = ` wallets.user_id = ${user_id}`
       }
-      console.log(filter)
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote
@@ -178,9 +166,8 @@ module.exports = {
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                     WHERE ${filter} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
-      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))  `
+      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))`
 
-      console.log("query", query)
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
@@ -201,7 +188,6 @@ module.exports = {
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
 
       for (var i = 0; i < (nonBalanceWalletData.rows).length; i++) {
-        console.log(nonBalanceWalletData.rows[i])
         if (nonBalanceWalletData.rows[i].quote != undefined) {
           nonBalanceWalletData.rows[i].quote.EUR.price = ((nonBalanceWalletData.rows[i].quote.EUR.price) != null ? (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
           // nonBalanceWalletData.rows[i].quote.USD.price = (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
@@ -401,13 +387,10 @@ module.exports = {
                 tier_step: userData.account_tier,
                 coin_id: coin.id
               });
-              console.log(limitTierData)
               if (limitTierData != undefined) {
                 limitAmount = limitTierData.daily_withdraw_crypto;
-                console.log(limitAmount)
                 limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount == null)
                 limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
-                console.log(limitAmountMonthly);
                 limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly == null)
               } else {
                 limitAmount = null;
@@ -416,10 +399,8 @@ module.exports = {
             }
           } else if (userTierData.length > 0) {
             limitAmount = userTierData[0].daily_withdraw_crypto;
-            console.log(limitAmount)
             limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount == null)
             limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
-            console.log(limitAmountMonthly)
             limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly == null)
           } else {
             limitAmount = null;
@@ -456,20 +437,15 @@ module.exports = {
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
-
-          console.log(limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined))
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
-            console.log((parseFloat(walletHistoryData) + parseFloat(total_fees)) <= limitAmount || (limitAmount == null || limitAmount == undefined))
             //If total amount + amount to be send is less than limited amount
             if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
-              console.log(limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined))
               //Checking monthly limit is greater than the total sum of month
               if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
-                console.log((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined))
                 // If total amount monthly + amount to be send is less than limited amount of month
                 if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
@@ -496,14 +472,9 @@ module.exports = {
                           //Check for warm wallet minimum thresold
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
 
-
-                            console.log(amount)
-                            console.log("Amount >>>>>>>>>", coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString())
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-
-                            console.log(transaction);
 
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
@@ -533,7 +504,6 @@ module.exports = {
                                 .fetch();
                             }
 
-                            console.log(wallet.send_address);
                             //Here remainning ebtry as well as address change
                             let walletHistory = {
                               coin_id: wallet.coin_id,
@@ -943,7 +913,6 @@ module.exports = {
         coinData = JSON.parse(JSON.stringify(coinData));
 
         var walletTransData
-        console.log("is_admin", is_admin)
         if (is_admin && is_admin != undefined) {
           walletTransData = await WalletHistory
             .find({
@@ -978,7 +947,6 @@ module.exports = {
         if (currencyConversionData) {
           if (currencyConversionData.quote.USD) {
             var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-            console.log(get_price)
             if (get_price[0] != undefined) {
               currencyConversionData.quote.USD.price = get_price[0].ask_price
             } else {
@@ -1427,13 +1395,10 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      console.log("===============Send Coin================");
-      console.log("coin", coin);
       let warmWalletData = await sails
         .helpers
         .wallet
         .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-      console.log("warmWalletData", warmWalletData);
       let sendWalletData = await sails
         .helpers
         .wallet
@@ -1451,8 +1416,6 @@ module.exports = {
 
         //Checking if wallet is found or not
         if (wallet) {
-          console.log("wallet", wallet);
-          console.log("wallet.placed_balance >= parseFloat(amount)", wallet.placed_balance >= parseFloat(amount));
           //If placed balance is greater than the amount to be send
           if (wallet.placed_balance >= parseFloat(amount)) {
 
@@ -1470,7 +1433,6 @@ module.exports = {
               // receive and receive to destination
               // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
               let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-              console.log("transaction", transaction);
               //Here remainning ebtry as well as address change
               let walletHistory = {
                 coin_id: wallet.coin_id,
@@ -1483,8 +1445,6 @@ module.exports = {
                 is_executed: false,
                 is_admin: true
               }
-
-              console.log(WalletHistory)
 
               // Make changes in code for receive webhook and then send to receive address
               // Entry in wallet history
@@ -1547,7 +1507,6 @@ module.exports = {
               });
             }
           } else {
-            console.log("First");
             await logger.info({
               "module": "Wallet Send Coin Admin",
               "user_id": "user_" + req.user.id,
@@ -1563,7 +1522,6 @@ module.exports = {
 
           }
         } else {
-          console.log("second");
           return res
             .status(400)
             .json({
@@ -1572,7 +1530,6 @@ module.exports = {
             });
         }
       } else {
-        console.log("Third");
         return res
           .status(400)
           .json({
@@ -1581,7 +1538,6 @@ module.exports = {
           });
       }
     } catch (err) {
-      console.log("Error");
       console.log(err);
       await logger.error({
         "user_id": "user_" + req.user.id,
@@ -1978,8 +1934,6 @@ module.exports = {
                             WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.balance > 0
                             AND wallets.placed_balance IS NOT NULL${filter}`
 
-        console.log(walletLogs);
-
         if (start_date && end_date) {
           walletLogs += " AND "
 
@@ -1992,7 +1946,6 @@ module.exports = {
 
         countQuery = walletLogs;
 
-        console.log(sort_col, sort_order);
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
@@ -2002,10 +1955,7 @@ module.exports = {
           walletLogs += " ORDER BY wallets.id DESC"
         }
 
-        console.log(walletLogs)
-
         walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log(walletLogs);
 
         var walletValue = await sails.sendNativeQuery(walletLogs, []);
 
