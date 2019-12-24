@@ -81,6 +81,7 @@ module.exports = {
         to: user.email,
         subject: template.name
       }, function (err) {
+        console.log("err",err);
         if (!err) {
           exits.success(template.name)
         } else {

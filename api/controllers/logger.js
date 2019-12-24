@@ -8,18 +8,20 @@ const configs = {
 }
 
 const stream = require('gelf-stream').forBunyan(
-  'logs.orderhive.plus',
+  process.env.LOG_URL,
   12201
 )
 configs.streams.push({
   type: 'raw',
   stream: stream,
   level: 'info'
+  // level: 61 // To disable logs
 })
 configs.streams.push({
   type: 'stream',
   stream: process.stderr,
   level: 'error'
+  // level: 61 // To disable logs
 })
 
 const logger = bunyan.createLogger(configs)

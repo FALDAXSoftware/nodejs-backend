@@ -924,6 +924,7 @@ module.exports = {
           to: user_details.email,
           subject: "Forgot Password"
         }, function (err) {
+          console.log("err",err);
           if (!err) {
             return res.json({
               "status": 200,
