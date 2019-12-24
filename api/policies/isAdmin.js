@@ -39,7 +39,6 @@ module.exports = async function (req, res, next) {
       "admin/get-admin-wallet-history",
       "admin/get-all-news",
       "admin/get-market-snapshot",
-      "admin/get-referred-user-data",
       "admin/users/list"
     ]
 
@@ -150,6 +149,7 @@ module.exports = async function (req, res, next) {
           return next();
         }
       } else {
+        console.log("dsdsd");
         return res.status(403).json({
           status: 403,
           err: 'Unauthorized access'
@@ -159,6 +159,7 @@ module.exports = async function (req, res, next) {
 
     return next();
   } catch (err) {
+    console.log("DSDSDSDDSDSDD");
     console.log(err);
   }
 

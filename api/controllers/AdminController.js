@@ -1872,14 +1872,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+      
 
       // var get_data = await UserForgotTwofactors.getOpenRequests();
       // if (get_data.rowCount > 0) {
@@ -1983,14 +1976,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+      
       let {
         id
       } = req.body;
@@ -2105,15 +2091,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Unauthorized Access"))
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+      
       let {
         id,
         reason

@@ -74,8 +74,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -131,10 +131,14 @@ module.exports = {
           .wallet
           .getWalletAddressBalance(coin.warm_wallet_address, coin.coin_code);
 
+        console.log("warmWalletData", warmWalletData)
+
         let sendWalletData = await sails
           .helpers
           .wallet
           .getWalletAddressBalance(coin.hot_send_wallet_address, coin.coin_code);
+
+        console.log("sendWalletData", sendWalletData)
 
         if (coin) {
           var wallet = await Wallet.findOne({
@@ -164,6 +168,7 @@ module.exports = {
                 //Checking Coin type
                 if (coin.type == 1) {
 
+                  console.log("warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold)
                   //Check for warm wallet minimum thresold
                   if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= coin.min_thresold) {
                     //Execute Transaction
@@ -173,6 +178,7 @@ module.exports = {
                     // Send to hot warm wallet and make entry in diffrent table for both warm to
                     // receive and receive to destination
                     let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, amount * 1e8)
+                    console.log(transaction);
                     //Here remainning entry as well as address change
                     let walletHistory = {
                       coin_id: wallet.coin_id,

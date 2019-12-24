@@ -424,5 +424,6 @@
 	"Warm wallet retrieve": "Warm wallet details has been retrieved successfully",
 	"Custodial wallet retrieve": "Warm wallet details has been retrieved successfully",
 	"system_health_ok": "System Health is Good",
-	"system_health_not_ok": "System Health is Not Good"
+	"system_health_not_ok": "System Health is Not Good",
+	"Terms status accept": "Thanks for accepting terms and conditions."
 }

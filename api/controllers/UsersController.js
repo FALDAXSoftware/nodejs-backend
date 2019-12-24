@@ -867,6 +867,7 @@ module.exports = {
                     user.city_town :
                     user_details["city_town"], user.postal_code);
               }
+              user.is_terms_agreed = false;
 
               var updatedUsers = await Users
                 .update({
@@ -3187,19 +3188,19 @@ module.exports = {
       var filter = ''
       if (data && data != '' && data != null) {
         data = data.trim();
-        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' "
+        filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.txid) LIKE '%" + data.toLowerCase() + "%'";
       }
 
       var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, 
                                     users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
-                                    ON (users.id = referral.user_id OR users.id=referral.referred_user_id)
+                                    ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
-                                    WHERE referral.is_collected = 'true' AND referral.user_id = ${user_id}${filter} 
+                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter} 
                                     AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid
-                                    ORDER BY coins.id DESC`);
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
+                                    ORDER BY coins.id , referral.updated_at DESC`);
 
       console.log(get_reffered_data);
 
@@ -3317,6 +3318,52 @@ module.exports = {
           "data": get_reffered_data.rows
         });
 
+    } catch (err) {
+      console.log(err);
+      await logger.error(err.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
+  },
+  /*
+   To update Terms status
+   */
+  updateTermsStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var is_terms_agreed = req.body.is_terms_agreed;
+      var userData = await Users.findOne({
+        id: user_id,
+        deleted_at: null,
+        is_active: true
+      });
+
+      if (userData != undefined) {
+        var emailData = await Users.update({
+          id: user_id,
+          deleted_at: null,
+          is_active: true
+        }).set({
+          is_terms_agreed: is_terms_agreed
+        });
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Terms status accept"),
+          "data": []
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("Something Wrong")
+          });
+      }
     } catch (err) {
       console.log(err);
       await logger.error(err.message)

@@ -32,12 +32,14 @@ module.exports.http = {
     order: [
       'cookieParser',
       'session',
+      'requestLogger',
+      'myRequestLogger',      
       'bodyParser',
       'compress',
       'poweredBy',
       'router',
       'www',
-      'favicon',
+      'favicon'
     ],
 
 
@@ -58,5 +60,49 @@ module.exports.http = {
       });
       return middlewareFn;
     })(),
-  },
+    // Logs each request to the console
+    requestLogger: function (req, res, next) {
+      // console.log("Requested :: ", req.method, req.url);
+      if( req.method == 'OPTIONS' ){
+        return next();
+      }
+      
+      var logger = require('../api/controllers/logger')
+      var object={
+        module: "Request",  
+        url: req.url,
+        type: "Success"
+      };
+      if( req.user && req.user.id ){
+        object.user_id = req.user.id;
+      }
+      // console.log("object",object);
+      logger.info(object, "Request success")
+      // sails.log.verbose(req.method, req.url); 
+      return next();
+    },
+    myRequestLogger: function (req, res, next) {
+      res.on("finish", function(each){
+        // console.log("ResData",res);
+        
+        sails.log("statusCode",res.statusCode);
+        var logger = require('../api/controllers/logger')
+        var object={
+          module: "Response",  
+          url: req.url,
+          type: "Error",
+          statusCode:res.statusCode
+        };        
+        if( res.statusCode == 200 ){
+          object.type = 'Success';
+        }
+        if( req.user && req.user.id ){
+          object.user_id = req.user.id;
+        }
+        // console.log("object",object);
+        logger.info(object, "Response success");
+     });
+     return next();
+    }    
+  },  
 }; //, maxTimeToBuffer: 120000,
