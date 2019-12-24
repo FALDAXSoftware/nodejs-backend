@@ -72,7 +72,6 @@ module.exports = {
         description,
         appId
       } = req.allParams();
-      console.log('>>>>if', description)
       req.file('document').upload(async function (err, uploadedFiles) {
         var fs = require("fs");
         let kycDocUploadDetails = {};
@@ -99,7 +98,6 @@ module.exports = {
           }, async function (error, response, body) {
             try {
               console.log("error", error);
-              console.log("response", response.toJSON());
               // console.log('response', response);
               // console.log('body', body);
               // console.log('response_body', response.body);
@@ -128,10 +126,7 @@ module.exports = {
         kycDocUploadDetails.append("file", req.file('document'));
         // kycDocUploadDetails.file = req.file('document');
 
-        console.log('kycDocUploadDetails', kycDocUploadDetails)
         let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-        console.log("idm_key", idm_key);
-        console.log("filep", req._fileparser.upstreams.length);
         if (req._fileparser.upstreams.length) {
           request.post({
             headers: {
@@ -143,7 +138,6 @@ module.exports = {
             body: kycDocUploadDetails
           }, async function (error, response, body) {
             try {
-              console.log('response', response);
               if (response) {
 
               } else {

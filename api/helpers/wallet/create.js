@@ -53,7 +53,6 @@ module.exports = {
         enterprise: sails.config.local.BITGO_ENTERPRISE
       })
       .then(async newWallet => {
-        console.log(newWallet);
         await Coins
           .update({
             id: requestedCoin[0].id

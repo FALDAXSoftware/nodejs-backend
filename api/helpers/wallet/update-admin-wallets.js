@@ -32,33 +32,29 @@ module.exports = {
       }
     });
     if (get_data != undefined) {
-      if( type == "add"){
-        console.log("BeforeBalance===>>>",parseFloat(get_data.balance));
+      if (type == "add") {
         var updatedBalance = parseFloat(get_data.balance) + (parseFloat(amount));
         var updatedPlacedBalance = parseFloat(get_data.placed_balance) + (parseFloat(amount));
       }
-      if( type == "subtract"){
+      if (type == "subtract") {
         var updatedBalance = parseFloat(get_data.balance) - (parseFloat(amount));
-        var updatedPlacedBalance = parseFloat(get_data.placed_balance) - (parseFloat(amount));        
-      }  
-      console.log("updatedBalance===>>>",updatedBalance);
-      console.log("updatedPlacedBalance===>>>",updatedPlacedBalance);
+        var updatedPlacedBalance = parseFloat(get_data.placed_balance) - (parseFloat(amount));
+      }
       var updatedData = await Wallet
-          .update({
-            deleted_at: null,
-            coin_id: coin_id,
-            is_active: true,
-            user_id: 36,
-            is_admin: true
-          })
-          .set({
-            balance: updatedBalance,
-            placed_balance: updatedPlacedBalance
-          })
-          .fetch();   
-      console.log("updatedData===>>>",updatedData);     
+        .update({
+          deleted_at: null,
+          coin_id: coin_id,
+          is_active: true,
+          user_id: 36,
+          is_admin: true
+        })
+        .set({
+          balance: updatedBalance,
+          placed_balance: updatedPlacedBalance
+        })
+        .fetch();
     }
-    var data = {status:1}
+    var data = { status: 1 }
     return exits.success(data);
   }
 

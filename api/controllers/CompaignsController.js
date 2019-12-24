@@ -380,20 +380,15 @@ module.exports = {
         id: id
       };
       var get_data = await Campaigns.findOne(data_object);
-      console.log("get_data", get_data);
       if (get_data != undefined) {
         var get_campaign_offers = await CampaignsOffers.find({ campaign_id: get_data.id }).sort('created_at DESC');
         if (get_campaign_offers.length > 0) {
           for (var i = 0; i < get_campaign_offers.length; i++) {
-            // Get User data
-            console.log("get_campaign_offers[i]", get_campaign_offers[i]);
             let user_data = {};
 
             if (get_campaign_offers[i].user_id > 0) {
               user_data = await module.exports.getOffercodeUserDetails(get_campaign_offers[i].user_id)
-              console.log("user_data", user_data);
               if (user_data != undefined) {
-                console.log("yes");
                 user_data = user_data;
               } else {
                 user_data = {};
@@ -485,7 +480,6 @@ module.exports = {
 
       if (update_data) {
         var message = '';
-        console.log("req_body.status", req_body.status);
         if (req_body.status == true || req_body.status === "true") {
           message = sails.__("campaign activated");
         } else {
@@ -582,7 +576,6 @@ module.exports = {
           err: 'Unauthorized access'
         });
       }
-      console.log(req.params.id);
       var id = req.param('id');
       var data_object = {
         id: req.params.id
@@ -613,7 +606,6 @@ module.exports = {
               if (data && data != "" && data != null) {
                 filter = " AND (uch.code LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' )";
               }
-              console.log("filter", filter);
             }
             // from += ' from users_campaign_history INNER JOIN users ON users_campaign_history.user_id = users.id where campaign_offer_id='+id;
             select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees 
@@ -651,7 +643,6 @@ module.exports = {
             }
           }
           select = "select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees   from users_campaign_history AS uch INNER JOIN users on uch.user_id=users.id where uch.campaign_offer_id='" + id + "'" + filter1 + " AND uch.wrong_attempted=true  UNION ALL select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees, CONCAT((jth.faldax_fees_actual-jth.faldax_fees),' ', (CASE when jth.side = 'Buy' THEN jth.currency ELSE jth.settle_currency END)) as faldax_fees from jst_trade_history AS jth INNER JOIN users on jth.user_id=users.id where jth.campaign_offer_id=" + id + filter2;
-          console.log("select", select);
           // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at,jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id';          
           total = await sails.sendNativeQuery(select + query, [])
           total = total.rowCount;
