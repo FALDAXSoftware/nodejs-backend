@@ -80,7 +80,6 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    console.log("inputs.order_object", inputs.order_object);
     request({
       url: sails.config.local.JST_ORDER_URL + '/api/Order/CreateOrder',
       method: "POST",
@@ -93,7 +92,6 @@ module.exports = {
       json: true
     }, async function (err, httpResponse, body) {
       console.log("err", err);
-      console.log("body", body);
       if (err || body == null) {
         var data = {
           status: 0,

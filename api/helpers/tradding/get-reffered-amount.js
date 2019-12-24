@@ -199,10 +199,8 @@ module.exports = {
           deleted_at: null,
           slug: 'referal'
         });
-        console.log(userNotification)
 
         if (userNotification && userNotification != undefined) {
-          console.log(userNotification.email)
           if (userNotification.email == true || userNotification.email == "true") {
             await sails.helpers.notification.send.email("thresold_notification", referredUserData)
           }

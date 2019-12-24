@@ -49,8 +49,6 @@ module.exports = {
         currency = values.currency;
       }
 
-      console.log(data.symbol)
-
       if (data.symbol != null || data.symbol != undefined) {
         if (currency != "null" && settle_currency != "null") {
           q['currency'] = settle_currency,
@@ -76,7 +74,6 @@ module.exports = {
       }
 
       q['is_processed'] = true;
-      console.log(q);
 
       userSimplexHistory = await SimplexTradeHistory
         .find({

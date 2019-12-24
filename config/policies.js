@@ -37,7 +37,7 @@ module.exports.policies = {
     "forgotPassword": true,
     "resetPassword": true, // We dont need authorization here, allowing public access,
     "getAdminWalletDetails": true,
-    "getTempMarketsnapshot":true
+    "getTempMarketsnapshot": true
     // "getCoinFees": true/
     // "getBatchDetails": true
   },
@@ -81,7 +81,8 @@ module.exports.policies = {
     "queryTestThresold": true,
     "getEncryptKey": true,
     "testPanicStatus": true,
-    "testMetabaseIntegrate": true
+    "testMetabaseIntegrate": true,
+    "checkSystemHealth": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },

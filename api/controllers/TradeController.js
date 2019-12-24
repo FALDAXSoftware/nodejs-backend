@@ -1254,7 +1254,6 @@ module.exports = {
       let user_id = req.user.id;
       data.user_id = user_id;
       var user_history_data;
-      console.log(data);
       if (data.trade_type == 1) {
         var user_history_data1 = await sails
           .helpers
@@ -1400,7 +1399,6 @@ module.exports = {
 
   getAllTradeHistory: async function (req, res) {
     var room = req.query.room;
-    // console.log("Inside this method ::::: ", room);
     try {
       if (req.isSocket) {
         if (req.query.prevRoom) {
@@ -1748,7 +1746,7 @@ module.exports = {
               }
             });
         }
-      } else {}
+      } else { }
     } catch (error) {
       await logger.error(error.message)
       return res
@@ -1821,8 +1819,8 @@ module.exports = {
           query += " jst_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 
@@ -1831,7 +1829,7 @@ module.exports = {
             'DESC' :
             'ASC');
           query += " ORDER BY " + sort_col + " " + sortVal;
-        }else{
+        } else {
           query += " ORDER BY created_on desc ";
         }
 
@@ -1854,11 +1852,11 @@ module.exports = {
         whereAppended = true
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
-            // whereAppended = true;
-            query += ' AND'
+            whereAppended = true;
+            query += " AND"
             query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR simplex_trade_history.payment_id LIKE '%" + data + "%' OR simplex_trade_history.quote_id LIKE '%" + data + "%' OR simplex_trade_history.address LIKE '%" + data.toLowerCase() + " %'";
             if (!isNaN(data)) {
-              query += " OR simplex_trade_history.quantity=" + data + " OR simplex_trade_history.fill_price=" + data
+              query += " OR simplex_trade_history.quantity = '" + data + "' OR simplex_trade_history.fill_price = '" + data + "'"
             }
             query += ")"
           }
@@ -1897,12 +1895,10 @@ module.exports = {
           query += " simplex_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND simplex_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
-
-        console.log(query)
 
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?
@@ -1960,8 +1956,8 @@ module.exports = {
           query += " jst_trade_history.created_at >= '" + await sails
             .helpers
             .dateFormat(start_date) + " 00:00:00' AND jst_trade_history.created_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
         countQuery = query;
 

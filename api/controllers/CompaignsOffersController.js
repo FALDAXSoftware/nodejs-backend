@@ -59,12 +59,12 @@ module.exports = {
           .json({
             "status": 200,
             "message": sails.__("offer retrieve success"),
-            "data":{
+            "data": {
               campaigns: get_data.rows,
               total
             }
           })
-      }else{
+      } else {
         return res
           .status(500)
           .json({
@@ -72,7 +72,7 @@ module.exports = {
             "err": sails.__("offer not found")
           });
       }
-     
+
     } catch (error) {
       console.log("error", error);
       await logger.error(error.message)
@@ -85,7 +85,7 @@ module.exports = {
     }
   },
 
-  
+
 
   /**
    * Create Compaign
@@ -105,10 +105,10 @@ module.exports = {
         no_of_transactions: 'required|integer',
         transaction_fees: 'required|decimal',
         campaign_id: 'required|integer',
-        is_default_values:'required|boolean'        
+        is_default_values: 'required|boolean'
       });
 
-     
+
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
@@ -128,10 +128,10 @@ module.exports = {
         no_of_transactions: req_body.no_of_transactions,
         transaction_fees: req_body.transaction_fees,
         campaign_id: req_body.campaign_id,
-        is_default_values:req_body.is_default_values
+        is_default_values: req_body.is_default_values
       };
 
-      let create_data = await CampaignsOffers.create( data_object );
+      let create_data = await CampaignsOffers.create(data_object);
       return res.json({
         "status": 200,
         "message": sails.__("offer created"),
@@ -161,18 +161,18 @@ module.exports = {
         });
       }
       var data_object = {
-        id:req.param("id")
+        id: req.param("id")
       };
-      var get_data = await CampaignsOffers.findOne( data_object ).populate('campaign_id');;
-      if ( get_data != undefined ) {
+      var get_data = await CampaignsOffers.findOne(data_object).populate('campaign_id');;
+      if (get_data != undefined) {
         return res
           .status(200)
           .json({
             "status": 200,
             "message": sails.__("offer retrieve success"),
-            "data":get_data
+            "data": get_data
           })
-      }else{
+      } else {
         return res
           .status(500)
           .json({
@@ -180,7 +180,7 @@ module.exports = {
             "err": sails.__("offer not found")
           });
       }
-     
+
     } catch (error) {
       console.log("error", error);
       await logger.error(error.message)
@@ -211,7 +211,7 @@ module.exports = {
   //       status: 'required|boolean',
   //     });
 
-     
+
   //     let matched = await validator.check();
   //     if (!matched) {
   //       for (var key in validator.errors) {
@@ -234,10 +234,10 @@ module.exports = {
   //           status: 500,
   //           "err": sails.__("offer not found")
   //         });
-        
+
   //     }
   //     var update_data = await CampaignsOffers.updateOne( data_object ).set({is_active:req_body.status});
-      
+
   //     if( update_data ){
   //       var message = '';
   //       console.log("req_body.status",req_body.status);
@@ -253,7 +253,7 @@ module.exports = {
   //           "message": message,
   //           "data":update_data
   //         })
-        
+
   //     }else{
   //       return res
   //         .status(500)
@@ -263,7 +263,7 @@ module.exports = {
   //           "data":[]
   //         })        
   //     }      
-     
+
   //   } catch (error) {
   //     console.log("error", error);
   //     await logger.error(error.message)
