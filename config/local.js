@@ -12,6 +12,7 @@ module.exports.local = {
   "PRE_PROD_URL": process.env.PRE_PROD_URL,
   "JST_MARKET_URL": process.env.JST_MARKET_URL,
   "JST_ORDER_URL": process.env.JST_ORDER_URL,
+  "SIMPLEX_HTTP_REF_URL": process.env.SIMPLEX_HTTP_REF_URL,
   // "PROD_URL": process.env.PROD_URL,
   // "DEV_URL": process.env.DEV_URL,
   'CURRENCY_LIST': process.env.CURRENCY,

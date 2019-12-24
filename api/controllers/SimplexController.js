@@ -172,7 +172,7 @@ module.exports = {
         pay_details.fiat_total_amount = fiat_details;
         pay_details.requested_digital_amount = requested_details;
         pay_details.destination_wallet = destination_wallet;
-        pay_details.original_http_ref_url = "https://preprod-trade.faldax.com/simplex";
+        pay_details.original_http_ref_url = sails.config.local.SIMPLEX_HTTP_REF_URL;
 
         transaction_details.payment_details = pay_details;
 
@@ -200,13 +200,8 @@ module.exports = {
 
   deleteEvent: async function (event_id) {
     try {
-      var key = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'access_token'
-        }
-      });
-      key = await sails.helpers.getDecryptData(key.value);
+      var keyValue = sails.config.local.ACCESS_TOKEN
+      key = await sails.helpers.getDecryptData(keyValue);
       await request.delete(sails.config.local.SIMPLEX_URL + "events/" + event_id, {
         headers: {
           'Authorization': 'ApiKey ' + key,
@@ -458,12 +453,9 @@ module.exports = {
   // ------------------------ CMS API -------------------------- //
   getSimplexTokenValue: async function (req, res) {
     try {
-      var access_token_value = await AdminSetting.findOne({
-        deleted_at: null,
-        slug: 'access_token'
-      });
+      var access_token_value = sails.config.local.ACCESS_TOKEN;
 
-      var key = await sails.helpers.getDecryptData(access_token_value.value);
+      var key = await sails.helpers.getDecryptData(access_token_value);
 
       return res
         .status(200)

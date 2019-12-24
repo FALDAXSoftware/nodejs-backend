@@ -81,7 +81,7 @@ function UploadFiles() {
               ACL: 'public-read',
               // Body: buf,
               Body: fileStream,
-              // ContentType: mime.lookup(uploadFileName)
+              ContentType: mime.lookup(uploadFileName)
             };
             s3.putObject(profile, function (err, rese) {
               if (err) {

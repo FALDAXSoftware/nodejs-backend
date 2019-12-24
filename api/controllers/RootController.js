@@ -302,26 +302,13 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
-    var textBytes = aesjs.utils.utf8.toBytes("dbeb99a40641d0d53d1630bc52e4e154f0d0d5a74a1e672b9f035feb0213d0fb");
-
-    var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
-    var encryptedBytes = aesOfb.encrypt(textBytes);
-
-    // To print or store the binary data, you may convert it to hex
-    var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-    // "55e3af2655dd72b9f32456042f39bae9accff6259159e608be55a1aa313c598d
-    //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
-
-    // When ready to decrypt the hex string, convert it back to bytes
-    var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
-
-    // The output feedback mode of operation maintains internal state,
-    // so to decrypt a new instance must be instantiated.
-    var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
-    var decryptedBytes = aesOfb.decrypt(encryptedBytes);
-
-    // Convert our bytes back into text
-    var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+    var value = req.body.encryptKey;
+    console.log(value);
+    var encryptData = await sails.helpers.getEncryptData(value);
+    console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData(encryptData);
+    console.log("decryptData", decryptData)
+    return res.json(200);
   },
 
   queryTestThresold: async function (req, res) {

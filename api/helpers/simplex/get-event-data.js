@@ -26,13 +26,8 @@ module.exports = {
 
     // Get event data.
     try {
-      var key = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'access_token'
-        }
-      });
-      key = await sails.helpers.getDecryptData(key.value);
+      var keyValue = sails.config.local.ACCESS_TOKEN;
+      key = await sails.helpers.getDecryptData(keyValue);
       await request.get('https://sandbox.test-simplexcc.com/wallet/merchant/v2/events', {
         headers: {
           'Authorization': 'ApiKey ' + key,
