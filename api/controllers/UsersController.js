@@ -867,6 +867,7 @@ module.exports = {
                     user.city_town :
                     user_details["city_town"], user.postal_code);
               }
+              user.is_terms_agreed = false;
 
               var updatedUsers = await Users
                 .update({
