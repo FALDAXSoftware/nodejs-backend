@@ -33,7 +33,6 @@ module.exports = {
       // Call SImplex 
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
-      console.log("data", data);
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
 
       return res.json(call_simplex);
@@ -117,7 +116,6 @@ module.exports = {
       } else {
         // Check Security
         let check_security = await sails.helpers.checkSecurity(user_id, data.otp);
-        console.log("Check  >>>>>>>...", check_security);
         if (check_security.status != 200) {
           return res
             // .status(check_security.status)
@@ -186,7 +184,6 @@ module.exports = {
         data.main_details = main_details;
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
-        console.log("data", data);
         var call_simplex = await sails.helpers.simplex.sbBackend(data);
         return res.json(call_simplex);
       }
@@ -216,7 +213,6 @@ module.exports = {
           'Content-Type': 'application/json'
         },
       }, function (err, res, body) {
-        console.log(res.body);
       });
 
     } catch (err) {
@@ -228,9 +224,7 @@ module.exports = {
   // Passing events for checking the status of the payment
   checkPaymentStatus: async function () {
     try {
-      console.log("Inside this method????????")
       var data = await sails.helpers.simplex.getEventData();
-      console.log(data);
       var tradeData = await SimplexTradeHistory.find({
         where: {
           deleted_at: null,
@@ -244,7 +238,6 @@ module.exports = {
         for (var j = 0; j < data.events.length; j++) {
           var payment_data = JSON.stringify(data.events[j].payment);
           payment_data = JSON.parse(payment_data);
-          console.log(payment_data)
           if (payment_data.id == tradeData[i].payment_id && payment_data.status == "pending_simplexcc_payment_to_partner") {
             var feesFaldax = await AdminSetting.findOne({
               where: {
@@ -315,22 +308,15 @@ module.exports = {
                 })
                 .fetch();
 
-              console.log("Trade History Data >>>>>>>>>>>.", tradeHistoryData);
-
               let referredData = await sails
                 .helpers
                 .tradding
                 .getRefferedAmount(tradeHistoryData, tradeHistoryData.user_id, tradeData[i].id);
 
-              console.log("Deleteing the event in if")
-
-              console.log(data.events[j].id);
               await this.deleteEvent(data.events[j].event_id)
             }
           } else if (payment_data.id == tradeData[i].payment_id) {
-            console.log("ELSE IF >>>>>>>>>>>>>")
             if (payment_data.status == "pending_simplexcc_approval") {
-              console.log("IF ????????????")
               var tradeHistoryData = await SimplexTradeHistory
                 .update({
                   id: tradeData[i].id
@@ -340,8 +326,6 @@ module.exports = {
                   is_processed: true
                 }).fetch();
 
-              console.log("Deleteing the event in else", data.events[j].event_id)
-
               await this.deleteEvent(data.events[j].event_id)
 
               var referData = await Referral.findOne({
@@ -350,7 +334,6 @@ module.exports = {
                   txid: tradeData[i].id
                 }
               })
-              console.log("Refer Data >>>>>>>>>", referData);
 
               if (referData != undefined) {
                 let referredData = await sails
@@ -368,7 +351,6 @@ module.exports = {
                   simplex_payment_status: 3,
                   is_processed: true
                 });
-              console.log("deleting thsi event further>>>>", data.events[j].event_id);
               await this.deleteEvent(data.events[j].event_id)
             }
           }
@@ -506,8 +488,6 @@ module.exports = {
 
       var key_value = await sails.helpers.getEncryptData(data.access_token);
 
-      console.log(key_value);
-
       var updateTokenValue = await AdminSetting
         .update({
           deleted_at: null,
@@ -540,8 +520,6 @@ module.exports = {
     try {
       var key_value = await sails.helpers.simplex.sbBackend({ id: 1434, res: res });
 
-
-      console.log("key_value", (key_value));
       // return key_value.data;
       // console.log("key_value",JSON.parse(key_value));
       // if( key_value == "OK")

@@ -42,7 +42,6 @@ module.exports = {
 
     // To print or store the binary data, you may convert it to hex
     var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-    console.log(encryptedHex);
 
     // Send back the result through the success exit.
     return exits.success(encryptData);

@@ -69,7 +69,6 @@ module.exports = {
     };
     try {
       // status = await kraken.api('QueryOrders', { txid: inputs.txid });
-      // console.log("query trdae info", status);
 
       status = {
         "error": [],

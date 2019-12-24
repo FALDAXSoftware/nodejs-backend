@@ -53,28 +53,16 @@ module.exports = {
 
         let slug = '';
 
-        console.log("Warm Wallet Balance >>>>>>", warmWallet.balance);
-        console.log("Conditiomn >>>>>>>> ", warmWallet.balance != undefined && warmWallet.balance > 0 && warmWallet.balance != null)
-
         // Checking whether which limit matched the warm wallet balance lower condition
         if (warmWallet.balance != undefined && warmWallet.balance > 0 && warmWallet.balance != null) {
-          console.log("Existing First Limit >>>>>>>", exisiting.fist_limit)
-          console.log("Second ????????", exisiting.second_limit);
-          console.log("Third >>>>>>>>>>>", exisiting.third_limit);
           if (warmWallet.balance <= exisiting.third_limit && warmWallet.balance < exisiting.second_limit && warmWallet.balance < exisiting.fist_limit) {
-            console.log("INSIDE FIRST");
             slug = "third_limit_low";
           } else if (warmWallet.balance <= exisiting.second_limit && warmWallet.balance < exisiting.fist_limit) {
-            console.log("INSIDE SECOND");
             slug = "second_limit_low";
           } else if (warmWallet.balance <= exisiting.fist_limit) {
-            console.log("INSIDE THIRD");
             slug = "first_limit_low"
           }
         }
-
-        console.log("Slug Value >>>>>>>>>>>", slug)
-        console.log("fgdgrsg", slug && slug != undefined && slug != null && slug != '')
 
         // Sending email and sms to the admins
         if (slug && slug != undefined && slug != null && slug != '') {

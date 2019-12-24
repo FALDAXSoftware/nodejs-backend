@@ -300,9 +300,7 @@ module.exports = {
   },
 
   getEncryptKey: async function (req, res) {
-    console.log(sails.config.local.key);
     var key = sails.config.local.key;
-    console.log(sails.config.local.iv);
     var iv = sails.config.local.iv;
     var textBytes = aesjs.utils.utf8.toBytes("dbeb99a40641d0d53d1630bc52e4e154f0d0d5a74a1e672b9f035feb0213d0fb");
 
@@ -311,7 +309,6 @@ module.exports = {
 
     // To print or store the binary data, you may convert it to hex
     var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-    console.log(encryptedHex);
     // "55e3af2655dd72b9f32456042f39bae9accff6259159e608be55a1aa313c598d
     //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
 
@@ -325,7 +322,6 @@ module.exports = {
 
     // Convert our bytes back into text
     var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-    console.log(decryptedText);
   },
 
   queryTestThresold: async function (req, res) {
@@ -430,6 +426,34 @@ module.exports = {
         })
     } catch (error) {
       console.log(error);
+    }
+  },
+
+
+  checkSystemHealth: async function (req, res) {
+    try {
+      var system_health = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'system_health'
+        }
+      })
+
+      if (system_health && system_health.value == "ok_from_db") {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("system_health_ok"),
+        })
+      }
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
+    } catch (error) {
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
     }
   }
 };
