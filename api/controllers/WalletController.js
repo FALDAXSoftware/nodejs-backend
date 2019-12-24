@@ -596,7 +596,7 @@ module.exports = {
                             }, sails.__("Token send success"))
                             return res.json({
                               status: 200,
-                              message: sails.__("Token send success")
+                              message: amount + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success")
                             });
                           } else {
                             if (req.body.confirm_for_wait === undefined) {
