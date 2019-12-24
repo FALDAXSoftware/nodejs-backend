@@ -10,9 +10,10 @@ var mime = require('mime');
 var S3BucketName = "production-static-asset";
 
 function UploadFiles() {
-  return { upload: _upload, deleteFile: _deleteFile, newUpload:_newUpload };
+  return { upload: _upload, deleteFile: _deleteFile, newUpload: _newUpload };
 
   function _upload(filePath, uploadFileName) {
+
     return new Promise((resolve, reject) => {
 
       gm(filePath)
@@ -79,7 +80,7 @@ function UploadFiles() {
               Key: uploadFileName,
               ACL: 'public-read',
               // Body: buf,
-              Body:fileStream,
+              Body: fileStream,
               // ContentType: mime.lookup(uploadFileName)
             };
             s3.putObject(profile, function (err, rese) {
