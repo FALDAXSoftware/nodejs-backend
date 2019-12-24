@@ -39,7 +39,7 @@ module.exports.http = {
       'poweredBy',
       'router',
       'www',
-      'favicon',
+      'favicon'
     ],
 
 

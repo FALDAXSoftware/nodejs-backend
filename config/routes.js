@@ -514,6 +514,8 @@ module.exports.routes = {
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
   // Temp 
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
+  "get /admin/get-static-page-links": "AdminController.getStaticLinks",
+  "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",
 
 
 

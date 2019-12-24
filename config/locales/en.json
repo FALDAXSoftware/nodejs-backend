@@ -425,5 +425,7 @@
 	"Custodial wallet retrieve": "Warm wallet details has been retrieved successfully",
 	"system_health_ok": "System Health is Good",
 	"system_health_not_ok": "System Health is Not Good",
-	"Terms status accept": "Thanks for accepting terms and conditions."
+	"Terms status accept": "Thanks for accepting terms and conditions.",
+	"Static Pdfs retrived successfully": "Static Pdfs retrived successfully",
+	"Static Pdfs updated successfully": "Static Pdfs updated successfully"
 }
