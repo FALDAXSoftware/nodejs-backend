@@ -24,7 +24,7 @@ volumes: [
               def myRepo = checkout scm
               gitCommit = myRepo.GIT_COMMIT
               shortGitCommit = "${gitCommit[0..10]}"
-              imageTag = shortGitCommit
+              imageTag = shortGitCommit.${env.BUILD_NUMBER}
               namespace = getNamespace(myRepo.GIT_BRANCH);
               if (namespace){
               withAWS(credentials:'jenkins_s3_upload') {
