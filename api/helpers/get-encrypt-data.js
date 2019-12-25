@@ -35,6 +35,7 @@ module.exports = {
     var key = sails.config.local.key;
 
     var iv = sails.config.local.iv;
+    console.log("inputs.text", inputs.text)
     var textBytes = aesjs.utils.utf8.toBytes(inputs.text);
 
     var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
@@ -42,9 +43,9 @@ module.exports = {
 
     // To print or store the binary data, you may convert it to hex
     var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-
+    console.log(encryptedHex);
     // Send back the result through the success exit.
-    return exits.success(encryptData);
+    return exits.success(encryptedHex);
 
   }
 

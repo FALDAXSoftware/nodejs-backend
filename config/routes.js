@@ -428,7 +428,7 @@ module.exports.routes = {
   'get /admin/get-referred-user-data': 'UsersController.getUserReferData',
   'get /admin/get-referred-id-assets': 'UsersController.getReferredAssets',
 
-  'get /get-encrypt-data': 'RootController.getEncryptKey',
+  'post /get-encrypt-data': 'RootController.getEncryptKey',
 
   // Simplex API
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
@@ -514,6 +514,8 @@ module.exports.routes = {
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
   // Temp 
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
+  "get /admin/get-static-page-links": "AdminController.getStaticLinks",
+  "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",
 
 
 

@@ -4004,5 +4004,94 @@ module.exports = {
         "message": "Data found",
         "data": all_data
       });
+  },
+  getStaticLinks: async function (req, res) {
+    try {
+      var static_pages = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          type: 'static_pages_pdf'
+        }
+      })
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Static Pdfs retrived successfully"),
+          "data": static_pages
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
+  },
+
+  updateStaticLinks: async function (req, res) {
+    try {
+      const pdfObject = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: req.body.slug
+        }
+      })
+      if (!pdfObject) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": 'Invalid data provided'
+          });
+      }
+      req
+        .file('pdf_file')
+        .upload(async function (err, uploadedFiles) {
+          if (err) {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "message": sails.__("Something Wrong")
+              });
+          }
+          if (uploadedFiles.length > 0) {
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
+            if (uploadedFilesRes) {
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": sails.__("Static Pdfs updated successfully")
+                })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong")
+                });
+            }
+          } else {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": 'Invalid data provided'
+              });
+          }
+        })
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
   }
 };
