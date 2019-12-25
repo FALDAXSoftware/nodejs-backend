@@ -70,9 +70,6 @@ module.exports = {
       headers: {
         'Content-Type': 'application/json'
       },
-      // body: {
-      //   symbol: inputs.symbol
-      // },
       json: true
     }, async function (err, httpResponse, body) {
       try{
