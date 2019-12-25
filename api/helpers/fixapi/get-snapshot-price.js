@@ -187,12 +187,8 @@ module.exports = {
         return exits.success(response_data);
       }catch(err){
         return exits.error(err);
-      }
-      
+      }      
     });
-
   }
-
-
 };
 
