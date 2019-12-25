@@ -123,6 +123,7 @@ module.exports.http = {
       if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
         return next();
       }
+      
       var logger = require('../api/controllers/logger');
       var oldWrite = res.write,
         oldEnd = res.end;
@@ -133,6 +134,7 @@ module.exports.http = {
       };
       var body;
       res.end = function (chunk) {
+        console.log("Status", res.statusCode);
         if (chunk) chunks.push(chunk);
         body = Buffer.concat(chunks).toString('utf8');        
         oldEnd.apply(res, arguments);

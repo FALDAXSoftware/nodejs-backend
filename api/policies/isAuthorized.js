@@ -54,6 +54,56 @@ module.exports = async function (req, res, next) {
         object.params = req.query;
       }
       logger.info(object, "Socket Request success");
+
+      var oldWrite = res.write,
+      oldEnd = res.end;
+      var chunks = [];
+      res.write = function (chunk) {
+        chunks.push(chunk);
+        oldWrite.apply(res, arguments);
+      };
+      var body;
+      res.end = function (chunk) {
+        if (chunk) chunks.push(chunk);
+        body = Buffer.concat(chunks).toString('utf8');        
+        oldEnd.apply(res, arguments);
+        var message = 'Response message';
+        // console.log("body",body);
+        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+          if( JSON.parse(body).message ){
+            message = JSON.parse(body).message  
+          }
+          if( JSON.parse(body).err ){
+            message = JSON.parse(body).err  
+          }
+        }
+        var response = body;
+        var object = {
+          module: "Response",
+          url: req.url,
+          type: "Error",
+          statusCode: res.statusCode,
+          // responseData:JSON.stringify(response),
+          log_id: req.headers['Logid']
+        };
+        
+        if( res.statusCode != 200 && res.statusCode >= 201 ){
+          object.responseData = (body);
+        }
+        if (req.user && req.user.id) {
+          object.user_id = "user_" + req.user.id;
+        }
+        if (res.statusCode == 200) {
+          object.type = 'Success';
+          if (req.url == '/login') {
+            object.user_id = "user_" + JSON.parse(body).user.id;
+          }
+          logger.info(object, message);
+        }else{
+          logger.error(object, message);
+        }
+        
+      };
       // Logger ends
     }
     if (req.headers && req.headers.authorization) {
