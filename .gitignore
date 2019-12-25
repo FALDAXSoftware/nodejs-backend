@@ -132,4 +132,4 @@ lib-cov
 *.pid
 
 .vscode
-.env
+.env*
