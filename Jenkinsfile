@@ -23,8 +23,8 @@ volumes: [
          container('build-container'){
               def myRepo = checkout scm
               gitCommit = myRepo.GIT_COMMIT
-              shortGitCommit = "${gitCommit[0..10]}"
-              imageTag = shortGitCommit.${env.BUILD_NUMBER}
+              shortGitCommit = "${gitCommit[0..10]}.${env.BUILD_NUMBER}"
+              imageTag = shortGitCommit
               namespace = getNamespace(myRepo.GIT_BRANCH);
               if (namespace){
               withAWS(credentials:'jenkins_s3_upload') {
