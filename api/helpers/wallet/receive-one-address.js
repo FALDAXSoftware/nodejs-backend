@@ -64,7 +64,7 @@ module.exports = {
       let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
 
       // Address Labeling and coin name for erc20 token
-      if (coin.isERC) {
+      if (coin.iserc) {
         walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
         address_label = coin.coin_code + '-' + address_label;
       }

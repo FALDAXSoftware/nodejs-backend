@@ -75,10 +75,10 @@ module.exports = {
 
           let walletCoinCode = coin.coin_code;
           // let address_label = inputs.user.id.toString();
-          let address_label = await sails.helpers.bitgo.generateUniqueUserAddress( user_id.toString() );
-          
+          let address_label = await sails.helpers.bitgo.generateUniqueUserAddress(user_id.toString());
+
           // Address Labeling and coin name for erc20 token
-          if (coin.isERC) {
+          if (coin.iserc) {
             walletCoinCode = sails.config.local.COIN_CODE_FOR_ERC_20_WALLET_BITGO;
             address_label = coin.coin_code + '-' + address_label;
           }
@@ -101,15 +101,6 @@ module.exports = {
               address_label: address_label
             }
 
-
-            // For Perfomance testing Add Balance to wallet
-            if (inputs.test_key == sails.config.local.test_key) {
-              obj = {
-                ...obj,
-                balance: 100000.0,
-                placed_balance: 100000.0,
-              }
-            }
             walletArray.push({
               ...obj
             });

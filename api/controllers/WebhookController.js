@@ -11,7 +11,7 @@ module.exports = {
     let coins = await Coins.find({
       deleted_at: null,
       is_active: true,
-      isERC: false,
+      iserc: false,
       type: 1,
       hot_receive_wallet_address: {
         '!=': null
@@ -319,7 +319,7 @@ module.exports = {
       });
       if (coinObject) {
 
-        await Wallet
+        var data = await Wallet
           .update({
             coin_id: coinObject.id,
             address_label: addressLable,
@@ -327,8 +327,42 @@ module.exports = {
           })
           .set({
             receive_address: address.address
-          });
+          })
+          .fetch();
+        var walletData = await Coins.find({
+          where: {
+            is_active: true,
+            deleted_at: null,
+            iserc: true
+          }
+        });
 
+        console.log("walletData", walletData)
+        console.log("walletData.length", walletData.length)
+
+        for (var i = 0; i < walletData.length; i++) {
+          var walletValue = await Wallet.find({
+            user_id: data[0].user_id,
+            coin_id: walletData[i].id,
+            is_active: true,
+            deleted_at: null
+          })
+          if (walletValue.length == 0) {
+            var walletCode = await Wallet
+              .create({
+                user_id: data[0].user_id,
+                deleted_at: null,
+                coin_id: walletData[i].id,
+                wallet_id: 'wallet',
+                is_active: true,
+                balance: 0.0,
+                placed_balance: 0.0,
+                address_label: addressLable,
+                is_admin: false
+              }).fetch();
+          }
+          console.log(walletCode);
+        }
       }
 
       return res.json({
@@ -364,7 +398,6 @@ module.exports = {
           .set({
             send_address: address.address
           });
-
       }
 
       return res.json({
