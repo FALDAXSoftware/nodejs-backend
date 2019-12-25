@@ -12,7 +12,50 @@ module.exports = async function (req, res, next) {
   var token;
 
   try {
-    
+    if (req.isSocket) {
+      if (req.headers && req.headers.authorization) {
+        var parts = req
+          .headers
+          .authorization
+          .split(' ');
+        if (parts.length == 2) {
+          var scheme = parts[0],
+            credentials = parts[1];
+          if (credentials != "undefined" && /^Bearer$/i.test(scheme)) {
+            token = credentials;
+            var verifyData = await sails
+              .helpers
+              .jwtVerify(token);
+            if (verifyData) {
+              req.user = verifyData;          
+            }        
+          }
+                    
+        }
+        
+      }
+      // Logger for Socket
+      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+      req.headers['Logid'] = generate_unique_string;
+      var logger = require('../controllers/logger')
+      var object = {
+        module: "Request",
+        url: req.url,
+        type: "Success",
+        log_id: req.headers['Logid']
+      };
+      if (req.user && req.user.id) {
+        object.user_id = "user_" + req.user.id;
+      }
+      if (req.body) {
+        // object.body = JSON.stringify(req.body);
+      }
+      if (req.query) {
+        object.params = req.query;
+      }
+      logger.info(object, "Socket Request success");
+      // Logger ends
+    }
     if (req.headers && req.headers.authorization) {
       var parts = req
         .headers
@@ -37,7 +80,7 @@ module.exports = async function (req, res, next) {
       token = req.param('token');
       // We delete the token from param to not mess with blueprints
       delete req.query.token;
-    } else if (req.isSocket) {
+    } else if (req.isSocket) {      
       if (req.socket.handshake.headers.authorization) {
         var parts = req
           .socket
@@ -85,34 +128,6 @@ module.exports = async function (req, res, next) {
       var userData = await Users.findOne({
         id: req.user.id
       });
-
-      // Logger
-      // console.log("req.user",req);
-      if (req.method == 'OPTIONS') {
-        return next();
-      }
-      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
-      req.headers['Logid'] = generate_unique_string;
-      var logger = require('../controllers/logger')
-      var object = {
-        module: "Request",
-        url: req.url,
-        type: "Success",
-        log_id: req.headers['Logid']
-      };
-      if (req.user && req.user.id) {
-        object.user_id = "user_" + req.user.id;
-      }
-      if (req.body) {
-        // object.body = JSON.stringify(req.body);
-      }
-      if (req.query) {
-        object.params = req.query;
-      }
-
-      logger.info(object, "Request success");
-      // Ends
-
       if (userData != undefined && userData.isAdmin != true) {
 
         if (userData.deleted_at == null) {

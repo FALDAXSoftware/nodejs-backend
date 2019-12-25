@@ -31,12 +31,12 @@ module.exports.http = {
 
     order: [
       'cookieParser',
-      'session',      
+      'session',            
+      'bodyParser',      
       'requestLogger',
-      'bodyParser',
       'responseLogger',
       'compress',
-      'poweredBy',
+      'poweredBy',      
       'router',
       'www',
       'favicon'
@@ -61,10 +61,37 @@ module.exports.http = {
       return middlewareFn;
     })(),
     // Logs each request to Graylog
-    requestLogger: function (req, res, next) {
-      // console.log("req.user",req);
-      if (req.method == 'OPTIONS') {
+    requestLogger: async function (req, res, next) {
+      
+      if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
         return next();
+      }
+      if (req.headers && req.headers.authorization) {
+        var parts = req
+          .headers
+          .authorization
+          .split(' ');
+        // console.log("parts.length",parts);  
+        if (parts.length == 2) {
+          var scheme = parts[0],
+            credentials = parts[1];
+          
+          // console.log("credentials",credentials);  
+          // console.log("scheme",scheme);  
+          // console.log("credentials != undefined",credentials != "undefined");
+        
+          if (credentials != "undefined" && /^Bearer$/i.test(scheme)) {
+            token = credentials;
+            var verifyData = await sails
+              .helpers
+              .jwtVerify(token);
+            if (verifyData) {
+              req.user = verifyData;          
+            }        
+          }
+                    
+        }
+        
       }
       // if( req.user ){
         var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
@@ -93,10 +120,9 @@ module.exports.http = {
     },
     // Logs each response to Graylog
     responseLogger: function (req, res, next) {
-      if (req.method == 'OPTIONS') {
+      if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
         return next();
       }
-
       var logger = require('../api/controllers/logger');
       var oldWrite = res.write,
         oldEnd = res.end;
@@ -108,9 +134,19 @@ module.exports.http = {
       var body;
       res.end = function (chunk) {
         if (chunk) chunks.push(chunk);
-        body = Buffer.concat(chunks).toString('utf8');
+        body = Buffer.concat(chunks).toString('utf8');        
         oldEnd.apply(res, arguments);
-        var response = JSON.parse(body);
+        var message = 'Response message';
+        // console.log("body",body);
+        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+          if( JSON.parse(body).message ){
+            message = JSON.parse(body).message  
+          }
+          if( JSON.parse(body).err ){
+            message = JSON.parse(body).err  
+          }
+        }
+        var response = body;
         var object = {
           module: "Response",
           url: req.url,
@@ -119,19 +155,23 @@ module.exports.http = {
           // responseData:JSON.stringify(response),
           log_id: req.headers['Logid']
         };
-        if (res.statusCode == 200) {
-          object.type = 'Success';
-          if (req.url == '/login') {
-            object.user_id = "user_" + response.user.id;
-          }
-        }
+        
         if( res.statusCode != 200 && res.statusCode >= 201 ){
-          object.responseData = JSON.stringify(body);
+          object.responseData = (body);
         }
         if (req.user && req.user.id) {
           object.user_id = "user_" + req.user.id;
         }
-        logger.info(object, response.message);
+        if (res.statusCode == 200) {
+          object.type = 'Success';
+          if (req.url == '/login') {
+            object.user_id = "user_" + JSON.parse(body).user.id;
+          }
+          logger.info(object, message);
+        }else{
+          logger.error(object, message);
+        }
+        
       };
       return next();
     }
