@@ -67,25 +67,12 @@ module.exports = {
           req.body['status'] = false;
         }
         var updated_kyc;
-        if (req.body.test_key == sails.config.local.test_key) {
-          req.body.is_approve = true;
-          req.body.direct_response = "ACCEPT";
-          req.body.webhook_response = "ACCEPT";
-          req.body.steps = 1;
-          updated_kyc = await KYC
-            .update({
-              id: kyc_details.id
-            })
-            .set(req.body)
-            .fetch();
-        } else {
-          updated_kyc = await KYC
-            .update({
-              id: kyc_details.id
-            })
-            .set(req.body)
-            .fetch();
-        }
+        updated_kyc = await KYC
+          .update({
+            id: kyc_details.id
+          })
+          .set(req.body)
+          .fetch();
 
         var user_value = await Users.findOne({
           where: {
@@ -124,12 +111,6 @@ module.exports = {
             })
         }
       } else {
-        if (req.body.test_key == sails.config.local.test_key) {
-          req.body.is_approve = true;
-          req.body.direct_response = "ACCEPT";
-          req.body.webhook_response = "ACCEPT";
-          req.body.steps = 1;
-        }
         let kyc_created = await KYC
           .create(req.body)
           .fetch();

@@ -528,7 +528,7 @@ module.exports = {
                   max_limit: req.body.max_limit,
                   deposit_method: req.body.deposit_method,
                   kraken_coin_name: req.body.kraken_coin_name,
-                  isERC: req.body.isERC,
+                  iserc: req.body.isERC,
                   //wallet_address: req.body.wallet_address,
                   created_at: new Date(),
                   coin: (req.body.coin_code).toUpperCase(),
