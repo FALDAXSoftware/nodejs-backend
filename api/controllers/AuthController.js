@@ -69,12 +69,10 @@ module.exports = {
               last_name: user.last_name
             });
           // Create Receive Address
-          // await sails
-          //   .helpers
-          //   .wallet
-          //   .receiveAddress(user, req.body.test_key ?
-          //     req.body.test_key :
-          //     "false");
+          await sails
+            .helpers
+            .wallet
+            .receiveAddress(user);
           return res.json({
             message: "Verification successfull.",
             "status": 200,
@@ -296,7 +294,7 @@ module.exports = {
                   user: user_detail.id,
                   ip: ip
                 });
-                if (loginData.length > 0 || req.body.test_key == sails.config.local.test_key || req.body.device_type == 1 || req.body.device_type == 2) {
+                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
@@ -924,7 +922,7 @@ module.exports = {
           to: user_details.email,
           subject: "Forgot Password"
         }, function (err) {
-          console.log("err",err);
+          console.log("err", err);
           if (!err) {
             return res.json({
               "status": 200,
@@ -1023,7 +1021,7 @@ module.exports = {
     if (req.body.email) {
       let user = await Users.findOne({
         email: req.body.email,
-        deleted_at:null
+        deleted_at: null
         // is_verified: false
         // is_new_email_verified: true
       });
