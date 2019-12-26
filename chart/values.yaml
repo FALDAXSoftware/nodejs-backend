@@ -56,6 +56,25 @@ resources:
    cpu: 300m
    memory: 500Mi
 
+health:
+  enable: true
+  livenessProbe:
+    path: /health-check
+    port: 80
+    initialDelaySeconds: 120
+    periodSeconds: 30
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    path: /health-check
+    port: 80
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+
 nodeSelector: {}
 
 tolerations:
