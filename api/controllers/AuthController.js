@@ -928,7 +928,14 @@ module.exports = {
               "status": 200,
               "message": sails.__("Reset password link sent to your email successfully.")
             });
-          }
+          }else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Something Wrong")
+            });
+        }
         })
       // return res.json({
       //   "status": 200,
