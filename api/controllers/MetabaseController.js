@@ -142,7 +142,6 @@ module.exports = {
     getCareerReport: async function (req, res) {
         try {
             var dashboardValue = 13;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -169,7 +168,6 @@ module.exports = {
     getCountryReport: async function (req, res) {
         try {
             var dashboardValue = 7;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -196,7 +194,6 @@ module.exports = {
     getEmployeeReport: async function (req, res) {
         try {
             var dashboardValue = 9;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -223,7 +220,6 @@ module.exports = {
     getFeesReport: async function (req, res) {
         try {
             var dashboardValue = 15;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -250,7 +246,6 @@ module.exports = {
     getHistoryReport: async function (req, res) {
         try {
             var dashboardValue = 33;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -277,7 +272,6 @@ module.exports = {
     getDashboardReport: async function (req, res) {
         try {
             var dashboardValue = 4;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -304,7 +298,6 @@ module.exports = {
     getKYCReport: async function (req, res) {
         try {
             var dashboardValue = 14;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -331,7 +324,6 @@ module.exports = {
     getNewsReport: async function (req, res) {
         try {
             var dashboardValue = 16;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -358,7 +350,6 @@ module.exports = {
     getOffersReport: async function (req, res) {
         try {
             var dashboardValue = 36;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -385,7 +376,6 @@ module.exports = {
     getPairsReport: async function (req, res) {
         try {
             var dashboardValue = 6;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -412,7 +402,6 @@ module.exports = {
     getRolesReport: async function (req, res) {
         try {
             var dashboardValue = 8;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -439,7 +428,6 @@ module.exports = {
     getTransactionHistoryReport: async function (req, res) {
         try {
             var dashboardValue = 10;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -466,7 +454,6 @@ module.exports = {
     getTwoFactorRequestReport: async function (req, res) {
         try {
             var dashboardValue = 19;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -493,7 +480,6 @@ module.exports = {
     getUsersReport: async function (req, res) {
         try {
             var dashboardValue = 1;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 
@@ -520,7 +506,6 @@ module.exports = {
     getWithdrawRequestReport: async function (req, res) {
         try {
             var dashboardValue = 12;
-            console.log(dashboardValue)
 
             var frameURL = await sails.helpers.metabaseSetup(dashboardValue)
 

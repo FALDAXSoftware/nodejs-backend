@@ -32,8 +32,6 @@ module.exports = {
       var msg;
       var sendInfo;
 
-      console.log(userKyc)
-
       if (userKyc) {
         if (userKyc.direct_response == null && userKyc.webhook_response == null) {
           response = false;

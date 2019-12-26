@@ -83,14 +83,25 @@ module.exports = {
         page,
         limit,
         data,
+        country_id,
         sortCol,
         sortOrder
       } = req.allParams();
       let query = " from states";
+      let whereAppended = false;
       if ((data && data != "")) {
+        whereAppended = true
         query += " WHERE"
         if (data && data != "" && data != null) {
           query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+        }
+      }
+
+      if (country_id) {
+        if (whereAppended == true) {
+          query += " AND country_id =" + country_id;
+        } else {
+          query += " WHERE country_id =" + country_id;
         }
       }
 

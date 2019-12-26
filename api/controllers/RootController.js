@@ -73,25 +73,27 @@ module.exports = {
       let template = await EmailTemplate.findOne({
         slug
       });
-      let emailContent = await sails
-        .helpers
-        .utilities
-        .formatEmail(template.content, {
-          recipientName: ''
-        })
-      if (template) {
-        sails
-          .hooks
-          .email
-          .send("general-email", {
-            content: emailContent
-          }, {
-            // to: "mansi.gyastelwala@openxcellinc.com, jagdish.banda@openxcelltechnolabs.com",
-            to: value,
-            subject: "Panic Button"
-          }, function (err) {
-            console.log(err);
-          });
+      for (var i = 0; i < all_user_emails.length; i++) {
+        let emailContent = await sails
+          .helpers
+          .utilities
+          .formatEmail(template.content, {
+            recipientName: ''
+          })
+        if (template) {
+          sails
+            .hooks
+            .email
+            .send("general-email", {
+              content: emailContent
+            }, {
+              to: all_user_emails[i],
+              to: value,
+              subject: "Panic Button"
+            }, function (err) {
+              console.log("err", err);
+            });
+        }
       }
       if (!user) {
         return res
@@ -298,32 +300,15 @@ module.exports = {
   },
 
   getEncryptKey: async function (req, res) {
-    console.log(sails.config.local.key);
     var key = sails.config.local.key;
-    console.log(sails.config.local.iv);
     var iv = sails.config.local.iv;
-    var textBytes = aesjs.utils.utf8.toBytes("dbeb99a40641d0d53d1630bc52e4e154f0d0d5a74a1e672b9f035feb0213d0fb");
-
-    var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
-    var encryptedBytes = aesOfb.encrypt(textBytes);
-
-    // To print or store the binary data, you may convert it to hex
-    var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-    console.log(encryptedHex);
-    // "55e3af2655dd72b9f32456042f39bae9accff6259159e608be55a1aa313c598d
-    //  b4b18406d89c83841c9d1af13b56de8eda8fcfe9ec8e75e8"
-
-    // When ready to decrypt the hex string, convert it back to bytes
-    var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
-
-    // The output feedback mode of operation maintains internal state,
-    // so to decrypt a new instance must be instantiated.
-    var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
-    var decryptedBytes = aesOfb.decrypt(encryptedBytes);
-
-    // Convert our bytes back into text
-    var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-    console.log(decryptedText);
+    var value = req.body.encryptKey;
+    console.log(value);
+    // var encryptData = await sails.helpers.getEncryptData(value);
+    // console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData(value);
+    console.log("decryptData", decryptData)
+    return res.json(200);
   },
 
   queryTestThresold: async function (req, res) {
@@ -428,6 +413,34 @@ module.exports = {
         })
     } catch (error) {
       console.log(error);
+    }
+  },
+
+
+  checkSystemHealth: async function (req, res) {
+    try {
+      var system_health = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'system_health'
+        }
+      })
+
+      if (system_health && system_health.value == "ok_from_db") {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("system_health_ok"),
+        })
+      }
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
+    } catch (error) {
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok"),
+      })
     }
   }
 };

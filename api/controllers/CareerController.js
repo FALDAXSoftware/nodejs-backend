@@ -15,11 +15,7 @@ module.exports = {
       is_active: true
     });
     if (jobDetail) {
-      // console.log("req.file('resume')",req.file('resume'));
-      console.log("req.file('resume')._files[0]", req.file('resume'));
-      console.log("req.file('cover_letter')._files[0]", req.file('cover_letter'));
       var uploadedFileName = await (req.file('resume')._files[0].stream.filename)
-      console.log("uploadedFileName", uploadedFileName);
       let timestamp1 = "resume_" + new Date()
         .getTime()
         .toString();
@@ -30,7 +26,6 @@ module.exports = {
 
 
         var uploadCoverName = await (req.file('cover_letter')._files[0].stream.filename)
-        console.log("uploadCoverName", uploadCoverName);
         let timestamp2 = "cover_" + new Date()
           .getTime()
           .toString();
@@ -42,7 +37,6 @@ module.exports = {
           //   .file('resume')
           //   .upload(async function (err, resume_file) {
           //     // var resume_file = req.file('resume');
-          //     console.log("resume_file",resume_file);
           //     let resume_filename = resume_file[0].filename;
           //     var resume_name = resume_filename.substring(resume_filename.indexOf("."));
           //     let resume_timestamp = new Date()
@@ -52,10 +46,8 @@ module.exports = {
           //     var uploadResume = await UploadFiles.upload(resume_file[0].fd, 'career/' + resume_uploaded_name,resume_file[0].size);
           //     // Cover letter
           //     var cover_letter_uploaded_name = '';
-          //     // console.log("fiel", req.file("cover_letter"));
           //     if( req.file('cover_letter') ){
           //       req.file('cover_letter').upload(  function(err, cover_letter_file){
-          //         console.log("cover_letter_file",cover_letter_file);
           //         let cover_letter_filename = cover_letter_file[0].filename;
           //         var cover_letter_name = cover_letter_filename.substring(cover_letter_filename.indexOf("."));
           //         let cover_letter_timestamp = new Date()

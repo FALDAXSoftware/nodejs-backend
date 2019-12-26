@@ -67,25 +67,12 @@ module.exports = {
           req.body['status'] = false;
         }
         var updated_kyc;
-        if (req.body.test_key == sails.config.local.test_key) {
-          req.body.is_approve = true;
-          req.body.direct_response = "ACCEPT";
-          req.body.webhook_response = "ACCEPT";
-          req.body.steps = 1;
-          updated_kyc = await KYC
-            .update({
-              id: kyc_details.id
-            })
-            .set(req.body)
-            .fetch();
-        } else {
-          updated_kyc = await KYC
-            .update({
-              id: kyc_details.id
-            })
-            .set(req.body)
-            .fetch();
-        }
+        updated_kyc = await KYC
+          .update({
+            id: kyc_details.id
+          })
+          .set(req.body)
+          .fetch();
 
         var user_value = await Users.findOne({
           where: {
@@ -97,7 +84,7 @@ module.exports = {
 
         if (user_value != undefined) {
           var user_update = await Users.
-          update({
+            update({
               deleted_at: null,
               is_active: true,
               id: user_id
@@ -124,12 +111,6 @@ module.exports = {
             })
         }
       } else {
-        if (req.body.test_key == sails.config.local.test_key) {
-          req.body.is_approve = true;
-          req.body.direct_response = "ACCEPT";
-          req.body.webhook_response = "ACCEPT";
-          req.body.steps = 1;
-        }
         let kyc_created = await KYC
           .create(req.body)
           .fetch();
@@ -144,7 +125,7 @@ module.exports = {
 
         if (user_value != undefined) {
           var user_update = await Users.
-          update({
+            update({
               deleted_at: null,
               is_active: true,
               id: user_id
@@ -238,6 +219,7 @@ module.exports = {
   callbackKYC: async function (req, res) {
     let data = req.body;
 
+
     let resultState = {
       "A": "ACCEPT",
       "D": "DENY",
@@ -262,20 +244,22 @@ module.exports = {
 
               if (resultState[data.state] == "ACCEPT") {
                 // Send email notification
-                var user_data = await Users.findOne({
+                var user_data_kyc = await KYC.findOne({
                   mtid: data.mtid
                 });
 
-                var tier_step = parseInt(user_data.account_tier) + 1;
+                // var tier_step = parseInt(user_data.account_tier) + 1;
                 var user_data = await Users
                   .update({
-                    id: user_data.id,
+                    id: user_data_kyc.user_id,
                     deleted_at: null,
                     is_active: true
                   })
                   .set({
-                    account_tier: tier_step
+                    account_tier: 1
                   })
+                  .fetch()
+
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data.id,
                   deleted_at: null,
@@ -309,7 +293,7 @@ module.exports = {
                     .send("general-email", {
                       content: emailContent
                     }, {
-                      to: (user_data.email).trim(),
+                      to: user_data.email,
                       subject: template.name
                     }, function (err) {
                       if (err) {
@@ -322,6 +306,8 @@ module.exports = {
           }
         }
       } catch (err) {
+        console.log(err);
+
         if (data.mtid) {
           let updated = await KYC
             .update({
@@ -429,7 +415,7 @@ module.exports = {
         status
       } = req.allParams();
       let query = " from kyc LEFT JOIN users ON kyc.user_id = users.id ";
-      
+
       query += ' WHERE kyc.deleted_at IS NULL'
       let whereAppended = false;
       if ((data && data != "")) {
@@ -458,8 +444,8 @@ module.exports = {
         query += " kyc.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND kyc.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
 
@@ -489,7 +475,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("err",err);
+      console.log("err", err);
       await logger.error(err.message)
       return res
         .status(500)

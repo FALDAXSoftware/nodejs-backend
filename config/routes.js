@@ -183,6 +183,7 @@ module.exports.routes = {
   'post /login': "AuthController.login",
   'post /users/create': "UsersController.create",
   'put /users/update': "UsersController.update",
+  'put /users/terms-status-update': "UsersController.updateTermsStatus",
   'post /users/verify-user': "AuthController.verifyUser",
   'post /users/verify-new-ip': "AuthController.verifyNewIp",
   'post /users/send-verification-email': "AuthController.sendVerificationCodeEmail",
@@ -388,8 +389,8 @@ module.exports.routes = {
   'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
   // Update User Wallet balance
-  'post /update-user-balance': 'WalletController.updateWalletBalance',
-  'post /add-user-balance': 'WalletController.addWalletBalance',
+  // 'post /update-user-balance': 'WalletController.updateWalletBalance',
+  // 'post /add-user-balance': 'WalletController.addWalletBalance',
 
   // Admin Send API
   'post /send-coin-admin': 'WalletController.sendCoinAdmin',
@@ -427,7 +428,7 @@ module.exports.routes = {
   'get /admin/get-referred-user-data': 'UsersController.getUserReferData',
   'get /admin/get-referred-id-assets': 'UsersController.getReferredAssets',
 
-  'get /get-encrypt-data': 'RootController.getEncryptKey',
+  'post /get-encrypt-data': 'RootController.getEncryptKey',
 
   // Simplex API
   'post /get-qoute-details': 'SimplexController.getUserQouteDetails',
@@ -512,5 +513,11 @@ module.exports.routes = {
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
   // Temp 
-  "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot"
+  "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
+  "get /admin/get-static-page-links": "AdminController.getStaticLinks",
+  "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",
+
+
+
+  "get /health-check": "RootController.checkSystemHealth"
 };

@@ -31,14 +31,8 @@ module.exports = {
 
     // Get partner data info.
     try {
-      var key = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: 'access_token'
-        }
-      });
-      key = await sails.helpers.getDecryptData(key.value);
-      console.log(key);
+      var keyValue = sails.config.local.ACCESS_TOKEN
+      key = await sails.helpers.getDecryptData(keyValue);
       await request.post(sails.config.local.SIMPLEX_URL + 'payments/partner/data', {
         headers: {
           'Authorization': 'ApiKey ' + key,
@@ -46,7 +40,6 @@ module.exports = {
         },
         body: JSON.stringify(inputs.data)
       }, function (err, res, body) {
-        console.log(res.body)
         return exits.success(JSON.parse(res.body));
       });
     } catch (err) {

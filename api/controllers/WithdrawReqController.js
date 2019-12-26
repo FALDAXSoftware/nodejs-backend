@@ -74,8 +74,8 @@ module.exports = {
       query += " withdraw_request.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND withdraw_request.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -150,8 +150,6 @@ module.exports = {
               deleted_at: null
             }
           })
-
-          console.log(userData)
 
           if (userData != undefined) {
 

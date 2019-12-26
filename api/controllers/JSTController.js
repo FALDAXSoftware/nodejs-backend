@@ -5,7 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
-var logger = require('../controllers/logger')
+// var logger = require('../controllers/logger')
 const {
   Validator
 } = require('node-input-validator');
@@ -17,12 +17,12 @@ module.exports = {
    */
   getJSTPairList: async function (req, res) {
     try {
-      await logger.info({
-        "module": "JST",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "JST",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var getJSTPair = await JSTPair.find({
         where: {
           deleted_at: null
@@ -36,29 +36,37 @@ module.exports = {
           is_jst_supported: true
         }
       })
-      await logger.info({
-        "module": "JST",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Success"
-      }, "JST Pair List")
+
+      var faldax_fee = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'faldax_fee'
+        }
+      })
+      // await logger.info({
+      //   "module": "JST",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Success"
+      // }, "JST Pair List")
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("jst pair retrieve success"),
           getJSTPair,
-          coinList
+          coinList,
+          faldax_fee
         })
 
     } catch (error) {
       console.log("error", error);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
@@ -98,7 +106,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -113,12 +121,12 @@ module.exports = {
    */
   getJSTPriceValue: async function (req, res) {
     try {
-      await logger.info({
-        "module": "JST",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "JST",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       let req_body = req.body;
       let flag = req_body.flag;
       let validator = new Validator(req_body, {
@@ -128,9 +136,7 @@ module.exports = {
         Currency: 'required',
         OrdType: 'required|in:1,2'
       });
-      console.log("getJSTPriceValue===>",req_body);
       var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
-      console.log("jstResponseValue=====>",jstResponseValue);
 
       // Check for Offercode and if it is proper, don't add Faldax fees
       var user_id = req.user.id;
@@ -160,7 +166,6 @@ module.exports = {
       var final_faldax_fees_actual = jstResponseValue.faldax_fee;
       jstResponseValue.faldax_fees_actual = final_faldax_fees_actual;
       jstResponseValue.limit_price = jstResponseValue.limit_price;
-      console.log("Offer COde >>>>>>.", offer_code);
       if (offer_code && offer_code != "") {
         let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
         // campaign_id = check_offer_status.data.campaign_id;
@@ -228,13 +233,12 @@ module.exports = {
         // console.log("final_faldax_fees", final_faldax_f/ees);
       }
       jstResponseValue.faldax_fee = final_faldax_fees;
-      console.log(jstResponseValue);
-      await logger.info({
-        "module": "JST",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Success"
-      }, sails.__("Price retrieve success"))
+      // await logger.info({
+      //   "module": "JST",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Success"
+      // }, sails.__("Price retrieve success"))
       return res
         .status(200)
         .json({
@@ -245,12 +249,12 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
@@ -287,7 +291,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -303,12 +307,12 @@ module.exports = {
    */
   createOrder: async function (req, res) {
     try {
-      await logger.info({
-        "module": "JST",
-        "user_id": "user_" + JSON.stringify(req.user.id),
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "JST",
+      //   "user_id": "user_" + JSON.stringify(req.user.id),
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       let req_body = req.body;
 
       let validator = new Validator(req_body, {
@@ -327,13 +331,12 @@ module.exports = {
         sell_currency_amount: 'required|decimal',
         limit_price: 'required|decimal',
         flag: 'required|in:1,2',
-        subtotal:'required|decimal'
+        subtotal: 'required|decimal'
       });
       var final_faldax_fees = req_body.faldax_fees;
       var final_ntwk_fees = req_body.network_fees;
       var final_faldax_fees_actual = req_body.faldax_fees_actual;
 
-      console.log("req_body >>>>>>", req_body);
 
       var quantityValue = 0;
       if (req_body.original_pair == req_body.order_pair) {
@@ -346,12 +349,12 @@ module.exports = {
       let matched = await validator.check();
       if (!matched) {
         for (var key in validator.errors) {
-          await logger.info({
-            "module": "JST",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, validator.errors[key].message)
+          // await logger.info({
+          //   "module": "JST",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, validator.errors[key].message)
           return res
             .status(400)
             .json({
@@ -371,12 +374,12 @@ module.exports = {
       });
 
       if (panic_button_details.value == true || panic_button_details.value == "true") {
-        await logger.error({
-          "user_id": "user_" + req.user.id,
-          "module": "JST Panic Button",
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("panic button enabled"))
+        // await logger.error({
+        //   "user_id": "user_" + req.user.id,
+        //   "module": "JST Panic Button",
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("panic button enabled"))
         return res
           .status(500)
           .json({
@@ -393,12 +396,12 @@ module.exports = {
 
 
       if (geo_fencing_data.response != true) {
-        await logger.error({
-          "user_id": "user_" + req.user.id,
-          "module": "JST GeoFencing",
-          "url": req.url,
-          "type": "Error"
-        }, sails.__(geo_fencing_data.msg))
+        // await logger.error({
+        //   "user_id": "user_" + req.user.id,
+        //   "module": "JST GeoFencing",
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__(geo_fencing_data.msg))
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg)
@@ -406,14 +409,14 @@ module.exports = {
       } else {
         // Check Security
         let check_security = await sails.helpers.checkSecurity(user_id, req_body.otp);
-        console.log("Check  >>>>>>>...", check_security);
+
         if (check_security.status != 200) {
-          await logger.error({
-            "user_id": "user_" + req.user.id,
-            "module": "JST Security Status",
-            "url": req.url,
-            "type": "Error"
-          }, check_security.message)
+          // await logger.error({
+          //   "user_id": "user_" + req.user.id,
+          //   "module": "JST Security Status",
+          //   "url": req.url,
+          //   "type": "Error"
+          // }, check_security.message)
           return res
             // .status(check_security.status)
             .status(500)
@@ -446,14 +449,14 @@ module.exports = {
             user_id: user_id
           }
         });
-        console.log("walletCurrency", walletCurrency);
+
         if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "")) {
-          await logger.info({
-            "module": "JST",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("Create Currency Wallet"))
+          // await logger.info({
+          //   "module": "JST",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("Create Currency Wallet"))
           return res
             .status(201)
             .json({
@@ -475,14 +478,14 @@ module.exports = {
             user_id: user_id
           }
         });
-        console.log("walletCrypto", walletCrypto);
+
         if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address == "")) {
-          await logger.info({
-            "module": "JST",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("Create Crypto Wallet"))
+          // await logger.info({
+          //   "module": "JST",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("Create Crypto Wallet"))
           return res
             .status(201)
             .json({
@@ -492,12 +495,12 @@ module.exports = {
         }
 
         if (req_body.OriginalQuantity < cryptoValue.jst_min_coin_limit) {
-          await logger.error({
-            "user_id": "user_" + req.user.id,
-            "module": "JST Create Order",
-            "url": req.url,
-            "type": "Error"
-          }, sails.__("Minimum Order Limit not satisfied"))
+          // await logger.error({
+          //   "user_id": "user_" + req.user.id,
+          //   "module": "JST Create Order",
+          //   "url": req.url,
+          //   "type": "Error"
+          // }, sails.__("Minimum Order Limit not satisfied"))
           return res
             .status(500)
             .json({
@@ -539,12 +542,12 @@ module.exports = {
         // }
         // if ((balanceChecking) > (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) {
         if (parseFloat(balanceChecking) > parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))) {
-          await logger.error({
-            "user_id": "user_" + req.user.id,
-            "module": "JST Create Order",
-            "url": req.url,
-            "type": "Error"
-          }, sails.__("insufficent funds in wallet"))
+          // await logger.error({
+          //   "user_id": "user_" + req.user.id,
+          //   "module": "JST Create Order",
+          //   "url": req.url,
+          //   "type": "Error"
+          // }, sails.__("insufficent funds in wallet"))
           return res
             .status(500)
             .json({
@@ -571,11 +574,11 @@ module.exports = {
           buy_currency_amount: req_body.buy_currency_amount,
           sell_currency_amount: req_body.sell_currency_amount,
           limit_price: req_body.limit_price,
-          subtotal:parseFloat(req_body.subtotal)
+          subtotal: parseFloat(req_body.subtotal)
         };
-        console.log("order_create", order_create);
+
         var create_order = await JSTTradeHistory.create(order_create).fetch();
-        
+
         // console.log("create_o/rder",create_order);
         let order_object = {
           ClOrdID: create_order.cl_order_id,
@@ -619,12 +622,12 @@ module.exports = {
           if (userData != undefined) {
             await sails.helpers.notification.send.email("jst_order_failed", userData)
           }
-          await logger.error({
-            "user_id": "user_" + req.user.id,
-            "module": "JST Create Order",
-            "url": req.url,
-            "type": "Error"
-          }, sails.__("jst order not created"))
+          // await logger.error({
+          //   "user_id": "user_" + req.user.id,
+          //   "module": "JST Create Order",
+          //   "url": req.url,
+          //   "type": "Error"
+          // }, sails.__("jst order not created"))
           return res
             .status(500)
             .json({
@@ -716,8 +719,8 @@ module.exports = {
               reason: (jst_response_data.Text ? jst_response_data.Text : ""),
               exec_id: jst_response_data.ExecID
             };
-            
-            
+
+
             var update_order = await JSTTradeHistory
               .update({
                 id: create_order.id
@@ -737,12 +740,12 @@ module.exports = {
             if (userData != undefined) {
               await sails.helpers.notification.send.email("jst_order_failed", userData)
             }
-            await logger.error({
-              "user_id": "user_" + req.user.id,
-              "module": "JST Create Order",
-              "url": req.url,
-              "type": "Error"
-            }, sails.__("jst order not created"))
+            // await logger.error({
+            //   "user_id": "user_" + req.user.id,
+            //   "module": "JST Create Order",
+            //   "url": req.url,
+            //   "type": "Error"
+            // }, sails.__("jst order not created"))
             return res.json({
               "status": 500,
               // "message": sails.__("jst order not created") + "Due to : " + (reason_text),
@@ -776,7 +779,6 @@ module.exports = {
           let offer_applied = false;
           if (offer_code && offer_code != "") {
             let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
-            console.log("check_offer_status", check_offer_status);
             if (check_offer_status.status != false) {
               campaign_id = check_offer_status.data.campaign_id;
               campaign_offer_id = check_offer_status.data.id;
@@ -800,7 +802,6 @@ module.exports = {
               offer_applied = true;
               final_faldax_fees = 0.0;
             }
-            console.log("final_faldax_fees", final_faldax_fees);
           }
 
           // Calculate fees deduction 
@@ -829,42 +830,40 @@ module.exports = {
 
           // Update Faldax Wallet Address with Fees and Commission, if any
           // If buy order
-          if( req_body.original_pair == req_body.order_pair ){
+          if (req_body.original_pair == req_body.order_pair) {
             // Update Crypto wallet
             let wallet_data = {
-              id:cryptoValue.id,
-              type:'add',
-              amount:parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees)
+              id: cryptoValue.id,
+              type: 'add',
+              amount: parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees)
             }
-            await sails.helpers.wallet.updateAdminWallets(wallet_data);              
+            await sails.helpers.wallet.updateAdminWallets(wallet_data);
             // Update Currency wallet
-            if( difference_faldax_commission > 0 ){
+            if (difference_faldax_commission > 0) {
               let wallet_data = {
-                id:coinValue.id,
-                type:'add',
-                amount:parseFloat(difference_faldax_commission)
+                id: coinValue.id,
+                type: 'add',
+                amount: parseFloat(difference_faldax_commission)
               }
-              await sails.helpers.wallet.updateAdminWallets(wallet_data);           
-            }               
-          }else{
-            console.log("FEES===>>",parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees));
-            console.log("Commission===>>",parseFloat(difference_faldax_commission));
+              await sails.helpers.wallet.updateAdminWallets(wallet_data);
+            }
+          } else {
             // Update Currency wallet
             let wallet_data = {
-              id:coinValue.id,
-              type:'add',
-              amount:parseFloat(final_faldax_fees)+parseFloat(final_ntwk_fees)
+              id: coinValue.id,
+              type: 'add',
+              amount: parseFloat(final_faldax_fees) + parseFloat(final_ntwk_fees)
             }
-            await sails.helpers.wallet.updateAdminWallets(wallet_data);              
+            await sails.helpers.wallet.updateAdminWallets(wallet_data);
             // Update Currency wallet
-            if( difference_faldax_commission > 0 ){
+            if (difference_faldax_commission > 0) {
               let wallet_data = {
-                id:coinValue.id,
-                type:'add',
-                amount:parseFloat(difference_faldax_commission)
+                id: coinValue.id,
+                type: 'add',
+                amount: parseFloat(difference_faldax_commission)
               }
-              await sails.helpers.wallet.updateAdminWallets(wallet_data);           
-            } 
+              await sails.helpers.wallet.updateAdminWallets(wallet_data);
+            }
           }
           // update order
           var update_data = {
@@ -916,10 +915,10 @@ module.exports = {
           var second_coin_balance = '';
           var coin1type = '';
           var coin2type = '';
-          console.log("walletCurrency.balance", walletCurrency.balance);
-          console.log("walletCrypto.balance", walletCrypto.balance);
-          console.log("final_fees_currency", final_fees_currency)
-          console.log("final_fees_deducted_crypto", final_fees_deducted_crypto)
+          // console.log("walletCurrency.balance", walletCurrency.balance);
+          // console.log("walletCrypto.balance", walletCrypto.balance);
+          // console.log("final_fees_currency", final_fees_currency)
+          // console.log("final_fees_deducted_crypto", final_fees_deducted_crypto)
           // Update wallet Balance
           if (req_body.original_pair == req_body.order_pair) { // Buy order
             var update_user_wallet_asset1 = await Wallet.update({
@@ -975,16 +974,15 @@ module.exports = {
             userData.secondCoin = second_coin;
             userData.firstAmount = first_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
             userData.secondAmount = second_coin_balance.toFixed(sails.config.local.TOTAL_PRECISION);
-            console.log("Acc userData", userData);
             await sails.helpers.notification.send.email("jst_order_success", userData)
           }
 
-          await logger.info({
-            "module": "JST Create Order",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("jst order created"))
+          // await logger.info({
+          //   "module": "JST Create Order",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("jst order created"))
           return res.json({
             "status": 200,
             "message": sails.__("jst order created"),
@@ -995,7 +993,7 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      // await logger.error(error.message)
 
       // Send Email 
       var user_id = req.user.id;
@@ -1011,12 +1009,12 @@ module.exports = {
       if (userData != undefined) {
         await sails.helpers.notification.send.email("jst_order_failed", userData)
       }
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST Create Order",
-        "url": req.url,
-        "type": "Error"
-      }, sails.__("Something Wrong"))
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST Create Order",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, sails.__("Something Wrong"))
 
       return res
         .status(500)
@@ -1031,12 +1029,12 @@ module.exports = {
   Check Offercode is valid or not 
   **/
   checkCampaignOfferStatus: async function (req, res) {
-    await logger.info({
-      "module": "Campaign",
-      "user_id": "user_" + req.user.id,
-      "url": req.url,
-      "type": "Entry"
-    }, "Entered the function")
+    // await logger.info({
+    //   "module": "Campaign",
+    //   "user_id": "user_" + req.user.id,
+    //   "url": req.url,
+    //   "type": "Entry"
+    // }, "Entered the function")
     let req_body = req.body;
     let validator = new Validator(req_body, {
       offer_code: 'required'
@@ -1056,13 +1054,12 @@ module.exports = {
     var user_id = req.user.id;
 
     let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(req_body.offer_code, user_id, true);
-    console.log("check_offer_status", check_offer_status);
-    await logger.info({
-      "module": "Campaigns",
-      "user_id": "user_" + req.user.id,
-      "url": req.url,
-      "type": "Success"
-    }, check_offer_status.message)
+    // await logger.info({
+    //   "module": "Campaigns",
+    //   "user_id": "user_" + req.user.id,
+    //   "url": req.url,
+    //   "type": "Success"
+    // }, check_offer_status.message)
     if (check_offer_status.status == true || check_offer_status.status == "truefalse") {
       return res.json({
         "status": 200,
@@ -1070,12 +1067,12 @@ module.exports = {
         "data": check_offer_status.data
       });
     } else {
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "Campaigns",
-        "url": req.url,
-        "type": "Error"
-      }, check_offer_status.message)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "Campaigns",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, check_offer_status.message)
       return res
         .status(500)
         .json({
@@ -1089,12 +1086,14 @@ module.exports = {
   **/
   getSocketJSTValue: async function (req, res) {
     try {
-      await logger.info({
-        "module": "JST Socket Value",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "JST Socket Value",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
+
+      console.log("req.query", req.query)
 
       var Symbol = req.query.Symbol;
       var Side = req.query.Side;
@@ -1118,134 +1117,32 @@ module.exports = {
         "original_pair": original_pair,
         "usd_value": usd_value
       }
-      console.log("getSocketJSTValue====>>",req_body)
+
 
       if (req.isSocket) {
-        var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
-        console.log("jstResponseValue===>>>",jstResponseValue);
-        // Check for Offercode and if it is proper, don't add Faldax fees
         var user_id = req.user.id;
-        let offer_code = req_body.offer_code;
-
-        var currency_pair = (req_body.Symbol).split("/");
-        let calculate_offer_amount = 0;
-        if (req_body.original_pair == req_body.order_pair) {
-          var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Buy");
-          var asset1_usd_value = asset1_value[0].ask_price;
-          var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Buy");
-          var asset2_usd_value = asset2_value[0].ask_price;
-          calculate_offer_amount = asset1_usd_value;
-        } else {
-          var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Sell");
-          var asset1_usd_value = asset1_value[0].bid_price;
-          var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Sell");
-          var asset2_usd_value = asset2_value[0].bid_price;
-          calculate_offer_amount = asset2_usd_value;
-        }
-
-        let campaign_id = 0;
-        let campaign_offer_id = 0;
-        let offer_message = "";
-        let offer_applied = false;
-        var final_faldax_fees = jstResponseValue.faldax_fee
-        var final_faldax_fees_actual = jstResponseValue.faldax_fee;
-        jstResponseValue.faldax_fees_actual = final_faldax_fees_actual;
-        jstResponseValue.limit_price = jstResponseValue.limit_price;
-        console.log("Offer COde >>>>>>.", offer_code);
-        if (offer_code && offer_code != "") {
-          console.log("INSIDE IF >>>>>>")
-          let check_offer_status = await sails.helpers.fixapi.checkOfferCodeStatus(offer_code, user_id, false);
-          console.log("check_offer_status", check_offer_status);
-          // campaign_id = check_offer_status.data.campaign_id;
-          // campaign_offer_id = check_offer_status.data.id;
-          offer_message = check_offer_status.message;
-          // offer_applied = false;
-          if (check_offer_status.status == "truefalse") {
-            console.log("INSIDE ANOTHER IF >>>>>>>>>")
-            final_faldax_fees = 0.0;
-
-
-            // Check Partially fees calulations
-            var current_order_faldax_fees = parseFloat(final_faldax_fees_actual) * parseFloat(calculate_offer_amount);
-            console.log("Current faldax FEE", current_order_faldax_fees);
-            console.log(parseFloat(check_offer_status.discount_values))
-            console.log(parseFloat(check_offer_status.discount_values) < parseFloat(current_order_faldax_fees))
-            if (parseFloat(check_offer_status.discount_values) < parseFloat(current_order_faldax_fees)) {
-              // offer_applied = true;
-              var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
-              var final_faldax_fees_crypto = remaining_fees_fiat / calculate_offer_amount;
-              final_faldax_fees = final_faldax_fees_crypto;
-              // console.log("Faladax Fee >>>>>>>>>>>>>",jstResponseValue.faldax_fee);
-              var value = jstResponseValue.total_value;
-              jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(final_faldax_fees);
-              console.log("INSIDE CONDITIUN >>>>>>>>", jstResponseValue.total_value);
-              jstResponseValue.orderQuantity = parseFloat(value) - parseFloat(final_faldax_fees);
-
-              console.log("QUANTITY >>>>>>>", jstResponseValue.orderQuantity);
-            } else {
-              if (flag == 2) {
-                var total_value = parseFloat(jstResponseValue.total_value).toFixed(8);
-                if (req_body.Side == 1) {
-                  jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
-                  jstResponseValue.faldax_fee = 0.0;
-                  jstResponseValue.orderQuantity = parseFloat(jstResponseValue.total_value).toFixed(8);
-                  jstResponseValue.currency_value = parseFloat((parseFloat(jstResponseValue.currency_value) * (jstResponseValue.orderQuantity)) / parseFloat(total_value)).toFixed(8)
-                } else if (req_body.Side == 2) {
-                  jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
-                  jstResponseValue.faldax_fee = 0.0;
-                  jstResponseValue.orderQuantity = parseFloat(jstResponseValue.total_value).toFixed(8);
-                  jstResponseValue.currency_value = parseFloat((parseFloat(jstResponseValue.currency_value) * (jstResponseValue.orderQuantity)) / parseFloat(total_value)).toFixed(8)
-                }
-              } else if (flag == 1) {
-                if (req_body.Side == 1) {
-                  jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) + parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
-                  jstResponseValue.faldax_fee = 0.0;
-                  jstResponseValue.orderQuantity = parseFloat(jstResponseValue.original_value).toFixed(8);
-                  jstResponseValue.original_value = parseFloat(jstResponseValue.original_value).toFixed(8)
-                } else if (req_body.Side == 2) {
-                  jstResponseValue.total_value = parseFloat(parseFloat(jstResponseValue.total_value) + parseFloat(jstResponseValue.faldax_fee)).toFixed(8);
-                  jstResponseValue.faldax_fee = 0.0;
-                  jstResponseValue.original_value = parseFloat(jstResponseValue.original_value).toFixed(8)
-                }
-              }
-            }
-          } else if (check_offer_status.status == true) {
-            // offer_applied = true;
-            final_faldax_fees = 0.0;
-            if (flag == 2) {
-              var total_value = jstResponseValue.total_value;
-              jstResponseValue.total_value = parseFloat(jstResponseValue.total_value) - parseFloat(jstResponseValue.faldax_fee);
-              jstResponseValue.faldax_fee = 0.0;
-              jstResponseValue.orderQuantity = jstResponseValue.total_value;
-            } else if (flag == 1) {
-              var total_value = jstResponseValue.original_value;
-              jstResponseValue.original_value = parseFloat(jstResponseValue.original_value) - parseFloat(jstResponseValue.faldax_fee);
-              jstResponseValue.faldax_fee = 0.0;
-              jstResponseValue.orderQuantity = jstResponseValue.original_value;
-            }
-
-          }
-          // console.log("final_faldax_fees", final_faldax_f/ees);
-        }
-        jstResponseValue.faldax_fee = final_faldax_fees;
-        await logger.info({
-          "module": "JST",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("User Trade Success"))
+        req_body.user_id = user_id;
+        console.log("req_body", req_body)
+        var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
+        jstResponseValue.faldax_fee = jstResponseValue.faldax_fee;
+        // await logger.info({
+        //   "module": "JST",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("User Trade Success"))
         return res.json({
           status: 200,
           data: jstResponseValue,
           "message": sails.__("User Trade Success")
         });
       } else {
-        await logger.info({
-          "module": "JST",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("error"))
+        // await logger.info({
+        //   "module": "JST",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("error"))
         return res
           .status(403)
           .json({
@@ -1257,12 +1154,12 @@ module.exports = {
 
     } catch (error) {
       console.log("error", error);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({

@@ -6,12 +6,13 @@ module.exports.local = {
 
   // The initialization vector (must be 16 bytes)
   'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
-  'test_key': 'nikita',
+  'test_key': 'Blake@Meghan@Addison@123',
   "METABASE_SITE_URL": process.env.METABASE_SITE_URL,
   "METABASE_SECRET_KEY": process.env.METABASE_SECRET_KEY,
   "PRE_PROD_URL": process.env.PRE_PROD_URL,
   "JST_MARKET_URL": process.env.JST_MARKET_URL,
   "JST_ORDER_URL": process.env.JST_ORDER_URL,
+  "SIMPLEX_HTTP_REF_URL": process.env.SIMPLEX_HTTP_REF_URL,
   // "PROD_URL": process.env.PROD_URL,
   // "DEV_URL": process.env.DEV_URL,
   'CURRENCY_LIST': process.env.CURRENCY,

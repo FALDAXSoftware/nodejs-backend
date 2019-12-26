@@ -37,12 +37,10 @@ module.exports = {
     // TODO
 
     try {
-      console.log("INIDE THIS >>>>>>>")
-      console.log(inputs.err);
       var formatOut = bunyan_format({
-          outputMode: 'bunyan',
-          levelInString: true
-        },
+        outputMode: 'bunyan',
+        levelInString: true
+      },
         fs.createWriteStream('/Users/mansi/faldax/faldax-nodejs/logs/category12.log', {
           flags: 'a'
         })
@@ -53,12 +51,8 @@ module.exports = {
         stream: formatOut
       })
 
-      console.log("LOGGER >>>>>>>>>>", logger);
-
-      console.log(logger.level())
       // console.log(rec, noemit);
       logger._emit = () => {
-        console.log("DFGJSHKJF");
         // rec['@timestamp'] = rec.time
         // delete rec.time
         // rec['@version'] = rec.v

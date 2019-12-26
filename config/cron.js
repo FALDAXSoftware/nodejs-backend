@@ -95,9 +95,7 @@ module.exports.cron = {
   updateJSTPrice: {
     schedule: '* * * * *',
     onTick: async function () {
-        console.log("In:",sails.config.local.CRON_STATUS);
       if (sails.config.local.CRON_STATUS == "true") {
-          console.log("Inner:",sails.config.local.CRON_STATUS);
         // Updating Thresold Value according to the latest value
         await sails.helpers.fixapi.getMarketPrice("XRP/USD");
         await sails.helpers.fixapi.getMarketPrice("BTC/USD");

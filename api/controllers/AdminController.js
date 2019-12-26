@@ -124,7 +124,6 @@ module.exports = {
 
             var roleAllowedData = await sails.sendNativeQuery(roleQuery, []);
             roleAllowedData = roleAllowedData.rows;
-            console.log(roleAllowedData);
             admin_details.roleAllowedData = roleAllowedData;
 
             // console.log(permissionDetail);
@@ -758,11 +757,7 @@ module.exports = {
         query += " ORDER BY admin.id DESC";
       }
 
-      console.log(req.allParams())
-
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
-      console.log(query)
 
       let allEmployees = await sails.sendNativeQuery("Select admin.*, roles.name as role " + query, [])
 
@@ -1872,14 +1867,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+
 
       // var get_data = await UserForgotTwofactors.getOpenRequests();
       // if (get_data.rowCount > 0) {
@@ -1983,14 +1971,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+
       let {
         id
       } = req.body;
@@ -2105,15 +2086,7 @@ module.exports = {
             "err": sails.__("Employee not found")
           });
       }
-      if (adminData.role_id != 1) {
-        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Unauthorized Access"))
-        res
-          .status(403)
-          .json({
-            "status": 403,
-            "err": sails.__("Unauthorized Access")
-          });
-      }
+
       let {
         id,
         reason
@@ -2409,38 +2382,6 @@ module.exports = {
         search
       } = req.allParams();
 
-      // walletQuery = `Select c.coin_code,c.coin,w.balance,w.send_address, w.receive_address,
-      // (sum(th.user_fee)+sum(th.requested_fee)) as Fee
-      // from coins c
-      // LEFT JOIN trade_history th
-      // ON c.coin=th.user_coin
-      // LEFT JOIN wallets w
-      // ON c.id=w.coin_id
-      // WHERE w.is_admin=TRUE AND c.is_active=TRUE
-      // ${(search && search != "" && search != null) ? `AND LOWER(c.coin) LIKE '%${search.toLowerCase()}%'` : ''}
-      // GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance`;
-
-      // let FeeData = await sails.sendNativeQuery(walletQuery, []);
-      // FeeData = FeeData.rows;
-
-      // var coinQuery = `SELECT  sum(wallets.balance) as forfeit_funds , wallets.coin_id, coins.coin_code
-      // from wallets LEFT JOIN users ON users.id = wallets.user_id 
-      // LEFT JOIN coins ON wallets.coin_id = coins.id
-      // WHERE users.deleted_at IS NULL 
-      // GROUP BY wallets.coin_id,coins.coin_code
-      // ORDER BY wallets.coin_id`
-
-      // let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
-      // forfeitFundData = forfeitFundData.rows;
-
-      // console.log("forfeitFundData",forfeitFundData);
-      // for (var i = 0; i < forfeitFundData.length; i++) {
-      //   for (var j = 0; j < FeeData.length; j++) {
-      //     if (FeeData[j].coin_code == forfeitFundData[i].coin_code) {
-      //       FeeData[j].forfeit_funds = forfeitFundData[i].forfeit_funds;
-      //     }
-      //   }
-      // }
       // Get Asset Details 
       var query = {};
       if (search && search != "" && search != null) {
@@ -3972,7 +3913,6 @@ module.exports = {
               permission_id: data[i].id
             }
           }).limit(1);
-          console.log(permissionValue)
           if (data[i].isChecked == "true" || data[i].isChecked == true) {
             // if (!permissionValue) {
             if (permissionValue.length == 0) {
@@ -4064,5 +4004,94 @@ module.exports = {
         "message": "Data found",
         "data": all_data
       });
+  },
+  getStaticLinks: async function (req, res) {
+    try {
+      var static_pages = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          type: 'static_pages_pdf'
+        }
+      })
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Static Pdfs retrived successfully"),
+          "data": static_pages
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
+
+  },
+
+  updateStaticLinks: async function (req, res) {
+    try {
+      const pdfObject = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: req.body.slug
+        }
+      })
+      if (!pdfObject) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": 'Invalid data provided'
+          });
+      }
+      req
+        .file('pdf_file')
+        .upload(async function (err, uploadedFiles) {
+          if (err) {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "message": sails.__("Something Wrong")
+              });
+          }
+          if (uploadedFiles.length > 0) {
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
+            if (uploadedFilesRes) {
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": sails.__("Static Pdfs updated successfully")
+                })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong")
+                });
+            }
+          } else {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": 'Invalid data provided'
+              });
+          }
+        })
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong")
+        });
+    }
   }
 };
