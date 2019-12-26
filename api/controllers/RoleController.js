@@ -72,10 +72,11 @@ module.exports = {
         query += " ORDER BY id DESC";
       }
 
-      let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee," +
+      let roles = await sails.sendNativeQuery("Select users, assets, roles, countries, employee, created_at," +
         "pairs, transaction_history, trade_history, withdraw_requests," +
         "dashboard, jobs, kyc, fees, panic_button, news, is_referral, add_user" + query, [])
-      let roleName = await sails.sendNativeQuery("Select id, name, is_active" + query, [])
+      console.log(query)
+      let roleName = await sails.sendNativeQuery("Select id,created_at, name, is_active" + query, [])
 
       roleName = roleName.rows;
       roles = roles.rows;
@@ -89,6 +90,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      console.log(error)
       await logger.error(error.message)
       return res
         .status(500)
