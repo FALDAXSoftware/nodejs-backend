@@ -31,7 +31,6 @@ module.exports = {
 
     try {
       var req_body = inputs.value_object;
-      console.log("INSIDE FUNCTION>>>>>", req_body);
       var get_faldax_fee;
       var get_network_fees;
       var feesCurrency;
@@ -82,76 +81,21 @@ module.exports = {
 
           // final_faldax_fees = 0.0;
           var current_order_faldax_fees = parseFloat(final_faldax_fees_actual) * parseFloat(calculate_offer_amount);
-          // console.log("current_order_faldax_fees", current_order_faldax_fees);
-          // console.log("check_offer_status.discount_values", check_offer_status.discount_values);
           if (parseFloat(check_offer_status.discount_values) < parseFloat(current_order_faldax_fees)) {
             var remaining_fees_fiat = parseFloat(current_order_faldax_fees) - parseFloat(check_offer_status.discount_values);
             var final_faldax_fees_crypto = remaining_fees_fiat / calculate_offer_amount;
             // var priceValue;
             faldax_fees_offer = parseFloat(final_faldax_fees_actual) - parseFloat(final_faldax_fees_crypto);
-            if (flag == 2) {
-              // get_faldax_fee = parseFloat(get_faldax_fee) - parseFloat(final_faldax_fees);
-              // final_faldax_fees = final_faldax_fees;
-              // // get_faldax_fee = parseFloat(value) - parseFloat(final_faldax_fees);
-              // faldax_fee = final_faldax_fees
-              // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), get_faldax_fee, flag);
-              // if (req_body.Side == 1) {
-              //   priceValue = (get_jst_price[0].ask_price);
-              // } else {
-              //   priceValue = (1 / get_jst_price[0].bid_price)
-              // }
-            } else if (flag == 1) {
-              // var original_value = get_faldax_fee
-              // var total_value = original_value;
-              // original_value = parseFloat(original_value) + parseFloat(faldax_fee_value);
-              // faldax_fee = final_faldax_fees;
-              // orderQuantity = original_value;
-              // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), original_value, flag);
-              // if (req_body.Side == 1) {
-              //   priceValue = (1 / get_jst_price[0].ask_price);
-              // } else {
-              //   priceValue = (get_jst_price[0].bid_price)
-              // }
-            }
             // console.log("priceValue", priceValue)
           }
-          // else {
-          //   final_faldax_fees_actual = 0.0;
-          // }
-          // object.priceValue = final_faldax_fees_actual;
           object.faldax_fees_offer = faldax_fees_offer;
           object.final_faldax_fees_actual = final_faldax_fees_actual;
           return object;
         } else if (check_offer_status.status == true) {
-          // offer_applied = true;
-          if (flag == 2) {
-            // get_faldax_fee = parseFloat(get_faldax_fee) - parseFloat(final_faldax_fees);
-            // final_faldax_fees = 0.0;
-            // // get_faldax_fee = parseFloat(value) - parseFloat(final_faldax_fees);
-            // faldax_fee = 0.0
-            // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), get_faldax_fee, flag);
-            // if (req_body.Side == 1) {
-            //   priceValue = (get_jst_price[0].ask_price);
-            // } else {
-            //   priceValue = (1 / get_jst_price[0].bid_price)
-            // }
-          } else if (flag == 1) {
-            // var original_value = get_faldax_fee
-            // var total_value = original_value;
-            // original_value = parseFloat(original_value) + parseFloat(faldax_fee_value);
-            // faldax_fee = 0.0;
-            // orderQuantity = original_value;
-            // var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), original_value, flag);
-            // if (req_body.Side == 1) {
-            //   priceValue = (1 / get_jst_price[0].ask_price);
-            // } else {
-            //   priceValue = (get_jst_price[0].bid_price)
-            // }
-          }
+
           // object.priceValue = priceValue;
           object.faldax_fees_offer = faldax_fees_offer;
           object.final_faldax_fees_actual = final_faldax_fees_actual;
-          // console.log("====>>", priceValue);
           return object;
         }
       }
@@ -371,8 +315,6 @@ module.exports = {
               faldax_fee_value = dataValueOne.faldax_fees_offer
             }
           }
-
-          console.log("get_faldax_fee", get_faldax_fee)
 
           if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
             totalValue = (req_body.OrderQty * priceValue);
