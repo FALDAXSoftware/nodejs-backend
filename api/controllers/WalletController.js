@@ -482,6 +482,7 @@ module.exports = {
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
+                            console.log("transaction", transaction)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
