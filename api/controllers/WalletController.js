@@ -161,27 +161,33 @@ module.exports = {
       }
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
-                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote
+                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE ${filter} AND length(wallets.receive_address) > 0 AND coins.is_active=true AND coins.deleted_at IS NULL`
-      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id WHERE coins.is_active=true AND coins.deleted_at IS NULL AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id = ${req.user.id} AND (receive_address IS NOT NULL AND length(receive_address) > 0))`
+                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.is_active=true AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL`
 
+      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote 
+                              FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id 
+                              WHERE coins.is_active=true AND coins.deleted_at IS NULL 
+                              AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id} 
+                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
-        balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
-        balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
-        balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION);
-        // balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
-        balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
-        if (balanceWalletData.rows[i].quote.USD) {
-          var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-          if (get_price.length > 0)
-            balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-          else
-            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+        if (balanceWalletData.rows[i].iserc == false) {
+          balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
+          balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
+          balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION);
+          // balanceWalletData.rows[i].quote.USD.price = (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
+          balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION);
+          if (balanceWalletData.rows[i].quote.USD) {
+            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+            if (get_price.length > 0)
+              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            else
+              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          }
         }
       }
 
@@ -901,7 +907,7 @@ module.exports = {
       }
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit"
+          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit", "iserc"
         ],
         where: {
           coin_code: coinReceive,
@@ -972,6 +978,23 @@ module.exports = {
             deleted_at: null,
             is_active: true
           });
+        }
+
+        console.log("coinData", coinData)
+
+        if (coinData.iserc == true) {
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              coin_id: 2,
+              user_id: req.user.id
+            }
+          })
+          console.log("walletData", walletData)
+
+          walletUserData.receive_address = walletData.receive_address;
+          walletUserData.send_address = walletData.send_address;
         }
 
 
@@ -1554,7 +1577,7 @@ module.exports = {
     }
   },
   /**
-  Just for QA testing
+  Just for QA testing Just for Testing
   **/
   addWalletBalance: async function (req, res) {
     try {
@@ -1606,7 +1629,7 @@ module.exports = {
     }
   },
   /**
-  Update Wallet Balance
+  Update Wallet Balance Just for testing
   **/
   updateWalletBalance: async function (req, res) {
     try {

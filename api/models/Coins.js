@@ -61,9 +61,9 @@ module.exports = {
       columnName: 'kraken_coin_name',
       required: true
     },
-    isERC: {
+    iserc: {
       type: 'boolean',
-      columnName: 'isERC',
+      columnName: 'iserc',
       defaultsTo: false
     },
     is_address_created_signup: {
