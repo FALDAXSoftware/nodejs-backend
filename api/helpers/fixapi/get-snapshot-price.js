@@ -72,7 +72,7 @@ module.exports = {
       },
       json: true
     }, async function (err, httpResponse, body) {
-      try{
+      try {
         if (err) {
           return exits.error(err);
         }
@@ -101,21 +101,21 @@ module.exports = {
         }]
         var total = 0.0;
         var MDEntries = body.MDEntries;
-  
+
         var total_sell = 0.0;
         var calculate_quantity = 0.0;
-  
+
         if (MDEntries.length > 0) {
           var last_price = 0;
           for (var i = 0; i < MDEntries.length; i++) {
             if (inputs.side == "Buy") {
               if (MDEntries[i].MDEntryType == 1 || MDEntries[i].MDEntryType == "1") {
                 if (inputs.flag == 1 || inputs.flag == "1") { // BTC Editable
-  
+
                   if (i == 0) {
                     calculate_quantity = parseFloat(inputs.order_quantity) / MDEntries[i].MDEntryPx;
                   }
-  
+
                   total_sell = calculate_quantity - parseFloat(MDEntries[i].MDEntrySize);
                   total += parseFloat(MDEntries[i].MDEntrySize);
                   if (total > calculate_quantity) {
@@ -125,10 +125,10 @@ module.exports = {
                     break;
                   }
                   last_price = MDEntries[i].MDEntryPx;
-  
+
                   response_data[0].ask_price = last_price;
                   response_data[0].limit_price = last_price;
-  
+
                 } else {
                   total += parseFloat(MDEntries[i].MDEntrySize);
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
@@ -140,9 +140,9 @@ module.exports = {
                   last_price = MDEntries[i].MDEntryPx;
                   response_data[0].ask_price = last_price;
                   response_data[0].limit_price = last_price;
-  
+
                 }
-  
+
               }
             }
             if (inputs.side == "Sell") {
@@ -162,7 +162,7 @@ module.exports = {
                   last_price = MDEntries[i].MDEntryPx;
                   response_data[0].bid_price = last_price;
                   response_data[0].limit_price = last_price;
-  
+
                 } else {
                   total += parseFloat(MDEntries[i].MDEntrySize);
                   // if( parseFloat(MDEntries[i].MDEntrySize) > parseFloat(inputs.order_quantity) ){
@@ -174,7 +174,7 @@ module.exports = {
                   last_price = MDEntries[i].MDEntryPx;
                   response_data[0].bid_price = last_price;
                   response_data[0].limit_price = last_price;
-  
+
                 }
               }
             }
@@ -182,9 +182,9 @@ module.exports = {
         }
         //ends
         return exits.success(response_data);
-      }catch(err){
+      } catch (err) {
         return exits.error(err);
-      }      
+      }
     });
   }
 };

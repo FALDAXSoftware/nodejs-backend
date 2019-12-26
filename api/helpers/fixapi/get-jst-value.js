@@ -12,7 +12,8 @@ module.exports = {
     value_object: {
       type: 'json',
       example: '{}',
-      description: 'JSON object for which the value needs to be obtained'
+      description: 'JSON object for which the value needs to be obtained',
+      required: true
     },
   },
 
@@ -30,6 +31,7 @@ module.exports = {
 
     try {
       var req_body = inputs.value_object;
+      console.log("INSIDE FUNCTION>>>>>", req_body);
       var get_faldax_fee;
       var get_network_fees;
       var feesCurrency;
@@ -254,6 +256,8 @@ module.exports = {
             req_body.OrderQty = parseFloat(req_body.OrderQty) - parseFloat(dataValueOne.final_faldax_fees_actual);
           }
 
+          console.log("req_body", req_body)
+
           var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 1) {
             priceValue = (get_jst_price[0].ask_price);
@@ -344,17 +348,6 @@ module.exports = {
             price_value_usd = price_value_usd * usd_value;
             req_body.OrderQty = price_value_usd;
           }
-          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
-          if (req_body.Side == 2) {
-            priceValue = (1 / get_jst_price[0].bid_price);
-          }
-          totalValue = (req_body.OrderQty * priceValue)
-
-          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
-            totalValue = (req_body.OrderQty * priceValue);
-            usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
-            usd_price = (req_body.OrderQty * usd_price[0].bid_price)
-          }
           if (req_body.Side == 2) {
             feesCurrency = currency;
             get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), req_body.OrderQty, totalValue);
@@ -370,13 +363,23 @@ module.exports = {
             if (req_body.offer_code && req_body.offer_code != '') {
               var dataValue = await offerApplyOrder(req_body, faldax_fee_value, limit_price, get_faldax_fee, flag)
               get_faldax_fee = parseFloat(get_faldax_fee) - parseFloat(faldax_fee_value);
-              dataValue = dataValueOne.priceValue;
               faldax_fee = dataValueOne.faldax_fee
             }
-            totalValue = get_faldax_fee * ((req_body.offer_code && req_body.offer_code != '') ? dataValue : priceValue)
-            faldax_fee_value = (dataValue > 0 && req_body.offer_code && req_body.offer_code != '') ? faldax_fee : faldax_fee_value;
-            original_value = totalValue;
           }
+          var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
+          if (req_body.Side == 2) {
+            priceValue = (1 / get_jst_price[0].bid_price);
+          }
+          totalValue = (req_body.OrderQty * priceValue)
+
+          if (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) {
+            totalValue = (req_body.OrderQty * priceValue);
+            usd_price = await sails.helpers.fixapi.getLatestPrice(currency + '/USD', (req_body.Side == 1 ? "Buy" : "Sell"));
+            usd_price = (req_body.OrderQty * usd_price[0].bid_price)
+          }
+          totalValue = get_faldax_fee * ((req_body.offer_code && req_body.offer_code != '') ? dataValue : priceValue)
+          faldax_fee_value = (dataValue > 0 && req_body.offer_code && req_body.offer_code != '') ? faldax_fee : faldax_fee_value;
+          original_value = totalValue;
 
           returnData = {
             "network_fee": get_network_fees,
