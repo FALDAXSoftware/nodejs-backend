@@ -24,8 +24,8 @@ module.exports = {
         });
       }
       let {
-        sortCol,
-        sortOrder,
+        sort_col,
+        sort_order,
         data,
         start_date,
         end_date,
@@ -54,11 +54,11 @@ module.exports = {
       }
       countQuery = query;
 
-      if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend' ?
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
           'DESC' :
           'ASC');
-        query += " ORDER BY " + sortCol + " " + sortVal;
+        query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
       }
