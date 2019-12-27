@@ -337,9 +337,6 @@ module.exports = {
           }
         });
 
-        console.log("walletData", walletData)
-        console.log("walletData.length", walletData.length)
-
         for (var i = 0; i < walletData.length; i++) {
           var walletValue = await Wallet.find({
             user_id: data[0].user_id,
@@ -361,7 +358,6 @@ module.exports = {
                 is_admin: false
               }).fetch();
           }
-          console.log(walletCode);
         }
       }
 
