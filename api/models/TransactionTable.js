@@ -33,6 +33,10 @@ module.exports = {
       type: 'string',
       columnName: 'transaction_type'
     },
+    network_fees: {
+      type: "number",
+      columnName: "network_fees"
+    },
     transaction_id: {
       type: 'string',
       columnName: 'transaction_id'
