@@ -35,7 +35,7 @@ module.exports = async function (req, res, next) {
         
       }
       // Logger for Socket
-      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
       req.headers['Logid'] = generate_unique_string;
       var logger = require('../controllers/logger')
       var object = {
@@ -69,7 +69,7 @@ module.exports = async function (req, res, next) {
         oldEnd.apply(res, arguments);
         var message = 'Response message';
         // console.log("body",body);
-        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+        if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
           if( JSON.parse(body).message ){
             message = JSON.parse(body).message  
           }

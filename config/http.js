@@ -62,7 +62,6 @@ module.exports.http = {
     })(),
     // Logs each request to Graylog
     requestLogger: async function (req, res, next) {
-      
       if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
         return next();
       }
@@ -87,6 +86,13 @@ module.exports.http = {
               .jwtVerify(token);
             if (verifyData) {
               req.user = verifyData;          
+            }else if( verifyData.name && verifyData.name == "TokenExpiredError" ){
+              return res
+              .status(403)
+              .json({
+                status: 403,
+                err: 'Your session has been expired. Please Login again to continue.'
+              });
             }        
           }
                     
@@ -94,7 +100,7 @@ module.exports.http = {
         
       }
       // if( req.user ){
-        var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+        var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
         req.headers['Logid'] = generate_unique_string;
         var logger = require('../api/controllers/logger')
         var object = {
@@ -124,6 +130,14 @@ module.exports.http = {
         return next();
       }
       
+      function IsValidJSONString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+      }
       var logger = require('../api/controllers/logger');
       var oldWrite = res.write,
         oldEnd = res.end;
@@ -134,13 +148,11 @@ module.exports.http = {
       };
       var body;
       res.end = function (chunk) {
-        console.log("Status", res.statusCode);
         if (chunk) chunks.push(chunk);
         body = Buffer.concat(chunks).toString('utf8');        
         oldEnd.apply(res, arguments);
         var message = 'Response message';
-        // console.log("body",body);
-        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+        if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
           if( JSON.parse(body).message ){
             message = JSON.parse(body).message  
           }
