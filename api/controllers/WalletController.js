@@ -483,6 +483,12 @@ module.exports = {
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
                             console.log("transaction", transaction)
+                            console.log("Network Fees>>>", transaction.transfer.value)
+                            console.log("total_fees", total_fees)
+                            var network_fees = -(transaction.transfer.value);
+                            console.log(network_fees)
+                            var network_feesValue = parseFloat(network_fees).toFixed(8) - parseFloat(total_fees * 1e8).toFixed(8)
+                            console.log("network_feesValue", network_feesValue)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -522,7 +528,8 @@ module.exports = {
                               transaction_id: transaction.txid,
                               is_executed: false,
                               is_admin: false,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              network_fees: network_feesValue
                             }
 
                             // Make changes in code for receive webhook and then send to receive address
@@ -551,7 +558,8 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              network_fees: network_feesValue
                             }
 
                             await TransactionTable.create({
@@ -567,7 +575,8 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: false,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8)
+                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              network_fees: network_feesValue
                             }
 
                             await TransactionTable.create({
@@ -937,6 +946,22 @@ module.exports = {
               deleted_at: null
             })
             .sort('id DESC');
+
+          console.log("walletTransData", walletTransData)
+
+          for (var j = 0; j < walletTransData.length; j++) {
+            if (walletTransData[j].transaction_type == 'send') {
+              walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee);
+              walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees) / 1e8)
+              walletTransData[j].total = (parseFloat(walletTransData[j].amount) + parseFloat((walletTransData[j].network_fees)));
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee)).toFixed(8);
+            } else if (walletTransData[j].transaction_type == 'receive') {
+              walletTransData[j].faldax_fee = "-";
+              walletTransData[j].network_fees = "-"
+              walletTransData[j].total = (parseFloat(walletTransData[j].amount));
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount)).toFixed(8);
+            }
+          }
         }
 
         let coinFee = await AdminSetting.findOne({
@@ -1763,7 +1788,8 @@ module.exports = {
           filter += ' AND'
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
-        var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, (cast(wallet_history.amount as decimal(8,8))) as amount, 
+        var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address, 
+                          (cast(wallet_history.amount as decimal(8,8))) as amount, 
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
