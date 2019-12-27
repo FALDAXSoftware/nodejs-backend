@@ -1093,8 +1093,6 @@ module.exports = {
       //   "type": "Entry"
       // }, "Entered the function")
 
-      console.log("req.query", req.query)
-
       var Symbol = req.query.Symbol;
       var Side = req.query.Side;
       var OrderQty = req.query.OrderQty;
@@ -1122,7 +1120,6 @@ module.exports = {
       if (req.isSocket) {
         var user_id = req.user.id;
         req_body.user_id = user_id;
-        console.log("req_body", req_body)
         var jstResponseValue = await sails.helpers.fixapi.getJstValue(req_body);
         jstResponseValue.faldax_fee = jstResponseValue.faldax_fee;
         // await logger.info({
