@@ -126,7 +126,7 @@ module.exports = {
             priceValue = (1 / get_jst_price[0].ask_price);
           }
           totalValue = (parseFloat(req_body.OrderQty) * parseFloat(priceValue))
-          req_body.OrderQty = totalValue;
+          // req_body.OrderQty = totalValue;
           if (req_body.Side == 1) {
             feesCurrency = crypto;
             get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), qty);
