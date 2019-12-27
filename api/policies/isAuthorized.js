@@ -69,7 +69,7 @@ module.exports = async function (req, res, next) {
         oldEnd.apply(res, arguments);
         var message = 'Response message';
         // console.log("body",body);
-        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+        if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
           if( JSON.parse(body).message ){
             message = JSON.parse(body).message  
           }
