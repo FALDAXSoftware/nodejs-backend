@@ -62,7 +62,7 @@ module.exports.http = {
     })(),
     // Logs each request to Graylog
     requestLogger: async function (req, res, next) {
-      if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
+      if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/' ) {
         return next();
       }
       if (req.headers && req.headers.authorization) {
@@ -126,7 +126,7 @@ module.exports.http = {
     },
     // Logs each response to Graylog
     responseLogger: function (req, res, next) {
-      if (req.method == 'OPTIONS' || req.url == '/__getcookie') {
+      if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/') {
         return next();
       }
       
