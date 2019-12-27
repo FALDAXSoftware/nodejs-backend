@@ -482,13 +482,8 @@ module.exports = {
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
-                            console.log("transaction", transaction)
-                            console.log("Network Fees>>>", transaction.transfer.value)
-                            console.log("total_fees", total_fees)
                             var network_fees = -(transaction.transfer.value);
-                            console.log(network_fees)
                             var network_feesValue = parseFloat(network_fees).toFixed(8) - parseFloat(total_fees * 1e8).toFixed(8)
-                            console.log("network_feesValue", network_feesValue)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -947,8 +942,6 @@ module.exports = {
             })
             .sort('id DESC');
 
-          console.log("walletTransData", walletTransData)
-
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee);
@@ -1006,8 +999,6 @@ module.exports = {
           });
         }
 
-        console.log("coinData", coinData)
-
         if (coinData.iserc == true) {
           var walletData = await Wallet.findOne({
             where: {
@@ -1017,7 +1008,6 @@ module.exports = {
               user_id: req.user.id
             }
           })
-          console.log("walletData", walletData)
 
           walletUserData.receive_address = walletData.receive_address;
           walletUserData.send_address = walletData.send_address;

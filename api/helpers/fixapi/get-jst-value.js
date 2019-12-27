@@ -206,8 +206,6 @@ module.exports = {
             req_body.OrderQty = parseFloat(req_body.OrderQty) - parseFloat(dataValueOne.final_faldax_fees_actual);
           }
 
-          console.log("req_body", req_body)
-
           var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 1) {
             priceValue = (get_jst_price[0].ask_price);
