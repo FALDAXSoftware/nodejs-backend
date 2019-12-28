@@ -30,6 +30,7 @@ module.exports = {
         expiresIn: '3m' // Token Expire time
       }
     );
+    console.log("token", result);
     return exits.success(result);
   }
 
