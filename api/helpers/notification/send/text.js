@@ -29,7 +29,8 @@ module.exports = {
   fn: async function (inputs, exits) {
     var account_sid = await sails.helpers.getDecryptData(sails.config.local.TWILLIO_ACCOUNT_SID);
     var accountSid = account_sid; // Your Account SID from www.twilio.com/console
-    var authToken = sails.config.local.TWILLIO_ACCOUNT_AUTH_TOKEN; // Your Auth Token from www.twilio.com/console
+    var authToken = await sails.helpers.getDecryptData(sails.config.local.TWILLIO_ACCOUNT_AUTH_TOKEN); // Your Auth Token from www.twilio.com/console
+    var accountNumber = await sails.helpers.getDecryptData(sails.config.local.TWILLIO_ACCOUNT_FROM_NUMBER);
     var user_id = inputs.user.id;
 
     //Template for sending Email
@@ -44,7 +45,7 @@ module.exports = {
     client.messages.create({
       body: bodyValue.content,
       to: inputs.user.phone_number, // Text this number
-      from: sails.config.local.TWILLIO_ACCOUNT_FROM_NUMBER // From a valid Twilio number
+      from: accountNumber // From a valid Twilio number
     }).then((message) => {
       return exits.success();
     })
