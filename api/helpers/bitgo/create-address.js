@@ -57,7 +57,7 @@ module.exports = {
       body: {
         label: inputs.label,
         walletPassphrase: passphrase_value,
-        enterprise: process.env.enterprise_value
+        enterprise: enterprise_value
       },
       json: true
     }, function (err, httpResponse, body) {
