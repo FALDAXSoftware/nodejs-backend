@@ -485,6 +485,8 @@ module.exports = {
                             console.log("transaction", transaction)
 
                             var network_fees = -(transaction.transfer.value);
+                            console.log("network_fees", network_fees);
+                            console.log("total_fees", total_fees)
                             var network_feesValue = parseFloat(network_fees).toFixed(8) - parseFloat(total_fees * 1e8).toFixed(8)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
