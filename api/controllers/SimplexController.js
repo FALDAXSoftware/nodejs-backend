@@ -200,7 +200,7 @@ module.exports = {
 
   deleteEvent: async function (event_id) {
     try {
-      var keyValue = sails.config.local.ACCESS_TOKEN
+      var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN
       key = await sails.helpers.getDecryptData(keyValue);
       await request.delete(sails.config.local.SIMPLEX_URL + "events/" + event_id, {
         headers: {
@@ -453,7 +453,7 @@ module.exports = {
   // ------------------------ CMS API -------------------------- //
   getSimplexTokenValue: async function (req, res) {
     try {
-      var access_token_value = sails.config.local.ACCESS_TOKEN;
+      var access_token_value = sails.config.local.SIMPLEX_ACCESS_TOKEN;
 
       var key = await sails.helpers.getDecryptData(access_token_value);
 
