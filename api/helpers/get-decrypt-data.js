@@ -37,6 +37,9 @@ module.exports = {
 
     var iv = sails.config.local.iv;
 
+    console.log("key", key);
+    console.log("iv", iv)
+
     // When ready to decrypt the hex string, convert it back to bytes
     var encryptedBytes = aesjs.utils.hex.toBytes(inputs.text);
 
