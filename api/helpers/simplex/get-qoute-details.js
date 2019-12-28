@@ -31,7 +31,7 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     try {
-      var keyValue = sails.config.local.ACCESS_TOKEN
+      var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN
       key = await sails.helpers.getDecryptData(keyValue);
       var walletIdValue = await sails.helpers.getDecryptData(sails.config.local.WALLET_ID);
 

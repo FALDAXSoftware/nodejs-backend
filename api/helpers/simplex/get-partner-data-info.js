@@ -31,7 +31,7 @@ module.exports = {
 
     // Get partner data info.
     try {
-      var keyValue = sails.config.local.ACCESS_TOKEN
+      var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN
       key = await sails.helpers.getDecryptData(keyValue);
       await request.post(sails.config.local.SIMPLEX_URL + 'payments/partner/data', {
         headers: {
