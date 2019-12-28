@@ -428,9 +428,6 @@ module.exports = {
 
       if (status && status != "") {
         query += " AND"
-        // query += whereAppended ?
-        //   " WHERE " :
-        //   " AND ";
         query += " kyc.direct_response = '" + status + "'";
         whereAppended = true;
       }
@@ -450,15 +447,25 @@ module.exports = {
       countQuery = query;
 
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend' ?
-          'DESC' :
-          'ASC');
-        query += " ORDER BY kyc." + sortCol + " " + sortVal;
+        var sortVal
+        if (sortCol = "account_tier") {
+          sortVal = (sortOrder == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY users." + sortCol + " " + sortVal;
+        } else {
+          sortVal = (sortOrder == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY kyc." + sortCol + " " + sortVal;
+        }
+
       } else {
         query += " ORDER BY kyc.id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      console.log(query);
       let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email, users.account_tier" + query, [])
 
       KYCData = KYCData.rows;
