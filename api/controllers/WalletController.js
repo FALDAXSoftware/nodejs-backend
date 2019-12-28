@@ -951,7 +951,7 @@ module.exports = {
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee);
-              walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees) / 1e8)
+              walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees))
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + parseFloat((walletTransData[j].network_fees)));
               walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee)).toFixed(8);
             } else if (walletTransData[j].transaction_type == 'receive') {
