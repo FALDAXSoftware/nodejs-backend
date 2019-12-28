@@ -33,6 +33,8 @@ module.exports = {
     try {
       var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN
       key = await sails.helpers.getDecryptData(keyValue);
+      var walletIdValue = await sails.helpers.getDecryptData(sails.config.local.WALLET_ID);
+
       await request.post(sails.config.local.SIMPLEX_URL + 'quote', {
         headers: {
           'Authorization': 'ApiKey ' + key,
@@ -44,7 +46,7 @@ module.exports = {
           "requested_currency": inputs.data.requested_currency,
           "requested_amount": inputs.data.requested_amount,
           "end_user_id": (inputs.data.end_user_id).toString(),
-          "wallet_id": sails.config.local.WALLET_ID,
+          "wallet_id": walletIdValue,
           "client_ip": (inputs.data.client_ip)
         }),
 
