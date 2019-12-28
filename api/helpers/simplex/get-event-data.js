@@ -26,7 +26,7 @@ module.exports = {
 
     // Get event data.
     try {
-      var keyValue = sails.config.local.ACCESS_TOKEN;
+      var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN;
       key = await sails.helpers.getDecryptData(keyValue);
       await request.get('https://sandbox.test-simplexcc.com/wallet/merchant/v2/events', {
         headers: {
