@@ -45,6 +45,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
+    var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/address`,
       method: "POST",
@@ -56,7 +57,7 @@ module.exports = {
       body: {
         label: inputs.label,
         walletPassphrase: passphrase_value,
-        enterprise: process.env.BITGO_ENTERPRISE
+        enterprise: process.env.enterprise_value
       },
       json: true
     }, function (err, httpResponse, body) {
