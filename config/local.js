@@ -3,7 +3,6 @@ dotenv.config();
 module.exports.local = {
   // An example 128-bit key
   'key': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-
   // The initialization vector (must be 16 bytes)
   'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
   'test_key': 'Blake@Meghan@Addison@123',
@@ -16,24 +15,21 @@ module.exports.local = {
   // "PROD_URL": process.env.PROD_URL,
   // "DEV_URL": process.env.DEV_URL,
   'CURRENCY_LIST': process.env.CURRENCY,
-  'DEFAULT_SENDING_EMAIL': process.env.DEFAULT_SENDING_EMAIL,
+  'EMAIL_DEFAULT_SENDING': process.env.EMAIL_DEFAULT_SENDING,
   'EMAIL_USER': process.env.EMAIL_USER,
   'EMAIL_HOST': process.env.EMAIL_HOST,
   'EMAIL_PORT': process.env.EMAIL_PORT,
   'EMAIL_PASSWORD': process.env.EMAIL_PASSWORD,
   'BITGO_ACCESS_TOKEN': process.env.BITGO_ACCESS_TOKEN,
-  'BITGO_ACCESS_TOKEN_ADMIN': process.env.BITGO_ACCESS_TOKEN_ADMIN,
   'BITGO_ENV_MODE': process.env.BITGO_ENV_MODE,
-  'chain': process.env.CHAIN,
   'BITGO_PASSPHRASE': process.env.BITGO_PASSPHRASE,
   "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
   "BITGO_PROXY_URL": process.env.BITGO_PROXY_URL,
-  "TEST": process.env.TESTDEMO,
   "CRON_STATUS": process.env.CRON_STATUS,
   "KRAKEN_API_KEY": process.env.API_KEY,
   "KRAKEN_API_SIGN": process.env.API_SIGN,
   "KEY_NAME": process.env.KEY_NAME,
-  "COIN_MARKET_CAP_API": process.env.MARKETPRICE,
+  "COIN_MARKET_CAP_API": process.env.COINMARKETCAP_MARKETPRICE,
   "GOOGLE_SECRET_KEY": process.env.GOOGLE_SECRET_KEY,
   "COIN_CODE_FOR_ERC_20_WALLET_BITGO": "teth",
   "JWT_TOKEN_SECRET": process.env.JWT_TOKEN_SECRET,
@@ -46,12 +42,12 @@ module.exports.local = {
   "TWILLIO_ACCOUNT_SID": process.env.TWILLIO_ACCOUNT_SID,
   "TWILLIO_ACCOUNT_AUTH_TOKEN": process.env.TWILLIO_ACCOUNT_AUTH_TOKEN,
   "TWILLIO_ACCOUNT_FROM_NUMBER": process.env.TWILLIO_ACCOUNT_FROM_NUMBER,
-  "AWS_S3_URL": "https://s3.us-east-2.amazonaws.com/production-static-asset/",
+  "AWS_S3_URL": process.env.AWS_S3_URL,
   "SIMPLEX_URL": process.env.SIMPLEX_URL,
-  "WALLET_ID": process.env.WALLET_ID,
-  "SUCCESS_URL": process.env.SUCCESS_URL,
-  "FAIL_URL": process.env.FAIL_URL,
-  "ACTION_URL": process.env.ACTION_URL,
+  "SIMPLEX_WALLET_ID": process.env.SIMPLEX_WALLET_ID,
+  "SIMPLEX_SUCCESS_URL": process.env.SIMPLEX_SUCCESS_URL,
+  "SIMPLEX_FAIL_URL": process.env.SIMPLEX_FAIL_URL,
+  "SIMPLEX_ACTION_URL": process.env.SIMPLEX_ACTION_URL,
   "COIN_TYPE_BITGO": 1,
   "coinArray": {
     'STRAT': {
@@ -213,5 +209,6 @@ module.exports.local = {
   notifications: {
 
   },
-  "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL
+  "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL,
+  "SIMPLEX_ACCESS_TOKEN":process.env.SIMPLEX_ACCESS_TOKEN
 }
