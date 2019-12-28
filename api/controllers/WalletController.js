@@ -484,10 +484,12 @@ module.exports = {
 
                             console.log("transaction", transaction)
 
-                            var network_fees = -(transaction.transfer.value);
+                            var network_fees = (transaction.transfer.feeString);
                             console.log("network_fees", network_fees);
                             console.log("total_fees", total_fees)
-                            var network_feesValue = parseFloat(network_fees).toFixed(8) - parseFloat(total_fees * 1e8).toFixed(8)
+                            var network_feesValue = parseFloat(network_fees / (1e8))
+                            var valueSub = parseFloat((network_feesValue)) + total_fees;
+                            console.log("valueSub", valueSub)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -542,8 +544,8 @@ module.exports = {
                                 id: wallet.id
                               })
                               .set({
-                                balance: (wallet.balance - total_fees).toFixed(sails.config.local.TOTAL_PRECISION),
-                                placed_balance: (wallet.placed_balance - total_fees).toFixed(sails.config.local.TOTAL_PRECISION)
+                                balance: (wallet.balance - valueSub).toFixed(sails.config.local.TOTAL_PRECISION),
+                                placed_balance: (wallet.placed_balance - valueSub).toFixed(sails.config.local.TOTAL_PRECISION)
                               });
 
                             // Adding the transaction details in transaction table This is entry for sending
