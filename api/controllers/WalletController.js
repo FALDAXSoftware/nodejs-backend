@@ -482,7 +482,11 @@ module.exports = {
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
+                            console.log("transaction", transaction)
+
                             var network_fees = -(transaction.transfer.value);
+                            console.log("network_fees", network_fees);
+                            console.log("total_fees", total_fees)
                             var network_feesValue = parseFloat(network_fees).toFixed(8) - parseFloat(total_fees * 1e8).toFixed(8)
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
