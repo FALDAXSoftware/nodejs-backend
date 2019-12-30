@@ -2255,6 +2255,34 @@ module.exports = {
           "err": sails.__("Something Wrong")
         });
     }
+  },
+
+  getNetworkFeeData: async function (req, res) {
+    try {
+      var data = req.body;
+
+      var reposneData = await sails
+        .helpers
+        .wallet
+        .getNetworkFee(data.coin, data.amount, data.address);
+
+      console.log("reposneData", reposneData)
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Fee retrieve Success"),
+          "data": reposneData
+        })
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong")
+        });
+    }
   }
 
   // // Check Wallet Balance
