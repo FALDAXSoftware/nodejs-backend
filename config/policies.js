@@ -89,7 +89,8 @@ module.exports.policies = {
   'WalletController': {
     "addWalletBalance": true,
     "updateWalletBalance": true,
-    "getMonthlyDailyValue": true
+    "getMonthlyDailyValue": true,
+    "getNetworkFeeData": true
     // "checkWalletBalance": true
   },
   'CareerController': {
