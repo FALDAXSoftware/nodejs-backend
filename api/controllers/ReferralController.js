@@ -11,12 +11,24 @@ module.exports = {
         user_id
       });
 
+      var flag = 0;
+      var coinArray = [];
+
       if (referralData != undefined && referralData != null && referralData.length > 0) {
         for (var i = 0; i < referralData.length; i++) {
+          console.log("referralData.length", referralData.length)
           var walletUserData = await Wallet.findOne({
             deleted_at: null,
             user_id: referralData[i].user_id,
             coin_id: referralData[i].coin_id
+          })
+
+          var coinData = await Coins.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: referralData[i].coin_id
+            }
           })
 
           if (walletUserData != undefined) {
@@ -62,6 +74,13 @@ module.exports = {
             }
 
           } else {
+            console.log("INSIDE ELSE")
+            flag = 1;
+
+            if (coinArray.indexOf(coinData.coin_code) == -1) {
+              coinArray.push(coinData.coin_code)
+            }
+            console.log("coinArray", coinArray)
             await Referral
               .update({
                 "id": referralData[i].id
@@ -71,9 +90,23 @@ module.exports = {
               });
           }
         }
+        console.log("coinArray", coinArray)
+        var msg = ''
+        msg = "Please generate your "
+        if (flag == 1) {
+          for (var i = 0; i < coinArray.length; i++) {
+            if (i == 0)
+              msg += "" + coinArray[i]
+            else
+              msg += ", " + coinArray[i]
+          }
+        }
+        msg += " to collect referral. "
+
+        console.log("msg", msg)
         return res.json({
           "status": 200,
-          "message": sails.__("Referral amount collect")
+          "message": msg + sails.__("Referral amount collect")
         });
       } else {
         return res.status(400).
