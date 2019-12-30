@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   // An example 128-bit key
-  'key': [63, 17, 35, 31, 99, 50, 42, 86, 89, 80, 47, 14, 12, 98, 44, 78],
+   'key': [63, 17, 35, 31, 99, 50, 42, 86, 89, 80, 47, 14, 12, 98, 44, 78],
   // The initialization vector (must be 16 bytes)
   'iv': [45, 56, 89, 10, 98, 54, 13, 27, 82, 61, 53, 86, 67, 96, 94, 51],
 
@@ -211,5 +211,5 @@ module.exports.local = {
 
   },
   "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL,
-  "SIMPLEX_ACCESS_TOKEN":process.env.SIMPLEX_ACCESS_TOKEN
+  "SIMPLEX_ACCESS_TOKEN": process.env.SIMPLEX_ACCESS_TOKEN
 }
