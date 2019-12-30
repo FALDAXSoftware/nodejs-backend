@@ -90,7 +90,7 @@ module.exports.policies = {
     "addWalletBalance": true,
     "updateWalletBalance": true,
     "getMonthlyDailyValue": true,
-    "getNetworkFeeData": true
+    // "getNetworkFeeData": true
     // "checkWalletBalance": true
   },
   'CareerController': {
