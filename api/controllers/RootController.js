@@ -341,13 +341,14 @@ module.exports = {
   createWallet: async function (req, res) {
 
     var {
-      coin_code
+      coin_code,
+      wallet_type
     } = req.allParams();
 
     await sails
       .helpers
       .wallet
-      .create(coin_code);
+      .create(coin_code, wallet_type);
     return res.end();
   },
 
