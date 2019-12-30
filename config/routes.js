@@ -517,7 +517,8 @@ module.exports.routes = {
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
   "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",
 
-
+  // network Fee
+  "post /wallet/get-network-fee": "WalletController.getNetworkFeeData",
 
   "get /health-check": "RootController.checkSystemHealth"
 };
