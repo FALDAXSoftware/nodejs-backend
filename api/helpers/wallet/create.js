@@ -11,6 +11,12 @@ module.exports = {
       example: 'BTC',
       description: 'Name of coin for wallet creation',
       required: true
+    },
+    type: {
+      type: 'string',
+      example: 'BTC',
+      description: 'Type of Wallet',
+      required: true
     }
   },
 
@@ -30,6 +36,7 @@ module.exports = {
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
+    console.log(access_token_value, passphrase_value, enterprise_value)
     //Configuring bitgo API with access token
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
@@ -44,6 +51,9 @@ module.exports = {
       coin_code: inputs.coin
     })
 
+    console.log("requestedCoin", requestedCoin)
+    var typeValue = inputs.type
+
     //Generating wallet id for particular coin
     bitgo
       .coin(inputs.coin)
@@ -54,15 +64,14 @@ module.exports = {
         enterprise: enterprise_value
       })
       .then(async newWallet => {
+        var object = {};
+        object[typeValue] = newWallet.wallet.id();
+        console.log("object", object)
         await Coins
           .update({
             id: requestedCoin[0].id
           })
-          .set({
-            'custody_wallet_address': newWallet
-              .wallet
-              .id()
-          });
+          .set(object);
         return exits.success(newWallet);
       })
   }

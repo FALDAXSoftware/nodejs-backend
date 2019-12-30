@@ -2,9 +2,9 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   // An example 128-bit key
-  'key': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+  'key': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
   // The initialization vector (must be 16 bytes)
-  'iv': [21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
+  'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
 
   'test_key': 'Blake@Meghan@Addison@123',
   "METABASE_SITE_URL": process.env.METABASE_SITE_URL,
@@ -211,5 +211,5 @@ module.exports.local = {
 
   },
   "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL,
-  "SIMPLEX_ACCESS_TOKEN":process.env.SIMPLEX_ACCESS_TOKEN
+  "SIMPLEX_ACCESS_TOKEN": process.env.SIMPLEX_ACCESS_TOKEN
 }

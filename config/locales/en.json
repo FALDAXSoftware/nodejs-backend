@@ -427,5 +427,6 @@
 	"system_health_not_ok": "System Health is Not Good",
 	"Terms status accept": "Thanks for accepting terms and conditions.",
 	"Static Pdfs retrived successfully": "Static Pdfs retrived successfully",
-	"Static Pdfs updated successfully": "Static Pdfs updated successfully"
+	"Static Pdfs updated successfully": "Static Pdfs updated successfully",
+	"Fee retrieve Success": "Network Fee Has been retrieved successfully"
 }
