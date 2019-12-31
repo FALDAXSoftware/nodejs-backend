@@ -65,6 +65,8 @@ module.exports = {
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     // res.end();
+    console.log("-------------Recieved----------------");
+    console.log("req.body",req.body);
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)

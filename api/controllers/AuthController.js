@@ -109,6 +109,13 @@ module.exports = {
 
   login: async function (req, res) {
     try {
+      await sails.helpers.loggerFormat(
+        sails.config.local.Login,
+        0,
+        req.url,
+        sails.config.local.LoggerRequest,
+        sails.config.local.LoggerIncoming
+      );
       if (req.body.email && req.body.password) {
         let query = {
           email: req
