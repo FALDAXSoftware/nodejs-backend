@@ -28,7 +28,10 @@ module.exports = {
 
     try {
 
+      console.log("inputs.value_object", inputs.value_object)
       var req_body = inputs.value_object;
+      console.log("sails.config.local.SIMPLEX_BACKEND_URL + req_body.action", sails.config.local.SIMPLEX_BACKEND_URL + req_body.action)
+      console.log("req_body.method", req_body.method)
       await request({
         url: sails.config.local.SIMPLEX_BACKEND_URL + req_body.action,
         method: req_body.method,
@@ -41,7 +44,8 @@ module.exports = {
         body: req_body,
         json: true
       }, function (err, httpResponse, body) {
-
+        console.log(err)
+        console.log(body)
         if (err) {
           return exits.error(err);
         }

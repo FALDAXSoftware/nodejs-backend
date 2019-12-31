@@ -65,14 +65,20 @@ module.exports = {
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     // res.end();
+    console.log("req.body.state", req.body.state)
+    console.log("req.body", req.body)
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
+      console.log("transferId", transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
+      console.log("transfer", transfer)
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
           transaction_id: req.body.hash
         });
+
+        console.log("alreadyWalletHistory", alreadyWalletHistory)
 
         if (alreadyWalletHistory.length == 0) {
           // Object Of receiver
@@ -117,8 +123,12 @@ module.exports = {
             }
           }
 
+          console.log("dest", dest, "source", source)
+
           // transaction amount
           let amount = (dest.value / 100000000);
+
+          console.log("amount", amount)
 
           // user wallet exitence check
           if (userWallet) {
