@@ -259,7 +259,8 @@ module.exports = {
         amount,
         total_fees,
         destination_address,
-        coin_code
+        coin_code,
+        networkFees
       } = req.allParams();
 
       let user_id = req.user.id;
@@ -485,11 +486,13 @@ module.exports = {
                             console.log("transaction", transaction)
 
                             var network_fees = (transaction.transfer.feeString);
-                            console.log("network_fees", network_fees);
-                            console.log("total_fees", total_fees)
                             var network_feesValue = parseFloat(network_fees / (1e8))
-                            var valueSub = parseFloat((network_feesValue)) + parseFloat(total_fees);
-                            console.log("valueSub", valueSub)
+                            var valueSub = parseFloat(total_fees);
+                            var faldaxFeeValue = parseFloat(parseFloat(networkFees) + parseFloat(amount))
+                            console.log("faldaxFeeValue", faldaxFeeValue)
+                            var finalFaldaxFee = parseFloat(total_fees) - parseFloat(faldaxFeeValue)
+                            console.log("finalFaldaxFee", finalFaldaxFee)
+
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -501,8 +504,8 @@ module.exports = {
                             });
 
                             if (adminWalletDetails != undefined) {
-                              var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(total_fees - amount));
-                              var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(total_fees - amount));
+                              var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(finalFaldaxFee));
+                              var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(finalFaldaxFee));
                               var updatedData = await Wallet
                                 .update({
                                   deleted_at: null,
@@ -529,7 +532,7 @@ module.exports = {
                               transaction_id: transaction.txid,
                               is_executed: false,
                               is_admin: false,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -559,7 +562,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -576,7 +579,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: false,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(total_fees - amount)).toFixed(8),
+                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -952,8 +955,8 @@ module.exports = {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee);
               walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees))
-              walletTransData[j].total = (parseFloat(walletTransData[j].amount) + parseFloat((walletTransData[j].network_fees)));
-              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee)).toFixed(8);
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee) - parseFloat(walletTransData[j].network_fees)).toFixed(8);
+              walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {
               walletTransData[j].faldax_fee = "-";
               walletTransData[j].network_fees = "-"
@@ -1970,7 +1973,7 @@ module.exports = {
           filter += " (LOWER(wallets.receive_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallets.send_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%')";
         }
 
-        var walletLogs = `SELECT users.email, users.created_at, users.deleted_at,
+        var walletLogs = `SELECT wallets.id, users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance, 
                             wallets.receive_address, coins.coin_code,
                             wallets.send_address, users.full_name, coins.coin
@@ -1996,13 +1999,12 @@ module.exports = {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
             'ASC');
-          walletLogs += " ORDER BY wallets." + sort_col + " " + sortVal;
+          walletLogs += " ORDER BY users." + sort_col + " " + sortVal;
         } else {
-          walletLogs += " ORDER BY wallets.id DESC"
+          walletLogs += " ORDER BY users.delete_at DESC"
         }
 
         walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
         var walletValue = await sails.sendNativeQuery(walletLogs, []);
 
         walletValue = walletValue.rows

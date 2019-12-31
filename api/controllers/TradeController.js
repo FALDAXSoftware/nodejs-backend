@@ -1830,7 +1830,7 @@ module.exports = {
             'ASC');
           query += " ORDER BY " + sort_col + " " + sortVal;
         } else {
-          query += " ORDER BY created_on desc ";
+          query += " ORDER BY jst_trade_history.created_at desc ";
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
