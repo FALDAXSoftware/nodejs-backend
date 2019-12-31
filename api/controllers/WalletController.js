@@ -1973,7 +1973,7 @@ module.exports = {
           filter += " (LOWER(wallets.receive_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallets.send_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%')";
         }
 
-        var walletLogs = `SELECT users.email, users.created_at, users.deleted_at,
+        var walletLogs = `SELECT wallets.id, users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance, 
                             wallets.receive_address, coins.coin_code,
                             wallets.send_address, users.full_name, coins.coin
@@ -1999,13 +1999,12 @@ module.exports = {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
             'ASC');
-          walletLogs += " ORDER BY wallets." + sort_col + " " + sortVal;
+          walletLogs += " ORDER BY users." + sort_col + " " + sortVal;
         } else {
-          walletLogs += " ORDER BY wallets.id DESC"
+          walletLogs += " ORDER BY users.delete_at DESC"
         }
 
         walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
         var walletValue = await sails.sendNativeQuery(walletLogs, []);
 
         walletValue = walletValue.rows
