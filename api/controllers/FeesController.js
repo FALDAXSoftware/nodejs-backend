@@ -28,7 +28,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:sails.__("Something Wrong")
         });
     }
   },
@@ -58,7 +59,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
     } else {

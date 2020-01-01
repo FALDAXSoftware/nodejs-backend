@@ -55,12 +55,13 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -128,13 +129,14 @@ module.exports = {
           allCoins
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -156,7 +158,8 @@ module.exports = {
         if (existingPair.length > 0) {
           return res.status(500).json({
             "status": 500,
-            "err": sails.__("pair already exist")
+            "err": sails.__("pair already exist"),
+            error_at:sails.__("pair already exist")
           });
         }
 
@@ -192,12 +195,13 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -243,13 +247,14 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log("error",error);
-      await logger.error(error.message)
+      // console.log("error",error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

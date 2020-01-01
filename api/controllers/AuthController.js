@@ -88,12 +88,13 @@ module.exports = {
         }
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -387,7 +388,8 @@ module.exports = {
                           .status(500)
                           .json({
                             "status": 500,
-                            "err": sails.__("Something Wrong")
+                            "err": sails.__("Something Wrong"),
+                            error_at:sails.__("Something Wrong")
                           });
                       }
                     });
@@ -427,13 +429,14 @@ module.exports = {
         return;
       }
     } catch (error) {
-      console.log('login ', error);
-      await logger.error(error.message)
+      // console.log('login ', error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          "error_at":error.stack
         });
     }
   },
@@ -539,12 +542,13 @@ module.exports = {
           "err": sails.__("Invalid verification token")
         });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -613,8 +617,8 @@ module.exports = {
       }, {
         to: user.email,
         subject: "Authentication Code"
-      }, function (err) {
-        if (!err) {
+      }, function (error) {
+        if (!error) {
           return res.json({
             "status": 200,
             "message": sails.__("Authentication code sent to email successfully")
@@ -624,7 +628,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:error.stack
             });
         }
       })
@@ -759,7 +764,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required."),
+          error_at:sails.__("Email is required.")
         });
     }
   },
@@ -844,16 +850,18 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Reset Token or Password is not present.")
+            "err": sails.__("Reset Token or Password is not present."),
+            error_at:sails.__("Reset Token or Password is not present.")
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -940,7 +948,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:sails.__("Something Wrong")
             });
         }
         })
@@ -950,13 +959,14 @@ module.exports = {
       //   reset_token
       // });
     } catch (error) {
-      console.log('error', error)
-      await logger.error(error.message)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1013,13 +1023,14 @@ module.exports = {
             message: sails.__("User Log out successfully.")
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       res
         .status(500)
         .json({
           "status": 500,
-          "err": e
+          "err": error,
+          error_at:error.stack
         });
       return;
     }
@@ -1038,7 +1049,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Email is already verified")
+              "err": sails.__("Email is already verified"),
+              error_at:sails.__("Email is already verified")
             });
         }
         delete user.email_verify_token;
@@ -1098,7 +1110,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required."),
+          error_at:sails.__("Email is required.")
         });
     }
   },
@@ -1115,7 +1128,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Account_Not_Verified")
+              "err": sails.__("Account_Not_Verified"),
+              error_at:sails.__("Account_Not_Verified")
             });
         }
 
@@ -1128,7 +1142,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Twofactors already requested")
+              "err": sails.__("Twofactors already requested"),
+              error_at:sails.__("Twofactors already requested")
             });
         }
 
@@ -1169,7 +1184,8 @@ module.exports = {
                 .status(500)
                 .json({
                   "status": 500,
-                  "err": sails.__("Image Required")
+                  "err": sails.__("Image Required"),
+                  error_at:sails.__("Image Required")
                 });
             }
           });
@@ -1186,7 +1202,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required."),
+          error_at:sails.__("Email is required.")
         });
     }
   },

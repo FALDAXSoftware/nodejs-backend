@@ -45,14 +45,15 @@ module.exports = {
           allCoinsCount
         });
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
       return;
     }
@@ -172,13 +173,14 @@ module.exports = {
           });
         }
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -219,20 +221,22 @@ module.exports = {
         "message": sails.__("wallet created success")
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.raw) {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": error.raw.err
+            "err": error.raw.err,
+            error_at:error.stack
           });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:error.stack
           });
       }
     }
@@ -274,14 +278,14 @@ module.exports = {
         'faldax_fees': faldaxFees
       });
     } catch (error) {
-      await logger.error(error.message)
-      res
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
+        });      
     }
   },
 
@@ -321,13 +325,13 @@ module.exports = {
       });
     } catch (error) {
       await logger.error(error.message)
-      res
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
-        });
-      return;
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
+        });      
     }
   },
 
@@ -352,9 +356,9 @@ module.exports = {
               } else {
                 sails
                   .sockets
-                  .join(req.socket, room, async function (err) {
-                    if (err) {
-                      console.log(err);
+                  .join(req.socket, room, async function (error) {
+                    if (error) {
+                      // console.log(error);
                       return res
                         .status(403)
                         .json({
@@ -378,7 +382,8 @@ module.exports = {
                           .status(500)
                           .json({
                             status: 500,
-                            "err": sails.__("Something Wrong")
+                            "err": sails.__("Something Wrong"),
+                            error_at:error.stack
                           });
                       }
                     }
@@ -388,8 +393,8 @@ module.exports = {
         } else {
           sails
             .sockets
-            .join(req.socket, room, async function (err) {
-              if (err) {
+            .join(req.socket, room, async function (error) {
+              if (error) {
                 return res
                   .status(403)
                   .json({
@@ -413,7 +418,8 @@ module.exports = {
                     .status(500)
                     .json({
                       status: 500,
-                      "err": sails.__("Something Wrong")
+                      "err": sails.__("Something Wrong"),
+                      error_at:sails.__("Something Wrong")
                     });
                 }
               }
@@ -428,12 +434,13 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -483,13 +490,14 @@ module.exports = {
           CoinsCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -574,12 +582,13 @@ module.exports = {
               });
           }
         } catch (error) {
-          await logger.error(error.message)
+          // await logger.error(error.message)
           return res
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:error.stack
             });
         }
       });
@@ -636,13 +645,14 @@ module.exports = {
         "message": sails.__("Coin details updated success")
       });
     } catch (error) {
-      console.log('error', error)
-      await logger.error(error.message)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -656,7 +666,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("coin id is not sent")
+          "err": sails.__("coin id is not sent"),
+          error_at:sails.__("coin id is not sent")
         });
     }
     let coinData = await Coins
@@ -699,16 +710,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
