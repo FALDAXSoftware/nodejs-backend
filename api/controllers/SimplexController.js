@@ -27,14 +27,13 @@ module.exports = {
       var user_id = req.user.id;
       data.client_ip = ip;
       data.end_user_id = user_id;
-
-
-
       // Call SImplex 
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-
+      if( call_simplex.status == 200 && call_simplex.data.digital_money.amount < 0 ){
+        call_simplex.data.digital_money.amount = 0;
+      }
       return res.json(call_simplex);
 
     } catch (err) {
