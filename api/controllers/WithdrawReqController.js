@@ -278,7 +278,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "message": sails.__("Something Wrong")
+              "message": sails.__("Something Wrong"),
+              error_at:sails.__("Something Wrong")
             });
         }
         return res
@@ -288,23 +289,25 @@ module.exports = {
             "message": sails.__("Withdraw Request Cancel")
           })
       }
-    } catch (err) {
-      console.log("errr", err);
+    } catch (error) {
+      console.log("errr", error);
 
       if (error.name == "ImplementationError") {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": "Insufficient Balance in warm Wallet"
+            "err": "Insufficient Balance in warm Wallet",
+            error_at:"Insufficient Balance in warm Wallet"
           })
       }
-      await logger.error(err.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

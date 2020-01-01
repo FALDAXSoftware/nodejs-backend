@@ -21,7 +21,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: "Role name exists"
+            err: "Role name exists",
+            error_at:"Role name exists"
           });
       }
 
@@ -34,7 +35,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Something Wrong")
+            err: sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
       return res.json({
@@ -47,7 +49,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong"),
+          error_at:sails.__("Something Wrong")
         })
     }
   },
@@ -90,13 +93,14 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log(error)
-      await logger.error(error.message)
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
         })
     }
   },
@@ -111,7 +115,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Invalid Role Id.")
+            err: sails.__("Invalid Role Id."),
+            error_at:sails.__("Invalid Role Id.")
           });
       }
       await Role
@@ -124,12 +129,13 @@ module.exports = {
         message: sails.__("Role Updated success")
       })
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
         })
     }
   },
@@ -144,7 +150,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Invalid Role Id.")
+            err: sails.__("Invalid Role Id."),
+            error_at:sails.__("Invalid Role Id.")
           });
       } else {
         await Role
@@ -160,12 +167,13 @@ module.exports = {
         })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
         })
     }
   }

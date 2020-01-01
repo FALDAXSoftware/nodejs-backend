@@ -21,12 +21,13 @@ module.exports = {
         panicStatus
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -126,17 +127,19 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": "OTP is wrong!!"
+            "err": "OTP is wrong!!",
+            error_at:"OTP is wrong!!"
           });
       }
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -218,7 +221,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
     } catch (error) {
@@ -325,8 +329,15 @@ module.exports = {
         .json({
           status: 101
         });
-    } catch (err) {
-      console.log("error :: ", err);
+    } catch (error) {
+      // console.log("error :: ", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
+        })
     }
   },
 
@@ -436,11 +447,13 @@ module.exports = {
       return res.status(500).json({
         "status": 500,
         "message": sails.__("system_health_not_ok"),
+        error_at:sails.__("system_health_not_ok")
       })
     } catch (error) {
       return res.status(500).json({
         "status": 500,
         "message": sails.__("system_health_not_ok"),
+        error_at:sails.__("system_health_not_ok")
       })
     }
   }
