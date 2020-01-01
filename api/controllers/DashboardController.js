@@ -281,6 +281,10 @@ module.exports = {
         is_active: true,
         deleted_at: null
       });
+      let inactiveJobCount = await Jobs.count({
+        is_active: false,
+        deleted_at: null
+      })
       let tradeHistoryData = await TradeHistory.count({
         where: {
           deleted_at: null,
@@ -383,6 +387,7 @@ module.exports = {
         activeEmployeeCount,
         inactiveEmployeeCount,
         jobsCount,
+        inactiveJobCount,
         withdrawReqCount,
         kyc_approved,
         kyc_disapproved,
