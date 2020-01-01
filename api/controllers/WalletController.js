@@ -83,12 +83,12 @@ module.exports = {
     //   .dashboard
     //   .getCurrencyConversion();
 
-    await logger.info({
-      "module": "Wallet",
-      "user_id": "user_" + req.user.id,
-      "url": req.url,
-      "type": "Entry"
-    }, "Entered the function")
+    // await logger.info({
+    //   "module": "Wallet",
+    //   "user_id": "user_" + req.user.id,
+    //   "url": req.url,
+    //   "type": "Entry"
+    // }, "Entered the function")
 
     let coins = await Coins.find({
       deleted_at: null,
@@ -144,12 +144,12 @@ module.exports = {
     // console.log("req",req);
 
     try {
-      await logger.info({
-        "module": "Wallet",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var user_id;
       var filter = ''
       if (req.user.isAdmin) {
@@ -208,12 +208,12 @@ module.exports = {
         }
       }
 
-      await logger.info({
-        "module": "Wallet",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Success"
-      }, sails.__("Balance retrieved success"))
+      // await logger.info({
+      //   "module": "Wallet",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Success"
+      // }, sails.__("Balance retrieved success"))
       return res.json({
         status: 200,
         message: sails.__("Balance retrieved success"),
@@ -223,18 +223,19 @@ module.exports = {
       });
 
     } catch (error) {
-      console.log('wallet error', error);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "Wallet",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // console.log('wallet error', error);
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "Wallet",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -249,12 +250,12 @@ module.exports = {
    */
   sendCoin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet Send Coin",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet Send Coin",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       let {
         amount,
         total_fees,
@@ -344,17 +345,18 @@ module.exports = {
       });
 
       if (coin.min_limit > amount) {
-        await logger.error({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code)
+        // await logger.error({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code)
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code
+            "message": sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code,
+            error_at:sails.__("Minimum limit for the coin ") + coin_code + " is " + coin.min_limit + " " + coin.coin_code
           })
       }
 
@@ -606,24 +608,24 @@ module.exports = {
                               }
                             }
 
-                            await logger.info({
-                              "module": "Wallet Send Coin",
-                              "user_id": "user_" + req.user.id,
-                              "url": req.url,
-                              "type": "Success"
-                            }, sails.__("Token send success"))
+                            // await logger.info({
+                            //   "module": "Wallet Send Coin",
+                            //   "user_id": "user_" + req.user.id,
+                            //   "url": req.url,
+                            //   "type": "Success"
+                            // }, sails.__("Token send success"))
                             return res.json({
                               status: 200,
                               message: amount + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success")
                             });
                           } else {
                             if (req.body.confirm_for_wait === undefined) {
-                              await logger.info({
-                                "module": "Wallet Send Coin",
-                                "user_id": "user_" + req.user.id,
-                                "url": req.url,
-                                "type": "Success"
-                              }, sails.__('withdraw request confirm'))
+                              // await logger.info({
+                              //   "module": "Wallet Send Coin",
+                              //   "user_id": "user_" + req.user.id,
+                              //   "url": req.url,
+                              //   "type": "Success"
+                              // }, sails.__('withdraw request confirm'))
                               return res
                                 .status(201)
                                 .json({
@@ -631,12 +633,12 @@ module.exports = {
                                   message: sails.__('withdraw request confirm')
                                 })
                             } else {
-                              await logger.info({
-                                "module": "Wallet Send Coin",
-                                "user_id": "user_" + req.user.id,
-                                "url": req.url,
-                                "type": "Success"
-                              }, sails.__("Transfer could not happen"))
+                              // await logger.info({
+                              //   "module": "Wallet Send Coin",
+                              //   "user_id": "user_" + req.user.id,
+                              //   "url": req.url,
+                              //   "type": "Success"
+                              // }, sails.__("Transfer could not happen"))
                               return res
                                 .status(200)
                                 .json({
@@ -665,23 +667,23 @@ module.exports = {
                             // notify To admin
 
 
-                            await logger.info({
-                              "module": "Wallet Send Coin",
-                              "user_id": "user_" + req.user.id,
-                              "url": req.url,
-                              "type": "Success"
-                            }, sails.__("Request sumbit success"))
+                            // await logger.info({
+                            //   "module": "Wallet Send Coin",
+                            //   "user_id": "user_" + req.user.id,
+                            //   "url": req.url,
+                            //   "type": "Success"
+                            // }, sails.__("Request sumbit success"))
                             return res.json({
                               status: 200,
                               message: sails.__("Request sumbit success")
                             });
                           } else {
-                            await logger.info({
-                              "module": "Wallet Send Coin",
-                              "user_id": "user_" + req.user.id,
-                              "url": req.url,
-                              "type": "Success"
-                            }, sails.__('withdraw request confirm'))
+                            // await logger.info({
+                            //   "module": "Wallet Send Coin",
+                            //   "user_id": "user_" + req.user.id,
+                            //   "url": req.url,
+                            //   "type": "Success"
+                            // }, sails.__('withdraw request confirm'))
 
                             return res
                               .status(201)
@@ -693,12 +695,12 @@ module.exports = {
                         }
                       }
                     } else {
-                      await logger.info({
-                        "module": "Wallet Send Coin",
-                        "user_id": "user_" + req.user.id,
-                        "url": req.url,
-                        "type": "Success"
-                      }, sails.__("Insufficent balance wallet"))
+                      // await logger.info({
+                      //   "module": "Wallet Send Coin",
+                      //   "user_id": "user_" + req.user.id,
+                      //   "url": req.url,
+                      //   "type": "Success"
+                      // }, sails.__("Insufficent balance wallet"))
                       return res
                         .status(400)
                         .json({
@@ -708,12 +710,12 @@ module.exports = {
 
                     }
                   } else {
-                    await logger.info({
-                      "module": "Wallet Send Coin",
-                      "user_id": "user_" + req.user.id,
-                      "url": req.url,
-                      "type": "Success"
-                    }, sails.__("Wallet Not Found"))
+                    // await logger.info({
+                    //   "module": "Wallet Send Coin",
+                    //   "user_id": "user_" + req.user.id,
+                    //   "url": req.url,
+                    //   "type": "Success"
+                    // }, sails.__("Wallet Not Found"))
                     return res
                       .status(400)
                       .json({
@@ -722,12 +724,12 @@ module.exports = {
                       });
                   }
                 } else {
-                  await logger.info({
-                    "module": "Wallet Send Coin",
-                    "user_id": "user_" + req.user.id,
-                    "url": req.url,
-                    "type": "Success"
-                  }, sails.__("Monthly Limit Exceeded Using Amount") + (limitAmountMonthly - (parseFloat(walletHistoryDataMonthly))))
+                  // await logger.info({
+                  //   "module": "Wallet Send Coin",
+                  //   "user_id": "user_" + req.user.id,
+                  //   "url": req.url,
+                  //   "type": "Success"
+                  // }, sails.__("Monthly Limit Exceeded Using Amount") + (limitAmountMonthly - (parseFloat(walletHistoryDataMonthly))))
                   return res
                     .status(400)
                     .json({
@@ -736,12 +738,12 @@ module.exports = {
                     })
                 }
               } else {
-                await logger.info({
-                  "module": "Wallet Send Coin",
-                  "user_id": "user_" + req.user.id,
-                  "url": req.url,
-                  "type": "Success"
-                }, sails.__("Monthly Limit Exceeded"))
+                // await logger.info({
+                //   "module": "Wallet Send Coin",
+                //   "user_id": "user_" + req.user.id,
+                //   "url": req.url,
+                //   "type": "Success"
+                // }, sails.__("Monthly Limit Exceeded"))
 
                 return res
                   .status(400)
@@ -751,12 +753,12 @@ module.exports = {
                   })
               }
             } else {
-              await logger.info({
-                "module": "Wallet Send Coin",
-                "user_id": "user_" + req.user.id,
-                "url": req.url,
-                "type": "Success"
-              }, sails.__("Daily Limit Exceeded Using Amount") + (limitAmount - (parseFloat(walletHistoryData))))
+              // await logger.info({
+              //   "module": "Wallet Send Coin",
+              //   "user_id": "user_" + req.user.id,
+              //   "url": req.url,
+              //   "type": "Success"
+              // }, sails.__("Daily Limit Exceeded Using Amount") + (limitAmount - (parseFloat(walletHistoryData))))
               return res
                 .status(400)
                 .json({
@@ -765,12 +767,12 @@ module.exports = {
                 })
             }
           } else {
-            await logger.info({
-              "module": "Wallet Send Coin",
-              "user_id": "user_" + req.user.id,
-              "url": req.url,
-              "type": "Success"
-            }, sails.__("Daily Limit Exceeded"))
+            // await logger.info({
+            //   "module": "Wallet Send Coin",
+            //   "user_id": "user_" + req.user.id,
+            //   "url": req.url,
+            //   "type": "Success"
+            // }, sails.__("Daily Limit Exceeded"))
 
             return res
               .status(400)
@@ -780,12 +782,12 @@ module.exports = {
               })
           }
         } else {
-          await logger.info({
-            "module": "Wallet Send Coin",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("Coin not found"))
+          // await logger.info({
+          //   "module": "Wallet Send Coin",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("Coin not found"))
 
           return res
             .status(400)
@@ -795,21 +797,22 @@ module.exports = {
             });
         }
       } else {
-        await logger.error({
-          "module": "Panic Button",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("panic button enabled"))
+        // await logger.error({
+        //   "module": "Panic Button",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("panic button enabled"))
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("panic button enabled")
+            "message": sails.__("panic button enabled"),
+            error_at:esails.__("panic button enabled")
           })
       }
     } catch (error) {
-      console.log("Error", error);
+      // console.log("Error", error);
       if (error.name == "ImplementationError") {
         return res
           .status(201)
@@ -818,17 +821,18 @@ module.exports = {
             message: sails.__('withdraw request confirm')
           })
       }
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -843,12 +847,12 @@ module.exports = {
    */
   getReceiveCoin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet Receive",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet Receive",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var {
         coin
       } = req.allParams();
@@ -859,44 +863,46 @@ module.exports = {
         .receiveCoin(coin, user_id);
 
       if (receiveCoin !== 1) {
-        await logger.info({
-          "module": "Wallet Receive Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("receive address success"))
+        // await logger.info({
+        //   "module": "Wallet Receive Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("receive address success"))
         return res.json({
           status: 200,
           message: sails.__("receive address success"),
           receiveCoin
         });
       } else {
-        await logger.error({
-          "module": "Panic Button",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Something Wrong"))
+        // await logger.error({
+        //   "module": "Panic Button",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Something Wrong"))
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, err.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -912,12 +918,12 @@ module.exports = {
 
   getWalletTransactionHistory: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet Details",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet Details",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       let {
         coinReceive,
         is_admin
@@ -1049,12 +1055,12 @@ module.exports = {
         // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
         // coin_id: coinData.id, deleted_at: null });
         if (walletTransData) {
-          await logger.info({
-            "module": "Wallet Details",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("wallet data retrieved success"))
+          // await logger.info({
+          //   "module": "Wallet Details",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("wallet data retrieved success"))
           return res.json({
             status: 200,
             message: sails.__("wallet data retrieved success"),
@@ -1065,43 +1071,45 @@ module.exports = {
             currencyConversionData
           });
         } else {
-          await logger.info({
-            "module": "Wallet Details",
-            "user_id": "user_" + req.user.id,
-            "url": req.url,
-            "type": "Success"
-          }, sails.__("No Data"))
+          // await logger.info({
+          //   "module": "Wallet Details",
+          //   "user_id": "user_" + req.user.id,
+          //   "url": req.url,
+          //   "type": "Success"
+          // }, sails.__("No Data"))
           return res.json({
             status: 200,
             message: sails.__("No Data")
           })
         }
       } else {
-        await logger.error({
-          "module": "Wallet Details",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("No Data"))
+        // await logger.error({
+        //   "module": "Wallet Details",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("No Data"))
         return res.json({
           status: 500,
-          err: sails.__("No Data")
+          err: sails.__("No Data"),
+          error_at:sails.__("No Data")
         })
       }
 
-    } catch (err) {
-      console.log('err', err)
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, err.message)
+    } catch (error) {
+      // console.log('err', error)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, err.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1116,12 +1124,12 @@ module.exports = {
    */
   createReceiveAddressCoin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet Create Address",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet Create Address",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var {
         coin_code
       } = req.allParams();
@@ -1159,43 +1167,45 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
-        await logger.info({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("Address Create Success"))
+        // await logger.info({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("Address Create Success"))
         return res.json({
           status: 200,
           message: sails.__("Address Create Success"),
           data: walletDataCreate
         })
       } else {
-        await logger.error({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Address Not Create Success"))
+        // await logger.error({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Address Not Create Success"))
         return res.json({
           status: 500,
           message: sails.__("Address Not Create Success"),
-          data: walletDataCreate
+          data: walletDataCreate,
+          error_at:sails.__("Address Not Create Success")
         })
       }
     } catch (error) {
-      console.log(error)
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // console.log(error)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1204,12 +1214,12 @@ module.exports = {
   **/
   createAdminReceiveAddressCoin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Admin Create User Wallet",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Admin Create User Wallet",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var {
         coin_code,
         user_id
@@ -1228,17 +1238,18 @@ module.exports = {
         .receiveOneAddress(coin_code, userData);
 
       if (walletDataCreate == 1) {
-        await logger.error({
-          "module": "Admin Create User Wallet",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Address already Create Success"))
+        // await logger.error({
+        //   "module": "Admin Create User Wallet",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Address already Create Success"))
 
         return res.json({
           status: 500,
           message: sails.__("Address already Create Success"),
-          data: walletDataCreate
+          data: walletDataCreate,
+          error_at:sails.__("Address already Create Success")
         })
       } else if (walletDataCreate) {
         //Sending email to user for wallet Address Creation
@@ -1266,43 +1277,45 @@ module.exports = {
 
             }
           })
-        await logger.info({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("Address Create Success"))
+        // await logger.info({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("Address Create Success"))
         return res.json({
           status: 200,
           message: sails.__("Address Create Success"),
           data: walletDataCreate
         })
       } else {
-        await logger.error({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Address Not Create Success"))
+        // await logger.error({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Address Not Create Success"))
         return res.json({
           status: 500,
           message: sails.__("Address Not Create Success"),
-          data: walletDataCreate
+          data: walletDataCreate,
+          error_at:sails.__("Address Not Create Success")
         })
       }
     } catch (error) {
-      console.log(error)
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // console.log(error)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1311,12 +1324,12 @@ module.exports = {
   **/
   createAdminReceiveAddressCoinForAdmin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Admin create admin wallet",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Admin create admin wallet",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var {
         coin_code,
         user_id
@@ -1334,16 +1347,17 @@ module.exports = {
         .receiveOneAddress(coin_code, userData);
 
       if (walletDataCreate == 1) {
-        await logger.error({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Address already Create Success"))
+        // await logger.error({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Address already Create Success"))
         return res.json({
           status: 500,
           message: sails.__("Address already Create Success"),
-          data: walletDataCreate
+          data: walletDataCreate,
+          error_at:sails.__("Address already Create Success")
         })
       } else if (walletDataCreate) {
         //Sending email to user for wallet Address Creation
@@ -1371,43 +1385,45 @@ module.exports = {
 
             }
           })
-        await logger.info({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Success"
-        }, sails.__("Address Create Success"))
+        // await logger.info({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Success"
+        // }, sails.__("Address Create Success"))
         return res.json({
           status: 200,
           message: sails.__("Address Create Success"),
           data: walletDataCreate
         })
       } else {
-        await logger.error({
-          "module": "Wallet Create Address",
-          "user_id": "user_" + req.user.id,
-          "url": req.url,
-          "type": "Error"
-        }, sails.__("Address Not Create Success"))
+        // await logger.error({
+        //   "module": "Wallet Create Address",
+        //   "user_id": "user_" + req.user.id,
+        //   "url": req.url,
+        //   "type": "Error"
+        // }, sails.__("Address Not Create Success"))
         return res.json({
           status: 500,
           message: sails.__("Address Not Create Success"),
-          data: walletDataCreate
+          data: walletDataCreate,
+          error_at:sails.__("Address Not Create Success")
         })
       }
     } catch (error) {
-      console.log(error)
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // console.log(error)
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1416,12 +1432,12 @@ module.exports = {
   **/
   sendCoinAdmin: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet Admin Send Coin",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet Admin Send Coin",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       let {
         amount,
         destination_address,
@@ -1549,24 +1565,24 @@ module.exports = {
                 ...addObject2
               })
 
-              await logger.info({
-                "module": "Wallet Send Coin Admin",
-                "user_id": "user_" + req.user.id,
-                "url": req.url,
-                "type": "Success"
-              }, sails.__("Token send success"))
+              // await logger.info({
+              //   "module": "Wallet Send Coin Admin",
+              //   "user_id": "user_" + req.user.id,
+              //   "url": req.url,
+              //   "type": "Success"
+              // }, sails.__("Token send success"))
               return res.json({
                 status: 200,
                 message: sails.__("Token send success")
               });
             }
           } else {
-            await logger.info({
-              "module": "Wallet Send Coin Admin",
-              "user_id": "user_" + req.user.id,
-              "url": req.url,
-              "type": "Success"
-            }, sails.__("Insufficent balance wallet"))
+            // await logger.info({
+            //   "module": "Wallet Send Coin Admin",
+            //   "user_id": "user_" + req.user.id,
+            //   "url": req.url,
+            //   "type": "Success"
+            // }, sails.__("Insufficent balance wallet"))
             return res
               .status(400)
               .json({
@@ -1591,19 +1607,20 @@ module.exports = {
             message: sails.__("Coin not found")
           });
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error({
-        "user_id": "user_" + req.user.id,
-        "module": "JST",
-        "url": req.url,
-        "type": "Error"
-      }, err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error({
+      //   "user_id": "user_" + req.user.id,
+      //   "module": "JST",
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, err.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1649,13 +1666,14 @@ module.exports = {
         "status": 200
       })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1701,14 +1719,15 @@ module.exports = {
       })
 
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1717,12 +1736,12 @@ module.exports = {
   **/
   getWithdrawlFee: async function (req, res) {
     try {
-      await logger.info({
-        "module": "Wallet",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Entry"
-      }, "Entered the function")
+      // await logger.info({
+      //   "module": "Wallet",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Entry"
+      // }, "Entered the function")
       var withdrawFee = await AdminSetting.find({
         where: {
           deleted_at: null,
@@ -1736,12 +1755,12 @@ module.exports = {
         }
       })
         .sort('id DESC')
-      await logger.info({
-        "module": "Wallet Faldax Fee",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Success"
-      }, "Withdraw Fee has been retrieved successfully")
+      // await logger.info({
+      //   "module": "Wallet Faldax Fee",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Success"
+      // }, "Withdraw Fee has been retrieved successfully")
       return res.status(200)
         .json({
           "status": 200,
@@ -1749,18 +1768,19 @@ module.exports = {
           withdrawFee
         })
     } catch (error) {
-      console.log(error);
-      await logger.error({
-        "module": "Wallet Faldax Fee",
-        "user_id": "user_" + req.user.id,
-        "url": req.url,
-        "type": "Error"
-      }, error.message)
+      // console.log(error);
+      // await logger.error({
+      //   "module": "Wallet Faldax Fee",
+      //   "user_id": "user_" + req.user.id,
+      //   "url": req.url,
+      //   "type": "Error"
+      // }, error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2030,13 +2050,14 @@ module.exports = {
 
 
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2090,13 +2111,14 @@ module.exports = {
           message: sails.__("Warm wallet retrieve")
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2143,13 +2165,14 @@ module.exports = {
           "data": warmWalletData
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2203,13 +2226,14 @@ module.exports = {
           message: sails.__("Custodial wallet retrieve")
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2254,13 +2278,14 @@ module.exports = {
           "data": warmWalletData
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2288,14 +2313,16 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": "Insufficient Balance in warm Wallet"
+            "err": "Insufficient Balance in warm Wallet",
+            error_at:error.stack
           })
       }
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

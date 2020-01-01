@@ -157,9 +157,13 @@ module.exports = async function (req, res, next) {
     }
 
     return next();
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    return res
+        .status(500)
+        .json({
+          status: 500,
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
+        })
   }
-
-
 };

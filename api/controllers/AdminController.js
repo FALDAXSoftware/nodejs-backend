@@ -225,13 +225,14 @@ module.exports = {
           });
       }
     } catch (error) {
-      console.log(error)
-      await logger.error(error.message)
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -279,12 +280,13 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -403,13 +405,14 @@ module.exports = {
           });
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       await logger.error(error.message)
       res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
       return;
     }
@@ -506,15 +509,16 @@ module.exports = {
         }, {
           to: adminUpdates[0]["email"],
           subject: "Password Change"
-        }, function (err) {
-          if (!err) {
+        }, function (error) {
+          if (!error) {
 
           } else {
             return res
               .status(500)
               .json({
                 "status": 500,
-                "err": sails.__("Something Wrong")
+                "err": sails.__("Something Wrong"),
+                error_at:error.stack
               });
           }
         });
@@ -533,13 +537,14 @@ module.exports = {
           });
       }
     } catch (error) {
-      console.log(error)
-      await logger.error(error.message)
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -577,12 +582,13 @@ module.exports = {
       });
 
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -651,15 +657,16 @@ module.exports = {
             "message": sails.__("Reset Password link has been expired.")
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
-      res
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
-      return;
+      
     }
   },
   /**
@@ -716,14 +723,14 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
-      res
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
-      return;
     }
   },
 
@@ -777,12 +784,13 @@ module.exports = {
         })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -836,12 +844,13 @@ module.exports = {
           })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -891,12 +900,13 @@ module.exports = {
           })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -954,12 +964,13 @@ module.exports = {
           })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -995,13 +1006,14 @@ module.exports = {
           "message": sails.__("Employee id is required")
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1051,12 +1063,13 @@ module.exports = {
         })
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1120,12 +1133,13 @@ module.exports = {
           err: sails.__("invalid otp")
         });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1173,12 +1187,13 @@ module.exports = {
         message: sails.__("2 factor disabled")
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1201,13 +1216,14 @@ module.exports = {
         message: sails.__("Admin Details"),
         data: adminDetails
       });
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1249,7 +1265,8 @@ module.exports = {
           } else {
             return res.status(500).json({
               status: 500,
-              "message": sails.__("Days greater 0")
+              "message": sails.__("Days greater 0"),
+              error_at:sails.__("Days greater 0")
             })
           }
         } else {
@@ -1261,7 +1278,8 @@ module.exports = {
         if (add_data) {
           return res.status(401).json({
             status: 500,
-            "message": sails.__("IP in whitelist exists")
+            "message": sails.__("IP in whitelist exists"),
+            error_at:sails.__("IP in whitelist exists")
           })
         } else {
           // Send email notification
@@ -1300,16 +1318,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1341,7 +1361,8 @@ module.exports = {
         } else {
           return res.status(500).json({
             status: 500,
-            "message": sails.__("Days greater 0")
+            "message": sails.__("Days greater 0"),
+            error_at:sails.__("Days greater 0")
           })
         }
       } else {
@@ -1353,7 +1374,8 @@ module.exports = {
       if (add_data) {
         return res.status(401).json({
           status: 500,
-          "message": sails.__("IP in whitelist exists")
+          "message": sails.__("IP in whitelist exists"),
+          error_at:sails.__("IP in whitelist exists")
         })
       } else {
         // Send email notification
@@ -1391,14 +1413,15 @@ module.exports = {
           })
       }
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1445,13 +1468,14 @@ module.exports = {
           "data": []
         })
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1501,13 +1525,14 @@ module.exports = {
           "data": []
         })
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1538,13 +1563,14 @@ module.exports = {
           "message": sails.__("WhiteList IP info Success Not Found"),
         })
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1579,13 +1605,14 @@ module.exports = {
           "message": sails.__("WhiteList IP info Success Not Found"),
         })
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1626,16 +1653,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("User Detail Not Found")
+            "err": sails.__("User Detail Not Found"),
+            error_at:sails.__("User Detail Not Found")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1659,18 +1688,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
 
     } catch (error) {
       console.log("error", error);
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1746,18 +1777,20 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                "err": sails.__("Something Wrong")
+                "err": sails.__("Something Wrong"),
+                error_at:sails.__("Something Wrong")
               });
           }
         })
 
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(err.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1833,17 +1866,19 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                "err": sails.__("Something Wrong")
+                "err": sails.__("Something Wrong"),
+                error_at:sails.__("Something Wrong")
               });
           }
         })
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1941,14 +1976,15 @@ module.exports = {
           requests_counts
         });
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1983,7 +2019,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("No record found")
+            "err": sails.__("No record found"),
+            error_at:sails.__("No record found")
           });
       }
 
@@ -1992,7 +2029,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Twofactor request closed")
+            "err": sails.__("Twofactor request closed"),
+            error_at:sails.__("Twofactor request closed")
           });
       }
       // Disable user's 2fa
@@ -2056,12 +2094,13 @@ module.exports = {
             });
           }
         })
-    } catch (err) {
-      console.log('err', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('err', error)
+      // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
   },
@@ -2070,7 +2109,7 @@ module.exports = {
   **/
   rejectUserTwofactorRequest: async function (req, res) {
     try {
-      await logger.info({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
+      // await logger.info({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       let user_id = req.user.id;
       let adminData = await Admin.findOne({
         id: user_id,
@@ -2078,7 +2117,7 @@ module.exports = {
       });
 
       if (!adminData) {
-        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Employee not found"))
+        // await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Employee not found"))
         res
           .status(401)
           .json({
@@ -2100,17 +2139,19 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("No record found")
+            "err": sails.__("No record found"),
+            error_at:sails.__("No record found")
           });
       }
 
       if (get_data.status == "closed") {
-        await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Twofactor request closed"))
+        // await logger.error({ "module": "Two Factor Request", "user_id": "admin_" + req.user.id, "url": req.url, "type": "Error" }, sails.__("Twofactor request closed"))
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Twofactor request closed")
+            "err": sails.__("Twofactor request closed"),
+            error_at:sails.__("Twofactor request closed")
           });
       }
 
@@ -2160,12 +2201,13 @@ module.exports = {
             });
           }
         })
-    } catch (err) {
-      console.log("err", err);
-      await logger.error({ "user_id": "admin_" + req.user.id, "module": "Two Factor Request", "url": req.url, "type": "Error" }, err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error({ "user_id": "admin_" + req.user.id, "module": "Two Factor Request", "url": req.url, "type": "Error" }, error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
   },
@@ -2174,7 +2216,7 @@ module.exports = {
   **/
   adminThresholdLists: async function (req, res) {
     try {
-      await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
+      // await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Entry" }, "Entered the function")
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
@@ -2227,17 +2269,18 @@ module.exports = {
           newarray.push(singledata);
         })
       }
-      await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Success" }, "Success")
+      // await logger.info({ "module": "Notifications", "requestId": "admin_" + req.user.id, "url": req.url, "type": "Success" }, "Success")
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Threshold listed"),
         "data": newarray
       });
-    } catch (err) {
-      await logger.error({ "requestId": "admin_" + req.user.id, "module": "Notifications", "url": req.url, "type": "Error" }, err.message)
+    } catch (error) {
+      // await logger.error({ "requestId": "admin_" + req.user.id, "module": "Notifications", "url": req.url, "type": "Error" }, error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
 
@@ -2276,14 +2319,15 @@ module.exports = {
         "message": sails.__("Threshold updated"),
         "data": assets
       });
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2321,14 +2365,15 @@ module.exports = {
         "message": sails.__("Threshold Contacts updated"),
         "data": admin_thresholds
       });
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2364,12 +2409,13 @@ module.exports = {
           "data": newarray
         });
       }
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
   },
@@ -2490,10 +2536,11 @@ module.exports = {
 
     } catch (error) {
       console.log(error)
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
   },
@@ -2526,7 +2573,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Batch is already generated with this transaction")
+              "err": sails.__("Batch is already generated with this transaction"),
+              error_at:sails.__("Batch is already generated with this transaction")
             });
         }
         // Get Previous data upto last tranasction
@@ -2600,7 +2648,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:sails.__("Something Wrong")
         });
     }
   },
@@ -2633,14 +2682,15 @@ module.exports = {
         "message": sails.__("Batch updated"),
         "data": get_data[0]
       });
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2709,12 +2759,13 @@ module.exports = {
           });
       }
 
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "message": sails.__("Something Wrong")
+        "message": sails.__("Something Wrong"),
+        error_at:error.stack
       });
     }
 
@@ -3083,14 +3134,15 @@ module.exports = {
       //   })
       // }
 
-    } catch (err) {
-      console.log(err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3191,14 +3243,15 @@ module.exports = {
         "data": newarray
       })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
 
@@ -3229,7 +3282,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Batch not found")
+            "message": sails.__("Batch not found"),
+            error_at:sails.__("Batch not found")
           });
       }
       var {
@@ -3512,14 +3566,15 @@ module.exports = {
         })
       }
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
 
@@ -3564,14 +3619,15 @@ module.exports = {
             "message": sails.__("no batch detail found")
           })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3591,7 +3647,8 @@ module.exports = {
       if (req_body.batch_id == "") {
         return res.status(500).json({
           "status": 500,
-          "message": sails.__("Missing Parameters")
+          "message": sails.__("Missing Parameters"),
+          error_at:sails.__("Missing Parameters")
         });
       }
 
@@ -3627,7 +3684,8 @@ module.exports = {
                     .status(500)
                     .json({
                       status: 500,
-                      "err": sails.__("Something Wrong")
+                      "err": sails.__("Something Wrong"),
+                      error_at:sails.__("Something Wrong")
                     });
                 }
               } else {
@@ -3636,7 +3694,8 @@ module.exports = {
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("File size should be greater than 0")
+                    "err": sails.__("File size should be greater than 0"),
+                    error_at:sails.__("File size should be greater than 0")
                   });
               }
             } catch (e) {
@@ -3646,14 +3705,15 @@ module.exports = {
           })
       }
 
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
 
@@ -3693,13 +3753,14 @@ module.exports = {
           feesValue
         })
     } catch (error) {
-      console.log("err", error);
-      await logger.error(error.message)
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3727,13 +3788,14 @@ module.exports = {
           value
         })
     } catch (error) {
-      console.log("err", error);
-      await logger.error(error.message)
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3780,13 +3842,14 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("err", error);
-      await logger.error(error.message)
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3886,13 +3949,14 @@ module.exports = {
           roleValue
         })
     } catch (error) {
-      console.log("err", error);
-      await logger.error(error.message)
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -3968,13 +4032,14 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("err", error);
-      await logger.error(error.message)
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -4025,7 +4090,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
 
@@ -4049,13 +4115,14 @@ module.exports = {
       }
       req
         .file('pdf_file')
-        .upload(async function (err, uploadedFiles) {
-          if (err) {
+        .upload(async function (error, uploadedFiles) {
+          if (error) {
             return res
               .status(500)
               .json({
                 "status": 500,
-                "message": sails.__("Something Wrong")
+                "message": sails.__("Something Wrong"),
+                error_at:error.stack
               });
           }
           if (uploadedFiles.length > 0) {
@@ -4072,7 +4139,8 @@ module.exports = {
                 .status(500)
                 .json({
                   "status": 500,
-                  "message": sails.__("Something Wrong")
+                  "message": sails.__("Something Wrong"),
+                  error_at:sails.__("Something Wrong")
                 });
             }
           } else {
@@ -4085,12 +4153,13 @@ module.exports = {
           }
         })
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res
         .status(500)
         .json({
           "status": 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

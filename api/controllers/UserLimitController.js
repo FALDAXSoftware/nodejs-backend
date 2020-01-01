@@ -40,16 +40,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": "User id not found"
+            "err": "User id not found",
+            error_at:"User id not found"
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -72,7 +74,8 @@ module.exports = {
           if (!updatedLimit) {
             return res.json({
               "status": 500,
-              "message": sails.__("Something Wrong")
+              "message": sails.__("Something Wrong"),
+              error_at:sails.__("Something Wrong")
             });
           }
           return res.json({
@@ -93,7 +96,8 @@ module.exports = {
             if (!updatedLimit) {
               return res.json({
                 "status": 500,
-                "message": sails.__("Something Wrong")
+                "message": sails.__("Something Wrong"),
+                error_at:sails.__("Something Wrong")
               });
             }
             return res.json({
@@ -111,7 +115,8 @@ module.exports = {
             if (!updatedLimit) {
               return res.json({
                 "status": 500,
-                "message": sails.__("Something Wrong")
+                "message": sails.__("Something Wrong"),
+                error_at:sails.__("Something Wrong")
               });
             }
             // User Limit Increased/Decreased Information Email
@@ -154,16 +159,18 @@ module.exports = {
       } else {
         return res.json({
           "status": 500,
-          "message": sails.__("User Id and Coin ID necessary")
+          "message": sails.__("User Id and Coin ID necessary"),
+          error_at:sails.__("User Id and Coin ID necessary")
         })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

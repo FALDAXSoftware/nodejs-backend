@@ -23,13 +23,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -49,13 +50,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -75,13 +77,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -101,13 +104,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -127,13 +131,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -153,13 +158,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -179,13 +185,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -205,13 +212,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -231,13 +239,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -257,13 +266,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -283,13 +293,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -309,13 +320,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -335,13 +347,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -361,13 +374,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -387,13 +401,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -413,13 +428,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -439,13 +455,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -465,13 +482,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -491,13 +509,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
@@ -517,13 +536,14 @@ module.exports = {
                     frameURL
                 })
         } catch (error) {
-            console.log(error);
-            await logger.error(error.message)
+            // console.log(error);
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                 });
         }
     },
