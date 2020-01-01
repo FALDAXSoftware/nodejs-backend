@@ -811,7 +811,15 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error", error);
+      if (error.name == "ImplementationError") {
+        return res
+          .status(201)
+          .json({
+            status: 201,
+            message: sails.__('withdraw request confirm')
+          })
+      }
       await logger.error({
         "user_id": "user_" + req.user.id,
         "module": "JST",
@@ -2277,7 +2285,14 @@ module.exports = {
           "data": reposneData
         })
     } catch (error) {
-      console.log(error);
+      if (error.name == "ImplementationError") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": "Insufficient Balance in warm Wallet"
+          })
+      }
       return res
         .status(500)
         .json({
