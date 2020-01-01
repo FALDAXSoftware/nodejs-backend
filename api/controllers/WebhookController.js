@@ -64,9 +64,10 @@ module.exports = {
 
   // webhook on receive
   webhookOnReceive: async function (req, res) {
+    
     // res.end();
-    console.log("req.body.state", req.body.state)
-    console.log("req.body", req.body)
+    console.log("-------------Recieved----------------");
+    console.log("req.body",req.body);
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
       console.log("transferId", transferId)
