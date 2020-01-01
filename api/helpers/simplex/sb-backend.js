@@ -27,11 +27,7 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     try {
-
-      console.log("inputs.value_object", inputs.value_object)
       var req_body = inputs.value_object;
-      console.log("sails.config.local.SIMPLEX_BACKEND_URL + req_body.action", sails.config.local.SIMPLEX_BACKEND_URL + req_body.action)
-      console.log("req_body.method", req_body.method)
       await request({
         url: sails.config.local.SIMPLEX_BACKEND_URL + req_body.action,
         method: req_body.method,
@@ -61,6 +57,4 @@ module.exports = {
       return exits.error(error)
     }
   }
-
-
 };
