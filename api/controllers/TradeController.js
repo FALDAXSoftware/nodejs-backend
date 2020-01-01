@@ -167,13 +167,14 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.message == "insufficientBalance") {
@@ -181,7 +182,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
       if (error.message == "orderBookEmpty") {
@@ -189,7 +191,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No more limit order Buy")
+            "err": sails.__("No more limit order Buy"),
+            error_at:error.stack
           });
       }
       if (error.message == "serverError") {
@@ -197,14 +200,16 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:error.stack
           });
       }
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -366,14 +371,15 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      console.log(error)
-      await logger.error(error.message)
+      // console.log(error)
+      // await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.message == "insufficientBalance") {
@@ -381,7 +387,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
       if (error.message == "orderBookEmpty") {
@@ -389,7 +396,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No more limit order Sell")
+            "err": sails.__("No more limit order Sell"),
+            error_at:error.stack
           });
       }
 
@@ -397,7 +405,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -560,13 +569,14 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.code == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.code == "insufficientBalance") {
@@ -574,7 +584,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
       if (error.code == "invalidQuantity") {
@@ -582,7 +593,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Invalid Quantity")
+            "err": sails.__("Invalid Quantity"),
+            error_at:error.stack
           });
       }
 
@@ -590,7 +602,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -765,13 +778,14 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.code == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.code == "insufficientBalance") {
@@ -779,7 +793,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
       if (error.code == "invalidQuantity") {
@@ -787,7 +802,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Invalid Quantity")
+            "err": sails.__("Invalid Quantity"),
+            error_at:error.stack
           });
       }
 
@@ -795,7 +811,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -956,13 +973,14 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.message == "insufficientBalance") {
@@ -970,7 +988,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
 
@@ -978,7 +997,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1139,13 +1159,14 @@ module.exports = {
       //   });
       // }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.message == "insufficientBalance") {
@@ -1153,7 +1174,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
 
@@ -1161,7 +1183,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1220,13 +1243,14 @@ module.exports = {
         "message": sails.__("Order Success")
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.message == "noBuyLimitOrder") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No Pending order")
+            "err": sails.__("No Pending order"),
+            error_at:error.stack
           });
       }
 
@@ -1234,7 +1258,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1289,14 +1314,15 @@ module.exports = {
         "data": user_history_data
       });
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       if (error.message == "coinNotFound") {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Coin not found")
+            "err": sails.__("Coin not found"),
+            error_at:error.stack
           });
       }
       if (error.message == "insufficientBalance") {
@@ -1304,14 +1330,16 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Insufficent balance")
+            "err": sails.__("Insufficent balance"),
+            error_at:error.stack
           });
       }
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1375,14 +1403,15 @@ module.exports = {
             "message": sails.__("error")
           });
       }
-    } catch (err) {
-      console.log('>>>', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('>>>', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1495,14 +1524,15 @@ module.exports = {
             "message": sails.__("error")
           });
       }
-    } catch (err) {
-      console.log('>>>', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('>>>', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1645,14 +1675,15 @@ module.exports = {
             "message": sails.__("error")
           });
       }
-    } catch (err) {
-      console.log('>>>', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('>>>', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1686,13 +1717,14 @@ module.exports = {
               } else {
                 sails
                   .sockets
-                  .join(req.socket, room, async function (err) {
-                    if (err) {
+                  .join(req.socket, room, async function (error) {
+                    if (error) {
                       return res
                         .status(500)
                         .json({
                           status: 500,
-                          "err": sails.__("Something Wrong")
+                          "err": sails.__("Something Wrong"),
+                          error_at:error.stack
                         });
                     } else {
                       let {
@@ -1718,13 +1750,14 @@ module.exports = {
         } else {
           sails
             .sockets
-            .join(req.socket, room, async function (err) {
-              if (err) {
+            .join(req.socket, room, async function (error) {
+              if (error) {
                 return res
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                   });
               } else {
                 let {
@@ -1748,12 +1781,13 @@ module.exports = {
         }
       } else { }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -1985,14 +2019,15 @@ module.exports = {
           tradeCount
         });
       }
-    } catch (err) {
-      console.log(err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -2073,13 +2108,14 @@ module.exports = {
           pendingDataCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
     //Last Query
@@ -2139,13 +2175,14 @@ module.exports = {
           cancelledOrderCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

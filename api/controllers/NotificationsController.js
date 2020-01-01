@@ -32,14 +32,15 @@ module.exports = {
           "message": sails.__("notification retreive success"),
           "data": notificationList
         });
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -92,14 +93,15 @@ module.exports = {
           "data": notificationList
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

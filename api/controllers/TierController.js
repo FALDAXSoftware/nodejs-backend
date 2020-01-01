@@ -54,13 +54,14 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -156,9 +157,16 @@ module.exports = {
       } else {
         console.log('>>>>else')
       }
-    } catch (err) {
-      console.log("errrrr:", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("errrrr:", error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          err: sails.__("Something Wrong"),
+          error_at:error.stack
+        })
     }
   },
 
@@ -204,14 +212,15 @@ module.exports = {
             "message": sails.__("tier upgrade request success")
           })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -241,14 +250,15 @@ module.exports = {
           getUserRejectedTierData
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -311,13 +321,14 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -346,14 +357,15 @@ module.exports = {
             "message": sails.__("no tier details retrieve success")
           })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -395,14 +407,15 @@ module.exports = {
           "data": tierUpdateData
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -438,14 +451,15 @@ module.exports = {
           });
       }
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

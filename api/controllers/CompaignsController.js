@@ -90,13 +90,14 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -202,13 +203,14 @@ module.exports = {
         "data": all_data
       });
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -352,13 +354,14 @@ module.exports = {
         "data": all_data
       });
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -417,18 +420,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("campaigns not found")
+            "err": sails.__("campaigns not found"),
+            error_at:sails.__("campaigns not found")
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -472,7 +477,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("campaigns not found")
+            "err": sails.__("campaigns not found"),
+            error_at:sails.__("campaigns not found")
           });
 
       }
@@ -499,18 +505,20 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("campaigns not updated"),
-            "data": []
+            "data": [],
+            error_at:sails.__("campaigns not updated")
           })
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -536,7 +544,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Offercode is exist")
+            "message": sails.__("Offercode is exist"),
+            error_at:sails.__("Offercode is exist")
           })
       } else {
         return res
@@ -548,13 +557,14 @@ module.exports = {
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -697,18 +707,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No records for offercode")
+            "err": sails.__("No records for offercode"),
+            error_at:sails.__("No records for offercode")
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },

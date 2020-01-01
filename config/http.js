@@ -119,13 +119,13 @@ module.exports.http = {
             object.params = req.query;
           // }
 
-          logger.info(object, "Request success");
+          await logger.info(object, "Incoming Request");
         }
 
         return next();
       },
     //   // Logs each response to Graylog
-      responseLogger: function (req, res, next) {
+      responseLogger:async function (req, res, next) {
         if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/') {
           return next();
         }
@@ -147,11 +147,12 @@ module.exports.http = {
           oldWrite.apply(res, arguments);
         };
         var body;
-        res.end = function (chunk) {
+        res.end = async function (chunk) {
           if (chunk) chunks.push(chunk);
           body = Buffer.concat(chunks).toString('utf8');        
           oldEnd.apply(res, arguments);
           var message = 'Response message';
+          var error_at = '';
           if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
             if( JSON.parse(body).message ){
               message = JSON.parse(body).message  
@@ -159,7 +160,11 @@ module.exports.http = {
             if( JSON.parse(body).err ){
               message = JSON.parse(body).err  
             }
+            if( res.statusCode > 200){
+              error_at = (JSON.parse(body).error_at ? (JSON.parse(body).error_at):"-");
+            }
           }
+          // console.log("JSON.parse(body)",JSON.parse(body));
           var response = body;
           var object = {
             module: "Response",
@@ -169,6 +174,10 @@ module.exports.http = {
             // responseData:JSON.stringify(response),
             log_id: req.headers['Logid']
           };
+          if( res.statusCode > 200){
+            object.error_at = error_at;
+          }
+          console.log("object",object);
 
           if( res.statusCode != 200 && res.statusCode >= 201 ){
             object.responseData = (body);
@@ -181,9 +190,9 @@ module.exports.http = {
             if (req.url == '/login') {
               object.user_id = "user_" + JSON.parse(body).user.id;
             }
-            logger.info(object, message);
+            await logger.info(object, message);
           }else{
-            logger.error(object, message);
+            await logger.error(object, message);
           }
 
         };

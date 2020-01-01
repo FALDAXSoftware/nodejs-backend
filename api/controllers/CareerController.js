@@ -16,13 +16,14 @@ module.exports = {
     });
     if (jobDetail) {
 
-      req.file('documents').upload(async function (err, uploadedFiles) {
-        if (err) {
+      req.file('documents').upload(async function (error, uploadedFiles) {
+        if (error) {
           return res
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:error.stack
             });
         }
 
@@ -91,7 +92,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:sails.__("Something Wrong")
         });
     }
   },
@@ -123,16 +125,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -176,13 +180,14 @@ module.exports = {
           allJobsCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -209,13 +214,14 @@ module.exports = {
             "err": sails.__("Job does not exists")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -242,16 +248,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -278,7 +286,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:sails.__("Something Wrong")
             });
         }
       } else {
@@ -289,13 +298,14 @@ module.exports = {
             "err": sails.__("Job not found")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(err.message)
       return res
         .status(400)
         .json({
           status: 400,
-          "err": sails.__("Job not found")
+          "err": sails.__("Job not found"),
+          error_at:error.stack
         });
     }
   },
@@ -310,7 +320,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Job id is not sent")
+            "err": sails.__("Job id is not sent"),
+            error_at:sails.__("Job id is not sent")
           });
       }
       let deletedJob = await Jobs
@@ -331,16 +342,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -381,13 +394,14 @@ module.exports = {
           applicationCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -403,7 +417,8 @@ module.exports = {
         if (existingCategory) {
           return res.json({
             "status": 500,
-            "err": sails.__("Job Category Exists")
+            "err": sails.__("Job Category Exists"),
+            error_at:sails.__("Job Category Exists")
           });
         }
 
@@ -423,7 +438,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong"),
+              error_at:sails.__("Something Wrong")
             });
         }
       } else {
@@ -431,16 +447,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -474,16 +492,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:sails.__("Something Wrong")
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }
