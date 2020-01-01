@@ -148,13 +148,14 @@ module.exports = {
             })
         }
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -173,14 +174,15 @@ module.exports = {
       if (req._fileparser.upstreams.length) {
         req
           .file('image')
-          .upload(function (err, file) {
-            console.log(err);
-            if (err) {
+          .upload(function (error, file) {
+            // console.log(error);
+            if (error) {
               return res
                 .status(500)
                 .json({
                   "status": 500,
-                  "err": sails.__("Something Wrong")
+                  "err": sails.__("Something Wrong"),
+                  error_at:error.stack
                 })
             } else {
               if (file.length <= 0) {
@@ -188,7 +190,8 @@ module.exports = {
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:sails.__("Something Wrong")
                   });
               }
               return res.json({
@@ -204,14 +207,15 @@ module.exports = {
           'message': sails.__("Image Required")
         })
       }
-    } catch (err) {
-      console.log("errrrr:", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("errrrr:", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -306,7 +310,7 @@ module.exports = {
           }
         }
       } catch (err) {
-        console.log(err);
+        // console.log(err);
 
         if (data.mtid) {
           let updated = await KYC
@@ -388,16 +392,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No KYC")
+            "err": sails.__("No KYC"),
+            error_at:sails.__("No KYC")
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -481,14 +487,15 @@ module.exports = {
           KYCCount
         });
       }
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -513,16 +520,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No KYC")
+            "err": sails.__("No KYC"),
+            error_at:sails.__("No KYC")
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }
