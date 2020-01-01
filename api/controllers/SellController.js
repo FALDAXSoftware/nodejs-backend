@@ -124,9 +124,16 @@ module.exports = {
             "message": sails.__("error")
           });
       }
-    } catch (err) {
-      console.log('>>>', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('>>>', error)
+      // await logger.error(error.message)
+      return res
+          .status(500)
+          .json({
+            status: 500,
+            "message": sails.__("error"),
+            error_at:error.stack
+          });
     }
   },
 
@@ -205,14 +212,15 @@ module.exports = {
           sellBookCount
         });
       }
-    } catch (err) {
-      console.log('>err>>', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('>err>>', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

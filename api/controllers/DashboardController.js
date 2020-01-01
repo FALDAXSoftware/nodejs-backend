@@ -48,12 +48,13 @@ module.exports = {
         data: activity
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -82,12 +83,13 @@ module.exports = {
         data: risingFalling
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -114,12 +116,13 @@ module.exports = {
         data: portfolio
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -177,13 +180,14 @@ module.exports = {
         } else {
           sails
             .sockets
-            .join(req.socket, room, async function (err) {
-              if (err) {
+            .join(req.socket, room, async function (error) {
+              if (error) {
                 return res
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong"),
+                    error_at:error.stack
                   });
               } else {
                 let cardDate = await sails
@@ -207,12 +211,13 @@ module.exports = {
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -399,13 +404,14 @@ module.exports = {
         transactionValue,
         feesTransactionValue
       });
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

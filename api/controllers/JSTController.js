@@ -60,7 +60,7 @@ module.exports = {
         })
 
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       // await logger.error({
       //   "user_id": "user_" + req.user.id,
       //   "module": "JST",
@@ -71,7 +71,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -105,13 +106,14 @@ module.exports = {
         })
 
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -248,7 +250,7 @@ module.exports = {
         })
 
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       // await logger.error({
       //   "user_id": "user_" + req.user.id,
       //   "module": "JST",
@@ -259,7 +261,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -290,13 +293,14 @@ module.exports = {
         })
 
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -384,7 +388,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("panic button enabled")
+            "message": sails.__("panic button enabled"),
+            error_at:sails.__("panic button enabled")
           })
       }
 
@@ -404,7 +409,8 @@ module.exports = {
         // }, sails.__(geo_fencing_data.msg))
         res.json({
           "status": 500,
-          "message": sails.__(geo_fencing_data.msg)
+          "message": sails.__(geo_fencing_data.msg),
+          error_at:sails.__(geo_fencing_data.msg)
         });
       } else {
         // Check Security
@@ -422,7 +428,8 @@ module.exports = {
             .status(500)
             .json({
               "status": check_security.status,
-              "message": check_security.message
+              "message": check_security.message,
+              error_at:check_security.message
             });
         }
 
@@ -505,7 +512,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "message": sails.__("Minimum Order Limit not satisfied")
+              "message": sails.__("Minimum Order Limit not satisfied"),
+              error_at:sails.__("Minimum Order Limit not satisfied")
             })
         }
 
@@ -552,7 +560,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "message": sails.__("insufficent funds in wallet")
+              "message": sails.__("insufficent funds in wallet"),
+              error_at:sails.__("insufficent funds in wallet")
             });
         }
         // if (req_body.original_pair != req_body.order_pair && req_body.Side == 2 && req_body.flag == 1) {
@@ -632,7 +641,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "message": sails.__("jst order not created")
+              "message": sails.__("jst order not created"),
+              error_at:sails.__("jst order not created")
             });
         } else {
           var jst_response_data = response.data; // JST Response Success Data         
@@ -746,12 +756,15 @@ module.exports = {
             //   "url": req.url,
             //   "type": "Error"
             // }, sails.__("jst order not created"))
-            return res.json({
-              "status": 500,
-              // "message": sails.__("jst order not created") + "Due to : " + (reason_text),
-              "message": sails.__("jst order not created"),
-              "data": update_order[0]
-            });
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                // "message": sails.__("jst order not created") + "Due to : " + (reason_text),
+                "message": sails.__("jst order not created"),
+                "data": update_order[0],
+                error_at: sails.__("jst order not created")
+              });
           }
 
           // Get JST Fiat Value
@@ -1020,7 +1033,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:sails.__("Something Wrong")
         });
     }
   },
@@ -1077,7 +1091,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": check_offer_status.message
+          "err": check_offer_status.message,
+          error_at:check_offer_status.message
         });
     }
   },
@@ -1150,7 +1165,7 @@ module.exports = {
 
 
     } catch (error) {
-      console.log("error", error);
+      // console.log("error", error);
       // await logger.error({
       //   "user_id": "user_" + req.user.id,
       //   "module": "JST",
@@ -1161,7 +1176,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }

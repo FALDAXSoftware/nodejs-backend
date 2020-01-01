@@ -36,7 +36,8 @@ module.exports = {
         } else {
           return res.status(500).json({
             status: 500,
-            "message": sails.__("Days greater 0")
+            "message": sails.__("Days greater 0"),
+            error_at:sails.__("Days greater 0")
           })
         }
       } else {
@@ -49,7 +50,8 @@ module.exports = {
       if (add_data) {
         return res.status(401).json({
           status: 500,
-          "message": sails.__("IP in whitelist exists")
+          "message": sails.__("IP in whitelist exists"),
+          error_at:sails.__("IP in whitelist exists")
         })
       } else {
         // Send email notification
@@ -104,14 +106,15 @@ module.exports = {
             }
           })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
 
@@ -173,14 +176,15 @@ module.exports = {
         })
       }
 
-    } catch (err) {
-      await logger.error(err.message)
-      console.log(err);
+    } catch (error) {
+      // await logger.error(error.message)
+      // console.log(error);
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -210,14 +214,15 @@ module.exports = {
           "message": sails.__("WhiteList IP info Success Not Found"),
         })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   }
