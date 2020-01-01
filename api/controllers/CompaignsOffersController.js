@@ -69,18 +69,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("offer not found")
+            "err": sails.__("offer not found"),
+            error_at:sails.__("offer not found")
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -138,13 +140,14 @@ module.exports = {
         "data": []
       });
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
@@ -177,18 +180,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("offer not found")
+            "err": sails.__("offer not found"),
+            error_at:sails.__("offer not found")
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong"),
+          error_at:error.stack
         });
     }
   },
