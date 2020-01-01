@@ -31,7 +31,7 @@ module.exports = {
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-      if( call_simplex.status == 200 && call_simplex.data.digital_money.amount < 0 ){
+      if (call_simplex.status == 200 && call_simplex.data.digital_money.amount < 0) {
         call_simplex.data.digital_money.amount = 0;
       }
       return res.json(call_simplex);
@@ -163,10 +163,18 @@ module.exports = {
           "amount": parseFloat(data.total_amount)
         }
 
-        var destination_wallet = {
-          "currency": data.digital_currency,
-          "address": data.address
-        };
+        var destination_wallet = {}
+
+        if (data.currency == "XRP") {
+          var addressValue = data.address
+          var responseAddress = addressValue.split("?");
+          destination_wallet.currency = data.digital_currency
+          destination_wallet.address = responseAddress[0];
+          destination_wallet.tag = responseAddress[1];
+        } else {
+          destination_wallet.currency = data.digital_currency;
+          destination_wallet.address = data.address
+        }
 
         pay_details.fiat_total_amount = fiat_details;
         pay_details.requested_digital_amount = requested_details;
@@ -179,6 +187,7 @@ module.exports = {
         main_details.transaction_details = transaction_details;
 
 
+        console.log(main_details)
         // Call SImplex 
         data.main_details = main_details;
         data.action = '/simplex/get-partner-data';
