@@ -133,7 +133,6 @@ module.exports = {
         response.message = error_message;
         return exits.success(response)
       }
-      console.log("checkOffercodeStatus", true);
     }
 
     // To check validity of Offercode
@@ -170,7 +169,6 @@ module.exports = {
       //   response.message = error_message;
       //   return exits.success(response)
       // }
-      console.log("checkValidityOfOffercode", true);
     }
 
     // Check number of Transactions
@@ -188,7 +186,6 @@ module.exports = {
         response.message = error_message;
         return exits.success(response)
       }
-      console.log("checkNumberOfTransaction", true);
     }
 
     // Check total fees already deducted using Offer
@@ -255,7 +252,6 @@ module.exports = {
           return exits.success(response)
         }
       }
-      console.log("checkTotalFeesDeducted",checkTotalFeesDeducted);
     }
     // To check if offercode is not of Same Campaign
     async function checkOffercodeCampaign(usage, user_id, campaign_id, campaign_offer_id, store_offercode_history, get_campaign_offer_data) {
@@ -275,11 +271,6 @@ module.exports = {
         check_offercode_campaign = await JSTTradeHistory
           .find(get_data_object).sort("id DESC").limit(1);
       }
-      console.log("campaign_id",campaign_id);
-      console.log("campaign_offer_id",campaign_offer_id);
-      console.log("user_id",user_id);
-      console.log("Campaign Offer userid", get_campaign_offer_data[0].user_id);
-      console.log("check_offercode_campaign",check_offercode_campaign);
 
       // console.log("usage",usage);
       // console.log("inputs.check_only",inputs.check_only);
@@ -309,7 +300,6 @@ module.exports = {
         response.message = error_message;
         return exits.success(response)
       }
-      console.log("checkOffercodeCampaign",checkOffercodeCampaign);    
     }
     // Check type of Campaign
     if (get_campaign_data[0].usage == 1) {
@@ -335,7 +325,7 @@ module.exports = {
     } else { // If Multiple usage
       let check_offercode_in_transactions = await getPastTransactions(user_id, campaign_id, campaign_offer_id);
       // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
-      console.log("check_offercode_in_transactions.length",check_offercode_in_transactions.length);
+      // console.log("check_offercode_in_transactions.length",check_offercode_in_transactions.length);
       let check_offercode_same_campaign = await checkOffercodeCampaign(0, user_id, campaign_id, campaign_offer_id, store_offercode_history, get_campaign_offer_data);
       if (check_offercode_in_transactions.length == 0) {
         let check_offer_validity = await checkValidityOfOffercode(get_campaign_data, get_campaign_offer_data, true);
