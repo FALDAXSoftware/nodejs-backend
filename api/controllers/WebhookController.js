@@ -64,15 +64,22 @@ module.exports = {
 
   // webhook on receive
   webhookOnReceive: async function (req, res) {
+    
     // res.end();
+    console.log("-------------Recieved----------------");
+    console.log("req.body",req.body);
     if (req.body.state == "confirmed") {
       let transferId = req.body.transfer;
+      console.log("transferId", transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
+      console.log("transfer", transfer)
       if (transfer.state == "confirmed") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
           transaction_id: req.body.hash
         });
+
+        console.log("alreadyWalletHistory", alreadyWalletHistory)
 
         if (alreadyWalletHistory.length == 0) {
           // Object Of receiver
@@ -96,14 +103,14 @@ module.exports = {
           }
 
           if (userWallet == undefined && userSendWallet == undefined) {
-            var userWalletAddress = await Wallet.findOne({
+            userWallet = await Wallet.findOne({
               receive_address: source.address,
               deleted_at: null,
               is_active: true
             });
 
-            if (userWalletAddress == undefined) {
-              userWalletAddress = await Wallet.findOne({
+            if (userWallet == undefined) {
+              userWallet = await Wallet.findOne({
                 send_address: source.address,
                 deleted_at: null,
                 is_active: true
@@ -117,8 +124,13 @@ module.exports = {
             }
           }
 
+          console.log("dest", dest, "source", source)
+
           // transaction amount
           let amount = (dest.value / 100000000);
+
+          console.log("amount", amount)
+          console.log("userWallet", userWallet)
 
           // user wallet exitence check
           if (userWallet) {
@@ -176,27 +188,27 @@ module.exports = {
               slug: 'receive'
             })
 
-            if (userNotification != undefined) {
-              if (userNotification.email == true || userNotification.email == "true") {
-                if (userData.email != undefined)
-                  // Pass Amount
-                  var coin_data = await Coins.findOne({
-                    id: userWallet.coin_id
-                  });
-                if (coin_data != undefined) {
-                  userData.coinName = coin_data.coin;
-                } else {
-                  userData.coinName = "-";
-                }
-                userData.amountReceived = (amount).toFixed(8);
+            // if (userNotification != undefined) {
+            //   if (userNotification.email == true || userNotification.email == "true") {
+            //     if (userData.email != undefined)
+            //       // Pass Amount
+            //       var coin_data = await Coins.findOne({
+            //         id: userWallet.coin_id
+            //       });
+            //     if (coin_data != undefined) {
+            //       userData.coinName = coin_data.coin;
+            //     } else {
+            //       userData.coinName = "-";
+            //     }
+            //     userData.amountReceived = (amount).toFixed(8);
 
-                await sails.helpers.notification.send.email("receive", userData)
-              }
-              // if (userNotification.text == true || userNotification.text == "true") {
-              //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-              //     await sails.helpers.notification.send.text("receive", userData)
-              // }
-            }
+            //     await sails.helpers.notification.send.email("receive", userData)
+            //   }
+            //   // if (userNotification.text == true || userNotification.text == "true") {
+            //   //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+            //   //     await sails.helpers.notification.send.text("receive", userData)
+            //   // }
+            // }
 
 
             // Send fund to Warm and custody wallet
@@ -204,9 +216,9 @@ module.exports = {
               id: userWallet.coin_id
             });
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
-
+            console.log("warmWallet", warmWallet)
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
-
+            console.log("custodialWallet", custodialWallet)
             // check for wallet exist or not
             if (warmWallet.id && custodialWallet.id) {
 
@@ -215,6 +227,9 @@ module.exports = {
               let custodialWalletAmount = 0;
               warmWalletAmount = (dest.value * 80) / 100;
               custodialWalletAmount = (dest.value * 20) / 100;
+
+              console.log("warmWalletAmount", warmWalletAmount)
+              console.log("custodialWalletAmount", custodialWalletAmount)
 
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
               //     // send 10% to warm wallet and 90% to custodial wallet
@@ -228,7 +243,7 @@ module.exports = {
 
               // send amount to warm wallet
 
-              // await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
               let transactionLog = [];
               // Log Transafer in transaction table
               transactionLog.push({
@@ -244,7 +259,7 @@ module.exports = {
 
 
               // send amount to custodial wallet
-              // await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
+              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
 
               // Log Transafer in transaction table
               transactionLog.push({

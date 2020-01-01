@@ -290,6 +290,15 @@ module.exports = {
       }
     } catch (err) {
       console.log("errr", err);
+
+      if (error.name == "ImplementationError") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": "Insufficient Balance in warm Wallet"
+          })
+      }
       await logger.error(err.message)
       return res
         .status(500)
