@@ -103,14 +103,14 @@ module.exports = {
           }
 
           if (userWallet == undefined && userSendWallet == undefined) {
-            var userWalletAddress = await Wallet.findOne({
+            userWallet = await Wallet.findOne({
               receive_address: source.address,
               deleted_at: null,
               is_active: true
             });
 
-            if (userWalletAddress == undefined) {
-              userWalletAddress = await Wallet.findOne({
+            if (userWallet == undefined) {
+              userWallet = await Wallet.findOne({
                 send_address: source.address,
                 deleted_at: null,
                 is_active: true
@@ -130,6 +130,7 @@ module.exports = {
           let amount = (dest.value / 100000000);
 
           console.log("amount", amount)
+          console.log("userWallet", userWallet)
 
           // user wallet exitence check
           if (userWallet) {
@@ -215,9 +216,9 @@ module.exports = {
               id: userWallet.coin_id
             });
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
-            console.log("warmWallet",warmWallet)
+            console.log("warmWallet", warmWallet)
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
-            console.log("custodialWallet",custodialWallet)
+            console.log("custodialWallet", custodialWallet)
             // check for wallet exist or not
             if (warmWallet.id && custodialWallet.id) {
 
@@ -226,8 +227,10 @@ module.exports = {
               let custodialWalletAmount = 0;
               warmWalletAmount = (dest.value * 80) / 100;
               custodialWalletAmount = (dest.value * 20) / 100;
-              console.log(warmWalletAmount)
-              console.log(custodialWalletAmount)
+
+              console.log("warmWalletAmount", warmWalletAmount)
+              console.log("custodialWalletAmount", custodialWalletAmount)
+
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
               //     // send 10% to warm wallet and 90% to custodial wallet
               //     warmWalletAmount = (dest.value * 10) / 100;
