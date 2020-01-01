@@ -260,7 +260,8 @@ module.exports = {
         total_fees,
         destination_address,
         coin_code,
-        networkFees
+        networkFees,
+        faldaxFees
       } = req.allParams();
 
       let user_id = req.user.id;
@@ -485,13 +486,10 @@ module.exports = {
 
                             console.log("transaction", transaction)
 
+                            var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
+
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
-                            var valueSub = parseFloat(total_fees);
-                            var faldaxFeeValue = parseFloat(parseFloat(networkFees) + parseFloat(amount))
-                            console.log("faldaxFeeValue", faldaxFeeValue)
-                            var finalFaldaxFee = parseFloat(total_fees) - parseFloat(faldaxFeeValue)
-                            console.log("finalFaldaxFee", finalFaldaxFee)
 
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
@@ -504,8 +502,8 @@ module.exports = {
                             });
 
                             if (adminWalletDetails != undefined) {
-                              var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(finalFaldaxFee));
-                              var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(finalFaldaxFee));
+                              var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(faldaxFees));
+                              var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(faldaxFees));
                               var updatedData = await Wallet
                                 .update({
                                   deleted_at: null,
@@ -527,12 +525,12 @@ module.exports = {
                               source_address: wallet.send_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: (total_fees),
+                              amount: (total_payout),
                               transaction_type: 'send',
                               transaction_id: transaction.txid,
                               is_executed: false,
                               is_admin: false,
-                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
+                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -547,8 +545,8 @@ module.exports = {
                                 id: wallet.id
                               })
                               .set({
-                                balance: (wallet.balance - valueSub).toFixed(sails.config.local.TOTAL_PRECISION),
-                                placed_balance: (wallet.placed_balance - valueSub).toFixed(sails.config.local.TOTAL_PRECISION)
+                                balance: (wallet.balance - total_payout).toFixed(sails.config.local.TOTAL_PRECISION),
+                                placed_balance: (wallet.placed_balance - total_payout).toFixed(sails.config.local.TOTAL_PRECISION)
                               });
 
                             // Adding the transaction details in transaction table This is entry for sending
@@ -562,7 +560,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
+                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -579,7 +577,7 @@ module.exports = {
                               transaction_type: 'send',
                               is_executed: false,
                               transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(finalFaldaxFee)).toFixed(8),
+                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               network_fees: network_feesValue
                             }
 
@@ -963,7 +961,7 @@ module.exports = {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee);
               walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees))
-              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee) - parseFloat(walletTransData[j].network_fees)).toFixed(8);
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {
               walletTransData[j].faldax_fee = "-";
