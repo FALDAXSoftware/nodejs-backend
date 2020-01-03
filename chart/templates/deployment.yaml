@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: CRON_STATUS
-            value: "true"
+            value: "false"
           volumeMounts:
           - name: config-value
             mountPath: {{ .Values.configuration.pod_directory }}
@@ -39,7 +39,27 @@ spec:
               protocol: TCP
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+{{- if .Values.health.enable }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.health.livenessProbe.path }}
+              port: {{ default 80 .Values.health.livenessProbe.port }}
+            initialDelaySeconds: {{ default 120 .Values.health.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ default 30 .Values.health.livenessProbe.periodSeconds }}
+            failureThreshold: {{ default 5 .Values.health.livenessProbe.failureThreshold }}
+            successThreshold: {{ default 1 .Values.health.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ default 5 .Values.health.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.health.readinessProbe.path }}
+              port: {{ default 80 .Values.health.readinessProbe.port }}
+            initialDelaySeconds: {{ default 60 .Values.health.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ default 30 .Values.health.readinessProbe.periodSeconds }}
+            failureThreshold: {{ default 5 .Values.health.readinessProbe.failureThreshold }}
+            successThreshold: {{ default 1 .Values.health.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ default 5 .Values.health.readinessProbe.timeoutSeconds }}
+{{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
