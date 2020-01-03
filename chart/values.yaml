@@ -36,6 +36,7 @@ ingress:
     kubernetes.io/tls-acme: "true"
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:496403030999:certificate/c789b806-1990-4ff0-8e95-011a9727b80c
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=600
     kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   path: /*
