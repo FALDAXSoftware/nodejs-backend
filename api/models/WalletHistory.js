@@ -37,6 +37,10 @@ module.exports = {
       type: "number",
       columnName: "amount"
     },
+    network_fees: {
+      type: "number",
+      columnName: "network_fees"
+    },
     faldax_fee: {
       type: "number",
       columnName: "faldax_fee"

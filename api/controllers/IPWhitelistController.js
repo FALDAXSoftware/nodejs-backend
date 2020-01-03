@@ -36,7 +36,8 @@ module.exports = {
         } else {
           return res.status(500).json({
             status: 500,
-            "message": sails.__("Days greater 0")
+            "message": sails.__("Days greater 0").message,
+            error_at:sails.__("Days greater 0").message
           })
         }
       } else {
@@ -49,7 +50,8 @@ module.exports = {
       if (add_data) {
         return res.status(401).json({
           status: 500,
-          "message": sails.__("IP in whitelist exists")
+          "message": sails.__("IP in whitelist exists").message,
+          error_at:sails.__("IP in whitelist exists").message
         })
       } else {
         // Send email notification
@@ -99,19 +101,20 @@ module.exports = {
             if (!err) {
               return res.status(200).json({
                 "status": 200,
-                "message": sails.__("WhiteList IP Add Success")
+                "message": sails.__("WhiteList IP Add Success").message
               });
             }
           })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
 
@@ -161,26 +164,27 @@ module.exports = {
       if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteList IP info Success"),
+          "message": sails.__("WhiteList IP info Success").message,
           "data": get_data.data,
           "total": get_data.total
         })
       } else {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteList IP info Success Not Found"),
+          "message": sails.__("WhiteList IP info Success Not Found").message,
           "data": []
         })
       }
 
-    } catch (err) {
-      await logger.error(err.message)
-      console.log(err);
+    } catch (error) {
+      // await logger.error(error.message)
+      // console.log(error);
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -202,22 +206,23 @@ module.exports = {
         return res.status(200)
           .json({
             status: 200,
-            "message": sails.__("WhiteList IP has been deleted successfully")
+            "message": sails.__("WhiteList IP has been deleted successfully").message
           })
       } else {
         return res.status(200).json({
           "status": 204,
-          "message": sails.__("WhiteList IP info Success Not Found"),
+          "message": sails.__("WhiteList IP info Success Not Found").message,
         })
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

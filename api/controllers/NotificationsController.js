@@ -16,7 +16,7 @@ module.exports = {
       // })
       //   .sort('id DESC')
 
-      var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at, 
+      var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at,
         user_notifications.user_id, notifications.title
         FROM public.user_notifications LEFT JOIN notifications
         ON user_notifications.slug = notifications.slug
@@ -29,17 +29,18 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("notification retreive success"),
+          "message": sails.__("notification retreive success").message,
           "data": notificationList
         });
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -74,7 +75,7 @@ module.exports = {
         }
       }
 
-      var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at, 
+      var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at,
         user_notifications.user_id, notifications.title
         FROM public.user_notifications LEFT JOIN notifications
         ON user_notifications.slug = notifications.slug
@@ -88,18 +89,19 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("notification update success"),
+          "message": sails.__("notification update success").message,
           "data": notificationList
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

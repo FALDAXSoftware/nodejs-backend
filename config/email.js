@@ -8,7 +8,7 @@ module.exports.email = {
             pass: process.env.EMAIL_PASSWORD
         }
     },
-    from: process.env.DEFAULT_SENDING_EMAIL,
+    from: process.env.EMAIL_DEFAULT_SENDING,
     templateDir: "views/emailTemplates",
     testMode: true
 };

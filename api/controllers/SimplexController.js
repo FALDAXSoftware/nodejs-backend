@@ -27,22 +27,22 @@ module.exports = {
       var user_id = req.user.id;
       data.client_ip = ip;
       data.end_user_id = user_id;
-
-
-
-      // Call SImplex 
+      // Call SImplex
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-
+      if (call_simplex.status == 200 && call_simplex.data.digital_money.amount < 0) {
+        call_simplex.data.digital_money.amount = 0;
+      }
       return res.json(call_simplex);
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -62,16 +62,17 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("qoute details success"),
+          "message": sails.__("qoute details success").message,
           "data": qouteDetail
         });
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -97,7 +98,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("panic button enabled")
+            "message": sails.__("panic button enabled").message,
+            error_at:sails.__("panic button enabled").message
           })
       }
 
@@ -111,7 +113,8 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         res.json({
           "status": 500,
-          "message": sails.__(geo_fencing_data.msg)
+          "message": sails.__(geo_fencing_data.msg).message,
+          error_at:sails.__(geo_fencing_data.msg).message
         });
       } else {
         // Check Security
@@ -122,7 +125,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": check_security.message
+              "err": check_security.message,
+              error_at:check_security.message
             });
         }
 
@@ -164,10 +168,18 @@ module.exports = {
           "amount": parseFloat(data.total_amount)
         }
 
-        var destination_wallet = {
-          "currency": data.digital_currency,
-          "address": data.address
-        };
+        var destination_wallet = {}
+
+        if (data.currency == "XRP") {
+          var addressValue = data.address
+          var responseAddress = addressValue.split("?");
+          destination_wallet.currency = data.digital_currency
+          destination_wallet.address = responseAddress[0];
+          destination_wallet.tag = responseAddress[1];
+        } else {
+          destination_wallet.currency = data.digital_currency;
+          destination_wallet.address = data.address
+        }
 
         pay_details.fiat_total_amount = fiat_details;
         pay_details.requested_digital_amount = requested_details;
@@ -180,7 +192,8 @@ module.exports = {
         main_details.transaction_details = transaction_details;
 
 
-        // Call SImplex 
+        console.log(main_details)
+        // Call SImplex
         data.main_details = main_details;
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
@@ -188,19 +201,20 @@ module.exports = {
         return res.json(call_simplex);
       }
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
 
   deleteEvent: async function (event_id) {
     try {
-      var keyValue = sails.config.local.ACCESS_TOKEN
+      var keyValue = sails.config.local.SIMPLEX_ACCESS_TOKEN
       key = await sails.helpers.getDecryptData(keyValue);
       await request.delete(sails.config.local.SIMPLEX_URL + "events/" + event_id, {
         headers: {
@@ -391,15 +405,16 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("coin list retrieve success"),
+          "message": sails.__("coin list retrieve success").message,
           object
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -437,15 +452,16 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("coin list retrieve success"),
+          "message": sails.__("coin list retrieve success").message,
           object
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -453,7 +469,7 @@ module.exports = {
   // ------------------------ CMS API -------------------------- //
   getSimplexTokenValue: async function (req, res) {
     try {
-      var access_token_value = sails.config.local.ACCESS_TOKEN;
+      var access_token_value = sails.config.local.SIMPLEX_ACCESS_TOKEN;
 
       var key = await sails.helpers.getDecryptData(access_token_value);
 
@@ -461,15 +477,16 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          message: sails.__("simplex token retrieve success"),
+          message: sails.__("simplex token retrieve success").message,
           data: key
         })
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -493,15 +510,16 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          message: sails.__("simplex token update success")
+          message: sails.__("simplex token update success").message
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -523,18 +541,19 @@ module.exports = {
           message: "Simplex api call",
           data: key_value.data
         })
-      // }      
+      // }
 
 
       // return res.send({status:1})
 
 
-    } catch (err) {
-      // console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },

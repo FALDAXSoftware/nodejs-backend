@@ -1,6 +1,5 @@
 
-var jwt = require('jsonwebtoken'),
-  tokenSecret = sails.config.local.JWT_TOKEN_SECRET;
+var jwt = require('jsonwebtoken');
 
 //currently not in use
 module.exports = {
@@ -22,6 +21,8 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
+    var token = await sails.helpers.getDecryptData(sails.config.local.JWT_TOKEN_SECRET);
+    var tokenSecret = token
     var result = jwt.sign(
       { id: inputs.id },
       tokenSecret, // Token Secret that we sign it with
@@ -29,6 +30,7 @@ module.exports = {
         expiresIn: '3m' // Token Expire time
       }
     );
+    console.log("token", result);
     return exits.success(result);
   }
 

@@ -144,7 +144,6 @@ module.exports = {
     }
   },
   beforeCreate: (values, next) => {
-    console.log(values)
     values.created_at = new Date();
     next();
   },
