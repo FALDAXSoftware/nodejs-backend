@@ -7,8 +7,10 @@ metadata:
     helm.sh/chart: {{ include "currency.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 80
       targetPort: http
