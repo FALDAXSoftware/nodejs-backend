@@ -10,5 +10,5 @@ module.exports.email = {
     },
     from: process.env.EMAIL_DEFAULT_SENDING,
     templateDir: "views/emailTemplates",
-    testMode: true
+    testMode: false
 };
