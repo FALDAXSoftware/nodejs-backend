@@ -50,7 +50,7 @@ module.exports = {
     if (userData.is_twofactor && userData.twofactor_secret) {
       if (!inputs.otp) {
         response.status = 202;
-        response.message = sails.__("Please enter OTP to continue");
+        response.message = sails.__("Please enter OTP to continue").message;
         return exits.success(response)
       }
 
@@ -65,7 +65,7 @@ module.exports = {
 
       if (!verified) {
         response.status = 402;
-        response.message = sails.__("invalid otp")
+        response.message = sails.__("invalid otp").message
         return exits.success(response)
       }
     }
@@ -85,7 +85,7 @@ module.exports = {
         var dateTime = moment(response.datetime).local().format(userData.date_format + " HH:mm");
         var localTime = moment.utc(dateTime).toDate();
         localTime = moment(localTime).format(userData.date_format + " HH:mm")
-        response.message = sails.__("Wait for 24 hours") + " till " + localTime;
+        response.message = sails.__("Wait for 24 hours").message + " till " + localTime;
         return exits.success(response)
       }
     }

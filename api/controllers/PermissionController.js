@@ -24,7 +24,7 @@ module.exports = {
 
             return res.json({
                 "status": 200,
-                "message": "All permissions listed",
+                "message": sails.__("All permissions listed").message,
                 allClasses
             });
         } catch (error) {
@@ -33,7 +33,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }

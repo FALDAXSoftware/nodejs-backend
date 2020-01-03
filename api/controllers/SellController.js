@@ -31,7 +31,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
@@ -42,7 +42,7 @@ module.exports = {
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
                       let {
@@ -68,7 +68,7 @@ module.exports = {
                         return res.json({
                           status: 200,
                           data: sellBookDetails,
-                          "message": sails.__("Sell data retrived success")
+                          "message": sails.__("Sell data retrived success").message
                         });
                       }
                     }
@@ -84,7 +84,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 let {
@@ -110,7 +110,7 @@ module.exports = {
                   return res.json({
                     status: 200,
                     data: sellBookDetails,
-                    "message": sails.__("Sell data retrived success")
+                    "message": sails.__("Sell data retrived success").message
                   });
                 }
               }
@@ -121,7 +121,7 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
     } catch (error) {
@@ -131,7 +131,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "message": sails.__("error"),
+            "message": sails.__("error").message,
             error_at:error.stack
           });
     }
@@ -207,7 +207,7 @@ module.exports = {
       if (sellBookData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Sell Order list"),
+          "message": sails.__("Sell Order list").message,
           "data": sellBookData,
           sellBookCount
         });
@@ -219,7 +219,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
