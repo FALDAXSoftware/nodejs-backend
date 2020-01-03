@@ -96,7 +96,7 @@ module.exports = {
             }
             return res.json({
               "status": 200,
-              "message": sails.__("Blog list"),
+              "message": sails.__("Blog list").message,
               "data": data
             });
           } catch (e) {
@@ -117,7 +117,7 @@ module.exports = {
       if (response) {
         return res.json({
           "status": 200,
-          "message": sails.__('Blog Details'),
+          "message": sails.__('Blog Details').message,
           data: response
         })
       } else {
@@ -125,7 +125,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "err": sails.__("Blog not found")
+            "err": sails.__("Blog not found").message
           });
       }
     });
@@ -171,7 +171,7 @@ module.exports = {
       if (comments) {
         return res.json({
           "status": 200,
-          "message": sails.__("Comment list"),
+          "message": sails.__("Comment list").message,
           "data": {
             comments: comments,
             commentCount: BlogCommentCount
@@ -184,7 +184,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -204,7 +204,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "err": sails.__("Blog not found")
+            "err": sails.__("Blog not found").message
           });
       }
       let tags = blog.tags != undefined ?
@@ -243,7 +243,7 @@ module.exports = {
       if (relatedPosts) {
         return res.json({
           "status": 200,
-          "message": sails.__("Blog list"),
+          "message": sails.__("Blog list").message,
           "data": {
             blogs: relatedPosts
           }
@@ -255,7 +255,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -314,7 +314,7 @@ module.exports = {
       if (newsData) {
         return res.json({
           "status": 200,
-          "message": sails.__("News list"),
+          "message": sails.__("News list").message,
           "data": newsData,
           NewsCount
         });
@@ -342,7 +342,7 @@ module.exports = {
       });
       return res.json({
         "status": 200,
-        "message": sails.__("News list"),
+        "message": sails.__("News list").message,
         "data": newsData,
         NewsCount
       });

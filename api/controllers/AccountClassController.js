@@ -34,7 +34,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("Account Class Data"),
+        "message": sails.__("Account Class Data").message,
         allClasses
       });
     } catch (error) {
@@ -43,7 +43,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -62,13 +62,13 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            err: sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
       return res.json({
         status: 200,
-        message: sails.__("Class added success")
+        message: sails.__("Class added success").message
       })
     } catch (error) {
       // await logger.error(error.message)
@@ -76,7 +76,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong"),
+          err: sails.__("Something Wrong").message,
           error_at:error.stack
         })
     }
@@ -103,15 +103,15 @@ module.exports = {
           .fetch();
         return res.json({
           status: 200,
-          message: sails.__("Class Update Success")
+          message: sails.__("Class Update Success").message
         })
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            err: sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -120,7 +120,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong"),
+          err: sails.__("Something Wrong").message,
           error_at:error.stack
         })
     }
@@ -144,7 +144,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "message": sails.__("user inactive")
+            "message": sails.__("user inactive").message
           });
       }
 
@@ -161,8 +161,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "message": sails.__("Class id is not sent"),
-              error_at:sails.__("Class id is not sent")
+              "message": sails.__("Class id is not sent").message,
+              error_at:sails.__("Class id is not sent").message
             });
         }
         let classData = await AccountClass
@@ -178,7 +178,7 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("Class deleted success")
+              "message": sails.__("Class deleted success").message
             });
         }
       } else {
@@ -186,8 +186,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": "OTP is wrong!!",
-            error_at:"OTP is wrong!!"
+            "message": sails.__("invalid otp").message,
+            error_at:sails.__("invalid otp").message
           });
       }
     } catch (error) {
@@ -196,7 +196,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong"),
+          err: sails.__("Something Wrong").message,
           error_at:error.stack
         })
     }

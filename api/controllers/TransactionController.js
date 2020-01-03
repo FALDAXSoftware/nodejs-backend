@@ -100,7 +100,7 @@ module.exports = {
       if (transactionData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Transaction list"),
+          "message": sails.__("Transaction list").message,
           "data": transactionData,
           transactionCount,
           'default_send_Coin_fee': parseFloat(coinFee.value)
@@ -110,7 +110,7 @@ module.exports = {
       console.log(error);
       return res.json({
         "status": 200,
-        "message": "Something went wrong"
+        "message": sails.__("Something Wrong").message
       })
     }
   },
@@ -199,7 +199,7 @@ module.exports = {
     if (transactionData) {
       return res.json({
         "status": 200,
-        "message": sails.__("Transaction list"),
+        "message": sails.__("Transaction list").message,
         "data": transactionData,
         transactionCount
       });
