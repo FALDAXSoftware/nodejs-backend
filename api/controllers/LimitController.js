@@ -26,26 +26,26 @@ module.exports = {
       if (limitData.length > 0) {
         return res.json({
           "status": 200,
-          "message": sails.__("Limit list"),
+          "message": sails.__("Limit list").message,
           "data": limitData
         });
       } else {
         return res.json({
           "status": 200,
-          "message": sails.__("No Limit Data List"),
+          "message": sails.__("No Limit Data List").message,
           "data": limitData
         });
       }
-    } catch (err) {
-      console.log('>>>>>', err)
-      await logger.error(err.message)
-      res
+    } catch (error) {
+      // console.log('>>>>>', error)
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
-      return;
     }
   },
 
@@ -61,7 +61,7 @@ module.exports = {
             .status(401)
             .json({
               'status': 401,
-              err: sails.__("Invalid limit")
+              err: sails.__("Invalid limit").message
             });
         }
         var updatedLimit;
@@ -79,12 +79,12 @@ module.exports = {
         if (!updatedLimit) {
           return res.json({
             "status": 200,
-            "message": sails.__("Something Wrong")
+            "message": sails.__("Something Wrong").message
           });
         }
         return res.json({
           "status": 200,
-          "message": sails.__('Update Limit')
+          "message": sails.__('Update Limit').message
         });
       } else {
         var updatedLimit = await Limit
@@ -93,18 +93,18 @@ module.exports = {
           .status(200)
           .json({
             'status': 200,
-            'message': sails._("limit id added sucess")
+            'message': sails.__("limit id added sucess").message
           })
       }
     } catch (error) {
-      await logger.error(error.message)
-      res
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
-      return;
     }
   }
 };

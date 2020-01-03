@@ -27,7 +27,7 @@ module.exports = {
       var user_id = req.user.id;
       data.client_ip = ip;
       data.end_user_id = user_id;
-      // Call SImplex 
+      // Call SImplex
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
@@ -36,12 +36,13 @@ module.exports = {
       }
       return res.json(call_simplex);
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -61,16 +62,17 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("qoute details success"),
+          "message": sails.__("qoute details success").message,
           "data": qouteDetail
         });
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -96,7 +98,8 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("panic button enabled")
+            "message": sails.__("panic button enabled").message,
+            error_at:sails.__("panic button enabled").message
           })
       }
 
@@ -110,7 +113,8 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         res.json({
           "status": 500,
-          "message": sails.__(geo_fencing_data.msg)
+          "message": sails.__(geo_fencing_data.msg).message,
+          error_at:sails.__(geo_fencing_data.msg).message
         });
       } else {
         // Check Security
@@ -121,7 +125,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": check_security.message
+              "err": check_security.message,
+              error_at:check_security.message
             });
         }
 
@@ -188,7 +193,7 @@ module.exports = {
 
 
         console.log(main_details)
-        // Call SImplex 
+        // Call SImplex
         data.main_details = main_details;
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
@@ -196,12 +201,13 @@ module.exports = {
         return res.json(call_simplex);
       }
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -399,15 +405,16 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("coin list retrieve success"),
+          "message": sails.__("coin list retrieve success").message,
           object
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -445,15 +452,16 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("coin list retrieve success"),
+          "message": sails.__("coin list retrieve success").message,
           object
         })
     } catch (error) {
-      console.log(error);
-      await logger.error(error.message)
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -469,15 +477,16 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          message: sails.__("simplex token retrieve success"),
+          message: sails.__("simplex token retrieve success").message,
           data: key
         })
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -501,15 +510,16 @@ module.exports = {
         .status(200)
         .json({
           status: 200,
-          message: sails.__("simplex token update success")
+          message: sails.__("simplex token update success").message
         })
 
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },
@@ -531,18 +541,19 @@ module.exports = {
           message: "Simplex api call",
           data: key_value.data
         })
-      // }      
+      // }
 
 
       // return res.send({status:1})
 
 
-    } catch (err) {
-      // console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
       });
     }
   },

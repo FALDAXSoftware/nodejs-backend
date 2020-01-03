@@ -221,5 +221,5 @@ module.exports.local = {
   LoggerSuccess:"Success",
   LoggerError:"Error",
   LoggerIncoming:"Incoming request",
-  Login: "Login"
+  LoggerWebhook:"Webhook"
 }

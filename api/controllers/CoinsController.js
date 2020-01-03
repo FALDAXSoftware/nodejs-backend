@@ -40,19 +40,20 @@ module.exports = {
       if (allCoins) {
         return res.json({
           "status": 200,
-          "message": sails.__("Coin list"),
+          "message": sails.__("Coin list").message,
           "data": allCoins,
           allCoinsCount
         });
       }
-    } catch (err) {
-      console.log(err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
       return;
     }
@@ -123,7 +124,7 @@ module.exports = {
         if (balanceRes) {
           return res.json({
             "status": 200,
-            "message": sails.__("Coin list"),
+            "message": sails.__("Coin list").message,
             "data": balanceRes,
             allCoinsCount
           });
@@ -166,19 +167,20 @@ module.exports = {
         if (balanceRes) {
           return res.json({
             "status": 200,
-            "message": sails.__("Coin list"),
+            "message": sails.__("Coin list").message,
             "data": balanceRes,
             allCoinsCount
           });
         }
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -199,7 +201,7 @@ module.exports = {
       .create(requestedCoin.coin_code);
     return res.json({
       "status": 200,
-      "message": sails.__("wallet created success")
+      "message": sails.__("wallet created success").message
     });
   },
 
@@ -216,23 +218,25 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("wallet created success")
+        "message": sails.__("wallet created success").message
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       if (error.raw) {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": error.raw.err
+            "err": error.raw.err,
+            error_at:error.stack
           });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong"),
+            error_at:error.stack
           });
       }
     }
@@ -268,20 +272,20 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("Coin list"),
+        "message": sails.__("Coin list").message,
         "data": coins,
         'kraken_fees': krakenFees,
         'faldax_fees': faldaxFees
       });
     } catch (error) {
-      await logger.error(error.message)
-      res
+      // await logger.error(error.message)
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
-      return;
     }
   },
 
@@ -316,18 +320,18 @@ module.exports = {
       }).select(["coin_icon", "coin_name", "coin"]);
       return res.json({
         "status": 200,
-        "message": sails.__("Coin list"),
+        "message": sails.__("Coin list").message,
         "data": coins
       });
     } catch (error) {
       await logger.error(error.message)
-      res
+      return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
-      return;
     }
   },
 
@@ -347,19 +351,19 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
                   .sockets
-                  .join(req.socket, room, async function (err) {
-                    if (err) {
-                      console.log(err);
+                  .join(req.socket, room, async function (error) {
+                    if (error) {
+                      // console.log(error);
                       return res
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
                       let pair = await Pairs.findOne({
@@ -371,14 +375,15 @@ module.exports = {
                         return res.json({
                           status: 200,
                           data: pair,
-                          "message": sails.__("Pair retrived success")
+                          "message": sails.__("Pair retrived success").message
                         });
                       } else {
                         return res
                           .status(500)
                           .json({
                             status: 500,
-                            "err": sails.__("Something Wrong")
+                            "err": sails.__("Something Wrong").message,
+                            error_at:error.stack
                           });
                       }
                     }
@@ -388,13 +393,13 @@ module.exports = {
         } else {
           sails
             .sockets
-            .join(req.socket, room, async function (err) {
-              if (err) {
+            .join(req.socket, room, async function (error) {
+              if (error) {
                 return res
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 let pair = await Pairs.findOne({
@@ -406,14 +411,15 @@ module.exports = {
                   return res.json({
                     status: 200,
                     data: pair,
-                    "message": sails.__("Pair retrived success")
+                    "message": sails.__("Pair retrived success").message
                   });
                 } else {
                   return res
                     .status(500)
                     .json({
                       status: 500,
-                      "err": sails.__("Something Wrong")
+                      "err": sails.__("Something Wrong").message,
+                      error_at:sails.__("Something Wrong").message
                     });
                 }
               }
@@ -424,16 +430,17 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -478,18 +485,19 @@ module.exports = {
       if (coinData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Coin list"),
+          "message": sails.__("Coin list").message,
           "data": coinData,
           CoinsCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -516,7 +524,7 @@ module.exports = {
                   .status(400)
                   .json({
                     "status": 400,
-                    "err": sails.__("Coin name or code already in use.")
+                    "err": sails.__("Coin name or code already in use.").message
                   });
               }
               var coins_detail = await Coins
@@ -546,7 +554,7 @@ module.exports = {
               if (coins_detail) {
                 res.json({
                   "status": 200,
-                  "message": sails.__("Coin created success")
+                  "message": sails.__("Coin created success").message
                 });
                 return;
               } else {
@@ -554,7 +562,7 @@ module.exports = {
                   .status(400)
                   .json({
                     "status": 400,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong").message
                   });
               }
             } else {
@@ -562,7 +570,7 @@ module.exports = {
                 .status(400)
                 .json({
                   "status": 400,
-                  "err": sails.__("coin id is not sent")
+                  "err": sails.__("coin id is not sent").message
                 });
             }
           } else {
@@ -570,16 +578,17 @@ module.exports = {
               .status(400)
               .json({
                 "status": 400,
-                "err": sails.__("coin icon is not sent")
+                "err": sails.__("coin icon is not sent").message
               });
           }
         } catch (error) {
-          await logger.error(error.message)
+          // await logger.error(error.message)
           return res
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at:error.stack
             });
         }
       });
@@ -595,7 +604,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            err: sails.__("Invalid coin")
+            err: sails.__("Invalid coin").message
           });
       }
       if (req.body.coin_name) {
@@ -611,7 +620,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__("Coin name or code already in use.")
+              "err": sails.__("Coin name or code already in use.").message
             });
         }
       }
@@ -628,21 +637,22 @@ module.exports = {
       if (!updatedCoin) {
         return res.json({
           "status": 200,
-          "message": sails.__("Something went wrong! could not able to update coin details")
+          "message": sails.__("Something went wrong! could not able to update coin details").message
         });
       }
       return res.json({
         "status": 200,
-        "message": sails.__("Coin details updated success")
+        "message": sails.__("Coin details updated success").message
       });
     } catch (error) {
-      console.log('error', error)
-      await logger.error(error.message)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -656,7 +666,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("coin id is not sent")
+          "err": sails.__("coin id is not sent").message,
+          error_at:sails.__("coin id is not sent").message
         });
     }
     let coinData = await Coins
@@ -672,7 +683,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("Coin deleted success")
+          "message": sails.__("Coin deleted success").message
         });
     }
   },
@@ -692,23 +703,25 @@ module.exports = {
           .json({
             "coin": coin,
             "status": 200,
-            "message": sails.__("Coin list")
+            "message": sails.__("Coin list").message
           });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
