@@ -67,7 +67,7 @@ module.exports = {
       console.log(error);
 
       return exits.serverError({
-        "err": sails.__("Something Wrong")
+        "err": sails.__("Something Wrong").message
       });
     }
   }

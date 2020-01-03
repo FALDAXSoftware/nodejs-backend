@@ -135,7 +135,7 @@ module.exports = {
 
       return res.status(200).json({
         "status": 200,
-        "message": sails.__("Favourites List Success"),
+        "message": sails.__("Favourites List Success").message,
         "data": sortBy(cardData, ['priority'])
       })
     } catch (error) {
@@ -145,7 +145,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

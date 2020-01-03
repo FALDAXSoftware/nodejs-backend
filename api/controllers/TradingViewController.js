@@ -145,7 +145,7 @@ module.exports = {
         .status(200)
         .json({
           s: "error",
-          "errmsg": sails.__("Something Wrong")
+          "errmsg": sails.__("Something Wrong").message
         });
     }
   }
