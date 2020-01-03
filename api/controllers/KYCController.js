@@ -32,7 +32,7 @@ module.exports = {
         if (kyc_details.steps == 3) {
           return res.json({
             'status': 200,
-            'message': sails.__('KYC Updated')
+            'message': sails.__('KYC Updated').message
           })
         }
 
@@ -97,17 +97,17 @@ module.exports = {
           // KYC API start if (updated_kyc[0].steps == 3) {     var greeting = await
           // sails.helpers.kycpicUpload(updated_kyc[0]);     console.log('greeting',
           // greeting);     return res.json({ 'status': 200, 'message': sails.__('Update
-          // KYC') }) } KYC API end
+          // KYC').message }) } KYC API end
           return res.json({
             'status': 200,
-            'message': sails.__('Update KYC')
+            'message': sails.__('Update KYC').message
           })
         } else {
           return res
             .status(400)
             .json({
               'status': 400,
-              'message': sails.__('Update KYC')
+              'message': sails.__('Update KYC').message
             })
         }
       } else {
@@ -137,24 +137,25 @@ module.exports = {
         if (kyc_created) {
           return res.json({
             'status': 200,
-            'message': sails.__('Create KYC')
+            'message': sails.__('Create KYC').message
           })
         } else {
           return res
             .status(400)
             .json({
               'status': 400,
-              'message': sails.__('Create KYC')
+              'message': sails.__('Create KYC').message
             })
         }
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -173,14 +174,15 @@ module.exports = {
       if (req._fileparser.upstreams.length) {
         req
           .file('image')
-          .upload(function (err, file) {
-            console.log(err);
-            if (err) {
+          .upload(function (error, file) {
+            // console.log(error);
+            if (error) {
               return res
                 .status(500)
                 .json({
                   "status": 500,
-                  "err": sails.__("Something Wrong")
+                  "err": sails.__("Something Wrong").message,
+                  error_at:error.stack
                 })
             } else {
               if (file.length <= 0) {
@@ -188,12 +190,13 @@ module.exports = {
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong").message,
+                    error_at:sails.__("Something Wrong").message
                   });
               }
               return res.json({
                 'status': 200,
-                'message': sails.__('KYC Doc Upload'),
+                'message': sails.__('KYC Doc Upload').message,
                 data: file[0].fd
               })
             }
@@ -201,17 +204,18 @@ module.exports = {
       } else {
         return res.status(200).json({
           'status': 200,
-          'message': sails.__("Image Required")
+          'message': sails.__("Image Required").message
         })
       }
-    } catch (err) {
-      console.log("errrrr:", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("errrrr:", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -306,7 +310,7 @@ module.exports = {
           }
         }
       } catch (err) {
-        console.log(err);
+        // console.log(err);
 
         if (data.mtid) {
           let updated = await KYC
@@ -374,13 +378,13 @@ module.exports = {
         KYCData = [];
         return res.json({
           "status": 200,
-          "message": sails.__("KYC Data success"),
+          "message": sails.__("KYC Data success").message,
           "data": KYCData
         });
       } else if (KYCData) {
         return res.json({
           "status": 200,
-          "message": sails.__("KYC Data success"),
+          "message": sails.__("KYC Data success").message,
           "data": KYCData
         });
       } else {
@@ -388,16 +392,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No KYC")
+            "err": sails.__("No KYC").message,
+            error_at:sails.__("No KYC").message
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -428,9 +434,6 @@ module.exports = {
 
       if (status && status != "") {
         query += " AND"
-        // query += whereAppended ?
-        //   " WHERE " :
-        //   " AND ";
         query += " kyc.direct_response = '" + status + "'";
         whereAppended = true;
       }
@@ -450,15 +453,25 @@ module.exports = {
       countQuery = query;
 
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend' ?
-          'DESC' :
-          'ASC');
-        query += " ORDER BY kyc." + sortCol + " " + sortVal;
+        var sortVal
+        if (sortCol = "account_tier") {
+          sortVal = (sortOrder == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY users." + sortCol + " " + sortVal;
+        } else {
+          sortVal = (sortOrder == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY kyc." + sortCol + " " + sortVal;
+        }
+
       } else {
         query += " ORDER BY kyc.id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      console.log(query);
       let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email, users.account_tier" + query, [])
 
       KYCData = KYCData.rows;
@@ -469,19 +482,20 @@ module.exports = {
       if (KYCData) {
         return res.json({
           "status": 200,
-          "message": sails.__("KYC list"),
+          "message": sails.__("KYC list").message,
           "data": KYCData,
           KYCCount
         });
       }
-    } catch (err) {
-      console.log("err", err);
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -498,7 +512,7 @@ module.exports = {
       if (KYCData) {
         return res.json({
           "status": 200,
-          "message": sails.__("KYC Data success"),
+          "message": sails.__("KYC Data success").message,
           "data": KYCData
         });
       } else {
@@ -506,16 +520,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No KYC")
+            "err": sails.__("No KYC").message,
+            error_at:sails.__("No KYC").message
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

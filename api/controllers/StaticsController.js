@@ -29,7 +29,7 @@ module.exports = {
     if (staticData) {
       return res.json({
         "status": 200,
-        "message": sails.__("Static Page retrived success"),
+        "message": sails.__("Static Page retrived success").message,
         "data": staticData
       })
     } else {
@@ -51,18 +51,19 @@ module.exports = {
       if (staticData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Static Page retrived success"),
+          "message": sails.__("Static Page retrived success").message,
           "data": staticData,
           staticCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },

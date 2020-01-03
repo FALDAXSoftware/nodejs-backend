@@ -27,22 +27,26 @@ module.exports = async function (req, res, next) {
               .helpers
               .jwtVerify(token);
             if (verifyData) {
-              req.user = verifyData;          
-            }        
+              req.user = verifyData;
+            }
           }
-                    
+
         }
-        
+
       }
       // Logger for Socket
-      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase();
+      var requestIp = require('request-ip');
+      var ip = requestIp.getClientIp(req);
+      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
       req.headers['Logid'] = generate_unique_string;
+      req.headers['ip_address'] = ip;
       var logger = require('../controllers/logger')
       var object = {
         module: "Request",
         url: req.url,
         type: "Success",
-        log_id: req.headers['Logid']
+        log_id: req.headers['Logid'],
+        ip_address:req.headers['ip_address']
       };
       if (req.user && req.user.id) {
         object.user_id = "user_" + req.user.id;
@@ -53,7 +57,7 @@ module.exports = async function (req, res, next) {
       if (req.query) {
         object.params = req.query;
       }
-      logger.info(object, "Socket Request success");
+      await logger.info(object, "Incoming Socket Request");
 
       var oldWrite = res.write,
       oldEnd = res.end;
@@ -63,18 +67,22 @@ module.exports = async function (req, res, next) {
         oldWrite.apply(res, arguments);
       };
       var body;
-      res.end = function (chunk) {
+      res.end = async function (chunk) {
         if (chunk) chunks.push(chunk);
-        body = Buffer.concat(chunks).toString('utf8');        
+        body = Buffer.concat(chunks).toString('utf8');
         oldEnd.apply(res, arguments);
         var message = 'Response message';
+        var error_at = '';
         // console.log("body",body);
-        if( (body != "_sailsIoJSConnect();" && body != '') && JSON.parse(body).status ){
+        if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
           if( JSON.parse(body).message ){
-            message = JSON.parse(body).message  
+            message = JSON.parse(body).message
           }
           if( JSON.parse(body).err ){
-            message = JSON.parse(body).err  
+            message = JSON.parse(body).err
+          }
+          if( res.statusCode > 200){
+            error_at = (JSON.parse(body).error_at ? (JSON.parse(body).error_at):"-");
           }
         }
         var response = body;
@@ -84,9 +92,13 @@ module.exports = async function (req, res, next) {
           type: "Error",
           statusCode: res.statusCode,
           // responseData:JSON.stringify(response),
-          log_id: req.headers['Logid']
+          log_id: req.headers['Logid'],
+          ip_address:req.headers['ip_address']
         };
-        
+        if( res.statusCode > 200){
+          object.error_at = error_at;
+        }
+        console.log("object",object);
         if( res.statusCode != 200 && res.statusCode >= 201 ){
           object.responseData = (body);
         }
@@ -98,11 +110,11 @@ module.exports = async function (req, res, next) {
           if (req.url == '/login') {
             object.user_id = "user_" + JSON.parse(body).user.id;
           }
-          logger.info(object, message);
+          await logger.info(object, message);
         }else{
-          logger.error(object, message);
+          await logger.error(object, message);
         }
-        
+
       };
       // Logger ends
     }
@@ -123,14 +135,14 @@ module.exports = async function (req, res, next) {
           .status(403)
           .json({
             status: 403,
-            err: 'Invalid Authorization token'
+            err: sails.__('Invalid Authorization token').message
           });
       }
     } else if (req.param('token')) {
       token = req.param('token');
       // We delete the token from param to not mess with blueprints
       delete req.query.token;
-    } else if (req.isSocket) {      
+    } else if (req.isSocket) {
       if (req.socket.handshake.headers.authorization) {
         var parts = req
           .socket
@@ -150,7 +162,7 @@ module.exports = async function (req, res, next) {
             .status(403)
             .json({
               status: 403,
-              err: 'Invalid Authorization token'
+              err: sails.__('Invalid Authorization token').message
             });
         }
       } else {
@@ -158,7 +170,7 @@ module.exports = async function (req, res, next) {
           .status(401)
           .json({
             status: 401,
-            err: 'No Authorization header was found'
+            err: sails.__('No Authorization header was found').message
           });
       }
     } else {
@@ -166,7 +178,7 @@ module.exports = async function (req, res, next) {
         .status(401)
         .json({
           status: 401,
-          err: 'No Authorization header was found'
+          err: sails.__('No Authorization header was found').message
         });
     }
 
@@ -187,7 +199,7 @@ module.exports = async function (req, res, next) {
             .status(403)
             .json({
               status: 403,
-              err: 'Your User has been deleted.'
+              err: sails.__('Your User has been deleted').message
             });
         } else {
           var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
@@ -217,7 +229,7 @@ module.exports = async function (req, res, next) {
                 .status(401)
                 .json({
                   "status": 401,
-                  "err": sails.__("Time for whitelist has been expired.")
+                  "err": sails.__("Time for whitelist has been expired.").message
                 });
             } else {
               next();
@@ -225,18 +237,6 @@ module.exports = async function (req, res, next) {
           } else {
             next();
           }
-
-
-          // if (userData.whitelist_ip.indexOf(ip) > -1) {
-          //   next();
-          // } else {
-          //   return res
-          //     .status(403)
-          //     .json({
-          //       status: 403,
-          //       err: 'Your IP has not been whitelisted. Please whitelist your IP to continue.'
-          //     });
-          // }
         }
       } else {
         next();
@@ -248,7 +248,7 @@ module.exports = async function (req, res, next) {
       .status(403)
       .json({
         status: 403,
-        err: 'Your session has been expired. Please Login again to continue.'
+        err: sails.__('Your session has been expired. Please Login again to continue').message
       });
   }
 };

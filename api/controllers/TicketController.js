@@ -30,7 +30,7 @@ module.exports = {
             // response available as `responseData` in `yourview`
             return res.json({
               "status": 200,
-              "message": sails.__("Ticket list"),
+              "message": sails.__("Ticket list").message,
               "data": JSON.parse(responseData)
             });
           } catch (e) {
@@ -66,7 +66,7 @@ module.exports = {
             // response available as `responseData` in `yourview`
             return res.json({
               "status": 200,
-              "message": sails.__("Ticket list"),
+              "message": sails.__("Ticket list").message,
               "data": JSON.parse(responseData)
             });
           } catch (e) {

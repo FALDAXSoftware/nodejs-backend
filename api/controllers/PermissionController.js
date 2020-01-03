@@ -24,16 +24,17 @@ module.exports = {
 
             return res.json({
                 "status": 200,
-                "message": "All permissions listed",
+                "message": sails.__("All permissions listed").message,
                 allClasses
             });
-        } catch (err) {
-            await logger.error(err.message)
+        } catch (error) {
+            // await logger.error(error.message)
             return res
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong")
+                    "err": sails.__("Something Wrong").message,
+                    error_at:error.stack
                 });
         }
     }

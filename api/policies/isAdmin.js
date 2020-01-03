@@ -75,7 +75,7 @@ module.exports = async function (req, res, next) {
                     .status(403)
                     .json({
                       status: 403,
-                      err: 'You are not allowed to access this route'
+                      err: sails.__('You are not allowed to access this route').message
                     })
                 }
               } else {
@@ -83,7 +83,7 @@ module.exports = async function (req, res, next) {
                   .status(403)
                   .json({
                     status: 403,
-                    err: 'You are not allowed to access this route'
+                    err: sails.__('You are not allowed to access this route').message
                   })
               }
             }
@@ -93,7 +93,7 @@ module.exports = async function (req, res, next) {
               .status(403)
               .json({
                 status: 403,
-                err: 'Your User has been deleted.'
+                err: sails.__('Your User has been deleted').message
               });
           } else {
             // var ip;
@@ -125,7 +125,7 @@ module.exports = async function (req, res, next) {
                   .status(401)
                   .json({
                     "status": 401,
-                    "err": sails.__("Time for whitelist has been expired.")
+                    "err": sails.__("Time for whitelist has been expired.").message
                   });
               } else {
                 next();
@@ -133,17 +133,6 @@ module.exports = async function (req, res, next) {
             } else {
               next();
             }
-
-            // if (userData.whitelist_ip.indexOf(ip) > -1) {
-            //   return next();
-            // } else {
-            //   return res
-            //     .status(403)
-            //     .json({
-            //       status: 403,
-            //       err: 'Your IP has not been whitelisted. Please whitelist your IP to continue.'
-            //     });
-            // }
           }
         } else {
           return next();
@@ -151,15 +140,19 @@ module.exports = async function (req, res, next) {
       } else {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
     }
 
     return next();
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    return res
+        .status(500)
+        .json({
+          status: 500,
+          err: sails.__("Something Wrong").message,
+          error_at:error.stack
+        })
   }
-
-
 };
