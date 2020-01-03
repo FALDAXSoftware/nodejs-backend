@@ -453,7 +453,7 @@ module.exports = {
       return res.status(500).json({
         "status": 500,
         "message": sails.__("system_health_not_ok").message,
-        error_at:sails.__("system_health_not_ok").message
+        error_at:error.stack
       })
     }
   }

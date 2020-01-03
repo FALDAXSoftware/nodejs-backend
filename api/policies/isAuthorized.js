@@ -35,7 +35,6 @@ module.exports = async function (req, res, next) {
 
       }
       // Logger for Socket
-      var requestIp = require('request-ip');
       var ip = requestIp.getClientIp(req);
       var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
       req.headers['Logid'] = generate_unique_string;
