@@ -49,6 +49,8 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
+    console.log("from send", inputs);
+
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     request({
@@ -61,7 +63,7 @@ module.exports = {
       },
       body: {
         address: inputs.address,
-        amount: parseFloat(inputs.amount),
+        amount: parseFloat(inputs.amount).toString(),
         walletPassphrase: passphrase_value
       },
       json: true

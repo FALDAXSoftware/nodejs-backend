@@ -47,7 +47,7 @@ module.exports = {
 
         var recipients = [
             {
-                "amount": parseFloat(inputs.amount * 1e8),
+                "amount": parseFloat(inputs.amount * 1e8).toString(),
                 "address": inputs.address
             }
         ]
@@ -69,12 +69,17 @@ module.exports = {
                 json: true
             }, function (err, httpResponse, body) {
                 if (err) {
+                    console.log(err);
+
                     return exits.error(err);
                 }
                 if (body.error) {
                     return exits.error(body);
                 }
-                var feeValue = parseFloat((body.feeInfo.fee) / 1e8)
+                var feeValue = 0
+                if (body.feeInfo) {
+                    feeValue = parseFloat((body.feeInfo.fee) / 1e8)
+                }
                 return exits.success(feeValue);
             });
         } else {

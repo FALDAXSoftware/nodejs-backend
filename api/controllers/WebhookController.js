@@ -64,16 +64,18 @@ module.exports = {
 
   // webhook on receive
   webhookOnReceive: async function (req, res) {
-    
+
     // res.end();
     console.log("-------------Recieved----------------");
-    console.log("req.body",req.body);
+    console.log("req.body", req.body);
+    // Check For Confirmed transfer
     if (req.body.state == "confirmed") {
+      let isToken = false;
       let transferId = req.body.transfer;
       console.log("transferId", transferId)
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
       console.log("transfer", transfer)
-      if (transfer.state == "confirmed") {
+      if (transfer.state == "confirmed" && transfer.type == "receive") {
         let alreadyWalletHistory = await WalletHistory.find({
           transaction_type: "receive",
           transaction_id: req.body.hash
@@ -83,9 +85,17 @@ module.exports = {
 
         if (alreadyWalletHistory.length == 0) {
           // Object Of receiver
-          let dest = transfer.outputs[0];
-          // Object of sender
-          let source = transfer.outputs[1];
+          let dest = null
+          let source = null
+          if (transfer.outputs) {
+            dest = transfer.outputs[0];
+            // Object of sender
+            source = transfer.outputs[1];
+          } else if (transfer.entries) {
+            dest = transfer.entries[0];
+            source = transfer.entries[1];
+          }
+
 
           // receiver wallet
           let userWallet = await Wallet.findOne({
@@ -123,11 +133,30 @@ module.exports = {
               source = temp;
             }
           }
-
+          let coin = await Coins.findOne({
+            id: userWallet.coin_id
+          });
+          // Check For Token
+          if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
+            let token = await Coins.findOne({
+              coin_code: req.body.coin,
+              deleted_at: null
+            })
+            let tokenUserWallet = await Wallet.findOne({
+              coin_id: token.id,
+              user_id: userWallet.user_id
+            })
+            userWallet = {
+              ...tokenUserWallet,
+              receive_address: userWallet.receiveAddress,
+              send_address: userWallet.send_address
+            }
+            isToken = true
+          }
           console.log("dest", dest, "source", source)
 
           // transaction amount
-          let amount = (dest.value / 100000000);
+          let amount = (dest.value / 1e8);
 
           console.log("amount", amount)
           console.log("userWallet", userWallet)
@@ -212,9 +241,7 @@ module.exports = {
 
 
             // Send fund to Warm and custody wallet
-            let coin = await Coins.findOne({
-              id: userWallet.coin_id
-            });
+
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
             console.log("warmWallet", warmWallet)
             let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
@@ -240,10 +267,14 @@ module.exports = {
               //     warmWalletAmount = (dest.value * 50) / 100;
               //     custodialWalletAmount = (dest.value * 50) / 100;
               // }
-
+              if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
+                warmWalletAmount = Math.ceil(warmWalletAmount)
+                custodialWalletAmount = Math.floor(custodialWalletAmount)
+              }
+              console.log("warmWalletAmount", warmWalletAmount)
+              console.log("custodialWalletAmount", custodialWalletAmount)
               // send amount to warm wallet
-
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
               let transactionLog = [];
               // Log Transafer in transaction table
               transactionLog.push({
@@ -259,19 +290,21 @@ module.exports = {
 
 
               // send amount to custodial wallet
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
+              if (custodialWalletAmount > 0) {
+                await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
 
-              // Log Transafer in transaction table
-              transactionLog.push({
-                source_address: userWallet.receive_address,
-                destination_address: custodialWallet.receiveAddress.address,
-                amount: (custodialWalletAmount / 1e8),
-                user_id: userWallet.user_id,
-                transaction_type: "receive",
-                coin_id: coin.id,
-                is_executed: true,
-                transaction_id: req.body.hash
-              });
+                // Log Transafer in transaction table
+                transactionLog.push({
+                  source_address: userWallet.receive_address,
+                  destination_address: custodialWallet.receiveAddress.address,
+                  amount: (custodialWalletAmount / 1e8),
+                  user_id: userWallet.user_id,
+                  transaction_type: "receive",
+                  coin_id: coin.id,
+                  is_executed: true,
+                  transaction_id: req.body.hash
+                });
+              }
 
               // Insert logs in taransaction table
               await TransactionTable.createEach([...transactionLog]);
@@ -422,6 +455,7 @@ module.exports = {
 
   webhookOnSend: async function (req, res) {
     // Check Status of Transaction
+    console.log("webhook from send", req.body);
 
     if (req.body.state == "confirmed") {
 
@@ -429,9 +463,9 @@ module.exports = {
       // get transaction details
       let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
 
-      let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+      // let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
       // check status of transaction in transaction details
-      if (transfer.state == "confirmed") {
+      if (transfer.state == "confirmed" && transfer.type == "receive") {
         let walletHistory = await WalletHistory.findOne({
           transaction_id: req.body.hash,
           is_executed: false

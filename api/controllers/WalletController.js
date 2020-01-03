@@ -342,6 +342,21 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+      let ethCoin = null
+      if (coin.iserc == true) {
+        ethCoin = await Coins.findOne({
+          deleted_at: null,
+          is_active: true,
+          coin: "ETH"
+        });
+        coin = {
+          ...coin,
+          hot_receive_wallet_address: ethCoin.hot_receive_wallet_address,
+          warm_wallet_address: ethCoin.warm_wallet_address,
+          hot_send_wallet_address: ethCoin.hot_send_wallet_address,
+          custody_wallet_address: ethCoin.custody_wallet_address
+        }
+      }
 
       if (coin.min_limit > amount) {
         await logger.error({
@@ -463,7 +478,19 @@ module.exports = {
                     is_active: true,
                     user_id: user_id
                   });
-
+                  if (coin.iserc == true) {
+                    let ethWallet = await Wallet.findOne({
+                      deleted_at: null,
+                      coin_id: ethCoin.id,
+                      is_active: true,
+                      user_id: user_id
+                    });
+                    wallet = {
+                      ...wallet,
+                      receive_address: ethWallet.receive_address,
+                      send_address: ethWallet.send_address
+                    }
+                  }
                   //Checking if wallet is found or not
                   if (wallet) {
 
@@ -476,11 +503,19 @@ module.exports = {
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait === undefined) {
-
+                          console.log("warm wallet balance", warmWalletData);
+                          let warmWalletBalance = 0
+                          if (warmWalletData.balance) {
+                            warmWalletBalance = warmWalletData.balance
+                          } else if (warmWalletData.balanceString) {
+                            warmWalletBalance = parseInt(warmWalletData.balanceString)
+                          }
                           //Check for warm wallet minimum thresold
-                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
+                          if (warmWalletBalance >= coin.min_thresold && (warmWalletBalance - total_fees) >= 0 && (warmWalletBalance - total_fees) >= coin.min_thresold) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
+                            console.log(coin, wallet);
+
                             // receive and receive to destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
 
@@ -1023,9 +1058,10 @@ module.exports = {
               user_id: req.user.id
             }
           })
-
-          walletUserData.receive_address = walletData.receive_address;
-          walletUserData.send_address = walletData.send_address;
+          if (walletData) {
+            walletUserData.receive_address = walletData.receive_address;
+            walletUserData.send_address = walletData.send_address;
+          }
         }
 
 
@@ -1046,6 +1082,7 @@ module.exports = {
         walletUserData['coin_name'] = coinData.coin_name;
         walletUserData['min_limit'] = coinData.min_limit;
         walletUserData['max_limit'] = coinData.max_limit;
+        walletUserData['iserc'] = coinData.iserc;
         // let walletTransCount = await WalletHistory.count({ user_id: req.user.id,
         // coin_id: coinData.id, deleted_at: null });
         if (walletTransData) {
@@ -2283,6 +2320,8 @@ module.exports = {
           "data": reposneData
         })
     } catch (error) {
+      console.log(error);
+
       if (error.name == "ImplementationError") {
         return res
           .status(500)

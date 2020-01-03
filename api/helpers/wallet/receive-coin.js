@@ -33,12 +33,21 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     //Getting receive address for all coins
-    var coinData = await Coins.findOne({deleted_at: null, coin_code: inputs.coin})
+    var coinData = await Coins.findOne({ deleted_at: null, coin_code: inputs.coin })
 
     if (coinData !== undefined) {
       //Getting wallet address for particular user and particular wallet
-      var walletData = await Wallet.find({coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null});
+      var walletData = await Wallet.find({ coin_id: coinData.id, user_id: inputs.user_id, deleted_at: null });
       walletData = walletData[0];
+      if (coinData.iserc == true) {
+        let ethCoin = await Coins.findOne({ deleted_at: null, coin: "ETH" })
+        let ethWallet = await Wallet.findOne({ coin_id: ethCoin.id, user_id: inputs.user_id, deleted_at: null });
+        walletData = {
+          ...walletData,
+          receive_address: ethWallet.receive_address,
+          send_address: ethWallet.send_address
+        }
+      }
 
       //Converting qrcode to data url
       QRCode.toDataURL(walletData.receive_address, function (err, url) {
@@ -47,7 +56,7 @@ module.exports = {
 
           return exits.error(err);
         } else {
-          return exits.success({'url': url, 'receive_address': walletData.receive_address});
+          return exits.success({ 'url': url, 'receive_address': walletData.receive_address });
         }
       })
     } else {
