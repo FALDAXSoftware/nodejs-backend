@@ -24,7 +24,7 @@ module.exports = {
       // console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -53,7 +53,7 @@ module.exports = {
       console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -79,7 +79,7 @@ module.exports = {
       // console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -105,7 +105,7 @@ module.exports = {
       // console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -132,7 +132,7 @@ module.exports = {
       console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -159,7 +159,7 @@ module.exports = {
       console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -185,7 +185,7 @@ module.exports = {
       // console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("something Wrong"),
+        "err": sails.__("something Wrong").message,
         error_at:error.stack
       });
     }
@@ -212,7 +212,7 @@ module.exports = {
       console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -238,7 +238,7 @@ module.exports = {
       // console.log(error);
       return res.json({
         status: 500,
-        "err": sails.__("Something Wrong"),
+        "err": sails.__("Something Wrong").message,
         error_at:error.stack
       });
     }
@@ -270,8 +270,8 @@ module.exports = {
       if (volume < cryptoLimit.min_limit) {
         return res.status(500).json({
           status: 500,
-          err: sails.__("Minimum amount requiried"),
-          error_at:sails.__("Minimum amount requiried")
+          err: sails.__("Minimum amount requiried").message,
+          error_at:sails.__("Minimum amount requiried").message
         });
       }
       let userId = req.user.id;
@@ -446,7 +446,7 @@ module.exports = {
 
                       return res.json({
                         status: 200,
-                        message: sails.__("Order Success")
+                        message: sails.__("Order Success").message
                       });
                     }
                   }
@@ -458,8 +458,8 @@ module.exports = {
                 .status(500)
                 .json({
                   status: 500,
-                  message: sails.__("Insufficient balance to place order"),
-                  error_at:sails.__("Insufficient balance to place order")
+                  message: sails.__("Insufficient balance to place order").message,
+                  error_at:sails.__("Insufficient balance to place order").message
                 });
             }
           } else {
@@ -467,8 +467,8 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                message: "No User Wallet has been found.",
-                error_at:"No User Wallet has been found."
+                message: sails.__("No User Wallet has been found.").message,
+                error_at:sails.__("No User Wallet has been found.").message
               });
           }
         } else {
@@ -476,15 +476,15 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong"),
-              error_at:sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at:sails.__("Something Wrong").message
             });
         }
       } else {
         res.json({
           "status": 200,
-          "message": sails.__(geo_fencing_data.msg),
-          error_at:sails.__(geo_fencing_data.msg)
+          "message": sails.__(geo_fencing_data.msg).message,
+          error_at:sails.__(geo_fencing_data.msg).message
         });
       }
     } catch (error) {
@@ -494,7 +494,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

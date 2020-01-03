@@ -22,27 +22,58 @@ module.exports = {
             description: 'Type; 1:Request, 2.Success, 3:Error',
             required: true
         },
+        req: {
+            type: 'json',
+            description: '{}',
+            required: true
+        },
         message: {
             type: 'string',
             description: 'Message',
             required: false
-        },
+        }
     },
     exits: {
     },
 
     fn: async function (inputs, exits) {
-        var temp = await sails.helpers.getDecryptData("77b4af3044d472f5e07456112f32a5ffa2c8fd27d353f112e315e4e53c7600c0a2e9d2479fcfd18446c348e060119d9d8ec78fb8fc8823a7ef67f575b6fa002fd4f298");
-        console.log(temp);
         var logger = require("../controllers/logger")
-        // var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
-        // req.headers['Logid'] = generate_unique_string;
-        await logger.info({
-            "module": inputs.module,
-            "user_id": "user_" + (inputs.user_id),
-            "url": inputs.url,
-            "type": inputs.type
-        }, inputs.message)
+        var headers = [];
+        if (inputs.type == 1 || inputs.type == "1") {
+            var requestIp = require('request-ip');
+            var ip = requestIp.getClientIp(inputs.req);
+            var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + (new Date().valueOf());
+            headers['Logid'] = generate_unique_string;
+            headers['ip_address'] = ip;
+        }
+        var type='';
+        if( inputs.type == 1){
+            type='Request';
+        }else if( inputs.type == 2){
+            type='Success';
+        }else if( inputs.type == 3){
+            type='Error';
+        }
+        if( inputs.type == 3 || inputs.type == "3" ){
+            await logger.error({
+                module: inputs.module,
+                user_id: "user_" + (inputs.user_id),
+                url: inputs.url,
+                type: inputs.type,
+                log_id: headers['Logid'],
+                ip_address:headers['ip_address']
+            }, inputs.message)
+        }else{
+            await logger.info({
+                module: inputs.module,
+                user_id: "user_" + (inputs.user_id),
+                url: inputs.url,
+                type: inputs.type,
+                log_id: headers['Logid'],
+                ip_address:headers['ip_address']
+            }, inputs.message)
+        }
+
         return exits.success(1);
     }
 };

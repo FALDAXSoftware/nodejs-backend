@@ -12,7 +12,7 @@ module.exports = {
       let templates = await EmailTemplate.find().sort('id ASC');
       return res.json({
         status: 200,
-        message: sails.__("Email template retrive success"),
+        message: sails.__("Email template retrive success").message,
         templates
       });
     } catch (error) {
@@ -21,7 +21,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -40,7 +40,7 @@ module.exports = {
       });
       return res.json({
         status: 200,
-        message: sails.__("Email template update success"),
+        message: sails.__("Email template update success").message,
       });
     } catch (error) {
       // await logger.error(error.message)
@@ -48,7 +48,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -64,7 +64,7 @@ module.exports = {
       });
       return res.json({
         status: 200,
-        message: sails.__("Email template retrive success"),
+        message: sails.__("Email template retrive success").message,
         template
       });
     } catch (error) {
@@ -73,7 +73,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
