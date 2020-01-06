@@ -27,7 +27,7 @@ module.exports.routes = {
   'post /toggle-panic-status': 'RootController.panicBtn',
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
-  'get /testemail': 'RootController.testemail',
+  // 'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
   'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
   'get /admin/get-coin-fees-coin': 'AdminController.getCoinFees',
@@ -472,7 +472,7 @@ module.exports.routes = {
 
   //simplexAPICall
   'get /call-simplex': 'SimplexController.simplexAPICall',
-  'delete /delete-all-events': 'SimplexController.deleteAllEvents',
+  // 'delete /delete-all-events': 'SimplexController.deleteAllEvents',
 
   // Get Users Wallet Data
   'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue',
@@ -512,7 +512,7 @@ module.exports.routes = {
   "get /admin/get-warm-wallet-transaction": "WalletController.getWarmWalletTransaction",
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
-  // Temp 
+  // Temp
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
   "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",

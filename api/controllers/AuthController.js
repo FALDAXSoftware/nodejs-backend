@@ -1035,7 +1035,7 @@ module.exports = {
         let email_verify_code = randomize('0', 6);
         await Users
           .update({
-            email: user.id
+            id: user.id
           })
           .set({
             email_verify_token: email_verify_code
