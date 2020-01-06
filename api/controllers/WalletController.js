@@ -1166,9 +1166,9 @@ module.exports = {
           "type": "Success"
         }, sails.__("Address Create Success"))
         return res.json({
-          status: 200,
-          message: sails.__("Address Create Success"),
-          data: walletDataCreate
+          status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
+          message: (coin_code != "SUSU") ? (sails.__("Address Create Success")) : (walletDataCreate.message),
+          data: (coin_code != "SUSU") ? (walletDataCreate) : (walletDataCreate.data)
         })
       } else {
         await logger.error({

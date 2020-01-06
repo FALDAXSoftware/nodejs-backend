@@ -217,9 +217,10 @@ module.exports.local = {
   "SIMPLEX_BACKEND_URL": process.env.SIMPLEX_BACKEND_URL,
   "SIMPLEX_ACCESS_TOKEN": process.env.SIMPLEX_ACCESS_TOKEN,
   // For Logger
-  LoggerRequest:"Request",
-  LoggerSuccess:"Success",
-  LoggerError:"Error",
-  LoggerIncoming:"Incoming request",
-  Login: "Login"
+  LoggerRequest: "Request",
+  LoggerSuccess: "Success",
+  LoggerError: "Error",
+  LoggerIncoming: "Incoming request",
+  Login: "Login",
+  SUSUCOIN_URL: process.env.SUSUCOIN_URL
 }
