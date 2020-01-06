@@ -235,7 +235,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -356,7 +356,7 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("Minimum limit for the coin ").message + coin_code + " is " + coin.min_limit + " " + coin.coin_code,
-            error_at:sails.__("Minimum limit for the coin ").message + coin_code + " is " + coin.min_limit + " " + coin.coin_code
+            error_at: sails.__("Minimum limit for the coin ").message + coin_code + " is " + coin.min_limit + " " + coin.coin_code
           })
       }
 
@@ -808,7 +808,7 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("panic button enabled").message,
-            error_at:esails.__("panic button enabled").message
+            error_at: esails.__("panic button enabled").message
           })
       }
     } catch (error) {
@@ -832,7 +832,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -886,7 +886,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("Something Wrong").message,
-            error_at:sails.__("Something Wrong").message
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -902,7 +902,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1092,7 +1092,7 @@ module.exports = {
         return res.json({
           status: 500,
           err: sails.__("No Data").message,
-          error_at:sails.__("No Data").message
+          error_at: sails.__("No Data").message
         })
       }
 
@@ -1109,7 +1109,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1174,9 +1174,9 @@ module.exports = {
         //   "type": "Success"
         // }, sails.__("Address Create Success").message)
         return res.json({
-          status: 200,
-          message: sails.__("Address Create Success").message,
-          data: walletDataCreate
+          status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
+          message: (coin_code != "SUSU") ? (sails.__("Address Create Success")) : (walletDataCreate.message),
+          data: (coin_code != "SUSU") ? (walletDataCreate) : (walletDataCreate.data)
         })
       } else {
         // await logger.error({
@@ -1189,7 +1189,7 @@ module.exports = {
           status: 500,
           message: sails.__("Address Not Create Success").message,
           data: walletDataCreate,
-          error_at:sails.__("Address Not Create Success").message
+          error_at: sails.__("Address Not Create Success").message
         })
       }
     } catch (error) {
@@ -1205,7 +1205,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1249,7 +1249,7 @@ module.exports = {
           status: 500,
           message: sails.__("Address already Create Success").message,
           data: walletDataCreate,
-          error_at:sails.__("Address already Create Success").message
+          error_at: sails.__("Address already Create Success").message
         })
       } else if (walletDataCreate) {
         //Sending email to user for wallet Address Creation
@@ -1299,7 +1299,7 @@ module.exports = {
           status: 500,
           message: sails.__("Address Not Create Success").message,
           data: walletDataCreate,
-          error_at:sails.__("Address Not Create Success").message
+          error_at: sails.__("Address Not Create Success").message
         })
       }
     } catch (error) {
@@ -1315,7 +1315,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1357,7 +1357,7 @@ module.exports = {
           status: 500,
           message: sails.__("Address already Create Success").message,
           data: walletDataCreate,
-          error_at:sails.__("Address already Create Success").message
+          error_at: sails.__("Address already Create Success").message
         })
       } else if (walletDataCreate) {
         //Sending email to user for wallet Address Creation
@@ -1407,7 +1407,7 @@ module.exports = {
           status: 500,
           message: sails.__("Address Not Create Success").message,
           data: walletDataCreate,
-          error_at:sails.__("Address Not Create Success").message
+          error_at: sails.__("Address Not Create Success").message
         })
       }
     } catch (error) {
@@ -1423,7 +1423,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1620,7 +1620,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1673,7 +1673,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1727,7 +1727,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1780,7 +1780,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2057,7 +2057,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2118,7 +2118,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2172,7 +2172,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2233,7 +2233,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2285,7 +2285,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -2314,7 +2314,7 @@ module.exports = {
           .json({
             "status": 500,
             "err": sails.__("Insufficient Balance in warm Wallet").message,
-            error_at:error.stack
+            error_at: error.stack
           })
       }
       return res
@@ -2322,7 +2322,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }
