@@ -68,18 +68,19 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("News retrived success"),
+        "message": sails.__("News retrived success").message,
         "data": news,
         newsCount
       });
     } catch (error) {
-      console.log('error', error)
-      await logger.error(error.message)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -99,15 +100,16 @@ module.exports = {
         });
       return res.json({
         "status": 200,
-        "message": sails.__("News Status Update success")
+        "message": sails.__("News Status Update success").message
       });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -124,22 +126,23 @@ module.exports = {
       if (newsDetails) {
         return res.json({
           "status": 200,
-          "message": sails.__("News Status Update success"),
+          "message": sails.__("News Status Update success").message,
           data: newsDetails
         });
       } else {
         return res.json({
           "status": 400,
-          "message": sails.__("No news found")
+          "message": sails.__("No news found").message
         });
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

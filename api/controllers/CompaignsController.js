@@ -12,7 +12,7 @@ const {
 
 module.exports = {
 
-  /** 
+  /**
    * get Compaigns list
    */
   list: async function (req, res) {
@@ -20,7 +20,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       let {
@@ -73,7 +73,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("compaigns retrieve success"),
+            "message": sails.__("compaigns retrieve success").message,
             "data": {
               campaigns: get_data.rows,
               total
@@ -84,19 +84,20 @@ module.exports = {
           .status(200)
           .json({
             status: 200,
-            "message": sails.__("compaigns not found"),
+            "message": sails.__("compaigns not found").message,
             data: []
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -112,7 +113,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       let req_body = req.body;
@@ -136,21 +137,21 @@ module.exports = {
         'campaign_offers.*.is_active': 'required|boolean',
       }
         , {
-          "usage": sails.__("Campaign usage"),
-          "label": sails.__("Campaign label"),
-          "no_of_transactions": sails.__("Campaign no_of_transactions"),
-          "fees_allowed": sails.__("Campaign fees_allowed"),
-          "start_date": sails.__("Campaign start_date"),
-          "end_date": sails.__("Campaign end_date"),
-          "is_active": sails.__("Campaign is_active"),
-          "campaign_offers.*.code": sails.__("Campaign code"),
-          "campaign_offers.*.is_default_values": sails.__("Campaign is_default_values"),
-          "campaign_offers.*.no_of_transactions": sails.__("Campaign no_of_transactions"),
-          "campaign_offers.*.fees_allowed": sails.__("Campaign fees_allowed"),
-          "campaign_offers.*.user_id": sails.__("Campaign user_id"),
-          "campaign_offers.*.start_date": sails.__("Campaign start_date"),
-          "campaign_offers.*.end_date": sails.__("Campaign end_date"),
-          "campaign_offers.*.is_active": sails.__("Campaign is_active"),
+          "usage": sails.__("Campaign usage").message,
+          "label": sails.__("Campaign label").message,
+          "no_of_transactions": sails.__("Campaign no_of_transactions").message,
+          "fees_allowed": sails.__("Campaign fees_allowed").message,
+          "start_date": sails.__("Campaign start_date").message,
+          "end_date": sails.__("Campaign end_date").message,
+          "is_active": sails.__("Campaign is_active").message,
+          "campaign_offers.*.code": sails.__("Campaign code").message,
+          "campaign_offers.*.is_default_values": sails.__("Campaign is_default_values").message,
+          "campaign_offers.*.no_of_transactions": sails.__("Campaign no_of_transactions").message,
+          "campaign_offers.*.fees_allowed": sails.__("Campaign fees_allowed").message,
+          "campaign_offers.*.user_id": sails.__("Campaign user_id").message,
+          "campaign_offers.*.start_date": sails.__("Campaign start_date").message,
+          "campaign_offers.*.end_date": sails.__("Campaign end_date").message,
+          "campaign_offers.*.is_active": sails.__("Campaign is_active").message,
         }
       );
 
@@ -198,17 +199,18 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("campaign created"),
+        "message": sails.__("campaign created").message,
         "data": all_data
       });
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -223,10 +225,10 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
-      // let validator1 = new Validator(req.params, { 
+      // let validator1 = new Validator(req.params, {
       //   id: 'required'
       // });
       // let matched1 = await validator1.check();
@@ -264,22 +266,22 @@ module.exports = {
         'campaign_offers_new.*.end_date': 'date',
       },
         {
-          "label": sails.__("Campaign label"),
-          "no_of_transactions": sails.__("Campaign no_of_transactions"),
-          "start_date": sails.__("Campaign start_date"),
-          "end_date": sails.__("Campaign end_date"),
-          "is_active": sails.__("Campaign is_active"),
-          "campaign_offers.*.start_date": sails.__("Campaign start_date"),
-          "campaign_offers.*.end_date": sails.__("Campaign end_date"),
-          "campaign_offers.*.is_active": sails.__("Campaign is_active"),
-          "campaign_offers_new.*.code": sails.__("Campaign code"),
-          "campaign_offers_new.*.is_default_values": sails.__("Campaign is_default_values"),
-          "campaign_offers_new.*.no_of_transactions": sails.__("Campaign no_of_transactions"),
-          "campaign_offers_new.*.fees_allowed": sails.__("Campaign fees_allowed"),
-          "campaign_offers_new.*.user_id": sails.__("Campaign user_id"),
-          "campaign_offers_new.*.start_date": sails.__("Campaign start_date"),
-          "campaign_offers_new.*.end_date": sails.__("Campaign end_date"),
-          "campaign_offers_new.*.is_active": sails.__("Campaign is_active"),
+          "label": sails.__("Campaign label").message,
+          "no_of_transactions": sails.__("Campaign no_of_transactions").message,
+          "start_date": sails.__("Campaign start_date").message,
+          "end_date": sails.__("Campaign end_date").message,
+          "is_active": sails.__("Campaign is_active").message,
+          "campaign_offers.*.start_date": sails.__("Campaign start_date").message,
+          "campaign_offers.*.end_date": sails.__("Campaign end_date").message,
+          "campaign_offers.*.is_active": sails.__("Campaign is_active").message,
+          "campaign_offers_new.*.code": sails.__("Campaign code").message,
+          "campaign_offers_new.*.is_default_values": sails.__("Campaign is_default_values").message,
+          "campaign_offers_new.*.no_of_transactions": sails.__("Campaign no_of_transactions").message,
+          "campaign_offers_new.*.fees_allowed": sails.__("Campaign fees_allowed").message,
+          "campaign_offers_new.*.user_id": sails.__("Campaign user_id").message,
+          "campaign_offers_new.*.start_date": sails.__("Campaign start_date").message,
+          "campaign_offers_new.*.end_date": sails.__("Campaign end_date").message,
+          "campaign_offers_new.*.is_active": sails.__("Campaign is_active").message,
         });
 
 
@@ -348,22 +350,23 @@ module.exports = {
       var all_data = create_data;
       return res.json({
         "status": 200,
-        "message": sails.__("campaign updated"),
+        "message": sails.__("campaign updated").message,
         "data": all_data
       });
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
 
-  /** 
+  /**
    * get Single Compaign
    */
   get: async function (req, res) {
@@ -371,7 +374,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       var id = req.param('id');
@@ -409,7 +412,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("campaigns retrieve success"),
+            "message": sails.__("campaigns retrieve success").message,
             "data": get_data
           })
       } else {
@@ -417,24 +420,26 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("campaigns not found")
+            "err": sails.__("campaigns not found").message,
+            error_at:sails.__("campaigns not found").message
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
 
 
-  /** 
+  /**
    * Update Compaign Status
    */
   changeStatus: async function (req, res) {
@@ -442,7 +447,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
 
@@ -472,7 +477,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("campaigns not found")
+            "err": sails.__("campaigns not found").message,
+            error_at:sails.__("campaigns not found").message
           });
 
       }
@@ -481,9 +487,9 @@ module.exports = {
       if (update_data) {
         var message = '';
         if (req_body.status == true || req_body.status === "true") {
-          message = sails.__("campaign activated");
+          message = sails.__("campaign activated").message;
         } else {
-          message = sails.__("campaign deactivated");
+          message = sails.__("campaign deactivated").message;
         }
         return res
           .status(200)
@@ -498,25 +504,27 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("campaigns not updated"),
-            "data": []
+            "message": sails.__("campaigns not updated").message,
+            "data": [],
+            error_at:sails.__("campaigns not updated").message
           })
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
 
 
-  /** 
+  /**
    * get Verify Offer Code
    */
   verifyOfferCode: async function (req, res) {
@@ -524,7 +532,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       var data_object = {
@@ -536,25 +544,27 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Offercode is exist")
+            "message": sails.__("Offercode is exist").message,
+            error_at:sails.__("Offercode is exist").message
           })
       } else {
         return res
           .status(200)
           .json({
             status: 200,
-            "message": sails.__("Offercode is notexist")
+            "message": sails.__("Offercode is notexist").message
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -565,7 +575,7 @@ module.exports = {
   },
 
 
-  /** 
+  /**
    * Get Offer code used
    */
   getOffercodeUsed: async function (req, res) {
@@ -573,7 +583,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       var id = req.param('id');
@@ -608,7 +618,7 @@ module.exports = {
               }
             }
             // from += ' from users_campaign_history INNER JOIN users ON users_campaign_history.user_id = users.id where campaign_offer_id='+id;
-            select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees 
+            select = `select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees
                       from users_campaign_history AS uch
                       INNER JOIN users
                       on uch.user_id=users.id
@@ -625,7 +635,7 @@ module.exports = {
               }
             }
             // from += ' from jst_trade_history INNER JOIN users ON jst_trade_history.user_id = users.id where campaign_offer_id='+id;
-            select = `select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees, CONCAT((jth.faldax_fees_actual-jth.faldax_fees),' ', (CASE when jth.side = 'Buy' THEN jth.currency ELSE jth.settle_currency END)) as faldax_fees  
+            select = `select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees, CONCAT((jth.faldax_fees_actual-jth.faldax_fees),' ', (CASE when jth.side = 'Buy' THEN jth.currency ELSE jth.settle_currency END)) as faldax_fees
                       from jst_trade_history AS jth
                       INNER JOIN users
                       on jth.user_id=users.id
@@ -643,7 +653,7 @@ module.exports = {
             }
           }
           select = "select uch.id,uch.user_id,uch.created_at,uch.campaign_offer_id,uch.code as order_id,users.full_name, users.email,'Attempted' offer_type, uch.wrong_attempted as is_attempted,'0' waived_fees,'0' faldax_fees   from users_campaign_history AS uch INNER JOIN users on uch.user_id=users.id where uch.campaign_offer_id='" + id + "'" + filter1 + " AND uch.wrong_attempted=true  UNION ALL select jth.id,jth.user_id,jth.created_at,jth.campaign_offer_id,jth.order_id as order_id, users.full_name, users.email,'Applied' offer_type,false is_attempted, (CASE WHEN jth.side = 'Buy' THEN ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset1_usd_value)) ELSE ((jth.faldax_fees_actual-jth.faldax_fees)*(jth.asset2_usd_value)) END) as waived_fees, CONCAT((jth.faldax_fees_actual-jth.faldax_fees),' ', (CASE when jth.side = 'Buy' THEN jth.currency ELSE jth.settle_currency END)) as faldax_fees from jst_trade_history AS jth INNER JOIN users on jth.user_id=users.id where jth.campaign_offer_id=" + id + filter2;
-          // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at,jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id';          
+          // selected_data = ' users_campaign_history.user_id,users_campaign_history.campaign_id,users_campaign_history.campaign_offer_id,users_campaign_history.created_at,jst_trade_history.user_id,jst_trade_history.campaign_id,jst_trade_history.campaign_offer_id,jst_trade_history.created_at,jst_trade_history.order_id';
           total = await sails.sendNativeQuery(select + query, [])
           total = total.rowCount;
         }
@@ -666,13 +676,13 @@ module.exports = {
 
         // get_campaign_offers[0].offer_used_data = get_data.rows;
         // var total = await sails.sendNativeQuery( countQuery, [])
-        // total = total.rows[0].count;        
+        // total = total.rows[0].count;
         if (get_data.rowCount > 0) {
           return res
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("compaigns retrieve success"),
+              "message": sails.__("compaigns retrieve success").message,
               "data": {
                 used_data: get_data.rows,
                 // campaigns: get_data.rows,
@@ -684,7 +694,7 @@ module.exports = {
             .status(200)
             .json({
               status: 200,
-              "message": sails.__("No records for offercode"),
+              "message": sails.__("No records for offercode").message,
               "data": {
                 used_data: [],
                 // campaigns: get_data.rows,
@@ -697,18 +707,20 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("No records for offercode")
+            "err": sails.__("No records for offercode").message,
+            error_at:sails.__("No records for offercode").message
           });
       }
 
     } catch (error) {
-      console.log("error", error);
-      await logger.error(error.message)
+      // console.log("error", error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },

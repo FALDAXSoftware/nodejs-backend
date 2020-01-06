@@ -21,7 +21,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: "Role name exists"
+            err: sails.__("Role name exists").message,
+            error_at:sails.__("Role name exists").message
           });
       }
 
@@ -34,12 +35,13 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Something Wrong")
+            err: sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
       return res.json({
         status: 200,
-        message: sails.__("Role added success")
+        message: sails.__("Role added success").message
       })
     } catch (error) {
       await logger.error(error.message)
@@ -47,7 +49,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong").message,
+          error_at:sails.__("Something Wrong").message
         })
     }
   },
@@ -84,19 +87,20 @@ module.exports = {
       if (roles) {
         return res.json({
           "status": 200,
-          "message": sails.__("Role retrived success"),
+          "message": sails.__("Role retrived success").message,
           roles,
           roleName
         })
       }
     } catch (error) {
-      console.log(error)
-      await logger.error(error.message)
+      // console.log(error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong").message,
+          error_at:error.stack
         })
     }
   },
@@ -111,7 +115,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Invalid Role Id.")
+            err: sails.__("Invalid Role Id.").message,
+            error_at:sails.__("Invalid Role Id.").message
           });
       }
       await Role
@@ -121,15 +126,16 @@ module.exports = {
         .set(req.body);
       return res.json({
         status: 200,
-        message: sails.__("Role Updated success")
+        message: sails.__("Role Updated success").message
       })
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong").message,
+          error_at:error.stack
         })
     }
   },
@@ -144,7 +150,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            err: sails.__("Invalid Role Id.")
+            err: sails.__("Invalid Role Id.").message,
+            error_at:sails.__("Invalid Role Id.").message
           });
       } else {
         await Role
@@ -156,16 +163,17 @@ module.exports = {
           });
         return res.json({
           status: 200,
-          message: sails.__("Role Deleted success")
+          message: sails.__("Role Deleted success").message
         })
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong")
+          err: sails.__("Something Wrong").message,
+          error_at:error.stack
         })
     }
   }

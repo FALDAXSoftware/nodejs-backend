@@ -100,7 +100,7 @@ module.exports = {
     if (withdrawReqData) {
       return res.json({
         "status": 200,
-        "message": sails.__("Withdraw Request list"),
+        "message": sails.__("Withdraw Request list").message,
         "data": withdrawReqData,
         withdrawReqCount
       });
@@ -226,7 +226,7 @@ module.exports = {
                       .json
                       .status(200)({
                         status: 200,
-                        message: sails.__("Token send success")
+                        message: sails.__("Token send success").message
                       });
                   }
                 }
@@ -235,7 +235,7 @@ module.exports = {
                   .status(400)
                   .json({
                     status: 400,
-                    message: sails.__("Insufficent balance wallet user")
+                    message: sails.__("Insufficent balance wallet user").message
                   });
               }
             } else {
@@ -243,7 +243,7 @@ module.exports = {
                 .status(400)
                 .json({
                   status: 400,
-                  message: sails.__("Wallet Not Found")
+                  message: sails.__("Wallet Not Found").message
                 });
             }
           } else {
@@ -251,7 +251,7 @@ module.exports = {
               .status(400)
               .json({
                 status: 400,
-                message: sails.__("User has been deleted, So funds cannot be transferred")
+                message: sails.__("User has been deleted, So funds cannot be transferred").message
               });
           }
         } else {
@@ -259,7 +259,7 @@ module.exports = {
             .status(400)
             .json({
               status: 400,
-              message: sails.__("Coin not found")
+              message: sails.__("Coin not found").message
             });
         }
       } else if (status == false) {
@@ -278,33 +278,36 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "message": sails.__("Something Wrong")
+              "message": sails.__("Something Wrong").message,
+              error_at:sails.__("Something Wrong").message
             });
         }
         return res
           .status(200)
           .json({
             status: 200,
-            "message": sails.__("Withdraw Request Cancel")
+            "message": sails.__("Withdraw Request Cancel").message
           })
       }
-    } catch (err) {
-      console.log("errr", err);
+    } catch (error) {
+      console.log("errr", error);
 
       if (error.name == "ImplementationError") {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": "Insufficient Balance in warm Wallet"
+            "err": sails.__("Insufficient Balance in warm Wallet").message,
+            error_at:sails.__("Insufficient Balance in warm Wallet").message
           })
       }
-      await logger.error(err.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "message": sails.__("Something Wrong")
+          "message": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

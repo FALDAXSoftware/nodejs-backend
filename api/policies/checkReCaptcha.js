@@ -24,7 +24,8 @@ module.exports = async function (req, res, next) {
         } else {
           return res.status(500).json({
             status: 500,
-            "err": sails.__("It looks like Robot !")
+            "err": sails.__("It looks like Robot !").message,
+            error_at:sails.__("It looks like Robot !").message
           });
         }
       });

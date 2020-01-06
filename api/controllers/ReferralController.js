@@ -106,22 +106,23 @@ module.exports = {
         console.log("msg", msg)
         return res.json({
           "status": 200,
-          "message": msg + sails.__("Referral amount collect")
+          "message": msg + sails.__("Referral amount collect").message
         });
       } else {
         return res.status(400).
           json({
             "status": 400,
-            "message": sails.__("No Referral Data found")
+            "message": sails.__("No Referral Data found").message
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -142,19 +143,20 @@ module.exports = {
       if (referredAmountData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Referral Amount Data"),
+          "message": sails.__("Referral Amount Data").message,
           "data": referredAmountData,
           userData
         });
       }
-    } catch (err) {
-      console.log('err', err)
-      await logger.error(err.message)
+    } catch (error) {
+      // console.log('err', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -172,17 +174,18 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": "Referral Percentage has been retrieved successfully",
+          "message": sails.__("Referral Percentage has been retrieved successfully").message,
           data: referData
         })
     } catch (error) {
-      console.log('err', error)
-      await logger.error(error.message)
+      // console.log('err', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

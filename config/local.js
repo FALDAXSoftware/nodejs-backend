@@ -222,5 +222,6 @@ module.exports.local = {
   LoggerError: "Error",
   LoggerIncoming: "Incoming request",
   Login: "Login",
-  SUSUCOIN_URL: process.env.SUSUCOIN_URL
+  SUSUCOIN_URL: process.env.SUSUCOIN_URL,
+  LoggerWebhook: "Webhook"
 }

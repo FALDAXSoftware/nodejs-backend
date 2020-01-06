@@ -74,26 +74,27 @@ module.exports = {
             .wallet
             .receiveAddress(user);
           return res.json({
-            message: "Verification successfull.",
+            message: sails.__("Verification successfull.").message,
             "status": 200,
-            "message": sails.__('Verify User')
+            "message": sails.__('Verify User').message
           });
         } else {
           return res
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__('Invalid Token')
+              "err": sails.__('Invalid Token').message
             });
         }
       }
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -109,13 +110,7 @@ module.exports = {
 
   login: async function (req, res) {
     try {
-      // await sails.helpers.loggerFormat(
-      //   sails.config.local.Login,
-      //   0,
-      //   req.url,
-      //   sails.config.local.LoggerRequest,
-      //   sails.config.local.LoggerIncoming
-      // );
+
       if (req.body.email && req.body.password) {
         let query = {
           email: req
@@ -133,13 +128,13 @@ module.exports = {
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By Admin')
+              err: sails.__('Deleted By Admin').message
             });
           }
           if (user_detail.deleted_at && user_detail.deleted_by == 1) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By User')
+              err: sails.__('Deleted By User').message
             });
           }
 
@@ -148,7 +143,7 @@ module.exports = {
               if (err) {
                 return res.status(403).json({
                   "status": 403,
-                  err: 'Forbidden'
+                  err: sails.__('Forbidden').message
                 });
               }
 
@@ -157,7 +152,7 @@ module.exports = {
                   .status(401)
                   .json({
                     "status": 401,
-                    "err": sails.__("Invalid email or password")
+                    "err": sails.__("Invalid email or password").message
                   });
               } else {
                 if (user_detail.is_verified == false) {
@@ -165,7 +160,7 @@ module.exports = {
                     .status(402)
                     .json({
                       "status": 402,
-                      "err": sails.__("Account_Not_Verified")
+                      "err": sails.__("Account_Not_Verified").message
                     });
                 }
                 if (user_detail) {
@@ -174,7 +169,7 @@ module.exports = {
                       .status(405)
                       .json({
                         "status": 405,
-                        "err": sails.__("To continue, please verify your new email address.")
+                        "err": sails.__("To continue, please verify your new email address.").message
                       });
                   }
                 }
@@ -184,7 +179,7 @@ module.exports = {
                 //       .status(201)
                 //       .json({
                 //         "status": 201,
-                //         "err": sails.__("Please enter OTP to continue")
+                //         "err": sails.__("Please enter OTP to continue").message
                 //       });
                 //   }
                 //   let verified = speakeasy
@@ -200,7 +195,7 @@ module.exports = {
                 //       .status(402)
                 //       .json({
                 //         "status": 402,
-                //         "err": sails.__("invalid otp")
+                //         "err": sails.__("invalid otp").message
                 //       });
                 //   }
                 // }
@@ -211,7 +206,7 @@ module.exports = {
                       .status(201)
                       .json({
                         "status": 201,
-                        "err": sails.__("Please enter Twofa Backup code to continue")
+                        "err": sails.__("Please enter Twofa Backup code to continue").message
                       });
                   }
                   if (user_detail.twofactor_backup_code != req.body.twofactor_backup_code) {
@@ -219,7 +214,7 @@ module.exports = {
                       .status(402)
                       .json({
                         "status": 402,
-                        "err": sails.__("Invalid twofa backup code")
+                        "err": sails.__("Invalid twofa backup code").message
                       });
                   }
                 } else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
@@ -228,7 +223,7 @@ module.exports = {
                       .status(201)
                       .json({
                         "status": 201,
-                        "err": sails.__("Please enter OTP to continue")
+                        "err": sails.__("Please enter OTP to continue").message
                       });
                   }
                   let verified = speakeasy
@@ -244,7 +239,7 @@ module.exports = {
                       .status(402)
                       .json({
                         "status": 402,
-                        "err": sails.__("invalid otp")
+                        "err": sails.__("invalid otp").message
                       });
                   }
                 }
@@ -282,7 +277,7 @@ module.exports = {
                           .status(401)
                           .json({
                             "status": 401,
-                            "err": sails.__("Time for whitelist has been expired.")
+                            "err": sails.__("Time for whitelist has been expired.").message
                           });
                       }
                     }
@@ -291,7 +286,7 @@ module.exports = {
                       .status(401)
                       .json({
                         "status": 401,
-                        "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.")
+                        "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.").message
                       });
                   }
                 }
@@ -358,13 +353,6 @@ module.exports = {
                     token: verifyToken,
                     ip: ip
                   })
-                  // return res
-                  //   .status(200)
-                  //   .json({
-                  //     "status": 200,
-                  //     verifyToken,
-                  //     "err": "Success"
-                  //   });
 
                   sails
                     .hooks
@@ -380,14 +368,15 @@ module.exports = {
                           .status(202)
                           .json({
                             "status": 202,
-                            "err": sails.__("New device confirmation email sent to your email.")
+                            "err": sails.__("New device confirmation email sent to your email.").message
                           });
                       } else {
                         return res
                           .status(500)
                           .json({
                             "status": 500,
-                            "err": sails.__("Something Wrong")
+                            "err": sails.__("Something Wrong").message,
+                            error_at:sails.__("Something Wrong").message
                           });
                       }
                     });
@@ -395,17 +384,13 @@ module.exports = {
               }
             });
 
-          // if (user_detail.is_verified == false) {   return res     .status(402) .json({
-          // "status": 402, "err": "To login please activate your account" }); } if
-          // (user_detail) {   if (user_detail.is_new_email_verified == false) { return
-          // res       .status(405)       .json({ "status": 405, "err": "To continue,
           // please verify your new email address." });   } }
           if (user_detail.is_active == false) {
             return res
               .status(403)
               .json({
                 "status": 403,
-                "err": sails.__("Contact Admin")
+                "err": sails.__("Contact Admin").message
               });
           }
         } else {
@@ -413,7 +398,7 @@ module.exports = {
             .status(401)
             .json({
               "status": 401,
-              "err": sails.__("Invalid email or password")
+              "err": sails.__("Invalid email or password").messsage
             });
           return;
         }
@@ -422,18 +407,19 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("Email or password is not sent")
+            "err": sails.__("Email or password is not sent").message
           });
         return;
       }
     } catch (error) {
-      console.log('login ', error);
-      await logger.error(error.message)
+      // console.log('login ', error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          "error_at":error.stack
         });
     }
   },
@@ -474,20 +460,20 @@ module.exports = {
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By Admin')
+              err: sails.__('Deleted By Admin').message
             });
           }
           if (user_detail.deleted_at && user_detail.deleted_by == 1) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By User')
+              err: sails.__('Deleted By User').message
             });
           }
 
           if (user_detail.is_verified == false || user_detail.is_verified == "false") {
             return res.status(403).json({
               "status": 403,
-              err: sails.__("account not not verified by admin")
+              err: sails.__("account not not verified by admin").message
             })
           }
 
@@ -507,7 +493,7 @@ module.exports = {
             });
             return res.status(201).json({
               "status": 201,
-              message: sails.__("account verify success")
+              message: sails.__("account verify success").message
             })
           }
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
@@ -536,15 +522,16 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("Invalid verification token")
+          "err": sails.__("Invalid verification token").message
         });
     } catch (error) {
-      await logger.error(error.message)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -571,7 +558,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("Invalid Email")
+          "err": sails.__("Invalid Email").message
         });
     }
     if (!user.is_active) {
@@ -579,7 +566,7 @@ module.exports = {
         .status(403)
         .json({
           "status": 403,
-          "err": sails.__("Contact Admin")
+          "err": sails.__("Contact Admin").message
         });
     }
 
@@ -613,18 +600,19 @@ module.exports = {
       }, {
         to: user.email,
         subject: "Authentication Code"
-      }, function (err) {
-        if (!err) {
+      }, function (error) {
+        if (!error) {
           return res.json({
             "status": 200,
-            "message": sails.__("Authentication code sent to email successfully")
+            "message": sails.__("Authentication code sent to email successfully").message
           });
         } else {
           return res
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at:error.stack
             });
         }
       })
@@ -653,7 +641,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("Invalid Email")
+          "err": sails.__("Invalid Email").message
         });
     }
     if (!user.is_verified) {
@@ -661,7 +649,7 @@ module.exports = {
         .status(403)
         .json({
           "status": 403,
-          "err": sails.__("Activate Account")
+          "err": sails.__("Activate Account").message
         });
     }
     if (!user.is_active) {
@@ -669,7 +657,7 @@ module.exports = {
         .status(403)
         .json({
           "status": 403,
-          "err": sails.__("Contact Admin")
+          "err": sails.__("Contact Admin").message
         });
     }
     if (user.twofactor_secret != otp) {
@@ -677,7 +665,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("invalid otp")
+          "err": sails.__("invalid otp").message
         });
     }
     await User
@@ -697,7 +685,7 @@ module.exports = {
       status: 200,
       user: user,
       token,
-      message: sails.__("Login successfull.")
+      message: sails.__("Login successfull.").message
     });
   },
 
@@ -742,7 +730,7 @@ module.exports = {
             if (!err) {
               return res.json({
                 "status": 200,
-                "message": sails.__("verification code")
+                "message": sails.__("verification code").message
               });
             }
           })
@@ -751,7 +739,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("This email id is not registered with us.")
+            "err": sails.__("This email id is not registered with us.").message
           });
       }
     } else {
@@ -759,7 +747,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required.").message,
+          error_at:sails.__("Email is required.").message
         });
     }
   },
@@ -778,7 +767,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__("Reset Token expired.")
+              "err": sails.__("Reset Token expired.").message
             });
         } else {
           let updateUsers = await Users
@@ -828,7 +817,7 @@ module.exports = {
                 if (!err) {
                   return res.json({
                     "status": 200,
-                    "message": sails.__("Password updated Successfully")
+                    "message": sails.__("Password updated Successfully").message
                   });
                 } else {
                   throw "Update password Error"
@@ -844,16 +833,18 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Reset Token or Password is not present.")
+            "err": sails.__("Reset Token or Password is not present.").message,
+            error_at:sails.__("Reset Token or Password is not present.").message
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -870,7 +861,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            err: sails.__("This email id is not registered with us.")
+            err: sails.__("This email id is not registered with us.").message
           });
       }
       if (user_details.is_active == false) {
@@ -878,7 +869,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            err: sails.__("Contact Admin")
+            err: sails.__("Contact Admin").message
           });
       }
       if (user_details.is_verified == false || user_details.is_new_email_verified == false) {
@@ -886,7 +877,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            err: sails.__("This email id is verified.")
+            err: sails.__("This email id is verified.").message
           });
       }
       let reset_token = randomize('Aa0', 10);
@@ -933,30 +924,27 @@ module.exports = {
           if (!err) {
             return res.json({
               "status": 200,
-              "message": sails.__("Reset password link sent to your email successfully.")
+              "message": sails.__("Reset password link sent to your email successfully.").message
             });
           }else {
           return res
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at:sails.__("Something Wrong").message
             });
         }
         })
-      // return res.json({
-      //   "status": 200,
-      //   "message": 'test',
-      //   reset_token
-      // });
     } catch (error) {
-      console.log('error', error)
-      await logger.error(error.message)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -978,7 +966,7 @@ module.exports = {
             .status(200)
             .json({
               status: 200,
-              message: sails.__("User Log out success")
+              message: sails.__("User Log out success").message
             });
         }
       }
@@ -1003,23 +991,24 @@ module.exports = {
       if (logged_user) {
         return res.json({
           status: 200,
-          message: sails.__("User Log out successfully.")
+          message: sails.__("User Log out successfully.").message
         });
       } else {
         return res
           .status(200)
           .json({
             status: 200,
-            message: sails.__("User Log out successfully.")
+            message: sails.__("User Log out successfully.").message
           });
       }
-    } catch (e) {
-      await logger.error(e.message)
+    } catch (error) {
+      // await logger.error(error.message)
       res
         .status(500)
         .json({
           "status": 500,
-          "err": e
+          "err": error,
+          error_at:error.stack
         });
       return;
     }
@@ -1038,7 +1027,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Email is already verified")
+              "err": sails.__("Email is already verified").message,
+              error_at:sails.__("Email is already verified").message
             });
         }
         delete user.email_verify_token;
@@ -1081,7 +1071,7 @@ module.exports = {
             if (!err) {
               return res.json({
                 "status": 200,
-                "message": sails.__("verification code")
+                "message": sails.__("verification code").message
               });
             }
           })
@@ -1090,7 +1080,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("This email id is not registered with us.")
+            "err": sails.__("This email id is not registered with us.").message
           });
       }
     } else {
@@ -1098,7 +1088,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required.").message,
+          error_at:sails.__("Email is required.").message
         });
     }
   },
@@ -1115,7 +1106,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Account_Not_Verified")
+              "err": sails.__("Account_Not_Verified").message,
+              error_at:sails.__("Account_Not_Verified").message
             });
         }
 
@@ -1128,7 +1120,8 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Twofactors already requested")
+              "err": sails.__("Twofactors already requested").message,
+              error_at:sails.__("Twofactors already requested").message
             });
         }
 
@@ -1144,7 +1137,7 @@ module.exports = {
                   .status(401)
                   .json({
                     "status": 401,
-                    "err": sails.__("Extention required")
+                    "err": sails.__("Extention required").message
                   });
               }
               var name = filename.substring(filename.indexOf("."));
@@ -1162,14 +1155,15 @@ module.exports = {
               var add = await UserForgotTwofactors.create(data);
               return res.json({
                 "status": 200,
-                "message": sails.__("Your request for twofactors is sent")
+                "message": sails.__("Your request for twofactors is sent").message
               });
             } else {
               return res
                 .status(500)
                 .json({
                   "status": 500,
-                  "err": sails.__("Image Required")
+                  "err": sails.__("Image Required").message,
+                  error_at:sails.__("Image Required").message
                 });
             }
           });
@@ -1178,7 +1172,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("This email id is not registered with us.")
+            "err": sails.__("This email id is not registered with us.").message
           });
       }
     } else {
@@ -1186,7 +1180,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Email is required.")
+          "err": sails.__("Email is required.").message,
+          error_at:sails.__("Email is required.").message
         });
     }
   },

@@ -33,7 +33,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
@@ -44,7 +44,7 @@ module.exports = {
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
                       let {
@@ -70,7 +70,7 @@ module.exports = {
                         return res.json({
                           status: 200,
                           data: buyBookDetails,
-                          "message": sails.__("Buy data retrived success")
+                          "message": sails.__("Buy data retrived success").message
                         });
                       }
                     }
@@ -86,7 +86,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 let {
@@ -112,7 +112,7 @@ module.exports = {
                   return res.json({
                     status: 200,
                     data: buyBookDetails,
-                    "message": sails.__("Buy data retrived success")
+                    "message": sails.__("Buy data retrived success").message
                   });
                 }
               }
@@ -123,16 +123,17 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           "status": 500,
-          "err": err
+          "err": error,
+          error_at:error.stack
         });
     }
   },
@@ -193,18 +194,19 @@ module.exports = {
       if (buyBookData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Buy Order list"),
+          "message": sails.__("Buy Order list").message,
           "data": buyBookData,
           buyBookCount
         });
       }
-    } catch (err) {
-      await logger.error(err.message)
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

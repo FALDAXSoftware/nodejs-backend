@@ -65,18 +65,20 @@ module.exports.http = {
         if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/' ) {
           return next();
         }
+        var requestIp = require('request-ip');
+        var ip = requestIp.getClientIp(req);
         if (req.headers && req.headers.authorization) {
           var parts = req
             .headers
             .authorization
             .split(' ');
-          // console.log("parts.length",parts);  
+          // console.log("parts.length",parts);
           if (parts.length == 2) {
             var scheme = parts[0],
               credentials = parts[1];
 
-            // console.log("credentials",credentials);  
-            // console.log("scheme",scheme);  
+            // console.log("credentials",credentials);
+            // console.log("scheme",scheme);
             // console.log("credentials != undefined",credentials != "undefined");
 
             if (credentials != "undefined" && /^Bearer$/i.test(scheme)) {
@@ -85,15 +87,15 @@ module.exports.http = {
                 .helpers
                 .jwtVerify(token);
               if (verifyData) {
-                req.user = verifyData;          
+                req.user = verifyData;
               }else if( verifyData.name && verifyData.name == "TokenExpiredError" ){
                 return res
                 .status(403)
                 .json({
                   status: 403,
-                  err: 'Your session has been expired. Please Login again to continue.'
+                  err: sails.__('Your session has been expired. Please Login again to continue').message
                 });
-              }        
+              }
             }
 
           }
@@ -102,12 +104,14 @@ module.exports.http = {
         // if( req.user ){
           var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
           req.headers['Logid'] = generate_unique_string;
+          req.headers['ip_address'] = ip;
           var logger = require('../api/controllers/logger')
           var object = {
             module: "Request",
             url: req.url,
             type: "Success",
-            log_id: req.headers['Logid']
+            log_id: req.headers['Logid'],
+            ip_address:req.headers['ip_address']
           };
           if (req.user && req.user.id) {
             object.user_id = "user_" + req.user.id;
@@ -119,13 +123,13 @@ module.exports.http = {
             object.params = req.query;
           // }
 
-          logger.info(object, "Request success");
+          await logger.info(object, "Incoming Request");
         }
 
         return next();
       },
     //   // Logs each response to Graylog
-      responseLogger: function (req, res, next) {
+      responseLogger:async function (req, res, next) {
         if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/') {
           return next();
         }
@@ -147,19 +151,24 @@ module.exports.http = {
           oldWrite.apply(res, arguments);
         };
         var body;
-        res.end = function (chunk) {
+        res.end = async function (chunk) {
           if (chunk) chunks.push(chunk);
-          body = Buffer.concat(chunks).toString('utf8');        
+          body = Buffer.concat(chunks).toString('utf8');
           oldEnd.apply(res, arguments);
           var message = 'Response message';
+          var error_at = '';
           if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
             if( JSON.parse(body).message ){
-              message = JSON.parse(body).message  
+              message = JSON.parse(body).message
             }
             if( JSON.parse(body).err ){
-              message = JSON.parse(body).err  
+              message = JSON.parse(body).err
+            }
+            if( res.statusCode > 200){
+              error_at = (JSON.parse(body).error_at ? (JSON.parse(body).error_at):"-");
             }
           }
+          // console.log("JSON.parse(body)",JSON.parse(body));
           var response = body;
           var object = {
             module: "Response",
@@ -167,8 +176,13 @@ module.exports.http = {
             type: "Error",
             statusCode: res.statusCode,
             // responseData:JSON.stringify(response),
-            log_id: req.headers['Logid']
+            log_id: req.headers['Logid'],
+            ip_address:req.headers['ip_address']
           };
+          if( res.statusCode > 200){
+            object.error_at = error_at;
+          }
+          console.log("object",object);
 
           if( res.statusCode != 200 && res.statusCode >= 201 ){
             object.responseData = (body);
@@ -181,9 +195,9 @@ module.exports.http = {
             if (req.url == '/login') {
               object.user_id = "user_" + JSON.parse(body).user.id;
             }
-            logger.info(object, message);
+            await logger.info(object, message);
           }else{
-            logger.error(object, message);
+            await logger.error(object, message);
           }
 
         };

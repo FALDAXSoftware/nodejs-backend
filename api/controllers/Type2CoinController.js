@@ -48,7 +48,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("node info retrieval success"),
+        "message": sails.__("node info retrieval success").message,
         "data": getInfo
       });
     } catch (err) {
@@ -113,7 +113,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("address create success"),
+        "message": sails.__("address create success").message,
         "data": getInfo
       });
     } catch (err) {
@@ -148,7 +148,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("transaction list success"),
+        "message": sails.__("transaction list success").message,
         "data": getInfo
       });
     } catch (err) {
@@ -212,7 +212,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("send coin success"),
+        "message": sails.__("send coin success").message,
         "data": getInfo
       });
     } catch (err) {
@@ -245,7 +245,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("list address success"),
+        "message": sails.__("list address success").message,
         "data": getInfo
       });
     } catch (err) {
@@ -283,7 +283,7 @@ module.exports = {
       }
       return res.json({
         "status": 200,
-        "message": sails.__("user address balance success"),
+        "message": sails.__("user address balance success").message,
         "data": getInfo
       });
     } catch (err) {
