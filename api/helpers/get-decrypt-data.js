@@ -33,13 +33,13 @@ module.exports = {
     // Get decrypt data.
     var decryptData;
 
-    var key = sails.config.local.key;
-
-    var iv = sails.config.local.iv;
+    // var key = sails.config.local.key;
+    // var iv = sails.config.local.iv;
+    var key = JSON.parse(process.env.SECRET_KEY);
+    var iv= JSON.parse(process.env.SECRET_IV);
 
     // When ready to decrypt the hex string, convert it back to bytes
     var encryptedBytes = aesjs.utils.hex.toBytes(inputs.text);
-
     // The output feedback mode of operation maintains internal state,
     // so to decrypt a new instance must be instantiated.
     var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
