@@ -482,11 +482,11 @@ module.exports = {
       //   ip = req.ip;
       // }
 
-      let today = new Date();
-      let dd = String(today.getDate()).padStart(2, '0');
-      let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-      let time = String(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds())
-
+      // let today = new Date();
+      // let dd = String(today.getDate()).padStart(2, '0');
+      // let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      // let time = String(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds())
+      let datetime = moment().format('MM/DD/YYYY HH:mm:ss');
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({
         select: ['content'],
@@ -496,7 +496,8 @@ module.exports = {
       });
       let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
         recipientName: adminUpdates[0].first_name,
-        datetime: dd + '-' + mm + '-' + today.getFullYear() + ' ' + time,
+        // datetime: dd + '-' + mm + '-' + today.getFullYear() + ' ' + time,
+        datetime: datetime,
         browser: req.headers['user-agent'],
         ip
       })
