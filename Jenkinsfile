@@ -29,7 +29,7 @@ volumes: [
               if (namespace){
               withAWS(credentials:'jenkins_s3_upload') {
                 s3Download(file:'.env', bucket:'env.faldax', path:"node-backend/${namespace}/.env", force:true)
-                s3Download(file: '.keyiv' bucket: 'env.faldax', path: "keyiv/${namespace}/.keyiv", force: true)
+                s3Download(file:'.keyiv', bucket: 'env.faldax', path: "keyiv/${namespace}/.keyiv", force: true)
               }
               sh "ls -a"
               sh "cat .keyiv >> .env && rm .keyiv"
