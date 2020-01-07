@@ -64,3 +64,30 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+controller:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 90
+
+health:
+  enable: true
+  livenessProbe:
+    path: /health-check
+    port: 1337
+    initialDelaySeconds: 120
+    periodSeconds: 30
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    path: /health-check
+    port: 1337
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
