@@ -486,7 +486,11 @@ module.exports = {
       // let dd = String(today.getDate()).padStart(2, '0');
       // let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
       // let time = String(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds())
-      let datetime = moment().format('MM/DD/YYYY HH:mm:ss');
+
+      // let datetime = moment().format('MM/DD/YYYY HH:mm:ss');
+
+      let datetime = moment(new Date(), 'DD/MM/YYYY HH:mm:ss', true).format();
+
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({
         select: ['content'],
