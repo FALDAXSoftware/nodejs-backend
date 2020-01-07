@@ -29,13 +29,10 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-
     // Get decrypt data.
     var decryptData;
-
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
-
     // When ready to decrypt the hex string, convert it back to bytes
     var encryptedBytes = aesjs.utils.hex.toBytes(inputs.text);
     // The output feedback mode of operation maintains internal state,

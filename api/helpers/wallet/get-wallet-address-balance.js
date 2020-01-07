@@ -42,7 +42,6 @@ module.exports = {
       })
         .then(resData => resData.json())
         .then(resData => {
-          console.log("resData",resData);
           walletAddressData = resData;
           return exits.success(walletAddressData);
         });
