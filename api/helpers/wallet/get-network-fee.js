@@ -51,6 +51,7 @@ module.exports = {
                 "address": inputs.address
             }
         ]
+        console.log("recipients", recipients)
 
         if (coinData !== undefined) {
             // Getting network Fee for send coin
@@ -69,8 +70,10 @@ module.exports = {
                 },
                 json: true
             }, function (err, httpResponse, body) {
-                console.log("body",body);
+                console.log("body", body);
+                console.log("err", err)
                 if (err) {
+
                     return exits.error(err);
                 }
                 if (body.error) {
