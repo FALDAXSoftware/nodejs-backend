@@ -907,7 +907,7 @@ module.exports = {
         .helpers
         .utilities
         .formatEmail(template.content, {
-          recipientName: updatedUser.first_name,
+          recipientName: updatedUser[0].first_name,
           token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
         })
 

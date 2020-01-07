@@ -57,7 +57,7 @@ module.exports = {
             // Getting network Fee for send coin
             var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
             request({
-                url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${coinData.hot_send_wallet_address}/tx/build`,
+                url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${coinData.warm_wallet_address}/tx/build`,
                 // url: 'https://test.bitgo.com/api/v2/tbtc/wallet/5daffa3e101f643404040f0ce899a78f/tx/build',
                 method: "POST",
                 headers: {
@@ -70,8 +70,6 @@ module.exports = {
                 },
                 json: true
             }, function (err, httpResponse, body) {
-                console.log("body", body);
-                console.log("err", err)
                 if (err) {
 
                     return exits.error(err);

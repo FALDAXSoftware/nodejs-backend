@@ -33,10 +33,9 @@ module.exports = {
     var encryptData;
 
     var key = sails.config.local.key;
-
     var iv = sails.config.local.iv;
-    var textBytes = aesjs.utils.utf8.toBytes(inputs.text);
 
+    var textBytes = aesjs.utils.utf8.toBytes(inputs.text);
     var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
     var encryptedBytes = aesOfb.encrypt(textBytes);
 

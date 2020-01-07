@@ -97,7 +97,7 @@ module.exports = async function (req, res, next) {
         if( res.statusCode > 200){
           object.error_at = error_at;
         }
-        console.log("object",object);
+        // console.log("object",object);
         if( res.statusCode != 200 && res.statusCode >= 201 ){
           object.responseData = (body);
         }
