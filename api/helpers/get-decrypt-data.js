@@ -33,10 +33,8 @@ module.exports = {
     // Get decrypt data.
     var decryptData;
 
-    // var key = sails.config.local.key;
-    // var iv = sails.config.local.iv;
-    var key = JSON.parse(process.env.SECRET_KEY);
-    var iv= JSON.parse(process.env.SECRET_IV);
+    var key = sails.config.local.key;
+    var iv = sails.config.local.iv;
 
     // When ready to decrypt the hex string, convert it back to bytes
     var encryptedBytes = aesjs.utils.hex.toBytes(inputs.text);
