@@ -1034,7 +1034,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:sails.__("Something Wrong").message
+          error_at:error.stack
         });
     }
   },

@@ -2,14 +2,9 @@ const dotenv = require('dotenv');
 dotenv.config();
 module.exports.local = {
   // An example 128-bit key
-
-
-  // 'key': [63, 17, 35, 31, 99, 50, 42, 86, 89, 80, 47, 14, 12, 98, 44, 78],
-  'key': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
   // The initialization vector (must be 16 bytes)
-  // 'iv': [45, 56, 89, 10, 98, 54, 13, 27, 82, 61, 53, 86, 67, 96, 94, 51],
-  'iv': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
-
+  'key': JSON.parse(process.env.SECRET_KEY),
+  'iv': JSON.parse(process.env.SECRET_IV),
   'test_key': 'Blake@Meghan@Addison@123',
   "METABASE_SITE_URL": process.env.METABASE_SITE_URL,
   "METABASE_SECRET_KEY": process.env.METABASE_SECRET_KEY,
