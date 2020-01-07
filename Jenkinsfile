@@ -5,7 +5,7 @@ def imageRepo = "100.69.158.196"
 podTemplate(label: label, containers: [
      containerTemplate(name: 'build-container', image: imageRepo + '/buildtool:deployer', command: 'cat', ttyEnabled: true),
      containerTemplate(name: 'pm291', image: imageRepo + '/buildtool:pm291', command: 'cat', ttyEnabled: true),
-], 
+],
 volumes: [
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
   ]
@@ -15,7 +15,7 @@ volumes: [
       def triggerByUser;
       def namespace;
       node(label) {
-     
+
          // Wipe the workspace so we are building completely clean
          deleteDir()
 
@@ -35,7 +35,7 @@ volumes: [
               sh "cat .keyiv >> .env && rm .keyiv"
               sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
               sh "docker push  ${imageRepo}/backend:${imageTag}"
-              sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag},ingress.hosts[0]=${namespace}-backend.faldax.com ${namespace}-backend -f chart/values-${namespace}.yaml chart/"                
+              sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag},ingress.hosts[0]=${namespace}-backend.faldax.com ${namespace}-backend -f chart/values-${namespace}.yaml chart/"
                  }
          }
          }
@@ -53,6 +53,7 @@ def getNamespace(branch){
         case 'development' :  return "dev";
         case 'pre-prod' : return "pre-prod";
         case 'mainnet' : return "mainnet";
+        case 'qa' : return "qa";
         default : return null;
     }
 }
