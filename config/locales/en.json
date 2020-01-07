@@ -2591,103 +2591,103 @@
         "message_type": "success",
         "message": "All permissions listed."
     },
-    "Referral Percentage has been retrieved successfully":{
+    "Referral Percentage has been retrieved successfully": {
         "page": "Referral percentage lists",
         "context": "Referral Percentage has been retrieved successfully",
         "message_type": "success",
         "message": "Referral Percentage has been retrieved successfully."
     },
-    "Trade data retrived successfully":{
+    "Trade data retrived successfully": {
         "page": "Trade data lists",
         "context": "Trade data retrived successfully",
         "message_type": "success",
         "message": "Trade data retrived successfully."
     },
-    "Withdraw Fee has been retrieved successfully":{
+    "Withdraw Fee has been retrieved successfully": {
         "page": "Withdraw fees lists",
         "context": "Withdraw Fee has been retrieved successfully",
         "message_type": "success",
         "message": "Withdraw Fee has been retrieved successfully."
     },
-    "user created succesfully":{
+    "user created succesfully": {
         "page": "User creation",
         "context": "user created succesfully",
         "message_type": "success",
         "message": "user created succesfully."
     },
-    "email successfully sent to registered email id":{
+    "email successfully sent to registered email id": {
         "page": "Email sent",
         "context": "Email successfully sent to registered email id.",
         "message_type": "success",
         "message": "Email successfully sent to registered email id."
     },
-    "admin email id is wrong":{
+    "admin email id is wrong": {
         "page": "Admin email id",
         "context": "admin email id is wrong.",
         "message_type": "error",
         "message": "admin email id is wrong."
     },
-    "Invalid Params":{
+    "Invalid Params": {
         "page": "Invalid parameters",
         "context": "Invalid Params",
         "message_type": "error",
         "message": "Invalid Params"
     },
-    "Insufficient Balance in warm Wallet":{
+    "Insufficient Balance in warm Wallet": {
         "page": "Insufficient Balance in Warm Wallet",
         "context": "Insufficient Balance in warm Wallet",
         "message_type": "error",
-        "message": "Insufficient Balance in warm Wallet"
+        "message": "This transaction can not be proceed at this time. Please try again after sometime or Contact Support."
     },
-    "Invalid data provided":{
+    "Invalid data provided": {
         "page": "Invalid data",
         "context": "Invalid data provided",
         "message_type": "error",
         "message": "Invalid data provided"
     },
-    "Role name exists":{
+    "Role name exists": {
         "page": "Role add",
         "context": "Role name exists",
         "message_type": "error",
         "message": "Role name exists"
     },
-    "Verification successfull":{
+    "Verification successfull": {
         "page": "Verify success",
         "context": "Verification successfull",
         "message_type": "success",
         "message": "Verification successfull"
     },
-    "No User Wallet has been found":{
+    "No User Wallet has been found": {
         "page": "User wallet lists",
         "context": "No User Wallet has been found",
         "message_type": "error",
         "message": "No User Wallet has been found"
     },
-    "Ticket lists":{
+    "Ticket lists": {
         "page": "Ticket lists",
         "context": "Ticket list successfully",
         "message_type": "success",
         "message": "Ticket list successfully"
     },
-    "You are not allowed to access this route":{
+    "You are not allowed to access this route": {
         "page": "Role permissions",
         "context": "You are not allowed to access this route",
         "message_type": "error",
         "message": "You are not allowed to access this route"
     },
-    "Your User has been deleted":{
+    "Your User has been deleted": {
         "page": "Authorization",
         "context": "Your User has been deleted",
         "message_type": "error",
         "message": "Your User has been deleted"
     },
-    "Invalid Authorization token":{
+    "Invalid Authorization token": {
         "page": "Authorization",
         "context": "Invalid Authorization token",
         "message_type": "error",
         "message": "Invalid Authorization token"
     },
-    "No Authorization header was found":{
+    "No Authorization header was found": {
         "page": "Authorization header missing",
         "context": "No Authorization header was found",
         "message_type": "error",
