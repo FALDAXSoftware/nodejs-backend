@@ -106,7 +106,7 @@ module.exports = {
       // );
       // res.end();
       console.log("-------------Recieved----------------");
-      console.log("req.body", req.body);
+      console.log("req.body", req.body.state);
       // Check For Confirmed transfer
       if (req.body.state == "confirmed") {
         let isToken = false;
@@ -613,7 +613,7 @@ module.exports = {
         let transferId = req.body.transfer;
         // get transaction details
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
-
+        console.log("transfer", transfer)
         // let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
         // check status of transaction in transaction details
         if (transfer.state == "confirmed" && transfer.type == "receive") {
@@ -621,10 +621,12 @@ module.exports = {
             transaction_id: req.body.hash,
             is_executed: false
           });
+          console.log("walletHistory", walletHistory)
           if (walletHistory) {
 
             // Send To user's destination address
             var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(2);
+            console.log("amount ?????", amount)
             let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount)
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
             // Update in wallet history
