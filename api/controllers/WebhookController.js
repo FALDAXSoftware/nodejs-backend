@@ -289,8 +289,14 @@ module.exports = {
                 // check for warm wallet balance
                 let warmWalletAmount = 0;
                 let custodialWalletAmount = 0;
+
                 warmWalletAmount = (dest.value * 80) / 100;
                 custodialWalletAmount = (dest.value * 20) / 100;
+
+                if( coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) > parseFloat(warmWalletAmount) ){
+                  warmWalletAmount = dest.value;
+                  custodialWalletAmount = 0.0;
+                }
 
                 console.log("warmWalletAmount", warmWalletAmount)
                 console.log("custodialWalletAmount", custodialWalletAmount)
