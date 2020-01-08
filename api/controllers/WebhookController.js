@@ -182,11 +182,11 @@ module.exports = {
               id: userWallet.user_id
             })
 
-            var userNotification = await UserNotification.findOne({
-              user_id: userData.id,
-              deleted_at: null,
-              slug: 'receive'
-            })
+            // var userNotification = await UserNotification.findOne({
+            //   user_id: userData.id,
+            //   deleted_at: null,
+            //   slug: 'receive'
+            // })
 
             // if (userNotification != undefined) {
             //   if (userNotification.email == true || userNotification.email == "true") {
