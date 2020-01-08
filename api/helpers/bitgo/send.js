@@ -51,9 +51,11 @@ module.exports = {
   fn: async function (inputs, exits) {
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
+    var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
     console.log("---------------------WebhookOnReceive----------");
     console.log("access_token_value", access_token_value);
     console.log("passphrase_value", passphrase_value);
+    console.log("enterprise_value", enterprise_value);
     var obj = {
         'cache-control': 'no-cache',
         Authorization: `Bearer ${access_token_value}`,
@@ -63,7 +65,8 @@ module.exports = {
     var bb ={
         address: inputs.address,
         amount: parseFloat(inputs.amount),
-        walletPassphrase: passphrase_value
+        walletPassphrase: passphrase_value,
+        enterprise: enterprise_value
       };
     console.log("bb",bb);  
     request({
