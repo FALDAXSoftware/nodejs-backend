@@ -51,6 +51,21 @@ module.exports = {
   fn: async function (inputs, exits) {
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
+    console.log("---------------------WebhookOnReceive----------");
+    console.log("access_token_value", access_token_value);
+    console.log("passphrase_value", passphrase_value);
+    var obj = {
+        'cache-control': 'no-cache',
+        Authorization: `Bearer ${access_token_value}`,
+        'Content-Type': 'application/json'
+      }
+    console.log("obj",obj);
+    var bb ={
+        address: inputs.address,
+        amount: parseFloat(inputs.amount),
+        walletPassphrase: passphrase_value
+      };
+    console.log("bb",bb);  
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
@@ -67,9 +82,11 @@ module.exports = {
       json: true
     }, function (err, httpResponse, body) {
       if (err) {
-        console.log(err)
+        console.log("Error in wb:",err)
         return exits.error(err);
       }
+      console.log("body",body);
+      console.log("----------");
       if (body.error) {
         return exits.error(body);
       }
