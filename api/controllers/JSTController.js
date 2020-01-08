@@ -457,7 +457,7 @@ module.exports = {
           }
         });
 
-        if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "")) {
+        if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "") || (walletCurrency.send_address == null && walletCurrency.receive_address == null)) {
           // await logger.info({
           //   "module": "JST",
           //   "user_id": "user_" + req.user.id,
@@ -486,7 +486,7 @@ module.exports = {
           }
         });
 
-        if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address == "")) {
+        if (walletCrypto == undefined || (walletCrypto.send_address == "" && walletCrypto.receive_address == "") || (walletCrypto.send_address == null && walletCrypto.receive_address == null)) {
           // await logger.info({
           //   "module": "JST",
           //   "user_id": "user_" + req.user.id,
