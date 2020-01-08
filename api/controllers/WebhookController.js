@@ -317,7 +317,8 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 console.log("custodialWalletAmount", custodialWalletAmount)
                 // send amount to warm wallet
-                await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
+                var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
+                console.log("warmwallet_balance_check",warmwallet_balance_check);
                 let transactionLog = [];
                 // Log Transafer in transaction table
                 transactionLog.push({
@@ -334,8 +335,8 @@ module.exports = {
 
                 // send amount to custodial wallet
                 if (custodialWalletAmount > 0) {
-                  await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
-
+                  var custodial_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
+                  console.log("custodial_balance_check",custodial_balance_check);
                   // Log Transafer in transaction table
                   transactionLog.push({
                     source_address: userWallet.receive_address,
