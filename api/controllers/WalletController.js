@@ -1034,9 +1034,8 @@ module.exports = {
           walletUserData.send_address = walletData.send_address;
         }
 
-
         if (walletUserData) {
-          if (walletUserData.receive_address === '') {
+          if (walletUserData.receive_address === '' || walletUserData.receive_address == null) {
             walletUserData['flag'] = 1;
           } else {
             walletUserData['flag'] = 0;
