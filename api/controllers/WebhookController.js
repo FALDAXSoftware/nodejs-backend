@@ -230,6 +230,13 @@ module.exports = {
 
               console.log("warmWalletAmount", warmWalletAmount)
               console.log("custodialWalletAmount", custodialWalletAmount)
+              
+              if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
+              warmWalletAmount = Math.ceil(warmWalletAmount)
+              custodialWalletAmount = Math.floor(custodialWalletAmount)
+            }
+            console.log("warmWalletAmount-After", warmWalletAmount)
+              console.log("custodialWalletAmount-After", custodialWalletAmount)
 
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
               //     // send 10% to warm wallet and 90% to custodial wallet
