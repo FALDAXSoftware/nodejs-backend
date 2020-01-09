@@ -59,6 +59,11 @@ module.exports = {
         coin_code: inputs.coin
       }
     })
+    var dataa = {
+        address: inputs.address,
+        amount: parseFloat(inputs.amount)
+    };
+    console.log("Input data", dataa);
     console.log("coinData",coinData);
     if (coinData && coinData != undefined) {
       if (inputs.coin == "btc") {
