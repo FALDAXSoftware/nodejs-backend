@@ -293,7 +293,8 @@ module.exports = {
                 warmWalletAmount = (dest.value * 80) / 100;
                 custodialWalletAmount = (dest.value * 20) / 100;
 
-                if( coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) > parseFloat(warmWalletAmount) ){
+                console.log(coin)
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) > parseFloat(warmWalletAmount / 1e8)) {
                   warmWalletAmount = dest.value;
                   custodialWalletAmount = 0.0;
                 }
@@ -318,7 +319,7 @@ module.exports = {
                 console.log("custodialWalletAmount", custodialWalletAmount)
                 // send amount to warm wallet
                 var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
-                console.log("warmwallet_balance_check",warmwallet_balance_check);
+                console.log("warmwallet_balance_check", warmwallet_balance_check);
                 let transactionLog = [];
                 // Log Transafer in transaction table
                 transactionLog.push({
@@ -336,7 +337,7 @@ module.exports = {
                 // send amount to custodial wallet
                 if (custodialWalletAmount > 0) {
                   var custodial_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
-                  console.log("custodial_balance_check",custodial_balance_check);
+                  console.log("custodial_balance_check", custodial_balance_check);
                   // Log Transafer in transaction table
                   transactionLog.push({
                     source_address: userWallet.receive_address,
