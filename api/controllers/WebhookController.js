@@ -223,19 +223,20 @@ module.exports = {
             if (warmWallet.id && custodialWallet.id) {
 
               // check for warm wallet balance 
-              let warmWalletAmount = 0;
-              let custodialWalletAmount = 0;
-              warmWalletAmount = (dest.value * 80) / 100;
-              custodialWalletAmount = (dest.value * 20) / 100;
+            //   let warmWalletAmount = 0;
+            //   let custodialWalletAmount = 0;
+            //   warmWalletAmount = (dest.value * 80) / 100;
+            //   custodialWalletAmount = (dest.value * 20) / 100;
 
-              console.log("warmWalletAmount", warmWalletAmount)
+            //   console.log("warmWalletAmount", warmWalletAmount)
               console.log("custodialWalletAmount", custodialWalletAmount)
               
-              if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
-              warmWalletAmount = Math.ceil(warmWalletAmount)
-              custodialWalletAmount = Math.floor(custodialWalletAmount)
-            }
-            console.log("warmWalletAmount-After", warmWalletAmount)
+            //   if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
+            //   warmWalletAmount = Math.ceil(warmWalletAmount)
+            //   custodialWalletAmount = Math.floor(custodialWalletAmount)
+            // }
+            custodialWalletAmount = 4706156;
+            // console.log("warmWalletAmount-After", warmWalletAmount)
               console.log("custodialWalletAmount-After", custodialWalletAmount)
 
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
@@ -249,20 +250,19 @@ module.exports = {
               // }
 
               // send amount to warm wallet
-
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              //await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
               let transactionLog = [];
               // Log Transafer in transaction table
-              transactionLog.push({
-                source_address: userWallet.receive_address,
-                destination_address: warmWallet.receiveAddress.address,
-                amount: (warmWalletAmount / 1e8),
-                user_id: userWallet.user_id,
-                transaction_type: "receive",
-                coin_id: coin.id,
-                is_executed: true,
-                transaction_id: req.body.hash
-              });
+            //   transactionLog.push({
+            //     source_address: userWallet.receive_address,
+            //     destination_address: warmWallet.receiveAddress.address,
+            //     amount: (warmWalletAmount / 1e8),
+            //     user_id: userWallet.user_id,
+            //     transaction_type: "receive",
+            //     coin_id: coin.id,
+            //     is_executed: true,
+            //     transaction_id: req.body.hash
+            //   });
 
 
               // send amount to custodial wallet
