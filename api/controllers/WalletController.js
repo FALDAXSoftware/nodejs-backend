@@ -656,8 +656,7 @@ module.exports = {
                           url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
                           method: "POST",
                           headers: {
-                            // 'cache-control': 'no-cache',
-                            // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+
                             'x-token': 'faldax-susucoin-node',
                             'Content-Type': 'application/json'
                           },
@@ -679,7 +678,7 @@ module.exports = {
                           .status(200)
                           .json({
                             "status": 200,
-                            "message": responseValue.message
+                            "message": amount + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       }
                     } else {
@@ -874,7 +873,7 @@ module.exports = {
       if (coinData != undefined) {
         // Explicitly call toJson of Model
         coinData = JSON.parse(JSON.stringify(coinData));
-
+        console.log(coinData);
         var walletTransData
         if (is_admin && is_admin != undefined) {
           walletTransData = await WalletHistory
@@ -978,8 +977,6 @@ module.exports = {
             is_active: true
           });
         }
-
-        console.log("walletUserData", walletUserData)
 
         if (coinData.iserc == true) {
           var walletData = await Wallet.findOne({
@@ -2006,12 +2003,24 @@ module.exports = {
         .sort('id ASC');
 
       for (var i = 0; i < coinData.length; i++) {
-        let warmWalletData = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
-        coinData[i].balance = (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString);
-        coinData[i].address = warmWalletData.receiveAddress.address;
+        if (coinData[i].coin_code != 'SUSU') {
+          var warmWalletData = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+          coinData[i].balance = (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString);
+          coinData[i].address = warmWalletData.receiveAddress.address;
+        } else {
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              "wallet_id": "warm_wallet"
+            }
+          });
+          coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
+          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+        }
       }
       return res
         .status(200)
@@ -2021,8 +2030,6 @@ module.exports = {
           message: sails.__("Warm wallet retrieve").message
         })
     } catch (error) {
-      // console.log(error);
-      // await logger.error(error.message)
       return res
         .status(500)
         .json({
@@ -2061,12 +2068,16 @@ module.exports = {
         searchLabel: searchLabel
       }
 
-      let warmWalletData = await sails
-        .helpers
-        .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address, data);
+      if (coinData.coin_code != 'SUSU') {
+        var warmWalletData = await sails
+          .helpers
+          .bitgo
+          .getCoinTransfer(coinData.coin_code, coinData.warm_wallet_address, data);
 
-      var data = warmWalletData.transfers
+        var data = warmWalletData.transfers
+      } else {
+        var warmWalletData = {}
+      }
 
       return res
         .status(200)
@@ -2121,12 +2132,17 @@ module.exports = {
         .sort('id ASC');
 
       for (var i = 0; i < coinData.length; i++) {
-        let wallet_data = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
-        coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
-        coinData[i].address = wallet_data.receiveAddress.address;
+        if (coinData[i].coin_code != "SUSU" && coinData[i].custody_wallet_address != null) {
+          let wallet_data = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
+          coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+          coinData[i].address = wallet_data.receiveAddress.address;
+        } else {
+          coinData[i].balance = 0.0
+          coinData[i].address = '';
+        }
       }
       return res
         .status(200)
@@ -2176,10 +2192,15 @@ module.exports = {
         searchLabel: searchLabel
       }
 
-      let warmWalletData = await sails
-        .helpers
-        .bitgo
-        .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address, data);
+      if (coinData[i].coin_code != 'SUSU') {
+
+        var warmWalletData = await sails
+          .helpers
+          .bitgo
+          .getCoinTransfer(coinData.coin_code, coinData.custody_wallet_address, data);
+      } else {
+        var warmWalletData = {};
+      }
 
       return res
         .status(200)
@@ -2231,9 +2252,7 @@ module.exports = {
       }
     } catch (error) {
       if (error.name == "ImplementationError") {
-        console.log(req.body)
         get_network_fees = await sails.helpers.feesCalculation(req.body.coin.toLowerCase(), (req.body.amount));
-
         return res
           .status(200)
           .json({
