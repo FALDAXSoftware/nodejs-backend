@@ -873,7 +873,7 @@ module.exports = {
       if (coinData != undefined) {
         // Explicitly call toJson of Model
         coinData = JSON.parse(JSON.stringify(coinData));
-
+        console.log(coinData);
         var walletTransData
         if (is_admin && is_admin != undefined) {
           walletTransData = await WalletHistory
