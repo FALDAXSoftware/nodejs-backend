@@ -235,7 +235,7 @@ module.exports = {
             //   warmWalletAmount = Math.ceil(warmWalletAmount)
             //   custodialWalletAmount = Math.floor(custodialWalletAmount)
             // }
-            custodialWalletAmount = 4706156;
+            custodialWalletAmount = 4692492;
             // console.log("warmWalletAmount-After", warmWalletAmount)
               console.log("custodialWalletAmount-After", custodialWalletAmount)
 
