@@ -2252,9 +2252,7 @@ module.exports = {
       }
     } catch (error) {
       if (error.name == "ImplementationError") {
-        console.log(req.body)
         get_network_fees = await sails.helpers.feesCalculation(req.body.coin.toLowerCase(), (req.body.amount));
-
         return res
           .status(200)
           .json({
