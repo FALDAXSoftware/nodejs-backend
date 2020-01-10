@@ -53,7 +53,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
       return;
     }
@@ -180,7 +180,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -228,7 +228,7 @@ module.exports = {
           .json({
             status: 500,
             "err": error.raw.err,
-            error_at:error.stack
+            error_at: error.stack
           });
       } else {
         return res
@@ -236,7 +236,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("Something Wrong"),
-            error_at:error.stack
+            error_at: error.stack
           });
       }
     }
@@ -284,7 +284,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -330,7 +330,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -383,7 +383,7 @@ module.exports = {
                           .json({
                             status: 500,
                             "err": sails.__("Something Wrong").message,
-                            error_at:error.stack
+                            error_at: error.stack
                           });
                       }
                     }
@@ -419,7 +419,7 @@ module.exports = {
                     .json({
                       status: 500,
                       "err": sails.__("Something Wrong").message,
-                      error_at:sails.__("Something Wrong").message
+                      error_at: sails.__("Something Wrong").message
                     });
                 }
               }
@@ -440,7 +440,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -497,7 +497,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -588,7 +588,7 @@ module.exports = {
             .json({
               status: 500,
               "err": sails.__("Something Wrong").message,
-              error_at:error.stack
+              error_at: error.stack
             });
         }
       });
@@ -652,7 +652,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -667,7 +667,7 @@ module.exports = {
         .json({
           "status": 500,
           "err": sails.__("coin id is not sent").message,
-          error_at:sails.__("coin id is not sent").message
+          error_at: sails.__("coin id is not sent").message
         });
     }
     let coinData = await Coins
@@ -711,7 +711,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("Something Wrong").message,
-            error_at:sails.__("Something Wrong").message
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -721,7 +721,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -744,28 +744,45 @@ module.exports = {
         .sort('id ASC')
 
       for (var i = 0; i < coinData.length; i++) {
-        let warmWalletData = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
-        var coldWalletData
-        var balanceColdWallet;
-        if (coinData[i].custody_wallet_address != null) {
-          coldWalletData = await sails
-            .helpers
-            .wallet
-            .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
-          balanceColdWallet = coldWalletData;
-          coldWalletData = coldWalletData.receiveAddress.address
+        if (coinData[i].coin_code != "SUSU") {
+          if (coinData[i].warm_wallet_address != null) {
+            var warmWalletData = await sails
+              .helpers
+              .wallet
+              .getWalletAddressBalance(coinData[i].warm_wallet_address, coinData[i].coin_code);
+          }
+          var coldWalletData
+          var balanceColdWallet;
+          if (coinData[i].custody_wallet_address != null) {
+            coldWalletData = await sails
+              .helpers
+              .wallet
+              .getWalletAddressBalance(coinData[i].custody_wallet_address, coinData[i].coin_code);
+            balanceColdWallet = coldWalletData;
+            coldWalletData = coldWalletData.receiveAddress.address
+          } else {
+            coldWalletData = ''
+          }
+          var object = {
+            "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
+            "coin_code": coinData[i].coin_code,
+            "address": warmWalletData.receiveAddress.address,
+            "cold_wallet": coldWalletData,
+            "cold_wallet_balance": (balanceColdWallet.balance) ? (balanceColdWallet.balance) : balanceColdWallet.balanceString
+          }
         } else {
-          coldWalletData = ''
-        }
-        var object = {
-          "balance": (warmWalletData.balance) ? (warmWalletData.balance) : (warmWalletData.balanceString),
-          "coin_code": coinData[i].coin_code,
-          "address": warmWalletData.receiveAddress.address,
-          "cold_wallet": coldWalletData,
-          "cold_wallet_balance": (balanceColdWallet.balance) ? (balanceColdWallet.balance) : balanceColdWallet.balanceString
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              "wallet_id": "warm_wallet",
+              coin_id: coinData[i].id
+            }
+          })
+          var object = {
+            "balance": walletData.balance,
+            "coin_code": coinData[i].coin_code,
+            "address": walletData.address
+          }
         }
         balance.push(object);
       }

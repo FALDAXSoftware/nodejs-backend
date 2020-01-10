@@ -27,7 +27,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -128,7 +128,7 @@ module.exports = {
           .json({
             "status": 500,
             "err": sails.__("invalid otp").message,
-            error_at:sails.__("invalid otp").message
+            error_at: sails.__("invalid otp").message
           });
       }
     } catch (error) {
@@ -139,7 +139,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -222,7 +222,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("Something Wrong").message,
-            error_at:sails.__("Something Wrong").message
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -306,11 +306,13 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
+    console.log(key);
+    console.log(iv)
     var value = req.body.encryptKey;
     console.log(value);
     // var encryptData = await sails.helpers.getEncryptData(value);
     // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData(value);
+    var decryptData = await sails.helpers.getDecryptData("2eee171fbf451581143ced33cd67b66aeb72ff8a3e4a1beb1dc3880ee8f3f3038d69439d146c680c86c9bc1527c3f95018d834a76615a26ddc3e8498");
     console.log("decryptData", decryptData)
     return res.json(200);
   },
@@ -336,7 +338,7 @@ module.exports = {
         .json({
           status: 500,
           err: sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         })
     }
   },
@@ -447,13 +449,13 @@ module.exports = {
       return res.status(500).json({
         "status": 500,
         "message": sails.__("system_health_not_ok").message,
-        error_at:sails.__("system_health_not_ok").message
+        error_at: sails.__("system_health_not_ok").message
       })
     } catch (error) {
       return res.status(500).json({
         "status": 500,
         "message": sails.__("system_health_not_ok").message,
-        error_at:error.stack
+        error_at: error.stack
       })
     }
   }
