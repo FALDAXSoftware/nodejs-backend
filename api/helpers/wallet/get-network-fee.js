@@ -47,11 +47,10 @@ module.exports = {
 
         var recipients = [
             {
-                "amount": parseFloat(inputs.amount * 1e8),
+                "amount": parseFloat((inputs.amount * 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
                 "address": inputs.address
             }
         ]
-        console.log("recipients", recipients)
 
         if (coinData !== undefined) {
             // Getting network Fee for send coin
