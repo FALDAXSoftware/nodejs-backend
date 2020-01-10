@@ -40,7 +40,7 @@ module.exports = {
     try {
       var coin = inputs.coin;
       var feesValue;
-      if (coin == 'btc') {
+      if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({
           where: {
             deleted_at: null,
@@ -48,7 +48,7 @@ module.exports = {
           }
         });
         feesValue = (((inputs.quantity) / (25) * data.value));
-      } else if (coin == 'bch') {
+      } else if (coin == 'bch' || coin == 'tbch') {
 
         var data = await AdminSetting.findOne({
           where: {
@@ -58,7 +58,7 @@ module.exports = {
         });
 
         feesValue = ((data.value * inputs.quantity) / inputs.price)
-      } else if (coin == 'eth') {
+      } else if (coin == 'eth' || coin == 'teth') {
 
         var data = await AdminSetting.findOne({
           where: {
@@ -69,7 +69,7 @@ module.exports = {
 
         feesValue = (data.value * 21000);
 
-      } else if (coin == 'ltc') {
+      } else if (coin == 'ltc' || coin == 'tltc') {
 
         var data = await AdminSetting.findOne({
           where: {
@@ -80,7 +80,7 @@ module.exports = {
 
         feesValue = data.value;
 
-      } else if (coin == 'xrp') {
+      } else if (coin == 'xrp' || coin == 'txrp') {
 
         var data = await AdminSetting.findOne({
           where: {
@@ -90,6 +90,8 @@ module.exports = {
         });
 
         feesValue = data.value
+      } else if (coin == 'susu') {
+        feesValue = 0.01
       }
       return exits.success(feesValue);
     } catch (err) {
