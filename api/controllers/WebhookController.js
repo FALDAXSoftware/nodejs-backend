@@ -106,6 +106,7 @@ module.exports = {
       // );
       // res.end();
       // Check For Confirmed transfer
+      console.log(req.body.state);
       if (req.body.state == "confirmed") {
         let isToken = false;
         let transferId = req.body.transfer;
@@ -249,32 +250,34 @@ module.exports = {
               })
 
               var userNotification = await UserNotification.findOne({
-                user_id: userData.id,
+                user_id: userWallet.user_id,
                 deleted_at: null,
                 slug: 'receive'
               })
 
-              // if (userNotification != undefined) {
-              //   if (userNotification.email == true || userNotification.email == "true") {
-              //     if (userData.email != undefined)
-              //       // Pass Amount
-              //       var coin_data = await Coins.findOne({
-              //         id: userWallet.coin_id
-              //       });
-              //     if (coin_data != undefined) {
-              //       userData.coinName = coin_data.coin;
-              //     } else {
-              //       userData.coinName = "-";
-              //     }
-              //     userData.amountReceived = (amount).toFixed(8);
+              console.log(userNotification)
 
-              //     await sails.helpers.notification.send.email("receive", userData)
-              //   }
-              //   // if (userNotification.text == true || userNotification.text == "true") {
-              //   //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-              //   //     await sails.helpers.notification.send.text("receive", userData)
-              //   // }
-              // }
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (userData.email != undefined)
+                    // Pass Amount
+                    var coin_data = await Coins.findOne({
+                      id: userWallet.coin_id
+                    });
+                  if (coin_data != undefined) {
+                    userData.coinName = coin_data.coin;
+                  } else {
+                    userData.coinName = "-";
+                  }
+                  userData.amountReceived = (amount).toFixed(8);
+                  console.log(userData);
+                  await sails.helpers.notification.send.email("receive", userData)
+                }
+                // if (userNotification.text == true || userNotification.text == "true") {
+                //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+                //     await sails.helpers.notification.send.text("receive", userData)
+                // }
+              }
 
 
               // Send fund to Warm and custody wallet
@@ -294,7 +297,12 @@ module.exports = {
                 custodialWalletAmount = (dest.value * 20) / 100;
 
                 console.log(coin)
-                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) > parseFloat(warmWalletAmount / 1e8)) {
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(warmWalletAmount / 1e8)) {
+                  warmWalletAmount = dest.value;
+                  custodialWalletAmount = 0.0;
+                }
+
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(custodialWalletAmount / 1e8)) {
                   warmWalletAmount = dest.value;
                   custodialWalletAmount = 0.0;
                 }
@@ -302,15 +310,6 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 console.log("custodialWalletAmount", custodialWalletAmount)
 
-                // if (warmWallet.confirmedBalance >= coin.min_thresold) {
-                //     // send 10% to warm wallet and 90% to custodial wallet
-                //     warmWalletAmount = (dest.value * 10) / 100;
-                //     custodialWalletAmount = (dest.value * 90) / 100;
-                // } else {
-                //     // send 50% to warm wallet and 50% to custodial wallet
-                //     warmWalletAmount = (dest.value * 50) / 100;
-                //     custodialWalletAmount = (dest.value * 50) / 100;
-                // }
                 if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
                   warmWalletAmount = Math.ceil(warmWalletAmount)
                   custodialWalletAmount = Math.floor(custodialWalletAmount)

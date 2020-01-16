@@ -27,13 +27,13 @@
         "page": "Asset lists",
         "context": "Assets retrived Success",
         "message_type": "success",
-        "message": "Assets retrived Success"
+        "message": "Assets retrived Success."
     },
     "User not found": {
         "page": "Users",
         "context": "User not found",
         "message_type": "error",
-        "message": "User not found"
+        "message": "User not found."
     },
     "user_delete_success": {
         "page": "Users",
@@ -45,13 +45,13 @@
         "page": "Employee list",
         "context": "Employees has been retrieved successfully",
         "message_type": "success",
-        "message": "Employees has been retrieved successfully"
+        "message": "Employees has been retrieved successfully."
     },
     "Add Employee": {
         "page": "Employee add",
         "context": "Employee has been added successfully",
         "message_type": "success",
-        "message": "Employee has been added successfully"
+        "message": "Employee has been added successfully."
     },
     "Delete Employee": {
         "page": "Employee list",
