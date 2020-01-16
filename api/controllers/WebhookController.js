@@ -225,11 +225,11 @@ module.exports = {
               // check for warm wallet balance 
               let warmWalletAmount = 0;
               let custodialWalletAmount = 0;
-              warmWalletAmount = (dest.value * 80) / 100;
-              custodialWalletAmount = (dest.value * 20) / 100;
+              warmWalletAmount = (dest.value * 78) / 100;
+              custodialWalletAmount = (dest.value * 19) / 100;
 
-            //   console.log("warmWalletAmount", warmWalletAmount)
-            //   console.log("custodialWalletAmount", custodialWalletAmount)
+              console.log("warmWalletAmount", warmWalletAmount)
+              console.log("custodialWalletAmount", custodialWalletAmount)
               
                 if (!Number.isInteger(warmWalletAmount) || !Number.isInteger(custodialWalletAmount)) {
                   warmWalletAmount = Math.ceil(warmWalletAmount)
