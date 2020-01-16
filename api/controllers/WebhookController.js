@@ -263,7 +263,7 @@ module.exports = {
             //     transaction_id: req.body.hash
             //   });
 
-               custodialWalletAmount = 1028000
+               custodialWalletAmount = 1020000
               // send amount to custodial wallet
               await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
 
