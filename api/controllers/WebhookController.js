@@ -127,6 +127,7 @@ module.exports = {
           console.log("dest", dest, "source", source)
 
           // transaction amount
+          dest.value = 4706156;
           let amount = (dest.value / 100000000);
 
           console.log("amount", amount)
