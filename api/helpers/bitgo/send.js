@@ -86,7 +86,7 @@ module.exports = {
     } else {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
-    // passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+    passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
     
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     request({
