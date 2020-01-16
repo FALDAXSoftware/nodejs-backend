@@ -126,7 +126,7 @@ module.exports = {
       if (newsDetails) {
         return res.json({
           "status": 200,
-          "message": sails.__("News Status Update success").message,
+          "message": sails.__("News retrived success").message,
           data: newsDetails
         });
       } else {

@@ -311,7 +311,7 @@ module.exports = {
                     status: 200,
                     user: user_detail,
                     token,
-                    message: "Welcome back, " + user_detail.first_name + "!"
+                    message: sails.__("Welcome back").message +", " + user_detail.first_name + "!"
                   });
                 } else {
                   let verifyToken = randomize("Aa0", 15);
@@ -514,7 +514,7 @@ module.exports = {
             status: 200,
             user: user_detail,
             token,
-            message: "Welcome back, " + user_detail.first_name + "!"
+            message: sails.__("Welcome back").message +", " + user_detail.first_name + "!"
           });
         }
       }

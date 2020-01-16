@@ -13,6 +13,7 @@ var QRCode = require('qrcode');
 var csc = require('country-state-city');
 const moment = require('moment');
 var logger = require("./logger");
+var requestIp = require('request-ip');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -157,6 +158,17 @@ module.exports = {
         }]).fetch();
 
         if (user_detail) {
+          // Insert history for Login
+          var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+          await LoginHistory.create({
+            user: user_detail.id,
+            ip: ip,
+            created_at: new Date(),
+            device_type: req.body.device_type,
+            jwt_token: "",
+            device_token: req.body.device_token ?
+              req.body.device_token : null
+          });
           //   Create Recive Address
           // await sails.helpers.wallet.receiveAddress(user_detail);
           let slug = "";
@@ -487,7 +499,7 @@ module.exports = {
                     "status": 200,
                     user,
                     token,
-                    "message": "Welcome back, " + user.first_name + "!"
+                    "message": sails.__("Welcome back").message +", " + user.first_name + "!"
                   });
                 }
               })
@@ -496,7 +508,7 @@ module.exports = {
               "status": 200,
               user,
               token,
-              "message": "Welcome back, " + user.first_name + "!"
+              "message": sails.__("Welcome back").message +", " + user.first_name + "!"
             });
           }
         } else {
