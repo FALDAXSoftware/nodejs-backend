@@ -498,6 +498,26 @@ module.exports = {
           error_at:error.stack
         });
     }
+  },
+  // Test logs
+  testLogs: async function (req, res) {
+    try {
+      var {
+        txid
+      } = req.allParams();
+
+      return res.json({
+        status: 200,
+          "data": []
+      });
+    } catch (error) {
+      // console.log(error);
+      return res.json({
+        status: 500,
+        "err": sails.__("Something Wrong").message,
+        error_at:error.stack
+      });
+    }
   }
 
 }
