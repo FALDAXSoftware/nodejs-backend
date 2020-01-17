@@ -121,6 +121,8 @@ module.exports = {
               slug: "faldax_fee"
             }
           })
+
+          console.log("faldax_fee", faldax_fee)
           var get_jst_price = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), req_body.OrderQty, flag);
           if (req_body.Side == 1) {
             priceValue = (1 / get_jst_price[0].ask_price);
@@ -131,6 +133,8 @@ module.exports = {
           if (req_body.Side == 1) {
             feesCurrency = crypto;
             get_network_fees = await sails.helpers.feesCalculation(feesCurrency.toLowerCase(), qty);
+            console.log("req_body.OrderQty", req_body.OrderQty)
+            console.log("faldax_fee.value", faldax_fee.value)
             faldax_fee_value = (req_body.OrderQty * ((faldax_fee.value) / 100))
             faldax_fees_actual = faldax_fee_value;
             get_faldax_fee = (!usd_value || usd_value == null || usd_value <= 0 || isNaN(usd_value)) ? (parseFloat(req_body.OrderQty) - parseFloat(get_network_fees) - parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100)))) : (parseFloat(req_body.OrderQty) - parseFloat(get_network_fees) - parseFloat(((req_body.OrderQty * (faldax_fee.value) / 100))));

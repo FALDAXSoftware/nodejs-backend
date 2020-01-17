@@ -68,8 +68,8 @@ module.exports = {
         query += " transaction_table.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -175,8 +175,8 @@ module.exports = {
       query += " transaction_table.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;

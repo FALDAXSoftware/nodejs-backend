@@ -2459,5 +2459,11 @@
 		"context": "No Authorization header was found",
 		"message_type": "error",
 		"message": "No Authorization header was found"
+	},
+	"Verification Expired": {
+		"page": "Login",
+		"context": "Activate Account after signup",
+		"message_type": "error",
+		"message": "Verification Link has expired"
 	}
 }
