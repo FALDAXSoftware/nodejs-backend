@@ -250,7 +250,12 @@ module.exports = {
               // }
 
               // send amount to warm wallet
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+              var warm_wallet_value = warmwallet_balance_check.transfer.feeString
+              custodialWalletAmount = custodialWalletAmount - (warm_wallet_value*2 )
+              console.log("warmwallet_balance_check",warmwallet_balance_check);
+              console.log("warm_wallet_value",warm_wallet_value);
+              console.log("Custodial estimate after fees deduction==>",custodialWalletAmount);
               let transactionLog = [];
               // Log Transafer in transaction table
               transactionLog.push({
