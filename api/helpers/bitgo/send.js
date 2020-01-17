@@ -94,6 +94,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
+        passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
       } else {
         passphrase_value = sails.config.local.BITGO_PASSPHRASE;
       }
