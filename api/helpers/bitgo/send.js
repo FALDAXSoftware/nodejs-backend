@@ -88,8 +88,8 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
           console.log("In hot_send_wallet_address");
         } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_LTC_HOT_RECEIVE_WALLET_PASSPHRASE;
-          console.log("In hot_receive_wallet_address");
+          passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
+          console.log("In hot_receive_wallet_address LTC");
         } else if (coinData.custody_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
@@ -104,8 +104,9 @@ module.exports = {
     //passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
     console.log("passphrase_value",passphrase_value);
     console.log("URL====>>",`${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`);
-    console.log("Body", { address: inputs.address, amount: parseInt(inputs.amount),  walletPassphrase: wallet_passphrase});
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
+    console.log("wallet_passphrase",wallet_passphrase)
+    console.log("Body", { address: inputs.address, amount: parseInt(inputs.amount),  walletPassphrase: wallet_passphrase});
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
@@ -117,8 +118,7 @@ module.exports = {
       body: {
         address: inputs.address,
         amount: parseInt(inputs.amount),
-        walletPassphrase: wallet_passphrase,
-        text:"testing"
+        walletPassphrase: wallet_passphrase
       },
       json: true
     }, function (err, httpResponse, body) {
