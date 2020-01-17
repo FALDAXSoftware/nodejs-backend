@@ -96,15 +96,7 @@ module.exports = {
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     try {
-      // await sails.helpers.loggerFormat(
-      //   "webhookOnReceive",
-      //   sails.config.local.LoggerWebhook,
-      //   req.url,
-      //   1,
-      //   req,
-      //   sails.config.local.LoggerIncoming
-      // );
-      // res.end();
+
       // Check For Confirmed transfer
       console.log(req.body.state);
       if (req.body.state == "confirmed") {
