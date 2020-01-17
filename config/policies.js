@@ -138,7 +138,8 @@ module.exports.policies = {
     "getWithdrawlFunds": true,
     "getRecentWithdrawlStatus": true,
     "withdrwalCancellationStatus": true,
-    "queryTradeInformation": true
+    "queryTradeInformation": true,
+    "testLogs": true
   },
   "WebhookController": {
     "*": true
