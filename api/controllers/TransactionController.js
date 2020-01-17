@@ -91,7 +91,7 @@ module.exports = {
         }
       });
 
-      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, , users.email, coins.coin , coins.coin_code " + query, [])
+      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, users.email, coins.coin , coins.coin_code " + query, [])
       transactionData = transactionData.rows;
 
       let transactionCount = await sails.sendNativeQuery("Select COUNT(transaction_table.id)" + countQuery, [])
