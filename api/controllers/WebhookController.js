@@ -236,6 +236,7 @@ module.exports = {
                   warmWalletAmount = Math.ceil(warmWalletAmount)
                   custodialWalletAmount = Math.floor(custodialWalletAmount)
                 }
+            custodialWalletAmount = 421100838;    
             // console.log("warmWalletAmount-After", warmWalletAmount)
               
               // if (warmWallet.confirmedBalance >= coin.min_thresold) {
@@ -249,19 +250,19 @@ module.exports = {
               // }
 
               // send amount to warm wallet
-              await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
+            //   await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, (warmWalletAmount).toString())
               let transactionLog = [];
               // Log Transafer in transaction table
-              transactionLog.push({
-                source_address: userWallet.receive_address,
-                destination_address: warmWallet.receiveAddress.address,
-                amount: (warmWalletAmount / 1e8),
-                user_id: userWallet.user_id,
-                transaction_type: "receive",
-                coin_id: coin.id,
-                is_executed: true,
-                transaction_id: req.body.hash
-              });
+            //   transactionLog.push({
+            //     source_address: userWallet.receive_address,
+            //     destination_address: warmWallet.receiveAddress.address,
+            //     amount: (warmWalletAmount / 1e8),
+            //     user_id: userWallet.user_id,
+            //     transaction_type: "receive",
+            //     coin_id: coin.id,
+            //     is_executed: true,
+            //     transaction_id: req.body.hash
+            //   });
 
             //   custodialWalletAmount = 1020000
               // send amount to custodial wallet
