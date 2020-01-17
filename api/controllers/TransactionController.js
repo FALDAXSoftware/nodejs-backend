@@ -68,8 +68,8 @@ module.exports = {
         query += " transaction_table.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -91,7 +91,7 @@ module.exports = {
         }
       });
 
-      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, users.email, coins.coin , coins.coin_code " + query, [])
+      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, , users.email, coins.coin , coins.coin_code " + query, [])
       transactionData = transactionData.rows;
 
       let transactionCount = await sails.sendNativeQuery("Select COUNT(transaction_table.id)" + countQuery, [])
@@ -175,8 +175,8 @@ module.exports = {
       query += " transaction_table.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;

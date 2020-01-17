@@ -168,6 +168,7 @@ module.exports = {
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       var susucoinData = await sails.helpers.getUsdSusucoinValue();
+      console.log("susucoinData", susucoinData)
       susucoinData = JSON.parse(susucoinData);
       susucoinData = susucoinData.data
 
@@ -466,7 +467,7 @@ module.exports = {
                         if (req.body.confirm_for_wait === undefined) {
 
                           //Check for warm wallet minimum thresold
-                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold) {
+                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) < total_fees) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
@@ -579,7 +580,7 @@ module.exports = {
                               slug: 'withdraw'
                             })
                             userData.coinName = coin.coin_code;
-                            userData.amountReceived = total_fees;
+                            userData.amountReceived = totalFeeSub;
                             if (userNotification != undefined) {
                               if (userNotification.email == true || userNotification.email == "true") {
                                 if (userData.email != undefined)
@@ -1721,7 +1722,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address,
-                          (cast(wallet_history.amount as decimal(8,8))) as amount,
+                          (cast((wallet_history.amount - wallet_history.faldax_fee) as decimal(8,8))) as amount,
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
@@ -2225,7 +2226,7 @@ module.exports = {
   getNetworkFeeData: async function (req, res) {
     try {
       var data = req.body;
-
+      console.log(data);
       if (data.coin != "SUSU") {
         var reposneData = await sails
           .helpers
