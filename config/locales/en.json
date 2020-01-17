@@ -30,19 +30,19 @@
 		"message": "Assets retrived Success"
 	},
 	"User not found": {
-		"page": "Users",
+		"page": "User lists",
 		"context": "User not found",
 		"message_type": "error",
 		"message": "User not found"
 	},
 	"user_delete_success": {
-		"page": "Users",
+		"page": "Users lists",
 		"context": "User account deactivated successfully.",
 		"message_type": "success",
 		"message": "User account deactivated successfully."
 	},
 	"Employee list": {
-		"page": "Employee list",
+		"page": "Employee lists",
 		"context": "Employees has been retrieved successfully",
 		"message_type": "success",
 		"message": "Employees has been retrieved successfully"
@@ -54,7 +54,7 @@
 		"message": "Employee has been added successfully"
 	},
 	"Delete Employee": {
-		"page": "Employee list",
+		"page": "Employee lists",
 		"context": "Employee account deleted successfully.",
 		"message_type": "success",
 		"message": "Employee account deleted successfully."
@@ -66,31 +66,31 @@
 		"message": "Employee details updated successfully."
 	},
 	"Create KYC": {
-		"page": "KYC",
+		"page": "KYC create",
 		"context": "KYC has been added successfully",
 		"message_type": "success",
 		"message": "KYC has been added successfully"
 	},
 	"Update KYC": {
-		"page": "KYC",
+		"page": "KYC update",
 		"context": "KYC has been updated successfully",
 		"message_type": "success",
 		"message": "KYC has been updated successfully"
 	},
 	"KYC Updated": {
-		"page": "KYC",
+		"page": "KYC update",
 		"context": "KYC details already updated",
 		"message_type": "success",
 		"message": "KYC details already updated"
 	},
 	"KYC Doc Upload": {
-		"page": "KYC",
+		"page": "KYC document upload",
 		"context": "KYC doc uploaded successfully",
 		"message_type": "success",
 		"message": "KYC doc uploaded successfully"
 	},
 	"Blog list": {
-		"page": "Blog list",
+		"page": "Blog lists",
 		"context": "Blogs has been retrieved successfully",
 		"message_type": "success",
 		"message": "Blogs has been retrieved successfully"
@@ -108,13 +108,13 @@
 		"message": "Blog has been updated successfully"
 	},
 	"Delete Blog": {
-		"page": "Blog list",
+		"page": "Blog lists",
 		"context": "Blog has been deleted successfully.",
 		"message_type": "success",
 		"message": "Blog has been deleted successfully."
 	},
 	"Pair list": {
-		"page": "Pairs list",
+		"page": "Pairs lists",
 		"context": "Pair has been retrieved successfully",
 		"message_type": "success",
 		"message": "Pair has been retrieved successfully"
@@ -150,7 +150,7 @@
 		"message": "Transaction list"
 	},
 	"Trade list": {
-		"page": "Trade lists",
+		"page": "Trade listss",
 		"context": "Trade list",
 		"message_type": "sucess",
 		"message": "Trade list"
@@ -1080,1462 +1080,1324 @@
 		"message": "User has been Loggedout."
 	},
 	"Missing Parameters": {
-		"page": "Login",
+		"page": "CMS - Batch upload, Batch Create",
 		"context": "Missing Parameters",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Missing Parameters"
 	},
-	"Something went wrong! could not able to update announcement details": {
-		"page": "Login",
-		"context": "Something went wrong! could not able to update announcement details",
-		"message_type": "",
-		"message": "Something went wrong! could not able to update announcement details"
-	},
-	"Invalid Static Id": {
-		"page": "Login",
-		"context": "Invalid Static Id",
-		"message_type": "",
-		"message": "Invalid Static Id"
-	},
-	"Announcement details updated success": {
-		"page": "Login",
-		"context": "Announcement details has been updated successfully",
-		"message_type": "",
-		"message": "Announcement details has been updated successfully"
-	},
-	"Announcement id is not sent": {
-		"page": "Login",
-		"context": "Announcement id has not been sent",
-		"message_type": "",
-		"message": "Announcement id has not been sent"
-	},
-	"Announcement deleted success": {
-		"page": "Login",
-		"context": "Announcement has been deleted successfully",
-		"message_type": "",
-		"message": "Announcement has been deleted successfully"
-	},
-	"Announcement sent to email success": {
-		"page": "Login",
-		"context": "Announcement has been sent to email successfully.",
-		"message_type": "",
-		"message": "Announcement has been sent to email successfully."
-	},
-	"Coin requested success": {
-		"page": "Login",
-		"context": "Asset has been requested successfully",
-		"message_type": "",
-		"message": "Asset has been requested successfully"
-	},
-	"Coin requests retrived success": {
-		"page": "Login",
-		"context": "Asset requests has been retrieved successfully",
-		"message_type": "",
-		"message": "Asset requests has been retrieved successfully"
-	},
 	"listed": {
-		"page": "Login",
+		"page": "CMS - Creat employee",
 		"context": "listed",
-		"message_type": "",
+		"message_type": "success",
 		"message": "listed"
 	},
 	"Please provide email, new password, confirm password": {
-		"page": "Login",
+		"page": "CMS - Change own password, Change employee password",
 		"context": "Please enter your email, a new password, and confirm the new password.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter your email, a new password, and confirm the new password."
 	},
 	"Email address not found": {
-		"page": "Login",
+		"page": "CMS - Change own password, Change employee password",
 		"context": "Please enter an email address to change your password.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter an email address to change your password."
 	},
 	"Current password mismatch": {
-		"page": "Login",
+		"page": "CMS - Change own password",
 		"context": "Current Password is incorrect",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Current Password is incorrect"
 	},
 	"Something went wrong! Could not able to update the password": {
-		"page": "Login",
+		"page": "CMS - Change own password, Change employee password",
 		"context": "Something went wrong! Could not able to update the password",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Something went wrong! Could not able to update the password"
 	},
 	"Update password Error": {
-		"page": "Login",
+		"page": "CMS - Reset password",
 		"context": "Update password Error",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Update password Error"
 	},
 	"Reset Password link has been expired.": {
-		"page": "Login",
+		"page": "CMS - Reset password",
 		"context": "The reset password link you have used has expired.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The reset password link you have used has expired."
 	},
 	"Email & roles is required.": {
-		"page": "Login",
+		"page": "CMS - Employee create",
 		"context": "In order to continue please include an email and a role.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "In order to continue please include an email and a role."
 	},
 	"Employee not found": {
-		"page": "Login",
+		"page": "CMS - Delete/Update employee, Change IP whiltelist Status, Get Two-factor list of employee, Approve/Disapprove Two-factor requests",
 		"context": "Entered employee could not be found.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Entered employee could not be found."
 	},
 	"Employee id is not sent.": {
-		"page": "Login",
+		"page": "CMS - Delete/Update employee",
 		"context": "Employee id has not been sent.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Employee id has not been sent."
 	},
 	"Employee Details": {
-		"page": "Login",
+		"page": "CMS - Employee details",
 		"context": "Employee Details",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Employee Details"
 	},
 	"Employee id is required": {
-		"page": "Login",
+		"page": "CMS - Employee details",
 		"context": "Employee ID is required in order to continue.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Employee ID is required in order to continue."
 	},
 	"Admin not found or it's not active": {
-		"page": "Login",
+		"page": "CMS - Setup Two-factor of Employee",
 		"context": "Admin not found or it's not active",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Admin not found or it's not active"
 	},
 	"Admin Details": {
-		"page": "Login",
+		"page": "CMS - Get admin details",
 		"context": "Admin Details",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Admin Details"
 	},
 	"It looks like Robot !": {
 		"page": "Login",
 		"context": "It looks like Robot !",
-		"message_type": "",
+		"message_type": "error",
 		"message": "It looks like Robot !"
 	},
 	"User Log out successfully.": {
-		"page": "Login",
+		"page": "Logout",
 		"context": "User Log out successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "User Log out successfully."
 	},
 	"Account Class Data": {
-		"page": "Login",
+		"page": "CMS - Account class lists",
 		"context": "Account Class data has been fetched successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account Class data has been fetched successfully."
 	},
 	"Class added success": {
-		"page": "Login",
+		"page": "CMS - Add account class",
 		"context": "Account class has been successfully added.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account class has been successfully added."
 	},
 	"Class Update Success": {
-		"page": "Login",
+		"page": "CMS - Update account class",
 		"context": "Account class has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account class has been successfully updated."
 	},
 	"Class id is not sent": {
-		"page": "Login",
+		"page": "CMS - Delete account class",
 		"context": "Account Class Id is not provided",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Account Class Id is not provided"
 	},
 	"Class deleted success": {
-		"page": "Login",
+		"page": "CMS - Delete account class",
 		"context": "Account class has been successfully deleted.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account class has been successfully deleted."
 	},
 	"Wallet Not Found": {
-		"page": "Login",
+		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
 		"context": "User Wallet has not been found",
-		"message_type": "",
+		"message_type": "error",
 		"message": "User Wallet has not been found"
 	},
 	"Daily Limit Exceeded": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "The amount you wish to withdraw exceeds daily limit.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The amount you wish to withdraw exceeds daily limit."
 	},
 	"Daily Limit Exceeded Using Amount": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "You exceed you daily limit by sending this amount.  Please send amount less than ",
-		"message_type": "",
+		"message_type": "error",
 		"message": "You exceed you daily limit by sending this amount.  Please send amount less than "
 	},
 	"withdraw request confirm": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "Your Withdrawl request may take 24-28 hours to process due to its size. Do you wish to proceed?",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Your Withdrawl request may take 24-28 hours to process due to its size. Do you wish to proceed?"
 	},
 	"Request sumbit success": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "Your withdraw request has been submitted successfully. We will update you soon.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Your withdraw request has been submitted successfully. We will update you soon."
 	},
 	"Insufficent balance wallet": {
-		"page": "Login",
+		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
 		"context": "Your account balance is currently too low to send this amount. If you think this is incorrect, please contact customer support.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your account balance is currently too low to send this amount. If you think this is incorrect, please contact customer support."
 	},
 	"Monthly Limit Exceeded Using Amount": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "You exceed you monthly limit by sending this amount. Please send amount less than ",
-		"message_type": "",
+		"message_type": "error",
 		"message": "You exceed you monthly limit by sending this amount. Please send amount less than "
 	},
 	"Monthly Limit Exceeded": {
-		"page": "Login",
+		"page": "Withdraw asset",
 		"context": "The amount you wish to withdraw exceeds monthly limit.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The amount you wish to withdraw exceeds monthly limit."
 	},
 	"No Limit Data List": {
-		"page": "Login",
+		"page": "CMS - Limit lists",
 		"context": "No Limit Data has been found for this asset.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No Limit Data has been found for this asset."
 	},
 	"Address Create Success": {
-		"page": "Login",
+		"page": "Recieve Address create,Recieve Address create for Faldax, Internal tradding - create recieve address",
 		"context": "Address has been created successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Address has been created successfully"
 	},
 	"Address Not Create Success": {
-		"page": "Login",
+		"page": "Recieve Address create,Recieve Address create for Faldax",
 		"context": "Address has not been created",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Address has not been created"
 	},
 	"Address already Create Success": {
-		"page": "Login",
+		"page": "Recieve Address create,Recieve Address create for Faldax",
 		"context": "Address has already been created",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Address has already been created"
 	},
 	"limit id added sucess": {
-		"page": "Login",
+		"page": "CMS - Limit create",
 		"context": "Tier Limit has been addedd successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Tier Limit has been addedd successfully"
 	},
 	"No User Limit Data List": {
-		"page": "Login",
+		"page": "CMS - User limits",
 		"context": "No User Limit Data has been found",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No User Limit Data has been found"
 	},
 	"User Limit list": {
-		"page": "Login",
+		"page": "CMS - User limits",
 		"context": "User limit data has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "User limit data has been listed successfully."
 	},
-	"Delete Limit": {
-		"page": "Login",
-		"context": "Limit has been deleted successfully",
-		"message_type": "",
-		"message": "Limit has been deleted successfully"
-	},
 	"Email template retrive success": {
-		"page": "Login",
+		"page": "CMS - Email template lists",
 		"context": "Email Template has been retrieved Succesfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Email Template has been retrieved Succesfully"
 	},
 	"Email template update success": {
-		"page": "Login",
+		"page": "CMS - Email template update",
 		"context": "Email template has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Email template has been successfully updated."
 	},
 	"Update User Limit": {
-		"page": "Login",
+		"page": "CMS - Update user limit",
 		"context": "User Limit has been updated successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "User Limit has been updated successfully."
 	},
 	"Delete User Limit": {
-		"page": "Login",
+		"page": "CMS - Update user limit",
 		"context": "User Limit has been deleted successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "User Limit has been deleted successfully."
 	},
 	"User Id and Coin ID necessary": {
-		"page": "Login",
+		"page": "CMS - Update user limit",
 		"context": "Userid and Assetid is necessary to provide.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Userid and Assetid is necessary to provide."
 	},
 	"Create User Limit": {
-		"page": "Login",
+		"page": "CMS - Update user limit",
 		"context": "A user limit has been successfully set.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "A user limit has been successfully set."
 	},
 	"New Source list success": {
-		"page": "Login",
+		"page": "CMS - News source lists",
 		"context": "News Source has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "News Source has been listed successfully."
 	},
-	"No News Source List": {
-		"page": "Login",
-		"context": "No News Source list has been found.",
-		"message_type": "",
-		"message": "No News Source list has been found."
-	},
 	"No news source found": {
-		"page": "Login",
+		"page": "CMS - News source status update",
 		"context": "No News Source ID has been provided.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No News Source ID has been provided."
 	},
 	"No source found": {
-		"page": "Login",
+		"page": "CMS - News source status update",
 		"context": "No News source has been found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No News source has been found."
 	},
 	"News Source update success": {
-		"page": "Login",
+		"page": "CMS - News source status update",
 		"context": "News source has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "News source has been successfully updated."
 	},
 	"New Source update fail.": {
-		"page": "Login",
+		"page": "CMS - News source status update",
 		"context": "News source updated has been failed.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "News source updated has been failed."
 	},
 	"Withdraw Request Cancel": {
-		"page": "Login",
+		"page": "CMS - Approve/Disapprove withdraw requests",
 		"context": "Withdraw Request has been disapproved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Withdraw Request has been disapproved successfully."
 	},
 	"Insufficent balance wallet user": {
-		"page": "Login",
+		"page": "CMS - Approve/Disapprove withdraw requests",
 		"context": "Insufficient wallet balance in user",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Insufficient wallet balance in user"
 	},
 	"Transfer could not happen": {
-		"page": "Login",
+		"page": "Withdraw requests",
 		"context": "Transfer could not happen",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Transfer could not happen"
 	},
 	"Referral amount collect": {
-		"page": "Login",
+		"page": "Collect referrals",
 		"context": "Congratulations! You have successfully claimed your referral earnings. Thank you for supporting FALDAX through our Referral Program!",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Congratulations! You have successfully claimed your referral earnings. Thank you for supporting FALDAX through our Referral Program!"
 	},
-	"No Users Amount collected": {
-		"page": "Login",
-		"context": "No User Amount has been collected till now.",
-		"message_type": "",
-		"message": "No User Amount has been collected till now."
-	},
-	"User Referred amount success": {
-		"page": "Login",
-		"context": "Your referred amount has been listed successfully",
-		"message_type": "",
-		"message": "Your referred amount has been listed successfully"
-	},
 	"No Referral Data found": {
-		"page": "Login",
+		"page": "Collect referrals",
 		"context": "No referral earnings to be collected.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No referral earnings to be collected."
 	},
 	"Job Category added success": {
-		"page": "Login",
+		"page": "CMS - Job category create",
 		"context": "Job category has been successfully added.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Job category has been successfully added."
 	},
 	"Job Category updated success": {
-		"page": "Login",
+		"page": "CMS - Job category update",
 		"context": "Job category has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Job category has been successfully updated."
 	},
 	"pair already exist": {
-		"page": "Login",
+		"page": "CMS - Pair create",
 		"context": "Pair Already Exist.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Pair Already Exist."
 	},
 	"Panic Status": {
-		"page": "Login",
+		"page": "Panic status on/of",
 		"context": "Panic status has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Panic status has been retrieved successfully"
 	},
 	"Your session has been expired. Please Login again to continue": {
 		"page": "Login",
 		"context": "Your session has expired due to inactivity, please login again to continue.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your session has expired due to inactivity, please login again to continue."
 	},
 	"WhiteList IP Add Success": {
-		"page": "Login",
+		"page": "IP whitelist add",
 		"context": "IP has been successfully whitelisted.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "IP has been successfully whitelisted."
 	},
 	"WhiteList IP info Success": {
-		"page": "Login",
+		"page": "IP Whitelist lists",
 		"context": "White List IP has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "White List IP has been retrieved successfully."
 	},
 	"Unauthorized Access": {
-		"page": "Login",
+		"page": "Unauthorized access",
 		"context": "Unauthorized Access",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Unauthorized Access"
 	},
-	"Minimum amount requiried": {
-		"page": "Login",
-		"context": "You have not satisfied minimum amount limit for placing the order.",
-		"message_type": "",
-		"message": "You have not satisfied minimum amount limit for placing the order."
-	},
 	"Job Category Exists": {
-		"page": "Login",
+		"page": "CMS - Job category add",
 		"context": "Job Category Already Exists!",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Job Category Already Exists!"
 	},
 	"Your IP has not been whitelisted. Please whitelist your IP to continue.": {
-		"page": "Login",
+		"page": "Login, CMS - Login",
 		"context": "Your IP has not been whitelisted. Please whitelist your IP to continue.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your IP has not been whitelisted. Please whitelist your IP to continue."
 	},
 	"User Detail Not Found": {
-		"page": "Login",
+		"page": "CMS - Delete user",
 		"context": "No User Details has been found",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No User Details has been found"
 	},
 	"WhiteList IP info Success Not Found": {
-		"page": "Login",
+		"page": "IP Whitelist list, Delete IP Whitelist,IP Whitelist list of Admin, Delete IP Whitelist of Admin",
 		"context": "No White List IP for user has been found",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No White List IP for user has been found"
 	},
 	"Days greater 0": {
-		"page": "Login",
+		"page": "Add IP in whitelist, CMS - Add IP in whitelist",
 		"context": "Days you selected should be greater than zero",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Days you selected should be greater than zero"
 	},
 	"WhiteList IP has been deleted successfully": {
-		"page": "Login",
+		"page": "Delete IP Whitelist, CMS - Delete user IP Whitelist, CMS - Delete IP Whitelist",
 		"context": "Whitelisted IP has been successfully deleted.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Whitelisted IP has been successfully deleted."
 	},
-	"Panic status Update": {
-		"page": "Login",
-		"context": "Panic status has been changed successfully.",
-		"message_type": "",
-		"message": "Panic status has been changed successfully."
-	},
-	"Change_Password_Email": {
-		"page": "Login",
-		"context": "Change Password Email has been Sent successfully",
-		"message_type": "",
-		"message": "Change Password Email has been Sent successfully"
-	},
 	"Time for whitelist has been expired.": {
-		"page": "Login",
+		"page": "IP whitelist timeout",
 		"context": "Your IP whitelist's session is expired. Try by adding new whitelist.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your IP whitelist's session is expired. Try by adding new whitelist."
 	},
 	"IP in whitelist exists": {
-		"page": "Login",
+		"page": "IP Whitelist add",
 		"context": "IP address already exists in whitelist",
-		"message_type": "",
+		"message_type": "error",
 		"message": "IP address already exists in whitelist"
 	},
 	"Email is already verified": {
-		"page": "Login",
+		"page": "Resend verification email",
 		"context": "The email address entered has already been verified.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The email address entered has already been verified."
 	},
 	"Image Required": {
-		"page": "Login",
+		"page": "Forgot Two-factor,Upload KYC Document, Tier document upload",
 		"context": "Please Provide Image to continue",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please Provide Image to continue"
 	},
 	"SF Status Enabled": {
-		"page": "Login",
+		"page": "Security feature",
 		"context": "Security feature has been enabled.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Security feature has been enabled."
 	},
 	"SF Status Disabled": {
-		"page": "Login",
+		"page": "Security feature",
 		"context": "Security feature has been disabled.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Security feature has been disabled."
 	},
 	"Whitelist ip enabled": {
-		"page": "Login",
+		"page": "IP Whitelist status update",
 		"context": "The IP Address(s) you added to your account whitelist is enabled.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "The IP Address(s) you added to your account whitelist is enabled."
 	},
 	"Whitelist ip disabled": {
-		"page": "Login",
+		"page": "IP Whitelist status update",
 		"context": "The IP Address(s) you added to your account whitelist is disabled.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "The IP Address(s) you added to your account whitelist is disabled."
 	},
 	"Please enter Twofa Backup code to continue": {
 		"page": "Login",
 		"context": "Please enter 2FA Backup code to continue.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter 2FA Backup code to continue."
 	},
 	"Invalid twofa backup code": {
-		"page": "Login",
+		"page": "Login, Delete user",
 		"context": "Invalid 2FA Backup Code.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Invalid 2FA Backup Code."
 	},
 	"Twofactor not enabled": {
-		"page": "Login",
+		"page": "Regenerate Two-factor",
 		"context": "Two-factor has not been enabled.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Two-factor has not been enabled."
 	},
 	"Twofactor backup code is generated": {
-		"page": "Login",
+		"page": "Regenerate Two-factor",
 		"context": "Two-factor Backup code has been generated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Two-factor Backup code has been generated."
 	},
 	"Your request for twofactors is sent": {
-		"page": "Login",
+		"page": "Forgot Two-factor",
 		"context": "Your request of Two-factor/Backup code, has been sent to support team for verification.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Your request of Two-factor/Backup code, has been sent to support team for verification."
 	},
 	"Twofactors already requested": {
-		"page": "Login",
+		"page": "Forgot Two-factor",
 		"context": "You have already requested. Support team will notify you about this.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "You have already requested. Support team will notify you about this."
 	},
 	"Extention required": {
-		"page": "Login",
+		"page": "Forgot Two-factor",
 		"context": "Only valid images(jpeg,png,jpg) are allowed.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Only valid images(jpeg,png,jpg) are allowed."
 	},
 	"No record found": {
-		"page": "Login",
+		"page": "CMS - Approve/Disapprove Two-factor requests, Contact lists, Admin wallet details, Batch listing",
 		"context": "No data found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No data found."
 	},
 	"Record found": {
-		"page": "Login",
+		"page": "Security Status, CMS - Approve/Disapprove Two-factor requests, Admin wallet details, Batch listing",
 		"context": "Data found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Data found."
 	},
 	"Twofactors lists": {
-		"page": "Login",
+		"page": "CMS - Two-factor requests",
 		"context": "Two-factors request's has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Two-factors request's has been listed successfully."
 	},
 	"Twofactor request closed": {
-		"page": "Login",
+		"page": "CMS - Approve/Disapprove Two-factor requests",
 		"context": "This request is already closed.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "This request is already closed."
 	},
 	"Twofactor Request approved": {
-		"page": "Login",
+		"page": "CMS - Approve Two-factor requests",
 		"context": "Two-factor Authentication has been disabled for this user.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Two-factor Authentication has been disabled for this user."
 	},
 	"Deleted By Admin": {
 		"page": "Login",
 		"context": "The account has been deactivated. Please email support for further assistance.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The account has been deactivated. Please email support for further assistance."
 	},
 	"Wait for 24 hours": {
-		"page": "Login",
+		"page": "Withdraw assets",
 		"context": "Due to security feature you cannot withdraw asset for 24 hour",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Due to security feature you cannot withdraw asset for 24 hour"
 	},
 	"Favourites List Success": {
-		"page": "Login",
+		"page": "Favourite lists",
 		"context": "Favourites List has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Favourites List has been retrieved successfully"
 	},
 	"This email id is verified.": {
-		"page": "Login",
+		"page": "Forgot password",
 		"context": "Your email id has not been verified. Please verify your email id",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your email id has not been verified. Please verify your email id"
 	},
 	"Deleted By User": {
-		"page": "Login",
+		"page": "Login, Verify New IP",
 		"context": "This account has been deleted by the user. Please contact support to activate the account.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "This account has been deleted by the user. Please contact support to activate the account."
 	},
 	"Twofactor Request rejected": {
-		"page": "Login",
+		"page": "CMS - Disapprove Two-factor request",
 		"context": "Two-Factor Authentication request has been rejected.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Two-Factor Authentication request has been rejected."
 	},
 	"Threshold updated": {
-		"page": "Login",
+		"page": "Add/Update user thresholds, CMS - Add/Update admin thresholds",
 		"context": "Your asset threshold preferences have been updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Your asset threshold preferences have been updated."
 	},
 	"Threshold listed": {
-		"page": "Login",
+		"page": "CMS - Admin threshold lists, User threshold lists",
 		"context": "Thresholds has been listed successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Thresholds has been listed successfully"
 	},
 	"Threshold Contacts updated": {
-		"page": "Login",
+		"page": "CMS - Admin threshold contact update",
 		"context": "Contact list has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Contact list has been successfully updated."
 	},
 	"Threshold Contacts listed": {
-		"page": "Login",
+		"page": "CMS - Admin threshold lists",
 		"context": "Contact list has been listed successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Contact list has been listed successfully"
 	},
 	"notification retreive success": {
-		"page": "Login",
+		"page": "Notification lists",
 		"context": "Notification List has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Notification List has been retrieved successfully."
 	},
 	"notification update success": {
-		"page": "Login",
+		"page": "Notification update",
 		"context": "Notification list has been successfully updated",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Notification list has been successfully updated"
 	},
 	"Wallet Details": {
-		"page": "Login",
+		"page": "CMS - Admin wallet details",
 		"context": "Wallet Details",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Wallet Details"
 	},
 	"Create Crypto Wallet": {
-		"page": "Login",
+		"page": "JST order create, Internal tradding - Market sell order, Internal tradding - Market buy order, Internal tradding - Limit sell order, Internal tradding - Limit buy order, Internal tradding - Stop limit sell order, Internal tradding - Stop limit buy order ",
 		"context": "The transaction was not completed because a wallet address needs to be generated first. Please navigate to your wallet to generate an address and try again.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The transaction was not completed because a wallet address needs to be generated first. Please navigate to your wallet to generate an address and try again."
 	},
 	"Create Currency Wallet": {
-		"page": "Login",
+		"page": "JST order create, Internal tradding - Market sell order, Internal tradding - Market buy order, Internal tradding - Limit sell order, Internal tradding - Limit buy order, Internal tradding - Stop limit sell order, Internal tradding - Stop limit buy order ",
 		"context": "The transaction was not completed because a wallet address needs to be generated first. Please navigate to your wallet to generate an address and try again.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "The transaction was not completed because a wallet address needs to be generated first. Please navigate to your wallet to generate an address and try again."
 	},
 	"Enter last transaction id": {
-		"page": "Login",
+		"page": "CMS - Batch create",
 		"context": "Enter last transaction id.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Enter last transaction id."
 	},
 	"Batch added": {
-		"page": "Login",
+		"page": "CMS - Batch create",
 		"context": "Batch has been added successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch has been added successfully"
 	},
 	"Batch listed": {
-		"page": "Login",
+		"page": "CMS - Batch lists",
 		"context": "Batch has been listed successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch has been listed successfully"
 	},
 	"Batch updated": {
-		"page": "Login",
+		"page": "CMS - Batch update",
 		"context": "Batch has been updated successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch has been updated successfully"
 	},
 	"Pending Orders List": {
-		"page": "Login",
+		"page": "Internal tradding - Pending order lists",
 		"context": "Pending orders has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Pending orders has been listed successfully."
 	},
 	"Cancel Orders List": {
-		"page": "Login",
+		"page": "Internal tradding - Cancel order lists",
 		"context": "Cancelled orders has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Cancelled orders has been listed successfully."
 	},
 	"Batch is already generated with this transaction": {
-		"page": "Login",
+		"page": "CMS - Batch create",
 		"context": "Batch is already generated with this transaction.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Batch is already generated with this transaction."
 	},
 	"tier details retrieve success": {
-		"page": "Login",
+		"page": "User tier lists, Tier lists",
 		"context": "Tier Details has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Tier Details has been retrieved successfully."
 	},
 	"no tier details retrieve success": {
-		"page": "Login",
+		"page": "User tier lists, Tier lists",
 		"context": "No Tier Details has been found",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No Tier Details has been found"
 	},
 	"tier update success": {
-		"page": "Login",
+		"page": "CMS - Tier update",
 		"context": "Tier has been updated successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Tier has been updated successfully"
 	},
 	"Price listed": {
-		"page": "Login",
+		"page": "JST price data",
 		"context": "Price has been listed successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Price has been listed successfully."
 	},
 	"batch data retrieved": {
-		"page": "Login",
+		"page": "CMS - Batch lists",
 		"context": "Batch Data has been retreived successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch Data has been retreived successfully."
 	},
 	"each batch data retrieved": {
-		"page": "Login",
+		"page": "CMS - Batch transaction data, CMS - Download batch data",
 		"context": "Batch Each Transaction Data has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch Each Transaction Data has been retrieved successfully."
 	},
 	"batch detail retrieve success": {
-		"page": "Login",
+		"page": "CMS - Batch data",
 		"context": "Batch Details has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch Details has been retrieved successfully."
 	},
 	"no batch detail found": {
-		"page": "Login",
+		"page": "CMS - Batch data",
 		"context": "No Batch Details has been found.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No Batch Details has been found."
 	},
 	"tier data retrieve success": {
-		"page": "Login",
+		"page": "CMS - Tier data",
 		"context": "Tier Details has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Tier Details has been retrieved successfully."
 	},
 	"no tier data found": {
-		"page": "Login",
+		"page": "CMS - Tier data",
 		"context": "No Tier Details has been found.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No Tier Details has been found."
 	},
 	"referal data success": {
-		"page": "Login",
+		"page": "Referral lists",
 		"context": "Referral Data has been retrieved succcessfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Referral Data has been retrieved succcessfully."
 	},
 	"refer data retrieve": {
-		"page": "Login",
+		"page": "Referred data",
 		"context": "Referral Data for user has been retrieve successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Referral Data for user has been retrieve successfully."
 	},
 	"BatchFile uploaded": {
-		"page": "Login",
+		"page": "CMS - Batch lists",
 		"context": "File has been uploaded successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "File has been uploaded successfully."
 	},
 	"File size should be greater than 0": {
-		"page": "Login",
+		"page": "CMS - Batch file upload",
 		"context": "File size should be greater than 0.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "File size should be greater than 0."
 	},
 	"Batch not found": {
-		"page": "Login",
+		"page": "CMS - Batch download",
 		"context": "Batch not found",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Batch not found"
 	},
 	"qoute details success": {
-		"page": "Login",
+		"page": "Simplex quote details",
 		"context": "Quote Details has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Quote Details has been retrieved successfully"
 	},
-	"payment details success": {
-		"page": "Login",
-		"context": "Payments Details has been retrieved success.",
-		"message_type": "",
-		"message": "Payments Details has been retrieved success."
-	},
-	"payment fail": {
-		"page": "Login",
-		"context": "Payment has failed please try again to continue.",
-		"message_type": "",
-		"message": "Payment has failed please try again to continue."
-	},
 	"option type required": {
-		"page": "Login",
+		"page": "CMS - Batch download",
 		"context": "Option type should be sent.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Option type should be sent."
 	},
 	"Wallet address list": {
-		"page": "Login",
+		"page": "User wallet lists",
 		"context": "Wallet address has been listed.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Wallet address has been listed."
 	},
 	"simplex token retrieve success": {
-		"page": "Login",
+		"page": "Simplex token get",
 		"context": "Simplex token has been retrieved success.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Simplex token has been retrieved success."
 	},
 	"simplex token update success": {
-		"page": "Login",
+		"page": "Simplex token update",
 		"context": "Simplex token has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Simplex token has been successfully updated."
 	},
-	"wallet address creation": {
-		"page": "Login",
-		"context": "Wallet address has been created.",
-		"message_type": "",
-		"message": "Wallet address has been created."
-	},
 	"panic button enabled": {
-		"page": "Login",
+		"page": "JST order create, Simplex payment, Withdraw assets",
 		"context": "As Panic button in enable you are not allowed to trade for 24 hours.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "As Panic button in enable you are not allowed to trade for 24 hours."
 	},
 	"account verify success": {
-		"page": "Login",
+		"page": "Verify new IP",
 		"context": "Account has been successfully verified with the new IP.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account has been successfully verified with the new IP."
 	},
 	"coin list retrieve success": {
-		"page": "Login",
+		"page": "Simplex asset lists",
 		"context": "Asset list has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Asset list has been retrieved successfully"
 	},
 	"panic button status": {
-		"page": "Login",
+		"page": "Panic status check",
 		"context": "Panic Status has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Panic Status has been retrieved successfully"
 	},
 	"User has been deleted": {
-		"page": "Login",
+		"page": "Signup, Middlewares(Where it checks for valid of session)",
 		"context": "Your account has been deactivated. Please signup with new email to continue",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your account has been deactivated. Please signup with new email to continue"
 	},
 	"account not not verified by admin": {
-		"page": "Login",
+		"page": "Verify new IP",
 		"context": "User Account has been unverified by admin",
-		"message_type": "",
+		"message_type": "error",
 		"message": "User Account has been unverified by admin"
 	},
 	"Please Enable 2FA to continue": {
-		"page": "Login",
+		"page": "Delete user",
 		"context": "Please Enable 2FA to continue",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please Enable 2FA to continue"
 	},
 	"jst order created": {
-		"page": "Login",
+		"page": "JST order create",
 		"context": "Success! Your order was received successfully! The transaction details will be available in your wallet soon. Thank you for choosing FALDAX!",
-		"message_type": "",
+		"message_type": "succes",
 		"message": "Success! Your order was received successfully! The transaction details will be available in your wallet soon. Thank you for choosing FALDAX!"
 	},
 	"jst order not created": {
-		"page": "Login",
+		"page": "JST order create",
 		"context": "Your order was not completed. Please try again or contact support for additional help. ",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Your order was not completed. Please try again or contact support for additional help. "
 	},
 	"insufficent funds in wallet": {
-		"page": "Login",
+		"page": "JST order create",
 		"context": "Insufficient funds in wallet",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Insufficient funds in wallet"
 	},
 	"Price retrieve success": {
-		"page": "Login",
+		"page": "JST price data",
 		"context": "Price has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Price has been retrieved successfully"
 	},
 	"jst pair retrieve success": {
-		"page": "Login",
+		"page": "JST pair lists",
 		"context": "JST Pair has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "JST Pair has been retrieved successfully."
 	},
 	"no funds left": {
-		"page": "Login",
+		"page": "User account details summary, CMS - User account details summary",
 		"context": "No funds are left in the user account.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No funds are left in the user account."
 	},
 	"please remove your funds": {
-		"page": "Login",
+		"page": "User account details summary, CMS - User account details summary",
 		"context": "Please remove your funds to continue.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please remove your funds to continue."
 	},
 	"Coin fees success": {
-		"page": "Login",
+		"page": "Asset fees",
 		"context": "Asset Fees List has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Asset Fees List has been retrieved successfully."
 	},
 	"slug retrive success": {
-		"page": "Login",
+		"page": "Each asset fee",
 		"context": "Asset Fee Value has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Asset Fee Value has been retrieved successfully."
 	},
 	"value updated successfully": {
-		"page": "Login",
+		"page": "Update asset fee",
 		"context": "Coin fee value has been successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Coin fee value has been successfully updated."
 	},
 	"value updated unsuccess": {
-		"page": "Login",
+		"page": "Update asset fees",
 		"context": "No Value this slug has been found",
-		"message_type": "",
+		"message_type": "error",
 		"message": "No Value this slug has been found"
 	},
 	"campaign created": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Campaign successfully added.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign successfully added."
 	},
 	"campaign updated": {
-		"page": "Login",
+		"page": "CMS - Campaign update",
 		"context": "Campaign successfully updated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign successfully updated."
 	},
 	"campaign not created": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Oops, Unfortunately Campaign is not created. Please try again.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Oops, Unfortunately Campaign is not created. Please try again."
 	},
 	"campaigns retrieve success": {
-		"page": "Login",
+		"page": "CMS - Campaign lists",
 		"context": "Campaigns has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaigns has been retrieved successfully."
 	},
 	"campaigns not found": {
-		"page": "Login",
+		"page": "CMS - Campaign lists",
 		"context": "No Campaigns found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No Campaigns found."
 	},
 	"campaign activated": {
-		"page": "Login",
+		"page": "CMS - Campaign status update",
 		"context": "Campaign has been activated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign has been activated."
 	},
 	"campaign deactivated": {
-		"page": "Login",
+		"page": "CMS - Campaign status update",
 		"context": "Campaign has been deactivated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign has been deactivated."
 	},
 	"offer created": {
-		"page": "Login",
+		"page": "CMS - Campaign offer create",
 		"context": "New Campaign Offer has been created successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "New Campaign Offer has been created successfully."
 	},
 	"offer not created": {
-		"page": "Login",
+		"page": "CMS - Campaign offer create",
 		"context": "Oops, Unfortunately Campaign Offer is not created. Please try again.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Oops, Unfortunately Campaign Offer is not created. Please try again."
 	},
 	"offer retrieve success": {
-		"page": "Login",
+		"page": "CMS - Campaign offer lists",
 		"context": "Campaign Offer has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign Offer has been retrieved successfully."
 	},
 	"offer not found": {
-		"page": "Login",
+		"page": "CMS - Campaign offer lists",
 		"context": "No Campaign Offer found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No Campaign Offer found."
 	},
 	"offer activated": {
-		"page": "Login",
+		"page": "CMS - Campaign offer status update",
 		"context": "Campaign Offer has been activated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign Offer has been activated."
 	},
 	"offer deactivated": {
-		"page": "Login",
+		"page": "CMS - Campaign offer status update",
 		"context": "Campaign Offer has been deactivated.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Campaign Offer has been deactivated."
 	},
 	"compaigns retrieve success": {
-		"page": "Login",
+		"page": "CMS - Campaign lists",
 		"context": "compaigns has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "compaigns has been retrieved successfully"
 	},
 	"compaigns not found": {
-		"page": "Login",
+		"page": "CMS - Campaign view",
 		"context": "compaigns not found",
-		"message_type": "",
+		"message_type": "success",
 		"message": "compaigns not found"
 	},
 	"Offercode is exist": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "This Offer code is already exist",
-		"message_type": "",
+		"message_type": "error",
 		"message": "This Offer code is already exist"
 	},
 	"Offercode is notexist": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "This Offer code is not exist",
-		"message_type": "",
+		"message_type": "success",
 		"message": "This Offer code is not exist"
 	},
 	"Minimum Order Limit not satisfied": {
-		"page": "Login",
+		"page": "JST create order",
 		"context": "Minimum order limit has not been satisified",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Minimum order limit has not been satisified"
 	},
 	"fees greater than 0": {
-		"page": "Login",
+		"page": "Update withdrawl/faldax fees",
 		"context": "Withdrawal fees must be greater than zero.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Withdrawal fees must be greater than zero."
 	},
 	"Faldax fee update success": {
-		"page": "Login",
+		"page": "Update faldax fees",
 		"context": "FALDAX fee has been successfully updated.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "FALDAX fee has been successfully updated."
 	},
 	"faldax fees greater than 0": {
-		"page": "Login",
+		"page": "Update faldax fees",
 		"context": "FALDAX fees must be greater than zero.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "FALDAX fees must be greater than zero."
 	},
 	"User has been deleted, So funds cannot be transferred": {
-		"page": "Login",
+		"page": "CMS - Approve/Disapprove withdraws requests",
 		"context": "User has been deleted. Funds cannot be transferred.",
-		"message_type": "",
+		"message_type": "error",
 		"message": "User has been deleted. Funds cannot be transferred."
 	},
-	"Coin minimum limit for the coin ": {
-		"page": "Login",
-		"context": "Asset minimum limit for the asset ",
-		"message_type": "",
-		"message": "Asset minimum limit for the asset "
-	},
 	"Minimum limit for the coin ": {
-		"page": "Login",
+		"page": "Withdraw assets",
 		"context": "Minimum limit for the asset ",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Minimum limit for the asset "
 	},
 	"Campaign usage": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please enter usage field and it should be either Onetime or Mutiple",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter usage field and it should be either Onetime or Mutiple"
 	},
 	"Campaign label": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please enter label",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter label"
 	},
 	"Campaign no_of_transactions": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please enter number of transactions and it should be number",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter number of transactions and it should be number"
 	},
 	"Campaign fees_allowed": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please enter fees allowed and it should be number",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter fees allowed and it should be number"
 	},
 	"Campaign start_date": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please select Start Date and it should be date",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please select Start Date and it should be date"
 	},
 	"Campaign end_date": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please select End Date and it should be date",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please select End Date and it should be date"
 	},
 	"Campaign is_active": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please select status",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please select status"
 	},
 	"Campaign code": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please enter code field and it should be unique",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please enter code field and it should be unique"
 	},
 	"Campaign is_default_values": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please select default values",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please select default values"
 	},
 	"Campaign user_id": {
-		"page": "Login",
+		"page": "CMS - Campaign create",
 		"context": "Please select User",
-		"message_type": "",
+		"message_type": "error",
 		"message": "Please select User"
 	},
-	"You are allowed to trade": {
-		"page": "Login",
-		"context": "You are allowed to trade",
-		"message_type": "",
-		"message": "You are allowed to trade"
-	},
 	"tier data retrieve": {
-		"page": "Login",
+		"page": "Tier request/data",
 		"context": "tier data has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "tier data has been retrieved successfully"
 	},
 	"Permission data has been retrieved": {
-		"page": "Login",
+		"page": "CMS - Role permission lists",
 		"context": "Permission Data has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Permission Data has been retrieved successfully."
 	},
 	"No records for offercode": {
-		"page": "Login",
+		"page": "CMS - Offercode usage",
 		"context": "No records found for offercode attempted/applied.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No records found for offercode attempted/applied."
 	},
 	"Role Updated Success": {
-		"page": "Login",
+		"page": "CMS - Role persmission update, CMS - Role update",
 		"context": "Role Permissions has been updated successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Role Permissions has been updated successfully"
 	},
 	"No Role data found": {
-		"page": "Login",
+		"page": "CMS - Role persmission update",
 		"context": "No Role Permission has been found.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "No Role Permission has been found."
 	},
 	"Account Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase account class report",
 		"context": "Account Class report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account Class report has been retrieved successfully."
 	},
 	"Account Tier Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase account tier report",
 		"context": "Account Tier report has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Account Tier report has been retrieved successfully"
 	},
 	"Referral Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase referral report",
 		"context": "Referral report has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Referral report has been retrieved successfully"
 	},
 	"Assets Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase assets report",
 		"context": "Assets report has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Assets report has been retrieved successfully"
 	},
 	"Batch Report Success": {
-		"page": "Login",
+		"page": "CMS - Batch and balance report",
 		"context": "Batch and Balance report has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Batch and Balance report has been retrieved successfully"
 	},
 	"Careers Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase career report",
 		"context": "Career report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Career report has been retrieved successfully."
 	},
 	"Country Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase country report",
 		"context": "Country report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Country report has been retrieved successfully."
 	},
 	"Employee Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase employee report",
 		"context": "Employee report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Employee report has been retrieved successfully."
 	},
 	"Fees Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase fees report",
 		"context": "Fees report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Fees report has been retrieved successfully."
 	},
 	"History Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase history report",
 		"context": "History report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "History report has been retrieved successfully."
 	},
 	"Dashboard Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase dashboard report",
 		"context": "Dashboard report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Dashboard report has been retrieved successfully."
 	},
 	"KYC Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase KYC report",
 		"context": "KYC report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "KYC report has been retrieved successfully."
 	},
 	"News Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase news report",
 		"context": "News report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "News report has been retrieved successfully."
 	},
 	"Offers Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase offers report",
 		"context": "Offers report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Offers report has been retrieved successfully."
 	},
 	"Pairs Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase pairs report",
 		"context": "Pairs report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Pairs report has been retrieved successfully."
 	},
 	"Roles Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase roles report",
 		"context": "Roles report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Roles report has been retrieved successfully."
 	},
 	"Transaction History Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase transaction history report",
 		"context": "Transaction History report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Transaction History report has been retrieved successfully."
 	},
 	"Two Factor Request Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase Two-factor requests report",
 		"context": "Two-factor Request report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Two-factor Request report has been retrieved successfully."
 	},
 	"Users Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase users report",
 		"context": "Users report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Users report has been retrieved successfully."
 	},
 	"Withdraw Request Report Success": {
-		"page": "Login",
+		"page": "CMS - Metabase withdraw requests report",
 		"context": "Withdraw Request report has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Withdraw Request report has been retrieved successfully."
 	},
 	"wallet Fee Data success": {
-		"page": "Login",
+		"page": "Faldax wallet fees data",
 		"context": "Faldax Wallet Fee Data has been retrieved successfully.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Faldax Wallet Fee Data has been retrieved successfully."
 	},
 	"Admin wallet history success": {
-		"page": "Login",
+		"page": "CMS - Wallet history lists",
 		"context": "Admin Wallet History has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Admin Wallet History has been retrieved successfully"
 	},
 	"Warm wallet retrieve": {
-		"page": "Login",
+		"page": "CMS - Warm wallet data",
 		"context": "Warm wallet details has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Warm wallet details has been retrieved successfully"
 	},
 	"Custodial wallet retrieve": {
-		"page": "Login",
-		"context": "Warm wallet details has been retrieved successfully",
-		"message_type": "",
-		"message": "Warm wallet details has been retrieved successfully"
+		"page": "CMS - Cold wallet data",
+		"context": "Custodial wallet details has been retrieved successfully",
+		"message_type": "success",
+		"message": "Custodial wallet details has been retrieved successfully"
 	},
 	"system_health_ok": {
-		"page": "Login",
+		"page": "Check system health",
 		"context": "System Health is Good",
-		"message_type": "",
+		"message_type": "success",
 		"message": "System Health is Good"
 	},
 	"system_health_not_ok": {
-		"page": "Login",
+		"page": "Check system health",
 		"context": "System Health is Not Good",
-		"message_type": "",
+		"message_type": "error",
 		"message": "System Health is Not Good"
 	},
 	"Terms status accept": {
-		"page": "Login",
+		"page": "Terms accept",
 		"context": "Thanks for accepting terms and conditions.",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Thanks for accepting terms and conditions."
 	},
 	"Static Pdfs retrived successfully": {
-		"page": "Login",
+		"page": "Policy PDF lists",
 		"context": "Static Pdfs retrived successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Static Pdfs retrived successfully"
 	},
 	"Static Pdfs updated successfully": {
-		"page": "Login",
+		"page": "Policy PDF update",
 		"context": "Static Pdfs updated successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Static Pdfs updated successfully"
 	},
 	"Fee retrieve Success": {
-		"page": "Login",
+		"page": "Network fees data",
 		"context": "Network Fee Has been retrieved successfully",
-		"message_type": "",
+		"message_type": "success",
 		"message": "Network Fee Has been retrieved successfully"
 	},
 	"Panic status changed successfully": {
-		"page": "Login",
+		"page": "CMS - Panic button enable/disable",
 		"context": "The panic status has been successfully changed.",
-		"message_type": "error",
+		"message_type": "success",
 		"message": "The panic status has been successfully changed."
 	},
 	"All permissions listed": {
-		"page": "Permission lists",
+		"page": "CMS - Role permission lists",
 		"context": "All permissions listed.",
 		"message_type": "success",
 		"message": "All permissions listed."
 	},
 	"Referral Percentage has been retrieved successfully": {
-		"page": "Referral percentage lists",
+		"page": "CMS - Referral percentage lists",
 		"context": "Referral Percentage has been retrieved successfully",
 		"message_type": "success",
 		"message": "Referral Percentage has been retrieved successfully."
 	},
 	"Trade data retrived successfully": {
-		"page": "Trade data lists",
+		"page": "CMS - Trade data lists",
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message": "Trade data retrived successfully."
 	},
 	"Withdraw Fee has been retrieved successfully": {
-		"page": "Withdraw fees lists",
+		"page": "CMS - Withdraw fees lists",
 		"context": "Withdraw Fee has been retrieved successfully",
 		"message_type": "success",
 		"message": "Withdraw Fee has been retrieved successfully."
-	},
-	"user created succesfully": {
-		"page": "User creation",
-		"context": "user created succesfully",
-		"message_type": "success",
-		"message": "user created succesfully."
-	},
-	"email successfully sent to registered email id": {
-		"page": "Email sent",
-		"context": "Email successfully sent to registered email id.",
-		"message_type": "success",
-		"message": "Email successfully sent to registered email id."
-	},
-	"admin email id is wrong": {
-		"page": "Admin email id",
-		"context": "admin email id is wrong.",
-		"message_type": "error",
-		"message": "admin email id is wrong."
 	},
 	"Invalid Params": {
 		"page": "Invalid parameters",
@@ -2544,62 +2406,56 @@
 		"message": "Invalid Params"
 	},
 	"Insufficient Balance in warm Wallet": {
-		"page": "Insufficient Balance in Warm Wallet",
+		"page": "CMS - Approve/Disapprove withdraw requests",
 		"context": "Insufficient Balance in warm Wallet",
 		"message_type": "error",
 		"message": "This transaction can not be proceed at this time. Please try again after sometime or Contact Support."
 	},
 	"Invalid data provided": {
-		"page": "Invalid data",
+		"page": "If invalid data provided",
 		"context": "Invalid data provided",
 		"message_type": "error",
 		"message": "Invalid data provided"
 	},
 	"Role name exists": {
-		"page": "Role add",
+		"page": "CMS - Role add",
 		"context": "Role name exists",
 		"message_type": "error",
 		"message": "Role name exists"
 	},
 	"Verification successfull": {
-		"page": "Verify success",
+		"page": "Verify user after signup",
 		"context": "Verification successfull",
 		"message_type": "success",
 		"message": "Verification successfull",
 		"": ""
 	},
-	"No User Wallet has been found": {
-		"page": "User wallet lists",
-		"context": "No User Wallet has been found",
-		"message_type": "error",
-		"message": "No User Wallet has been found"
-	},
 	"Ticket lists": {
-		"page": "Ticket lists",
+		"page": "Ticket lists, CMS - Ticket lists",
 		"context": "Ticket list successfully",
 		"message_type": "success",
 		"message": "Ticket list successfully"
 	},
 	"You are not allowed to access this route": {
-		"page": "Role permissions",
+		"page": "Middleware(CMS and Frontend)",
 		"context": "You are not allowed to access this route",
 		"message_type": "error",
 		"message": "You are not allowed to access this route"
 	},
 	"Your User has been deleted": {
-		"page": "Authorization",
+		"page": "Middleware(If user has deleted)",
 		"context": "Your User has been deleted",
 		"message_type": "error",
 		"message": "Your User has been deleted"
 	},
 	"Invalid Authorization token": {
-		"page": "Authorization",
+		"page": "Middleware(If invalid access token)",
 		"context": "Invalid Authorization token",
 		"message_type": "error",
 		"message": "Invalid Authorization token"
 	},
 	"No Authorization header was found": {
-		"page": "Authorization header missing",
+		"page": "Authorization header missing in middleware",
 		"context": "No Authorization header was found",
 		"message_type": "error",
 		"message": "No Authorization header was found"
