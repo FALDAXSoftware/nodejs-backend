@@ -114,7 +114,7 @@ module.exports = {
       },
       body: {
         address: inputs.address,
-        amount: inputs.amount,
+        amount: parseInt(inputs.amount),
         walletPassphrase: wallet_passphrase
       },
       json: true
