@@ -66,7 +66,7 @@ module.exports = {
     console.log("Input data", inputs);
     console.log("coinData",coinData);
     if (coinData && coinData != undefined) {
-      if (inputs.coin == "btc") {
+      if (inputs.coin == "btc") { // BTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -75,6 +75,20 @@ module.exports = {
           console.log("In hot_send_wallet_address");
         } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
+          console.log("In hot_receive_wallet_address");
+        } else if (coinData.custody_wallet_address == inputs.walletId) {
+          passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+          console.log("In custody_wallet_address");
+        }
+      }else if (inputs.coin == "ltc") { // LTC
+        if (coinData.warm_wallet_address == inputs.walletId) {
+          passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
+          console.log("In warm_wallet_address");
+        } else if (coinData.hot_send_wallet_address == inputs.walletId) {
+          passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
+          console.log("In hot_send_wallet_address");
+        } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
+          passphrase_value = sails.config.local.BITGO_LTC_HOT_RECEIVE_WALLET_PASSPHRASE;
           console.log("In hot_receive_wallet_address");
         } else if (coinData.custody_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
