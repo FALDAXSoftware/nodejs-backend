@@ -312,7 +312,7 @@ module.exports = {
     console.log(value);
     // var encryptData = await sails.helpers.getEncryptData(value);
     // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("2eee171fbf451581143ced33cd67b66aeb72ff8a3e4a1beb1dc3880ee8f3f3038d69439d146c680c86c9bc1527c3f95018d834a76615a26ddc3e8498");
+    var decryptData = await sails.helpers.getDecryptData("28970b51da571ec974408676");
     console.log("decryptData", decryptData)
     return res.json(200);
   },
