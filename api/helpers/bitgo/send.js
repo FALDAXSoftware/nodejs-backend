@@ -102,7 +102,9 @@ module.exports = {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
     //passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
-    
+    console.log("passphrase_value",passphrase_value);
+    console.log("URL====>>",`${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`);
+    console.log("Body", { address: inputs.address, amount: parseInt(inputs.amount),  walletPassphrase: wallet_passphrase});
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
@@ -115,7 +117,8 @@ module.exports = {
       body: {
         address: inputs.address,
         amount: parseInt(inputs.amount),
-        walletPassphrase: wallet_passphrase
+        walletPassphrase: wallet_passphrase,
+        text:"testing"
       },
       json: true
     }, function (err, httpResponse, body) {
