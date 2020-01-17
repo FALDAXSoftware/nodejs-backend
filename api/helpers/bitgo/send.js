@@ -88,13 +88,12 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
           console.log("In hot_send_wallet_address");
         } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
+          passphrase_value = sails.config.local.BITGO_LTC_HOT_RECEIVE_WALLET_PASSPHRASE;
           console.log("In hot_receive_wallet_address LTC");
         } else if (coinData.custody_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-        passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
       } else {
         passphrase_value = sails.config.local.BITGO_PASSPHRASE;
       }
