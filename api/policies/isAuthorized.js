@@ -51,7 +51,7 @@ module.exports = async function (req, res, next) {
         object.user_id = "user_" + req.user.id;
       }
       if (req.body) {
-        // object.body = JSON.stringify(req.body);
+        object.body = JSON.stringify(req.body);
       }
       if (req.query) {
         object.params = req.query;
@@ -98,9 +98,9 @@ module.exports = async function (req, res, next) {
           object.error_at = error_at;
         }
         // console.log("object",object);
-        if( res.statusCode != 200 && res.statusCode >= 201 ){
+        // if( res.statusCode != 200 && res.statusCode >= 201 ){
           object.responseData = (body);
-        }
+        // }
         if (req.user && req.user.id) {
           object.user_id = "user_" + req.user.id;
         }
