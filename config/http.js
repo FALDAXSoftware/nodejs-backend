@@ -65,7 +65,6 @@ module.exports.http = {
         if (req.method == 'OPTIONS' || req.url == '/__getcookie' || req.url == '/' ) {
           return next();
         }
-        console.log(req.headers);
         if( req.headers && req.headers["lang"] && req.headers["lang"]!= "" ){
           sails.hooks.i18n.setLocale(req.headers["lang"]);
         }else{

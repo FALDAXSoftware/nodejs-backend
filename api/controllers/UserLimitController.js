@@ -18,7 +18,7 @@ module.exports = {
       if (user_id) {
         let query = 'FROM coins LEFT JOIN (SELECT * FROM user_limit WHERE user_id = ' + user_id + ' AND deleted_at IS NULL) AS specific_user_limit ON coins.id = specific_user_limit.coin_id WHERE coins.deleted_at IS NULL AND coins.is_active = true';
 
-        let limitData = await sails.sendNativeQuery("Select coins.id as coin_table_id,coins.coin_code,coins.coin,specific_user_limit.*" + query, [])
+        let limitData = await sails.sendNativeQuery("Select coins.id as coin_table_id,coins.coin_code,coins.coin,coins.min_limit, coins.max_limit,specific_user_limit.*" + query, [])
 
         limitData = limitData.rows;
 
@@ -41,7 +41,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("User not found").message,
-            error_at:sails.__("User not found").message
+            error_at: sails.__("User not found").message
           });
       }
     } catch (error) {
@@ -51,7 +51,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -75,7 +75,7 @@ module.exports = {
             return res.json({
               "status": 500,
               "message": sails.__("Something Wrong").message,
-              error_at:sails.__("Something Wrong").message
+              error_at: sails.__("Something Wrong").message
             });
           }
           return res.json({
@@ -97,7 +97,7 @@ module.exports = {
               return res.json({
                 "status": 500,
                 "message": sails.__("Something Wrong").message,
-                error_at:sails.__("Something Wrong").message
+                error_at: sails.__("Something Wrong").message
               });
             }
             return res.json({
@@ -116,7 +116,7 @@ module.exports = {
               return res.json({
                 "status": 500,
                 "message": sails.__("Something Wrong").message,
-                error_at:sails.__("Something Wrong").message
+                error_at: sails.__("Something Wrong").message
               });
             }
             // User Limit Increased/Decreased Information Email
@@ -160,7 +160,7 @@ module.exports = {
         return res.json({
           "status": 500,
           "message": sails.__("User Id and Coin ID necessary").message,
-          error_at:sails.__("User Id and Coin ID necessary").message
+          error_at: sails.__("User Id and Coin ID necessary").message
         })
       }
     } catch (error) {
@@ -170,7 +170,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

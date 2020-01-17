@@ -23,6 +23,21 @@ module.exports = {
         })
         .sort("id ASC");
 
+      let coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: coin_id
+        }
+      })
+
+      if (coinData != undefined) {
+        for (var i = 0; i < limitData.length; i++) {
+          limitData[i].min_limit = coinData.min_limit;
+          limitData[i].max_limit = coinData.max_limit;
+        }
+      }
+
       if (limitData.length > 0) {
         return res.json({
           "status": 200,
