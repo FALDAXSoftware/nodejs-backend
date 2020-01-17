@@ -88,7 +88,7 @@ module.exports = {
           account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
-          // signup_token_expiration:moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+          // signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
         }).fetch();
 
         var now = moment.now();

@@ -42,9 +42,10 @@ module.exports = {
         if (user) {
           // console.log(user)
           // var today = moment().utc().format();
-          // var yesterday = moment(yesterday).format()
+          // var yesterday = moment(user.signup_token_expiration).utc().format()
           // console.log("yesterday", yesterday);
-          // console.log
+          // console.log("today", today)
+          // console.log("yesterday < today", yesterday < today)
           // if (yesterday < today) {
           //   var existing = moment(user.signup_token_expiration);
           //   var tz = moment.tz.guess();
@@ -1052,7 +1053,7 @@ module.exports = {
           })
           .set({
             email_verify_token: email_verify_code,
-            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+            // signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
           });
 
         let slug = "";
