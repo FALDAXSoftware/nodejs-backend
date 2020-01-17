@@ -29,6 +29,11 @@ module.exports = {
       type: 'string',
       columnName: 'phone_number'
     },
+    signup_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'signup_token_expiration'
+    },
     full_name: {
       type: 'string',
       columnName: 'full_name',
@@ -371,7 +376,7 @@ async function updateData(filter, params) {
         .hubspot
         .contacts
         .update(check_exist["hubspot_id"], user.first_name, user.last_name, user.street_address + (
-            ", " + user.street_address_2), user.country,
+          ", " + user.street_address_2), user.country,
           user.state, user.city_town, user.postal_code);
     }
 
