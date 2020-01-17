@@ -114,7 +114,7 @@ module.exports = {
       },
       body: {
         address: inputs.address,
-        amount: parseFloat(inputs.amount),
+        amount: inputs.amount,
         walletPassphrase: wallet_passphrase
       },
       json: true
