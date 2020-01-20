@@ -521,5 +521,7 @@ module.exports.routes = {
   "post /wallet/get-network-fee": "WalletController.getNetworkFeeData",
 
   "get /health-check": "RootController.checkSystemHealth",
-  "post /test-logs":"KrakenController.testLogs"
+  "post /test-logs":"KrakenController.testLogs",
+  "put /admin/update-asset-fees-limits":"AdminController.updateAssetFeesLimits",
+  "get /admin/list-asset-fees-limits":"AdminController.listAssetFeesLimits"
 };

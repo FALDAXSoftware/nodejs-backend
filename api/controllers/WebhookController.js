@@ -94,10 +94,9 @@ module.exports = {
   },
 
   // webhook on receive
-  webhookOnReceive: async function (req, res) {
+  webhookOnReceiveOld: async function (req, res) {
     try {
       // Check For Confirmed transfer
-      var get_fee_limit_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
       if (req.body.state == "confirmed") {
         let isToken = false;
         let transferId = req.body.transfer;
@@ -711,6 +710,290 @@ module.exports = {
         error_at: error.stack
       });
     }
-  }
+  },
+  // webhook on receive
+  webhookOnReceive: async function (req, res) {
+    try {
+      // Check For Confirmed transfer
+
+      if (req.body.state == "confirmed") {
+
+
+        let isToken = false;
+        let transferId = req.body.transfer;
+        console.log("transferId", transferId)
+        let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
+        console.log("transfer", transfer)
+        if (transfer.state == "confirmed" && transfer.type == "receive") {
+          let alreadyWalletHistory = await WalletHistory.find({
+            transaction_type: "receive",
+            transaction_id: req.body.hash
+          });
+
+          console.log("alreadyWalletHistory", alreadyWalletHistory)
+
+          if (alreadyWalletHistory.length == 0) {
+            // Object Of receiver
+            let dest = null
+            let source = null
+            if (transfer.outputs) {
+              dest = transfer.outputs[0];
+              // Object of sender
+              source = transfer.outputs[1];
+            } else if (transfer.entries) {
+              dest = transfer.entries[0];
+              source = transfer.entries[1];
+            }
+
+
+            // receiver wallet
+            let userWallet = await Wallet.findOne({
+              receive_address: dest.address,
+              deleted_at: null,
+              is_active: true
+            });
+
+            if (userWallet == undefined) {
+              var userSendWallet = await Wallet.findOne({
+                send_address: dest.address,
+                deleted_at: null,
+                is_active: true
+              });
+            }
+
+            if (userWallet == undefined && userSendWallet == undefined) {
+              userWallet = await Wallet.findOne({
+                receive_address: source.address,
+                deleted_at: null,
+                is_active: true
+              });
+
+              if (userWallet == undefined) {
+                userWallet = await Wallet.findOne({
+                  send_address: source.address,
+                  deleted_at: null,
+                  is_active: true
+                });
+              }
+
+              if (userWallet) {
+                let temp = dest;
+                dest = source;
+                source = temp;
+              }
+            }
+            let coin = await Coins.findOne({
+              id: userWallet.coin_id
+            });
+            // Check For Token
+            if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
+              let token = await Coins.findOne({
+                coin_code: req.body.coin,
+                deleted_at: null
+              })
+              let tokenUserWallet = await Wallet.findOne({
+                coin_id: token.id,
+                user_id: userWallet.user_id
+              })
+              userWallet = {
+                ...tokenUserWallet,
+                receive_address: userWallet.receiveAddress,
+                send_address: userWallet.send_address
+              }
+              isToken = true
+            }
+            console.log("dest", dest, "source", source)
+
+            // transaction amount
+            let amount = (dest.value / 1e8);
+
+            console.log("amount", amount)
+            console.log("userWallet", userWallet)
+
+            // user wallet exitence check
+            if (userWallet) {
+              // Set wallet history params
+              let walletHistory = {
+                coin_id: userWallet.coin_id,
+                source_address: source.address,
+                destination_address: dest.address,
+                user_id: userWallet.user_id,
+                amount: (amount).toFixed(8),
+                transaction_type: 'receive',
+                transaction_id: req.body.hash
+              }
+
+              // Entry in wallet history
+              await WalletHistory.create({
+                ...walletHistory
+              });
+
+              let transactionHistory = {
+                coin_id: userWallet.coin_id,
+                source_address: source.address,
+                destination_address: dest.address,
+                user_id: userWallet.user_id,
+                amount: (amount).toFixed(8),
+                transaction_type: 'receive',
+                transaction_id: req.body.hash
+              }
+
+              await TransactionTable.create({
+                ...transactionHistory
+              })
+
+
+              // update wallet balance
+              await Wallet
+                .update({
+                  id: userWallet.id
+                })
+                .set({
+                  balance: (userWallet.balance + amount).toFixed(8),
+                  placed_balance: (userWallet.placed_balance + amount).toFixed(8)
+                });
+
+              // Sending Notification To users
+
+              var userData = await Users.findOne({
+                deleted_at: null,
+                is_active: true,
+                id: userWallet.user_id
+              })
+
+              var userNotification = await UserNotification.findOne({
+                user_id: userWallet.user_id,
+                deleted_at: null,
+                slug: 'receive'
+              })
+
+              console.log(userNotification)
+
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (userData.email != undefined)
+                    // Pass Amount
+                    var coin_data = await Coins.findOne({
+                      id: userWallet.coin_id
+                    });
+                  if (coin_data != undefined) {
+                    userData.coinName = coin_data.coin;
+                  } else {
+                    userData.coinName = "-";
+                  }
+                  userData.amountReceived = (amount).toFixed(8);
+                  console.log(userData);
+                  await sails.helpers.notification.send.email("receive", userData)
+                }
+                // if (userNotification.text == true || userNotification.text == "true") {
+                //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+                //     await sails.helpers.notification.send.text("receive", userData)
+                // }
+              }
+
+
+              // Send fund to Warm and custody wallet
+
+              let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
+              console.log("warmWallet", warmWallet)
+              // let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
+              // console.log("custodialWallet", custodialWallet)
+              // check for wallet exist or not
+              if (warmWallet.id && custodialWallet.id) {
+
+                // check for warm wallet balance
+                let warmWalletAmount = 0;
+                // let custodialWalletAmount = 0;
+
+                warmWalletAmount = dest.value;
+                // custodialWalletAmount = (dest.value * 20) / 100;
+
+                console.log(coin)
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(warmWalletAmount / 1e8)) {
+                  warmWalletAmount = dest.value;
+                  // custodialWalletAmount = 0.0;
+                }
+
+                // if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(custodialWalletAmount / 1e8)) {
+                //   warmWalletAmount = dest.value;
+                //   custodialWalletAmount = 0.0;
+                // }
+
+                console.log("warmWalletAmount", warmWalletAmount)
+                // console.log("custodialWalletAmount", custodialWalletAmount)
+
+                if ( !Number.isInteger(warmWalletAmount) ) {
+                  warmWalletAmount = Math.ceil(warmWalletAmount)
+                  // custodialWalletAmount = Math.floor(custodialWalletAmount)
+                }
+                console.log("warmWalletAmount", warmWalletAmount)
+                // console.log("custodialWalletAmount", custodialWalletAmount)
+                let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
+                warmWalletAmount = warmWalletAmount-get_static_fees_data;
+                console.log("warmWalletAmount after fees", warmWalletAmount)
+                // send amount to warm wallet
+                var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, get_static_fees_data)
+                console.log("warmwallet_balance_check", warmwallet_balance_check);
+                let transactionLog = [];
+                // Log Transafer in transaction table
+                transactionLog.push({
+                  source_address: userWallet.receive_address,
+                  destination_address: warmWallet.receiveAddress.address,
+                  amount: (warmWalletAmount / 1e8),
+                  user_id: userWallet.user_id,
+                  transaction_type: "receive",
+                  coin_id: coin.id,
+                  is_executed: true,
+                  transaction_id: req.body.hash
+                });
+
+
+                // send amount to custodial wallet (As per client call, Need to remove transfer fund in Custodial)
+                // if (custodialWalletAmount > 0) {
+                //   var custodial_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
+                //   console.log("custodial_balance_check", custodial_balance_check);
+                //   // Log Transafer in transaction table
+                //   transactionLog.push({
+                //     source_address: userWallet.receive_address,
+                //     destination_address: custodialWallet.receiveAddress.address,
+                //     amount: (custodialWalletAmount / 1e8),
+                //     user_id: userWallet.user_id,
+                //     transaction_type: "receive",
+                //     coin_id: coin.id,
+                //     is_executed: true,
+                //     transaction_id: req.body.hash
+                //   });
+                // }
+
+                // Insert logs in taransaction table
+                await TransactionTable.createEach([...transactionLog]);
+              }
+            }
+          }
+
+        }
+      }
+      // await sails.helpers.loggerFormat(
+      //   "webhookOnReceive",
+      //   sails.config.local.LoggerWebhook,
+      //   req.url,
+      //   2,
+      //   sails.config.local.LoggerSuccess
+      // );
+    } catch (error) {
+      // await sails.helpers.loggerFormat(
+      //   "webhookOnReceive",
+      //   sails.config.local.LoggerWebhook,
+      //   req.url,
+      //   3,
+      //   error.stack
+      // );
+      return res.status(500).json({
+        success: false,
+        error_at: error.stack
+      });
+    }
+    res.end();
+  },
 
 };
