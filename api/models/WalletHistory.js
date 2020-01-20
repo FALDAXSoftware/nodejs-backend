@@ -37,9 +37,18 @@ module.exports = {
       type: "number",
       columnName: "amount"
     },
-    network_fees: {
+    actual_network_fees: {
       type: "number",
-      columnName: "network_fees"
+      columnName: "actual_network_fees"
+    },
+    estimated_network_fees: {
+      type: "number",
+      columnName: "estimated_network_fees"
+    },
+    is_done: {
+      type: 'boolean',
+      columnName: 'is_done',
+      defaultsTo: false
     },
     faldax_fee: {
       type: "number",

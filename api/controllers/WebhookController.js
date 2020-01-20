@@ -311,6 +311,10 @@ module.exports = {
                 // send amount to warm wallet
                 var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
                 console.log("warmwallet_balance_check", warmwallet_balance_check);
+
+                var value = warmwallet_balance_check.transfer.feeString
+
+                custodialWalletAmount = custodialWalletAmount - (value + value)
                 let transactionLog = [];
                 // Log Transafer in transaction table
                 transactionLog.push({

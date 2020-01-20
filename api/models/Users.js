@@ -34,6 +34,16 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'signup_token_expiration'
     },
+    forgot_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'forgot_token_expiration'
+    },
+    device_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'device_token_expiration'
+    },
     full_name: {
       type: 'string',
       columnName: 'full_name',
