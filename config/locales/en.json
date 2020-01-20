@@ -2465,5 +2465,17 @@
 		"context": "Activate Account after signup",
 		"message_type": "error",
 		"message": "Verification Link has expired"
+	},
+	"Campaign Offer invalid": {
+		"page": "JST order",
+		"context": "When check offercode on JST conversion",
+		"message_type": "error",
+		"message": "Sorry! The offer code you entered is either expired or not applicable for your accounts."
+	},
+	"Campaign Offer valid %s": {
+		"page": "JST order",
+		"context": "When check offercode on JST conversion",
+		"message_type": "error",
+		"message": "Success! up to $%s total in FALDAX Transaction Fees are waived for your next 2 Transactions!"
 	}
 }

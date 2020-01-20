@@ -96,9 +96,8 @@ module.exports = {
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     try {
-
       // Check For Confirmed transfer
-      console.log(req.body.state);
+      var get_fee_limit_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
       if (req.body.state == "confirmed") {
         let isToken = false;
         let transferId = req.body.transfer;

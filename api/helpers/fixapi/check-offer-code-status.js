@@ -32,7 +32,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     const moment = require('moment');
-    var error_message = `Sorry! The offer code you entered is either expired or not applicable for your account.`;
+    var error_message = sails.__("Campaign Offer invalid").message;
 
     var current_date = formatTime();
     // var current_date = moment(new Date()).format();
@@ -54,7 +54,7 @@ module.exports = {
       response.message = error_message;
       return exits.success(response)
     }
-    // Check Campaign 
+    // Check Campaign
     var campaign_id = get_campaign_offer_data[0].campaign_id;
     var campaign_offer_id = get_campaign_offer_data[0].id;
     // console.log("campaign_id",campaign_id);
@@ -93,6 +93,7 @@ module.exports = {
       total_transaction_allowed = get_campaign_data[0].no_of_transactions;
     }
     var success_message = `Success! up to $${total_fees_allowed} total in FALDAX Transaction Fees are waived for your next ${total_transaction_allowed} Transactions!`;
+    // var success_message = __('Campaign Offer valid %s', total_fees_allowed);
     // To make in UTC with 0
     function formatTime(datetime = '') {
       var m = moment();
@@ -196,7 +197,7 @@ module.exports = {
         offer_transaction_fees = get_campaign_data[0].fees_allowed;
       }
 
-      // Check total fees 
+      // Check total fees
       let all_transaction = check_offercode_in_transactions;
       var fiat_faldax_fees = 0;
       for (var ii = 0; ii < (check_offercode_in_transactions.length); ii++) {
@@ -227,7 +228,7 @@ module.exports = {
         // console.log("Fiat_value", fiat_value);
         // console.log("faldax_fees_actual", faldax_fees_actual);
         // console.log("fiat_faldax_fees", fiat_faldax_fees);
-        // calculate faldax fees in Fiat                
+        // calculate faldax fees in Fiat
         fiat_faldax_fees += (fiat_value * faldax_fees_actual);
 
       }
@@ -315,7 +316,7 @@ module.exports = {
       } else {
         // Check Offercode is expired or not
         let check_offer_validity = await checkValidityOfOffercode(get_campaign_data, get_campaign_offer_data, false);
-        // Check Offercode is active or not // Function        
+        // Check Offercode is active or not // Function
         let check_offer_status = await checkOffercodeStatus(get_campaign_offer_data);
         // Get Number of transactions and Total fees of old transactions
         let check_total_transaction = await checkNumberOfTransaction(get_campaign_offer_data, check_offercode_in_transactions);
@@ -324,12 +325,12 @@ module.exports = {
       }
     } else { // If Multiple usage
       let check_offercode_in_transactions = await getPastTransactions(user_id, campaign_id, campaign_offer_id);
-      // console.log( "check_offercode_in_transactions",check_offercode_in_transactions ); 
+      // console.log( "check_offercode_in_transactions",check_offercode_in_transactions );
       // console.log("check_offercode_in_transactions.length",check_offercode_in_transactions.length);
       let check_offercode_same_campaign = await checkOffercodeCampaign(0, user_id, campaign_id, campaign_offer_id, store_offercode_history, get_campaign_offer_data);
       if (check_offercode_in_transactions.length == 0) {
         let check_offer_validity = await checkValidityOfOffercode(get_campaign_data, get_campaign_offer_data, true);
-        // No block of code 
+        // No block of code
         let check_offer_status = await checkOffercodeStatus(get_campaign_offer_data, true);
       } else {
         let check_offer_validity = await checkValidityOfOffercode(get_campaign_data, get_campaign_offer_data, true);
@@ -337,7 +338,7 @@ module.exports = {
         let check_offer_status = await checkOffercodeStatus(get_campaign_offer_data, true);
         let check_total_transaction = await checkNumberOfTransaction(get_campaign_offer_data, check_offercode_in_transactions);
         let check_total_fees = await checkTotalFeesDeducted(get_campaign_offer_data, check_offercode_in_transactions);
-        // console.log("check_total_fees",check_total_fees);    
+        // console.log("check_total_fees",check_total_fees);
       }
 
     }
