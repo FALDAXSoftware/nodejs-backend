@@ -19,7 +19,7 @@ module.exports.sendmail = async function (obj, req, res) {
                     if (obj.mail_name == "signup") {
                         res.json({
                             "status": sails.config.constants.success_status,
-                            "message": sails.__("user created succesfully").message,
+                            "message": "user created succesfully",
                             data: obj.user_detail,
                         });
                         return;
@@ -31,13 +31,13 @@ module.exports.sendmail = async function (obj, req, res) {
                         if (user) {
                             res.json({
                                 "status": sails.config.constants.success_status,
-                                "message": sails.__("email successfully sent to registered email id").message,
+                                "message": "email successfully sent to registered email id",
                             });
                             return;
                         } else {
                             res.json({
                                 "status": sails.config.constants.error_status,
-                                "message": sails.__("admin email id is wrong").message,
+                                "message": "admin email id is wrong",
                             });
                             return;
                         }
