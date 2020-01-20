@@ -32,6 +32,12 @@ module.exports = {
       example: 10000,
       description: 'amount of transfer',
       required: true
+    },
+    feeRate: {
+      type: 'number',
+      example: 1,
+      description: 'Fees transfer',
+      required: false
     }
   },
 
@@ -84,7 +90,15 @@ module.exports = {
     // console.log("passphrase_value", passphrase_value);
     // var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     console.log("wallet_passphrase", passphrase_value);
-    console.log("inputs.amount", inputs.amount)
+    var send_data = {
+      address: inputs.address,
+      amount: parseFloat(inputs.amount),
+      walletPassphrase: passphrase_value
+    };
+    if (inputs.feeRate && inputs.feeRate > 0) {
+      send_data.feeRate = inputs.feeRate;
+    }
+    console.log("send_data", send_data);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
@@ -93,11 +107,7 @@ module.exports = {
         Authorization: `Bearer ${access_token_value}`,
         'Content-Type': 'application/json'
       },
-      body: {
-        address: inputs.address,
-        amount: parseFloat(inputs.amount),
-        walletPassphrase: passphrase_value
-      },
+      body: send_data,
       json: true
     }, function (err, httpResponse, body) {
       if (err) {
