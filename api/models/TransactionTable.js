@@ -24,6 +24,10 @@ module.exports = {
       type: "number",
       columnName: "faldax_fee"
     },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
+    },
     user_id: {
       type: 'string',
       columnName: 'user_id',
@@ -33,9 +37,18 @@ module.exports = {
       type: 'string',
       columnName: 'transaction_type'
     },
-    network_fees: {
+    actual_network_fees: {
       type: "number",
-      columnName: "network_fees"
+      columnName: "actual_network_fees"
+    },
+    estimated_network_fees: {
+      type: "number",
+      columnName: "estimated_network_fees"
+    },
+    is_done: {
+      type: 'boolean',
+      columnName: 'is_done',
+      defaultsTo: false
     },
     transaction_id: {
       type: 'string',

@@ -84,6 +84,7 @@ module.exports = {
     // console.log("passphrase_value", passphrase_value);
     // var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     console.log("wallet_passphrase", passphrase_value);
+    console.log("inputs.amount", inputs.amount)
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",

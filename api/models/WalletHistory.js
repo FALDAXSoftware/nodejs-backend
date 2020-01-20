@@ -54,6 +54,10 @@ module.exports = {
       type: "number",
       columnName: "faldax_fee"
     },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
+    },
     transaction_type: {
       type: "string",
       columnName: "transaction_type"

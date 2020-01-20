@@ -308,7 +308,7 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 console.log("custodialWalletAmount", custodialWalletAmount)
                 // send amount to warm wallet
-                var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
+                var warmwallet_balance_1 = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount)
                 console.log("warmwallet_balance_check", warmwallet_balance_check);
 
                 var value = warmwallet_balance_check.transfer.feeString
@@ -611,6 +611,7 @@ module.exports = {
       if (req.body.state == "confirmed") {
 
         let transferId = req.body.transfer;
+        console.log("transferId", transferId)
         // get transaction details
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId);
         console.log("transfer", transfer)
@@ -624,15 +625,18 @@ module.exports = {
           if (walletHistory) {
 
             // Send To user's destination address
-            var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(2);
-
+            var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(8);
+            console.log("amount", amount)
             let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount)
+            console.log("sendTransfer", sendTransfer)
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+            console.log("warmWallet", warmWallet)
             // Update in wallet history
             await WalletHistory.update({
               id: walletHistory.id
             }).set({
               is_executed: true,
+              is_done: true,
               transaction_id: sendTransfer.txid
             });
 
