@@ -133,6 +133,12 @@ module.exports = {
         });
 
         if (user_detail) {
+          // Set language to user's default
+          if (user_detail.default_language && user_detail.default_language != "" ) {
+            sails.hooks.i18n.setLocale(user_detail.default_language);
+          } else {
+            sails.hooks.i18n.setLocale("en");
+          }
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
@@ -411,13 +417,12 @@ module.exports = {
               });
           }
         } else {
-          res
+          return res
             .status(401)
             .json({
               "status": 401,
-              "err": sails.__("Invalid email or password").messsage
+              "err": sails.__("Account does not exists").message
             });
-          return;
         }
       } else {
         res
