@@ -88,7 +88,7 @@ module.exports = {
           account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
-          // signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+          signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
         }).fetch();
 
         var now = moment.now();
@@ -1629,9 +1629,17 @@ module.exports = {
               }
             }
           }
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-          walletCount[i].fiat = get_jst_price[0].ask_price;
-          usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+          if (walletCount[i].coin_name != "SUSU") {
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+            walletCount[i].fiat = get_jst_price[0].ask_price;
+            usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+          } else {
+            var susucoinData = await sails.helpers.getUsdSusucoinValue();
+            susucoinData = JSON.parse(susucoinData);
+            susucoinData = susucoinData.data
+            walletCount[i].fiat = susucoinData.USD;
+            usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
+          }
         }
 
         if (total > 0) {

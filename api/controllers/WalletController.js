@@ -471,15 +471,17 @@ module.exports = {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
-
-                            console.log("transaction", transaction)
+                            var valueFee = parseFloat(networkFees / 2).toFixed(8)
+                            var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                            var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
+                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
 
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
-
+                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
-                            var totalFeeSub = parseFloat(total_payout) + parseFloat(network_feesValue);
+                            var totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
+                            var leftNetworkFees = (network_feesValue > singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -493,6 +495,10 @@ module.exports = {
                             if (adminWalletDetails != undefined) {
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(faldaxFees));
                               var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(faldaxFees));
+                              if (networkFees > network_feesValue) {
+                                updatedBalance = parseFloat(updatedBalance) + parseFloat(leftNetworkFees);
+                                updatedPlacedBalance = parseFloat(updatedPlacedBalance) + parseFloat(leftNetworkFees);
+                              }
                               var updatedData = await Wallet
                                 .update({
                                   deleted_at: null,
@@ -507,7 +513,6 @@ module.exports = {
                                 })
                                 .fetch();
                             }
-
                             //Here remainning ebtry as well as address change
                             let walletHistory = {
                               coin_id: wallet.coin_id,
@@ -520,7 +525,10 @@ module.exports = {
                               is_executed: false,
                               is_admin: false,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
-                              network_fees: network_feesValue
+                              actual_network_fees: network_feesValue,
+                              estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                              is_done: false,
+                              actual_amount: amount
                             }
 
                             // Make changes in code for receive webhook and then send to receive address
@@ -529,15 +537,14 @@ module.exports = {
                               ...walletHistory
                             });
                             // update wallet balance
-                            await Wallet
+                            var data = await Wallet
                               .update({
                                 id: wallet.id
                               })
                               .set({
-                                balance: (wallet.balance - totalFeeSub).toFixed(sails.config.local.TOTAL_PRECISION),
-                                placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(sails.config.local.TOTAL_PRECISION)
+                                balance: (wallet.balance - totalFeeSub).toFixed(8),
+                                placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
-
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
                             let addObject = {
@@ -550,7 +557,10 @@ module.exports = {
                               is_executed: true,
                               transaction_id: transaction.txid,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
-                              network_fees: network_feesValue
+                              actual_network_fees: network_feesValue,
+                              estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                              is_done: false,
+                              actual_amount: amount
                             }
 
                             await TransactionTable.create({
@@ -567,7 +577,10 @@ module.exports = {
                               is_executed: false,
                               transaction_id: transaction.txid,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
-                              network_fees: network_feesValue
+                              actual_network_fees: network_feesValue,
+                              estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                              is_done: false,
+                              actual_amount: amount
                             }
 
                             await TransactionTable.create({
@@ -616,8 +629,8 @@ module.exports = {
                           if (req.body.confirm_for_wait == true || req.body.confirm_for_wait === "true") {
                             //Insert request in withdraw request
                             var requestObject = {
-                              source_address: warmWalletData.receiveAddress.address,
-                              destination_address: wallet.send_address,
+                              source_address: wallet.send_address,
+                              destination_address: destination_address,
                               user_id: user_id,
                               amount: (total_fees),
                               transaction_type: 'send',
@@ -897,7 +910,7 @@ module.exports = {
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
-              walletTransData[j].network_fees = parseFloat((walletTransData[j].network_fees)).toFixed(10)
+              walletTransData[j].network_fees = (walletTransData[j].actual_network_fees >= parseFloat(walletTransData[j].estimated_network_fees)) ? (parseFloat((walletTransData[j].actual_network_fees)).toFixed(10)) : (parseFloat(walletTransData[j].estimated_network_fees))
               walletTransData[j].amount = (walletTransData[j].coin_id != 26) ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].amount).toFixed(10));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {
@@ -915,7 +928,7 @@ module.exports = {
             user_id: req.user.id,
             coin_id: coinData.id
           }
-        })
+        }).sort('created_at DESC')
 
         let coinFee = await AdminSetting.findOne({
           where: {
@@ -1711,9 +1724,10 @@ module.exports = {
 
       var user_id = req.user.id;
       var filter = ''
+      console.log("coin_code", coin_code);
       if (wallet_type == 1) {
         var queryAppended = false;
-        if (coin_code && coin_code != '' && coin_code != null) {
+        if (coin_code && (coin_code != '' || coin_code != null)) {
           filter += ` AND coins.coin_code = '${coin_code}'`
           queryAppended = true;
         }
@@ -1722,13 +1736,14 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address,
-                          (cast((wallet_history.amount - wallet_history.faldax_fee) as decimal(8,8))) as amount,
+                          (cast((wallet_history.amount - wallet_history.faldax_fee) as decimal(8,0))) as amount,
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
                           WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL
                            AND wallet_history.transaction_type = 'send'${filter}`
+
 
         if (start_date && end_date) {
           walletLogs += " AND "
@@ -1775,7 +1790,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address,
-                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,8))) as amount,
+                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,0))) as amount,
                             wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
                             FROM public.wallet_history LEFT JOIN coins
                             ON wallet_history.coin_id = coins.id
@@ -2233,6 +2248,8 @@ module.exports = {
           .wallet
           .getNetworkFee(data.coin, data.amount, data.address);
 
+        console.log("reposneData", reposneData)
+        reposneData = 2 * reposneData;
         console.log("reposneData", reposneData)
         return res
           .status(200)
