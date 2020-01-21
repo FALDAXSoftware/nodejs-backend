@@ -4151,5 +4151,85 @@ module.exports = {
           error_at: error.stack
         });
     }
-  }
+  },
+  /**
+  Update Asset Fees and Limit for transfer From Recieve to Warm wallet
+  **/
+  updateAssetFeesLimits: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: sails.__('Unauthorized Access').message
+        });
+      }
+      var data = req.body;
+      let get_data = await AdminSetting.findOne({
+        where: {
+          slug: data.slug,
+          deleted_at: null
+        }
+      });
+
+      if (get_data != undefined) {
+        await AdminSetting
+          .update({
+            id: get_data.id
+          })
+          .set({
+            value: data.value
+          })
+      }
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Asset fees limit update").message,
+        "data": get_data
+      });
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+  /**
+  List Asset Fees and Limit for transfer From Recieve to Warm wallet
+  **/
+  listAssetFeesLimits: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: sails.__('Unauthorized Access').message
+        });
+      }
+      let get_data = await AdminSetting.find({
+        where: {
+          slug:{
+            in:['btc_static_fees','ltc_static_fees','eth_static_fees','xrp_static_fees','btc_limit_wallet_transfer','ltc_limit_wallet_transfer','xrp_limit_wallet_transfer','eth_limit_wallet_transfer']
+          }
+        }
+      }).sort([{"id":"desc"}]);
+      return res.status(200).json({
+        "status": 200,
+        "message": sails.__("Asset fees limit lists").message,
+        "data": get_data
+      });
+    } catch (error) {
+      // console.log("err", error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 };
