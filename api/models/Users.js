@@ -288,6 +288,11 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_terms_agreed'
     },
+    default_language: {
+      type: 'string',
+      columnName: 'default_language',
+      defaultsTo:"en"
+    },
   },
   beforeCreate: (values, next) => {
     Users

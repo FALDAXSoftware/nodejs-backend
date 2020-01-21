@@ -88,7 +88,8 @@ module.exports = {
           account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
-          signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+          signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
+          default_language: ( req.body.default_language ? req.body.default_language :"en")
         }).fetch();
 
         var now = moment.now();
@@ -1854,7 +1855,7 @@ module.exports = {
   },
 
   //------------------CMS APi------------------------------------------------//
-
+  // Get Active users lists
   getUserPaginate: async function (req, res) {
     try {
       let {
@@ -1866,14 +1867,14 @@ module.exports = {
         country
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
+      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN wallets ON users.id = wallets.user_id";
       query += " WHERE users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -1900,12 +1901,12 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
@@ -1928,7 +1929,7 @@ module.exports = {
         });
     }
   },
-
+  // Get inactive users lists
   getInactiveUserPaginate: async function (req, res) {
     try {
       let {
@@ -1940,14 +1941,14 @@ module.exports = {
         country
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
+      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN wallets ON users.id = wallets.user_id";
       query += " WHERE users.is_active = false AND is_verified = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -1974,12 +1975,12 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
@@ -2001,7 +2002,7 @@ module.exports = {
         });
     }
   },
-
+  // Get Deleted users lists
   getDeletedUserPaginate: async function (req, res) {
     try {
       let {
@@ -2013,13 +2014,13 @@ module.exports = {
         country
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users ";
+      let query = " from users LEFT JOIN wallets ON users.id = wallets.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -2046,12 +2047,12 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
