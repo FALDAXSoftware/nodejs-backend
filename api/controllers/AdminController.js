@@ -4211,7 +4211,7 @@ module.exports = {
       let get_data = await AdminSetting.find({
         where: {
           slug:{
-            in:['btc_static_fees','ltc_static_fees','eth_static_fees','xrp_static_fees','btc_limit_wallet_transfer','ltc_limit_wallet_transfer','xrp_limit_wallet_transfer','eth_limit_wallet_transfer']
+            in:['tbtc_static_fees','tltc_static_fees','teth_static_fees','txrp_static_fees','tbtc_limit_wallet_transfer','tltc_limit_wallet_transfer','txrp_limit_wallet_transfer','teth_limit_wallet_transfer']
           }
         }
       }).sort([{"id":"desc"}]);
