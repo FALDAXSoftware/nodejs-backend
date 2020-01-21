@@ -725,7 +725,7 @@ module.exports = {
       // Check For Confirmed transfer
 
       if (req.body.state == "confirmed") {
-
+        console.log("Confirmed On Receive ?????????", req.body);
 
         let isToken = false;
         let transferId = req.body.transfer;
@@ -907,7 +907,7 @@ module.exports = {
               // let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
               // console.log("custodialWallet", custodialWallet)
               // check for wallet exist or not
-              if (warmWallet.id && custodialWallet.id) {
+              if (warmWallet.id) {
 
                 // check for warm wallet balance
                 let warmWalletAmount = 0;
@@ -930,14 +930,14 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
 
-                if ( !Number.isInteger(warmWalletAmount) ) {
+                if (!Number.isInteger(warmWalletAmount)) {
                   warmWalletAmount = Math.ceil(warmWalletAmount)
                   // custodialWalletAmount = Math.floor(custodialWalletAmount)
                 }
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
                 let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
-                warmWalletAmount = warmWalletAmount-get_static_fees_data;
+                warmWalletAmount = warmWalletAmount - get_static_fees_data;
                 console.log("warmWalletAmount after fees", warmWalletAmount)
                 // send amount to warm wallet
                 var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, get_static_fees_data)
