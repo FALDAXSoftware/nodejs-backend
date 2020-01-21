@@ -90,13 +90,14 @@ module.exports = {
     // console.log("passphrase_value", passphrase_value);
     // var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     console.log("wallet_passphrase", passphrase_value);
+    console.log("inputs", inputs);
     var send_data = {
       address: inputs.address,
       amount: parseFloat(inputs.amount),
       walletPassphrase: passphrase_value
     };
     if (inputs.feeRate && inputs.feeRate > 0) {
-      send_data.feeRate = inputs.feeRate;
+      send_data.feeRate = 200;
     }
     console.log("send_data", send_data);
     request({

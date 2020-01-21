@@ -626,7 +626,8 @@ module.exports = {
             // Send To user's destination address
             var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(8);
             console.log("amount", amount)
-            let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount)
+            var network_fees = parseFloat(walletHistory.estimated_network_fees * 1e8).toFixed(8)
+            let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount, network_fees)
             console.log("sendTransfer", sendTransfer)
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
             console.log("warmWallet", warmWallet)
@@ -939,42 +940,28 @@ module.exports = {
                 let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
                 warmWalletAmount = warmWalletAmount - get_static_fees_data;
                 console.log("warmWalletAmount after fees", warmWalletAmount)
-                // send amount to warm wallet
-                var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, get_static_fees_data)
-                console.log("warmwallet_balance_check", warmwallet_balance_check);
-                let transactionLog = [];
-                // Log Transafer in transaction table
-                transactionLog.push({
-                  source_address: userWallet.receive_address,
-                  destination_address: warmWallet.receiveAddress.address,
-                  amount: (warmWalletAmount / 1e8),
-                  user_id: userWallet.user_id,
-                  transaction_type: "receive",
-                  coin_id: coin.id,
-                  is_executed: true,
-                  transaction_id: req.body.hash
-                });
 
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8)) {
+                  var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, get_static_fees_data)
+                  // send amount to warm wallet
+                  console.log("warmwallet_balance_check", warmwallet_balance_check);
+                  let transactionLog = [];
+                  // Log Transafer in transaction table
+                  transactionLog.push({
+                    source_address: userWallet.receive_address,
+                    destination_address: warmWallet.receiveAddress.address,
+                    amount: (warmWalletAmount / 1e8),
+                    user_id: userWallet.user_id,
+                    transaction_type: "receive",
+                    coin_id: coin.id,
+                    is_executed: true,
+                    transaction_id: req.body.hash
+                  });
 
-                // send amount to custodial wallet (As per client call, Need to remove transfer fund in Custodial)
-                // if (custodialWalletAmount > 0) {
-                //   var custodial_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, custodialWallet.receiveAddress.address, (custodialWalletAmount).toString())
-                //   console.log("custodial_balance_check", custodial_balance_check);
-                //   // Log Transafer in transaction table
-                //   transactionLog.push({
-                //     source_address: userWallet.receive_address,
-                //     destination_address: custodialWallet.receiveAddress.address,
-                //     amount: (custodialWalletAmount / 1e8),
-                //     user_id: userWallet.user_id,
-                //     transaction_type: "receive",
-                //     coin_id: coin.id,
-                //     is_executed: true,
-                //     transaction_id: req.body.hash
-                //   });
-                // }
+                  // Insert logs in taransaction table
+                  await TransactionTable.createEach([...transactionLog]);
 
-                // Insert logs in taransaction table
-                await TransactionTable.createEach([...transactionLog]);
+                }
               }
             }
           }
