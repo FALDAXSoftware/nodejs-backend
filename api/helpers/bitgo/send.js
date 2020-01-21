@@ -95,10 +95,10 @@ module.exports = {
       amount: parseFloat(inputs.amount),
       walletPassphrase: passphrase_value
     };
-    if( inputs.feeRate && inputs.feeRate > 0 ){
+    if (inputs.feeRate && inputs.feeRate > 0) {
       send_data.feeRate = inputs.feeRate;
     }
-    console.log("send_data",send_data);
+    console.log("send_data", send_data);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
