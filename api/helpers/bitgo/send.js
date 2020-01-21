@@ -97,7 +97,7 @@ module.exports = {
       walletPassphrase: passphrase_value
     };
     if (inputs.feeRate && inputs.feeRate > 0) {
-      send_data.feeRate = 200;
+      send_data.feeRate = inputs.feeRate;
     }
     console.log("send_data", send_data);
     request({
