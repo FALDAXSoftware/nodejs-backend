@@ -40,20 +40,14 @@ module.exports = {
           email_verify_token: req.body.email_verify_token
         });
         if (user) {
-          // console.log(user)
-          // var today = moment().utc().format();
-          // var yesterday = moment(user.signup_token_expiration).utc().format()
-          // console.log("yesterday", yesterday);
-          // console.log("today", today)
-          // console.log("yesterday < today", yesterday < today)
-          // if (yesterday < today) {
-          //   var existing = moment(user.signup_token_expiration);
-          //   var tz = moment.tz.guess();
-          //   return res.status(400).json({
-          //     "status": 400,
-          //     "err": sails.__("Verification Expired").message
-          //   })
-          // }
+          var today = moment().utc().format();
+          var yesterday = moment(user.signup_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Verification Expired").message
+            })
+          }
           let hubspotcontact = await sails
             .helpers
             .hubspot
@@ -311,6 +305,14 @@ module.exports = {
                   ip: ip
                 });
                 if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
+                  var today = moment().utc().format();
+                  var yesterday = moment(user_detail.device_token_expiration).format();
+                  if (yesterday < today) {
+                    return res.status(400).json({
+                      "status": 400,
+                      "err": sails.__("Verification Expired").message
+                    })
+                  }
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
@@ -336,7 +338,8 @@ module.exports = {
                     .set({
                       email: user_detail["email"],
                       new_ip_verification_token: verifyToken,
-                      new_ip: ip
+                      new_ip: ip,
+                      device_token_expiration: moment().utc().add(process.env.DEVICE_TOKEN_DURATION, 'minutes')
                     });
 
                   let slug = "new_ip_verification"
@@ -784,6 +787,14 @@ module.exports = {
               "err": sails.__("Reset Token expired.").message
             });
         } else {
+          var today = moment().utc().format();
+          var yesterday = moment(user_details.forgot_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Reset Token expired.").message
+            })
+          }
           let updateUsers = await Users
             .update({
               email: user_details.email,
@@ -900,7 +911,8 @@ module.exports = {
       let new_user = {
         email: req.body.email,
         reset_token,
-        reset_token_expire
+        reset_token_expire,
+        forgot_token_expiration: forgot_token_expiration
       }
       var updatedUser = await Users
         .update({
@@ -1053,7 +1065,7 @@ module.exports = {
           })
           .set({
             email_verify_token: email_verify_code,
-            // signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
           });
 
         let slug = "";
