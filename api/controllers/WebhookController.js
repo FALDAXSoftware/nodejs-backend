@@ -903,7 +903,7 @@ module.exports = {
               // let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
               // console.log("custodialWallet", custodialWallet)
               // check for wallet exist or not
-              if (warmWallet.id && custodialWallet.id) {
+              if (warmWallet.id) {
 
                 // check for warm wallet balance
                 let warmWalletAmount = 0;
