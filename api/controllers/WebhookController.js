@@ -938,11 +938,22 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
                 let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
-                warmWalletAmount = warmWalletAmount - get_static_fees_data;
-                console.log("warmWalletAmount after fees", warmWalletAmount)
+                warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
+                console.log("warmWalletAmount after static fees", warmWalletAmount);
+
+                var reposneData = await sails
+                  .helpers
+                  .wallet
+                  .getNetworkFee(req.body.coin, (warmWalletAmountAfter / 1e8), warmWallet.receiveAddress.address);
+
+                console.log("reposneData", reposneData)
+                console.log("Fee Rate ??????", reposneData.feeRate);
+
+                warmWalletAmount = warmWalletAmount - reposneData.fee
+                console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
 
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8)) {
-                  var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, get_static_fees_data)
+                  var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
                   // send amount to warm wallet
                   console.log("warmwallet_balance_check", warmwallet_balance_check);
                   let transactionLog = [];
