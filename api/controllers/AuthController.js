@@ -134,7 +134,7 @@ module.exports = {
 
         if (user_detail) {
           // Set language to user's default
-          if (user_detail.default_language && user_detail.default_language != "" ) {
+          if (user_detail.default_language && user_detail.default_language != "") {
             sails.hooks.i18n.setLocale(user_detail.default_language);
           } else {
             sails.hooks.i18n.setLocale("en");
@@ -917,7 +917,7 @@ module.exports = {
         email: req.body.email,
         reset_token,
         reset_token_expire,
-        forgot_token_expiration: forgot_token_expiration
+        forgot_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
       }
       var updatedUser = await Users
         .update({

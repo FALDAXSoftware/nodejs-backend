@@ -79,7 +79,7 @@ module.exports = {
                 if (body.error) {
                     return exits.error(body);
                 }
-                var feeValue = parseFloat((body.feeInfo.fee) / 1e8)
+                var feeValue = body.feeInfo
                 return exits.success(feeValue);
             });
         } else {
