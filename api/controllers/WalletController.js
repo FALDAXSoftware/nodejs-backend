@@ -2249,8 +2249,8 @@ module.exports = {
           .getNetworkFee(data.coin, data.amount, data.address);
 
         console.log("reposneData", reposneData)
-        reposneData = 2 * reposneData;
-        console.log("reposneData", reposneData)
+        reposneDataValue = 2 * (reposneData.fee);
+        console.log("reposneData", reposneDataValue)
         return res
           .status(200)
           .json({
