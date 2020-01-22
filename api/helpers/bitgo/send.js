@@ -96,6 +96,8 @@ module.exports = {
     };
     if (inputs.feeRate && inputs.feeRate > 0) {
       send_data.feeRate = inputs.feeRate;
+      // send_data.fee = inputs.feeRate;
+      // send_data.maxFeeRate = inputs.feeRate;
     }
     console.log("send_data", send_data);
     request({
