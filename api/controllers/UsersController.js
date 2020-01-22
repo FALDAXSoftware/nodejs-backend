@@ -14,6 +14,7 @@ var csc = require('country-state-city');
 const moment = require('moment');
 var logger = require("./logger");
 var requestIp = require('request-ip');
+const uuidv1 = require('uuid/v1');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -89,9 +90,9 @@ module.exports = {
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
           signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
-          default_language: ( req.body.default_language ? req.body.default_language :"en")
+          default_language: (req.body.default_language ? req.body.default_language : "en")
         }).fetch();
-
+        console.log(user_detail.id);
         var now = moment.now();
 
         var notificationList = await Notifications.find({
@@ -116,6 +117,14 @@ module.exports = {
             ...object
           }).fetch();
         }
+
+        var userUpdate = await Users
+          .update({
+            id: user_detail.id
+          })
+          .set({
+            "customer_id": 624 + parseFloat(user_detail.id - 1)
+          });
 
         var userFavouritesData = await UserFavourites.createEach([{
           user_id: user_detail.id,
@@ -888,6 +897,10 @@ module.exports = {
                     user_details["state"], user.city_town ?
                     user.city_town :
                     user_details["city_town"], user.postal_code);
+              }
+
+              if (req.body.country_code) {
+                user['country_code'] = req.body.country_code;
               }
 
               var updatedUsers = await Users
@@ -1900,7 +1913,6 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
@@ -2046,7 +2058,6 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals" + query, [])
 
@@ -2499,6 +2510,7 @@ module.exports = {
         deleted_at: null,
         email: user.email
       });
+      var full_name = user.first_name + " " + user.middle_name + " " + user.last_name;
       if (existedUser == undefined) {
         let hubspotcontact = await sails
           .helpers
@@ -2514,7 +2526,8 @@ module.exports = {
             hubspot_id: hubspotcontact,
             is_active: true,
             is_verified: true,
-            password: user.password
+            password: user.password,
+            full_name: full_name
           })
           .fetch();
         if (kyc_done == true) {
