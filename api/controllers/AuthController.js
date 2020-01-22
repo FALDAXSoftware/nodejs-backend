@@ -311,13 +311,15 @@ module.exports = {
                   ip: ip
                 });
                 if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
-                  var today = moment().utc().format();
-                  var yesterday = moment(user_detail.device_token_expiration).format();
-                  if (yesterday < today) {
-                    return res.status(400).json({
-                      "status": 400,
-                      "err": sails.__("Verification Expired").message
-                    })
+                  if (req.body.device_token) {
+                    var today = moment().utc().format();
+                    var yesterday = moment(user_detail.device_token_expiration).format();
+                    if (yesterday < today) {
+                      return res.status(400).json({
+                        "status": 400,
+                        "err": sails.__("Verification Expired").message
+                      })
+                    }
                   }
                   await LoginHistory.create({
                     user: user_detail.id,
