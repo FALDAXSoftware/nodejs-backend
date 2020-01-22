@@ -216,6 +216,11 @@ module.exports = {
       allowNull: true,
       columnName: 'new_email_token'
     },
+    customer_id: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'customer_id'
+    },
     is_new_email_verified: {
       type: 'boolean',
       columnName: "is_new_email_verified",
@@ -291,7 +296,7 @@ module.exports = {
     default_language: {
       type: 'string',
       columnName: 'default_language',
-      defaultsTo:"en"
+      defaultsTo: "en"
     },
   },
   beforeCreate: (values, next) => {

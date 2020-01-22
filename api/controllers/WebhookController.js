@@ -951,7 +951,15 @@ module.exports = {
 
                 warmWalletAmount = warmWalletAmount - reposneData.fee
                 console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
-
+                // Calculate Sizes
+                let size = reposneData.size; // in bytes
+                let get_sizefor_tx = size/1024; // in kb
+                let amount_fee_rate = get_static_fees_data*get_sizefor_tx
+                console.log("get_static_fees_data",get_static_fees_data);
+                console.log("size",size);
+                console.log("get_sizefor_tx",get_sizefor_tx);
+                console.log("amount_fee_rate",amount_fee_rate);
+                reposneData.feeRate = parseInt(amount_fee_rate);
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8)) {
                   var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
                   // send amount to warm wallet

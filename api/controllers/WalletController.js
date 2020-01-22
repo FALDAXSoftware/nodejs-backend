@@ -2248,9 +2248,7 @@ module.exports = {
           .wallet
           .getNetworkFee(data.coin, data.amount, data.address);
 
-        console.log("reposneData", reposneData)
         reposneDataValue = 2 * (reposneData.fee);
-        console.log("reposneData", reposneDataValue)
         return res
           .status(200)
           .json({
@@ -2259,7 +2257,6 @@ module.exports = {
             "data": parseFloat(reposneDataValue / 1e8).toFixed(8)
           })
       } else {
-        console.log("INSIDE ELSE")
         return res
           .status(200)
           .json({
