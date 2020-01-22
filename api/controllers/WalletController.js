@@ -2256,7 +2256,7 @@ module.exports = {
           .json({
             "status": 200,
             "message": sails.__("Fee retrieve Success").message,
-            "data": reposneData
+            "data": reposneDataValue
           })
       } else {
         console.log("INSIDE ELSE")
