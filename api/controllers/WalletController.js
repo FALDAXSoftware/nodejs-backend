@@ -627,6 +627,12 @@ module.exports = {
                           }
                         } else {
                           if (req.body.confirm_for_wait == true || req.body.confirm_for_wait === "true") {
+                            var adminDataFees = await AdminSetting.findOne({
+                              where: {
+                                deleted_at: null,
+                                slug: "default_send_coin_fee"
+                              }
+                            });
                             //Insert request in withdraw request
                             var requestObject = {
                               source_address: wallet.send_address,
@@ -635,7 +641,8 @@ module.exports = {
                               amount: (total_fees),
                               transaction_type: 'send',
                               coin_id: coin.id,
-                              is_executed: false
+                              is_executed: false,
+                              fees: adminDataFees.value
                             }
 
                             await WithdrawRequest.create({

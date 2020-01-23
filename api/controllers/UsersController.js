@@ -92,7 +92,6 @@ module.exports = {
           signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
           default_language: (req.body.default_language ? req.body.default_language : "en")
         }).fetch();
-        console.log(user_detail.id);
         var now = moment.now();
 
         var notificationList = await Notifications.find({
@@ -118,12 +117,13 @@ module.exports = {
           }).fetch();
         }
 
+        var id = user_detail.id;
         var userUpdate = await Users
           .update({
             id: user_detail.id
           })
           .set({
-            "customer_id": 624 + parseFloat(user_detail.id - 1)
+            "customer_id": "F-" + id.toString(16).toUpperCase()
           });
 
         var userFavouritesData = await UserFavourites.createEach([{
@@ -382,7 +382,8 @@ module.exports = {
               new_email_token: null,
               email_verify_token: re_new_email_token,
               requested_email: null,
-              is_new_email_verified: false
+              is_new_email_verified: false,
+              is_verified: false
             })
             .fetch();
 
@@ -1845,6 +1846,7 @@ module.exports = {
 
   getUserTickets: async function (req, res) {
     try {
+      console.log(req.user.id);
       let tickets = await sails
         .helpers
         .hubspot
@@ -1877,7 +1879,9 @@ module.exports = {
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
       let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
@@ -1887,7 +1891,7 @@ module.exports = {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -1900,6 +1904,18 @@ module.exports = {
         }
         whereAppended = true;
         query += "  users.country='" + country + "'";
+      }
+
+      if (start_date && end_date) {
+        // query += whereAppended ?
+        //   " AND " :
+        //   " WHERE ";
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -1951,7 +1967,9 @@ module.exports = {
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
       let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
@@ -1974,6 +1992,15 @@ module.exports = {
         }
         whereAppended = true;
         query += "  users.country='" + country + "'";
+      }
+
+      if (start_date && end_date) {
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -2024,7 +2051,9 @@ module.exports = {
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
       let query = " from users LEFT JOIN wallets ON users.id = wallets.user_id";
@@ -2046,6 +2075,15 @@ module.exports = {
         }
         whereAppended = true;
         query += "  users.country='" + country + "'";
+      }
+
+      if (start_date && end_date) {
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -2526,11 +2564,21 @@ module.exports = {
             ...user,
             hubspot_id: hubspotcontact,
             is_active: true,
-            is_verified: true,
+            is_verified: false,
             password: user.password,
             full_name: full_name
           })
           .fetch();
+
+        var id = generatedUser.id;
+        var userUpdate = await Users
+          .update({
+            id: generatedUser.id
+          })
+          .set({
+            "customer_id": "F-" + id.toString(16).toUpperCase(),
+            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
+          });
         if (kyc_done == true) {
           await KYC.create({
             first_name: user.first_name,
@@ -2560,10 +2608,49 @@ module.exports = {
               .receiveOneAddress(elementCoin.coin, generatedUser);
           }
         }
-        return res.json({
-          status: 200,
-          message: sails.__("user created success").message
-        });
+
+        let email_verify_token = randomize('Aa0', 10);
+        if (generatedUser) {
+          // Insert history for Login
+          let slug = "signup_for_web"
+          let template = await EmailTemplate.findOne({
+            slug
+          });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: generatedUser.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+              tokenCode: email_verify_token
+            })
+          if (template) {
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: generatedUser.email,
+                subject: "Signup Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("verification link sent to user").message,
+                    email_verify_token
+                  });
+                }
+              });
+          }
+        } else {
+          return res
+            .status(401)
+            .json({
+              status: 401,
+              "err": sails.__("Something Wrong").message
+            });
+        }
       } else {
         return res
           .status(500)
@@ -3114,7 +3201,7 @@ module.exports = {
       //   query += " ORDER BY created_at DESC";
       // }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
+      console.log(query);
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
@@ -3154,6 +3241,7 @@ module.exports = {
           }
         });
         if (userData != undefined) {
+          var emailArray = [];
           var userDataValue = await Users
             .count('id')
             .where({
@@ -3162,6 +3250,21 @@ module.exports = {
               referred_id: userIds[i]
             });
 
+          var dataValue = await Users.find({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              referred_id: userIds[i]
+            }
+          });
+
+          console.log(dataValue);
+
+          for (var j = 0; j < dataValue.length; j++) {
+            emailArray.push(dataValue[j].email);
+          }
+          console.log(emailArray);
+          userData.emailValue = emailArray;
           userData.no_of_referral = userDataValue
           usersData.push(userData)
         }
