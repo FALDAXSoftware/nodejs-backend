@@ -68,7 +68,7 @@ module.exports = {
         .status(400)
         .json({
           status: 400,
-          "err": sails.__("No Data").message
+          "err": sails.__("No record found").message
         });
     }
   }
