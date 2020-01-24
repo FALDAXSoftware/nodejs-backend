@@ -554,6 +554,98 @@ module.exports = {
     }
   },
 
+  /*
+    Send Forgot Password Link to User
+  */
+  userForgotPassword: async function (req, res) {
+    try {
+      const user_details = await Users.findOne({
+        email: req.body.email,
+        deleted_at: null,
+        is_active: true
+      });
+      if (!user_details) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("This email id is not registered with us.").message
+          });
+      }
+
+      if (user_details.is_verified == false || user_details.is_new_email_verified == false) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            err: sails.__("This email id is verified.").message
+          });
+      }
+
+      let reset_token = randomize('Aa0', 10);
+      let reset_token_expire = new Date().getTime() + 300000;
+
+      let new_user = {
+        email: req.body.email,
+        reset_token,
+        reset_token_expire,
+        forgot_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+      }
+      var updatedUser = await Users
+        .update({
+          email: req.body.email,
+          deleted_at: null
+        })
+        .set(new_user)
+        .fetch();
+
+      let slug = "forgot_password"
+      let template = await EmailTemplate.findOne({
+        slug
+      });
+      let emailContent = await sails
+        .helpers
+        .utilities
+        .formatEmail(template.content, {
+          recipientName: updatedUser[0].first_name,
+          token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
+        })
+      sails
+        .hooks
+        .email
+        .send("general-email", {
+          content: emailContent
+        }, {
+          to: user_details.email,
+          subject: "Forgot Password"
+        }, function (err) {
+          console.log("err", err);
+          if (!err) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Reset password link sent to your email successfully.").message
+            });
+          } else {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "err": sails.__("Something Wrong").message,
+                error_at: sails.__("Something Wrong").message
+              });
+          }
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
   /**
   Update Profile Details Admin
   **/

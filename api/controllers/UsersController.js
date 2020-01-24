@@ -1490,7 +1490,8 @@ module.exports = {
       .set({
         email: user.email,
         deleted_by: 1, //deleted by user
-        deleted_at: new Date()
+        deleted_at: new Date(),
+        is_active: false
       });
 
     var total = 0;
@@ -1892,8 +1893,9 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN wallets ON users.id = wallets.user_id";
+      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id) wallets`;
+      let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND "
@@ -1927,6 +1929,7 @@ module.exports = {
       }
 
       countQuery = query;
+
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
@@ -1938,7 +1941,8 @@ module.exports = {
 
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select DISTINCT users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
       usersData = usersData.rows;
@@ -1980,8 +1984,9 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN wallets ON users.id = wallets.user_id";
+      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id ";
       query += " WHERE users.is_active = false AND is_verified = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
@@ -2064,7 +2069,8 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN wallets ON users.id = wallets.user_id";
+      let new_query = ` FROM (select DISTINCT on (user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let query = new_query+" RIGHT JOIN users ON wallets.user_id=users.id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
@@ -2579,6 +2585,28 @@ module.exports = {
           .fetch();
 
         var id = generatedUser.id;
+        var notificationList = await Notifications.find({
+          where: {
+            deleted_at: null
+          }
+        });
+
+        for (var i = 0; i < notificationList.length; i++) {
+          var object = {};
+          object.slug = notificationList[i].slug;
+          object.title = notificationList[i].title;
+          object.created_at = new Date();
+          object.user_id = id
+          if (notificationList[i].is_necessary == "true" || notificationList[i].is_necessary == true) {
+            object.email = true
+          } else {
+            object.email = false
+          }
+          object.text = false;
+          var data = await UserNotification.create({
+            ...object
+          }).fetch();
+        }
         var userUpdate = await Users
           .update({
             id: generatedUser.id
