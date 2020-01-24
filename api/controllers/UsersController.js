@@ -1893,7 +1893,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
       let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
@@ -1941,7 +1941,6 @@ module.exports = {
 
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals" + query, [])
 
