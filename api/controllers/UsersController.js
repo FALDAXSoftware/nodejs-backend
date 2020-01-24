@@ -383,7 +383,8 @@ module.exports = {
               email_verify_token: re_new_email_token,
               requested_email: null,
               is_new_email_verified: false,
-              is_verified: false
+              is_verified: false,
+              signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
             })
             .fetch();
 
@@ -460,7 +461,14 @@ module.exports = {
           email_verify_token: req.body.new_email_verify_token
         });
         if (user) {
-
+          var today = moment().utc().format();
+          var yesterday = moment(user.signup_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Invalid Token").message
+            })
+          }
           await Users
             .update({
               id: user.id,

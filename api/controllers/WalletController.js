@@ -475,12 +475,14 @@ module.exports = {
                             var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                             var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
-
+                            console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
+                            console.log("total_payout", total_payout)
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
                             var totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
+                            console.log("totalFeeSub", totalFeeSub)
                             var leftNetworkFees = (network_feesValue > singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
@@ -536,6 +538,8 @@ module.exports = {
                             await WalletHistory.create({
                               ...walletHistory
                             });
+
+                            console.log("wallet.balance", wallet.balance)
                             // update wallet balance
                             var data = await Wallet
                               .update({
