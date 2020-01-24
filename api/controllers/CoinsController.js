@@ -471,7 +471,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
-        query += " ORDER BY id ASC ";
+        query += " ORDER BY id DESC ";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
@@ -741,7 +741,7 @@ module.exports = {
           deleted_at: null
         }
       })
-        .sort('id ASC')
+        .sort('id DESC')
 
       for (var i = 0; i < coinData.length; i++) {
         if (coinData[i].coin_code != "SUSU") {

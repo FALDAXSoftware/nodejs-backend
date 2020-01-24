@@ -107,11 +107,11 @@ module.exports = {
         var allJobCategories = await JobCategory.find({
           deleted_at: null,
           is_active: true
-        }).sort('id ASC');
+        }).sort('id DESC');
       } else {
         var allJobCategories = await JobCategory.find({
           deleted_at: null
-        }).sort('id ASC');
+        }).sort('id DESC');
       }
 
       if (allJobCategories) {
@@ -163,7 +163,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
-        query += " ORDER BY jobs.id ASC";
+        query += " ORDER BY jobs.id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let allJobs = await sails.sendNativeQuery("Select jobs.*, job_category.category" + query, [])
