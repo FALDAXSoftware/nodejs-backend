@@ -1193,8 +1193,8 @@
 		"page": "Verify new IP",
 		"context": "Invalid verification token",
 		"message_type": "error",
-		"message": "Invalid verification token.",
-		"message_english": "Invalid verification token."
+		"message": "Invalid verification token.The token has either been used previously or the time limit has expired. Please contact support or try again.",
+		"message_english": "Invalid verification token.The token has either been used previously or the time limit has expired. Please contact support or try again."
 	},
 	"Authentication code sent to email successfully": {
 		"page": "Send OTP to email",
@@ -2904,5 +2904,12 @@
 		"message_type": "error",
 		"message": "Account does not exists with this email id.",
 		"message_english": "Account does not exists with this email id."
+	},
+	"verification link sent to user": {
+		"page": "CMS - Add User",
+		"context": "When admin create the user from CMS",
+		"message_type": "success",
+		"message": "User Account has been created Successfully. Verification Link has been sent to user.",
+		"message_english": "User Account has been created Successfully. Verfification Link has been sent to user."
 	}
 }

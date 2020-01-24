@@ -520,6 +520,13 @@ module.exports = {
               message: sails.__("account verify success").message
             })
           }
+
+          await Users
+          .update({
+            id: user_detail.id
+          }).set({
+            new_ip_verification_token: null
+          })
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
           // new_ip_verification_token: null,   email: user_detail.email });
           await LoginHistory.create({

@@ -54,7 +54,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -89,7 +89,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -122,7 +122,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -187,7 +187,7 @@ module.exports = {
                   .json({
                     status: 500,
                     "err": sails.__("Something Wrong").message,
-                    error_at:error.stack
+                    error_at: error.stack
                   });
               } else {
                 let cardDate = await sails
@@ -217,7 +217,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -237,7 +237,7 @@ module.exports = {
         deleted_at: null
       });
       let inactiveUsers = await Users.count({
-        is_verified: true,
+        is_verified: false,
         is_active: false,
         deleted_at: null
       });
@@ -411,7 +411,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

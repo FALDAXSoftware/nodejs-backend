@@ -30,12 +30,14 @@ module.exports = {
       // Get users tickets.
       var usersTickets = [];
       // TODO
-      let user = await Users.findOne({id: inputs.user_id});
+      let user = await Users.findOne({ id: inputs.user_id });
+      console.log(user);
       if (user) {
         if (user.hubspot_id != null) {
-          fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.ticket.getUsersTicket.replace(":objectId", user.hubspot_id) + "?hapikey=" + sails.config.local.hubspot.apiKey, {method: "GET"})
+          fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.ticket.getUsersTicket.replace(":objectId", user.hubspot_id) + "?hapikey=" + sails.config.local.hubspot.apiKey, { method: "GET" })
             .then(resData => resData.json())
             .then(async function (resData) {
+              console.log(resData);
               let tickets = await sails
                 .helpers
                 .hubspot
