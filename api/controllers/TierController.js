@@ -17,7 +17,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('id ASC');
+      }).sort('id DESC');
 
       var userData = await Users.findOne({
         where: {
@@ -339,7 +339,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('id ASC');
+      }).sort('id DESC');
 
       if (tierDetails) {
         return res

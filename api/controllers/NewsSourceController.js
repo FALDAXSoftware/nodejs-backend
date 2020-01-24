@@ -13,7 +13,7 @@ module.exports = {
 
     let newsSourceData = await NewsSource.find({
       deleted_at: null
-    }).sort('id ASC');
+    }).sort('id DESC');
 
     if (newsSourceData.length > 0) {
       return res.json({
