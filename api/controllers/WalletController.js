@@ -1062,14 +1062,14 @@ module.exports = {
         } else {
           return res.json({
             status: 200,
-            message: sails.__("No Data").message
+            message: sails.__("No record found").message
           })
         }
       } else {
         return res.json({
           status: 500,
-          err: sails.__("No Data").message,
-          error_at: sails.__("No Data").message
+          err: sails.__("No record found").message,
+          error_at: sails.__("No record found").message
         })
       }
 

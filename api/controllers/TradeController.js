@@ -2157,7 +2157,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
-        query += " ORDER BY id ASC";
+        query += " ORDER BY id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let cancelDetails = await sails.sendNativeQuery("Select *" + query, [])
