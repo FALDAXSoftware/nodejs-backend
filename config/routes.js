@@ -178,6 +178,7 @@ module.exports.routes = {
   'post /admin/change-news-status': 'News.changeNewsStatus',
   'get /admin/get-news-details': 'News.getNewsDetails',
   'get /admin/get-referal-details': 'ReferralController.getReferalDetails',
+  'post /admin/forgot-user-password': 'AdminController.userForgotPassword',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
