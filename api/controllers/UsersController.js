@@ -3341,7 +3341,7 @@ module.exports = {
                                 WHERE referral.is_collected = 'true' AND user_id = ${id}
                                 AND users.deleted_at IS NULL
                                 GROUP BY referral.coin_name,coins.coin_icon, coins.id
-                                ORDER BY coins.id ASC`);
+                                ORDER BY coins.id DESC`);
       return res
         .status(200)
         .json({

@@ -83,7 +83,7 @@ module.exports = {
               '<=': today
             }
           }
-        }).sort('id', 'ASC');
+        }).sort('id', 'DESC');
 
         if (previous_price == undefined || previous_price.length == 0) {
           previous_price = 0;
@@ -115,7 +115,7 @@ module.exports = {
           created_at: {
             '<=': today
           }
-        }).sort('created_at', 'ASC');
+        }).sort('created_at', 'DESC');
 
         var card_data = {
           "pair_from": favouritesData[i].pair_from,

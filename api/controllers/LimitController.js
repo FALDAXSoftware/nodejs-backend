@@ -21,7 +21,7 @@ module.exports = {
             coin_id: coin_id
           }
         })
-        .sort("id ASC");
+        .sort("id DESC");
 
       let coinData = await Coins.findOne({
         where: {
