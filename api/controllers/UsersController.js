@@ -383,7 +383,8 @@ module.exports = {
               email_verify_token: re_new_email_token,
               requested_email: null,
               is_new_email_verified: false,
-              is_verified: false
+              is_verified: false,
+              signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
             })
             .fetch();
 
@@ -460,7 +461,14 @@ module.exports = {
           email_verify_token: req.body.new_email_verify_token
         });
         if (user) {
-
+          var today = moment().utc().format();
+          var yesterday = moment(user.signup_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Invalid Token").message
+            })
+          }
           await Users
             .update({
               id: user.id,
@@ -1482,7 +1490,8 @@ module.exports = {
       .set({
         email: user.email,
         deleted_by: 1, //deleted by user
-        deleted_at: new Date()
+        deleted_at: new Date(),
+        is_active: false
       });
 
     var total = 0;
@@ -2576,6 +2585,28 @@ module.exports = {
           .fetch();
 
         var id = generatedUser.id;
+        var notificationList = await Notifications.find({
+          where: {
+            deleted_at: null
+          }
+        });
+
+        for (var i = 0; i < notificationList.length; i++) {
+          var object = {};
+          object.slug = notificationList[i].slug;
+          object.title = notificationList[i].title;
+          object.created_at = new Date();
+          object.user_id = id
+          if (notificationList[i].is_necessary == "true" || notificationList[i].is_necessary == true) {
+            object.email = true
+          } else {
+            object.email = false
+          }
+          object.text = false;
+          var data = await UserNotification.create({
+            ...object
+          }).fetch();
+        }
         var userUpdate = await Users
           .update({
             id: generatedUser.id
