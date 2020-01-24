@@ -640,17 +640,36 @@ module.exports = {
               transaction_id: sendTransfer.txid
             });
 
+            console.log(sendTransfer);
+
+            var object = {
+              coin_id: walletHistory.coin_id,
+              source_address: wallet.receiveAddress.address,
+              destination_address: walletHistory.destination_address,
+              user_id: walletHistory.user_id,
+              amount: amount,
+              transaction_type: 'send',
+              is_executed: true,
+              transaction_id: sendTransfer.txid,
+              estimated_network_fees: walletHistory.estimated_network_fees,
+              actual_network_fees: parseFloat(sendTransfer.transfer.feeString / (1e8)).toFixed(8),
+              faldax_fee: 0.0
+            }
+
+            console.log("object ", object);
             // Log transaction in transaction table
             await TransactionTable.create({
               coin_id: walletHistory.coin_id,
               source_address: wallet.receiveAddress.address,
               destination_address: walletHistory.destination_address,
               user_id: walletHistory.user_id,
-              amount: walletHistory.amount,
+              amount: amount,
               transaction_type: 'send',
               is_executed: true,
-              actual_network_fees: sendTransfer.txid,
-              estimated_network_fees: walletHistory.estimated_network_fees
+              transaction_id: sendTransfer.txid,
+              estimated_network_fees: walletHistory.estimated_network_fees,
+              actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
+              faldax_fee: 0.0
             });
           }
         }
@@ -976,9 +995,10 @@ module.exports = {
                     transaction_type: "send",
                     coin_id: coin.id,
                     is_executed: true,
-                    transaction_id: req.body.hash,
-                    actual_network_fees: warmwallet_balance_check.txid,
-                    estimated_network_fees: get_static_fees_data
+                    transaction_id: warmwallet_balance_check.txid,
+                    estimated_network_fees: get_static_fees_data,
+                    actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
+                    faldax_fee: 0.0
                   });
 
                   // Insert logs in taransaction table
