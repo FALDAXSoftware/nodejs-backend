@@ -467,6 +467,7 @@ module.exports = {
                         if (req.body.confirm_for_wait === undefined) {
 
                           //Check for warm wallet minimum thresold
+                          console.log("Warmwalletbalance before",warmWalletData.balance);
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * 1e8)) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
@@ -482,6 +483,17 @@ module.exports = {
                             var network_feesValue = parseFloat(network_fees / (1e8))
                             var totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
                             var leftNetworkFees = (network_feesValue > singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
+
+                            console.log("valueFee",valueFee);
+                            console.log("sendAmount",sendAmount);
+                            console.log("amountValue",amountValue);
+                            console.log("transaction",transaction);
+                            console.log("total_payout",total_payout);
+                            console.log("singleNetworkFee",singleNetworkFee);
+                            console.log("network_fees",network_fees);
+                            console.log("network_feesValue",network_feesValue);
+                            console.log("totalFeeSub",totalFeeSub);
+                            console.log("leftNetworkFees",leftNetworkFees);
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -545,6 +557,7 @@ module.exports = {
                                 balance: (wallet.balance - totalFeeSub).toFixed(8),
                                 placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
+                            console.log("User wallet balance after tx",data);
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
                             let addObject = {
@@ -2254,7 +2267,7 @@ module.exports = {
           .helpers
           .wallet
           .getNetworkFee(data.coin, data.amount, data.address);
-
+        console.log("reposneData",reposneData);
         reposneDataValue = 2 * (reposneData.fee);
         return res
           .status(200)
