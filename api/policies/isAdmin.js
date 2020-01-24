@@ -39,7 +39,8 @@ module.exports = async function (req, res, next) {
       "admin/get-admin-wallet-history",
       "admin/get-all-news",
       "admin/get-market-snapshot",
-      "admin/users/list"
+      "admin/users/list",
+      "admin/forgot-user-password"
     ]
 
     let urlPrefix = urlArray[1];
@@ -148,11 +149,11 @@ module.exports = async function (req, res, next) {
     return next();
   } catch (error) {
     return res
-        .status(500)
-        .json({
-          status: 500,
-          err: sails.__("Something Wrong").message,
-          error_at:error.stack
-        })
+      .status(500)
+      .json({
+        status: 500,
+        err: sails.__("Something Wrong").message,
+        error_at: error.stack
+      })
   }
 };
