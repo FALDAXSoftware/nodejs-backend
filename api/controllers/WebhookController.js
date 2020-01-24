@@ -641,15 +641,17 @@ module.exports = {
             });
 
             // Log transaction in transaction table
-            // await TransactionTable.create({
-            //   coin_id: walletHistory.coin_id,
-            //   source_address: wallet.receiveAddress.address,
-            //   destination_address: walletHistory.destination_address,
-            //   user_id: walletHistory.user_id,
-            //   amount: walletHistory.amount,
-            //   transaction_type: 'send',
-            //   is_executed: true
-            // });
+            await TransactionTable.create({
+              coin_id: walletHistory.coin_id,
+              source_address: wallet.receiveAddress.address,
+              destination_address: walletHistory.destination_address,
+              user_id: walletHistory.user_id,
+              amount: walletHistory.amount,
+              transaction_type: 'send',
+              is_executed: true,
+              actual_network_fees: sendTransfer.txid,
+              estimated_network_fees: walletHistory.estimated_network_fees
+            });
           }
         }
       }
@@ -953,12 +955,12 @@ module.exports = {
                 console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
                 // Calculate Sizes
                 let size = reposneData.size; // in bytes
-                let get_sizefor_tx = size/1024; // in kb
-                let amount_fee_rate = get_static_fees_data*get_sizefor_tx
-                console.log("get_static_fees_data",get_static_fees_data);
-                console.log("size",size);
-                console.log("get_sizefor_tx",get_sizefor_tx);
-                console.log("amount_fee_rate",amount_fee_rate);
+                let get_sizefor_tx = size / 1024; // in kb
+                let amount_fee_rate = get_static_fees_data * get_sizefor_tx
+                console.log("get_static_fees_data", get_static_fees_data);
+                console.log("size", size);
+                console.log("get_sizefor_tx", get_sizefor_tx);
+                console.log("amount_fee_rate", amount_fee_rate);
                 reposneData.feeRate = parseInt(amount_fee_rate);
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8)) {
                   var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
@@ -971,10 +973,12 @@ module.exports = {
                     destination_address: warmWallet.receiveAddress.address,
                     amount: (warmWalletAmount / 1e8),
                     user_id: userWallet.user_id,
-                    transaction_type: "receive",
+                    transaction_type: "send",
                     coin_id: coin.id,
                     is_executed: true,
-                    transaction_id: req.body.hash
+                    transaction_id: req.body.hash,
+                    actual_network_fees: warmwallet_balance_check.txid,
+                    estimated_network_fees: get_static_fees_data
                   });
 
                   // Insert logs in taransaction table

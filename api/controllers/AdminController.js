@@ -755,7 +755,7 @@ module.exports = {
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (LOWER(admin.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(admin.last_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(admin.email) LIKE '%" + data.toLowerCase() + "%')";
+          query = query + " AND (LOWER(admin.first_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(admin.last_name) LIKE '%" + data.toLowerCase() + "%'OR CONCAT((admin.first_name) || ' ' || (admin.last_name)) LIKE '%" + data + "%'OR LOWER(admin.email) LIKE '%" + data.toLowerCase() + "%')";
         }
       }
       countQuery = query;
@@ -4210,11 +4210,11 @@ module.exports = {
       }
       let get_data = await AdminSetting.find({
         where: {
-          slug:{
-            in:['tbtc_static_fees','tltc_static_fees','teth_static_fees','txrp_static_fees','tbtc_limit_wallet_transfer','tltc_limit_wallet_transfer','txrp_limit_wallet_transfer','teth_limit_wallet_transfer']
+          slug: {
+            in: ['tbtc_static_fees', 'tltc_static_fees', 'teth_static_fees', 'txrp_static_fees', 'tbtc_limit_wallet_transfer', 'tltc_limit_wallet_transfer', 'txrp_limit_wallet_transfer', 'teth_limit_wallet_transfer']
           }
         }
-      }).sort([{"id":"desc"}]);
+      }).sort([{ "id": "desc" }]);
       return res.status(200).json({
         "status": 200,
         "message": sails.__("Asset fees limit lists").message,
