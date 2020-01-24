@@ -996,7 +996,7 @@ module.exports = {
                     coin_id: coin.id,
                     is_executed: true,
                     transaction_id: warmwallet_balance_check.txid,
-                    estimated_network_fees: get_static_fees_data,
+                    estimated_network_fees: parseFloat(get_static_fees_data / (1e8)).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
                     faldax_fee: 0.0
                   });
