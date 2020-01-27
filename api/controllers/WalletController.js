@@ -482,7 +482,12 @@ module.exports = {
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
-                            var totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
+                            var totalFeeSub;
+                            if (network_feesValue > singleNetworkFee) {
+                              totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
+                            } else {
+                              totalFeeSub = parseFloat(parseFloat(total_payout) + parseFloat(2 * singleNetworkFee)).toFixed(8)
+                            }
                             console.log("totalFeeSub", totalFeeSub)
                             var leftNetworkFees = (network_feesValue > singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
 
