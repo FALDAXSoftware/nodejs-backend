@@ -39,6 +39,7 @@
     "lodash": "^4.17.15",
     "log4js": "^5.1.0",
     "logback": "^1.0.16",
+    "macaddress": "^0.2.9",
     "moment": "^2.23.0",
     "moment-timezone": "^0.5.26",
     "node-blackcoin": "^1.0.2",
