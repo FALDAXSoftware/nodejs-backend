@@ -542,8 +542,8 @@
         "page": "Email or password not sent",
         "context": "Email or Password or Phone_number is not sent",
         "message_type": "error",
-        "message_english": "Email or Password or Phone_number is not sent.",
-        "message": "Email or Password or Phone_number is not sent."
+        "message_english": "Network error, information not received. Please try again. ",
+        "message": "Network error, information not received. Please try again. "
     },
     "email already registered": {
         "page": "Signup",
@@ -927,8 +927,8 @@
         "page": "Rising Falling details",
         "context": "Rising Falling data has been retrieved successfully.",
         "message_type": "success",
-        "message_english": "Rising Falling data has been retrieved successfully.",
-        "message": "Rising Falling data has been retrieved successfully."
+        "message_english": "Rising/Falling data has been retrieved successfully.",
+        "message": "Rising/Falling data has been retrieved successfully."
     },
     "Portfolio retrived success": {
         "page": "CMS - Portfolio lists",
@@ -1123,8 +1123,8 @@
         "page": "CMS - Job category delete",
         "context": "Job id is not sent",
         "message_type": "error",
-        "message_english": "Job ID is not sent.",
-        "message": "Job ID is not sent."
+        "message_english": "Job ID is invalid. Cannot delete Job.",
+        "message": "Job ID is invalid. Cannot delete Job."
     },
     "Job removed success": {
         "page": "CMS - Job category delete",
@@ -1186,8 +1186,8 @@
         "page": "Login, CMS - Login",
         "context": "Email or password has not been sent",
         "message_type": "error",
-        "message_english": "Email or password has not been sent.",
-        "message": "Email or password has not been sent."
+        "message_english": "Network error, information not received. Please try again. ",
+        "message": "Network error, information not received. Please try again. "
     },
     "Invalid verification token": {
         "page": "Verify new IP",
@@ -1298,15 +1298,15 @@
         "page": "CMS - Change own password, Change employee password",
         "context": "Something went wrong! Could not able to update the password",
         "message_type": "error",
-        "message_english": "Something went wrong! Could not update the password.",
-        "message": "Something went wrong! Could not update the password."
+        "message_english": "Network error, password has not been updated.",
+        "message": "Network error, password has not been updated."
     },
     "Update password Error": {
         "page": "CMS - Reset password",
         "context": "Update password Error",
         "message_type": "error",
-        "message_english": "Update password Error.",
-        "message": "Update password Error."
+        "message_english": "Network error, password has not been reset.",
+        "message": "Network error, password has not been reset."
     },
     "Reset Password link has been expired.": {
         "page": "CMS - Reset password",
@@ -1333,8 +1333,8 @@
         "page": "CMS - Delete\/Update employee",
         "context": "Employee id has not been sent.",
         "message_type": "error",
-        "message_english": "Employee ID has not been sent.",
-        "message": "Employee ID has not been sent."
+        "message_english": "Network error, Employee information has not been updated.",
+        "message": "Network error, Employee information has not been updated."
     },
     "Employee Details": {
         "page": "CMS - Employee details",
@@ -1613,8 +1613,8 @@
         "page": "Withdraw requests",
         "context": "Transfer could not happen",
         "message_type": "error",
-        "message_english": "Transfer could not happen.",
-        "message": "Transfer could not happen."
+        "message_english": "Network error, transfer did not go through. Please try again.",
+        "message": "Network error, transfer did not go through. Please try again."
     },
     "Referral amount collect": {
         "page": "Collect referrals",
@@ -1683,8 +1683,8 @@
         "page": "Unauthorized access",
         "context": "Unauthorized Access",
         "message_type": "error",
-        "message_english": "Unauthorized Access.",
-        "message": "Unauthorized Access."
+        "message_english": "You do not have access to this area. Please login on the FALDAX main website.",
+        "message": "You do not have access to this area. Please login on the FALDAX main website."
     },
     "Job Category Exists": {
         "page": "CMS - Job category add",
@@ -1760,15 +1760,15 @@
         "page": "Security feature",
         "context": "Security feature has been enabled.",
         "message_type": "success",
-        "message_english": "Security feature has been enabled.",
-        "message": "Security feature has been enabled."
+        "message_english": "Security Feature has been enabled.",
+        "message": "Security Feature has been enabled."
     },
     "SF Status Disabled": {
         "page": "Security feature",
         "context": "Security feature has been disabled.",
         "message_type": "success",
-        "message_english": "Security feature has been disabled.",
-        "message": "Security feature has been disabled."
+        "message_english": "Security Feature has been disabled.",
+        "message": "Security Feature has been disabled."
     },
     "Whitelist ip enabled": {
         "page": "IP Whitelist status update",
@@ -1837,15 +1837,15 @@
         "page": "CMS - Approve\/Disapprove Two-factor requests, Contact lists, Admin wallet details, Batch listing",
         "context": "No data found.",
         "message_type": "success",
-        "message_english": "No data found.",
-        "message": "No data found."
+        "message_english": "No data/records could be retrieved.",
+        "message": "No data/records could be retrieved."
     },
     "Record found": {
         "page": "Security Status, CMS - Approve\/Disapprove Two-factor requests, Admin wallet details, Batch listing",
         "context": "Data found.",
         "message_type": "success",
-        "message_english": "Data found.",
-        "message": "Data found."
+        "message_english": "Data/records successfully retrieved.",
+        "message": "Data/records successfully retrieved."
     },
     "Twofactors lists": {
         "page": "CMS - Two-factor requests",
