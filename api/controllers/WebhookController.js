@@ -596,17 +596,9 @@ module.exports = {
 
   webhookOnSend: async function (req, res) {
     try {
-      // await sails.helpers.loggerFormat(
-      //   "webhookOnSend",
-      //   sails.config.local.LoggerWebhook,
-      //   req.url,
-      //   1,
-      //   req,
-      //   sails.config.local.LoggerIncoming
-      // );
-      // Check Status of Transaction
       console.log("webhook from send", req.body);
 
+      // Check Status of Transaction
       if (req.body.state == "confirmed") {
 
         let transferId = req.body.transfer;
@@ -642,25 +634,10 @@ module.exports = {
 
             console.log(sendTransfer);
 
-            var object = {
-              coin_id: walletHistory.coin_id,
-              source_address: wallet.receiveAddress.address,
-              destination_address: walletHistory.destination_address,
-              user_id: walletHistory.user_id,
-              amount: amount,
-              transaction_type: 'send',
-              is_executed: true,
-              transaction_id: sendTransfer.txid,
-              estimated_network_fees: walletHistory.estimated_network_fees,
-              actual_network_fees: parseFloat(sendTransfer.transfer.feeString / (1e8)).toFixed(8),
-              faldax_fee: 0.0
-            }
-
-            console.log("object ", object);
             // Log transaction in transaction table
             await TransactionTable.create({
               coin_id: walletHistory.coin_id,
-              source_address: wallet.receiveAddress.address,
+              source_address: walletHistory.source_address,
               destination_address: walletHistory.destination_address,
               user_id: walletHistory.user_id,
               amount: amount,
@@ -996,7 +973,7 @@ module.exports = {
                     coin_id: coin.id,
                     is_executed: true,
                     transaction_id: warmwallet_balance_check.txid,
-                    estimated_network_fees: parseFloat(get_static_fees_data / (1e8)).toFixed(8),
+                    estimated_network_fees: parseFloat((reposneData.fee) / 1e8).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
                     faldax_fee: 0.0
                   });
