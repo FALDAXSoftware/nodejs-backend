@@ -1986,7 +1986,7 @@ module.exports = {
       let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
       let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id ";
-      query += " WHERE users.is_active = false AND is_verified = false AND users.deleted_at IS NULL"
+      query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
