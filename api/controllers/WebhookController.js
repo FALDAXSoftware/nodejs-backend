@@ -992,7 +992,7 @@ module.exports = {
                     destination_address: warmWallet.receiveAddress.address,
                     amount: (warmWalletAmount / 1e8),
                     user_id: userWallet.user_id,
-                    transaction_type: "send",
+                    transaction_type: "receive",
                     coin_id: coin.id,
                     is_executed: true,
                     transaction_id: warmwallet_balance_check.txid,
