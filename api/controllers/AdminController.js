@@ -174,7 +174,7 @@ module.exports = {
                     .status(403)
                     .json({
                       "status": 403,
-                      "err": sails.__("Forbidden").message
+                      "err": sails.__("Invalid email or password").message
                     });
                 }
 
