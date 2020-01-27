@@ -640,13 +640,14 @@ module.exports = {
               source_address: walletHistory.source_address,
               destination_address: walletHistory.destination_address,
               user_id: walletHistory.user_id,
-              amount: amount,
+              amount: parseFloat(amount / 1e8).toFixed(8),
               transaction_type: 'send',
               is_executed: true,
               transaction_id: sendTransfer.txid,
               estimated_network_fees: walletHistory.estimated_network_fees,
               actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
-              faldax_fee: 0.0
+              faldax_fee: 0.0,
+              actual_amount: walletHistory.actual_amount
             });
           }
         }
@@ -967,7 +968,7 @@ module.exports = {
                   transactionLog.push({
                     source_address: userWallet.receive_address,
                     destination_address: warmWallet.receiveAddress.address,
-                    amount: (warmWalletAmount / 1e8),
+                    amount: parseFloat(warmWalletAmount / 1e8).toFixed(8),
                     user_id: userWallet.user_id,
                     transaction_type: "receive",
                     coin_id: coin.id,
@@ -975,7 +976,8 @@ module.exports = {
                     transaction_id: warmwallet_balance_check.txid,
                     estimated_network_fees: parseFloat((reposneData.fee) / 1e8).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
-                    faldax_fee: 0.0
+                    faldax_fee: 0.0,
+                    actual_amount: parseFloat(dest.value / 1e8).toFixed(8)
                   });
 
                   // Insert logs in taransaction table
