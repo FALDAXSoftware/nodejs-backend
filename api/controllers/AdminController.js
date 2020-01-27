@@ -2549,21 +2549,23 @@ module.exports = {
             });
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
+          var temp_wallet_total = 0;
           if (wallet_details != undefined) {
             assets_data[i].send_address = wallet_details.send_address;
             assets_data[i].receive_address = wallet_details.receive_address;
+            temp_wallet_total = parseFloat(wallet_details.placed_balance);
           }
           // Get Wallet Data
-          var walletQuery = `SELECT * FROM wallet_history WHERE deleted_at IS NULL AND transaction_type = 'send' AND coin_id='${asset_id}'`;
-          let FeeData = await sails.sendNativeQuery(walletQuery, []);
-          var temp_wallet_total = 0;
-          if (FeeData.rowCount > 0) {
-            (FeeData.rows).forEach(function (each, index) {
-              if (each.faldax_fee != null) {
-                temp_wallet_total += parseFloat(each.faldax_fee)
-              }
-            })
-          }
+          // var walletQuery = `SELECT * FROM wallet_history WHERE deleted_at IS NULL AND transaction_type = 'send' AND coin_id='${asset_id}'`;
+          // let FeeData = await sails.sendNativeQuery(walletQuery, []);
+          // var temp_wallet_total = 0;
+          // if (FeeData.rowCount > 0) {
+          //   (FeeData.rows).forEach(function (each, index) {
+          //     if (each.faldax_fee != null) {
+          //       temp_wallet_total += parseFloat(each.faldax_fee)
+          //     }
+          //   })
+          // }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
