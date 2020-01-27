@@ -732,6 +732,14 @@ module.exports = {
         console.log("transferId", transferId)
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
         console.log("transfer", transfer)
+
+        await logger.info({
+          "module": "WebhookRecieve",
+          "user_id": 0,
+          "url": req.url,
+          "type": sails.config.local.LoggerWebhook,
+          "body":transfer
+        }, sails.config.local.LoggerSuccess)
         if (transfer.state == "confirmed" && transfer.type == "receive") {
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
