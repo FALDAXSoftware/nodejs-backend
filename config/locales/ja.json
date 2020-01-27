@@ -6,13 +6,6 @@
         "message_english": "Welcome back",
         "message": "Welcome back"
     },
-    "Forbidden": {
-        "page": "403 (when access not granted)",
-        "context": "Forbidden",
-        "message_type": "error",
-        "message_english": "Forbidden",
-        "message": "Forbidden"
-    },
     "No Data": {
         "page": "204 (When data does not exists)",
         "context": "No data found.",
@@ -38,8 +31,8 @@
         "page": "User lists",
         "context": "User not found",
         "message_type": "error",
-        "message_english": "User not found.",
-        "message": "User not found."
+        "message_english": "We are unable to fetch the requested information. Please try again after some time or contact support.",
+        "message": "We are unable to fetch the requested information. Please try again after some time or contact support."
     },
     "user_delete_success": {
         "page": "Users lists",
@@ -1214,8 +1207,8 @@
         "page": "CMS - Forgot password, Forgot password, Forgot Two-factor, Resend verification email",
         "context": "Reset instructions for the account associated with this email have been sent.",
         "message_type": "success",
-        "message_english": "Reset instructions for the account associated with this email have been sent.",
-        "message": "Reset instructions for the account associated with this email have been sent."
+        "message_english": "This Email ID is not registered in our system. Please check the email and try again or signup for a new account if you are new user.",
+        "message": "This Email ID is not registered in our system. Please check the email and try again or signup for a new account if you are new user."
     },
     "Email is required.": {
         "page": "Resend verification email, Forgot Two-factor",
@@ -1340,8 +1333,8 @@
         "page": "CMS - Employee details",
         "context": "Employee Details",
         "message_type": "success",
-        "message_english": "Employee Details.",
-        "message": "Employee Details."
+        "message_english": "Employee Details retrieved successfully.",
+        "message": "Employee Details retrieved successfully."
     },
     "Employee id is required": {
         "page": "CMS - Employee details",
@@ -1354,8 +1347,8 @@
         "page": "CMS - Setup Two-factor of Employee",
         "context": "Admin not found or it's not active",
         "message_type": "error",
-        "message_english": "Admin not found or it's not active.",
-        "message": "Admin not found or it's not active."
+        "message_english": "The record you are looking for is either inactive or does not exist in the system",
+        "message": "The record you are looking for is either inactive or does not exist in the system"
     },
     "Admin Details": {
         "page": "CMS - Get admin details",
@@ -1368,8 +1361,8 @@
         "page": "Login",
         "context": "It looks like Robot !",
         "message_type": "error",
-        "message_english": "It looks like Robot!",
-        "message": "It looks like Robot!"
+        "message_english": "Recaptcha reload is required to ensure it's not a Robot. Please refresh the page and try again.",
+        "message": "Recaptcha reload is required to ensure it's not a Robot. Please refresh the page and try again."
     },
     "User Log out successfully.": {
         "page": "Logout",
@@ -2754,8 +2747,8 @@
         "page": "Policy PDF update",
         "context": "Static Pdfs updated successfully",
         "message_type": "success",
-        "message_english": "Static Pdfs updated successfully.",
-        "message": "Static Pdfs updated successfully."
+        "message_english": "File uploaded successfully",
+        "message": "File uploaded successfully"
     },
     "Fee retrieve Success": {
         "page": "Network fees data",
