@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("../controllers/logger");
 module.exports = {
 
   // set on recive webhook
