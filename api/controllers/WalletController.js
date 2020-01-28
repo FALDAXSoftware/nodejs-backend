@@ -483,13 +483,19 @@ module.exports = {
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
                             var totalFeeSub;
+                            console.log("network_feesValue", network_feesValue)
+                            console.log("singleNetworkFee", singleNetworkFee)
                             if (network_feesValue > singleNetworkFee) {
                               totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
                             } else {
                               totalFeeSub = parseFloat(parseFloat(total_payout) + parseFloat(2 * singleNetworkFee)).toFixed(8)
                             }
-                            // console.log("totalFeeSub", totalFeeSub)
-                            var leftNetworkFees = (network_feesValue > singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
+                            console.log("totalFeeSub", totalFeeSub)
+                            var leftNetworkFees = 0;
+                            if (network_feesValue < singleNetworkFee) {
+                              leftNetworkFees = (parseFloat(singleNetworkFee) - parseFloat(network_feesValue))
+                            }
+                            // var leftNetworkFees = (network_feesValue < singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
 
                             // console.log("valueFee", valueFee);
                             // console.log("sendAmount", sendAmount);
@@ -512,9 +518,12 @@ module.exports = {
                             });
 
                             if (adminWalletDetails != undefined) {
+                              console.log("adminWalletDetails", adminWalletDetails.balance)
+                              console.log("faldaxFees", faldaxFees)
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(faldaxFees));
                               var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(faldaxFees));
-                              if (networkFees > network_feesValue) {
+                              if (leftNetworkFees > 0) {
+                                console.log("leftNetworkFees", leftNetworkFees)
                                 updatedBalance = parseFloat(updatedBalance) + parseFloat(leftNetworkFees);
                                 updatedPlacedBalance = parseFloat(updatedPlacedBalance) + parseFloat(leftNetworkFees);
                               }
@@ -943,7 +952,7 @@ module.exports = {
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
-              walletTransData[j].network_fees = (walletTransData[j].actual_network_fees >= parseFloat(walletTransData[j].estimated_network_fees)) ? (parseFloat((walletTransData[j].actual_network_fees * 2)).toFixed(10)) : (parseFloat(walletTransData[j].estimated_network_fees * 2))
+              walletTransData[j].network_fees = (walletTransData[j].actual_network_fees >= parseFloat(walletTransData[j].estimated_network_fees)) ? (parseFloat((walletTransData[j].actual_network_fees) + parseFloat(walletTransData[j].estimated_network_fees)).toFixed(10)) : (parseFloat(walletTransData[j].estimated_network_fees * 2))
               walletTransData[j].amount = (walletTransData[j].coin_id != 26) ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].amount).toFixed(10));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {

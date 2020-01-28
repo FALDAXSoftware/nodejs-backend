@@ -761,6 +761,13 @@ module.exports = {
               source = transfer.entries[1];
             }
 
+            if (source == undefined) {
+              source = transfer.inputs[0]
+            }
+
+            if (dest == undefined) {
+              dest = transfer.inputs[0]
+            }
 
             // receiver wallet
             let userWallet = await Wallet.findOne({
@@ -778,18 +785,20 @@ module.exports = {
             }
 
             if (userWallet == undefined && userSendWallet == undefined) {
-              userWallet = await Wallet.findOne({
-                receive_address: source.address,
-                deleted_at: null,
-                is_active: true
-              });
-
-              if (userWallet == undefined) {
+              if (source != undefined) {
                 userWallet = await Wallet.findOne({
-                  send_address: source.address,
+                  receive_address: source.address,
                   deleted_at: null,
                   is_active: true
                 });
+
+                if (userWallet == undefined) {
+                  userWallet = await Wallet.findOne({
+                    send_address: source.address,
+                    deleted_at: null,
+                    is_active: true
+                  });
+                }
               }
 
               if (userWallet) {
