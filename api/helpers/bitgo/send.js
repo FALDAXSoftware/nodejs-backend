@@ -99,9 +99,9 @@ module.exports = {
       // send_data.fee = inputs.feeRate;
       // send_data.maxFeeRate = inputs.feeRate;
     }
-    // send_data.comment = 'Timestamp_'+new Date();
-    // send_data.sequenceId = 'Timestamp_'+new Date();
-    // send_data.label = 'Timestamp_'+new Date();
+    send_data.comment = 'Timestamp_'+new Date();
+    send_data.sequenceId = 'Timestamp_'+new Date();
+    send_data.label = 'Timestamp_'+new Date();
     console.log("send_data", send_data);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
