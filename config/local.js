@@ -221,5 +221,8 @@ module.exports.local = {
   LoggerIncoming: "Incoming request",
   Login: "Login",
   SUSUCOIN_URL: process.env.SUSUCOIN_URL,
-  LoggerWebhook: "Webhook"
+  LoggerWebhook: "Webhook",
+  WARM_TO_SEND:"Warmwallet to Send",
+  SEND_TO_DESTINATION:"Send to Destination",
+  RECEIVE_TO_WARM:"Receiver to Warmwallet"
 }

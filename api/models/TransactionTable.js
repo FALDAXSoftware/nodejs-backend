@@ -67,6 +67,22 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_executed'
     },
+    sender_user_balance_before: {
+      type: "number",
+      columnName: "sender_user_balance_before"
+    },
+    receiver_user_balance_before: {
+      type: "number",
+      columnName: "receiver_user_balance_before"
+    },
+    warm_wallet_balance_before: {
+      type: "number",
+      columnName: "warm_wallet_balance_before"
+    },
+    transaction_from: {
+      type: "string",
+      columnName: "transaction_from"
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

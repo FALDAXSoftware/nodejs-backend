@@ -497,16 +497,16 @@ module.exports = {
                             }
                             // var leftNetworkFees = (network_feesValue < singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
 
-                            console.log("valueFee", valueFee);
-                            console.log("sendAmount", sendAmount);
-                            console.log("amountValue", amountValue);
-                            console.log("transaction", transaction);
-                            console.log("total_payout", total_payout);
-                            console.log("singleNetworkFee", singleNetworkFee);
-                            console.log("network_fees", network_fees);
-                            console.log("network_feesValue", network_feesValue);
-                            console.log("totalFeeSub", totalFeeSub);
-                            console.log("leftNetworkFees", leftNetworkFees);
+                            // console.log("valueFee", valueFee);
+                            // console.log("sendAmount", sendAmount);
+                            // console.log("amountValue", amountValue);
+                            // console.log("transaction", transaction);
+                            // console.log("total_payout", total_payout);
+                            // console.log("singleNetworkFee", singleNetworkFee);
+                            // console.log("network_fees", network_fees);
+                            // console.log("network_feesValue", network_feesValue);
+                            // console.log("totalFeeSub", totalFeeSub);
+                            // console.log("leftNetworkFees", leftNetworkFees);
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -565,7 +565,8 @@ module.exports = {
                               ...walletHistory
                             });
 
-                            console.log("wallet.balance", wallet.balance)
+
+                            var user_wallet_balance = wallet.balance;
                             // update wallet balance
                             var data = await Wallet
                               .update({
@@ -575,7 +576,7 @@ module.exports = {
                                 balance: (wallet.balance - totalFeeSub).toFixed(8),
                                 placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
-                            console.log("User wallet balance after tx", data);
+
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
                             let addObject = {
@@ -591,7 +592,10 @@ module.exports = {
                               actual_network_fees: network_feesValue,
                               estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
                               is_done: false,
-                              actual_amount: amount
+                              actual_amount: amount,
+                              sender_user_balance_before:user_wallet_balance,
+                              warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                              transaction_from:sails.config.local.WARM_TO_SEND
                             }
 
                             await TransactionTable.create({
