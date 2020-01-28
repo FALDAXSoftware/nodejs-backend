@@ -733,13 +733,13 @@ module.exports = {
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
         console.log("transfer", transfer)
 
-        await logger.info({
-          "module": "WebhookRecieve",
-          "user_id": 0,
-          "url": req.url,
-          "type": sails.config.local.LoggerWebhook,
-          "body":transfer
-        }, sails.config.local.LoggerSuccess)
+        // await logger.info({
+        //   "module": "WebhookRecieve",
+        //   "user_id": 0,
+        //   "url": req.url,
+        //   "type": sails.config.local.LoggerWebhook,
+        //   "body":transfer
+        // }, sails.config.local.LoggerSuccess)
         if (transfer.state == "confirmed" && transfer.type == "receive") {
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
@@ -761,6 +761,13 @@ module.exports = {
               source = transfer.entries[1];
             }
 
+            if (source == undefined) {
+              source = transfer.inputs[0]
+            }
+
+            if (dest == undefined) {
+              dest = transfer.inputs[0]
+            }
 
             // receiver wallet
             let userWallet = await Wallet.findOne({
@@ -778,18 +785,20 @@ module.exports = {
             }
 
             if (userWallet == undefined && userSendWallet == undefined) {
-              userWallet = await Wallet.findOne({
-                receive_address: source.address,
-                deleted_at: null,
-                is_active: true
-              });
-
-              if (userWallet == undefined) {
+              if (source != undefined) {
                 userWallet = await Wallet.findOne({
-                  send_address: source.address,
+                  receive_address: source.address,
                   deleted_at: null,
                   is_active: true
                 });
+
+                if (userWallet == undefined) {
+                  userWallet = await Wallet.findOne({
+                    send_address: source.address,
+                    deleted_at: null,
+                    is_active: true
+                  });
+                }
               }
 
               if (userWallet) {
