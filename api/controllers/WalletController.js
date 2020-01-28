@@ -1382,12 +1382,6 @@ module.exports = {
   **/
   sendCoinAdmin: async function (req, res) {
     try {
-      // await logger.info({
-      //   "module": "Wallet Admin Send Coin",
-      //   "user_id": "user_" + req.user.id,
-      //   "url": req.url,
-      //   "type": "Entry"
-      // }, "Entered the function")
       let {
         amount,
         destination_address,
@@ -1395,6 +1389,7 @@ module.exports = {
       } = req.allParams();
 
       let user_id = req.user.id;
+      console.log(user_id);
       var today = moment().utc().format();
 
       var yesterday = moment()
@@ -1431,7 +1426,8 @@ module.exports = {
           deleted_at: null,
           coin_id: coin.id,
           is_active: true,
-          user_id: user_id
+          user_id: user_id,
+          is_admin: true
         });
 
         //Checking if wallet is found or not
@@ -1471,6 +1467,9 @@ module.exports = {
               await WalletHistory.create({
                 ...walletHistory
               });
+
+              console.log("wallet.balance", wallet.balance)
+              console.log("amount", amount)
               // update wallet balance
               await Wallet
                 .update({
