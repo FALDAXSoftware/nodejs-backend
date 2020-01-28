@@ -1882,6 +1882,7 @@ module.exports = {
   // Get Active users lists
   getUserPaginate: async function (req, res) {
     try {
+
       let {
         page,
         limit,
@@ -1895,7 +1896,7 @@ module.exports = {
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
       let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND "
@@ -1942,7 +1943,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals" + query, [])
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
@@ -1985,7 +1986,7 @@ module.exports = {
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
       let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id ";
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
@@ -2028,7 +2029,7 @@ module.exports = {
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals" + query, [])
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
@@ -2069,7 +2070,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT on (user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
-      let query = new_query+" RIGHT JOIN users ON wallets.user_id=users.id";
+      let query = new_query+" RIGHT JOIN users ON wallets.user_id=users.id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
@@ -2111,7 +2112,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-        "f_referrals" + query, [])
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
