@@ -1894,7 +1894,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
-      let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
       if ((data && data != "")) {
@@ -1984,7 +1984,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
-      let query = new_query+" RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id ";
       query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
@@ -2069,7 +2069,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let new_query = ` FROM (select DISTINCT on (user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
-      let query = new_query+" RIGHT JOIN users ON wallets.user_id=users.id";
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id=users.id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
@@ -2183,33 +2183,59 @@ module.exports = {
   updateSendCoinFee: async function (req, res) {
     try {
       let {
-        send_coin_fee
+        send_coin_fee,
+        otp
       } = req.body;
 
-      if (parseFloat(send_coin_fee) > 0) {
-        updateCoinFee = await AdminSetting
-          .update({
-            slug: 'default_send_coin_fee'
-          })
-          .set({
-            value: send_coin_fee
-          })
-          .fetch();
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
 
-        if (updateCoinFee) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Withdrawal fee update success").message
-          });
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
+        });
+
+      if (verified) {
+        if (parseFloat(send_coin_fee) > 0) {
+          updateCoinFee = await AdminSetting
+            .update({
+              slug: 'default_send_coin_fee'
+            })
+            .set({
+              value: send_coin_fee
+            })
+            .fetch();
+
+          if (updateCoinFee) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Withdrawal fee update success").message
+            });
+          }
+        } else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("fees greater than 0").message,
+              error_at: sails.__("fees greater than 0").message
+            })
         }
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("fees greater than 0").message,
-            error_at: sails.__("fees greater than 0").message
-          })
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
     } catch (error) {
       // await logger.error(error.message)
@@ -2226,34 +2252,58 @@ module.exports = {
   updateFaldaxFee: async function (req, res) {
     try {
       let {
-        send_coin_fee
+        send_coin_fee, otp
       } = req.body;
 
-      if (parseFloat(send_coin_fee) > 0) {
-        updateCoinFee = await AdminSetting
-          .update({
-            slug: 'faldax_fee',
-            deleted_at: null
-          })
-          .set({
-            value: parseFloat(send_coin_fee)
-          })
-          .fetch();
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
 
-        if (updateCoinFee) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Faldax fee update success").message
-          });
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: req.body
+        });
+      if (verified) {
+        if (parseFloat(send_coin_fee) > 0) {
+          updateCoinFee = await AdminSetting
+            .update({
+              slug: 'faldax_fee',
+              deleted_at: null
+            })
+            .set({
+              value: parseFloat(send_coin_fee)
+            })
+            .fetch();
+
+          if (updateCoinFee) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Faldax fee update success").message
+            });
+          }
+        } else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("faldax fees greater than 0").message,
+              error_at: sails.__("faldax fees greater than 0").message
+            })
         }
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("faldax fees greater than 0").message,
-            error_at: sails.__("faldax fees greater than 0").message
-          })
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
     } catch (error) {
       // await logger.error(error.message)
@@ -2606,13 +2656,16 @@ module.exports = {
             ...object
           }).fetch();
         }
+
+        console.log("process.env.TOKEN_DURATION", process.env.TOKEN_DURATION);
+        console.log("moment().utc().add(process.env.TOKEN_DURATION, 'minutes')", moment().utc().add(process.env.TOKEN_DURATION, 'minutes'))
         var userUpdate = await Users
           .update({
             id: generatedUser.id
           })
           .set({
             "customer_id": "F-" + id.toString(16).toUpperCase(),
-            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
+            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
           });
         if (kyc_done == true) {
           await KYC.create({
@@ -2645,7 +2698,16 @@ module.exports = {
         }
 
         let email_verify_token = randomize('Aa0', 10);
+        console.log("generatedUser", generatedUser)
         if (generatedUser) {
+          var userUpdate = await Users
+            .update({
+              id: generatedUser.id
+            })
+            .set({
+              "email_verify_token": email_verify_token
+            });
+
           // Insert history for Login
           let slug = "signup_for_web"
           let template = await EmailTemplate.findOne({
@@ -2659,6 +2721,7 @@ module.exports = {
               token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
               tokenCode: email_verify_token
             })
+          console.log("template", template)
           if (template) {
             sails
               .hooks
