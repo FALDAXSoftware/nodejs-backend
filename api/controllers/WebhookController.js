@@ -619,6 +619,7 @@ module.exports = {
             var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(8);
             console.log("amount", amount)
             var network_fees = parseFloat(walletHistory.estimated_network_fees * 1e8).toFixed(8)
+            let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
             let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount, network_fees)
             console.log("sendTransfer", sendTransfer)
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
@@ -647,7 +648,9 @@ module.exports = {
               estimated_network_fees: walletHistory.estimated_network_fees,
               actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
               faldax_fee: 0.0,
-              actual_amount: walletHistory.actual_amount
+              actual_amount: walletHistory.actual_amount,
+              warm_wallet_balance_before:parseFloat(warmWalletBefore.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+              transaction_from:sails.config.local.SEND_TO_DESTINATION
             });
           }
         }
@@ -836,6 +839,8 @@ module.exports = {
             console.log("userWallet", userWallet)
 
             // user wallet exitence check
+            let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
+
             if (userWallet) {
               // Set wallet history params
               let walletHistory = {
@@ -860,7 +865,10 @@ module.exports = {
                 user_id: userWallet.user_id,
                 amount: (amount).toFixed(8),
                 transaction_type: 'receive',
-                transaction_id: req.body.hash
+                transaction_id: req.body.hash,
+                receiver_user_balance_before:userWallet.balance,
+                warm_wallet_balance_before:parseFloat(warmWallet.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from:sails.config.local.RECEIVE_TO_DESTINATION
               }
 
               await TransactionTable.create({
@@ -919,8 +927,6 @@ module.exports = {
 
               // Send fund to Warm and custody wallet
 
-              let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
-              console.log("warmWallet", warmWallet)
               // let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
               // console.log("custodialWallet", custodialWallet)
               // check for wallet exist or not
@@ -994,7 +1000,9 @@ module.exports = {
                     estimated_network_fees: parseFloat((reposneData.fee) / 1e8).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
                     faldax_fee: 0.0,
-                    actual_amount: parseFloat(dest.value / 1e8).toFixed(8)
+                    actual_amount: parseFloat(dest.value / 1e8).toFixed(8),
+                    warm_wallet_balance_before:parseFloat(warmWallet.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                    transaction_from:sails.config.local.RECEIVE_TO_WARM
                   });
 
                   // Insert logs in taransaction table
