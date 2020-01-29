@@ -32,7 +32,7 @@ module.exports = {
       if (data && data != "" && data != null) {
         query += " WHERE"
         whereAppended = true;
-        query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(withdraw_request.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(withdraw_request.destination_address) LIKE '%" + data.toLowerCase() + "%'";
+        query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(withdraw_request.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(withdraw_request.destination_address) LIKE '%" + data.toLowerCase() + "%'";
         if (!isNaN(data)) {
           query += " OR withdraw_request.amount=" + data;
         }
@@ -90,8 +90,7 @@ module.exports = {
     }
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
-    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email, coins.coin_name " + query, [])
+    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email,users.first_name,users.last_name, coins.coin_name " + query, [])
     withdrawReqData = withdrawReqData.rows;
 
     let withdrawReqCount = await sails.sendNativeQuery("Select COUNT(withdraw_request.id)" + countQuery, [])
@@ -208,7 +207,10 @@ module.exports = {
                       user_id: user_id,
                       amount: amount,
                       transaction_type: 'send',
-                      is_executed: true
+                      is_executed: true,
+                      sender_user_balance_before:(wallet.balance),
+                      warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                      transaction_from:sails.config.local.WARM_TO_SEND
                     }
 
                     await TransactionTable.create({
