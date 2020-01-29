@@ -484,6 +484,7 @@ module.exports = {
                             var network_feesValue = parseFloat(network_fees / (1e8))
                             var totalFeeSub = 0;
                             totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
+                            totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("totalFeeSub", totalFeeSub)
                             // var leftNetworkFees = (network_feesValue < singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
 
@@ -959,7 +960,7 @@ module.exports = {
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
-              walletTransData[j].network_fees = (walletTransData[j].actual_network_fees >= parseFloat(walletTransData[j].estimated_network_fees)) ? (parseFloat((walletTransData[j].actual_network_fees) + parseFloat(walletTransData[j].estimated_network_fees)).toFixed(10)) : (parseFloat(walletTransData[j].estimated_network_fees * 2))
+              walletTransData[j].network_fees = parseFloat(walletTransData[j].estimated_network_fees)
               walletTransData[j].amount = (walletTransData[j].coin_id != 26) ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].amount).toFixed(10));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {

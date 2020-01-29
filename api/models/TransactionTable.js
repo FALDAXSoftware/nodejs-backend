@@ -50,6 +50,10 @@ module.exports = {
       columnName: 'is_done',
       defaultsTo: false
     },
+    residual_amount: {
+      type: "number",
+      columnName: "residual_amount"
+    },
     transaction_id: {
       type: 'string',
       columnName: 'transaction_id'
