@@ -3890,38 +3890,62 @@ module.exports = {
 
       var body_value = req.body;
 
-      var feeValue = await AdminSetting.findOne({
-        where: {
-          deleted_at: null,
-          slug: body_value.slug
-        }
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
       });
-      var updateFeeValue;
-      if (feeValue != undefined) {
-        updateFeeValue = await AdminSetting
-          .update({
+
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: req.body.otp
+        });
+      if (verified) {
+        var feeValue = await AdminSetting.findOne({
+          where: {
             deleted_at: null,
             slug: body_value.slug
-          })
-          .set({
-            value: body_value.value
-          })
-          .fetch()
+          }
+        });
+        var updateFeeValue;
+        if (feeValue != undefined) {
+          updateFeeValue = await AdminSetting
+            .update({
+              deleted_at: null,
+              slug: body_value.slug
+            })
+            .set({
+              value: body_value.value
+            })
+            .fetch()
 
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("value updated successfully").message,
-            updateFeeValue
-          })
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("value updated successfully").message,
+              updateFeeValue
+            })
+        } else {
+          return res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("value updated unsuccess").message
+            })
+        }
       } else {
         return res
-          .status(201)
+          .status(500)
           .json({
-            "status": 201,
-            "message": sails.__("value updated unsuccess").message
-          })
+            "status": 500,
+            "message": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
 
     } catch (error) {
@@ -4258,27 +4282,52 @@ module.exports = {
         });
       }
       var data = req.body;
-      let get_data = await AdminSetting.findOne({
-        where: {
-          slug: data.slug,
-          deleted_at: null
-        }
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
       });
 
-      if (get_data != undefined) {
-        await AdminSetting
-          .update({
-            id: get_data.id
-          })
-          .set({
-            value: data.value
-          })
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: req.body.otp
+        });
+
+      if (verified) {
+        let get_data = await AdminSetting.findOne({
+          where: {
+            slug: data.slug,
+            deleted_at: null
+          }
+        });
+
+        if (get_data != undefined) {
+          await AdminSetting
+            .update({
+              id: get_data.id
+            })
+            .set({
+              value: data.value
+            })
+        }
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Asset fees limit update").message,
+          "data": get_data
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
-      return res.status(200).json({
-        "status": 200,
-        "message": sails.__("Asset fees limit update").message,
-        "data": get_data
-      });
     } catch (error) {
       // console.log("err", error);
       // await logger.error(error.message)

@@ -50,6 +50,10 @@ module.exports = {
       columnName: 'is_done',
       defaultsTo: false
     },
+    residual_amount: {
+      type: "number",
+      columnName: "residual_amount"
+    },
     transaction_id: {
       type: 'string',
       columnName: 'transaction_id'
@@ -66,6 +70,22 @@ module.exports = {
     is_executed: {
       type: 'boolean',
       columnName: 'is_executed'
+    },
+    sender_user_balance_before: {
+      type: "number",
+      columnName: "sender_user_balance_before"
+    },
+    receiver_user_balance_before: {
+      type: "number",
+      columnName: "receiver_user_balance_before"
+    },
+    warm_wallet_balance_before: {
+      type: "number",
+      columnName: "warm_wallet_balance_before"
+    },
+    transaction_from: {
+      type: "string",
+      columnName: "transaction_from"
     },
     created_at: {
       type: 'ref',
