@@ -101,7 +101,7 @@ module.exports = {
     }
     send_data.comment = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
     send_data.sequenceId = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
-    send_data.label = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
+    // send_data.label = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
 
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
