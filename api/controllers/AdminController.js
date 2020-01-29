@@ -3902,7 +3902,7 @@ module.exports = {
         .verify({
           secret: user.twofactor_secret,
           encoding: "base32",
-          token: req.body
+          token: req.body.otp
         });
       if (verified) {
         var feeValue = await AdminSetting.findOne({
@@ -3943,7 +3943,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("invalid otp").message,
+            "message": sails.__("invalid otp").message,
             error_at: sails.__("invalid otp").message
           });
       }
@@ -4294,7 +4294,7 @@ module.exports = {
         .verify({
           secret: user.twofactor_secret,
           encoding: "base32",
-          token: data.otp
+          token: req.body.otp
         });
 
       if (verified) {

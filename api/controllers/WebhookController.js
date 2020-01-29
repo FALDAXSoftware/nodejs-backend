@@ -611,7 +611,8 @@ module.exports = {
         if (transfer.state == "confirmed" && transfer.type == "receive") {
           let walletHistory = await WalletHistory.findOne({
             transaction_id: req.body.hash,
-            is_executed: false
+            is_executed: false,
+            is_admin: false
           });
           if (walletHistory) {
 

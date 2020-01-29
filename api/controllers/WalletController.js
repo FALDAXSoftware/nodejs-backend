@@ -472,7 +472,7 @@ module.exports = {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            var valueFee = parseFloat(networkFees / 2).toFixed(8)
+                            var valueFee = parseFloat(networkFees).toFixed(8)
                             var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                             var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
@@ -482,19 +482,9 @@ module.exports = {
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (1e8))
-                            var totalFeeSub;
-                            console.log("network_feesValue", network_feesValue)
-                            console.log("singleNetworkFee", singleNetworkFee)
-                            if (network_feesValue > singleNetworkFee) {
-                              totalFeeSub = (parseFloat(total_payout) + parseFloat(network_feesValue) + parseFloat(singleNetworkFee));
-                            } else {
-                              totalFeeSub = parseFloat(parseFloat(total_payout) + parseFloat(2 * singleNetworkFee)).toFixed(8)
-                            }
+                            var totalFeeSub = 0;
+                            totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
                             console.log("totalFeeSub", totalFeeSub)
-                            var leftNetworkFees = 0;
-                            if (network_feesValue < singleNetworkFee) {
-                              leftNetworkFees = (parseFloat(singleNetworkFee) - parseFloat(network_feesValue))
-                            }
                             // var leftNetworkFees = (network_feesValue < singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
 
                             // console.log("valueFee", valueFee);
@@ -518,15 +508,12 @@ module.exports = {
                             });
 
                             if (adminWalletDetails != undefined) {
+                              var totalAdminFees = 0;
                               console.log("adminWalletDetails", adminWalletDetails.balance)
                               console.log("faldaxFees", faldaxFees)
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(faldaxFees));
                               var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(faldaxFees));
-                              if (leftNetworkFees > 0) {
-                                console.log("leftNetworkFees", leftNetworkFees)
-                                updatedBalance = parseFloat(updatedBalance) + parseFloat(leftNetworkFees);
-                                updatedPlacedBalance = parseFloat(updatedPlacedBalance) + parseFloat(leftNetworkFees);
-                              }
+                              totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
                               var updatedData = await Wallet
                                 .update({
                                   deleted_at: null,
@@ -540,6 +527,26 @@ module.exports = {
                                   placed_balance: updatedPlacedBalance
                                 })
                                 .fetch();
+                              let walletHistoryValue = {
+                                coin_id: wallet.coin_id,
+                                source_address: warmWalletData.receiveAddress.address,
+                                destination_address: adminWalletDetails.receive_address,
+                                user_id: 36,
+                                is_admin: true,
+                                amount: (totalAdminFees),
+                                transaction_type: 'send',
+                                transaction_id: transaction.txid,
+                                is_executed: false,
+                                faldax_fee: faldaxFees,
+                                actual_network_fees: 0.0,
+                                estimated_network_fees: 0.0,
+                                is_done: false,
+                                actual_amount: amount
+                              }
+
+                              await WalletHistory.create({
+                                ...walletHistoryValue
+                              });
                             }
                             //Here remainning ebtry as well as address change
                             let walletHistory = {
@@ -554,7 +561,7 @@ module.exports = {
                               is_admin: false,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                              estimated_network_fees: parseFloat(networkFees).toFixed(8),
                               is_done: false,
                               actual_amount: amount
                             }
@@ -590,12 +597,12 @@ module.exports = {
                               transaction_id: transaction.txid,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                              estimated_network_fees: parseFloat(networkFees).toFixed(8),
                               is_done: false,
                               actual_amount: amount,
-                              sender_user_balance_before:user_wallet_balance,
-                              warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                              transaction_from:sails.config.local.WARM_TO_SEND
+                              sender_user_balance_before: user_wallet_balance,
+                              warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                              transaction_from: sails.config.local.WARM_TO_SEND
                             }
 
                             await TransactionTable.create({
@@ -1777,13 +1784,14 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address,
-                          (cast((wallet_history.amount - wallet_history.faldax_fee) as decimal(8,0))) as amount,
+                         wallet_history.amount,
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
+                          wallet_history.residual_amount,
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
-                          WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL
-                           AND wallet_history.transaction_type = 'send'${filter}`
+                          WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL AND wallet_history.user_id = 36 
+                          AND wallet_history.is_admin = 'true' AND wallet_history.transaction_type = 'send'${filter}`
 
 
         if (start_date && end_date) {

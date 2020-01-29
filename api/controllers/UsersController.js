@@ -2268,7 +2268,7 @@ module.exports = {
         .verify({
           secret: user.twofactor_secret,
           encoding: "base32",
-          token: req.body
+          token: req.body.otp
         });
       if (verified) {
         if (parseFloat(send_coin_fee) > 0) {
