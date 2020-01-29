@@ -870,8 +870,7 @@ module.exports = {
                 transaction_id: req.body.hash,
                 receiver_user_balance_before: userWallet.balance,
                 warm_wallet_balance_before: parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION,
-                residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
+                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
               }
 
               await TransactionTable.create({
