@@ -39,9 +39,13 @@ module.exports = {
         let user = await Users.findOne({
           email_verify_token: req.body.email_verify_token
         });
+
+        console.log(user);
         if (user) {
           var today = moment().utc().format();
+          console.log(today)
           var yesterday = moment(user.signup_token_expiration).format();
+          console.log(yesterday)
           if (yesterday < today) {
             return res.status(400).json({
               "status": 400,
@@ -522,11 +526,11 @@ module.exports = {
           }
 
           await Users
-          .update({
-            id: user_detail.id
-          }).set({
-            new_ip_verification_token: null
-          })
+            .update({
+              id: user_detail.id
+            }).set({
+              new_ip_verification_token: null
+            })
           // await Users.update({   id: user_detail.id }).set({   new_ip: null,
           // new_ip_verification_token: null,   email: user_detail.email });
           await LoginHistory.create({

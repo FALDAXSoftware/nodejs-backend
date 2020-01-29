@@ -45,6 +45,10 @@ module.exports = {
       type: "number",
       columnName: "estimated_network_fees"
     },
+    residual_amount: {
+      type: 'number',
+      columnName: "residual_amount"
+    },
     is_done: {
       type: 'boolean',
       columnName: 'is_done',
