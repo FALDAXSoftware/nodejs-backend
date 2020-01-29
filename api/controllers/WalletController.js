@@ -1504,7 +1504,10 @@ module.exports = {
                 transaction_type: 'send',
                 transaction_id: transaction.txid,
                 is_executed: true,
-                is_admin: true
+                is_admin: true,
+                sender_user_balance_before:(wallet.balance),
+                warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from:sails.config.local.WARM_TO_SEND
               }
 
               await TransactionTable.create({
@@ -1520,7 +1523,9 @@ module.exports = {
                 transaction_id: transaction.txid,
                 transaction_type: 'send',
                 is_executed: false,
-                is_admin: true
+                is_admin: true,
+                warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from:sails.config.local.SEND_TO_DESTINATION
               }
 
               await TransactionTable.create({
