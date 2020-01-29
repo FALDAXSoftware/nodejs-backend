@@ -870,7 +870,8 @@ module.exports = {
                 transaction_id: req.body.hash,
                 receiver_user_balance_before: userWallet.balance,
                 warm_wallet_balance_before: parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
+                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION,
+                residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
               }
 
               await TransactionTable.create({
@@ -1004,7 +1005,8 @@ module.exports = {
                     faldax_fee: 0.0,
                     actual_amount: parseFloat(dest.value / 1e8).toFixed(8),
                     warm_wallet_balance_before: parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                    transaction_from: sails.config.local.RECEIVE_TO_WARM
+                    transaction_from: sails.config.local.RECEIVE_TO_WARM,
+                    residual_amount: parseFloat((reposneData.fee) / 1e8).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
                   });
 
                   // Insert logs in taransaction table
