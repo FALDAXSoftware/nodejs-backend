@@ -224,5 +224,6 @@ module.exports.local = {
   LoggerWebhook: "Webhook",
   WARM_TO_SEND:"Warmwallet to Send",
   SEND_TO_DESTINATION:"Send to Destination",
-  RECEIVE_TO_WARM:"Receiver to Warmwallet"
+  RECEIVE_TO_WARM:"Receive to Warmwallet",
+  RECEIVE_TO_DESTINATION:"Receive to Destination"
 }
