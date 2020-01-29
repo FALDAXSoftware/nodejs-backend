@@ -207,7 +207,10 @@ module.exports = {
                       user_id: user_id,
                       amount: amount,
                       transaction_type: 'send',
-                      is_executed: true
+                      is_executed: true,
+                      sender_user_balance_before:(wallet.balance),
+                      warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                      transaction_from:sails.config.local.WARM_TO_SEND
                     }
 
                     await TransactionTable.create({
