@@ -1653,10 +1653,10 @@
     },
     "Your session has been expired. Please Login again to continue": {
         "page": "Login",
-        "context": "Your session has expired due to inactivity, please login again to continue.",
+        "context": "Your session has expired, please login again to continue.",
         "message_type": "error",
-        "message_english": "Your session has expired due to inactivity, please login again to continue.",
-        "message": "Your session has expired due to inactivity, please login again to continue."
+        "message_english": "Your session has expired, please login again to continue.",
+        "message": "Your session has expired, please login again to continue."
     },
     "WhiteList IP Add Success": {
         "page": "IP whitelist add",
@@ -1702,7 +1702,7 @@
     },
     "WhiteList IP info Success Not Found": {
         "page": "IP Whitelist list, Delete IP Whitelist,IP Whitelist list of Admin, Delete IP Whitelist of Admin",
-        "context": "No White List IP for user has been found",
+        "context": "If no any IP Whitelist exists for the user we are trying to fetch.",
         "message_type": "error",
         "message_english": "No White List IP for user has been found.",
         "message": "No White List IP for user has been found."
@@ -2276,7 +2276,7 @@
     },
     "value updated unsuccess": {
         "page": "Update asset fees",
-        "context": "No Value this slug has been found",
+        "context": "When we try to update asset fee, and if the record does not exists (based on Slug (unique key)), then we return this message",
         "message_type": "error",
         "message_english": "No Value this slug has been found.",
         "message": "No Value this slug has been found."
@@ -2437,14 +2437,14 @@
     },
     "Minimum limit for the coin": {
         "page": "Withdraw assets",
-        "context": "Minimum limit for the asset",
+        "context": "When user try to withdraw funds and if the Amount is less than Minimum limit of Asset, then we show this message to the user.",
         "message_type": "error",
         "message_english": "Minimum limit for the asset",
         "message": "Minimum limit for the asset"
     },
     "Campaign usage": {
         "page": "CMS - Campaign create",
-        "context": "Please enter usage field and it should be either Onetime or Mutiple",
+        "context": "When we create campaign, the backend system checks for valid/required inputs from fronend. If the field 'Usage' for (Onetime or Multicode usage) is not passed, then we return this message",
         "message_type": "error",
         "message_english": "Please enter usage field and it should be either Onetime or Multiple.",
         "message": "Please enter usage field and it should be either Onetime or Multiple."
@@ -2835,15 +2835,15 @@
         "message": "Ticket listed successfully."
     },
     "You are not allowed to access this route": {
-        "page": "Middleware(CMS and Frontend)",
-        "context": "You are not allowed to access this route",
+        "page": "Middleware(CMS)",
+        "context": "In CMS, we assign permission to role for each section. If user with any role has not permission to access the page, then we return this message.",
         "message_type": "error",
         "message_english": "You are not allowed to access this route.",
         "message": "You are not allowed to access this route."
     },
     "Your User has been deleted": {
         "page": "Middleware(If user has deleted)",
-        "context": "Your User has been deleted",
+        "context": "If user access any section/page on frontend, and if that user is unfortunately deleted (By admin OR if in another browser user himself has deactivated own account), then we throw this message.",
         "message_type": "error",
         "message_english": "Your User has been deleted.",
         "message": "Your User has been deleted."
