@@ -3502,7 +3502,8 @@ module.exports = {
       for (var i = 0; i < coins.length; i++) {
         var user_coins = await Wallet.findOne({
           user_id: user_id,
-          coin_id: coins[i].id
+          coin_id: coins[i].id,
+          deleted_at: null
         });
         // console.log(coins[i]);
         coins[i].coin = (coins[i].coin)
