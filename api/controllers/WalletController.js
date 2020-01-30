@@ -647,9 +647,10 @@ module.exports = {
                                   await sails.helpers.notification.send.text("withdraw", userData)
                               }
                             }
+                            total_payout = parseFloat(parseFloat(total_payout) + parseFloat(faldaxFees)).toFixed(8)
                             return res.json({
                               status: 200,
-                              message: amount + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                              message: parseFloat(total_payout).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                             });
                           } else {
                             if (req.body.confirm_for_wait === undefined) {
@@ -1513,9 +1514,9 @@ module.exports = {
                 transaction_id: transaction.txid,
                 is_executed: true,
                 is_admin: true,
-                sender_user_balance_before:(wallet.balance),
-                warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from:sails.config.local.WARM_TO_SEND
+                sender_user_balance_before: (wallet.balance),
+                warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from: sails.config.local.WARM_TO_SEND
               }
 
               await TransactionTable.create({
@@ -1532,8 +1533,8 @@ module.exports = {
                 transaction_type: 'send',
                 is_executed: false,
                 is_admin: true,
-                warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from:sails.config.local.SEND_TO_DESTINATION
+                warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from: sails.config.local.SEND_TO_DESTINATION
               }
 
               await TransactionTable.create({
