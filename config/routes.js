@@ -524,5 +524,7 @@ module.exports.routes = {
   "get /health-check": "RootController.checkSystemHealth",
   "post /test-logs": "KrakenController.testLogs",
   "put /admin/update-asset-fees-limits": "AdminController.updateAssetFeesLimits",
-  "get /admin/list-asset-fees-limits": "AdminController.listAssetFeesLimits"
+  "get /admin/list-asset-fees-limits": "AdminController.listAssetFeesLimits",
+
+  "get /admin/get-residual-lists": "ResidualTransactionController.list"
 };
