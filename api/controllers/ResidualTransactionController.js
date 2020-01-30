@@ -30,11 +30,11 @@ module.exports = {
         page,
         limit
       } = req.allParams();
-      let query = " from residual_transactions WHERE deleted_at IS NULL ";
+      let query = " from residual_transactions LEFT JOIN coins ON residual_transactions.coin_id = coins.id  WHERE residual_transactions.deleted_at IS NULL ";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (transaction_from='" + data + "')";
+          query = query + " AND (residual_transactions.transaction_from='" + data + "')";
         }
       }
       countQuery = query;
@@ -45,13 +45,13 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
-        query += " ORDER BY id DESC";
+        query += " ORDER BY residual_transactions.id DESC";
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let get_data = await sails.sendNativeQuery("Select *" + query, [])
-      let total = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let get_data = await sails.sendNativeQuery("Select residual_transactions.*, coins.coin" + query, [])
+      let total = await sails.sendNativeQuery("Select COUNT(residual_transactions.id)" + countQuery, [])
       total = total.rows[0].count;
       if (get_data.rowCount > 0) {
         return res
