@@ -609,26 +609,6 @@ module.exports = {
                               ...addObject
                             });
 
-                            // let addObject2 = {
-                            //   coin_id: coin.id,
-                            //   source_address: wallet.send_address,
-                            //   destination_address: destination_address,
-                            //   user_id: user_id,
-                            //   amount: (amount),
-                            //   transaction_type: 'send',
-                            //   is_executed: false,
-                            //   transaction_id: transaction.txid,
-                            //   faldax_fee: 0.0,
-                            //   actual_network_fees: network_feesValue,
-                            //   estimated_network_fees: parseFloat(networkFees / 2).toFixed(8),
-                            //   is_done: false,
-                            //   actual_amount: amount
-                            // }
-
-                            // await TransactionTable.create({
-                            //   ...addObject2
-                            // })
-
                             var userNotification = await UserNotification.findOne({
                               user_id: userData.id,
                               deleted_at: null,
@@ -692,7 +672,10 @@ module.exports = {
                               transaction_type: 'send',
                               coin_id: coin.id,
                               is_executed: false,
-                              fees: adminDataFees.value
+                              fees: adminDataFees.value,
+                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
+                              network_fee: parseFloat(networkFees).toFixed(8),
+                              actual_amount: parseFloat(amount).toFixed(8)
                             }
 
                             await WithdrawRequest.create({
