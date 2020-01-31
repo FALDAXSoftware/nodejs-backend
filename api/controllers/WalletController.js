@@ -573,7 +573,6 @@ module.exports = {
                               ...walletHistory
                             });
 
-
                             var user_wallet_balance = wallet.balance;
                             // update wallet balance
                             var data = await Wallet
@@ -635,8 +634,16 @@ module.exports = {
                               deleted_at: null,
                               slug: 'withdraw'
                             })
+
+                            var walletHistoryDataValue = await WalletHistory.findOne({
+                              transaction_id: transaction.txid,
+                              deleted_at: null,
+                              coin_id: wallet.coin_id
+                            })
+
+                            totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
                             userData.coinName = coin.coin_code;
-                            userData.amountReceived = totalFeeSub;
+                            userData.amountReceived = parseFloat(totalFeeSub).toFixed(8);
                             if (userNotification != undefined) {
                               if (userNotification.email == true || userNotification.email == "true") {
                                 if (userData.email != undefined)
@@ -647,7 +654,6 @@ module.exports = {
                                   await sails.helpers.notification.send.text("withdraw", userData)
                               }
                             }
-                            total_payout = parseFloat(parseFloat(total_payout) + parseFloat(faldaxFees)).toFixed(8)
                             return res.json({
                               status: 200,
                               message: parseFloat(total_payout).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
