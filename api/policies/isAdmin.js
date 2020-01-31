@@ -40,7 +40,8 @@ module.exports = async function (req, res, next) {
       "admin/get-all-news",
       "admin/get-market-snapshot",
       "admin/users/list",
-      "admin/forgot-user-password"
+      "admin/forgot-user-password",
+      "admin/get-residual-lists"
     ]
 
     let urlPrefix = urlArray[1];
