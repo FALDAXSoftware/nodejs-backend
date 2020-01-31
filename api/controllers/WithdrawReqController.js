@@ -115,7 +115,9 @@ module.exports = {
         destination_address,
         coin_id,
         user_id,
-        reason
+        reason,
+        faldax_fee,
+        network_fee
       } = req.body;
 
       if (status == true) {
@@ -155,6 +157,7 @@ module.exports = {
             //Checking if wallet data is found or not
             if (wallet) {
 
+              var totalAmount = parseFloat()
               //If placed balance is greater than the amount to be send
               if (wallet.placed_balance >= parseFloat(amount)) {
 
