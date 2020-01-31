@@ -208,9 +208,9 @@ module.exports = {
                       amount: amount,
                       transaction_type: 'send',
                       is_executed: true,
-                      sender_user_balance_before:(wallet.balance),
-                      warm_wallet_balance_before:parseFloat(warmWalletData.balance/1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                      transaction_from:sails.config.local.WARM_TO_SEND
+                      sender_user_balance_before: (wallet.balance),
+                      warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                      transaction_from: sails.config.local.WARM_TO_SEND
                     }
 
                     await TransactionTable.create({
@@ -225,8 +225,8 @@ module.exports = {
                     // TransactionTable.create({   ...addObjectSendData });
 
                     return res
-                      .json
-                      .status(200)({
+                      .status(200)
+                      .json(200)({
                         status: 200,
                         message: sails.__("Token send success").message
                       });
@@ -281,7 +281,7 @@ module.exports = {
             .json({
               status: 500,
               "message": sails.__("Something Wrong").message,
-              error_at:sails.__("Something Wrong").message
+              error_at: sails.__("Something Wrong").message
             });
         }
         return res
@@ -300,7 +300,7 @@ module.exports = {
           .json({
             "status": 500,
             "err": sails.__("Insufficient Balance in warm Wallet").message,
-            error_at:sails.__("Insufficient Balance in warm Wallet").message
+            error_at: sails.__("Insufficient Balance in warm Wallet").message
           })
       }
       // await logger.error(error.message)
@@ -309,7 +309,7 @@ module.exports = {
         .json({
           status: 500,
           "message": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }
