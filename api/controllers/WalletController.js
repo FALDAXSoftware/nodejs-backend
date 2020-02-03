@@ -1466,6 +1466,8 @@ module.exports = {
                 is_admin: true
               }
 
+              console.log(walletHistory);
+
               // Make changes in code for receive webhook and then send to receive address
               // Entry in wallet history
               await WalletHistory.create({
@@ -1531,7 +1533,7 @@ module.exports = {
               // }, sails.__("Token send success").message)
               return res.json({
                 status: 200,
-                message: sails.__("Token send success").message
+                message: parseFloat(amount).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
               });
             }
           } else {
@@ -1828,7 +1830,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address,
-                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,0))) as amount,
+                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,7))) as amount,
                             wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
                             FROM public.wallet_history LEFT JOIN coins
                             ON wallet_history.coin_id = coins.id
