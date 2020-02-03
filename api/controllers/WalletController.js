@@ -486,18 +486,6 @@ module.exports = {
                             totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
                             totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("totalFeeSub", totalFeeSub)
-                            // var leftNetworkFees = (network_feesValue < singleNetworkFee) ? (parseFloat(network_feesValue) - parseFloat(singleNetworkFee)) : (parseFloat(singleNetworkFee) - parseFloat(network_feesValue));
-
-                            // console.log("valueFee", valueFee);
-                            // console.log("sendAmount", sendAmount);
-                            // console.log("amountValue", amountValue);
-                            // console.log("transaction", transaction);
-                            // console.log("total_payout", total_payout);
-                            // console.log("singleNetworkFee", singleNetworkFee);
-                            // console.log("network_fees", network_fees);
-                            // console.log("network_feesValue", network_feesValue);
-                            // console.log("totalFeeSub", totalFeeSub);
-                            // console.log("leftNetworkFees", leftNetworkFees);
                             var adminWalletDetails = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
@@ -618,7 +606,8 @@ module.exports = {
                             var walletHistoryDataValue = await WalletHistory.findOne({
                               transaction_id: transaction.txid,
                               deleted_at: null,
-                              coin_id: wallet.coin_id
+                              coin_id: wallet.coin_id,
+                              user_id: user_id,
                             })
 
                             totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
