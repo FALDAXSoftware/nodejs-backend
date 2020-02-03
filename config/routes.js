@@ -526,5 +526,6 @@ module.exports.routes = {
   "put /admin/update-asset-fees-limits": "AdminController.updateAssetFeesLimits",
   "get /admin/list-asset-fees-limits": "AdminController.listAssetFeesLimits",
 
-  "get /admin/get-residual-lists": "ResidualTransactionController.list"
+  "get /admin/get-residual-lists": "ResidualTransactionController.list",
+  'post /users/check-forgot-password-token': "AuthController.checkForgotPasswordToken", //2
 };
