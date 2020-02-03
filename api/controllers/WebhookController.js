@@ -479,6 +479,18 @@ module.exports = {
               iserc: true
             }
           });
+          var userData = await Users.findOne({
+            where: {
+              id:data[0].user_id,
+              is_active: true,
+              deleted_at: null
+            }
+          });
+          if( userData ){
+            // Send Email to the user to inform, wallet has created
+            await sails.helpers.notification.send.email("wallet_created_successfully", userData);
+          }
+
 
           for (var i = 0; i < walletData.length; i++) {
             var walletValue = await Wallet.find({
