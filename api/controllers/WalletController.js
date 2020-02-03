@@ -625,7 +625,7 @@ module.exports = {
                             }
                             return res.json({
                               status: 200,
-                              message: parseFloat(total_payout).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                              message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                             });
                           } else {
                             if (req.body.confirm_for_wait === undefined) {
@@ -958,6 +958,10 @@ module.exports = {
             coin_id: coinData.id
           }
         }).sort('created_at DESC')
+
+        for (var k = 0; k < withdrawRequestData.length; k++) {
+          withdrawRequestData[k].amount = parseFloat(withdrawRequestData[k].amount) - parseFloat(withdrawRequestData[k].faldax_fee);
+        }
 
         let coinFee = await AdminSetting.findOne({
           where: {

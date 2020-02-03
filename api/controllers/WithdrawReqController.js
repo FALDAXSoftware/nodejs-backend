@@ -90,7 +90,7 @@ module.exports = {
     }
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code " + query, [])
+    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, (withdraw_request.amount - withdraw_request.faldax_fee) as amount, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code " + query, [])
     withdrawReqData = withdrawReqData.rows;
 
     let withdrawReqCount = await sails.sendNativeQuery("Select COUNT(withdraw_request.id)" + countQuery, [])
@@ -120,6 +120,8 @@ module.exports = {
         network_fee,
         actual_amount
       } = req.body;
+
+      console.log(req.body);
 
       if (status == true) {
         var coin = await Coins.findOne({
@@ -313,11 +315,20 @@ module.exports = {
                         "transaction_id": transaction.txid
                       })
 
+                    var walletHistoryDataValue = await WalletHistory.findOne({
+                      transaction_id: transaction.txid,
+                      deleted_at: null,
+                      coin_id: wallet.coin_id,
+                      user_id: user_id,
+                    })
+
+                    totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
+
                     return res
                       .status(200)
                       .json({
                         status: 200,
-                        message: parseFloat(total_payout).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                        message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                       });
                   }
                 }
