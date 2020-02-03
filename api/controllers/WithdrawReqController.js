@@ -330,6 +330,13 @@ module.exports = {
                         status: 200,
                         message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                       });
+                  } else {
+                    return res
+                      .status(400)
+                      .json({
+                        status: 400,
+                        message: sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
+                      })
                   }
                 }
               } else {
