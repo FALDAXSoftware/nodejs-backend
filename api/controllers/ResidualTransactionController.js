@@ -50,7 +50,7 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let get_data = await sails.sendNativeQuery("Select residual_transactions.*, coins.coin" + query, [])
+      let get_data = await sails.sendNativeQuery("Select residual_transactions.*, coins.coin, coins.coin_code" + query, [])
       let total = await sails.sendNativeQuery("Select COUNT(residual_transactions.id)" + countQuery, [])
       total = total.rows[0].count;
       if (get_data.rowCount > 0) {
@@ -70,7 +70,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("No record found").message,
-            error_at:sails.__("No record found").message
+            error_at: sails.__("No record found").message
           });
       }
 
@@ -82,7 +82,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }
