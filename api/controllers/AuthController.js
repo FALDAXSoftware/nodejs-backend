@@ -1230,5 +1230,52 @@ module.exports = {
         });
     }
   },
+  // Check Token valid or not while Forgot Password
+  checkForgotPasswordToken: async function (req, res) {
+    try {
+      if (req.body.reset_token) {
+        var reset_token = req.body.reset_token;
+        let user_details = await Users.findOne({
+          reset_token
+        });
+        if (user_details == undefined) {
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__("Reset Token expired.").message
+            });
+        } else {
+          var today = moment().utc().format();
+          var yesterday = moment(user_details.forgot_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Reset Token expired.").message
+            })
+          }
+          return res.json({
+            "status": 200
+          });
+        }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Missing Parameters").message,
+            error_at: sails.__("Missing Parameters").message
+          });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 
 };
