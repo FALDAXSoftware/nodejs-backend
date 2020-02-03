@@ -281,7 +281,7 @@ module.exports = {
                       source_address: warmWalletData.receiveAddress.address,
                       destination_address: wallet.send_address,
                       user_id: user_id,
-                      amount: parseFloat(amountToBeSnd).toFixed(8),
+                      amount: parseFloat(amountToBeSnd / 1e8).toFixed(8),
                       transaction_type: 'send',
                       is_executed: true,
                       transaction_id: transaction.txid,
