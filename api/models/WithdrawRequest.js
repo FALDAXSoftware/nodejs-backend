@@ -62,6 +62,14 @@ module.exports = {
       type: "number",
       columnName: "amount"
     },
+    network_fee: {
+      type: "number",
+      columnName: "network_fee"
+    },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
