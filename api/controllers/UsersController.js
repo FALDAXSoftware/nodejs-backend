@@ -2613,7 +2613,7 @@ module.exports = {
         deleted_at: null,
         email: user.email
       });
-      var full_name = user.first_name + " " + user.middle_name + " " + user.last_name;
+      var full_name = user.first_name + " " + user.last_name;
       if (existedUser == undefined) {
         let hubspotcontact = await sails
           .helpers
