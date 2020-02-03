@@ -24,12 +24,11 @@ module.exports = {
     } = req.allParams();
     try {
       let query = " from transaction_table LEFT JOIN users ON transaction_table.user_id = users.id LEFT JOIN coins ON transaction_table.coin_id = coins.id";
-      let whereAppended = false;
+      query += " WHERE transaction_table.is_admin='false'";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query += " WHERE"
-          whereAppended = true;
+          query += " AND "
           query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR transaction_table.amount=" + data;
@@ -39,31 +38,20 @@ module.exports = {
       }
 
       if (user_id) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
-        whereAppended = true;
+        query += " AND "
         query += " transaction_table.user_id=" + user_id
       }
 
       if (t_type && t_type.trim() != "") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
-        whereAppended = true;
+
+        query += " AND "
         query += "  transaction_table.transaction_type='" + t_type + "'";
       }
 
       if (start_date && end_date) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+
+        query += " AND "
+
 
         query += " transaction_table.created_at >= '" + await sails
           .helpers
