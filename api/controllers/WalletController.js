@@ -1782,7 +1782,8 @@ module.exports = {
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
                           WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL AND wallet_history.user_id = 36 
-                          AND wallet_history.is_admin = 'true' AND wallet_history.transaction_type = 'send'${filter}`
+                          AND wallet_history.is_admin = 'true' AND wallet_history.transaction_type = 'send'${filter}
+                          AND wallet_history.faldax_fee > 0`
 
 
         if (start_date && end_date) {
