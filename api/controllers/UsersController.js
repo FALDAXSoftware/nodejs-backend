@@ -412,7 +412,8 @@ module.exports = {
                 return res.json({
                   "status": 200,
                   "new_email_token": re_new_email_token,
-                  "message": sails.__("verification link").message
+                  "message": sails.__("verification link").message,
+                  "data": requested_email
                 });
               }
             })
