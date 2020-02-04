@@ -30,6 +30,15 @@ module.exports = {
     let asset = inputs.asset;
     let type = inputs.type;
     let temp_type = '';
+    if( asset == 'btc' || asset == 'tbtc'){
+      asset = 'btc';
+    }else if( asset == 'ltc' || asset == 'tltc'){
+      asset = 'ltc';
+    }else if( asset == 'xrp' || asset == 'txrp'){
+      asset = 'xrp';
+    }else if( asset == 'eth' || asset == 'teth'){
+      asset = 'eth';
+    }
     if( type == 1 ){
         temp_type = asset+'_static_fees'
     }
