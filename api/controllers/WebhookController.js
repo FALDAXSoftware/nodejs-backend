@@ -676,7 +676,7 @@ module.exports = {
             if (walletHistoryValue) {
 
               // Send To user's destination address
-              var amount = walletHistoryValue.amount
+              var amount = parseFloat(walletHistoryValue.amount * 1e8).toFixed(8)
               console.log("amount", amount)
               var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * 1e8).toFixed(8)
               let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
@@ -685,7 +685,7 @@ module.exports = {
               let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
               console.log("warmWallet", warmWallet)
               // Update in wallet history
-              await walletHistoryValue.update({
+              await WalletHistory.update({
                 id: walletHistoryValue.id
               }).set({
                 is_executed: true,
