@@ -32,6 +32,12 @@ module.exports = {
       example: 10000,
       description: 'amount of transfer',
       required: true
+    },
+    feeRate: {
+      type: 'number',
+      example: 1,
+      description: 'Fees transfer',
+      required: false
     }
   },
 
@@ -50,8 +56,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
-    // var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
-    var passphrase_value;
+    var passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     var coinData = await Coins.findOne({
       where: {
         deleted_at: null,
@@ -59,14 +64,17 @@ module.exports = {
         coin_code: inputs.coin
       }
     })
-    var dataa = {
-        address: inputs.address,
-        amount: parseFloat(inputs.amount)
-    };
-    console.log("Input data", inputs);
+    await sails.helpers.loggerFormat(
+        "Bitgo Send",
+        sails.config.local.LoggerWebhook,
+        "Bitgo Send",
+        1,
+        inputs,
+        sails.config.local.LoggerIncoming
+      );
     console.log("coinData",coinData);
     if (coinData && coinData != undefined) {
-      if (inputs.coin == "btc") { // BTC
+      if (inputs.coin == "btc" ) { // BTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -80,6 +88,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
+        passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
       }else if (inputs.coin == "ltc") { // LTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
@@ -128,12 +137,29 @@ module.exports = {
     } else {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
-    //passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
-    console.log("passphrase_value",passphrase_value);
-    console.log("URL====>>",`${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`);
+
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
-    console.log("wallet_passphrase",wallet_passphrase)
-    console.log("Body", { address: inputs.address, amount: parseInt(inputs.amount),  walletPassphrase: wallet_passphrase});
+    var send_data = {
+      address: inputs.address,
+      amount: parseFloat(inputs.amount),
+      walletPassphrase: wallet_passphrase
+    };
+    if (inputs.feeRate && inputs.feeRate > 0) {
+      send_data.feeRate = inputs.feeRate;
+      // send_data.fee = inputs.feeRate;
+      // send_data.maxFeeRate = inputs.feeRate;
+    }
+    send_data.comment = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
+    send_data.sequenceId = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
+    // send_data.label = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
+    await sails.helpers.loggerFormat(
+      "Bitgo Send",
+      sails.config.local.LoggerWebhook,
+      "Bitgo Send data",
+      1,
+      send_data,
+      sails.config.local.LoggerIncoming
+    );
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",
@@ -142,19 +168,31 @@ module.exports = {
         Authorization: `Bearer ${access_token_value}`,
         'Content-Type': 'application/json'
       },
-      body: {
-        address: inputs.address,
-        amount: parseInt(inputs.amount),
-        walletPassphrase: wallet_passphrase
-      },
+      body: send_data,
       json: true
-    }, function (err, httpResponse, body) {
+    }, async function (err, httpResponse, body) {
       if (err) {
+        await sails.helpers.loggerFormat(
+          "Bitgo Send",
+          sails.config.local.LoggerWebhook,
+          "Bitgo Send",
+          3,
+          body,
+          err
+        );
         console.log("Error", err)
         return exits.error(err);
       }
       console.log("Res Body", body);
       if (body.error) {
+        await sails.helpers.loggerFormat(
+          "Bitgo Send",
+          sails.config.local.LoggerWebhook,
+          "Bitgo Send",
+          3,
+          body,
+          body.error
+        );
         return exits.error(body);
       }
       return exits.success(body);

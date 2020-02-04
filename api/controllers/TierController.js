@@ -17,7 +17,7 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('id ASC');
+      }).sort('id DESC');
 
       var userData = await Users.findOne({
         where: {
@@ -42,7 +42,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("tier details retrieve success"),
+            "message": sails.__("tier details retrieve success").message,
             "data": tierDetails
           })
       } else {
@@ -50,7 +50,7 @@ module.exports = {
           .status(201)
           .json({
             "status": 201,
-            "message": sails.__("no tier details retrieve success")
+            "message": sails.__("no tier details retrieve success").message
           })
       }
     } catch (error) {
@@ -60,7 +60,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -114,7 +114,7 @@ module.exports = {
         } else {
           return res.status(200).json({
             'status': 200,
-            'message': sails.__("Image Required")
+            'message': sails.__("Image Required").message
           })
         }
 
@@ -151,7 +151,7 @@ module.exports = {
         } else {
           return res.status(200).json({
             'status': 200,
-            'message': sails.__("Image Required")
+            'message': sails.__("Image Required").message
           })
         }
       } else {
@@ -164,7 +164,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong"),
+          err: sails.__("Something Wrong").message,
           error_at:error.stack
         })
     }
@@ -209,7 +209,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("tier upgrade request success")
+            "message": sails.__("tier upgrade request success").message
           })
       }
     } catch (error) {
@@ -219,7 +219,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -244,7 +244,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("tier data retrieve"),
+          "message": sails.__("tier data retrieve").message,
           getUserPendingTierData,
           getUserApprovedTierData,
           getUserRejectedTierData
@@ -257,7 +257,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -309,7 +309,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("request changed successfully")
+            "message": sails.__("request changed successfully").message
           })
 
       } else {
@@ -317,7 +317,7 @@ module.exports = {
           .status(201)
           .json({
             "status": 201,
-            "message": sails.__("no request found")
+            "message": sails.__("no request found").message
           })
       }
     } catch (error) {
@@ -327,7 +327,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -339,14 +339,14 @@ module.exports = {
         where: {
           deleted_at: null
         }
-      }).sort('id ASC');
+      }).sort('id DESC');
 
       if (tierDetails) {
         return res
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("tier details retrieve success"),
+            "message": sails.__("tier details retrieve success").message,
             "data": tierDetails
           })
       } else {
@@ -354,7 +354,7 @@ module.exports = {
           .status(201)
           .json({
             "status": 201,
-            "message": sails.__("no tier details retrieve success")
+            "message": sails.__("no tier details retrieve success").message
           })
       }
     } catch (error) {
@@ -364,7 +364,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -403,7 +403,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("tier update success"),
+          "message": sails.__("tier update success").message,
           "data": tierUpdateData
         })
 
@@ -414,7 +414,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -439,7 +439,7 @@ module.exports = {
           .status(200)
           .json({
             status: 200,
-            "message": sails.__("tier data retrieve success"),
+            "message": sails.__("tier data retrieve success").message,
             "data": tierData
           });
       } else {
@@ -447,7 +447,7 @@ module.exports = {
           .status(201)
           .json({
             status: 201,
-            "message": sails.__("no tier data found")
+            "message": sails.__("no tier data found").message
           });
       }
 
@@ -458,7 +458,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

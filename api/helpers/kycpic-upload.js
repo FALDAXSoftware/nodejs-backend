@@ -104,9 +104,10 @@ module.exports = {
     //kycUploadDetails.docCountry = 'US';
     // kycUploadDetails.dob = moment(kyc_details.dob, 'DD-MM-YYYY').format('YYYY-MM-DD');
     kycUploadDetails.dob = kyc_details.dob;
+
     var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
     //production url : https://edna.identitymind.com/merchantedna/
-    //user:password base64 
+    //user:password base64
     request.post({
       headers: {
         'Authorization': 'Basic ' + idm_key

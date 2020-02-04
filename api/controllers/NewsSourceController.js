@@ -13,12 +13,12 @@ module.exports = {
 
     let newsSourceData = await NewsSource.find({
       deleted_at: null
-    }).sort('id ASC');
+    }).sort('id DESC');
 
     if (newsSourceData.length > 0) {
       return res.json({
         "status": 200,
-        "message": sails.__("New Source list success"),
+        "message": sails.__("New Source list success").message,
         "data": newsSourceData
       });
     } else {
@@ -26,8 +26,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:sails.__("Something Wrong").message
         });
     }
   },
@@ -47,8 +47,8 @@ module.exports = {
         if (!newSourceDaa || newSourceDaa === null || newSourceDaa === undefined) {
           return res.json({
             status: 500,
-            "message": sails.__("No source found"),
-            error_at:sails.__("No source found")
+            "message": sails.__("No source found").message,
+            error_at:sails.__("No source found").message
           })
         } else {
           var updatedNewSourceData = await NewsSource
@@ -63,13 +63,13 @@ module.exports = {
           if (!updatedNewSourceData) {
             return res.json({
               status: 500,
-              "message": sails.__("New Source update fail."),
-              error_at:sails.__("New Source update fail.")
+              "message": sails.__("New Source update fail.").message,
+              error_at:sails.__("New Source update fail.").message
             })
           } else {
             return res.status(200).json({
               status: 200,
-              "message": sails.__("News Source update success"),
+              "message": sails.__("News Source update success").message,
               data: updatedNewSourceData
             })
           }
@@ -77,7 +77,7 @@ module.exports = {
       } else {
         return res.json({
           status: 500,
-          "message": sails.__("No news source found")
+          "message": sails.__("No news source found").message
         })
       }
     } catch (error) {
@@ -86,7 +86,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

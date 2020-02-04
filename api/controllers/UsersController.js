@@ -13,6 +13,8 @@ var QRCode = require('qrcode');
 var csc = require('country-state-city');
 const moment = require('moment');
 var logger = require("./logger");
+var requestIp = require('request-ip');
+const uuidv1 = require('uuid/v1');
 
 module.exports = {
   //------------------Web APi------------------------------------------------//
@@ -44,14 +46,14 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("User has been deleted")
+            "err": sails.__("User has been deleted").message
           });
       } else if (existedUser) {
         return res
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("email exits")
+            "err": sails.__("email exits").message
           });
       }
       if (req.body.referral_code) {
@@ -63,7 +65,7 @@ module.exports = {
             .status(401)
             .json({
               status: 401,
-              "err": sails.__("invalid referal")
+              "err": sails.__("invalid referal").message
             });
         } else {
           referred_id = parseInt(referredUser.id);
@@ -86,9 +88,10 @@ module.exports = {
           account_tier: 1,
           account_class: 4,
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
-            email_verify_code : email_verify_token
+            email_verify_code : email_verify_token,
+          signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
+          default_language: (req.body.default_language ? req.body.default_language : "en")
         }).fetch();
-
         var now = moment.now();
 
         var notificationList = await Notifications.find({
@@ -113,6 +116,15 @@ module.exports = {
             ...object
           }).fetch();
         }
+
+        var id = user_detail.id;
+        var userUpdate = await Users
+          .update({
+            id: user_detail.id
+          })
+          .set({
+            "customer_id": "F-" + id.toString(16).toUpperCase()
+          });
 
         var userFavouritesData = await UserFavourites.createEach([{
           user_id: user_detail.id,
@@ -157,6 +169,17 @@ module.exports = {
         }]).fetch();
 
         if (user_detail) {
+          // Insert history for Login
+          var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+          await LoginHistory.create({
+            user: user_detail.id,
+            ip: ip,
+            created_at: new Date(),
+            device_type: req.body.device_type,
+            jwt_token: "",
+            device_token: req.body.device_token ?
+              req.body.device_token : null
+          });
           //   Create Recive Address
           // await sails.helpers.wallet.receiveAddress(user_detail);
           let slug = "";
@@ -191,7 +214,7 @@ module.exports = {
                   return res.json({
                     "status": 200,
                     "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
-                      sails.__("verification code") : sails.__("verification link"),
+                      sails.__("verification code").message : sails.__("verification link").message,
                     email_verify_token
                   });
                 }
@@ -208,7 +231,7 @@ module.exports = {
             .status(401)
             .json({
               status: 401,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message
             });
         }
       } else {
@@ -216,7 +239,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("email password not sent")
+            "err": sails.__("email password not sent").message
           });
         return;
       }
@@ -228,8 +251,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -263,7 +286,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("email already registered")
+            "err": sails.__("email already registered").message
           });
       }
 
@@ -304,7 +327,7 @@ module.exports = {
             if (!err) {
               return res.json({
                 "status": 200,
-                "message": sails.__("confirm otp")
+                "message": sails.__("confirm otp").message
               });
             }
           })
@@ -315,8 +338,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -359,7 +382,9 @@ module.exports = {
               new_email_token: null,
               email_verify_token: re_new_email_token,
               requested_email: null,
-              is_new_email_verified: false
+              is_new_email_verified: false,
+              is_verified: false,
+              signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
             })
             .fetch();
 
@@ -387,7 +412,8 @@ module.exports = {
                 return res.json({
                   "status": 200,
                   "new_email_token": re_new_email_token,
-                  "message": sails.__("verification link")
+                  "message": sails.__("verification link").message,
+                  "data": requested_email
                 });
               }
             })
@@ -396,7 +422,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__("invalid otp")
+              "err": sails.__("invalid otp").message
             });
         }
       } else {
@@ -404,8 +430,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": "Invalid Params",
-            error_at:"Invalid Params"
+            "err": sails.__("Invalid Params").message,
+            error_at: sails.__("Invalid Params").message
           });
       }
     } catch (error) {
@@ -414,8 +440,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -436,7 +462,14 @@ module.exports = {
           email_verify_token: req.body.new_email_verify_token
         });
         if (user) {
-
+          var today = moment().utc().format();
+          var yesterday = moment(user.signup_token_expiration).format();
+          if (yesterday < today) {
+            return res.status(400).json({
+              "status": 400,
+              "err": sails.__("Invalid Token").message
+            })
+          }
           await Users
             .update({
               id: user.id,
@@ -487,7 +520,7 @@ module.exports = {
                     "status": 200,
                     user,
                     token,
-                    "message": "Welcome back, " + user.first_name + "!"
+                    "message": sails.__("Welcome back").message + ", " + user.first_name + "!"
                   });
                 }
               })
@@ -496,7 +529,7 @@ module.exports = {
               "status": 200,
               user,
               token,
-              "message": "Welcome back, " + user.first_name + "!"
+              "message": sails.__("Welcome back").message + ", " + user.first_name + "!"
             });
           }
         } else {
@@ -504,7 +537,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__('Invalid Token')
+              "err": sails.__('Invalid Token').message
             });
         }
       }
@@ -514,8 +547,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -551,7 +584,7 @@ module.exports = {
 
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteList IP Add Success"),
+          "message": sails.__("WhiteList IP Add Success").message,
           "data": emailData
         });
       } else {
@@ -559,8 +592,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -570,8 +603,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -602,7 +635,7 @@ module.exports = {
       if (userData != undefined) {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("WhiteList IP info Success"),
+          "message": sails.__("WhiteList IP info Success").message,
           "data": userData
         });
       } else {
@@ -610,8 +643,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -621,8 +654,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -660,7 +693,7 @@ module.exports = {
       if (usersData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Users Data"),
+          "message": sails.__("Users Data").message,
           "data": usersData
         });
       }
@@ -671,8 +704,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -734,7 +767,7 @@ module.exports = {
     if (usersData) {
       return res.json({
         "status": 200,
-        "message": sails.__("Users Data"),
+        "message": sails.__("Users Data").message,
         "data": usersData
       });
     }
@@ -759,7 +792,7 @@ module.exports = {
   //   if (usersData) {
   //     return res.json({
   //       "status": 200,
-  //       "message": sails.__("User referred Data"),
+  //       "message": sails.__("User referred Data").message,
   //       "data": usersData
   //     });
   //   }
@@ -775,7 +808,7 @@ module.exports = {
       .limit(10);
     return res.json({
       "status": 200,
-      "message": sails.__("Users Login History"),
+      "message": sails.__("Users Login History").message,
       "data": history
     });
   },
@@ -790,7 +823,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": 'Invalid email'
+            "err": sails.__('Invalid email').message
           });
       }
       var user = req.body;
@@ -845,7 +878,7 @@ module.exports = {
                 delete updatedUsers.password
                 return res.json({
                   "status": 200,
-                  "message": sails.__("User Update")
+                  "message": sails.__("User Update").message
                 });
               }
             } else {
@@ -876,6 +909,10 @@ module.exports = {
                     user_details["city_town"], user.postal_code);
               }
 
+              if (req.body.country_code) {
+                user['country_code'] = req.body.country_code;
+              }
+
               var updatedUsers = await Users
                 .update({
                   email: user.email,
@@ -885,7 +922,7 @@ module.exports = {
 
               return res.json({
                 "status": 200,
-                "message": sails.__("User Update")
+                "message": sails.__("User Update").message
               });
             }
           } catch (e) {
@@ -898,8 +935,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -911,7 +948,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("password provide")
+            "err": sails.__("password provide").message
           });
       }
       if (req.body.new_password != req.body.confirm_password) {
@@ -919,7 +956,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("password must match")
+            "err": sails.__("password must match").message
           });
       }
       if (req.body.current_password == req.body.new_password) {
@@ -927,7 +964,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("current new must not be same")
+            "err": sails.__("current new must not be same").message
           });
       }
 
@@ -939,7 +976,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("User not found")
+            "err": sails.__("User not found").message
           });
       }
       let compareCurrent = await bcrypt.compare(req.body.current_password, user_details.password);
@@ -948,7 +985,7 @@ module.exports = {
           .status(401)
           .json({
             status: 401,
-            "err": sails.__("Old password not correct")
+            "err": sails.__("Old password not correct").message
           });
       }
 
@@ -997,7 +1034,7 @@ module.exports = {
             if (!err) {
               return res.json({
                 "status": 200,
-                "message": sails.__("password change success")
+                "message": sails.__("password change success").message
               });
             }
           })
@@ -1006,7 +1043,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            err: sails.__("Something Wrong")
+            err: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -1015,8 +1052,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -1096,7 +1133,7 @@ module.exports = {
     if (usersData) {
       return res.json({
         "status": 200,
-        "message": sails.__("User referred Data"),
+        "message": sails.__("User referred Data").message,
         "data": usersData,
         referredData,
         leftReferredData
@@ -1125,7 +1162,7 @@ module.exports = {
 
     return res.json({
       "status": 200,
-      "message": sails.__("Users Login History"),
+      "message": sails.__("Users Login History").message,
       "data": history,
       historyCount
     });
@@ -1145,7 +1182,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("user inactive")
+            "err": sails.__("user inactive").message
           });
       }
       const secret = speakeasy.generateSecret({
@@ -1166,7 +1203,7 @@ module.exports = {
       QRCode.toDataURL(encodeURI(url), function (err, data_url) {
         return res.json({
           status: 200,
-          message: sails.__("Qr code sent"),
+          message: sails.__("Qr code sent").message,
           tempSecret: secret.base32,
           dataURL: data_url,
           otpauthURL: secret.otpauth_url
@@ -1178,8 +1215,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -1202,7 +1239,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("user inactive")
+            "err": sails.__("user inactive").message
           });
       }
 
@@ -1211,7 +1248,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("2 factor already enabled")
+            "err": sails.__("2 factor already enabled").message
           });
       }
 
@@ -1263,7 +1300,7 @@ module.exports = {
             if (!err || err == null) {
               return res.json({
                 status: 200,
-                message: sails.__("2 factor enabled"),
+                message: sails.__("2 factor enabled").message,
                 twofactor_backup_code: random_string
               });
             }
@@ -1272,7 +1309,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            err: sails.__("invalid otp")
+            err: sails.__("invalid otp").message
           });
       }
 
@@ -1283,8 +1320,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -1303,7 +1340,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("user inactive")
+            "err": sails.__("user inactive").message
           });
       }
       if (user.is_twofactor == false) {
@@ -1311,7 +1348,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("2 factor already disabled")
+            "err": sails.__("2 factor already disabled").message
           });
       }
       await Users
@@ -1360,7 +1397,7 @@ module.exports = {
           if (!err) {
             return res.json({
               status: 200,
-              message: sails.__("2 factor disabled")
+              message: sails.__("2 factor disabled").message
             });
           }
         })
@@ -1371,8 +1408,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -1393,7 +1430,7 @@ module.exports = {
           .status(201)
           .json({
             "status": 201,
-            "err": sails.__("Please enter Twofa Backup code to continue")
+            "err": sails.__("Please enter Twofa Backup code to continue").message
           });
       }
       if (user.twofactor_backup_code != req.body.twofactor_backup_code) {
@@ -1401,7 +1438,7 @@ module.exports = {
           .status(402)
           .json({
             "status": 402,
-            "err": sails.__("Invalid twofa backup code")
+            "err": sails.__("Invalid twofa backup code").message
           });
       }
     } else if (user.is_twofactor && user.twofactor_secret) {
@@ -1410,7 +1447,7 @@ module.exports = {
           .status(201)
           .json({
             "status": 201,
-            "err": sails.__("Please enter OTP to continue")
+            "err": sails.__("Please enter OTP to continue").message
           });
       }
       let verified = speakeasy
@@ -1426,7 +1463,7 @@ module.exports = {
           .status(402)
           .json({
             "status": 402,
-            "err": sails.__("invalid otp")
+            "err": sails.__("invalid otp").message
           });
       }
     } else if (user.is_twofactor == false || user.is_twofactor == "false") {
@@ -1434,7 +1471,7 @@ module.exports = {
         .status(201)
         .json({
           "status": 201,
-          "err": sails.__("Please Enable 2FA to continue")
+          "err": sails.__("Please Enable 2FA to continue").message
         });
     }
 
@@ -1443,7 +1480,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("User not found")
+          "err": sails.__("User not found").message
         });
     }
     // Update to deleted
@@ -1454,21 +1491,22 @@ module.exports = {
       .set({
         email: user.email,
         deleted_by: 1, //deleted by user
-        deleted_at: new Date()
+        deleted_at: new Date(),
+        is_active: false
       });
 
     var total = 0;
     var usd_price = 0;
     var walletArray = [];
-    var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
-                            FROM public.referral 
+    var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id
+                            FROM public.referral
                             WHERE user_id = ${user_id} AND is_collected = 'false'
                             GROUP BY coin_id, coin_name`
 
     var referCount = await sails.sendNativeQuery(referQuery, [])
     referCount = referCount.rows;
 
-    let walletQuery = `SELECT coins.coin as coin_name,wallets.balance 
+    let walletQuery = `SELECT coins.coin as coin_name,wallets.balance
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1558,7 +1596,7 @@ module.exports = {
 
             return res.json({
               status: 200,
-              message: sails.__("user_delete_success")
+              message: sails.__("user_delete_success").message
             });
           }
         });
@@ -1584,15 +1622,15 @@ module.exports = {
       var usd_price = 0;
       var referTotal = 0;
       var walletArray = [];
-      var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
-                            FROM public.referral 
+      var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id
+                            FROM public.referral
                             WHERE user_id = ${user_id} AND is_collected = 'false'
                             GROUP BY coin_id, coin_name`
 
       var referCount = await sails.sendNativeQuery(referQuery, [])
       referCount = referCount.rows;
 
-      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance 
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1616,9 +1654,17 @@ module.exports = {
               }
             }
           }
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-          walletCount[i].fiat = get_jst_price[0].ask_price;
-          usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+          if (walletCount[i].coin_name != "SUSU") {
+            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+            walletCount[i].fiat = get_jst_price[0].ask_price;
+            usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+          } else {
+            var susucoinData = await sails.helpers.getUsdSusucoinValue();
+            susucoinData = JSON.parse(susucoinData);
+            susucoinData = susucoinData.data
+            walletCount[i].fiat = susucoinData.USD;
+            usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
+          }
         }
 
         if (total > 0) {
@@ -1626,7 +1672,7 @@ module.exports = {
             .status(201)
             .json({
               "status": 201,
-              "message": sails.__("please remove your funds"),
+              "message": sails.__("please remove your funds").message,
               data: walletArray,
               usd_price,
               user2fastatus
@@ -1636,7 +1682,7 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left"),
+              "message": sails.__("no funds left").message,
               user2fastatus,
               user
             })
@@ -1656,7 +1702,7 @@ module.exports = {
             .status(201)
             .json({
               "status": 201,
-              "message": sails.__("please remove your funds"),
+              "message": sails.__("please remove your funds").message,
               data: walletArray,
               usd_price,
               user2fastatus
@@ -1666,7 +1712,7 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left"),
+              "message": sails.__("no funds left").message,
               user2fastatus,
               user
             })
@@ -1674,7 +1720,7 @@ module.exports = {
       } else {
         return res.json({
           "status": 200,
-          "message": sails.__("no funds left"),
+          "message": sails.__("no funds left").message,
           user2fastatus,
           user
         })
@@ -1686,8 +1732,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -1704,15 +1750,15 @@ module.exports = {
       var usd_price = 0;
       var referTotal = 0;
       var walletArray = [];
-      var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id 
-                            FROM public.referral 
+      var referQuery = `SELECT coin_name, sum(amount) as amount,  coin_id
+                            FROM public.referral
                             WHERE user_id = ${user_id}
                             GROUP BY coin_id, coin_name`
 
       var referCount = await sails.sendNativeQuery(referQuery, [])
       referCount = referCount.rows;
 
-      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, wallets.receive_address 
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, wallets.receive_address
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1746,7 +1792,7 @@ module.exports = {
             .status(201)
             .json({
               "status": 201,
-              "message": sails.__("please remove your funds"),
+              "message": sails.__("please remove your funds").message,
               data: walletArray,
               usd_price,
               user
@@ -1756,7 +1802,7 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left")
+              "message": sails.__("no funds left").message
             })
         }
       } else if (referCount.length > 0) {
@@ -1774,7 +1820,7 @@ module.exports = {
             .status(201)
             .json({
               "status": 201,
-              "message": sails.__("please remove your funds"),
+              "message": sails.__("please remove your funds").message,
               data: walletArray,
               usd_price,
               user
@@ -1784,14 +1830,14 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "message": sails.__("no funds left"),
+              "message": sails.__("no funds left").message,
               user
             })
         }
       } else {
         return res.json({
           "status": 200,
-          "message": sails.__("no funds left"),
+          "message": sails.__("no funds left").message,
           user
         })
       }
@@ -1802,14 +1848,15 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   getUserTickets: async function (req, res) {
     try {
+      console.log(req.user.id);
       let tickets = await sails
         .helpers
         .hubspot
@@ -1818,7 +1865,7 @@ module.exports = {
       res.json({
         status: 200,
         tickets: tickets.reverse(),
-        message: "Ticket"
+        message: sails.__("Ticket lists").message
       });
     } catch (error) {
       // await logger.error(error.message)
@@ -1826,33 +1873,37 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   //------------------CMS APi------------------------------------------------//
-
+  // Get Active users lists
   getUserPaginate: async function (req, res) {
     try {
+
       let {
         page,
         limit,
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
-      query += " WHERE users.deleted_at IS NULL"
+      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
+      query += " WHERE users.is_active = true and users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -1867,7 +1918,20 @@ module.exports = {
         query += "  users.country='" + country + "'";
       }
 
+      if (start_date && end_date) {
+        // query += whereAppended ?
+        //   " AND " :
+        //   " WHERE ";
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
       countQuery = query;
+
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
@@ -1877,20 +1941,20 @@ module.exports = {
         query += " ORDER BY users.created_at DESC";
       }
 
-      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals" + query, [])
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Users list"),
+          "message": sails.__("Users list").message,
           "data": usersData,
           userCount
         });
@@ -1902,12 +1966,12 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
-
+  // Get inactive users lists
   getInactiveUserPaginate: async function (req, res) {
     try {
       let {
@@ -1916,17 +1980,20 @@ module.exports = {
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users LEFT JOIN (SELECT referred_id, COUNT(id) as no_of_referrals FROM use" +
-        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id";
-      query += " WHERE users.is_active = false AND is_verified = false AND users.deleted_at IS NULL"
+      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
+        "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
+      query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -1941,6 +2008,15 @@ module.exports = {
         query += "  users.country='" + country + "'";
       }
 
+      if (start_date && end_date) {
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
@@ -1953,18 +2029,18 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Users list"),
+          "message": sails.__("Users list").message,
           "data": usersData,
           userCount
         });
@@ -1975,12 +2051,12 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
-
+  // Get Deleted users lists
   getDeletedUserPaginate: async function (req, res) {
     try {
       let {
@@ -1989,16 +2065,19 @@ module.exports = {
         data,
         sort_col,
         sort_order,
-        country
+        country,
+        start_date,
+        end_date
       } = req.allParams();
       let whereAppended = false;
-      let query = " from users ";
+      let new_query = ` FROM (select DISTINCT on (user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let query = new_query + " RIGHT JOIN users ON wallets.user_id=users.id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
@@ -2013,6 +2092,15 @@ module.exports = {
         query += "  users.country='" + country + "'";
       }
 
+      if (start_date && end_date) {
+
+        query += " AND users.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
       countQuery = query;
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
@@ -2024,19 +2112,18 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
-      let usersData = await sails.sendNativeQuery("Select users.*, CONCAT(users.account_class, '-', users.id) AS UUID" +
-        "f_referrals" + query, [])
+      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Users list"),
+          "message": sails.__("Users list").message,
           "data": usersData,
           userCount
         });
@@ -2048,8 +2135,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2085,12 +2172,12 @@ module.exports = {
     if (updateUserData) {
       return res.json({
         "status": 200,
-        "message": sails.__("user referral updated")
+        "message": sails.__("user referral updated").message
       });
     } else {
       return res.json({
         "status": 200,
-        "message": sails.__("User not found")
+        "message": sails.__("User not found").message
       });
     }
   },
@@ -2098,33 +2185,59 @@ module.exports = {
   updateSendCoinFee: async function (req, res) {
     try {
       let {
-        send_coin_fee
+        send_coin_fee,
+        otp
       } = req.body;
 
-      if (parseFloat(send_coin_fee) > 0) {
-        updateCoinFee = await AdminSetting
-          .update({
-            slug: 'default_send_coin_fee'
-          })
-          .set({
-            value: send_coin_fee
-          })
-          .fetch();
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
 
-        if (updateCoinFee) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Withdrawal fee update success")
-          });
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
+        });
+
+      if (verified) {
+        if (parseFloat(send_coin_fee) > 0) {
+          updateCoinFee = await AdminSetting
+            .update({
+              slug: 'default_send_coin_fee'
+            })
+            .set({
+              value: send_coin_fee
+            })
+            .fetch();
+
+          if (updateCoinFee) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Withdrawal fee update success").message
+            });
+          }
+        } else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("fees greater than 0").message,
+              error_at: sails.__("fees greater than 0").message
+            })
         }
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("fees greater than 0"),
-            error_at:sails.__("fees greater than 0")
-          })
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
     } catch (error) {
       // await logger.error(error.message)
@@ -2132,8 +2245,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2141,34 +2254,58 @@ module.exports = {
   updateFaldaxFee: async function (req, res) {
     try {
       let {
-        send_coin_fee
+        send_coin_fee, otp
       } = req.body;
 
-      if (parseFloat(send_coin_fee) > 0) {
-        updateCoinFee = await AdminSetting
-          .update({
-            slug: 'faldax_fee',
-            deleted_at: null
-          })
-          .set({
-            value: parseFloat(send_coin_fee)
-          })
-          .fetch();
+      let user_id = req.user.id;
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
 
-        if (updateCoinFee) {
-          return res.json({
-            "status": 200,
-            "message": sails.__("Faldax fee update success")
-          });
+      let verified = speakeasy
+        .totp
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: req.body.otp
+        });
+      if (verified) {
+        if (parseFloat(send_coin_fee) > 0) {
+          updateCoinFee = await AdminSetting
+            .update({
+              slug: 'faldax_fee',
+              deleted_at: null
+            })
+            .set({
+              value: parseFloat(send_coin_fee)
+            })
+            .fetch();
+
+          if (updateCoinFee) {
+            return res.json({
+              "status": 200,
+              "message": sails.__("Faldax fee update success").message
+            });
+          }
+        } else {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("faldax fees greater than 0").message,
+              error_at: sails.__("faldax fees greater than 0").message
+            })
         }
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("faldax fees greater than 0"),
-            error_at:sails.__("faldax fees greater than 0")
-          })
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
+          });
       }
     } catch (error) {
       // await logger.error(error.message)
@@ -2176,8 +2313,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2216,12 +2353,12 @@ module.exports = {
       if (usersData && typeof usersData === 'object' && usersData.length > 0) {
         return res.json({
           "status": 200,
-          "message": sails.__("User Status Updated")
+          "message": sails.__("User Status Updated").message
         });
       } else {
         return res.json({
           "status": 401,
-          "message": sails.__("User not found")
+          "message": sails.__("User not found").message
         });
       }
     } catch (error) {
@@ -2230,8 +2367,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2252,8 +2389,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:error.stack
+            "err": sails.__("Something Wrong").message,
+            error_at: error.stack
           });
       })
   },
@@ -2288,7 +2425,7 @@ module.exports = {
     });
     res.json({
       state: 200,
-      message: sails.__("Countries retirved success"),
+      message: sails.__("Countries retirved success").message,
       countries: countriesResponse
     });
   },
@@ -2354,7 +2491,7 @@ module.exports = {
       if (usersData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Referral Users Data"),
+          "message": sails.__("Referral Users Data").message,
           "data": usersData,
           referralCount
         });
@@ -2366,8 +2503,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2424,7 +2561,7 @@ module.exports = {
         if (allHistoryData) {
           return res.json({
             "status": 200,
-            "message": sails.__("History list"),
+            "message": sails.__("History list").message,
             "data": allHistoryData,
             allHistoryCount
           });
@@ -2448,7 +2585,7 @@ module.exports = {
         if (allHistoryData) {
           return res.json({
             "status": 200,
-            "message": sails.__("History list"),
+            "message": sails.__("History list").message,
             "data": allHistoryData,
             allHistoryCount
           });
@@ -2460,8 +2597,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2477,6 +2614,7 @@ module.exports = {
         deleted_at: null,
         email: user.email
       });
+      var full_name = user.first_name + " " + user.last_name;
       if (existedUser == undefined) {
         let hubspotcontact = await sails
           .helpers
@@ -2491,10 +2629,46 @@ module.exports = {
             ...user,
             hubspot_id: hubspotcontact,
             is_active: true,
-            is_verified: true,
-            password: user.password
+            is_verified: false,
+            password: user.password,
+            full_name: full_name
           })
           .fetch();
+
+        var id = generatedUser.id;
+        var notificationList = await Notifications.find({
+          where: {
+            deleted_at: null
+          }
+        });
+
+        for (var i = 0; i < notificationList.length; i++) {
+          var object = {};
+          object.slug = notificationList[i].slug;
+          object.title = notificationList[i].title;
+          object.created_at = new Date();
+          object.user_id = id
+          if (notificationList[i].is_necessary == "true" || notificationList[i].is_necessary == true) {
+            object.email = true
+          } else {
+            object.email = false
+          }
+          object.text = false;
+          var data = await UserNotification.create({
+            ...object
+          }).fetch();
+        }
+
+        console.log("process.env.TOKEN_DURATION", process.env.TOKEN_DURATION);
+        console.log("moment().utc().add(process.env.TOKEN_DURATION, 'minutes')", moment().utc().add(process.env.TOKEN_DURATION, 'minutes'))
+        var userUpdate = await Users
+          .update({
+            id: generatedUser.id
+          })
+          .set({
+            "customer_id": "F-" + id.toString(16).toUpperCase(),
+            signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes')
+          });
         if (kyc_done == true) {
           await KYC.create({
             first_name: user.first_name,
@@ -2524,17 +2698,66 @@ module.exports = {
               .receiveOneAddress(elementCoin.coin, generatedUser);
           }
         }
-        return res.json({
-          status: 200,
-          message: sails.__("user created success")
-        });
+
+        let email_verify_token = randomize('Aa0', 10);
+        console.log("generatedUser", generatedUser)
+        if (generatedUser) {
+          var userUpdate = await Users
+            .update({
+              id: generatedUser.id
+            })
+            .set({
+              "email_verify_token": email_verify_token
+            });
+
+          // Insert history for Login
+          let slug = "signup_for_web"
+          let template = await EmailTemplate.findOne({
+            slug
+          });
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(template.content, {
+              recipientName: generatedUser.first_name,
+              token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+              tokenCode: email_verify_token
+            })
+          console.log("template", template)
+          if (template) {
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: generatedUser.email,
+                subject: "Signup Verification"
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("verification link sent to user").message,
+                    email_verify_token
+                  });
+                }
+              });
+          }
+        } else {
+          return res
+            .status(401)
+            .json({
+              status: 401,
+              "err": sails.__("Something Wrong").message
+            });
+        }
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("email already registered"),
-            error_at:sails.__("email already registered")
+            "err": sails.__("email already registered").message,
+            error_at: sails.__("email already registered").message
           });
       }
     } catch (error) {
@@ -2544,8 +2767,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2563,7 +2786,7 @@ module.exports = {
       res.json({
         status: 200,
         tickets: tickets.reverse(),
-        message: "Ticket"
+        message: sails.__("Ticket lists").message
       });
     } catch (error) {
       // await logger.error(error.message)
@@ -2571,8 +2794,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2591,14 +2814,14 @@ module.exports = {
           security_feature: security_feature,
           // security_feature_expired_time : moment().utc()
         };
-        message = sails.__("SF Status Enabled");
+        message = sails.__("SF Status Enabled").message;
         status = "Enabled";
       } else {
         update_data = {
           security_feature: security_feature,
           // security_feature_expired_time : null
         };
-        message = sails.__("SF Status Disabled");
+        message = sails.__("SF Status Disabled").message;
         status = "Disabled";
       }
       var user_details = await Users
@@ -2640,8 +2863,8 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                "err": sails.__("Something Wrong"),
-                error_at:sails.__("Something Wrong")
+                "err": sails.__("Something Wrong").message,
+                error_at: sails.__("Something Wrong").message
               });
           }
         })
@@ -2651,8 +2874,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2673,7 +2896,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("User not found")
+          "err": sails.__("User not found").message
         });
     }
 
@@ -2712,12 +2935,12 @@ module.exports = {
           if (status == true || status == "true") {
             res.json({
               status: 200,
-              message: sails.__("Whitelist ip enabled")
+              message: sails.__("Whitelist ip enabled").message
             });
           } else {
             res.json({
               status: 200,
-              message: sails.__("Whitelist ip disabled")
+              message: sails.__("Whitelist ip disabled").message
             });
           }
         } else {
@@ -2725,8 +2948,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong"),
-              error_at:sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at: sails.__("Something Wrong").message
             });
         }
       })
@@ -2745,7 +2968,7 @@ module.exports = {
         .status(401)
         .json({
           "status": 401,
-          "err": sails.__("User not found")
+          "err": sails.__("User not found").message
         });
     }
 
@@ -2754,8 +2977,8 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Twofactor not enabled"),
-          error_at:sails.__("Twofactor not enabled")
+          "err": sails.__("Twofactor not enabled").message,
+          error_at: sails.__("Twofactor not enabled").message
         });
     }
 
@@ -2783,7 +3006,7 @@ module.exports = {
         });
       res.json({
         status: 200,
-        message: sails.__("Twofactor backup code is generated"),
+        message: sails.__("Twofactor backup code is generated").message,
         twofactor_backup_code: random_string
       });
     } else {
@@ -2791,7 +3014,7 @@ module.exports = {
         .status(401)
         .json({
           status: 401,
-          err: sails.__("invalid otp")
+          err: sails.__("invalid otp").message
         });
     }
 
@@ -2823,7 +3046,7 @@ module.exports = {
       if (userData != undefined) {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("Record found"),
+          "message": sails.__("Record found").message,
           "data": userData
         });
       } else {
@@ -2831,8 +3054,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -2841,8 +3064,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2911,7 +3134,7 @@ module.exports = {
 
       return res.status(200).json({
         "status": 200,
-        "message": sails.__("Threshold updated"),
+        "message": sails.__("Threshold updated").message,
         "data": assets
       });
     } catch (error) {
@@ -2921,8 +3144,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -2983,7 +3206,7 @@ module.exports = {
       }
       return res.status(200).json({
         "status": 200,
-        "message": sails.__("Threshold listed"),
+        "message": sails.__("Threshold listed").message,
         "data": newarray
       });
     } catch (error) {
@@ -2993,8 +3216,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3028,7 +3251,7 @@ module.exports = {
       get_price.faldax_fees = parseFloat(faldax_fees).toFixed(process.env.TOTAL_PRECISION);
       return res.status(200).json({
         "status": 200,
-        "message": sails.__("Price listed"),
+        "message": sails.__("Price listed").message,
         "data": get_price
       });
     } catch (error) {
@@ -3038,8 +3261,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3078,7 +3301,7 @@ module.exports = {
       //   query += " ORDER BY created_at DESC";
       // }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
+      console.log(query);
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
@@ -3118,6 +3341,7 @@ module.exports = {
           }
         });
         if (userData != undefined) {
+          var emailArray = [];
           var userDataValue = await Users
             .count('id')
             .where({
@@ -3126,6 +3350,21 @@ module.exports = {
               referred_id: userIds[i]
             });
 
+          var dataValue = await Users.find({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              referred_id: userIds[i]
+            }
+          });
+
+          console.log(dataValue);
+
+          for (var j = 0; j < dataValue.length; j++) {
+            emailArray.push(dataValue[j].email);
+          }
+          console.log(emailArray);
+          userData.emailValue = emailArray;
           userData.no_of_referral = userDataValue
           usersData.push(userData)
         }
@@ -3135,7 +3374,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("referal data success"),
+          "message": sails.__("referal data success").message,
           "data": usersData,
           "referralCount": user_details.rowCount
         })
@@ -3146,8 +3385,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3164,15 +3403,15 @@ module.exports = {
                                 ON users.id = referral.user_id
                                 LEFT JOIN coins
                                 ON referral.coin_name = coins.coin
-                                WHERE referral.is_collected = 'true' AND user_id = ${id} 
+                                WHERE referral.is_collected = 'true' AND user_id = ${id}
                                 AND users.deleted_at IS NULL
                                 GROUP BY referral.coin_name,coins.coin_icon, coins.id
-                                ORDER BY coins.id ASC`);
+                                ORDER BY coins.id DESC`);
       return res
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("refer data retrieve"),
+          "message": sails.__("refer data retrieve").message,
           "data": get_reffered_data.rows
         });
 
@@ -3183,13 +3422,13 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
-  // Get Each User Refer Data 
+  // Get Each User Refer Data
   getUserReferData: async function (req, res) {
     try {
       var {
@@ -3206,13 +3445,13 @@ module.exports = {
         filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.txid) LIKE '%" + data.toLowerCase() + "%'";
       }
 
-      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon, 
+      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon,
                                     users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
                                     ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
-                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter} 
+                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter}
                                     AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
                                     GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
                                     ORDER BY coins.id , referral.updated_at DESC`);
@@ -3228,7 +3467,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("refer data retrieve"),
+          "message": sails.__("refer data retrieve").message,
           "data": data.rows,
           count
         });
@@ -3240,8 +3479,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3264,7 +3503,8 @@ module.exports = {
       for (var i = 0; i < coins.length; i++) {
         var user_coins = await Wallet.findOne({
           user_id: user_id,
-          coin_id: coins[i].id
+          coin_id: coins[i].id,
+          deleted_at: null
         });
         // console.log(coins[i]);
         coins[i].coin = (coins[i].coin)
@@ -3281,7 +3521,7 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("Wallet address list"),
+        "message": sails.__("Wallet address list").message,
         "data": all_data
       });
     } catch (error) {
@@ -3291,8 +3531,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3309,11 +3549,11 @@ module.exports = {
       // var get_reffered_data = await sails.sendNativeQuery("SELECT users.email as Email, users.first_name as FirstName, users.last_name as LastName, users.id as UserID,users.created_at as ReferredDate, referral.coin_name as CoinName ,referral.user_id as RUserID, referral.coin_id as CoinId, sum(referral.amount) as Earned FROM users " +
       //   "INNER JOIN referral ON users.id = referral.referred_user_id WHERE users.referred_id = " + id + " and referral.user_id = " + id + " GROUP BY RUserID, CoinId, CoinName ,users.id order by user_id ASC");
       var get_reffered_data = await sails.sendNativeQuery(
-        ` SELECT ref.coin_id, ref.user_id, ref.referred_user_id, co.id, co.coin_name, sum(ref.amount) as totalearned, u.email FROM referral ref 
-          INNER JOIN coins co 
-          ON ref.coin_id = co.id 
-          INNER JOIN users u 
-          ON ref.referred_user_id = u.id 
+        ` SELECT ref.coin_id, ref.user_id, ref.referred_user_id, co.id, co.coin_name, sum(ref.amount) as totalearned, u.email FROM referral ref
+          INNER JOIN coins co
+          ON ref.coin_id = co.id
+          INNER JOIN users u
+          ON ref.referred_user_id = u.id
           WHERE ref.user_id = ${id} and u.referred_id = ${id}
           GROUP BY ref.coin_id,co.id, ref.user_id,  co.coin_name, ref.referred_user_id, u.email`);
       // console.log("get_reffered_data",get_reffered_data);
@@ -3329,7 +3569,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("refer data retrieve"),
+          "message": sails.__("refer data retrieve").message,
           "data": get_reffered_data.rows
         });
 
@@ -3340,8 +3580,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -3369,7 +3609,7 @@ module.exports = {
 
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("Terms status accept"),
+          "message": sails.__("Terms status accept").message,
           "data": []
         });
       } else {
@@ -3377,8 +3617,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -3388,8 +3628,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },

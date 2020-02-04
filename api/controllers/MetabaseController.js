@@ -19,7 +19,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Account Report Success"),
+                    "message": sails.__("Account Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -29,7 +29,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -46,7 +46,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Account Tier Report Success"),
+                    "message": sails.__("Account Tier Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -56,7 +56,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -73,7 +73,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Referral Report Success"),
+                    "message": sails.__("Referral Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -83,7 +83,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -100,7 +100,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Assets Report Success"),
+                    "message": sails.__("Assets Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -110,7 +110,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -127,7 +127,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Batch Report Success"),
+                    "message": sails.__("Batch Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -137,7 +137,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -154,7 +154,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Careers Report Success"),
+                    "message": sails.__("Careers Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -164,7 +164,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -181,7 +181,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Country Report Success"),
+                    "message": sails.__("Country Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -191,7 +191,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -208,7 +208,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Employee Report Success"),
+                    "message": sails.__("Employee Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -218,7 +218,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -235,7 +235,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Fees Report Success"),
+                    "message": sails.__("Fees Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -245,7 +245,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -262,7 +262,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("History Report Success"),
+                    "message": sails.__("History Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -272,7 +272,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -289,7 +289,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Dashboard Report Success"),
+                    "message": sails.__("Dashboard Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -299,7 +299,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -316,7 +316,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("KYC Report Success"),
+                    "message": sails.__("KYC Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -326,7 +326,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -343,7 +343,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("News Report Success"),
+                    "message": sails.__("News Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -353,7 +353,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -370,7 +370,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Offers Report Success"),
+                    "message": sails.__("Offers Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -380,7 +380,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -397,7 +397,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Pairs Report Success"),
+                    "message": sails.__("Pairs Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -407,7 +407,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -424,7 +424,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Roles Report Success"),
+                    "message": sails.__("Roles Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -434,7 +434,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -451,7 +451,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Transaction History Report Success"),
+                    "message": sails.__("Transaction History Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -461,7 +461,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -478,7 +478,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Two Factor Request Report Success"),
+                    "message": sails.__("Two Factor Request Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -488,7 +488,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -505,7 +505,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Users Report Success"),
+                    "message": sails.__("Users Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -515,7 +515,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }
@@ -532,7 +532,7 @@ module.exports = {
                 .status(200)
                 .json({
                     "status": 200,
-                    "message": sails.__("Withdraw Request Report Success"),
+                    "message": sails.__("Withdraw Request Report Success").message,
                     frameURL
                 })
         } catch (error) {
@@ -542,7 +542,7 @@ module.exports = {
                 .status(500)
                 .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
+                    "err": sails.__("Something Wrong").message,
                     error_at:error.stack
                 });
         }

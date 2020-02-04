@@ -29,6 +29,21 @@ module.exports = {
       type: 'string',
       columnName: 'phone_number'
     },
+    signup_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'signup_token_expiration'
+    },
+    forgot_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'forgot_token_expiration'
+    },
+    device_token_expiration: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'device_token_expiration'
+    },
     full_name: {
       type: 'string',
       columnName: 'full_name',
@@ -201,6 +216,11 @@ module.exports = {
       allowNull: true,
       columnName: 'new_email_token'
     },
+    customer_id: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'customer_id'
+    },
     is_new_email_verified: {
       type: 'boolean',
       columnName: "is_new_email_verified",
@@ -272,6 +292,11 @@ module.exports = {
     is_terms_agreed: {
       type: 'boolean',
       columnName: 'is_terms_agreed'
+    },
+    default_language: {
+      type: 'string',
+      columnName: 'default_language',
+      defaultsTo: "en"
     },
   },
   beforeCreate: (values, next) => {
@@ -371,7 +396,7 @@ async function updateData(filter, params) {
         .hubspot
         .contacts
         .update(check_exist["hubspot_id"], user.first_name, user.last_name, user.street_address + (
-            ", " + user.street_address_2), user.country,
+          ", " + user.street_address_2), user.country,
           user.state, user.city_town, user.postal_code);
     }
 

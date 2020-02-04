@@ -19,7 +19,7 @@ module.exports = {
     if (allTradingFees) {
       return res.json({
         "status": 200,
-        "message": sails.__("All fees retrived success"),
+        "message": sails.__("All fees retrived success").message,
         "data": allTradingFees,
         feesCount
       });
@@ -28,8 +28,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:sails.__("Something Wrong").message
         });
     }
   },
@@ -52,15 +52,15 @@ module.exports = {
       if (updatedFee) {
         return res.json({
           "status": 200,
-          "message": sails.__("Fees updated success")
+          "message": sails.__("Fees updated success").message
         });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
     } else {
@@ -68,7 +68,7 @@ module.exports = {
         .status(400)
         .json({
           status: 400,
-          "err": sails.__("No Data")
+          "err": sails.__("No record found").message
         });
     }
   }

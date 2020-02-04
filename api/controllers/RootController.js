@@ -17,7 +17,7 @@ module.exports = {
       });
       return res.json({
         status: 200,
-        message: sails.__("Panic Status"),
+        message: sails.__("Panic Status").message,
         panicStatus
       });
     } catch (error) {
@@ -26,8 +26,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -101,7 +101,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("user inactive")
+            "err": sails.__("user inactive").message
           });
       }
       let verified = speakeasy
@@ -120,15 +120,15 @@ module.exports = {
         return res
           .json({
             "status": 200,
-            "message": "Panic status changed successfully."
+            "message": sails.__("Panic status changed successfully").message
           });
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": "OTP is wrong!!",
-            error_at:"OTP is wrong!!"
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
           });
       }
     } catch (error) {
@@ -138,8 +138,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -191,7 +191,7 @@ module.exports = {
     });
     return res.json({
       status: 200,
-      message: sails.__("contact details retrived success"),
+      message: sails.__("contact details retrived success").message,
       data: contacts
     })
   },
@@ -214,15 +214,15 @@ module.exports = {
       if (contactDetails) {
         return res.json({
           status: 200,
-          message: sails.__("Contact details updated success")
+          message: sails.__("Contact details updated success").message
         })
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong"),
-            error_at:sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
@@ -306,11 +306,13 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
+    console.log(key);
+    console.log(iv)
     var value = req.body.encryptKey;
     console.log(value);
     // var encryptData = await sails.helpers.getEncryptData(value);
     // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData(value);
+    var decryptData = await sails.helpers.getDecryptData("28970b51da571ec974408676");
     console.log("decryptData", decryptData)
     return res.json(200);
   },
@@ -335,8 +337,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          err: sails.__("Something Wrong"),
-          error_at:error.stack
+          err: sails.__("Something Wrong").message,
+          error_at: error.stack
         })
     }
   },
@@ -383,21 +385,21 @@ module.exports = {
     // console.log(transfer);
 
   },
-  testemail: function (req, res) {
-    sails
-      .hooks
-      .email.send("testemail", {}, {
-        to: "ankit.morker@openxcellinc.com",
-        subject: "test email"
-      }, function (err) {
-        if (!err) {
-          return res.json({
-            "status": 200,
-            "message": "dkhsd"
-          });
-        }
-      });
-  },
+  // testemail: function (req, res) {
+  //   sails
+  //     .hooks
+  //     .email.send("testemail", {}, {
+  //       to: "ankit.morker@openxcellinc.com",
+  //       subject: "test email"
+  //     }, function (err) {
+  //       if (!err) {
+  //         return res.json({
+  //           "status": 200,
+  //           "message": "dkhsd"
+  //         });
+  //       }
+  //     });
+  // },
 
   testMetabaseIntegrate: async function (req, res) {
     var frameURL = await sails.helpers.metabaseSetup();
@@ -420,7 +422,7 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": sails.__("panic button status"),
+          "message": sails.__("panic button status").message,
           "data": panicStatus.value
         })
     } catch (error) {
@@ -441,19 +443,19 @@ module.exports = {
       if (system_health && system_health.value == "ok_from_db") {
         return res.status(200).json({
           "status": 200,
-          "message": sails.__("system_health_ok"),
+          "message": sails.__("system_health_ok").message,
         })
       }
       return res.status(500).json({
         "status": 500,
-        "message": sails.__("system_health_not_ok"),
-        error_at:sails.__("system_health_not_ok")
+        "message": sails.__("system_health_not_ok").message,
+        error_at: sails.__("system_health_not_ok").message
       })
     } catch (error) {
       return res.status(500).json({
         "status": 500,
-        "message": sails.__("system_health_not_ok"),
-        error_at:sails.__("system_health_not_ok")
+        "message": sails.__("system_health_not_ok").message,
+        error_at: error.stack
       })
     }
   }
