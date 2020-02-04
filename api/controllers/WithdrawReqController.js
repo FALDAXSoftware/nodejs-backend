@@ -324,6 +324,17 @@ module.exports = {
 
                     totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
 
+                    var userData = await Users.findOne({
+                      where: {
+                        id: user_id,
+                        is_active: true,
+                        deleted_at: null
+                      }
+                    });
+                    if (userData) {
+                      // Send Email to the user to inform, wallet has created
+                      await sails.helpers.notification.send.email("approve_withdraw_request", userData);
+                    }
                     return res
                       .status(200)
                       .json({
@@ -390,6 +401,17 @@ module.exports = {
               "message": sails.__("Something Wrong").message,
               error_at: sails.__("Something Wrong").message
             });
+        }
+        var userData = await Users.findOne({
+          where: {
+            id: user_id,
+            is_active: true,
+            deleted_at: null
+          }
+        });
+        if (userData) {
+          // Send Email to the user to inform, wallet has created
+          await sails.helpers.notification.send.email("disapprove_withdraw_request", userData);
         }
         return res
           .status(200)

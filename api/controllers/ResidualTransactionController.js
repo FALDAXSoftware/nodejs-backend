@@ -28,16 +28,41 @@ module.exports = {
         sortOrder,
         data,
         page,
-        limit
+        limit,
+        start_date,
+        end_date,
+        t_type
       } = req.allParams();
       let query = " from residual_transactions LEFT JOIN coins ON residual_transactions.coin_id = coins.id  WHERE residual_transactions.deleted_at IS NULL ";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (residual_transactions.transaction_from='" + data + "')";
+          query += " AND "
+          query += " (LOWER(residual_transactions.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.destination_address) LIKE '%" + data.toLowerCase() + "%'";
+          if (!isNaN(data)) {
+            query += " OR residual_transactions.amount=" + data;
+          }
+          query += ")"
         }
       }
+
+
       countQuery = query;
+
+      if (t_type && t_type != "") {
+        query += " AND LOWER(residual_transactions.transaction_type) LIKE '%" + t_type.toLowerCase() + "'"
+      }
+
+      if (start_date && end_date) {
+        query += " AND "
+
+        query += " residual_transactions.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND residual_transactions.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
 
       if (sortCol && sortOrder) {
         let sortVal = (sortOrder == 'descend' ?
@@ -49,7 +74,8 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
+      console.log("Query >>>>>>>>>", query);
+      console.log("bsdfhbfhehj")
       let get_data = await sails.sendNativeQuery("Select residual_transactions.*, coins.coin, coins.coin_code" + query, [])
       let total = await sails.sendNativeQuery("Select COUNT(residual_transactions.id)" + countQuery, [])
       total = total.rows[0].count;

@@ -481,12 +481,12 @@ module.exports = {
           });
           var userData = await Users.findOne({
             where: {
-              id:data[0].user_id,
+              id: data[0].user_id,
               is_active: true,
               deleted_at: null
             }
           });
-          if( userData ){
+          if (userData) {
             // Send Email to the user to inform, wallet has created
             await sails.helpers.notification.send.email("wallet_created_successfully", userData);
           }
@@ -666,19 +666,68 @@ module.exports = {
               transaction_from: sails.config.local.SEND_TO_DESTINATION,
               residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
             });
+          } else {
+            let walletHistoryValue = await WalletHistory.findOne({
+              transaction_id: req.body.hash,
+              is_executed: false,
+              is_admin: true,
+              user_id: 36
+            });
+            if (walletHistoryValue) {
+
+              // Send To user's destination address
+              var amount = parseFloat(walletHistoryValue.amount * 1e8).toFixed(8)
+              console.log("amount", amount)
+              var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * 1e8).toFixed(8)
+              let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+              let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistoryValue.destination_address, amount, network_fees)
+              console.log("sendTransfer", sendTransfer)
+              let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+              console.log("warmWallet", warmWallet)
+              // Update in wallet history
+              await WalletHistory.update({
+                id: walletHistoryValue.id
+              }).set({
+                is_executed: true,
+                is_done: true,
+                transaction_id: sendTransfer.txid
+              });
+
+              console.log(sendTransfer);
+
+              // Log transaction in transaction table
+              await TransactionTable.create({
+                coin_id: walletHistoryValue.coin_id,
+                source_address: walletHistoryValue.source_address,
+                destination_address: walletHistoryValue.destination_address,
+                user_id: walletHistoryValue.user_id,
+                amount: parseFloat(amount / 1e8).toFixed(8),
+                is_admin: true,
+                transaction_type: 'send',
+                is_executed: true,
+                transaction_id: sendTransfer.txid,
+                estimated_network_fees: walletHistoryValue.estimated_network_fees,
+                actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
+                faldax_fee: 0.0,
+                actual_amount: walletHistoryValue.actual_amount,
+                warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                transaction_from: sails.config.local.SEND_TO_DESTINATION,
+                residual_amount: parseFloat(walletHistoryValue.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
+              });
+            }
           }
         }
+        // await sails.helpers.loggerFormat(
+        //   "webhookOnSend",
+        //   sails.config.local.LoggerWebhook,
+        //   req.url,
+        //   2,
+        //   sails.config.local.LoggerSuccess
+        // );
+        res.json({
+          success: true
+        });
       }
-      // await sails.helpers.loggerFormat(
-      //   "webhookOnSend",
-      //   sails.config.local.LoggerWebhook,
-      //   req.url,
-      //   2,
-      //   sails.config.local.LoggerSuccess
-      // );
-      res.json({
-        success: true
-      });
     } catch (error) {
       // await sails.helpers.loggerFormat(
       //   "webhookOnSend",
