@@ -83,7 +83,7 @@ module.exports = {
               '<=': today
             }
           }
-        }).sort('id', 'ASC');
+        }).sort('id', 'DESC');
 
         if (previous_price == undefined || previous_price.length == 0) {
           previous_price = 0;
@@ -115,7 +115,7 @@ module.exports = {
           created_at: {
             '<=': today
           }
-        }).sort('created_at', 'ASC');
+        }).sort('created_at', 'DESC');
 
         var card_data = {
           "pair_from": favouritesData[i].pair_from,
@@ -135,7 +135,7 @@ module.exports = {
 
       return res.status(200).json({
         "status": 200,
-        "message": sails.__("Favourites List Success"),
+        "message": sails.__("Favourites List Success").message,
         "data": sortBy(cardData, ['priority'])
       })
     } catch (error) {
@@ -145,7 +145,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

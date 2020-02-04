@@ -27,7 +27,7 @@ module.exports.routes = {
   'post /toggle-panic-status': 'RootController.panicBtn',
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
-  'get /testemail': 'RootController.testemail',
+  // 'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
   'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
   'get /admin/get-coin-fees-coin': 'AdminController.getCoinFees',
@@ -178,6 +178,7 @@ module.exports.routes = {
   'post /admin/change-news-status': 'News.changeNewsStatus',
   'get /admin/get-news-details': 'News.getNewsDetails',
   'get /admin/get-referal-details': 'ReferralController.getReferalDetails',
+  'post /admin/forgot-user-password': 'AdminController.userForgotPassword',
 
   // Web Routes///////////////////////////////////////////
   'post /login': "AuthController.login",
@@ -472,7 +473,7 @@ module.exports.routes = {
 
   //simplexAPICall
   'get /call-simplex': 'SimplexController.simplexAPICall',
-  'delete /delete-all-events': 'SimplexController.deleteAllEvents',
+  // 'delete /delete-all-events': 'SimplexController.deleteAllEvents',
 
   // Get Users Wallet Data
   'post /get-user-wallet-history': 'WalletController.getMonthlyDailyValue',
@@ -512,7 +513,7 @@ module.exports.routes = {
   "get /admin/get-warm-wallet-transaction": "WalletController.getWarmWalletTransaction",
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
-  // Temp 
+  // Temp
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
   "post /admin/update-static-page-pdf": "AdminController.updateStaticLinks",
@@ -520,5 +521,11 @@ module.exports.routes = {
   // network Fee
   "post /wallet/get-network-fee": "WalletController.getNetworkFeeData",
 
-  "get /health-check": "RootController.checkSystemHealth"
+  "get /health-check": "RootController.checkSystemHealth",
+  "post /test-logs": "KrakenController.testLogs",
+  "put /admin/update-asset-fees-limits": "AdminController.updateAssetFeesLimits",
+  "get /admin/list-asset-fees-limits": "AdminController.listAssetFeesLimits",
+
+  "get /admin/get-residual-lists": "ResidualTransactionController.list",
+  'post /users/check-forgot-password-token': "AuthController.checkForgotPasswordToken", //2
 };

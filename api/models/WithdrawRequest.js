@@ -50,6 +50,26 @@ module.exports = {
       type: 'string',
       columnName: 'reason'
     },
+    faldax_fee: {
+      type: "number",
+      columnName: "faldax_fee"
+    },
+    transaction_id: {
+      type: "string",
+      columnName: "transaction_id"
+    },
+    amount: {
+      type: "number",
+      columnName: "amount"
+    },
+    network_fee: {
+      type: "number",
+      columnName: "network_fee"
+    },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',

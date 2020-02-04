@@ -12,7 +12,7 @@ const {
 
 module.exports = {
 
-  /** 
+  /**
    * get Compaigns list
    */
   list: async function (req, res) {
@@ -20,7 +20,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       let {
@@ -58,7 +58,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("offer retrieve success"),
+            "message": sails.__("offer retrieve success").message,
             "data": {
               campaigns: get_data.rows,
               total
@@ -69,8 +69,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("offer not found"),
-            error_at:sails.__("offer not found")
+            "err": sails.__("offer not found").message,
+            error_at:sails.__("offer not found").message
           });
       }
 
@@ -81,7 +81,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -98,7 +98,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       let req_body = req.body;
@@ -136,7 +136,7 @@ module.exports = {
       let create_data = await CampaignsOffers.create(data_object);
       return res.json({
         "status": 200,
-        "message": sails.__("offer created"),
+        "message": sails.__("offer created").message,
         "data": []
       });
     } catch (error) {
@@ -146,13 +146,13 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
   },
 
-  /** 
+  /**
    * get Single Compaign
    */
   get: async function (req, res) {
@@ -160,7 +160,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          err: 'Unauthorized access'
+          err: sails.__('Unauthorized Access').message
         });
       }
       var data_object = {
@@ -172,7 +172,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "message": sails.__("offer retrieve success"),
+            "message": sails.__("offer retrieve success").message,
             "data": get_data
           })
       } else {
@@ -180,8 +180,8 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("offer not found"),
-            error_at:sails.__("offer not found")
+            "err": sails.__("offer not found").message,
+            error_at:sails.__("offer not found").message
           });
       }
 
@@ -192,14 +192,14 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
   },
 
 
-  /** 
+  /**
    * Update Compaign Offer data
    */
   // update: async function (req, res) {
@@ -207,7 +207,7 @@ module.exports = {
   //     if (!req.user.isAdmin) {
   //       return res.status(403).json({
   //         status: 403,
-  //         err: 'Unauthorized access'
+  //         err: sails.__('Unauthorized Access').message
   //       });
   //     }
 
@@ -237,7 +237,7 @@ module.exports = {
   //         .status(500)
   //         .json({
   //           status: 500,
-  //           "err": sails.__("offer not found")
+  //           "err": sails.__("offer not found").message
   //         });
 
   //     }
@@ -249,7 +249,7 @@ module.exports = {
   //       if( req_body.status == true || req_body.status === "true" ){
   //         message = sails.__("offer activated");
   //       }else{
-  //         message = sails.__("offer deactivated");
+  //         message = sails.__("offer deactivated").message;
   //       }
   //       return res
   //         .status(200)
@@ -264,10 +264,10 @@ module.exports = {
   //         .status(500)
   //         .json({
   //           "status": 500,
-  //           "message": sails.__("offer not updated"),
+  //           "message": sails.__("offer not updated").message,
   //           "data":[]
-  //         })        
-  //     }      
+  //         })
+  //     }
 
   //   } catch (error) {
   //     console.log("error", error);
@@ -276,7 +276,7 @@ module.exports = {
   //       .status(500)
   //       .json({
   //         status: 500,
-  //         "err": sails.__("Something Wrong")
+  //         "err": sails.__("Something Wrong").message
   //       });
   //   }
   // },

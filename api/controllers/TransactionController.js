@@ -24,12 +24,11 @@ module.exports = {
     } = req.allParams();
     try {
       let query = " from transaction_table LEFT JOIN users ON transaction_table.user_id = users.id LEFT JOIN coins ON transaction_table.coin_id = coins.id";
-      let whereAppended = false;
+      query += " WHERE transaction_table.is_admin='false'";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query += " WHERE"
-          whereAppended = true;
+          query += " AND "
           query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
           if (!isNaN(data)) {
             query += " OR transaction_table.amount=" + data;
@@ -39,37 +38,26 @@ module.exports = {
       }
 
       if (user_id) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
-        whereAppended = true;
+        query += " AND "
         query += " transaction_table.user_id=" + user_id
       }
 
       if (t_type && t_type.trim() != "") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
-        whereAppended = true;
+
+        query += " AND "
         query += "  transaction_table.transaction_type='" + t_type + "'";
       }
 
       if (start_date && end_date) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+
+        query += " AND "
+
 
         query += " transaction_table.created_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-          .helpers
-          .dateFormat(end_date) + " 23:59:59'";
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
@@ -91,7 +79,7 @@ module.exports = {
         }
       });
 
-      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, users.email, coins.coin , coins.coin_code " + query, [])
+      let transactionData = await sails.sendNativeQuery("Select transaction_table.*, users.email,users.first_name,users.last_name, coins.coin , coins.coin_code " + query, [])
       transactionData = transactionData.rows;
 
       let transactionCount = await sails.sendNativeQuery("Select COUNT(transaction_table.id)" + countQuery, [])
@@ -100,7 +88,7 @@ module.exports = {
       if (transactionData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Transaction list"),
+          "message": sails.__("Transaction list").message,
           "data": transactionData,
           transactionCount,
           'default_send_Coin_fee': parseFloat(coinFee.value)
@@ -110,7 +98,7 @@ module.exports = {
       console.log(error);
       return res.json({
         "status": 200,
-        "message": "Something went wrong"
+        "message": sails.__("Something Wrong").message
       })
     }
   },
@@ -175,8 +163,8 @@ module.exports = {
       query += " transaction_table.created_at >= '" + await sails
         .helpers
         .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
-        .helpers
-        .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
     }
 
     countQuery = query;
@@ -199,7 +187,7 @@ module.exports = {
     if (transactionData) {
       return res.json({
         "status": 200,
-        "message": sails.__("Transaction list"),
+        "message": sails.__("Transaction list").message,
         "data": transactionData,
         transactionCount
       });

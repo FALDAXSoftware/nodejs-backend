@@ -29,7 +29,7 @@ module.exports = {
                 .status(403)
                 .json({
                   status: 403,
-                  "message": sails.__("error")
+                  "message": sails.__("error").message
                 });
             } else {
               var response = await sails
@@ -41,7 +41,7 @@ module.exports = {
                 .status(200)
                 .json({
                   status: 200,
-                  "message": sails.__("instruments data retireve success"),
+                  "message": sails.__("instruments data retireve success").message,
                   data: response
                 });
             }
@@ -51,7 +51,7 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
     } catch (error) {
@@ -60,7 +60,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -102,7 +102,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
-        query += " ORDER BY id ASC";
+        query += " ORDER BY id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let pairData = await sails.sendNativeQuery("Select *" + query, [])
@@ -123,7 +123,7 @@ module.exports = {
       if (pairData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Pair list"),
+          "message": sails.__("Pair list").message,
           "data": pairData,
           pairsCount,
           allCoins
@@ -135,7 +135,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -158,8 +158,8 @@ module.exports = {
         if (existingPair.length > 0) {
           return res.status(500).json({
             "status": 500,
-            "err": sails.__("pair already exist"),
-            error_at:sails.__("pair already exist")
+            "err": sails.__("pair already exist").message,
+            error_at:sails.__("pair already exist").message
           });
         }
 
@@ -176,14 +176,14 @@ module.exports = {
         if (pair_details) {
           return res.json({
             "status": 200,
-            "message": sails.__('Create Pair')
+            "message": sails.__('Create Pair').message
           });
         } else {
           return res
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__("not listed")
+              "err": sails.__("not listed").message
             });
         }
       } else {
@@ -191,7 +191,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "err": sails.__("Pair Name & coin is not sent")
+            "err": sails.__("Pair Name & coin is not sent").message
           });
       }
     } catch (error) {
@@ -200,7 +200,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }
@@ -217,7 +217,7 @@ module.exports = {
             .status(401)
             .json({
               "status": 401,
-              err: sails.__('invalid coin')
+              err: sails.__('invalid coin').message
             });
         }
         var updatedPair = await Pairs
@@ -231,19 +231,19 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message
             });
         }
         return res.json({
           "status": 200,
-          "message": sails.__('Update Pair')
+          "message": sails.__('Update Pair').message
         });
       } else {
         return res
           .status(400)
           .json({
             'status': 400,
-            'err': sails.__('pair id is not sent.')
+            'err': sails.__('pair id is not sent.').message
           })
       }
     } catch (error) {
@@ -253,7 +253,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
+          "err": sails.__("Something Wrong").message,
           error_at:error.stack
         });
     }

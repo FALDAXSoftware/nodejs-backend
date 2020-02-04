@@ -1,12 +1,12 @@
 /**
- * TransactionTable.js
+ * ResidualTransaction.js
  *
  * @description :: Represents a database table transaction_table.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
 module.exports = {
-  tableName: 'transaction_table',
+  tableName: 'residual_transactions',
   attributes: {
     source_address: {
       type: 'string',
@@ -20,22 +20,50 @@ module.exports = {
       type: 'string',
       columnName: 'amount'
     },
-    faldax_fee: {
-      type: "number",
-      columnName: "faldax_fee"
-    },
-    actual_amount: {
-      type: "number",
-      columnName: "actual_amount"
-    },
     user_id: {
       type: 'string',
       columnName: 'user_id',
       required: true
     },
+    is_executed: {
+      type: 'boolean',
+      columnName: 'is_executed'
+    },
     transaction_type: {
       type: 'string',
       columnName: 'transaction_type'
+    },
+    coin_id: {
+      type: 'number',
+      columnName: 'coin_id'
+    },
+    created_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'created_at'
+    },
+    updated_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'updated_at'
+    },
+    deleted_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'deleted_at'
+    },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
+    },
+    transaction_id: {
+      type: 'string',
+      columnName: 'transaction_id'
+    },
+    faldax_fee: {
+      type: "number",
+      columnName: "faldax_fee"
     },
     actual_network_fees: {
       type: "number",
@@ -45,31 +73,14 @@ module.exports = {
       type: "number",
       columnName: "estimated_network_fees"
     },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
+    },
     is_done: {
       type: 'boolean',
       columnName: 'is_done',
       defaultsTo: false
-    },
-    residual_amount: {
-      type: "number",
-      columnName: "residual_amount"
-    },
-    transaction_id: {
-      type: 'string',
-      columnName: 'transaction_id'
-    },
-    is_admin: {
-      type: 'boolean',
-      columnName: 'is_admin',
-      defaultsTo: false
-    },
-    coin_id: {
-      type: 'number',
-      columnName: 'coin_id'
-    },
-    is_executed: {
-      type: 'boolean',
-      columnName: 'is_executed'
     },
     sender_user_balance_before: {
       type: "number",
@@ -87,21 +98,11 @@ module.exports = {
       type: "string",
       columnName: "transaction_from"
     },
-    created_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'created_at'
-    },
-    updated_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'updated_at'
-    },
-    deleted_at: {
-      type: 'ref',
-      columnType: 'datetime',
-      columnName: 'deleted_at'
+    residual_amount: {
+      type: "number",
+      columnName: "residual_amount"
     }
+
   },
   beforeCreate: function (values, next) {
     values.created_at = new Date();

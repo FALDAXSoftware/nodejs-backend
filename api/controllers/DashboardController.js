@@ -44,7 +44,7 @@ module.exports = {
         .getActivity(user_id);
       res.json({
         "status": 200,
-        "message": sails.__("Activity retrived success"),
+        "message": sails.__("Activity retrived success").message,
         data: activity
       });
     } catch (error) {
@@ -53,8 +53,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -79,7 +79,7 @@ module.exports = {
       //   .getRisingFallingData(currency);
       res.json({
         "status": 200,
-        "message": sails.__("Rising Falling data retrived success"),
+        "message": sails.__("Rising Falling data retrived success").message,
         data: risingFalling
       });
     } catch (error) {
@@ -88,8 +88,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -112,7 +112,7 @@ module.exports = {
         .getPortfolio(user_id);
       res.json({
         "status": 200,
-        "message": sails.__("Portfolio retrived success"),
+        "message": sails.__("Portfolio retrived success").message,
         data: portfolio
       });
     } catch (error) {
@@ -121,8 +121,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -150,7 +150,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
@@ -161,7 +161,7 @@ module.exports = {
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
                       let cardDate = await sails
@@ -171,7 +171,7 @@ module.exports = {
                       return res.json({
                         status: 200,
                         data: cardDate,
-                        "message": sails.__("Card data retrived success")
+                        "message": sails.__("Card data retrived success").message
                       });
                     }
                   });
@@ -186,8 +186,8 @@ module.exports = {
                   .status(500)
                   .json({
                     status: 500,
-                    "err": sails.__("Something Wrong"),
-                    error_at:error.stack
+                    "err": sails.__("Something Wrong").message,
+                    error_at: error.stack
                   });
               } else {
                 let cardDate = await sails
@@ -197,7 +197,7 @@ module.exports = {
                 return res.json({
                   status: 200,
                   data: cardDate,
-                  "message": sails.__("Card data retrived success")
+                  "message": sails.__("Card data retrived success").message
                 });
               }
             });
@@ -207,7 +207,7 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
     } catch (error) {
@@ -216,8 +216,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -237,7 +237,7 @@ module.exports = {
         deleted_at: null
       });
       let inactiveUsers = await Users.count({
-        is_verified: true,
+        is_verified: false,
         is_active: false,
         deleted_at: null
       });
@@ -376,7 +376,7 @@ module.exports = {
       })
       return res.json({
         "status": 200,
-        "message": sails.__("Dashboard Data retrieved success"),
+        "message": sails.__("Dashboard Data retrieved success").message,
         activeCoins,
         InactiveCoins,
         activeUsers,
@@ -410,8 +410,8 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong"),
-          error_at:error.stack
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   }
