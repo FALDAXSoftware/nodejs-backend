@@ -142,13 +142,16 @@ module.exports = {
             if (!usd_value && usd_value != '') { (original_value = get_faldax_fee) }
             req_body.OrderQty = get_faldax_fee;
           }
+          console.log("get_faldax_fee before",get_faldax_fee)
           if (req_body.offer_code && req_body.offer_code != '') {
             dataValueOne = await offerApplyOrder(req_body, faldax_fee_value, flag);
             var faldax_feeRemainning = dataValueOne.final_faldax_fees_actual - dataValueOne.faldax_fees_offer;
             if (faldax_feeRemainning < 0) {
               faldax_feeRemainning = 0.0
             }
-            get_faldax_fee = parseFloat(get_faldax_fee) + parseFloat(faldax_feeRemainning).toFixed(8);
+            console.log(parseFloat(faldax_feeRemainning));
+            var feeValue = parseFloat(faldax_feeRemainning).toFixed(8)
+            get_faldax_fee = parseFloat(get_faldax_fee) + parseFloat(feeValue);
             dataValue = dataValueOne.priceValue;
             faldax_fee_value = dataValueOne.faldax_fees_offer;
           }
@@ -164,7 +167,7 @@ module.exports = {
           }
 
           original_value = totalValue;
-
+          console.log("get_faldax_fee",get_faldax_fee)
           returnData = {
             "network_fee": (get_network_fees > 0) ? (get_network_fees) : (0.0),
             "faldax_fee": (faldax_fee_value > 0) ? (faldax_fee_value) : (0.0),
