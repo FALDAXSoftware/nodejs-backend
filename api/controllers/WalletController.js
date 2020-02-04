@@ -1396,7 +1396,9 @@ module.exports = {
       let {
         amount,
         destination_address,
-        coin_code
+        coin_code,
+        networkFees,
+        total_fees
       } = req.allParams();
 
       let user_id = req.user.id;
@@ -1444,7 +1446,7 @@ module.exports = {
         //Checking if wallet is found or not
         if (wallet) {
           //If placed balance is greater than the amount to be send
-          if (wallet.placed_balance >= parseFloat(amount)) {
+          if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
             //If coin is of bitgo type
             if (coin.type == 1) {
@@ -1454,13 +1456,33 @@ module.exports = {
               // console.log(warmWalletData.balance >= coin.min_thresold)
               //Execute Transaction
 
+
+              let warmWalletData = await sails
+                          .helpers
+                          .wallet
+                          .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
+
+                        let sendWalletData = await sails
+                          .helpers
+                          .wallet
+                          .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
               // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
+              if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * 1e8)) {
               // Send to hot warm wallet and make entry in diffrent table for both warm to
               // receive and receive to destination
               // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
-              let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amount * 1e8).toString());
+              var valueFee = parseFloat(networkFees).toFixed(8)
+                            var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                            var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
+              let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
               //Here remainning ebtry as well as address change
+              var network_fees = (transaction.transfer.feeString);
+              var network_feesValue = parseFloat(network_fees / (1e8))
+              var totalFeeSub = 0;
+              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
+              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
+              console.log("totalFeeSub", totalFeeSub)
               let walletHistory = {
                 coin_id: wallet.coin_id,
                 source_address: wallet.send_address,
@@ -1470,7 +1492,12 @@ module.exports = {
                 transaction_type: 'send',
                 transaction_id: transaction.txid,
                 is_executed: false,
-                is_admin: true
+                is_admin: true,
+                faldax_fee: 0.0,
+                actual_network_fees: network_feesValue,
+                estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                is_done: false,
+                actual_amount: amount
               }
 
               console.log(walletHistory);
@@ -1483,14 +1510,15 @@ module.exports = {
 
               console.log("wallet.balance", wallet.balance)
               console.log("amount", amount)
+              var user_wallet_balance = wallet.balance;
               // update wallet balance
               await Wallet
                 .update({
                   id: wallet.id
                 })
                 .set({
-                  balance: wallet.balance - amount,
-                  placed_balance: wallet.placed_balance - amount
+                  balance: wallet.balance - totalFeeSub,
+                  placed_balance: wallet.placed_balance - totalFeeSub
                 });
 
               // Adding the transaction details in transaction table This is entry for sending
@@ -1500,14 +1528,19 @@ module.exports = {
                 source_address: warmWalletData.receiveAddress.address,
                 destination_address: wallet.send_address,
                 user_id: user_id,
-                amount: amount,
+                amount: parseFloat(amountValue / 1e8).toFixed(8),
                 transaction_type: 'send',
                 transaction_id: transaction.txid,
                 is_executed: true,
                 is_admin: true,
-                sender_user_balance_before: (wallet.balance),
+                faldax_fee: 0.0,
+                actual_network_fees: network_feesValue,
+                estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                is_done: false,
+                actual_amount: amount,
+                sender_user_balance_before: user_wallet_balance,
                 warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                actual_network_fees: parseFloat(((transaction.transfer.feeString)) / 1e8).toFixed(8),
+                // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / 1e8).toFixed(8),
                 transaction_from: sails.config.local.WARM_TO_SEND
               }
 
@@ -1526,6 +1559,14 @@ module.exports = {
                 message: parseFloat(amount).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
               });
             }
+          }else{
+            return res.status(500)
+            .json({
+              status:500,
+              "message":sails.__("Insufficient Balance in warm Wallet Withdraw Request").message    
+            })
+          }
+
           } else {
             // await logger.info({
             //   "module": "Wallet Send Coin Admin",
