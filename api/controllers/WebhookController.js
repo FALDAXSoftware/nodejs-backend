@@ -677,43 +677,67 @@ module.exports = {
 
               // Send To user's destination address
               var amount = parseFloat(walletHistoryValue.amount * 1e8).toFixed(8)
+              let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
               console.log("amount", amount)
               var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * 1e8).toFixed(8)
-              let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
-              let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistoryValue.destination_address, amount, network_fees)
-              console.log("sendTransfer", sendTransfer)
-              let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
-              console.log("warmWallet", warmWallet)
-              // Update in wallet history
-              await WalletHistory.update({
-                id: walletHistoryValue.id
-              }).set({
-                is_executed: true,
-                is_done: true,
-                transaction_id: sendTransfer.txid
-              });
+              let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
+              amountAfter = amount - get_static_fees_data;
+              console.log("Amount Value ", amountAfter)
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(req.body.coin, (amountAfter / 1e8), warmWalletBefore.receiveAddress.address);
 
-              console.log(sendTransfer);
+              amount = amount - reposneData.fee
 
-              // Log transaction in transaction table
-              await TransactionTable.create({
-                coin_id: walletHistoryValue.coin_id,
-                source_address: walletHistoryValue.source_address,
-                destination_address: walletHistoryValue.destination_address,
-                user_id: walletHistoryValue.user_id,
-                amount: parseFloat(amount / 1e8).toFixed(8),
-                is_admin: true,
-                transaction_type: 'send',
-                is_executed: true,
-                transaction_id: sendTransfer.txid,
-                estimated_network_fees: walletHistoryValue.estimated_network_fees,
-                actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
-                faldax_fee: 0.0,
-                actual_amount: walletHistoryValue.actual_amount,
-                warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from: sails.config.local.SEND_TO_DESTINATION,
-                residual_amount: parseFloat(walletHistoryValue.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
+              let size = reposneData.size; // in bytes
+              let get_sizefor_tx = size / 1024; // in kb
+              let amount_fee_rate = get_static_fees_data * get_sizefor_tx
+              console.log("get_static_fees_data", get_static_fees_data);
+              console.log("size", size);
+              console.log("get_sizefor_tx", get_sizefor_tx);
+              console.log("amount_fee_rate", amount_fee_rate);
+              reposneData.feeRate = parseInt(amount_fee_rate);
+              let coin = await Coins.findOne({
+                id: walletHistoryValue.coin_id
               });
+              if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(amount / 1e8)) {
+                console.log("amount>?>>>>", amount)
+                let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistoryValue.destination_address, parseFloat(amount), reposneData.feeRate)
+                console.log("sendTransfer", sendTransfer)
+                let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+                console.log("warmWallet", warmWallet)
+                // Update in wallet history
+                await WalletHistory.update({
+                  id: walletHistoryValue.id
+                }).set({
+                  is_executed: true,
+                  is_done: true,
+                  transaction_id: sendTransfer.txid
+                });
+
+                console.log(sendTransfer);
+
+                // Log transaction in transaction table
+                await TransactionTable.create({
+                  coin_id: walletHistoryValue.coin_id,
+                  source_address: walletHistoryValue.source_address,
+                  destination_address: walletHistoryValue.destination_address,
+                  user_id: walletHistoryValue.user_id,
+                  amount: parseFloat(amount / 1e8).toFixed(8),
+                  is_admin: true,
+                  transaction_type: 'send',
+                  is_executed: true,
+                  transaction_id: sendTransfer.txid,
+                  estimated_network_fees: walletHistoryValue.estimated_network_fees,
+                  actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
+                  faldax_fee: 0.0,
+                  actual_amount: walletHistoryValue.actual_amount,
+                  warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                  transaction_from: sails.config.local.SEND_TO_DESTINATION,
+                  residual_amount: parseFloat(walletHistoryValue.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
+                });
+              }
             }
           }
         }
