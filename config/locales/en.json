@@ -2806,13 +2806,6 @@
 		"message_english": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support.",
 		"message": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support."
 	},
-	"Insufficient Balance in warm Wallet Withdraw Request": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
-		"context": "Insufficient Balance in warm Wallet",
-		"message_type": "error",
-		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
-		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
-	},
 	"Invalid data provided": {
 		"page": "If invalid data provided",
 		"context": "Invalid data provided",
@@ -2910,5 +2903,12 @@
 		"message_type": "success",
 		"message_english": "User Account has been created Successfully. Verification Link has been sent to user.",
 		"message": "User Account has been created Successfully. Verification Link has been sent to user."
+	},
+	"Insufficient Balance in warm Wallet Withdraw Request": {
+		"page": "CMS - Approve/Disapprove withdraw requests",
+		"context": "Insufficient Balance in warm Wallet",
+		"message_type": "error",
+		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
+		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
 	}
 }
