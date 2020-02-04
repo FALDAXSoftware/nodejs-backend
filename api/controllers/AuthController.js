@@ -70,7 +70,7 @@ module.exports = {
               is_verified: true,
               is_new_email_verified: true,
               email_verify_token: null,
-              // hubspot_id: hubspotcontact
+              hubspot_id: hubspotcontact
             });
           await KYC
             .update({
