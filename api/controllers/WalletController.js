@@ -692,7 +692,7 @@ module.exports = {
                           "amount": parseFloat(amount),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
-                          "network_fee": networkFees
+                          "estimated_network_fees": networkFees
                         }
                         console.log(value);
                         var responseValue = await request({
@@ -938,9 +938,16 @@ module.exports = {
 
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
+              var coinDataValue = await Coins.findOne({
+                where: {
+                  deleted_at: null,
+                  is_active: true,
+                  id: walletTransData[j].coin_id
+                }
+              })
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
               walletTransData[j].network_fees = parseFloat(walletTransData[j].estimated_network_fees)
-              walletTransData[j].amount = (walletTransData[j].coin_id != 26) ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].amount).toFixed(10));
+              walletTransData[j].amount = (coinDataValue.coin_code != "SUSU") ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].amount).toFixed(10));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {
               walletTransData[j].faldax_fee = "-";
@@ -1500,6 +1507,7 @@ module.exports = {
                 is_admin: true,
                 sender_user_balance_before: (wallet.balance),
                 warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                actual_network_fees: parseFloat(((transaction.transfer.feeString)) / 1e8).toFixed(8),
                 transaction_from: sails.config.local.WARM_TO_SEND
               }
 
