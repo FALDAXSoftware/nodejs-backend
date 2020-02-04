@@ -1829,7 +1829,7 @@ module.exports = {
                             FROM public.transaction_table LEFT JOIN coins
                             ON transaction_table.coin_id = coins.id
                             WHERE coins.is_active = 'true' AND transaction_table.deleted_at IS NULL
-                            AND user_id = ${user_id}${filter}`
+                            AND transaction_table.user_id = ${user_id}${filter}`
 
         if (t_type) {
           walletLogs += " AND LOWER(transaction_table.transaction_type) LIKE '%" + t_type.toLowerCase() + "' "
