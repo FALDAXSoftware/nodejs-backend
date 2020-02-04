@@ -1740,10 +1740,12 @@ module.exports = {
         limit,
         data,
         start_date,
-        end_date
+        end_date,
+        t_type
       } = req.allParams();
 
       var user_id = req.user.id;
+      user_id = 36;
       var filter = ''
       console.log("coin_code", coin_code);
       if (wallet_type == 1) {
@@ -1810,22 +1812,27 @@ module.exports = {
         }
         if (data && data != '' && data != null) {
           filter += ' AND'
-          filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
+          filter += " (LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
-        var walletLogs = `SELECT wallet_history.source_address,coins.coin, wallet_history.destination_address,
-                            (CONCAT(wallet_history.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(8,7))) as amount,
-                            wallet_history.transaction_id, wallet_history.transaction_type, wallet_history.created_at, coins.coin_code
-                            FROM public.wallet_history LEFT JOIN coins
-                            ON wallet_history.coin_id = coins.id
-                            WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL
-                            AND user_id = ${user_id} AND is_admin = 'true'${filter}`
+        var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
+                            (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(9,8))) as amount,
+                            transaction_table.transaction_id, transaction_table.*,
+                            transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
+                            FROM public.transaction_table LEFT JOIN coins
+                            ON transaction_table.coin_id = coins.id
+                            WHERE coins.is_active = 'true' AND transaction_table.deleted_at IS NULL
+                            AND user_id = ${user_id}${filter}`
+
+        if (t_type) {
+          walletLogs += " AND LOWER(transaction_table.transaction_type) LIKE '%" + t_type.toLowerCase() + "' "
+        }
 
         if (start_date && end_date) {
           walletLogs += " AND "
 
-          walletLogs += " wallet_history.created_at >= '" + await sails
+          walletLogs += " transaction_table.created_at >= '" + await sails
             .helpers
-            .dateFormat(start_date) + " 00:00:00' AND wallet_history.created_at <= '" + await sails
+            .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
               .helpers
               .dateFormat(end_date) + " 23:59:59'";
         }
@@ -1836,11 +1843,11 @@ module.exports = {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
             'ASC');
-          walletLogs += " ORDER BY wallet_history." + sort_col + " " + sortVal;
+          walletLogs += " ORDER BY transaction_table." + sort_col + " " + sortVal;
         }
-
+        console.log(walletLogs);
+        console.log("dhvfb");
         walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
         var walletValue = await sails.sendNativeQuery(walletLogs, []);
 
         walletValue = walletValue.rows
