@@ -36,7 +36,8 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
-
+    console.log("access_token_value",access_token_value)
+    console.log("sails.config.local.BITGO_ENV_MODE",sails.config.local.BITGO_ENV_MODE)
     //Configuring bitgo
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
@@ -50,6 +51,7 @@ module.exports = {
       coin: inputs.coin
     });
 
+  console.log("coin",coin);
 
     var walletData = await Wallet.findOne({
       deleted_at: null,
