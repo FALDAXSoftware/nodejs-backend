@@ -34,7 +34,11 @@ module.exports = {
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
-          query = query + " AND (residual_transactions.transaction_from='" + data + "')";
+          query = query + " AND (residual_transactions.transaction_from='" + data + "' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%  OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%' ";
+          if (!isNaN(data)) {
+            query += " OR transaction_table.amount=" + data;
+          }
+          query += ")"
         }
       }
       countQuery = query;

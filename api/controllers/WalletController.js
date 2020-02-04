@@ -898,10 +898,10 @@ module.exports = {
   getWalletTransactionHistory: async function (req, res) {
     try {
       let {
-        coinReceive,
-        is_admin
+        coinReceive
       } = req.body;
-      if (is_admin == true && is_admin == "true") {
+      console.log("req.isAdmin", req.user.isAdmin)
+      if (req.user.isAdmin == true || req.user.isAdmin == "true") {
         req.user.id = 36
       }
       let coinData = await Coins.findOne({
@@ -918,7 +918,7 @@ module.exports = {
         coinData = JSON.parse(JSON.stringify(coinData));
         console.log(coinData);
         var walletTransData
-        if (is_admin && is_admin != undefined) {
+        if (req.user.isAdmin && req.user.isAdmin != undefined) {
           walletTransData = await WalletHistory
             .find({
               user_id: 36,
@@ -1008,7 +1008,7 @@ module.exports = {
 
         var object
         var walletUserData;
-        if (is_admin && is_admin != undefined) {
+        if (req.user.isAdmin && req.user.isAdmin != undefined) {
           walletUserData = await Wallet.findOne({
             user_id: (36),
             coin_id: coinData.id,
@@ -1292,7 +1292,7 @@ module.exports = {
       userData = await Admin.findOne({
         deleted_at: null,
         is_active: true,
-        id: user_id
+        id: 36
       });
       userData.flag = true;
       var walletDataCreate = await sails
@@ -1430,7 +1430,7 @@ module.exports = {
           deleted_at: null,
           coin_id: coin.id,
           is_active: true,
-          user_id: user_id,
+          user_id: 36,
           is_admin: true
         });
 
@@ -1506,24 +1506,6 @@ module.exports = {
               await TransactionTable.create({
                 ...addObject
               });
-
-              let addObject2 = {
-                coin_id: coin.id,
-                source_address: wallet.send_address,
-                destination_address: destination_address,
-                user_id: user_id,
-                amount: amount,
-                transaction_id: transaction.txid,
-                transaction_type: 'send',
-                is_executed: false,
-                is_admin: true,
-                warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                transaction_from: sails.config.local.SEND_TO_DESTINATION
-              }
-
-              await TransactionTable.create({
-                ...addObject2
-              })
 
               // await logger.info({
               //   "module": "Wallet Send Coin Admin",
