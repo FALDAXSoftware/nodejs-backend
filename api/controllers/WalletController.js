@@ -692,7 +692,7 @@ module.exports = {
                           "amount": parseFloat(amount),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
-                          "network_fee": networkFees
+                          "estimated_network_fees": networkFees
                         }
                         console.log(value);
                         var responseValue = await request({
