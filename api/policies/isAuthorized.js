@@ -36,7 +36,7 @@ module.exports = async function (req, res, next) {
       }
       // Logger for Socket
       var ip = requestIp.getClientIp(req);
-      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase()+"-"+(new Date().valueOf());
+      var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + (new Date().valueOf());
       req.headers['Logid'] = generate_unique_string;
       req.headers['ip_address'] = ip;
       var logger = require('../controllers/logger')
@@ -45,7 +45,7 @@ module.exports = async function (req, res, next) {
         url: req.url,
         type: "Success",
         log_id: req.headers['Logid'],
-        ip_address:req.headers['ip_address']
+        ip_address: req.headers['ip_address']
       };
       if (req.user && req.user.id) {
         object.user_id = "user_" + req.user.id;
@@ -59,7 +59,7 @@ module.exports = async function (req, res, next) {
       await logger.info(object, "Incoming Socket Request");
 
       var oldWrite = res.write,
-      oldEnd = res.end;
+        oldEnd = res.end;
       var chunks = [];
       res.write = function (chunk) {
         chunks.push(chunk);
@@ -73,15 +73,15 @@ module.exports = async function (req, res, next) {
         var message = 'Response message';
         var error_at = '';
         // console.log("body",body);
-        if( (body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status ){
-          if( JSON.parse(body).message ){
+        if ((body != "_sailsIoJSConnect();" && body != '') && IsValidJSONString(body) && JSON.parse(body).status) {
+          if (JSON.parse(body).message) {
             message = JSON.parse(body).message
           }
-          if( JSON.parse(body).err ){
+          if (JSON.parse(body).err) {
             message = JSON.parse(body).err
           }
-          if( res.statusCode > 200){
-            error_at = (JSON.parse(body).error_at ? (JSON.parse(body).error_at):"-");
+          if (res.statusCode > 200) {
+            error_at = (JSON.parse(body).error_at ? (JSON.parse(body).error_at) : "-");
           }
         }
         var response = body;
@@ -92,14 +92,14 @@ module.exports = async function (req, res, next) {
           statusCode: res.statusCode,
           // responseData:JSON.stringify(response),
           log_id: req.headers['Logid'],
-          ip_address:req.headers['ip_address']
+          ip_address: req.headers['ip_address']
         };
-        if( res.statusCode > 200){
+        if (res.statusCode > 200) {
           object.error_at = error_at;
         }
         // console.log("object",object);
         // if( res.statusCode != 200 && res.statusCode >= 201 ){
-          object.responseData = (body);
+        object.responseData = (body);
         // }
         if (req.user && req.user.id) {
           object.user_id = "user_" + req.user.id;
@@ -110,7 +110,7 @@ module.exports = async function (req, res, next) {
             object.user_id = "user_" + JSON.parse(body).user.id;
           }
           await logger.info(object, message);
-        }else{
+        } else {
           await logger.error(object, message);
         }
 
@@ -191,7 +191,7 @@ module.exports = async function (req, res, next) {
       });
       if (userData != undefined && userData.isAdmin != true) {
 
-        if (userData.deleted_at == null) {
+        if (userData.deleted_at == null && userData.is_active == true) {
           next();
         } else if (userData.deleted_at != null) {
           return res
@@ -200,7 +200,15 @@ module.exports = async function (req, res, next) {
               status: 403,
               err: sails.__('Your User has been deleted').message
             });
-        } else {
+        } else if (userData.is_active == false || userData.is_active == 'false') {
+          return res
+            .status(403)
+            .json({
+              status: 403,
+              err: sails.__('Your User has been deactivated').message
+            });
+        }
+        else {
           var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
           // var ip = clientIp;
           // if (req.headers['x-forwarded-for']) {
