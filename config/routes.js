@@ -520,6 +520,7 @@ module.exports.routes = {
 
   // network Fee
   "post /wallet/get-network-fee": "WalletController.getNetworkFeeData",
+  "post /admin/wallet/get-network-fee": "WalletController.getAdminNetworkFeeData",
 
   "get /health-check": "RootController.checkSystemHealth",
   "post /test-logs": "KrakenController.testLogs",
