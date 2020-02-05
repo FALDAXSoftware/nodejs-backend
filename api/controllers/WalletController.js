@@ -1863,7 +1863,11 @@ module.exports = {
       if (wallet_type == 1) {
         var queryAppended = false;
         if (coin_code && (coin_code != '' || coin_code != null)) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true;
         }
         if (data && data != '' && data != null) {
@@ -1986,7 +1990,11 @@ module.exports = {
         var queryAppended = false;
 
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true
         }
 
@@ -2061,7 +2069,11 @@ module.exports = {
       } else if (wallet_type == 4) {
 
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true
         }
 
