@@ -1218,10 +1218,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (userData.default_language ? userData.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: userData.first_name,
             coin: coin_code
           });
@@ -1232,7 +1235,7 @@ module.exports = {
             content: emailContent
           }, {
             to: userData.email,
-            subject: "User Wallet Address has been Created"
+            subject: language_subject
           }, function (err) {
             if (!err) {
 
@@ -1326,10 +1329,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = 'en';
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: userData.first_name,
             coin: coin_code
           });
@@ -1340,7 +1346,7 @@ module.exports = {
             content: emailContent
           }, {
             to: userData.email,
-            subject: "User Wallet Address has been Created"
+            subject: language_subject
           }, function (err) {
             if (!err) {
 
@@ -1773,7 +1779,7 @@ module.exports = {
                           wallet_history.created_at, coins.coin_code
                           FROM public.wallet_history LEFT JOIN coins
                           ON wallet_history.coin_id = coins.id
-                          WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL AND wallet_history.user_id = 36 
+                          WHERE coins.is_active = 'true' AND wallet_history.deleted_at IS NULL AND wallet_history.user_id = 36
                           AND wallet_history.is_admin = 'true' AND wallet_history.transaction_type = 'send'${filter}
                           AND wallet_history.faldax_fee > 0`
 
@@ -2322,7 +2328,273 @@ module.exports = {
           error_at: error.stack
         });
     }
+  },
+  /**
+  Get HotSendWallet Information
+  **/
+  getHotSendWalletInfo: async function (req, res) {
+    try {
+      let {
+        search
+      } = req.allParams();
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [{
+            coin: {
+              contains: search
+            }
+          },
+          {
+            coin_name: {
+              contains: search
+            }
+          }
+          ]
+        }
+      }
+      query.deleted_at = null
+      query.is_active = true
+
+      var coinData = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_send_wallet_address']
+        })
+        .sort('id ASC');
+
+      for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i].coin_code);
+        if (coinData[i].coin_code != 'SUSU') {
+
+          var wallet_data = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coinData[i].hot_send_wallet_address, coinData[i].coin_code);
+          console.log("wallet_data", wallet_data);
+          coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+          coinData[i].address = wallet_data.receiveAddress.address;
+        } else {
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              "wallet_id": "warm_wallet"
+            }
+          });
+          coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
+          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+        }
+      }
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          data: coinData,
+          message: sails.__("Warm wallet retrieve").message
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+  /**
+  Get HotSend Wallet Transaction list
+  /**/
+  getHotSendWalletTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        limit,
+        prevId,
+        searchLabel
+      } = req.allParams();
+      var coinData = await Coins.findOne({
+        select: [
+          'hot_send_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin_code
+        }
+      });
+
+      var data = {
+        prevId: prevId,
+        limit: limit,
+        searchLabel: searchLabel
+      }
+
+      if (coinData.coin_code != 'SUSU') {
+        var warmWalletData = await sails
+          .helpers
+          .bitgo
+          .getCoinTransfer(coinData.coin_code, coinData.hot_send_wallet_address, data);
+
+        var data = warmWalletData.transfers
+      } else {
+        var warmWalletData = {}
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "data": warmWalletData
+        })
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+   /**
+  Get HotReceiveWallet Information
+  **/
+ getHotReceiveWalletInfo: async function (req, res) {
+  try {
+    let {
+      search
+    } = req.allParams();
+    var query = {};
+    if (search && search != "" && search != null) {
+      query = {
+        or: [{
+          coin: {
+            contains: search
+          }
+        },
+        {
+          coin_name: {
+            contains: search
+          }
+        }
+        ]
+      }
+    }
+    query.deleted_at = null
+    query.is_active = true
+
+    var coinData = await Coins
+      .find({
+        where: query,
+        select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address']
+      })
+      .sort('id ASC');
+
+    for (var i = 0; i < coinData.length; i++) {
+      console.log(coinData[i].coin_code);
+      if (coinData[i].coin_code != 'SUSU') {
+
+        var wallet_data = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coinData[i].hot_receive_wallet_address, coinData[i].coin_code);
+        console.log("wallet_data", wallet_data);
+        coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+        coinData[i].address = wallet_data.receiveAddress.address;
+      } else {
+        var walletData = await Wallet.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            "wallet_id": "warm_wallet"
+          }
+        });
+        coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
+        coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+      }
+    }
+    return res
+      .status(200)
+      .json({
+        status: 200,
+        data: coinData,
+        message: sails.__("Warm wallet retrieve").message
+      })
+  } catch (error) {
+    return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong").message,
+        error_at: error.stack
+      });
   }
+},
+
+/**
+  Get HotReceive Wallet Transaction list
+  /**/
+  getHotReceiveWalletTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        limit,
+        prevId,
+        searchLabel
+      } = req.allParams();
+      var coinData = await Coins.findOne({
+        select: [
+          'hot_receive_wallet_address',
+          'coin_code'
+        ],
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin_code
+        }
+      });
+
+      var data = {
+        prevId: prevId,
+        limit: limit,
+        searchLabel: searchLabel
+      }
+
+      if (coinData.coin_code != 'SUSU') {
+        var warmWalletData = await sails
+          .helpers
+          .bitgo
+          .getCoinTransfer(coinData.coin_code, coinData.hot_receive_wallet_address, data);
+
+        var data = warmWalletData.transfers
+      } else {
+        var warmWalletData = {}
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "data": warmWalletData
+        })
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 
   // // Check Wallet Balance
   // checkWalletBalance: async function (req, res) {

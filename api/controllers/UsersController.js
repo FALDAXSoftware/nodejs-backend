@@ -191,10 +191,13 @@ module.exports = {
           let template = await EmailTemplate.findOne({
             slug
           });
+          let user_language = (user_detail.default_language ? user_detail.default_language : 'en');
+          let language_content = template.all_content[user_language].content;
+          let language_subject = template.all_content[user_language].subject;
           let emailContent = await sails
             .helpers
             .utilities
-            .formatEmail(template.content, {
+            .formatEmail(language_content, {
               recipientName: user_detail.first_name,
               token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
               tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
@@ -208,7 +211,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: user_detail.email,
-                subject: "Signup Verification"
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   return res.json({
@@ -308,10 +311,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (existedUser.default_language ? existedUser.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: existedUser.first_name,
             tokenCode: new_email_token
           });
@@ -322,7 +328,7 @@ module.exports = {
             content: emailContent
           }, {
             to: existedUser.email,
-            subject: "New Email Confirmation"
+            subject: language_subject
           }, function (err) {
             if (!err) {
               return res.json({
@@ -392,10 +398,13 @@ module.exports = {
           let template = await EmailTemplate.findOne({
             slug
           });
+          let user_language = (user.default_language ? user.default_language : 'en');
+          let language_content = template.all_content[user_language].content;
+          let language_subject = template.all_content[user_language].subject;
           let emailContent = await sails
             .helpers
             .utilities
-            .formatEmail(template.content, {
+            .formatEmail(language_content, {
               recipientName: user.first_name,
               token: sails.config.urlconf.APP_URL + '/login?emailCode=' + re_new_email_token
             });
@@ -406,7 +415,7 @@ module.exports = {
               content: emailContent
             }, {
               to: requested_email,
-              subject: "New Email Verification"
+              subject: language_subject
             }, function (err) {
               if (!err) {
                 return res.json({
@@ -500,10 +509,13 @@ module.exports = {
             let template = await EmailTemplate.findOne({
               slug
             });
+            let user_language = (user.default_language ? user.default_language : 'en');
+            let language_content = template.all_content[user_language].content;
+            let language_subject = template.all_content[user_language].subject;
             let emailContent = await sails
               .helpers
               .utilities
-              .formatEmail(template.content, {
+              .formatEmail(language_content, {
                 recipientName: user.first_name
               });
             sails
@@ -513,7 +525,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: user.email,
-                subject: "New Email Updated"
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   return res.json({
@@ -1015,10 +1027,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (user_details.default_language ? user_details.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: user_details.first_name
           })
 
@@ -1029,7 +1044,7 @@ module.exports = {
             content: emailContent
           }, {
             to: (user_details.email).trim(),
-            subject: template.name
+            subject: language_subject
           }, function (err) {
             if (!err) {
               return res.json({
@@ -1279,10 +1294,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (user.default_language ? user.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: user.first_name,
             status: "ENABLED"
           })
@@ -1294,7 +1312,7 @@ module.exports = {
             content: emailContent
           }, {
             to: (user.email).trim(),
-            subject: "2 Factor Authentication Enabled"
+            subject: language_subject
           }, function (err) {
             console.log("err", err);
             if (!err || err == null) {
@@ -1377,10 +1395,13 @@ module.exports = {
       let template = await EmailTemplate.findOne({
         slug
       });
+      let user_language = (user.default_language ? user.default_language : 'en');
+      let language_content = template.all_content[user_language].content;
+      let language_subject = template.all_content[user_language].subject;
       let emailContent = await sails
         .helpers
         .utilities
-        .formatEmail(template.content, {
+        .formatEmail(language_content, {
           recipientName: user.first_name,
           status: "DISABLED"
         })
@@ -1392,7 +1413,7 @@ module.exports = {
           content: emailContent
         }, {
           to: (user.email).trim(),
-          subject: "2 Factor Authentication Disabled"
+          subject: language_subject
         }, function (err) {
           if (!err) {
             return res.json({
@@ -1556,10 +1577,13 @@ module.exports = {
     let template = await EmailTemplate.findOne({
       slug
     });
+    let user_language = (user.default_language ? user.default_language : 'en');
+    let language_content = template.all_content[user_language].content;
+    let language_subject = template.all_content[user_language].subject;
     let emailContent = await sails
       .helpers
       .utilities
-      .formatEmail(template.content, {
+      .formatEmail(language_content, {
         summary: value,
         recipientName: user.first_name
       })
@@ -1571,7 +1595,7 @@ module.exports = {
           content: emailContent
         }, {
           to: user.email,
-          subject: "Delete Account Summary"
+          subject: language_subject
         }, async function (err) {
           if (!err) {
             // Check if user has requested for 2FA Forgot Request, then close it
@@ -2715,10 +2739,13 @@ module.exports = {
           let template = await EmailTemplate.findOne({
             slug
           });
+          let user_language = (generatedUser.default_language ? generatedUser.default_language : 'en');
+          let language_content = template.all_content[user_language].content;
+          let language_subject = template.all_content[user_language].subject;
           let emailContent = await sails
             .helpers
             .utilities
-            .formatEmail(template.content, {
+            .formatEmail(language_content, {
               recipientName: generatedUser.first_name,
               token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
               tokenCode: email_verify_token
@@ -2732,7 +2759,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: generatedUser.email,
-                subject: "Signup Verification"
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   return res.json({
@@ -2836,10 +2863,13 @@ module.exports = {
       var template = await EmailTemplate.findOne({
         slug
       });
+      let user_language = (user_details[0].default_language ? user_details[0].default_language : 'en');
+      let language_content = template.all_content[user_language].content;
+      let language_subject = template.all_content[user_language].subject;
       var emailContent = await sails
         .helpers
         .utilities
-        .formatEmail(template.content, {
+        .formatEmail(language_content, {
           recipientName: user_details[0].first_name,
           status: status
         })
@@ -2851,7 +2881,7 @@ module.exports = {
           content: emailContent
         }, {
           to: (user_details[0].email).trim(),
-          subject: "Security Feature"
+          subject: language_subject
         }, function (err) {
           if (!err) {
             return res.json({
@@ -2914,10 +2944,13 @@ module.exports = {
     var template = await EmailTemplate.findOne({
       slug
     });
+    let user_language = (user_details[0].default_language ? user_details[0].default_language : 'en');
+    let language_content = template.all_content[user_language].content;
+    let language_subject = template.all_content[user_language].subject;
     var emailContent = await sails
       .helpers
       .utilities
-      .formatEmail(template.content, {
+      .formatEmail(language_content, {
         recipientName: user_details[0].first_name,
         status: (status == true || status == "true" ? "Enabled" : "Disabled")
       })
@@ -2929,7 +2962,7 @@ module.exports = {
         content: emailContent
       }, {
         to: (user_details[0].email).trim(),
-        subject: "IP Whitelist status changed"
+        subject: language_subject
       }, function (err) {
         if (!err) {
           if (status == true || status == "true") {

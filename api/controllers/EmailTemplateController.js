@@ -30,13 +30,13 @@ module.exports = {
     try {
       let {
         id,
-        content
+        all_content
       } = req.allParams();
 
       await EmailTemplate.update({
         id
       }).set({
-        content
+        all_content
       });
       return res.json({
         status: 200,
