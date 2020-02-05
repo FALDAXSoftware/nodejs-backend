@@ -74,11 +74,14 @@ module.exports = {
             let template = await EmailTemplate.findOne({
               slug: slug
             });
+            let user_language = 'en';
+            let language_content = template.all_content[user_language].content;
+            let language_subject = template.all_content[user_language].subject;
             //Sending Email to users for notification
             let emailContent = await sails
               .helpers
               .utilities
-              .formatEmail(template.content, {
+              .formatEmail(language_content, {
                 recipientName: data.email
               });
 
@@ -89,7 +92,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: data.email,
-                subject: template.name
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   exits.success(template.name)

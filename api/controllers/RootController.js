@@ -74,11 +74,14 @@ module.exports = {
       let template = await EmailTemplate.findOne({
         slug
       });
+      let user_language = (user.default_language ? user.default_language : 'en');
+      let language_content = template.all_content[user_language].content;
+      let language_subject = template.all_content[user_language].subject;
       for (var i = 0; i < all_user_emails.length; i++) {
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: ''
           })
         if (template) {
@@ -90,7 +93,7 @@ module.exports = {
             }, {
               to: all_user_emails[i],
               to: value,
-              subject: "Panic Button"
+              subject: language_subject
             }, function (err) {
               console.log("err", err);
             });

@@ -81,10 +81,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (user_data.default_language ? user_data.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: user_data.first_name,
             newIPAddress: ip
           })
@@ -96,7 +99,7 @@ module.exports = {
             content: emailContent
           }, {
             to: (user_data.email).trim(),
-            subject: template.name
+            subject: language_subject
           }, function (err) {
             if (!err) {
               return res.status(200).json({
