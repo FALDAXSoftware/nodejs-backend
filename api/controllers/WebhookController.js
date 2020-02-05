@@ -1046,7 +1046,7 @@ module.exports = {
                 console.log("get_sizefor_tx", get_sizefor_tx);
                 console.log("amount_fee_rate", amount_fee_rate);
                 reposneData.feeRate = parseInt(amount_fee_rate);
-                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8)) {
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8) && warmWalletAmount > 0) {
                   var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
                   // send amount to warm wallet
                   console.log("warmwallet_balance_check", warmwallet_balance_check);
