@@ -1147,6 +1147,7 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
+        console.log("walletDataCreate", walletDataCreate)
         return res.json({
           status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
           message: (coin_code != "SUSU") ? (sails.__("Address Create Success")) : (walletDataCreate.message),
@@ -1161,6 +1162,7 @@ module.exports = {
         })
       }
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -1863,7 +1865,11 @@ module.exports = {
       if (wallet_type == 1) {
         var queryAppended = false;
         if (coin_code && (coin_code != '' || coin_code != null)) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true;
         }
         if (data && data != '' && data != null) {
@@ -1986,7 +1992,11 @@ module.exports = {
         var queryAppended = false;
 
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true
         }
 
@@ -2061,7 +2071,11 @@ module.exports = {
       } else if (wallet_type == 4) {
 
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
           queryAppended = true
         }
 
