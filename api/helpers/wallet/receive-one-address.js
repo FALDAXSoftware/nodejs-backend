@@ -140,7 +140,8 @@ module.exports = {
         if (inputs.user.flag == true) {
           var walletData = await Wallet
             .update({
-              "id": body.data.id,
+              "receive_address": body.data.receive_address,
+              "send_address": body.data.send_address,
               deleted_at: null
             })
             .set({
@@ -151,12 +152,15 @@ module.exports = {
           var walletData = await Wallet.findOne({
             where: {
               deleted_at: null,
-              id: body.data.id
+              "receive_address": body.data.receive_address,
+              "send_address": body.data.send_address
             }
           })
         }
         console.log("walletData", walletData);
-        return exits.success(walletData);
+        body.data = walletData;
+        console.log(body)
+        return exits.success(body);
         // return body;
       });
     }
