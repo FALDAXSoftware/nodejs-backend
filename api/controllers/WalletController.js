@@ -1937,7 +1937,7 @@ module.exports = {
           filter += " (LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
-                            (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(9,8))) as amount,
+                            (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(10,8))) as amount,
                             transaction_table.transaction_id, transaction_table.*,
                             transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
                             FROM public.transaction_table LEFT JOIN coins
