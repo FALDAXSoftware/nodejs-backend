@@ -166,5 +166,59 @@ module.exports.cron = {
         }
       }
     }
-  }
+  },
+  //  test: {
+  //   schedule: '* * * * *',
+  //   onTick: async function () {
+  //     var get_data = await EmailTemplate.find();
+  //     for( var i=0;i<get_data.length;i++){
+  //       let content = {};
+  //       content['en']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "English"
+  //       }
+  //       content['ja']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "Japanese"
+  //       }
+  //       content['es']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "Spanish"
+  //       }
+  //       content['uk']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "Ukrainian"
+  //       }
+  //       content['ru']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "Russia"
+  //       }
+  //       content['zh']={
+  //         subject : get_data[i].name,
+  //         content : get_data[i].content,
+  //         note : get_data[i].note,
+  //         language : "Mandarin"
+  //       }
+
+  //       console.log(content);
+  //       await EmailTemplate.
+  //       update({
+  //         id: get_data[i].id
+  //       })
+  //       .set({
+  //         "all_content": content
+  //       });
+  //     }
+  //   }
+  // }
 };

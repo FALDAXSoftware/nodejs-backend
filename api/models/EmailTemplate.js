@@ -43,6 +43,12 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    all_content: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'all_content',
+      defaultsTo: {}
     }
   },
   beforeCreate: (values, next) => {

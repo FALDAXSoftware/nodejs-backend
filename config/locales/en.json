@@ -2910,5 +2910,12 @@
 		"message_type": "error",
 		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
 		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
+	},
+	"Your User has been deactivated": {
+		"page": "User -Acrtive/deactive",
+		"context": "User has been deactivated",
+		"message_type": "error",
+		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
+		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
 	}
 }

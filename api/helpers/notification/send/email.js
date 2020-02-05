@@ -34,6 +34,9 @@ module.exports = {
     let template = await EmailTemplate.findOne({
       slug: slug
     });
+    let user_language = (user.default_language ? user.default_language : 'en');
+    let language_content = template.all_content[user_language].content;
+    let language_subject = template.all_content[user_language].subject;
     // console.log("Email Template Value >>>>>>>>>>", template);
     var object = {};
     object.recipientName = user.first_name;
@@ -68,7 +71,7 @@ module.exports = {
     let emailContent = await sails
       .helpers
       .utilities
-      .formatEmail(template.content, {
+      .formatEmail(language_content, {
         object
       });
 
@@ -79,7 +82,7 @@ module.exports = {
         content: emailContent
       }, {
         to: user.email,
-        subject: template.name
+        subject: language_subject
       }, function (err) {
         console.log("err",err);
         if (!err) {
