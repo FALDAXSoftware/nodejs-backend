@@ -1551,7 +1551,7 @@ module.exports = {
           }
         }
         var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-        walletCount[i].fiat = get_jst_price[0].ask_price;
+        walletCount[i].fiat = (get_jst_price && get_jst_price.length > 0) ? (get_jst_price[0].ask_price) : (0.0)
         usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
       }
     } else if (referCount.length > 0) {

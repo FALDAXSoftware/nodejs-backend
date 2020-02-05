@@ -2566,7 +2566,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit']
         })
         .sort('created_at DESC');
 
@@ -2578,7 +2578,9 @@ module.exports = {
             .findOne({
               is_active: true,
               is_admin: true,
-              coin_id: asset_id
+              coin_id: asset_id,
+              deleted_at: null,
+              user_id: 36
             });
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
