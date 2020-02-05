@@ -513,6 +513,10 @@ module.exports.routes = {
   "get /admin/get-warm-wallet-transaction": "WalletController.getWarmWalletTransaction",
   "get /admin/get-cold-wallet-data": "WalletController.getColdWalletInfo",
   "get /admin/get-cold-wallet-transaction": "WalletController.getColdWalletTransaction",
+  "get /admin/get-hotsend-wallet-data": "WalletController.getHotSendWalletInfo",
+  "get /admin/get-hotsend-wallet-transaction": "WalletController.getHotSendWalletTransaction",
+  "get /admin/get-hotreceive-wallet-data": "WalletController.getHotReceiveWalletInfo",
+  "get /admin/get-hotreceive-wallet-transaction": "WalletController.getHotReceiveWalletTransaction",
   // Temp
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
@@ -520,6 +524,7 @@ module.exports.routes = {
 
   // network Fee
   "post /wallet/get-network-fee": "WalletController.getNetworkFeeData",
+  "post /admin/wallet/get-network-fee": "WalletController.getAdminNetworkFeeData",
 
   "get /health-check": "RootController.checkSystemHealth",
   "post /test-logs": "KrakenController.testLogs",

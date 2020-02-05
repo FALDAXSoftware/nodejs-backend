@@ -358,6 +358,9 @@ module.exports = {
                   let template = await EmailTemplate.findOne({
                     slug
                   });
+                  let user_language = (user_detail.default_language ? user_detail.default_language : 'en');
+                  let language_content = template.all_content[user_language].content;
+                  let language_subject = template.all_content[user_language].subject;
 
                   // Notification Sending for users
                   var userNotification = await UserNotification.findOne({
@@ -376,7 +379,7 @@ module.exports = {
                     }
                   }
 
-                  let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
+                  let emailContent = await sails.helpers.utilities.formatEmail(language_content, {
                     homeLink: sails.config.urlconf.APP_URL,
                     recipientName: user_detail.first_name,
                     token: verifyToken,
@@ -390,7 +393,7 @@ module.exports = {
                       content: emailContent
                     }, {
                       to: user_detail["email"],
-                      subject: "New Device Confirmation"
+                      subject: language_subject
                     }, function (err) {
                       if (!err) {
                         return res
@@ -620,10 +623,13 @@ module.exports = {
     let template = await EmailTemplate.findOne({
       slug
     });
+    let user_language = (user.default_language ? user.default_language : 'en');
+    let language_content = template.all_content[user_language].content;
+    let language_subject = template.all_content[user_language].subject;
     let emailContent = await sails
       .helpers
       .utilities
-      .formatEmail(template.content, {
+      .formatEmail(language_content, {
         recipientName: admin_details.name,
         code: user.auth_code
       });
@@ -634,7 +640,7 @@ module.exports = {
         content: emailContent
       }, {
         to: user.email,
-        subject: "Authentication Code"
+        subject: language_subject
       }, function (error) {
         if (!error) {
           return res.json({
@@ -746,10 +752,13 @@ module.exports = {
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (user.default_language ? user.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: user.first_name,
             tokenCode: email_verify_code
           });
@@ -760,7 +769,7 @@ module.exports = {
             content: emailContent
           }, {
             to: req.body.email,
-            subject: "Signup Verification"
+            subject: language_subject
           }, function (err) {
             if (!err) {
               return res.json({
@@ -841,10 +850,13 @@ module.exports = {
             let template = await EmailTemplate.findOne({
               slug
             });
+            let user_language = (user_details.default_language ? user_details.default_language : 'en');
+            let language_content = template.all_content[user_language].content;
+            let language_subject = template.all_content[user_language].subject;
             let emailContent = await sails
               .helpers
               .utilities
-              .formatEmail(template.content, {
+              .formatEmail(language_content, {
                 recipientName: user_details.first_name
               })
 
@@ -855,7 +867,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: (user_details.email).trim(),
-                subject: template.name
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   return res.json({
@@ -942,15 +954,17 @@ module.exports = {
 
       // Email sending stopped for performance testing
 
-
       let slug = "forgot_password"
       let template = await EmailTemplate.findOne({
         slug
       });
+      let user_language = (user_details.default_language ? user_details.default_language : 'en');
+      let language_content = template.all_content[user_language].content;
+      let language_subject = template.all_content[user_language].subject;
       let emailContent = await sails
         .helpers
         .utilities
-        .formatEmail(template.content, {
+        .formatEmail(language_content, {
           recipientName: updatedUser[0].first_name,
           token: sails.config.urlconf.APP_URL + '/reset-password?reset_token=' + reset_token
         })
@@ -962,7 +976,7 @@ module.exports = {
           content: emailContent
         }, {
           to: user_details.email,
-          subject: "Forgot Password"
+          subject: language_subject
         }, function (err) {
           console.log("err", err);
           if (!err) {
@@ -1092,13 +1106,18 @@ module.exports = {
         } else {
           slug = "signup_for_web"
         }
+
+
         let template = await EmailTemplate.findOne({
           slug
         });
+        let user_language = (user.default_language ? user.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
         let emailContent = await sails
           .helpers
           .utilities
-          .formatEmail(template.content, {
+          .formatEmail(language_content, {
             recipientName: user.first_name,
             token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_code,
             tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
@@ -1111,7 +1130,7 @@ module.exports = {
             content: emailContent
           }, {
             to: req.body.email,
-            subject: "Signup Verification"
+            subject: language_subject
           }, function (err) {
             if (!err) {
               return res.json({
