@@ -2545,7 +2545,9 @@ module.exports = {
             .findOne({
               is_active: true,
               is_admin: true,
-              coin_id: asset_id
+              coin_id: asset_id,
+              deleted_at: null,
+              user_id: 36
             });
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';

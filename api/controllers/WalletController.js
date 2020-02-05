@@ -686,13 +686,13 @@ module.exports = {
                               })
                           }
                         }
-                      } else {
+                      } else if (coin_code == "SUSU") {
                         var value = {
                           "user_id": parseInt(user_id),
                           "amount": parseFloat(amount),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
-                          "estimated_network_fees": networkFees
+                          "network_fee": networkFees
                         }
                         console.log(value);
                         var responseValue = await request({
@@ -1402,7 +1402,9 @@ module.exports = {
       } = req.allParams();
 
       let user_id = req.user.id;
+      user_id = 36;
       console.log(user_id);
+      console.log(coin_code)
       var today = moment().utc().format();
 
       var yesterday = moment()
@@ -1423,14 +1425,19 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      let warmWalletData = await sails
-        .helpers
-        .wallet
-        .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-      let sendWalletData = await sails
-        .helpers
-        .wallet
-        .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+      if (coin.type == 1) {
+
+        let warmWalletData = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
+        let sendWalletData = await sails
+          .helpers
+          .wallet
+          .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+      }
+
+      console.log("coin", coin)
 
       //If coin is found
       if (coin) {
@@ -1442,6 +1449,7 @@ module.exports = {
           user_id: 36,
           is_admin: true
         });
+        console.log("wallet", wallet)
 
         //Checking if wallet is found or not
         if (wallet) {
@@ -1558,13 +1566,62 @@ module.exports = {
                   status: 200,
                   message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
+              } else {
+                return res.status(500)
+                  .json({
+                    status: 500,
+                    "message": sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
+                  })
               }
-            } else {
-              return res.status(500)
-                .json({
-                  status: 500,
-                  "message": sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
-                })
+            } else if (coin_code == "SUSU") {
+              console.log("INSIDE SUSU COIN")
+              // Sending SUSU coin
+              var value = {
+                "user_id": parseInt(user_id),
+                "amount": parseFloat(amount),
+                "destination_address": destination_address,
+                "faldax_fee": 0.0,
+                "network_fee": networkFees,
+                "is_admin": true
+              }
+
+              console.log("value", value);
+              var responseValue = await request({
+                url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
+                method: "POST",
+                headers: {
+
+                  'x-token': 'faldax-susucoin-node',
+                  'Content-Type': 'application/json'
+                },
+                body: value,
+                json: true
+              }, function (err, httpResponse, body) {
+                console.log("body", body)
+                console.log(err)
+                if (err) {
+                  return (err);
+                }
+                if (body.error) {
+                  return (body);
+                }
+                // return body;
+                if (body.status == 200) {
+                  return res
+                    .status(200)
+                    .json({
+                      "status": 200,
+                      "message": amount + " " + coin.coin_code + " " + sails.__("Token send success").message
+                    })
+                } else {
+                  return res
+                    .status(201)
+                    .json({
+                      "status": 201,
+                      "message": body.message
+                    })
+                }
+              });
             }
 
           } else {
@@ -1857,7 +1914,11 @@ module.exports = {
           })
       } else if (wallet_type == 2) {
         if (coin_code && coin_code != '' && coin_code != null) {
-          filter += ` AND coins.coin_code = '${coin_code}'`
+          if (coin_code == "susu") {
+            filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+          } else {
+            filter += ` AND coins.coin_code = '${coin_code}'`
+          }
         }
         if (data && data != '' && data != null) {
           filter += ' AND'
@@ -1871,6 +1932,8 @@ module.exports = {
                             ON transaction_table.coin_id = coins.id
                             WHERE coins.is_active = 'true' AND transaction_table.deleted_at IS NULL
                             AND transaction_table.user_id = ${user_id}${filter}`
+
+        console.log(walletLogs)
 
         if (t_type) {
           walletLogs += " AND LOWER(transaction_table.transaction_type) LIKE '%" + t_type.toLowerCase() + "' "
