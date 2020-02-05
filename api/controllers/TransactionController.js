@@ -24,7 +24,7 @@ module.exports = {
     } = req.allParams();
     try {
       let query = " from transaction_table LEFT JOIN users ON transaction_table.user_id = users.id LEFT JOIN coins ON transaction_table.coin_id = coins.id";
-      query += " WHERE transaction_table.is_admin='false'";
+      query += " WHERE transaction_table.is_admin='false' AND users.email IS NOT NULL AND users.first_name IS NOT NULL  AND users.last_name IS NOT NULL ";
 
       if ((data && data != "")) {
         if (data && data != "" && data != null) {

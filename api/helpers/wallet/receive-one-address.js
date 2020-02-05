@@ -56,6 +56,7 @@ module.exports = {
       coin_id: coin.id,
       user_id: parseInt(inputs.user.id),
     })
+    console.log("coin", coin)
     console.log((coin.type == 1))
     let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
     if (coin.type == 1) {
@@ -128,14 +129,34 @@ module.exports = {
         },
         body: value,
         json: true
-      }, function (err, httpResponse, body) {
+      }, async function (err, httpResponse, body) {
+        console.log("body", body);
         if (err) {
           return exits.error(err);
         }
         if (body.error) {
           return exits.error(body);
         }
-        return exits.success(body);
+        if (inputs.user.flag == true) {
+          var walletData = await Wallet
+            .update({
+              "id": body.data.id,
+              deleted_at: null
+            })
+            .set({
+              "is_admin": true
+            })
+            .fetch();
+        } else {
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              id: body.data.id
+            }
+          })
+        }
+        console.log("walletData", walletData);
+        return exits.success(walletData);
         // return body;
       });
     }

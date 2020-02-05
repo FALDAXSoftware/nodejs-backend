@@ -1243,7 +1243,7 @@
 		"context": "The password reset link has been emailed, please follow the instructions in the email to continue.",
 		"message_type": "success",
 		"message_english": "The password reset link has been emailed, please follow the instructions in the email to continue.",
-		"message": "The password reset link has been emailed, please follow the instructions in the email to continue."
+		"message": "パスワードリセットリンクがメールで送信されました。メールの指示に従って続行してください."
 	},
 	"User Log out success": {
 		"page": "Logout",
