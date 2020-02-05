@@ -122,7 +122,7 @@ module.exports = {
             // User Limit Increased/Decreased Information Email
 
             let user = await Users.find({
-              select: ['first_name', 'email'],
+              select: ['first_name', 'email','default_language'],
               where: {
                 id: req.body.user_id
               }
@@ -132,10 +132,13 @@ module.exports = {
             let template = await EmailTemplate.findOne({
               slug
             });
+            let user_language = (user.default_language ? user.default_language : 'en');
+            let language_content = template.all_content[user_language].content;
+            let language_subject = template.all_content[user_language].subject;
             let emailContent = await sails
               .helpers
               .utilities
-              .formatEmail(template.content, {
+              .formatEmail(language_content, {
                 recipientName: user[0].first_name,
               });
             sails
@@ -145,7 +148,7 @@ module.exports = {
                 content: emailContent
               }, {
                 to: user[0].email,
-                subject: "User Limit Updation"
+                subject: language_subject
               }, function (err) {
                 if (!err) {
                   return res.json({
