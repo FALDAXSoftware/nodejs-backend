@@ -704,7 +704,7 @@ module.exports = {
                       } else if (coin_code == "SUSU") {
                         var value = {
                           "user_id": parseInt(user_id),
-                          "amount": parseFloat(amount),
+                          "amount": parseFloat(total_fees),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
                           "network_fee": networkFees
@@ -967,8 +967,8 @@ module.exports = {
             } else if (walletTransData[j].transaction_type == 'receive') {
               walletTransData[j].faldax_fee = "-";
               walletTransData[j].network_fees = "-"
-              walletTransData[j].total = (parseFloat(walletTransData[j].amount));
-              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount)).toFixed(8);
+              walletTransData[j].total = (parseFloat(walletTransData[j].actual_amount));
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].actual_amount)).toFixed(8);
             }
           }
         }
@@ -1615,7 +1615,7 @@ module.exports = {
               // Sending SUSU coin
               var value = {
                 "user_id": parseInt(user_id),
-                "amount": parseFloat(amount),
+                "amount": parseFloat(total_fees),
                 "destination_address": destination_address,
                 "faldax_fee": 0.0,
                 "network_fee": networkFees,
