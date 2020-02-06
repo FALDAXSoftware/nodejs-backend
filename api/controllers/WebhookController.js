@@ -612,6 +612,12 @@ module.exports = {
 
       // Check Status of Transaction
       if (req.body.state == "confirmed") {
+        var division = sails.config.local.DIVIDE_EIGHT;
+        if (req.body.coin == "teth" || req.body.coin == "eth") {
+          division = sails.config.local.DIVIDE_NINE;
+        } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
+          division = sails.config.local.DIVIDE_SIX;
+        }
 
         let transferId = req.body.transfer;
         console.log("transferId", transferId)
@@ -629,10 +635,15 @@ module.exports = {
           if (walletHistory) {
 
             // Send To user's destination address
-            var amount = ((walletHistory.amount - walletHistory.faldax_fee) * 1e8).toFixed(8);
+            var amount = ((walletHistory.amount - walletHistory.faldax_fee) * division).toFixed(8);
             console.log("amount", amount)
-            var network_fees = parseFloat(walletHistory.estimated_network_fees * 1e8).toFixed(8)
+            var network_fees = parseFloat(walletHistory.estimated_network_fees * division).toFixed(8)
             let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
+            if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
+              amount = amount.toString();
+            } else {
+              amount = parseFloat(amount)
+            }
             let sendTransfer = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistory.destination_address, amount, network_fees)
             console.log("sendTransfer", sendTransfer)
             let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
@@ -673,15 +684,21 @@ module.exports = {
               is_admin: true,
               user_id: 36
             });
+
             console.log("walletHistoryValue", walletHistoryValue);
             if (walletHistoryValue) {
 
               // Send To user's destination address
-              let amount = parseFloat(walletHistoryValue.amount * 1e8).toFixed(8)
-              var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * 1e8).toFixed(8)
+              let amount = parseFloat(walletHistoryValue.amount * division).toFixed(8)
+              var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * division).toFixed(8)
               let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
               console.log("amount>?>>>>", amount)
-              let sendTransferValue = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistoryValue.destination_address, parseFloat(amount), network_fees)
+              if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
+                amount = amount.toString();
+              } else {
+                amount = parseFloat(amount)
+              }
+              let sendTransferValue = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, walletHistoryValue.destination_address, amount, network_fees)
               console.log("sendTransfer", sendTransferValue)
               let warmWalletValue = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
               console.log("warmWallet", warmWalletValue)
@@ -793,7 +810,12 @@ module.exports = {
 
       if (req.body.state == "confirmed") {
         console.log("Confirmed On Receive ?????????", req.body);
-
+        var division = sails.config.local.DIVIDE_EIGHT;
+        if (req.body.coin == "teth" || req.body.coin == "eth") {
+          division = sails.config.local.DIVIDE_NINE;
+        } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
+          division = sails.config.local.DIVIDE_SIX;
+        }
         let isToken = false;
         let transferId = req.body.transfer;
         console.log("transferId", transferId)
@@ -897,7 +919,7 @@ module.exports = {
             console.log("dest", dest, "source", source)
 
             // transaction amount
-            let amount = (dest.value / 1e8);
+            let amount = (dest.value / division);
 
             console.log("amount", amount)
             console.log("userWallet", userWallet)
@@ -1023,29 +1045,35 @@ module.exports = {
                 }
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
-                let get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
-                warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
-                console.log("warmWalletAmount after static fees", warmWalletAmount);
+                if (req.body.coin != "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
+                  var get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
+                  warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
+                  console.log("warmWalletAmount after static fees", warmWalletAmount);
 
-                var reposneData = await sails
-                  .helpers
-                  .wallet
-                  .getNetworkFee(req.body.coin, (warmWalletAmountAfter / 1e8), warmWallet.receiveAddress.address);
+                  var reposneData = await sails
+                    .helpers
+                    .wallet
+                    .getNetworkFee(req.body.coin, (warmWalletAmountAfter / 1e8), warmWallet.receiveAddress.address);
 
-                console.log("reposneData", reposneData)
-                console.log("Fee Rate ??????", reposneData.feeRate);
+                  console.log("reposneData", reposneData)
+                  console.log("Fee Rate ??????", reposneData.feeRate);
 
-                warmWalletAmount = warmWalletAmount - reposneData.fee
-                console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
-                // Calculate Sizes
-                let size = reposneData.size; // in bytes
-                let get_sizefor_tx = size / 1024; // in kb
-                let amount_fee_rate = get_static_fees_data * get_sizefor_tx
-                console.log("get_static_fees_data", get_static_fees_data);
-                console.log("size", size);
-                console.log("get_sizefor_tx", get_sizefor_tx);
-                console.log("amount_fee_rate", amount_fee_rate);
-                reposneData.feeRate = parseInt(amount_fee_rate);
+                  warmWalletAmount = warmWalletAmount - reposneData.fee
+                  console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
+                  // Calculate Sizes
+                  var size = reposneData.size; // in bytes
+                  var get_sizefor_tx = size / 1024; // in kb
+                  var amount_fee_rate = get_static_fees_data * get_sizefor_tx
+                  console.log("get_static_fees_data", get_static_fees_data);
+                  console.log("size", size);
+                  console.log("get_sizefor_tx", get_sizefor_tx);
+                  console.log("amount_fee_rate", amount_fee_rate);
+                  reposneData.feeRate = parseInt(amount_fee_rate);
+                } else if (req.body.coin == 'txrp' || req.body.coin == 'xrp') {
+                  var feesValue = parseFloat(45 / division).toFixed(8)
+                  warmWalletAmount = warmWalletAmount - 45;
+                }
+
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8) && warmWalletAmount > 0) {
                   var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
                   // send amount to warm wallet
@@ -1055,19 +1083,19 @@ module.exports = {
                   transactionLog.push({
                     source_address: userWallet.receive_address,
                     destination_address: warmWallet.receiveAddress.address,
-                    amount: parseFloat(warmWalletAmount / 1e8).toFixed(8),
+                    amount: parseFloat(warmWalletAmount / division).toFixed(8),
                     user_id: userWallet.user_id,
                     transaction_type: "receive",
                     coin_id: coin.id,
                     is_executed: true,
                     transaction_id: warmwallet_balance_check.txid,
-                    estimated_network_fees: parseFloat((reposneData.fee) / 1e8).toFixed(8),
-                    actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8),
+                    estimated_network_fees: parseFloat((reposneData.fee) / division).toFixed(8),
+                    actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8),
                     faldax_fee: 0.0,
-                    actual_amount: parseFloat(dest.value / 1e8).toFixed(8),
-                    warm_wallet_balance_before: parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                    actual_amount: parseFloat(dest.value / division).toFixed(8),
+                    warm_wallet_balance_before: parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                     transaction_from: sails.config.local.RECEIVE_TO_WARM,
-                    residual_amount: parseFloat((reposneData.fee) / 1e8).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
+                    residual_amount: parseFloat((reposneData.fee) / division).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
                   });
 
                   // Insert logs in taransaction table
