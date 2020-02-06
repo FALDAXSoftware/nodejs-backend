@@ -513,7 +513,7 @@ module.exports = {
                               console.log("faldaxFees", faldaxFees)
                               let admin_network_fees = 0.0;
                               if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                                admin_network_fees = parseFloat(networkFees);
+                                admin_network_fees = parseFloat(networkFees).toFixed(division);
                               }
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
                               var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
@@ -2707,19 +2707,32 @@ module.exports = {
     try {
       var data = req.body;
       console.log(data);
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if (data.coin == 'xrp' || data.coin == 'txrp') {
+        division = sails.config.local.DIVIDE_SIX;
+      } else if (coin_code == 'eth' || coin_code == 'teth') {
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
       if (data.coin != "SUSU") {
-        var reposneData = await sails
-          .helpers
-          .wallet
-          .getNetworkFee(data.coin, data.amount, data.dest_address);
+        var reposneData = {};
+        if (data.coin == 'xrp' || data.coin == 'txrp') {
+          reposneData.fee = 45;
+        } else {
+          reposneData = await sails
+            .helpers
+            .wallet
+            .getNetworkFee(data.coin, data.amount, data.dest_address);
+        }
+        var reposneDataValue;
+        if (data.coin == "eth" || data.coin == "teth") {
+          reposneDataValue = 2 * (reposneData)
+        } else {
+          console.log("reposneData", reposneData);
+          reposneDataValue = 2 * (reposneData.fee);
+        }
+
         console.log("reposneData", reposneData);
         reposneDataValue = 2 * (reposneData.fee);
-        var division = sails.config.local.DIVIDE_EIGHT;
-        if (data.coin == 'xrp' || data.coin == 'txrp') {
-          division = sails.config.local.DIVIDE_SIX;
-        } else if (coin_code == 'eth' || coin_code == 'teth') {
-          division = sails.config.local.DIVIDE_EIGHTEEN;
-        }
         return res
           .status(200)
           .json({
