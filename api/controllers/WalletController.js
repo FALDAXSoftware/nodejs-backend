@@ -967,8 +967,8 @@ module.exports = {
             } else if (walletTransData[j].transaction_type == 'receive') {
               walletTransData[j].faldax_fee = "-";
               walletTransData[j].network_fees = "-"
-              walletTransData[j].total = (parseFloat(walletTransData[j].amount));
-              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].amount)).toFixed(8);
+              walletTransData[j].total = (parseFloat(walletTransData[j].actual_amount));
+              walletTransData[j].amount = parseFloat(parseFloat(walletTransData[j].actual_amount)).toFixed(8);
             }
           }
         }
