@@ -174,6 +174,7 @@ module.exports = {
       send_data,
       sails.config.local.LoggerIncoming
     );
+    console.log(send_data);
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
       method: "POST",

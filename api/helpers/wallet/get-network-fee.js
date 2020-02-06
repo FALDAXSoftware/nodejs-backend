@@ -48,7 +48,7 @@ module.exports = {
         if(inputs.coin == "eth" || inputs.coin == 'teth'){
             var recipients = [
                 {
-                    "amount": (inputs.amount).toString(),
+                    "amount": (inputs.amount * 1e9).toString(),
                     "address": inputs.address
                 }
             ]

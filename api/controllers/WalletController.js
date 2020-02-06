@@ -262,7 +262,7 @@ module.exports = {
       if( coin_code == 'xrp' || coin_code == 'txrp'){
         division = sails.config.local.DIVIDE_SIX;
       }else if( coin_code == 'eth' || coin_code == 'teth'){
-        division = sails.config.local.DIVIDE_EIGHTEEN;
+        division = sails.config.local.DIVIDE_NINE;
       }
 
       let user_id = req.user.id;
@@ -475,13 +475,17 @@ module.exports = {
                           console.log("warmWalletData",warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
-                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
+                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division) || true) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            var valueFee = parseFloat(networkFees).toFixed(8)
-                            var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
-                            var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                            if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                              var amountValue = parseFloat(amount * division).toFixed(8);
+                            }else{
+                              var valueFee = parseFloat(networkFees).toFixed(8)
+                              var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                              var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                            }
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
                             console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
