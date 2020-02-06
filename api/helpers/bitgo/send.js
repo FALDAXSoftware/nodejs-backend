@@ -80,7 +80,8 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
         } else if (coinData.hot_send_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+        //   passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+          passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
           console.log("In hot_send_wallet_address");
         } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
