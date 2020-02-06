@@ -736,7 +736,7 @@ module.exports = {
                           .status(200)
                           .json({
                             "status": 200,
-                            "message": amount + " " + coin.coin_code + " " + sails.__("Token send success").message
+                            "message": total_fees + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       }
                     } else {
@@ -1648,7 +1648,7 @@ module.exports = {
                     .status(200)
                     .json({
                       "status": 200,
-                      "message": amount + " " + coin.coin_code + " " + sails.__("Token send success").message
+                      "message": total_fees + " " + coin.coin_code + " " + sails.__("Token send success").message
                     })
                 } else {
                   return res
