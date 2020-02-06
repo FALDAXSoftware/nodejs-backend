@@ -1919,7 +1919,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
@@ -2009,7 +2009,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
@@ -2094,7 +2094,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT on (user_id)user_id,wallets.send_address,wallets.receive_address from wallets ORDER BY user_id DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id=users.id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
