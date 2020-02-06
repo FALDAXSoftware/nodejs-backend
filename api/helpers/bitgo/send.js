@@ -88,7 +88,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-        passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+        passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
       }else if (inputs.coin == "ltc") { // LTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
