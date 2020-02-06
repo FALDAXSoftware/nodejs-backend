@@ -55,6 +55,7 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
+      console.log("inputs", inputs);
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
     var passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     var coinData = await Coins.findOne({
@@ -74,7 +75,7 @@ module.exports = {
       );
     console.log("coinData",coinData);
     if (coinData && coinData != undefined) {
-      if (inputs.coin_code == "btc" ) { // BTC
+      if (inputs.coin == "btc" ) { // BTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -89,7 +90,7 @@ module.exports = {
           console.log("In custody_wallet_address");
         }
         passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
-      }else if (inputs.coin_code == "ltc") { // LTC
+      }else if (inputs.coin == "ltc") { // LTC
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -103,7 +104,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-      }else if (inputs.coin_code == "xrp") { // XRP
+      }else if (inputs.coin == "xrp") { // XRP
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_XRP_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -117,7 +118,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-      }else if (inputs.coin_code == "eth") { // ETH
+      }else if (inputs.coin == "eth") { // ETH
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_ETH_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -137,7 +138,8 @@ module.exports = {
     } else {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
-
+    passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+    console.log("passphrase_value",passphrase_value);
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     var send_data = {
       address: inputs.address,
@@ -152,6 +154,7 @@ module.exports = {
     send_data.comment = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
     send_data.sequenceId = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
     // send_data.label = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());
+    console.log("send_data",send_data);
     await sails.helpers.loggerFormat(
       "Bitgo Send",
       sails.config.local.LoggerWebhook,
