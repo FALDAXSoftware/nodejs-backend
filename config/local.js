@@ -242,5 +242,9 @@ module.exports.local = {
   WARM_TO_SEND:"Warmwallet to Send",
   SEND_TO_DESTINATION:"Send to Destination",
   RECEIVE_TO_WARM:"Receive to Warmwallet",
-  RECEIVE_TO_DESTINATION:"Destination To Receive"
+  RECEIVE_TO_DESTINATION:"Destination To Receive",
+  DIVIDE_SIX:1e6,
+  DIVIDE_EIGHT:1e8,
+  DIVIDE_EIGHTEEN:1e18,
+  DIVIDE_NINE:1e9
 }
