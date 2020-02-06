@@ -143,16 +143,25 @@ module.exports = {
 
     console.log("passphrase_value", passphrase_value);
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
+
     var send_data = {
       address: inputs.address,
-      amount: parseFloat(inputs.amount),
+      // amount: parseFloat(inputs.amount),
       walletPassphrase: wallet_passphrase
     };
-    if (inputs.feeRate && inputs.feeRate > 0) {
-      send_data.feeRate = inputs.feeRate;
-      // send_data.fee = inputs.feeRate;
-      // send_data.maxFeeRate = inputs.feeRate;
+
+    send_data.amount = parseFloat(inputs.amount);
+    if ( inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" ){
+      send_data.amount = (inputs.amount).toString();
     }
+    if ( inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" ){
+      if (inputs.feeRate && inputs.feeRate > 0) {
+        send_data.feeRate = inputs.feeRate;
+        // send_data.fee = inputs.feeRate;
+        // send_data.maxFeeRate = inputs.feeRate;
+      }
+    }
+
     send_data.comment = 'Timestamp_' + Math.random().toString(36).substring(2) + "_" + (new Date().getTime());
     send_data.sequenceId = 'Timestamp_' + Math.random().toString(36).substring(2) + "_" + (new Date().getTime());
     // send_data.label = 'Timestamp_'+Math.random().toString(36).substring(2)+"_"+(new Date().getTime());

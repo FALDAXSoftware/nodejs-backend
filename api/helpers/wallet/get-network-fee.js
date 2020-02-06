@@ -45,12 +45,21 @@ module.exports = {
             is_active: true
         })
 
-        var recipients = [
-            {
-                "amount": parseFloat((inputs.amount * 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
-                "address": inputs.address
-            }
-        ]
+        if(inputs.coin == "eth" || inputs.coin == 'teth'){
+            var recipients = [
+                {
+                    "amount": (inputs.amount).toString(),
+                    "address": inputs.address
+                }
+            ]
+        }else{
+            var recipients = [
+                {
+                    "amount": parseFloat((inputs.amount * 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
+                    "address": inputs.address
+                }
+            ]
+        }
 
         console.log("recipients", recipients)
 
@@ -79,7 +88,18 @@ module.exports = {
                 if (body.error) {
                     return exits.error(body);
                 }
-                var feeValue = body.feeInfo
+                var feeValue;
+                if(inputs.coin == "eth" || inputs.coin == "teth"){
+                    let gasLimit = body.gasLimit;
+                    let gasPrice = body.gasPrice;
+                    gasPrice = parseFloat(gasPrice / sails.config.local.DIVIDE_NINE).toFixed(8);
+                    feeValue = parseFloat(gasPrice) * parseFloat(gasLimit)
+                }else if(inputs.coin == 'xrp' || inputs.coin == 'txrp'){
+                    feeValue = body.txInfo.Fee
+                }else{
+                    feeValue = body.feeInfo
+                }
+                console.log("feeValue", feeValue);
                 return exits.success(feeValue);
             });
         } else {

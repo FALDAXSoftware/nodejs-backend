@@ -43,6 +43,9 @@ module.exports = {
         .then(resData => resData.json())
         .then(resData => {
           walletAddressData = resData;
+          if ( inputs.coin_code == "txrp" || inputs.coin_code == "xrp" ){
+            resData.balance = resData.balanceString;
+          }
           return exits.success(walletAddressData);
         });
     } catch (err) {

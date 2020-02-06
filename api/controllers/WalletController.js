@@ -258,6 +258,13 @@ module.exports = {
         faldaxFees
       } = req.allParams();
 
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if( coin_code == 'xrp' || coin_code == 'txrp'){
+        division = sails.config.local.DIVIDE_SIX;
+      }else if( coin_code == 'eth' || coin_code == 'teth'){
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
+
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -465,23 +472,23 @@ module.exports = {
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait === undefined) {
-
+                          console.log("warmWalletData",warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
-                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * 1e8)) {
+                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
                             var valueFee = parseFloat(networkFees).toFixed(8)
                             var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
-                            var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
+                            var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
                             console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("total_payout", total_payout)
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
-                            var network_feesValue = parseFloat(network_fees / (1e8))
+                            var network_feesValue = parseFloat(network_fees / (division))
                             var totalFeeSub = 0;
                             totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
                             totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
@@ -579,7 +586,7 @@ module.exports = {
                               source_address: warmWalletData.receiveAddress.address,
                               destination_address: wallet.send_address,
                               user_id: user_id,
-                              amount: parseFloat(amountValue / 1e8).toFixed(8),
+                              amount: parseFloat(amountValue / division).toFixed(8),
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
@@ -589,7 +596,7 @@ module.exports = {
                               is_done: false,
                               actual_amount: amount,
                               sender_user_balance_before: user_wallet_balance,
-                              warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                              warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                               transaction_from: sails.config.local.WARM_TO_SEND
                             }
 
@@ -1408,7 +1415,12 @@ module.exports = {
         networkFees,
         total_fees
       } = req.allParams();
-
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if( coin_code == 'xrp' || coin_code == 'txrp'){
+        division = sails.config.local.DIVIDE_SIX;
+      }else if( coin_code == 'eth' || coin_code == 'teth'){
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
       let user_id = req.user.id;
       user_id = 36;
       console.log(user_id);
@@ -1484,17 +1496,17 @@ module.exports = {
                 .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
               // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
-              if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * 1e8)) {
+              if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                 // Send to hot warm wallet and make entry in diffrent table for both warm to
                 // receive and receive to destination
-                // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * 1e8).toString());
+                // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
                 var valueFee = parseFloat(networkFees).toFixed(8)
                 var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
-                var amountValue = parseFloat(sendAmount * 1e8).toFixed(8)
+                var amountValue = parseFloat(sendAmount * division).toFixed(8)
                 let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
                 //Here remainning ebtry as well as address change
                 var network_fees = (transaction.transfer.feeString);
-                var network_feesValue = parseFloat(network_fees / (1e8))
+                var network_feesValue = parseFloat(network_fees / (division))
                 var totalFeeSub = 0;
                 totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
                 totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
@@ -1544,7 +1556,7 @@ module.exports = {
                   source_address: warmWalletData.receiveAddress.address,
                   destination_address: wallet.send_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / 1e8).toFixed(8),
+                  amount: parseFloat(amountValue / division).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: transaction.txid,
                   is_executed: true,
@@ -1555,8 +1567,8 @@ module.exports = {
                   is_done: false,
                   actual_amount: amount,
                   sender_user_balance_before: user_wallet_balance,
-                  warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                  // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / 1e8).toFixed(8),
+                  warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                  // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
                   transaction_from: sails.config.local.WARM_TO_SEND
                 }
 
@@ -2404,19 +2416,36 @@ module.exports = {
     try {
       var data = req.body;
       console.log(data);
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if( data.coin == 'xrp' || data.coin == 'txrp'){
+        division = sails.config.local.DIVIDE_SIX;
+      }else if( data.coin == 'eth' || data.coin == 'teth'){
+        division = sails.config.local.DIVIDE_NINE;
+      }
       if (data.coin != "SUSU") {
-        var reposneData = await sails
-          .helpers
-          .wallet
-          .getNetworkFee(data.coin, data.amount, data.address);
-        console.log("reposneData", reposneData);
+        var reposneData={};
+        if( data.coin == 'xrp' || data.coin == 'txrp'){
+          reposneData.fee = 45;
+        }else{
+          reposneData = await sails
+            .helpers
+            .wallet
+            .getNetworkFee(data.coin, data.amount, data.address);
+
+        }
+        if(data.coin == "eth" || data.coin == "teth"){
+          reposneDataValue = 2 * (reposneData)
+        }else{
+          console.log("reposneData", reposneData);
         reposneDataValue = 2 * (reposneData.fee);
+        }
+
         return res
           .status(200)
           .json({
             "status": 200,
             "message": sails.__("Fee retrieve Success").message,
-            "data": parseFloat(reposneDataValue / 1e8).toFixed(8)
+            "data": parseFloat(reposneDataValue / division).toFixed(8)
           })
       } else {
         return res
@@ -2668,12 +2697,18 @@ module.exports = {
           .getNetworkFee(data.coin, data.amount, data.dest_address);
         console.log("reposneData", reposneData);
         reposneDataValue = 2 * (reposneData.fee);
+        var division = sails.config.local.DIVIDE_EIGHT;
+        if( data.coin == 'xrp' || data.coin == 'txrp'){
+          division = sails.config.local.DIVIDE_SIX;
+        }else if( coin_code == 'eth' || coin_code == 'teth'){
+          division = sails.config.local.DIVIDE_EIGHTEEN;
+        }
         return res
           .status(200)
           .json({
             "status": 200,
             "message": sails.__("Fee retrieve Success").message,
-            "data": parseFloat(reposneDataValue / 1e8).toFixed(8)
+            "data": parseFloat(reposneDataValue / division).toFixed(8)
           })
       } else {
         return res
