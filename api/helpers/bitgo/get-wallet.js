@@ -58,6 +58,9 @@ module.exports = {
       if (body.error) {
         return exits.error(body);
       }
+      if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == 'teth' || inputs.coin == 'eth') {
+        body.balance = body.balanceString;
+      }
       return exits.success(body);
     });
   }
