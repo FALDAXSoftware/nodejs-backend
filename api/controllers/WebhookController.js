@@ -953,7 +953,7 @@ module.exports = {
                 transaction_type: 'receive',
                 transaction_id: req.body.hash,
                 receiver_user_balance_before: userWallet.balance,
-                warm_wallet_balance_before: parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                warm_wallet_balance_before: (parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
                 transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
               }
 
@@ -1045,6 +1045,7 @@ module.exports = {
                 }
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
+                var feeValue = 0.0
                 if (req.body.coin != "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
                   var get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
                   warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
@@ -1069,13 +1070,27 @@ module.exports = {
                   console.log("get_sizefor_tx", get_sizefor_tx);
                   console.log("amount_fee_rate", amount_fee_rate);
                   reposneData.feeRate = parseInt(amount_fee_rate);
+                  var feeRateValue = reposneData.feeRate
+                  feeValue = (reposneData.fee / division)
                 } else if (req.body.coin == 'txrp' || req.body.coin == 'xrp') {
                   var feesValue = parseFloat(45 / division).toFixed(8)
                   warmWalletAmount = warmWalletAmount - 45;
+                  feeValue = parseFloat(45 / 1000000).toFixed(8)
+                } else if (req.body.coin == 'teth' || req.body.coin == 'eth') {
+                  var reposneData = await sails
+                    .helpers
+                    .wallet
+                    .getNetworkFee(req.body.coin, (warmWalletAmount / 1e8), warmWallet.receiveAddress.address);
+                  feeValue = (reposneData / division)
                 }
 
+                console.log(feeValue)
+
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8) && warmWalletAmount > 0) {
-                  var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, reposneData.feeRate)
+                  if (coin.coin_code == "teth" || coin.coin_code == 'eth' || coin.coin_code == "txrp" || coin.coin_code == "xrp") {
+                    feeRateValue = 0.0
+                  }
+                  var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, feeRateValue)
                   // send amount to warm wallet
                   console.log("warmwallet_balance_check", warmwallet_balance_check);
                   let transactionLog = [];
@@ -1089,13 +1104,13 @@ module.exports = {
                     coin_id: coin.id,
                     is_executed: true,
                     transaction_id: warmwallet_balance_check.txid,
-                    estimated_network_fees: parseFloat((reposneData.fee) / division).toFixed(8),
+                    estimated_network_fees: parseFloat((feeValue)).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8),
                     faldax_fee: 0.0,
-                    actual_amount: parseFloat(dest.value / division).toFixed(8),
+                    actual_amount: (feeValue).toFixed(8),
                     warm_wallet_balance_before: parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                     transaction_from: sails.config.local.RECEIVE_TO_WARM,
-                    residual_amount: parseFloat((reposneData.fee) / division).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
+                    residual_amount: parseFloat((feeValue)).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
                   });
 
                   // Insert logs in taransaction table
