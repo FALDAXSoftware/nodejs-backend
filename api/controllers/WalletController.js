@@ -475,7 +475,7 @@ module.exports = {
                           console.log("warmWalletData", warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
-                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division) || true) {
+                          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division) ) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
@@ -513,7 +513,7 @@ module.exports = {
                               console.log("faldaxFees", faldaxFees)
                               let admin_network_fees = 0.0;
                               if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                                admin_network_fees = parseFloat(networkFees).toFixed(division);
+                                admin_network_fees = parseFloat(networkFees).toFixed(8);
                               }
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
                               var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);

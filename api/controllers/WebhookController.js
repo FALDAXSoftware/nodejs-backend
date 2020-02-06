@@ -665,17 +665,17 @@ module.exports = {
               source_address: walletHistory.source_address,
               destination_address: walletHistory.destination_address,
               user_id: walletHistory.user_id,
-              amount: parseFloat(amount / 1e8).toFixed(8),
+              amount: parseFloat(amount / division).toFixed(8),
               transaction_type: 'send',
               is_executed: true,
               transaction_id: sendTransfer.txid,
               estimated_network_fees: walletHistory.estimated_network_fees,
-              actual_network_fees: parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8),
+              actual_network_fees: parseFloat(sendTransfer.transfer.feeString / division).toFixed(8),
               faldax_fee: 0.0,
               actual_amount: walletHistory.actual_amount,
-              warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+              warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
               transaction_from: sails.config.local.SEND_TO_DESTINATION,
-              residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / 1e8).toFixed(8)
+              residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / division).toFixed(8)
             });
           } else {
             let walletHistoryValue = await WalletHistory.findOne({
@@ -719,16 +719,16 @@ module.exports = {
                 source_address: walletHistoryValue.source_address,
                 destination_address: walletHistoryValue.destination_address,
                 user_id: walletHistoryValue.user_id,
-                amount: parseFloat(amount / 1e8).toFixed(8),
+                amount: parseFloat(amount / division).toFixed(8),
                 is_admin: true,
                 transaction_type: 'send',
                 is_executed: true,
                 transaction_id: sendTransferValue.txid,
                 estimated_network_fees: walletHistoryValue.estimated_network_fees,
-                actual_network_fees: parseFloat(sendTransferValue.transfer.feeString / 1e8).toFixed(8),
+                actual_network_fees: parseFloat(sendTransferValue.transfer.feeString / division).toFixed(8),
                 faldax_fee: 0.0,
                 actual_amount: walletHistoryValue.actual_amount,
-                warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
+                warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                 transaction_from: sails.config.local.SEND_TO_DESTINATION,
                 residual_amount: parseFloat(walletHistoryValue.estimated_network_fees) - parseFloat(sendTransferValue.transfer.feeString / 1e8).toFixed(8)
               });
@@ -953,7 +953,7 @@ module.exports = {
                 transaction_type: 'receive',
                 transaction_id: req.body.hash,
                 receiver_user_balance_before: userWallet.balance,
-                warm_wallet_balance_before: (parseFloat(warmWallet.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
+                warm_wallet_balance_before: (parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION)),
                 transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
               }
 
@@ -1026,7 +1026,7 @@ module.exports = {
                 // custodialWalletAmount = (dest.value * 20) / 100;
 
                 console.log(coin)
-                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(warmWalletAmount / 1e8)) {
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(warmWalletAmount / division)) {
                   warmWalletAmount = dest.value;
                   // custodialWalletAmount = 0.0;
                 }
@@ -1054,7 +1054,7 @@ module.exports = {
                   var reposneData = await sails
                     .helpers
                     .wallet
-                    .getNetworkFee(req.body.coin, (warmWalletAmountAfter / 1e8), warmWallet.receiveAddress.address);
+                    .getNetworkFee(req.body.coin, (warmWalletAmountAfter / division), warmWallet.receiveAddress.address);
 
                   console.log("reposneData", reposneData)
                   console.log("Fee Rate ??????", reposneData.feeRate);
@@ -1080,13 +1080,13 @@ module.exports = {
                   var reposneData = await sails
                     .helpers
                     .wallet
-                    .getNetworkFee(req.body.coin, (warmWalletAmount / 1e8), warmWallet.receiveAddress.address);
+                    .getNetworkFee(req.body.coin, (warmWalletAmount / division), warmWallet.receiveAddress.address);
                   feeValue = (reposneData / division)
                 }
 
                 console.log(feeValue)
 
-                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / 1e8) && warmWalletAmount > 0) {
+                if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / division) && warmWalletAmount > 0) {
                   if (coin.coin_code == "teth" || coin.coin_code == 'eth' || coin.coin_code == "txrp" || coin.coin_code == "xrp") {
                     feeRateValue = 0.0
                   }
@@ -1110,7 +1110,7 @@ module.exports = {
                     actual_amount: (feeValue).toFixed(8),
                     warm_wallet_balance_before: parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                     transaction_from: sails.config.local.RECEIVE_TO_WARM,
-                    residual_amount: parseFloat((feeValue)).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (1e8)).toFixed(8)
+                    residual_amount: parseFloat((feeValue)).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8)
                   });
 
                   // Insert logs in taransaction table
