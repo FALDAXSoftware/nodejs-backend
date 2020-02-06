@@ -511,8 +511,12 @@ module.exports = {
                               var totalAdminFees = 0;
                               console.log("adminWalletDetails", adminWalletDetails.balance)
                               console.log("faldaxFees", faldaxFees)
-                              var updatedBalance = parseFloat(adminWalletDetails.balance) + (parseFloat(faldaxFees));
-                              var updatedPlacedBalance = parseFloat(adminWalletDetails.placed_balance) + (parseFloat(faldaxFees));
+                              let admin_network_fees = 0.0;
+                              if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                                admin_network_fees = parseFloat(networkFees).toFixed(division);
+                              }
+                              var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
+                              var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
                               totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
                               var updatedData = await Wallet
                                 .update({
@@ -1504,9 +1508,14 @@ module.exports = {
                 // Send to hot warm wallet and make entry in diffrent table for both warm to
                 // receive and receive to destination
                 // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
-                var valueFee = parseFloat(networkFees).toFixed(8)
-                var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
-                var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                  var amountValue = parseFloat(amount * division).toFixed(8);
+                }else{
+                  var valueFee = parseFloat(networkFees).toFixed(8)
+                  var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                  var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                }
+
                 let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
                 //Here remainning ebtry as well as address change
                 var network_fees = (transaction.transfer.feeString);
@@ -1543,14 +1552,18 @@ module.exports = {
                 console.log("wallet.balance", wallet.balance)
                 console.log("amount", amount)
                 var user_wallet_balance = wallet.balance;
+                let admin_network_fees = 0.0;
+                if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                  admin_network_fees = parseFloat(networkFees).toFixed(8);
+                }
                 // update wallet balance
                 await Wallet
                   .update({
                     id: wallet.id
                   })
                   .set({
-                    balance: wallet.balance - totalFeeSub,
-                    placed_balance: wallet.placed_balance - totalFeeSub
+                    balance: (wallet.balance - totalFeeSub)+admin_network_fees,
+                    placed_balance: (wallet.placed_balance - totalFeeSub)+admin_network_fees
                   });
 
                 // Adding the transaction details in transaction table This is entry for sending
