@@ -259,9 +259,9 @@ module.exports = {
       } = req.allParams();
 
       var division = sails.config.local.DIVIDE_EIGHT;
-      if( coin_code == 'xrp' || coin_code == 'txrp'){
+      if (coin_code == 'xrp' || coin_code == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      }else if( coin_code == 'eth' || coin_code == 'teth'){
+      } else if (coin_code == 'eth' || coin_code == 'teth') {
         division = sails.config.local.DIVIDE_NINE;
       }
 
@@ -472,16 +472,16 @@ module.exports = {
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait === undefined) {
-                          console.log("warmWalletData",warmWalletData);
+                          console.log("warmWalletData", warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division) || true) {
 
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                            if (coin.coin_code == "teth" || coin.coin_code == "eth") {
                               var amountValue = parseFloat(amount * division).toFixed(8);
-                            }else{
+                            } else {
                               var valueFee = parseFloat(networkFees).toFixed(8)
                               var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
@@ -512,7 +512,7 @@ module.exports = {
                               console.log("adminWalletDetails", adminWalletDetails.balance)
                               console.log("faldaxFees", faldaxFees)
                               let admin_network_fees = 0.0;
-                              if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                              if (coin.coin_code == "teth" || coin.coin_code == "eth") {
                                 admin_network_fees = parseFloat(networkFees).toFixed(division);
                               }
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
@@ -1424,9 +1424,9 @@ module.exports = {
         total_fees
       } = req.allParams();
       var division = sails.config.local.DIVIDE_EIGHT;
-      if( coin_code == 'xrp' || coin_code == 'txrp'){
+      if (coin_code == 'xrp' || coin_code == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      }else if( coin_code == 'eth' || coin_code == 'teth'){
+      } else if (coin_code == 'eth' || coin_code == 'teth') {
         division = sails.config.local.DIVIDE_EIGHTEEN;
       }
       let user_id = req.user.id;
@@ -1508,9 +1508,9 @@ module.exports = {
                 // Send to hot warm wallet and make entry in diffrent table for both warm to
                 // receive and receive to destination
                 // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
-                if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                if (coin.coin_code == "teth" || coin.coin_code == "eth") {
                   var amountValue = parseFloat(amount * division).toFixed(8);
-                }else{
+                } else {
                   var valueFee = parseFloat(networkFees).toFixed(8)
                   var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                   var amountValue = parseFloat(sendAmount * division).toFixed(8)
@@ -1553,7 +1553,7 @@ module.exports = {
                 console.log("amount", amount)
                 var user_wallet_balance = wallet.balance;
                 let admin_network_fees = 0.0;
-                if(coin.coin_code == "teth" || coin.coin_code == "eth"){
+                if (coin.coin_code == "teth" || coin.coin_code == "eth") {
                   admin_network_fees = parseFloat(networkFees).toFixed(8);
                 }
                 // update wallet balance
@@ -1562,8 +1562,8 @@ module.exports = {
                     id: wallet.id
                   })
                   .set({
-                    balance: (wallet.balance - totalFeeSub)+admin_network_fees,
-                    placed_balance: (wallet.placed_balance - totalFeeSub)+admin_network_fees
+                    balance: (wallet.balance - totalFeeSub) + admin_network_fees,
+                    placed_balance: (wallet.placed_balance - totalFeeSub) + admin_network_fees
                   });
 
                 // Adding the transaction details in transaction table This is entry for sending
@@ -2434,27 +2434,27 @@ module.exports = {
       var data = req.body;
       console.log(data);
       var division = sails.config.local.DIVIDE_EIGHT;
-      if( data.coin == 'xrp' || data.coin == 'txrp'){
+      if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      }else if( data.coin == 'eth' || data.coin == 'teth'){
+      } else if (data.coin == 'eth' || data.coin == 'teth') {
         division = sails.config.local.DIVIDE_NINE;
       }
       if (data.coin != "SUSU") {
-        var reposneData={};
-        if( data.coin == 'xrp' || data.coin == 'txrp'){
+        var reposneData = {};
+        if (data.coin == 'xrp' || data.coin == 'txrp') {
           reposneData.fee = 45;
-        }else{
+        } else {
           reposneData = await sails
             .helpers
             .wallet
             .getNetworkFee(data.coin, data.amount, data.address);
 
         }
-        if(data.coin == "eth" || data.coin == "teth"){
+        if (data.coin == "eth" || data.coin == "teth") {
           reposneDataValue = 2 * (reposneData)
-        }else{
+        } else {
           console.log("reposneData", reposneData);
-        reposneDataValue = 2 * (reposneData.fee);
+          reposneDataValue = 2 * (reposneData.fee);
         }
 
         return res
@@ -2707,19 +2707,33 @@ module.exports = {
     try {
       var data = req.body;
       console.log(data);
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if (data.coin == 'xrp' || data.coin == 'txrp') {
+        division = sails.config.local.DIVIDE_SIX;
+      } else if (coin_code == 'eth' || coin_code == 'teth') {
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
       if (data.coin != "SUSU") {
-        var reposneData = await sails
-          .helpers
-          .wallet
-          .getNetworkFee(data.coin, data.amount, data.dest_address);
+        var reposneData = {};
+        if (data.coin == 'xrp' || data.coin == 'txrp') {
+          reposneData.fee = 45;
+        } else {
+          reposneData = await sails
+            .helpers
+            .wallet
+            .getNetworkFee(data.coin, data.amount, data.dest_address);
+        }
+        var reposneDataValue;
+        if (data.coin == "eth" || data.coin == "teth") {
+          reposneDataValue = 2 * (reposneData)
+        } else {
+          console.log("reposneData", reposneData);
+          reposneDataValue = 2 * (reposneData.fee);
+        }
+
         console.log("reposneData", reposneData);
         reposneDataValue = 2 * (reposneData.fee);
-        var division = sails.config.local.DIVIDE_EIGHT;
-        if( data.coin == 'xrp' || data.coin == 'txrp'){
-          division = sails.config.local.DIVIDE_SIX;
-        }else if( coin_code == 'eth' || coin_code == 'teth'){
-          division = sails.config.local.DIVIDE_EIGHTEEN;
-        }
+
         return res
           .status(200)
           .json({
