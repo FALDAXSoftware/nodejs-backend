@@ -1962,12 +1962,14 @@ module.exports = {
           'ASC');
         query += " ORDER BY users." + sort_col + " " + sortVal;
       } else {
-        query += " ORDER BY users.created_at DESC";
+        query += " ORDER BY users.id DESC";
       }
 
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      console.log("Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query);
+      let usersData = await sails.sendNativeQuery("Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
 
       usersData = usersData.rows;
