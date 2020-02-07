@@ -44,8 +44,14 @@ module.exports = {
             coin_code: inputs.coin,
             is_active: true
         })
-
-        if(inputs.coin == "eth" || inputs.coin == 'teth'){
+        if(inputs.coin == "xrp" || inputs.coin == 'txrp'){
+            var recipients = [
+                {
+                    "amount": (inputs.amount * 1e6).toString(),
+                    "address": inputs.address
+                }
+            ]
+        }else if(inputs.coin == "eth" || inputs.coin == 'teth' ){
             var recipients = [
                 {
                     "amount": (inputs.amount * 1e9).toString(),
