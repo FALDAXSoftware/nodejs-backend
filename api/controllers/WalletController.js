@@ -431,6 +431,10 @@ module.exports = {
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
+          console.log("walletHistoryData",walletHistoryData);
+          console.log("amount",amount);
+          console.log("limitAmount",limitAmount);
+          console.log((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount);
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
@@ -704,7 +708,7 @@ module.exports = {
                       } else if (coin_code == "SUSU") {
                         var value = {
                           "user_id": parseInt(user_id),
-                          "amount": parseFloat(total_fees),
+                          "amount": parseFloat(amount),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
                           "network_fee": networkFees
