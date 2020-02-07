@@ -2710,8 +2710,8 @@ module.exports = {
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth') {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
+      } else if (data.coin == 'eth' || data.coin == 'teth') {
+        division = sails.config.local.DIVIDE_NINE;
       }
       if (data.coin != "SUSU") {
         var reposneData = {};
