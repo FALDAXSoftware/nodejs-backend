@@ -2226,7 +2226,7 @@ module.exports = {
             }
           });
           coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
-          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+          coinData[i].address = coinData[i].warm_wallet_address;
         }
       }
       return res
