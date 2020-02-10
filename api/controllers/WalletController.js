@@ -383,9 +383,9 @@ module.exports = {
               });
               if (limitTierData != undefined) {
                 limitAmount = limitTierData.daily_withdraw_crypto;
-                limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount == null)
+                limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
                 limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
-                limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly == null)
+                limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly = null)
               } else {
                 limitAmount = null;
                 limitAmountMonthly = null;
@@ -393,9 +393,9 @@ module.exports = {
             }
           } else if (userTierData.length > 0) {
             limitAmount = userTierData[0].daily_withdraw_crypto;
-            limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount == null)
+            limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
             limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
-            limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly == null)
+            limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly = null)
           } else {
             limitAmount = null;
             limitAmountMonthly = null;
