@@ -1010,43 +1010,28 @@ module.exports = {
                 // }
               }
 
-
-              // Send fund to Warm and custody wallet
-
-              // let custodialWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.custody_wallet_address);
-              // console.log("custodialWallet", custodialWallet)
               // check for wallet exist or not
               if (warmWallet.id) {
 
                 // check for warm wallet balance
                 let warmWalletAmount = 0;
-                // let custodialWalletAmount = 0;
 
                 warmWalletAmount = dest.value;
-                // custodialWalletAmount = (dest.value * 20) / 100;
 
                 console.log(coin)
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(warmWalletAmount / division)) {
                   warmWalletAmount = dest.value;
-                  // custodialWalletAmount = 0.0;
                 }
 
-                // if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) >= parseFloat(custodialWalletAmount / 1e8)) {
-                //   warmWalletAmount = dest.value;
-                //   custodialWalletAmount = 0.0;
-                // }
 
                 console.log("warmWalletAmount", warmWalletAmount)
-                // console.log("custodialWalletAmount", custodialWalletAmount)
 
                 if (!Number.isInteger(warmWalletAmount)) {
                   warmWalletAmount = Math.ceil(warmWalletAmount)
-                  // custodialWalletAmount = Math.floor(custodialWalletAmount)
                 }
                 console.log("warmWalletAmount", warmWalletAmount)
-                // console.log("custodialWalletAmount", custodialWalletAmount)
                 var feeValue = 0.0
-                if (req.body.coin != "teth" || req.body.coin != "eth" || req.body.coin != "txrp" || req.body.coin != "xrp") {
+                if (req.body.coin != "teth" && req.body.coin != "eth" && req.body.coin != "txrp" && req.body.coin != "xrp") {
                   var get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
                   warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
                   console.log("warmWalletAmount after static fees", warmWalletAmount);
