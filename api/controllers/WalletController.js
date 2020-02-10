@@ -1560,14 +1560,17 @@ module.exports = {
                 if (coin.coin_code == "teth" || coin.coin_code == "eth") {
                   admin_network_fees = parseFloat(networkFees).toFixed(8);
                 }
+                console.log("wallet", wallet)
+                var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub) + parseFloat(admin_network_fees)
+                var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub) + parseFloat(admin_network_fees);
                 // update wallet balance
                 await Wallet
                   .update({
                     id: wallet.id
                   })
                   .set({
-                    balance: (wallet.balance - totalFeeSub) + admin_network_fees,
-                    placed_balance: (wallet.placed_balance - totalFeeSub) + admin_network_fees
+                    balance: updateBalance,
+                    placed_balance: updatePlacedBalance
                   });
 
                 // Adding the transaction details in transaction table This is entry for sending
@@ -2736,7 +2739,7 @@ module.exports = {
         }
 
         console.log("reposneData", reposneData);
-        reposneDataValue = 2 * (reposneData.fee);
+        // reposneDataValue = 2 * (reposneData.fee);
         return res
           .status(200)
           .json({
