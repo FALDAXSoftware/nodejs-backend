@@ -49,7 +49,7 @@ module.exports = {
           if (yesterday < today) {
             return res.status(400).json({
               "status": 400,
-              "err": sails.__("Verification Expired").message
+              "error": sails.__("Verification Expired").message
             })
           }
           let hubspotcontact = await sails
@@ -95,7 +95,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "err": sails.__('Invalid Token').message
+              "error": sails.__('Invalid Token').message
             });
         }
       }
@@ -105,7 +105,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong").message,
+          "error": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -146,13 +146,13 @@ module.exports = {
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By Admin').message
+              error: sails.__('Deleted By Admin').message
             });
           }
           if (user_detail.deleted_at && user_detail.deleted_by == 1) {
             return res.status(403).json({
               "status": 403,
-              err: sails.__('Deleted By User').message
+              error: sails.__('Deleted By User').message
             });
           }
 
@@ -161,7 +161,7 @@ module.exports = {
               if (err) {
                 return res.status(403).json({
                   "status": 403,
-                  err: sails.__('Invalid email or password').message
+                  error: sails.__('Invalid email or password').message
                 });
               }
 
@@ -170,7 +170,7 @@ module.exports = {
                   .status(401)
                   .json({
                     "status": 401,
-                    "err": sails.__("Invalid email or password").message
+                    "error": sails.__("Invalid email or password").message
                   });
               } else {
                 if (user_detail.is_verified == false) {
@@ -178,7 +178,7 @@ module.exports = {
                     .status(402)
                     .json({
                       "status": 402,
-                      "err": sails.__("Account_Not_Verified").message
+                      "error": sails.__("Account_Not_Verified").message
                     });
                 }
                 if (user_detail) {
@@ -187,36 +187,11 @@ module.exports = {
                       .status(405)
                       .json({
                         "status": 405,
-                        "err": sails.__("To continue, please verify your new email address.").message
+                        "error": sails.__("To continue, please verify your new email address.").message
                       });
                   }
                 }
-                // if (user_detail.is_twofactor && user_detail.twofactor_secret) {
-                //   if (!req.body.otp) {
-                //     return res
-                //       .status(201)
-                //       .json({
-                //         "status": 201,
-                //         "err": sails.__("Please enter OTP to continue").message
-                //       });
-                //   }
-                //   let verified = speakeasy
-                //     .totp
-                //     .verify({
-                //       secret: user_detail.twofactor_secret,
-                //       encoding: 'base32',
-                //       token: req.body.otp,
-                //       window: 2
-                //     });
-                //   if (!verified) {
-                //     return res
-                //       .status(402)
-                //       .json({
-                //         "status": 402,
-                //         "err": sails.__("invalid otp").message
-                //       });
-                //   }
-                // }
+
                 // If Enter 2fa backup code
                 if (req.body.twofactor_backup_code) {
                   if (!req.body.twofactor_backup_code) {
@@ -224,7 +199,7 @@ module.exports = {
                       .status(201)
                       .json({
                         "status": 201,
-                        "err": sails.__("Please enter Twofa Backup code to continue").message
+                        "message": sails.__("Please enter Twofa Backup code to continue").message
                       });
                   }
                   if (user_detail.twofactor_backup_code != req.body.twofactor_backup_code) {
@@ -232,7 +207,7 @@ module.exports = {
                       .status(402)
                       .json({
                         "status": 402,
-                        "err": sails.__("Invalid twofa backup code").message
+                        "error": sails.__("Invalid twofa backup code").message
                       });
                   }
                 } else if (user_detail.is_twofactor && user_detail.twofactor_secret) {
@@ -241,7 +216,7 @@ module.exports = {
                       .status(201)
                       .json({
                         "status": 201,
-                        "err": sails.__("Please enter OTP to continue").message
+                        "message": sails.__("Please enter OTP to continue").message
                       });
                   }
                   let verified = speakeasy
@@ -257,7 +232,7 @@ module.exports = {
                       .status(402)
                       .json({
                         "status": 402,
-                        "err": sails.__("invalid otp").message
+                        "error": sails.__("invalid otp").message
                       });
                   }
                 }
@@ -295,7 +270,7 @@ module.exports = {
                           .status(401)
                           .json({
                             "status": 401,
-                            "err": sails.__("Time for whitelist has been expired.").message
+                            "error": sails.__("Time for whitelist has been expired.").message
                           });
                       }
                     }
@@ -304,7 +279,7 @@ module.exports = {
                       .status(401)
                       .json({
                         "status": 401,
-                        "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.").message
+                        "error": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.").message
                       });
                   }
                 }
@@ -321,7 +296,7 @@ module.exports = {
                     if (yesterday < today) {
                       return res.status(400).json({
                         "status": 400,
-                        "err": sails.__("Verification Expired").message
+                        "error": sails.__("Verification Expired").message
                       })
                     }
                   }
@@ -407,7 +382,7 @@ module.exports = {
                           .status(500)
                           .json({
                             "status": 500,
-                            "err": sails.__("Something Wrong").message,
+                            "error": sails.__("Something Wrong").message,
                             error_at: sails.__("Something Wrong").message
                           });
                       }
@@ -422,7 +397,7 @@ module.exports = {
               .status(403)
               .json({
                 "status": 403,
-                "err": sails.__("Contact Admin").message
+                "error": sails.__("Contact Admin").message
               });
           }
         } else {
@@ -430,7 +405,7 @@ module.exports = {
             .status(401)
             .json({
               "status": 401,
-              "err": sails.__("Account does not exists").message
+              "error": sails.__("Account does not exists").message
             });
         }
       } else {
@@ -438,7 +413,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("Email or password is not sent").message
+            "error": sails.__("Email or password is not sent").message
           });
         return;
       }
@@ -449,7 +424,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "err": sails.__("Something Wrong").message,
+          "error": sails.__("Something Wrong").message,
           "error_at": error.stack
         });
     }
@@ -466,16 +441,6 @@ module.exports = {
 
   verifyNewIp: async function (req, res) {
     try {
-      // var ip;
-      // if (req.headers['x-forwarded-for']) {
-      //   ip = req
-      //     .headers['x-forwarded-for']
-      //     .split(",")[0];
-      // } else if (req.connection && req.connection.remoteAddress) {
-      //   ip = req.connection.remoteAddress;
-      // } else {
-      //   ip = req.ip;
-      // }
       var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
       if (req.body.token) {
 
