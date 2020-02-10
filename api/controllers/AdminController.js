@@ -496,7 +496,7 @@ module.exports = {
 
       let slug = "change_password_subadmin"
       let template = await EmailTemplate.findOne({
-        select: ['content','all_content'],
+        select: ['content', 'all_content'],
         where: {
           slug
         }
