@@ -92,7 +92,7 @@ module.exports = {
                       .status(401)
                       .json({
                         "status": 401,
-                        "error": sails.__("Time for whitelist has been expired.").message
+                        "err": sails.__("Time for whitelist has been expired.").message
                       });
                   }
                 }
@@ -102,7 +102,7 @@ module.exports = {
                   .status(401)
                   .json({
                     "status": 401,
-                    "error": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.").message
+                    "err": sails.__("Your IP has not been whitelisted. Please whitelist your IP to continue.").message
                   });
               }
             }
@@ -134,7 +134,7 @@ module.exports = {
                 .status(400)
                 .json({
                   "status": 400,
-                  "error": sails.__("Contact Admin for Role").message
+                  "err": sails.__("Contact Admin for Role").message
                 });
               return;
             }
@@ -145,7 +145,7 @@ module.exports = {
                   .status(201)
                   .json({
                     "status": 201,
-                    "message": sails.__("Please enter OTP to continue").message
+                    "err": sails.__("Please enter OTP to continue").message
                   });
               }
               let verified = speakeasy
@@ -161,7 +161,7 @@ module.exports = {
                   .status(402)
                   .json({
                     "status": 402,
-                    "error": sails.__("invalid otp").message
+                    "err": sails.__("invalid otp").message
                   });
               }
             }
@@ -174,7 +174,7 @@ module.exports = {
                     .status(403)
                     .json({
                       "status": 403,
-                      "error": sails.__("Invalid email or password").message
+                      "err": sails.__("Invalid email or password").message
                     });
                 }
 
@@ -183,7 +183,7 @@ module.exports = {
                     .status(401)
                     .json({
                       "status": 401,
-                      "error": sails.__("Invalid email or password").message
+                      "err": sails.__("Invalid email or password").message
                     });
                 } else {
                   if (admin_details.is_twofactor) { }
@@ -205,7 +205,7 @@ module.exports = {
               .status(400)
               .json({
                 "status": 400,
-                "error": sails.__("Contact Admin").message
+                "err": sails.__("Contact Admin").message
               });
           }
         } else {
@@ -213,7 +213,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "error": sails.__("Invalid email or password").message
+              "err": sails.__("Invalid email or password").message
             });
         }
       } else {
@@ -221,7 +221,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "error": sails.__("Email or password is not sent").message
+            "err": sails.__("Email or password is not sent").message
           });
       }
     } catch (error) {
@@ -231,7 +231,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -268,7 +268,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "error": sails.__("Something Wrong").message
+              "err": sails.__("Something Wrong").message
             });
         }
       } else {
@@ -276,7 +276,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "error": sails.__("Email or password is not sent").message
+            "err": sails.__("Email or password is not sent").message
           });
       }
     } catch (error) {
@@ -285,7 +285,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -305,7 +305,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            error: sails.__("Please provide email, new password, confirm password").message
+            err: sails.__("Please provide email, new password, confirm password").message
           });
       }
 
@@ -314,7 +314,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("password must match").message
+            err: sails.__("password must match").message
           });
       }
 
@@ -324,7 +324,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("current new must not be same").message
+            err: sails.__("current new must not be same").message
           });
       }
 
@@ -339,7 +339,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("Email address not found").message
+            err: sails.__("Email address not found").message
           });
       }
 
@@ -350,7 +350,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("Current password mismatch").message
+            err: sails.__("Current password mismatch").message
           });
       }
 
@@ -404,7 +404,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            error: sails.__("Something went wrong! Could not able to update the password").message
+            err: sails.__("Something went wrong! Could not able to update the password").message
           });
       }
     } catch (error) {
@@ -414,7 +414,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
       return;
@@ -434,7 +434,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            error: sails.__("Please provide email, new password, confirm password").message
+            err: sails.__("Please provide email, new password, confirm password").message
           });
       }
 
@@ -443,7 +443,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("password must match").message
+            err: sails.__("password must match").message
           });
       }
 
@@ -458,7 +458,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("Email address not found").message
+            err: sails.__("Email address not found").message
           });
       }
 
@@ -528,7 +528,7 @@ module.exports = {
               .status(500)
               .json({
                 "status": 500,
-                "error": sails.__("Something Wrong").message,
+                "err": sails.__("Something Wrong").message,
                 error_at: error.stack
               });
           }
@@ -544,7 +544,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            error: sails.__("Something went wrong! Could not able to update the password").message
+            err: sails.__("Something went wrong! Could not able to update the password").message
           });
       }
     } catch (error) {
@@ -554,7 +554,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -575,7 +575,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("This email id is not registered with us.").message
+            err: sails.__("This email id is not registered with us.").message
           });
       }
 
@@ -584,7 +584,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            error: sails.__("This email id is verified.").message
+            err: sails.__("This email id is verified.").message
           });
       }
 
@@ -639,7 +639,7 @@ module.exports = {
               .status(500)
               .json({
                 "status": 500,
-                "error": sails.__("Something Wrong").message,
+                "err": sails.__("Something Wrong").message,
                 error_at: sails.__("Something Wrong").message
               });
           }
@@ -649,7 +649,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -668,7 +668,7 @@ module.exports = {
           .status(401)
           .json({
             status: '401',
-            error: sails.__("Invalid email").message
+            err: sails.__("Invalid email").message
           });
       }
       var updatedAdmin = await Admin
@@ -693,7 +693,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -755,7 +755,7 @@ module.exports = {
         } else {
           return res.json({
             "status": 400,
-            "error": sails.__("Update password Error").message
+            "message": sails.__("Update password Error").message
           });
         }
       } else {
@@ -763,7 +763,7 @@ module.exports = {
           .status(400)
           .json({
             status: 400,
-            "error": sails.__("Reset Password link has been expired.").message
+            "message": sails.__("Reset Password link has been expired.").message
           });
       }
     } catch (error) {
@@ -772,7 +772,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
 
@@ -831,7 +831,7 @@ module.exports = {
         return res
           .status(401)
           .json({
-            error: sails.__("This email id is not registered with us.").message
+            err: sails.__("This email id is not registered with us.").message
           });
       }
     } catch (error) {
@@ -840,7 +840,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -901,7 +901,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -923,7 +923,7 @@ module.exports = {
             .status(401)
             .json({
               status: 401,
-              "error": sails.__("email exits").message
+              "message": sails.__("email exits").message
             });
         }
 
@@ -951,7 +951,7 @@ module.exports = {
         return res
           .status(400)
           .json({
-            'error': sails.__("Email & roles is required.").message,
+            'message': sails.__("Email & roles is required.").message,
             'status': 400
           })
       }
@@ -961,7 +961,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1000,7 +1000,7 @@ module.exports = {
             .status(400)
             .json({
               status: 400,
-              'error': sails.__("Employee not found").message
+              'err': sails.__("Employee not found").message
             })
         }
       } else {
@@ -1008,7 +1008,7 @@ module.exports = {
           .status(400)
           .json({
             status: 400,
-            'error': sails.__("Employee id is not sent.").message
+            'err': sails.__("Employee id is not sent.").message
           })
       }
     } catch (error) {
@@ -1017,7 +1017,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1064,7 +1064,7 @@ module.exports = {
             .status(400)
             .json({
               'status': '400',
-              'error': sails.__("Employee not found").message
+              'err': sails.__("Employee not found").message
             })
         }
       } else {
@@ -1072,7 +1072,7 @@ module.exports = {
           .status(400)
           .json({
             'status': '400',
-            'error': sails.__("Employee id is not sent.").message
+            'err': sails.__("Employee id is not sent.").message
           })
       }
     } catch (error) {
@@ -1081,7 +1081,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1115,7 +1115,7 @@ module.exports = {
       } else {
         return res.json({
           "status": 400,
-          "error": sails.__("Employee id is required").message
+          "message": sails.__("Employee id is required").message
         });
       }
     } catch (error) {
@@ -1124,7 +1124,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1147,7 +1147,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("Admin not found or it's not active").message
+            "err": sails.__("Admin not found or it's not active").message
           });
       }
       const secret = speakeasy.generateSecret({
@@ -1180,7 +1180,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1204,7 +1204,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("user inactive").message
+            "err": sails.__("user inactive").message
           });
       }
       if (user.is_twofactor == true) {
@@ -1212,7 +1212,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("2 factor already enabled").message
+            "err": sails.__("2 factor already enabled").message
           });
       }
 
@@ -1242,7 +1242,7 @@ module.exports = {
         .status(401)
         .json({
           status: 401,
-          error: sails.__("invalid otp").message
+          err: sails.__("invalid otp").message
         });
     } catch (error) {
       // await logger.error(error.message)
@@ -1250,7 +1250,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1273,7 +1273,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("user inactive").message
+            "err": sails.__("user inactive").message
           });
       }
       if (user.is_twofactor == false) {
@@ -1281,7 +1281,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("2 factor already disabled").message
+            "err": sails.__("2 factor already disabled").message
           });
       }
       await Admin
@@ -1304,7 +1304,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1334,7 +1334,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1377,7 +1377,7 @@ module.exports = {
           } else {
             return res.status(500).json({
               status: 500,
-              "error": sails.__("Days greater 0").message,
+              "message": sails.__("Days greater 0").message,
               error_at: sails.__("Days greater 0").message
             })
           }
@@ -1390,7 +1390,7 @@ module.exports = {
         if (add_data) {
           return res.status(401).json({
             status: 500,
-            "error": sails.__("IP in whitelist exists").message,
+            "message": sails.__("IP in whitelist exists").message,
             error_at: sails.__("IP in whitelist exists").message
           })
         } else {
@@ -1433,7 +1433,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "error": sails.__("Something Wrong").message,
+            "err": sails.__("Something Wrong").message,
             error_at: sails.__("Something Wrong").message
           });
       }
@@ -1443,7 +1443,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1456,7 +1456,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var requestData = req.body;
@@ -1476,7 +1476,7 @@ module.exports = {
         } else {
           return res.status(500).json({
             status: 500,
-            "error": sails.__("Days greater 0").message,
+            "message": sails.__("Days greater 0").message,
             error_at: sails.__("Days greater 0").message
           })
         }
@@ -1489,7 +1489,7 @@ module.exports = {
       if (add_data) {
         return res.status(401).json({
           status: 500,
-          "error": sails.__("IP in whitelist exists").message,
+          "message": sails.__("IP in whitelist exists").message,
           error_at: sails.__("IP in whitelist exists").message
         })
       } else {
@@ -1538,7 +1538,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1592,7 +1592,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1608,7 +1608,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var now = moment().valueOf();
@@ -1649,7 +1649,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1687,7 +1687,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1700,7 +1700,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       let {
@@ -1729,7 +1729,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1771,7 +1771,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "error": sails.__("User Detail Not Found").message,
+            "err": sails.__("User Detail Not Found").message,
             error_at: sails.__("User Detail Not Found").message
           });
       }
@@ -1781,7 +1781,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1806,7 +1806,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "error": sails.__("Something Wrong").message,
+            "err": sails.__("Something Wrong").message,
             error_at: sails.__("Something Wrong").message
           });
       }
@@ -1818,7 +1818,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1842,7 +1842,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("Employee not found").message
+            "err": sails.__("Employee not found").message
           });
       }
       var admin_details = await Admin
@@ -1898,7 +1898,7 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                "error": sails.__("Something Wrong").message,
+                "err": sails.__("Something Wrong").message,
                 error_at: sails.__("Something Wrong").message
               });
           }
@@ -1910,7 +1910,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -1934,7 +1934,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("User not found").message
+            "err": sails.__("User not found").message
           });
       }
 
@@ -1990,7 +1990,7 @@ module.exports = {
               .status(500)
               .json({
                 status: 500,
-                "error": sails.__("Something Wrong").message,
+                "err": sails.__("Something Wrong").message,
                 error_at: sails.__("Something Wrong").message
               });
           }
@@ -2001,7 +2001,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -2023,7 +2023,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("Employee not found").message
+            "err": sails.__("Employee not found").message
           });
       }
 
@@ -2091,7 +2091,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -2112,7 +2112,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("Employee not found").message
+            "err": sails.__("Employee not found").message
           });
       }
 
@@ -2127,7 +2127,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("No record found").message,
+            "err": sails.__("No record found").message,
             error_at: sails.__("No record found").message
           });
       }
@@ -2137,7 +2137,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("Twofactor request closed").message,
+            "err": sails.__("Twofactor request closed").message,
             error_at: sails.__("Twofactor request closed").message
           });
       }
@@ -2210,7 +2210,7 @@ module.exports = {
       // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -2233,7 +2233,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("Employee not found").message
+            "err": sails.__("Employee not found").message
           });
       }
 
@@ -2250,7 +2250,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("No record found").message,
+            "err": sails.__("No record found").message,
             error_at: sails.__("No record found").message
           });
       }
@@ -2261,7 +2261,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("Twofactor request closed").message,
+            "err": sails.__("Twofactor request closed").message,
             error_at: sails.__("Twofactor request closed").message
           });
       }
@@ -2320,7 +2320,7 @@ module.exports = {
       // await logger.error({ "user_id": "admin_" + req.user.id, "module": "Two Factor Request", "url": req.url, "type": "Error" }, error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -2334,7 +2334,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var get_coins = await sails.sendNativeQuery("SELECT id as coin_id, coin FROM coins WHERE is_active=true and deleted_at IS NULL");
@@ -2393,7 +2393,7 @@ module.exports = {
       // await logger.error({ "requestId": "admin_" + req.user.id, "module": "Notifications", "url": req.url, "type": "Error" }, error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -2407,7 +2407,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var assets = req.body;
@@ -2440,7 +2440,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -2453,7 +2453,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var contacts = req.body;
@@ -2486,7 +2486,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -2499,7 +2499,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
 
@@ -2528,7 +2528,7 @@ module.exports = {
       // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -2657,7 +2657,7 @@ module.exports = {
       // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -2670,7 +2670,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       // Parameter Existence
@@ -2691,7 +2691,7 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "error": sails.__("Batch is already generated with this transaction").message,
+              "err": sails.__("Batch is already generated with this transaction").message,
               error_at: sails.__("Batch is already generated with this transaction").message
             });
         }
@@ -2748,7 +2748,7 @@ module.exports = {
             .status(400)
             .json({
               "status": 400,
-              "error": sails.__("Something Wrong").message
+              "err": sails.__("Something Wrong").message
             });
         }
       } else {
@@ -2756,7 +2756,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "error": sails.__("Enter last transaction id").message
+            "err": sails.__("Enter last transaction id").message
           });
       }
     } catch (error) {
@@ -2766,7 +2766,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: sails.__("Something Wrong").message
         });
     }
@@ -2779,7 +2779,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var req_body = req.body;
@@ -2807,7 +2807,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -2820,7 +2820,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       let {
@@ -2882,7 +2882,7 @@ module.exports = {
       // await logger.error(error.message)
       return res.json({
         "status": 500,
-        "error": sails.__("Something Wrong").message,
+        "message": sails.__("Something Wrong").message,
         error_at: error.stack
       });
     }
@@ -3111,6 +3111,147 @@ module.exports = {
         "message": sails.__("batch data retrieved").message,
         "data": summary
       })
+      // if (coinDetail != undefined) {
+      //   var buyTxTotal = 0
+      //   var sellTxTotal = 0;
+      //   var feesTotal = 0;
+      //   // coinDetail.map(async obj => {
+      //   for (var i = 0; i < coinDetail.length; i++) {
+      //     var details = coinDetail[i];
+      //     var singledata = {}
+      //     var buyDetails = await TradeHistory
+      //       .sum('quantity')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Buy',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Sell',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var buyDetailsTx = await TradeHistory
+      //       .count('id')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Buy',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Sell',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var sellDetails = await TradeHistory
+      //       .sum('quantity')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Sell',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Buy',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var sellDetailsTx = await TradeHistory
+      //       .count('id')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         or: [{
+      //             currency: details.coin,
+      //             side: 'Sell',
+      //           },
+      //           {
+      //             settle_currency: details.coin,
+      //             side: 'Buy',
+      //           }
+      //         ],
+      //         trade_type: 1
+      //       });
+
+      //     var coinUserFees = await TradeHistory
+      //       .sum('user_fee')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         user_coin: details.coin,
+      //         trade_type: 1
+      //       })
+
+      //     var coinRequestedFees = await TradeHistory
+      //       .sum('requested_fee')
+      //       .where({
+      //         deleted_at: null,
+      //         id: {
+      //           '<=': transaction_end,
+      //           '>=': transaction_start
+      //         },
+      //         requested_coin: details.coin,
+      //         trade_type: 1
+      //       })
+
+      //     buyTxTotal = buyTxTotal + buyDetailsTx;
+      //     sellTxTotal = sellTxTotal + sellDetailsTx;
+
+      //     var coinFees = coinUserFees + coinRequestedFees
+      //     var usdValue = await sails.helpers.fixapi.getPrice(details.coin)
+      //     if (usdValue.length > 0)
+      //       feesTotal = feesTotal + (coinFees * (usdValue[0].bid_price > 0 ? usdValue[0].bid_price : usdValue[0].ask_price));
+
+      //     singledata.coin = details.coin;
+      //     singledata.buy_detail = buyDetails;
+      //     singledata.sell_detail = sellDetails;
+      //     singledata.asset_net = (buyDetails - sellDetails)
+      //     singledata.buy_tx = buyDetailsTx;
+      //     singledata.sell_tx = sellDetailsTx;
+      //     singledata.faldax_fees = coinFees;
+      //     singledata.faldax_usd_fees = 'USD ' + feesTotal;
+      //     newArray.push(singledata);
+      //   }
+
+      //   return res.status(200).json({
+      //     "status": 200,
+      //     "message": sails.__("batch data retrieved").message,
+      //     "data": newArray,
+      //     buyTxTotal,
+      //     sellTxTotal,
+      //     feesTotal
+      //   })
+      // }
+
     } catch (error) {
       // console.log(error)
       // await logger.error(error.message)
@@ -3118,7 +3259,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3141,6 +3282,33 @@ module.exports = {
       var newarray = {};
       var purchases = [];
       var idValue;
+      // for (var i = 0; i < diffrence; i++) {
+      //   var singledata = {};
+      //   idValue = i + parseInt(transaction_start);
+      //   var tradeData = await TradeHistory.findOne({
+      //     deleted_at: null,
+      //     id: idValue
+      //   });
+
+      //   if (tradeData != undefined) {
+      //     var asset_1_usd_value = await sails.helpers.fixapi.getPrice(tradeData.currency);
+      //     var asset_2_usd_value = await sails.helpers.fixapi.getPrice(tradeData.settle_currency);
+      //     var dateValue = tradeData.created_at
+      //     singledata.transaction_id = tradeData.id;
+      //     singledata.transaction_time = moment(dateValue).format('MM/DD/YYYY HH:mm:ss');
+      //     singledata.pair = tradeData.symbol;
+      //     singledata.user_id = tradeData.user_id;
+      //     singledata.asset_1_amount = tradeData.quantity;
+      //     singledata.asset_1_value = ((asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price) * tradeData.quantity)
+      //     singledata.asset_2_amount = tradeData.filled;
+      //     singledata.asset_2_value = (tradeData.filled * (asset_2_usd_value[0].bid_price > 0 ? asset_2_usd_value[0].bid_price : asset_2_usd_value[0].ask_price));
+      //     singledata.transaction_value = tradeData.quantity * singledata.asset_1_value
+      //     singledata.faldax_fee = (tradeData.user_fee);
+      //     singledata.faldax_fee_usd_value = (singledata.faldax_fee * (asset_1_usd_value[0].bid_price > 0 ? asset_1_usd_value[0].bid_price : asset_1_usd_value[0].ask_price));
+
+      //     newarray.push(singledata);
+      //   }
+      // }
 
       for (var i = 0; i < diffrence; i++) {
 
@@ -3200,7 +3368,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3218,7 +3386,7 @@ module.exports = {
           .status(400)
           .json({
             "status": 400,
-            "error": sails.__("Missing Parameters").message
+            "message": sails.__("Missing Parameters").message
           });
       }
       var batchDetail = await Batches.findOne({
@@ -3232,7 +3400,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("Batch not found").message,
+            "message": sails.__("Batch not found").message,
             error_at: sails.__("Batch not found").message
           });
       }
@@ -3511,7 +3679,7 @@ module.exports = {
       } else {
         return res.status(200).json({
           "status": 400,
-          "error": sails.__("option type required").message,
+          "message": sails.__("option type required").message,
           "data": newarray
         })
       }
@@ -3523,7 +3691,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3538,7 +3706,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
 
@@ -3576,7 +3744,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3589,7 +3757,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
 
@@ -3597,7 +3765,7 @@ module.exports = {
       if (req_body.batch_id == "") {
         return res.status(500).json({
           "status": 500,
-          "error": sails.__("Missing Parameters").message,
+          "message": sails.__("Missing Parameters").message,
           error_at: sails.__("Missing Parameters").message
         });
       }
@@ -3634,7 +3802,7 @@ module.exports = {
                     .status(500)
                     .json({
                       status: 500,
-                      "error": sails.__("Something Wrong").message,
+                      "err": sails.__("Something Wrong").message,
                       error_at: sails.__("Something Wrong").message
                     });
                 }
@@ -3644,7 +3812,7 @@ module.exports = {
                   .status(500)
                   .json({
                     status: 500,
-                    "error": sails.__("File size should be greater than 0").message,
+                    "err": sails.__("File size should be greater than 0").message,
                     error_at: sails.__("File size should be greater than 0").message
                   });
               }
@@ -3662,7 +3830,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3709,7 +3877,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3744,7 +3912,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3810,7 +3978,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("invalid otp").message,
+            "message": sails.__("invalid otp").message,
             error_at: sails.__("invalid otp").message
           });
       }
@@ -3822,7 +3990,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -3834,7 +4002,7 @@ module.exports = {
     if (!req.user.isAdmin) {
       return res.status(403).json({
         status: 403,
-        error: sails.__('Unauthorized Access').message
+        err: sails.__('Unauthorized Access').message
       });
     }
     var user_data = await Users.find({
@@ -3857,7 +4025,7 @@ module.exports = {
         .status(400)
         .json({
           "status": 400,
-          "error": sails.__("No record found").message
+          "message": sails.__("No record found").message
         })
     }
 
@@ -3929,7 +4097,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -4012,7 +4180,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -4064,7 +4232,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -4084,7 +4252,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__('Invalid data provided').message
+            "err": sails.__('Invalid data provided').message
           });
       }
       req
@@ -4095,7 +4263,7 @@ module.exports = {
               .status(500)
               .json({
                 "status": 500,
-                "error": sails.__("Something Wrong").message,
+                "message": sails.__("Something Wrong").message,
                 error_at: error.stack
               });
           }
@@ -4113,7 +4281,7 @@ module.exports = {
                 .status(500)
                 .json({
                   "status": 500,
-                  "error": sails.__("Something Wrong").message,
+                  "message": sails.__("Something Wrong").message,
                   error_at: sails.__("Something Wrong").message
                 });
             }
@@ -4122,7 +4290,7 @@ module.exports = {
               .status(401)
               .json({
                 "status": 401,
-                "error": sails.__('Invalid data provided').message
+                "err": sails.__('Invalid data provided').message
               });
           }
         })
@@ -4132,7 +4300,7 @@ module.exports = {
         .status(500)
         .json({
           "status": 500,
-          "error": sails.__("Something Wrong").message,
+          "message": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -4145,7 +4313,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       var data = req.body;
@@ -4191,7 +4359,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("invalid otp").message,
+            "err": sails.__("invalid otp").message,
             error_at: sails.__("invalid otp").message
           });
       }
@@ -4202,7 +4370,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -4215,7 +4383,7 @@ module.exports = {
       if (!req.user.isAdmin) {
         return res.status(403).json({
           status: 403,
-          error: sails.__('Unauthorized Access').message
+          err: sails.__('Unauthorized Access').message
         });
       }
       let get_data = await AdminSetting.find({
@@ -4237,7 +4405,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
