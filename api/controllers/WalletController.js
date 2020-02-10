@@ -262,7 +262,7 @@ module.exports = {
       if (coin_code == 'xrp' || coin_code == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
       } else if (coin_code == 'eth' || coin_code == 'teth') {
-        division = sails.config.local.DIVIDE_NINE;
+        division = sails.config.local.DIVIDE_EIGHTEEN;
       }
 
       let user_id = req.user.id;
@@ -431,9 +431,9 @@ module.exports = {
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
-          console.log("walletHistoryData",walletHistoryData);
-          console.log("amount",amount);
-          console.log("limitAmount",limitAmount);
+          console.log("walletHistoryData", walletHistoryData);
+          console.log("amount", amount);
+          console.log("limitAmount", limitAmount);
           console.log((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount);
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
