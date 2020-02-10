@@ -1046,7 +1046,7 @@ module.exports = {
                 console.log("warmWalletAmount", warmWalletAmount)
                 // console.log("custodialWalletAmount", custodialWalletAmount)
                 var feeValue = 0.0
-                if (req.body.coin != "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
+                if (req.body.coin != "teth" || req.body.coin != "eth" || req.body.coin != "txrp" || req.body.coin != "xrp") {
                   var get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
                   warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
                   console.log("warmWalletAmount after static fees", warmWalletAmount);
@@ -1058,7 +1058,6 @@ module.exports = {
 
                   console.log("reposneData", reposneData)
                   console.log("Fee Rate ??????", reposneData.feeRate);
-
                   warmWalletAmount = warmWalletAmount - reposneData.fee
                   console.log("After Dynamic Fees Deduction >>>>>", warmWalletAmount)
                   // Calculate Sizes
