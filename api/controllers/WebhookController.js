@@ -607,14 +607,15 @@ module.exports = {
 
 
   webhookOnSend: async function (req, res) {
+    console.log("webhook send Outside", req.body);
     try {
-      console.log("webhook from send", req.body);
+      console.log("webhook from send Inside", req.body);
 
       // Check Status of Transaction
       if (req.body.state == "confirmed") {
         var division = sails.config.local.DIVIDE_EIGHT;
         if (req.body.coin == "teth" || req.body.coin == "eth") {
-          division = sails.config.local.DIVIDE_NINE;
+          division = sails.config.local.DIVIDE_EIGHTEEN;
         } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
           division = sails.config.local.DIVIDE_SIX;
         }
@@ -812,7 +813,7 @@ module.exports = {
         console.log("Confirmed On Receive ?????????", req.body);
         var division = sails.config.local.DIVIDE_EIGHT;
         if (req.body.coin == "teth" || req.body.coin == "eth") {
-          division = sails.config.local.DIVIDE_NINE;
+          division = sails.config.local.DIVIDE_EIGHTEEN;
         } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
           division = sails.config.local.DIVIDE_SIX;
         }
