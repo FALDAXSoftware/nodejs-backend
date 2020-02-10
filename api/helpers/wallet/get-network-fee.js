@@ -44,21 +44,21 @@ module.exports = {
             coin_code: inputs.coin,
             is_active: true
         })
-        if(inputs.coin == "xrp" || inputs.coin == 'txrp'){
+        if (inputs.coin == "xrp" || inputs.coin == 'txrp') {
             var recipients = [
                 {
                     "amount": (inputs.amount * 1e6).toString(),
                     "address": inputs.address
                 }
             ]
-        }else if(inputs.coin == "eth" || inputs.coin == 'teth' ){
+        } else if (inputs.coin == "eth" || inputs.coin == 'teth') {
             var recipients = [
                 {
                     "amount": (inputs.amount * 1e9).toString(),
                     "address": inputs.address
                 }
             ]
-        }else{
+        } else {
             var recipients = [
                 {
                     "amount": parseFloat((inputs.amount * 1e8).toFixed(sails.config.local.TOTAL_PRECISION)),
@@ -95,14 +95,14 @@ module.exports = {
                     return exits.error(body);
                 }
                 var feeValue;
-                if(inputs.coin == "eth" || inputs.coin == "teth"){
+                if (inputs.coin == "eth" || inputs.coin == "teth") {
                     let gasLimit = body.gasLimit;
                     let gasPrice = body.gasPrice;
                     gasPrice = parseFloat(gasPrice / sails.config.local.DIVIDE_NINE).toFixed(8);
                     feeValue = parseFloat(gasPrice) * parseFloat(gasLimit)
-                }else if(inputs.coin == 'xrp' || inputs.coin == 'txrp'){
+                } else if (inputs.coin == 'xrp' || inputs.coin == 'txrp') {
                     feeValue = body.txInfo.Fee
-                }else{
+                } else {
                     feeValue = body.feeInfo
                 }
                 console.log("feeValue", feeValue);
