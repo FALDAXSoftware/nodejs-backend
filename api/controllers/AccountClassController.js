@@ -43,7 +43,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "error": sails.__("Something Wrong").message,
+          "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
@@ -62,7 +62,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            error: sails.__("Something Wrong").message,
+            err: sails.__("Something Wrong").message,
             error_at: sails.__("Something Wrong").message
           });
       }
@@ -76,7 +76,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          error: sails.__("Something Wrong").message,
+          err: sails.__("Something Wrong").message,
           error_at: error.stack
         })
     }
@@ -110,7 +110,7 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            error: sails.__("Something Wrong").message,
+            err: sails.__("Something Wrong").message,
             error_at: sails.__("Something Wrong").message
           });
       }
@@ -120,7 +120,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          error: sails.__("Something Wrong").message,
+          err: sails.__("Something Wrong").message,
           error_at: error.stack
         })
     }
@@ -144,7 +144,7 @@ module.exports = {
           .status(401)
           .json({
             "status": 401,
-            "error": sails.__("user inactive").message
+            "message": sails.__("user inactive").message
           });
       }
 
@@ -161,7 +161,7 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "error": sails.__("Class id is not sent").message,
+              "message": sails.__("Class id is not sent").message,
               error_at: sails.__("Class id is not sent").message
             });
         }
@@ -186,7 +186,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "error": sails.__("invalid otp").message,
+            "message": sails.__("invalid otp").message,
             error_at: sails.__("invalid otp").message
           });
       }
@@ -196,7 +196,7 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          error: sails.__("Something Wrong").message,
+          err: sails.__("Something Wrong").message,
           error_at: error.stack
         })
     }
