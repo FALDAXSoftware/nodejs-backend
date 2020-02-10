@@ -1091,7 +1091,7 @@ module.exports = {
                     estimated_network_fees: parseFloat((feeValue)).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8),
                     faldax_fee: 0.0,
-                    actual_amount: (feeValue).toFixed(8),
+                    actual_amount: parseFloat(dest.value).toFixed(8),
                     warm_wallet_balance_before: parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                     transaction_from: sails.config.local.RECEIVE_TO_WARM,
                     residual_amount: parseFloat((feeValue)).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8)
