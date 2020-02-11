@@ -511,7 +511,9 @@ module.exports = {
                   balance: 0.0,
                   placed_balance: 0.0,
                   address_label: addressLable,
-                  is_admin: false
+                  is_admin: false,
+                  send_address: (data[0].send_address?data[0].send_address:""),
+                  receive_address: address.address
                 }).fetch();
             }
           }
