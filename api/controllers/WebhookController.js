@@ -472,6 +472,7 @@ module.exports = {
               receive_address: address.address
             })
             .fetch();
+          // Check all ERC20 Token;s and loop through
           var walletData = await Coins.find({
             where: {
               is_active: true,

@@ -173,7 +173,7 @@ module.exports = {
       susucoinData = susucoinData.data
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
-        if (balanceWalletData.rows[i].iserc == false) {
+        // if (balanceWalletData.rows[i].iserc == false) {
           balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
           balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
           if (balanceWalletData.rows[i].quote != null) {
@@ -200,7 +200,7 @@ module.exports = {
             else
               balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
-        }
+        // }
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
@@ -1033,7 +1033,7 @@ module.exports = {
         }
 
         var object
-        var walletUserData;
+        var walletUserData={};
         if (req.user.isAdmin && req.user.isAdmin != undefined) {
           walletUserData = await Wallet.findOne({
             user_id: (36),
@@ -1043,6 +1043,9 @@ module.exports = {
             is_admin: true
           });
         } else {
+          // if( coinData.iserc == true ){
+          //   coinData.id = 2;
+          // }
           walletUserData = await Wallet.findOne({
             user_id: (req.user.id),
             coin_id: coinData.id,
@@ -1051,19 +1054,22 @@ module.exports = {
           });
         }
 
-        if (coinData.iserc == true) {
-          var walletData = await Wallet.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              coin_id: 2,
-              user_id: req.user.id
-            }
-          })
+        // if (coinData.iserc == true) {
+        //   var walletData = await Wallet.findOne({
+        //     where: {
+        //       deleted_at: null,
+        //       is_active: true,
+        //       coin_id: 2,
+        //       user_id: req.user.id
+        //     }
+        //   })
+        //   console.log("walletData",walletData.receive_address);
 
-          walletUserData.receive_address = walletData.receive_address;
-          walletUserData.send_address = walletData.send_address;
-        }
+        //   walletUserData.receive_address = walletData.receive_address;
+        //   walletUserData.send_address = walletData.send_address;
+
+
+        // }
 
         if (walletUserData) {
           if (walletUserData.receive_address === '' || walletUserData.receive_address == null) {
