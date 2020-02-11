@@ -1680,8 +1680,9 @@ module.exports = {
           }
           if (walletCount[i].coin_name != "SUSU") {
             var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-            walletCount[i].fiat = get_jst_price[0].ask_price;
-            usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+            walletCount[i].fiat = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0);
+            var fiatValue = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0)
+            usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
           } else {
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
@@ -1969,7 +1970,7 @@ module.exports = {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
           'ASC');
-          new_sort += " ORDER BY users." + sort_col + " " + sortVal;
+        new_sort += " ORDER BY users." + sort_col + " " + sortVal;
       } else {
         new_sort += " ORDER BY users.created_at DESC";
       }
@@ -1982,7 +1983,7 @@ module.exports = {
       // let usersData = await sails.sendNativeQuery("Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
       //   "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-      "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query+ ") users "+new_sort, [])
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
 
@@ -2069,7 +2070,7 @@ module.exports = {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
           'ASC');
-          new_sort += " ORDER BY users." + sort_col + " " + sortVal;
+        new_sort += " ORDER BY users." + sort_col + " " + sortVal;
       } else {
         new_sort += " ORDER BY users.created_at DESC";
       }
@@ -2080,7 +2081,7 @@ module.exports = {
       // let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
       //   "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query+ ") users "+new_sort, [])
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
 
@@ -2165,7 +2166,7 @@ module.exports = {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
           'ASC');
-          new_sort += " ORDER BY users." + sort_col + " " + sortVal;
+        new_sort += " ORDER BY users." + sort_col + " " + sortVal;
       } else {
         new_sort += " ORDER BY users.created_at DESC";
       }
@@ -2173,7 +2174,7 @@ module.exports = {
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query+ ") users "+new_sort, [])
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
 

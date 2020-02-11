@@ -174,32 +174,32 @@ module.exports = {
 
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
         // if (balanceWalletData.rows[i].iserc == false) {
-          balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
-          balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
-          if (balanceWalletData.rows[i].quote != null) {
-            balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
-            balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
-          } else {
-            balanceWalletData.rows[i].quote = {
-              EUR: {
-                price: susucoinData.EUR,
-              },
-              INR: {
-                price: susucoinData.INR,
-              },
-              USD: {
-                price: susucoinData.USD,
-              }
-
+        balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
+        balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
+        if (balanceWalletData.rows[i].quote != null) {
+          balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+          balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+        } else {
+          balanceWalletData.rows[i].quote = {
+            EUR: {
+              price: susucoinData.EUR,
+            },
+            INR: {
+              price: susucoinData.INR,
+            },
+            USD: {
+              price: susucoinData.USD,
             }
+
           }
-          if (balanceWalletData.rows[i].quote.USD) {
-            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0)
-              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            else
-              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-          }
+        }
+        if (balanceWalletData.rows[i].quote.USD) {
+          var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+          if (get_price.length > 0)
+            balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+          else
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+        }
         // }
       }
 
@@ -257,13 +257,6 @@ module.exports = {
         networkFees,
         faldaxFees
       } = req.allParams();
-
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth') {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
 
       let user_id = req.user.id;
       var today = moment().utc().format();
@@ -343,6 +336,17 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+
+      console.log("coin", coin)
+
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if (coin_code == 'xrp' || coin_code == 'txrp') {
+        division = sails.config.local.DIVIDE_SIX;
+      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
+
+      console.log("division", division)
 
       if (coin.min_limit > amount) {
         return res
@@ -479,11 +483,15 @@ module.exports = {
                           console.log("warmWalletData", warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
+                          // total_fees = 1;
+                          console.log("warmWalletData.balance >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold)
+                          console.log("(warmWalletData.balance - total_fees) >= 0", (warmWalletData.balance - total_fees) >= 0)
+                          console.log("(warmWalletData.balance - total_fees) >= coin.min_thresold", (warmWalletData.balance - total_fees) >= coin.min_thresold)
+                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * 1e8))
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
-
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
-                            if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                            if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                               var amountValue = parseFloat(amount * division).toFixed(8);
                             } else {
                               var valueFee = parseFloat(networkFees).toFixed(8)
@@ -932,6 +940,7 @@ module.exports = {
           deleted_at: null
         }
       });
+      console.log(coinData)
       if (coinData != undefined) {
         // Explicitly call toJson of Model
         coinData = JSON.parse(JSON.stringify(coinData));
@@ -955,15 +964,16 @@ module.exports = {
             })
             .sort('id DESC');
 
+          console.log("walletTransData.length", walletTransData.length)
+          var coinDataValue = await Coins.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: coinData.id
+            }
+          })
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
-              var coinDataValue = await Coins.findOne({
-                where: {
-                  deleted_at: null,
-                  is_active: true,
-                  id: walletTransData[j].coin_id
-                }
-              })
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
               walletTransData[j].network_fees = parseFloat(walletTransData[j].estimated_network_fees)
               walletTransData[j].amount = (coinDataValue.coin_code != "SUSU") ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].actual_amount).toFixed(10));
@@ -996,6 +1006,8 @@ module.exports = {
           }
         });
 
+        console.log("coinFee", coinFee)
+
 
         if (coinReceive != "SUSU") {
           var currencyConversionData = await CurrencyConversion.findOne({
@@ -1003,6 +1015,7 @@ module.exports = {
             deleted_at: null
           })
 
+          console.log("currencyConversionData", currencyConversionData)
           if (currencyConversionData) {
             if (currencyConversionData.quote.USD) {
               var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
@@ -1033,7 +1046,7 @@ module.exports = {
         }
 
         var object
-        var walletUserData={};
+        var walletUserData = {};
         if (req.user.isAdmin && req.user.isAdmin != undefined) {
           walletUserData = await Wallet.findOne({
             user_id: (36),
@@ -1071,6 +1084,8 @@ module.exports = {
 
         // }
 
+        console.log("walletUserData", walletUserData)
+
         if (walletUserData) {
           if (walletUserData.receive_address === '' || walletUserData.receive_address == null) {
             walletUserData['flag'] = 1;
@@ -1088,6 +1103,7 @@ module.exports = {
         walletUserData['coin_name'] = coinData.coin_name;
         walletUserData['min_limit'] = coinData.min_limit;
         walletUserData['max_limit'] = coinData.max_limit;
+        walletUserData['iserc'] = coinData.iserc
 
         if (walletTransData) {
           return res.json({
@@ -1115,6 +1131,7 @@ module.exports = {
       }
 
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -1433,12 +1450,6 @@ module.exports = {
         networkFees,
         total_fees
       } = req.allParams();
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth') {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
       let user_id = req.user.id;
       user_id = 36;
       console.log(user_id);
@@ -1463,6 +1474,12 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+      var division = sails.config.local.DIVIDE_EIGHT;
+      if (coin_code == 'xrp' || coin_code == 'txrp') {
+        division = sails.config.local.DIVIDE_SIX;
+      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+        division = sails.config.local.DIVIDE_EIGHTEEN;
+      }
       if (coin.type == 1) {
 
         let warmWalletData = await sails
@@ -1518,7 +1535,7 @@ module.exports = {
                 // Send to hot warm wallet and make entry in diffrent table for both warm to
                 // receive and receive to destination
                 // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
-                if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                   var amountValue = parseFloat(amount * division).toFixed(8);
                 } else {
                   var valueFee = parseFloat(networkFees).toFixed(8)
@@ -1563,7 +1580,7 @@ module.exports = {
                 console.log("amount", amount)
                 var user_wallet_balance = wallet.balance;
                 let admin_network_fees = 0.0;
-                if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                   admin_network_fees = parseFloat(networkFees).toFixed(8);
                 }
                 console.log("wallet", wallet)
@@ -2446,10 +2463,17 @@ module.exports = {
     try {
       var data = req.body;
       console.log(data);
+      var coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          coin_code: data.coin
+        }
+      })
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth') {
+      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
         division = sails.config.local.DIVIDE_NINE;
       }
       if (data.coin != "SUSU") {
@@ -2463,7 +2487,7 @@ module.exports = {
             .getNetworkFee(data.coin, data.amount, data.address);
 
         }
-        if (data.coin == "eth" || data.coin == "teth") {
+        if (data.coin == "eth" || data.coin == "teth" || coinData.iserc == true) {
           reposneDataValue = 2 * (reposneData)
         } else {
           console.log("reposneData", reposneData);
@@ -2720,10 +2744,17 @@ module.exports = {
     try {
       var data = req.body;
       console.log(data);
+      var coinData = await Coins.findOne({
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: data.coin
+        }
+      })
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth') {
+      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
         division = sails.config.local.DIVIDE_NINE;
       }
       if (data.coin != "SUSU") {
@@ -2737,7 +2768,7 @@ module.exports = {
             .getNetworkFee(data.coin, data.amount, data.dest_address);
         }
         var reposneDataValue;
-        if (data.coin == "eth" || data.coin == "teth") {
+        if (data.coin == "eth" || data.coin == "teth" || coinData.iserc == true) {
           reposneDataValue = 2 * (reposneData)
         } else {
           console.log("reposneData", reposneData);
@@ -2837,6 +2868,102 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getWalletAvailableBalance: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var {
+        coin
+      } = req.allParams();
+      var availableBalance = 0.0;
+      var coinData = await Coins.findOne({
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin
+        }
+      })
+
+      if (coinData != undefined) {
+        var walletUserData = await Wallet.findOne({
+          user_id: user_id,
+          deleted_at: null,
+          coin_id: coinData.id
+        });
+
+        if (walletUserData) {
+          var faldax_fee = await AdminSetting.findOne({
+            where: {
+              deleted_at: null,
+              slug: 'send_fee'
+            }
+          });
+
+          var faldax_fee_value = faldax_fee.value;
+          var walletBalance = walletUserData.placed_balance;
+          console.log("walletBalance * (faldax_fee_value / 100)", parseFloat(walletBalance * (faldax_fee_value / 100)));
+          var remainningAmount = parseFloat(walletBalance) - parseFloat(walletBalance * (faldax_fee_value / 100));
+          if (remainningAmount > 0) {
+            var division = 1e8;
+            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              division = 1e18;
+            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+              division = 1e6;
+            }
+            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
+            if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
+              // remainningAmountValue = remainningAmount * division
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              availableBalance = remainningAmount - (2 * reposneData.fee)
+            } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              // remainningAmountValue = remainningAmount * division
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              feeValue = (reposneData / division)
+              availableBalance = remainningAmount - (2 * feeValue);
+            } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
+              var feesValue = parseFloat(45 / division).toFixed(8)
+              availableBalance = remainningAmount - 45;
+            }
+
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Available Balance").message,
+                "data": parseFloat(availableBalance).toFixed(8)
+              })
+          }
+        }
+      }
+    } catch (error) {
+
+      if (error.name == "ImplementationError") {
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
+        var availableBalance = remainningAmount - (2 * get_network_fees)
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Available Balance").message,
+            "data": parseFloat(availableBalance).toFixed(8)
+          })
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "error": sails.__("Something Wrong").message,
           error_at: error.stack
         });
     }
