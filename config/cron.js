@@ -221,4 +221,47 @@ module.exports.cron = {
   //     }
   //   }
   // }
+  //  test: {
+  //   schedule: '* * * * *',
+  //   onTick: async function () {
+  //     let get_eth = await Coins.findOne({coin_code:"teth", is_active:true,deleted_at:null});
+  //     console.log(get_eth);
+  //     let get_eth_wallet_data = await Wallet.find({coin_id:get_eth.id,is_active:true,deleted_at:null});
+  //     console.log(get_eth_wallet_data);
+  //     let get_erc_token = await Coins.findOne({coin_code:"terc", is_active:true,deleted_at:null});
+  //     console.log(get_erc_token);
+  //     // let get_erc_wallet_data = await Wallet.find({coin_id:get_erc_token.id,is_active:true,deleted_at:null});
+  //     for( var i=0;i<get_eth_wallet_data.length;i++){
+  //       // console.log("get_eth_wallet_data[i].user_id",get_eth_wallet_data[i].user_id);
+  //       let check_existing_erc = await Wallet.findOne({coin_id:get_erc_token.id,is_active:true,deleted_at:null,user_id:get_eth_wallet_data[i].user_id});
+  //       // console.log("check_existing_erc",check_existing_erc);
+  //       if( check_existing_erc == undefined ){
+  //         var walletCode = await Wallet
+  //           .create({
+  //             user_id: get_eth_wallet_data[i].user_id,
+  //             deleted_at: null,
+  //             coin_id: get_erc_token.id,
+  //             wallet_id: 'wallet',
+  //             is_active: true,
+  //             balance: 0.0,
+  //             placed_balance: 0.0,
+  //             address_label: get_eth_wallet_data[i].address_label,
+  //             is_admin: false
+  //           }).fetch();
+  //       }else{
+  //         if( get_eth_wallet_data[i].send_address != null && get_eth_wallet_data[i].receive_address != null ){
+  //           await Wallet
+  //           .update({
+  //             id: check_existing_erc.id
+  //           })
+  //           .set({
+  //             send_address:get_eth_wallet_data[i].send_address,
+  //             receive_address:get_eth_wallet_data[i].receive_address
+  //           })
+  //         }
+
+  //       }
+  //     }
+  //   }
+  // }
 };
