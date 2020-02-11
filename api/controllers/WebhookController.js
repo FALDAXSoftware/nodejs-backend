@@ -515,6 +515,15 @@ module.exports = {
                   send_address: (data[0].send_address?data[0].send_address:""),
                   receive_address: address.address
                 }).fetch();
+            }else{
+              await Wallet
+                .update({
+                  id: walletValue[0].id
+                })
+                .set({
+                  send_address:(data[0].send_address?data[0].send_address:""),
+                  receive_address:address.address
+                })
             }
           }
         }
@@ -571,15 +580,68 @@ module.exports = {
         });
         if (coinObject) {
 
-          await Wallet
+          var data = await Wallet
             .update({
               coin_id: coinObject.id,
               address_label: addressLable
             })
             .set({
               send_address: address.address
-            });
+            })
+            .fetch();
+
+          // Check all ERC20 Token;s and loop through
+          var walletData = await Coins.find({
+            where: {
+              is_active: true,
+              deleted_at: null,
+              iserc: true
+            }
+          });
+          var userData = await Users.findOne({
+            where: {
+              id: data[0].user_id,
+              is_active: true,
+              deleted_at: null
+            }
+          });
+
+          for (var i = 0; i < walletData.length; i++) {
+            var walletValue = await Wallet.find({
+              user_id: data[0].user_id,
+              coin_id: walletData[i].id,
+              is_active: true,
+              deleted_at: null
+            })
+            if (walletValue.length == 0) {
+              var walletCode = await Wallet
+                .create({
+                  user_id: data[0].user_id,
+                  deleted_at: null,
+                  coin_id: walletData[i].id,
+                  wallet_id: 'wallet',
+                  is_active: true,
+                  balance: 0.0,
+                  placed_balance: 0.0,
+                  address_label: addressLable,
+                  is_admin: false,
+                  send_address: address.address,
+                  receive_address: (data[0].receive_address?data[0].receive_address:"")
+                }).fetch();
+            }else{
+              await Wallet
+                .update({
+                  id: walletValue[0].id
+                })
+                .set({
+                  send_address:address.address,
+                  receive_address:(data[0].receive_address?data[0].receive_address:"")
+                })
+            }
+          }
         }
+
+
         // await sails.helpers.loggerFormat(
         //   "webhookOnSendAddress",
         //   sails.config.local.LoggerWebhook,
