@@ -30,9 +30,9 @@ module.exports = {
         if (data && data != "" && data != null) {
           query += " AND "
           query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
-          if (!isNaN(data)) {
-            query += " OR transaction_table.amount=" + data;
-          }
+          // if (!isNaN(data)) {
+          //   query += " OR transaction_table.amount=" + data;
+          // }
           query += ")"
         }
       }
@@ -71,7 +71,7 @@ module.exports = {
         query += " ORDER BY transaction_table.id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
+      console.log(query)
       let coinFee = await AdminSetting.findOne({
         where: {
           slug: 'default_send_coin_fee',
@@ -126,9 +126,9 @@ module.exports = {
         query += " WHERE"
         whereAppended = true;
         query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
-        if (!isNaN(data)) {
-          query += " OR transaction_table.amount=" + data;
-        }
+        // if (!isNaN(data)) {
+        //   query += " OR transaction_table.amount=" + data;
+        // }
         query += ")"
       }
     }
