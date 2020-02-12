@@ -535,4 +535,5 @@ module.exports.routes = {
   'post /users/check-forgot-password-token': "AuthController.checkForgotPasswordToken", //2
 
   'get /users/get-available-balance': 'WalletController.getWalletAvailableBalance',
+  'get /admin/get-admin-available-balance': 'WalletController.getAdminWalletAvailableBalance',
 };
