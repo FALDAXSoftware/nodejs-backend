@@ -2240,6 +2240,7 @@ module.exports = {
         .sort('id ASC');
 
       for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i].coin_code)
         if (coinData[i].coin_code != 'SUSU') {
           var warmWalletData = await sails
             .helpers
