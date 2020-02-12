@@ -50,15 +50,22 @@ module.exports = {
         'Content-Type': 'application/json'
       },
       json: true
-    }, function (err, httpResponse, body) {
-    //   console.log("wallet", err, httpResponse, body);
+    }, async function (err, httpResponse, body) {
+      console.log("wallet", err);
       if (err) {
         return exits.error(err);
       }
       if (body.error) {
         return exits.error(body);
       }
-      if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == 'teth' || inputs.coin == 'eth') {
+      var coinData = await Coins.findOne({
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: inputs.coin
+        }
+      })
+      if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == 'teth' || inputs.coin == 'eth' || coinData.iserc == true) {
         body.balance = body.balanceString;
       }
       return exits.success(body);
