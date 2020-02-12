@@ -2589,6 +2589,7 @@ module.exports = {
             })
             assets_data[i].fiat = (currency_conversion && currency_conversion != undefined && currency_conversion.qoute != null) ? (currency_conversion.qoute.USD.price) : (0.0)
           } else if (assets_data[i].coin_code == 'SUSU') {
+            console.log("wallet_details", wallet_details);
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
             susucoinData = susucoinData.data
@@ -2597,6 +2598,8 @@ module.exports = {
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var temp_wallet_total = 0;
+
+
           if (wallet_details != undefined) {
             assets_data[i].send_address = wallet_details.send_address;
             assets_data[i].receive_address = wallet_details.receive_address;
