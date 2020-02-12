@@ -524,7 +524,7 @@ module.exports = {
                               console.log("adminWalletDetails", adminWalletDetails.balance)
                               console.log("faldaxFees", faldaxFees)
                               let admin_network_fees = 0.0;
-                              if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                              if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                                 admin_network_fees = parseFloat(networkFees).toFixed(8);
                               }
                               var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
