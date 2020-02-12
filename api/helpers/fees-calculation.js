@@ -40,13 +40,15 @@ module.exports = {
     try {
       var coin = inputs.coin;
       var feesValue;
+      console.log(coin)
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
           is_active: true,
-          coin_code: coin
+          coin_code: (coin)
         }
       })
+      console.log(coinData)
       if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({
           where: {
