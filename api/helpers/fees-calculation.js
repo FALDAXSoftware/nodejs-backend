@@ -47,10 +47,10 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          coin_code: coin
+          coin_code: (coin)
         }
       })
-      console.log("coinData",coinData);
+
       if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({
           where: {

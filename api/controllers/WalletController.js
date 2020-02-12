@@ -2240,6 +2240,7 @@ module.exports = {
         .sort('id ASC');
 
       for (var i = 0; i < coinData.length; i++) {
+        console.log(coinData[i].coin_code)
         if (coinData[i].coin_code != 'SUSU') {
           var warmWalletData = await sails
             .helpers
@@ -2887,7 +2888,7 @@ module.exports = {
           coin_code: coin
         }
       })
-
+      console.log(coinData)
       if (coinData != undefined) {
         var walletUserData = await Wallet.findOne({
           user_id: user_id,
@@ -2915,7 +2916,7 @@ module.exports = {
               division = 1e6;
             }
             let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
-            if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
+            if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false && coinData.coin_code != 'SUSU') {
               // remainningAmountValue = remainningAmount * division
               var reposneData = await sails
                 .helpers
@@ -2933,6 +2934,9 @@ module.exports = {
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
               availableBalance = remainningAmount - 45;
+            } else if (coinData.coin_code == 'SUSU') {
+              var feesValue = 0.01
+              availableBalance = remainningAmount - 0.01;
             }
 
             return res
