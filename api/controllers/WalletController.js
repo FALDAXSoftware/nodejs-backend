@@ -2967,51 +2967,98 @@ module.exports = {
           error_at: error.stack
         });
     }
+  },
+
+  getAdminWalletAvailableBalance: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: sails.__('Unauthorized Access').message
+        });
+      }
+      var user_id = 36;
+      var {
+        coin
+      } = req.allParams();
+      var availableBalance = 0.0;
+      var coinData = await Coins.findOne({
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin
+        }
+      })
+
+      if (coinData != undefined) {
+        var walletUserData = await Wallet.findOne({
+          user_id: user_id,
+          deleted_at: null,
+          coin_id: coinData.id,
+          is_admin: true
+        });
+
+        if (walletUserData) {
+          var walletBalance = walletUserData.placed_balance;
+          var remainningAmount = parseFloat(walletBalance);
+          if (remainningAmount > 0) {
+            var division = 1e8;
+            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              division = 1e18;
+            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+              division = 1e6;
+            }
+            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
+            if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
+              // remainningAmountValue = remainningAmount * division
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              availableBalance = remainningAmount - (2 * reposneData.fee)
+            } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              feeValue = (reposneData / division)
+              availableBalance = remainningAmount - (2 * feeValue);
+            } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
+              var feesValue = parseFloat(45 / division).toFixed(8)
+              availableBalance = remainningAmount - 45;
+            }
+
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Available Balance").message,
+                "data": parseFloat(availableBalance).toFixed(8)
+              })
+          }
+        }
+      }
+    } catch (error) {
+
+      if (error.name == "ImplementationError") {
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
+        var availableBalance = remainningAmount - (2 * get_network_fees)
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Available Balance").message,
+            "data": parseFloat(availableBalance).toFixed(8)
+          })
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "error": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
   }
-
-
-
-  // // Check Wallet Balance
-  // checkWalletBalance: async function (req, res) {
-  //   try {
-
-  //     var coinData = await Coins.find({
-  //       deleted_at: null,
-  //       is_active: true
-  //     });
-
-  //     var coin_limit_data = await AdminSetting.findOne({
-  //       where: {
-  //         deleted_at: null,
-  //         slug: 'admin_threshold_notification'
-  //       }
-  //     });
-
-  //     var data = JSON.parse(coin_limit_data.value)
-
-  //     for (var i = 0; i < coinData.length; i++) {
-
-  //       console.log(coinData[i].id);
-  //       console.log(coinData[i].coin_code);
-  //       let warmWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].warm_wallet_address);
-  //       let custodialWallet = await sails.helpers.bitgo.getWallet(coinData[i].coin_code, coinData[i].custody_wallet_address);
-
-  //       console.log("Warm Wallet Balance ??????????????", warmWallet.balance);
-  //       console.log("Custodial Wallet Balance >>>>>>>>>>", custodialWallet.balance)
-
-  //       let exisiting = data.find(each_value => each_value['coin_id'] === coinData[i].id);
-  //       console.log("Existing Value >>>>>>>>>>>>.", exisiting);
-
-  //       if (warmWallet.balance != undefined) {
-  //         if (warmWallet.balance <= data.first_limit) {
-
-  //         }
-  //       }
-
-  //     }
-
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 };

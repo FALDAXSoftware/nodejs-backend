@@ -3585,6 +3585,7 @@ module.exports = {
         if (user_coins != undefined) {
           coins[i].send_address = user_coins.send_address;
           coins[i].receive_address = user_coins.receive_address;
+          coins[i].balance = user_coins.balance
         }
         all_data.push(coins[i]);
       }
