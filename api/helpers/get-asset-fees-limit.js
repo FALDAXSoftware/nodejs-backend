@@ -30,13 +30,20 @@ module.exports = {
     let asset = inputs.asset;
     let type = inputs.type;
     let temp_type = '';
+    var coinData = await Coins.findOne({
+      where: {
+        deleted_at: null,
+        is_active: true,
+        coin_code: asset
+      }
+    })
     if( asset == 'btc' || asset == 'tbtc'){
       asset = 'btc';
     }else if( asset == 'ltc' || asset == 'tltc'){
       asset = 'ltc';
     }else if( asset == 'xrp' || asset == 'txrp'){
       asset = 'xrp';
-    }else if( asset == 'eth' || asset == 'teth'){
+    }else if( asset == 'eth' || asset == 'teth' || coinData.iserc == true){
       asset = 'eth';
     }
     if( type == 1 ){

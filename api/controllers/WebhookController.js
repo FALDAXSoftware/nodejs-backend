@@ -449,7 +449,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
@@ -567,7 +567,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
@@ -764,7 +764,7 @@ module.exports = {
               var network_fees = parseFloat(walletHistoryValue.estimated_network_fees * division).toFixed(8)
               let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
               console.log("amount>?>>>>", amount)
-              if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp") {
+              if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp" || coin.iserc == true) {
                 amount = amount.toString();
               } else {
                 amount = parseFloat(amount)
@@ -880,9 +880,14 @@ module.exports = {
       // Check For Confirmed transfer
 
       if (req.body.state == "confirmed") {
+        let coin = await Coins.findOne({
+          deleted_at: null,
+          is_active: true,
+          coin_code: req.body.coin
+        });
         console.log("Confirmed On Receive ?????????", req.body);
         var division = sails.config.local.DIVIDE_EIGHT;
-        if (req.body.coin == "teth" || req.body.coin == "eth") {
+        if (req.body.coin == "teth" || req.body.coin == "eth" || coin.iserc == true) {
           division = sails.config.local.DIVIDE_EIGHTEEN;
         } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
           division = sails.config.local.DIVIDE_SIX;
