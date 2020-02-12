@@ -325,8 +325,20 @@ module.exports = {
       var transactionValue = transactionCount.rows;
 
       let feesQuery = "SELECT symbol, sum(user_fee) FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY sum(user_fee) DESC"
+      console.log("feesQuery", feesQuery)
       let feesTransactionCount = await sails.sendNativeQuery(feesQuery, [])
       var feesTransactionValue = feesTransactionCount.rows;
+
+      let walletFeesQuery = `SELECT coins.coin_code, sum(wallet_history.faldax_fee) as faldax_fee, sum(wallet_history.residual_amount) as residual_amount
+                                FROM wallet_history LEFT JOIN coins
+                                ON wallet_history.coin_id = coins.id
+                                WHERE wallet_history.created_at >= '${moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss')}'  AND wallet_history.deleted_at IS NULL
+                                AND coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                GROUP BY coins.coin_code
+                                ORDER BY sum(faldax_fee) DESC`
+
+      let walletFeesTransactionCount = await sails.sendNativeQuery(walletFeesQuery, [])
+      var walletFeesTransactionValue = walletFeesTransactionCount.rows;
 
       let withdrawReqCountValue = await WithdrawRequest.count({
         deleted_at: null,
@@ -402,7 +414,8 @@ module.exports = {
         withdrawReqCountValue,
         userSignUpCountValue,
         transactionValue,
-        feesTransactionValue
+        feesTransactionValue,
+        walletFeesTransactionValue
       });
     } catch (error) {
       // await logger.error(error.message)
