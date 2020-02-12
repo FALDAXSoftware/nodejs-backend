@@ -924,18 +924,24 @@ module.exports = {
               dest = transfer.inputs[0]
             }
 
+            let coinDataValue = await Coins.findOne({
+              coin_code: req.body.coin
+            });
+
             // receiver wallet
             let userWallet = await Wallet.findOne({
               receive_address: dest.address,
               deleted_at: null,
-              is_active: true
+              is_active: true,
+              coin_id: coinDataValue.id
             });
 
             if (userWallet == undefined) {
               var userSendWallet = await Wallet.findOne({
                 send_address: dest.address,
                 deleted_at: null,
-                is_active: true
+                is_active: true,
+                coin_id: coinDataValue.id
               });
             }
 
@@ -944,14 +950,16 @@ module.exports = {
                 userWallet = await Wallet.findOne({
                   receive_address: source.address,
                   deleted_at: null,
-                  is_active: true
+                  is_active: true,
+                  coin_id: coinDataValue.id
                 });
 
                 if (userWallet == undefined) {
                   userWallet = await Wallet.findOne({
                     send_address: source.address,
                     deleted_at: null,
-                    is_active: true
+                    is_active: true,
+                    coin_id: coinDataValue.id
                   });
                 }
               }
@@ -1097,7 +1105,7 @@ module.exports = {
                 }
                 console.log("warmWalletAmount", warmWalletAmount)
                 var feeValue = 0.0
-                if (req.body.coin != "teth" && req.body.coin != "eth" && req.body.coin != "txrp" && req.body.coin != "xrp") {
+                if (req.body.coin != "teth" && req.body.coin != "eth" && req.body.coin != "txrp" && req.body.coin != "xrp" && coin.iserc == false) {
                   var get_static_fees_data = await sails.helpers.getAssetFeesLimit(req.body.coin, 1);
                   warmWalletAmountAfter = warmWalletAmount - get_static_fees_data;
                   console.log("warmWalletAmount after static fees", warmWalletAmount);
@@ -1126,7 +1134,7 @@ module.exports = {
                   var feesValue = parseFloat(45 / division).toFixed(8)
                   warmWalletAmount = warmWalletAmount - 45;
                   feeValue = parseFloat(45 / 1000000).toFixed(8)
-                } else if (req.body.coin == 'teth' || req.body.coin == 'eth') {
+                } else if (req.body.coin == 'teth' || req.body.coin == 'eth' || coin.iserc == true) {
                   var reposneData = await sails
                     .helpers
                     .wallet
@@ -1137,7 +1145,7 @@ module.exports = {
                 console.log(feeValue)
 
                 if (coin.min_limit != null && coin.min_limit != "" && parseFloat(coin.min_limit) <= parseFloat(warmWalletAmount / division) && warmWalletAmount > 0) {
-                  if (coin.coin_code == "teth" || coin.coin_code == 'eth' || coin.coin_code == "txrp" || coin.coin_code == "xrp") {
+                  if (coin.coin_code == "teth" || coin.coin_code == 'eth' || coin.coin_code == "txrp" || coin.coin_code == "xrp" || coin.iserc == true) {
                     feeRateValue = 0.0
                   }
                   var warmwallet_balance_check = await sails.helpers.bitgo.send(req.body.coin, req.body.wallet, warmWallet.receiveAddress.address, warmWalletAmount, feeRateValue)
