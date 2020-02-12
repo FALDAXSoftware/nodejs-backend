@@ -3047,6 +3047,14 @@ module.exports = {
                 "message": sails.__("Available Balance").message,
                 "data": parseFloat(availableBalance).toFixed(8)
               })
+          } else {
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Available Balance").message,
+                "data": parseFloat(0).toFixed(8)
+              })
           }
         }
       }
