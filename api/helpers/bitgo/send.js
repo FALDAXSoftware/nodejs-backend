@@ -151,10 +151,10 @@ module.exports = {
     };
 
     send_data.amount = parseFloat(inputs.amount);
-    if ( inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" ){
+    if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" || coinData.iserc == true) {
       send_data.amount = (inputs.amount).toString();
     }
-    if ( inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" ){
+    if (inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" || coinData.iserc == true ) {
       if (inputs.feeRate && inputs.feeRate > 0) {
         send_data.feeRate = inputs.feeRate;
         // send_data.fee = inputs.feeRate;

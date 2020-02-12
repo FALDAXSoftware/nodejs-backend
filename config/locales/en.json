@@ -2917,5 +2917,12 @@
 		"message_type": "error",
 		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
 		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
+	},
+	"Available Balance": {
+		"page": "User - Available Balance for user to send after fees deduction",
+		"context": "Available Balance for the user",
+		"message_type": "success",
+		"message_english": "User Available balance after fees has been retrieved successfully.",
+		"message": "User Available balance after fees has been retrieved successfully."
 	}
 }
