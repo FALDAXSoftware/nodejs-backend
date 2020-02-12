@@ -237,13 +237,12 @@ module.exports = {
         deleted_at: null
       });
       let inactiveUsers = await Users.count({
-        is_verified: false,
         is_active: false,
         deleted_at: null
       });
       let deletedUsers = await Users.count({
         deleted_at: {
-          '!': null
+          '!=': null
         }
       });
       let activeCoins = await Coins.count({
