@@ -1176,13 +1176,16 @@ module.exports = {
         .helpers
         .wallet
         .receiveOneAddress(coin_code, userData);
+      console.log(walletDataCreate)
       if (walletDataCreate == 1) {
+        console.log("Inside If >>>>>")
         await logger.error({
           "module": "Panic Button",
           "user_id": "user_" + req.user.id,
           "url": req.url,
           "type": "Error"
         }, sails.__("Address already Create Success").message)
+        console.log(sails.__("Address already Create Success").message)
         return res.json({
           status: 500,
           message: sails.__("Address already Create Success").message,
@@ -1192,7 +1195,7 @@ module.exports = {
         console.log("walletDataCreate", walletDataCreate)
         return res.json({
           status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
-          message: (coin_code != "SUSU") ? (sails.__("Address Create Success")) : (walletDataCreate.message),
+          message: (coin_code != "SUSU") ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
           data: (coin_code != "SUSU") ? (walletDataCreate) : (walletDataCreate.data)
         })
       } else {
@@ -2922,7 +2925,7 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
-              availableBalance = remainningAmount - (2 * reposneData.fee)
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
             } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
               // remainningAmountValue = remainningAmount * division
               var reposneData = await sails
