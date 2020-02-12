@@ -1987,7 +1987,10 @@ module.exports = {
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+
+      //let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
@@ -2085,7 +2088,8 @@ module.exports = {
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
@@ -2177,8 +2181,10 @@ module.exports = {
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
-
-      let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
+      console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
       if (usersData) {
