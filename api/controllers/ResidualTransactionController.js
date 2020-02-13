@@ -38,10 +38,7 @@ module.exports = {
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
           query += " AND "
-          query += " (LOWER(residual_transactions.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.destination_address) LIKE '%" + data.toLowerCase() + "%'";
-          if (!isNaN(data)) {
-            query += " OR residual_transactions.amount=" + data;
-          }
+          query += " (LOWER(residual_transactions.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(coins.coin_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(residual_transactions.destination_address) LIKE '%" + data.toLowerCase() + "%'";
           query += ")"
         }
       }
