@@ -3572,7 +3572,7 @@ module.exports = {
         is_active: true,
         deleted_at: null
       })
-        .select(["coin_code", "coin"])
+        .select(["coin_code", "coin", "coin_icon"])
         .sort('id DESC');
 
       var all_data = [];
@@ -3584,6 +3584,7 @@ module.exports = {
         });
         // console.log(coins[i]);
         coins[i].coin = (coins[i].coin)
+        coins[i].coin_icon = (coins[i].coin_icon)
         coins[i].coin_code = (coins[i].coin_code).toUpperCase();
         coins[i].user_id = user_id;
         coins[i].send_address = "";
