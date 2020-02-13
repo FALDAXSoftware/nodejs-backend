@@ -3084,5 +3084,129 @@ module.exports = {
           error_at: error.stack
         });
     }
+  },
+
+  getWarmAvailableBalance: async function (req, res) {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({
+          status: 403,
+          err: sails.__('Unauthorized Access').message
+        });
+      }
+
+      var {
+        coin
+      } = req.allParams();
+      var availableBalance = 0.0;
+      var coinData = await Coins.findOne({
+        where: {
+          is_active: true,
+          deleted_at: null,
+          coin_code: coin
+        }
+      })
+
+      if (coinData != undefined) {
+        var walletData = await sails
+          .helpers
+          .bitgo
+          .getWallet(coinData.coin_code, coinData.warm_wallet_address)
+        console.log("walletData", walletData)
+        if (walletData && walletData != undefined) {
+          var walletBalance = walletData.balance;
+          var remainningAmount = parseFloat(walletBalance);
+          console.log("remainningAmount", remainningAmount)
+          var get_static_fees_data = await sails.helpers.getAssetFeesLimit(coinData.coin_code, 1);
+          remainningAmount = remainningAmount - get_static_fees_data
+          console.log("remainningAmount", remainningAmount)
+          if (remainningAmount > 0) {
+            var division = 1e8;
+            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              division = 1e18;
+            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+              division = 1e6;
+            }
+
+            if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount / division), walletData.receiveAddress.address);
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
+              console.log(availableBalance)
+            } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+              console.log(remainningAmount)
+              var reposneData = await sails
+                .helpers
+                .wallet
+                .getNetworkFee(coinData.coin_code, (remainningAmount / division), walletData.receiveAddress.address);
+              feeValue = (reposneData / division)
+              console.log(remainningAmount)
+              console.log(feeValue)
+              availableBalance = parseFloat(remainningAmount) - parseFloat(2 * feeValue);
+            } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
+              var feesValue = parseFloat(45 / division).toFixed(8)
+              availableBalance = remainningAmount - parseFloat(45 / division).toFixed(8);
+            }
+
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Available Balance").message,
+                "data": (availableBalance > 0) ? (parseFloat(availableBalance / division).toFixed(8)) : (0.0)
+              })
+          } else {
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Available Balance").message,
+                "data": parseFloat(0).toFixed(8)
+              })
+          }
+        }
+      }
+    } catch (error) {
+
+      if (error.name == "ImplementationError") {
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
+        var availableBalance = remainningAmount - (2 * get_network_fees)
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Available Balance").message,
+            "data": (availableBalance > 0) ? (parseFloat(availableBalance / division).toFixed(8)) : (0.0)
+          })
+      }
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "error": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getAdminWarmSend: async function (req, res) {
+    try {
+      var {
+        amount,
+        destination_address,
+        coin_code
+      } = rq.allParams();
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "error": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
   }
 };

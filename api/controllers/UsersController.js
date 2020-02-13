@@ -1934,13 +1934,9 @@ module.exports = {
       }
 
       if (country && country != "") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+        query += " AND "
         whereAppended = true;
-        query += "  users.country='" + country + "'";
+        query += "  users.country LIKE '%" + country + "%'";
       }
 
       if (start_date && end_date) {
@@ -1979,7 +1975,8 @@ module.exports = {
 
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-
+      console.log("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
       // let usersData = await sails.sendNativeQuery("Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
       //   "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
