@@ -449,7 +449,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
@@ -473,13 +473,13 @@ module.exports = {
             })
             .fetch();
           // Check all ERC20 Token;s and loop through
-          var walletData = await Coins.find({
-            where: {
-              is_active: true,
-              deleted_at: null,
-              iserc: true
-            }
-          });
+          // var walletData = await Coins.find({
+          //   where: {
+          //     is_active: true,
+          //     deleted_at: null,
+          //     iserc: true
+          //   }
+          // });
           var userData = await Users.findOne({
             where: {
               id: data[0].user_id,
@@ -493,39 +493,39 @@ module.exports = {
           }
 
 
-          for (var i = 0; i < walletData.length; i++) {
-            var walletValue = await Wallet.find({
-              user_id: data[0].user_id,
-              coin_id: walletData[i].id,
-              is_active: true,
-              deleted_at: null
-            })
-            if (walletValue.length == 0) {
-              var walletCode = await Wallet
-                .create({
-                  user_id: data[0].user_id,
-                  deleted_at: null,
-                  coin_id: walletData[i].id,
-                  wallet_id: 'wallet',
-                  is_active: true,
-                  balance: 0.0,
-                  placed_balance: 0.0,
-                  address_label: addressLable,
-                  is_admin: false,
-                  send_address: (data[0].send_address ? data[0].send_address : ""),
-                  receive_address: address.address
-                }).fetch();
-            } else {
-              await Wallet
-                .update({
-                  id: walletValue[0].id
-                })
-                .set({
-                  send_address: (data[0].send_address ? data[0].send_address : ""),
-                  receive_address: address.address
-                })
-            }
-          }
+          // for (var i = 0; i < walletData.length; i++) {
+          //   var walletValue = await Wallet.find({
+          //     user_id: data[0].user_id,
+          //     coin_id: walletData[i].id,
+          //     is_active: true,
+          //     deleted_at: null
+          //   })
+          //   if (walletValue.length == 0) {
+          //     var walletCode = await Wallet
+          //       .create({
+          //         user_id: data[0].user_id,
+          //         deleted_at: null,
+          //         coin_id: walletData[i].id,
+          //         wallet_id: 'wallet',
+          //         is_active: true,
+          //         balance: 0.0,
+          //         placed_balance: 0.0,
+          //         address_label: addressLable,
+          //         is_admin: false,
+          //         send_address: (data[0].send_address ? data[0].send_address : ""),
+          //         receive_address: address.address
+          //       }).fetch();
+          //   } else {
+          //     await Wallet
+          //       .update({
+          //         id: walletValue[0].id
+          //       })
+          //       .set({
+          //         send_address: (data[0].send_address ? data[0].send_address : ""),
+          //         receive_address: address.address
+          //       })
+          //   }
+          // }
         }
         // await sails.helpers.loggerFormat(
         //   "webhookOnAddress",
@@ -567,7 +567,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
@@ -591,13 +591,13 @@ module.exports = {
             .fetch();
 
           // Check all ERC20 Token;s and loop through
-          var walletData = await Coins.find({
-            where: {
-              is_active: true,
-              deleted_at: null,
-              iserc: true
-            }
-          });
+          // var walletData = await Coins.find({
+          //   where: {
+          //     is_active: true,
+          //     deleted_at: null,
+          //     iserc: true
+          //   }
+          // });
           var userData = await Users.findOne({
             where: {
               id: data[0].user_id,
@@ -606,39 +606,39 @@ module.exports = {
             }
           });
 
-          for (var i = 0; i < walletData.length; i++) {
-            var walletValue = await Wallet.find({
-              user_id: data[0].user_id,
-              coin_id: walletData[i].id,
-              is_active: true,
-              deleted_at: null
-            })
-            if (walletValue.length == 0) {
-              var walletCode = await Wallet
-                .create({
-                  user_id: data[0].user_id,
-                  deleted_at: null,
-                  coin_id: walletData[i].id,
-                  wallet_id: 'wallet',
-                  is_active: true,
-                  balance: 0.0,
-                  placed_balance: 0.0,
-                  address_label: addressLable,
-                  is_admin: false,
-                  send_address: address.address,
-                  receive_address: (data[0].receive_address ? data[0].receive_address : "")
-                }).fetch();
-            } else {
-              await Wallet
-                .update({
-                  id: walletValue[0].id
-                })
-                .set({
-                  send_address: address.address,
-                  receive_address: (data[0].receive_address ? data[0].receive_address : "")
-                })
-            }
-          }
+          // for (var i = 0; i < walletData.length; i++) {
+          //   var walletValue = await Wallet.find({
+          //     user_id: data[0].user_id,
+          //     coin_id: walletData[i].id,
+          //     is_active: true,
+          //     deleted_at: null
+          //   })
+          //   if (walletValue.length == 0) {
+          //     var walletCode = await Wallet
+          //       .create({
+          //         user_id: data[0].user_id,
+          //         deleted_at: null,
+          //         coin_id: walletData[i].id,
+          //         wallet_id: 'wallet',
+          //         is_active: true,
+          //         balance: 0.0,
+          //         placed_balance: 0.0,
+          //         address_label: addressLable,
+          //         is_admin: false,
+          //         send_address: address.address,
+          //         receive_address: (data[0].receive_address ? data[0].receive_address : "")
+          //       }).fetch();
+          //   } else {
+          //     await Wallet
+          //       .update({
+          //         id: walletValue[0].id
+          //       })
+          //       .set({
+          //         send_address: address.address,
+          //         receive_address: (data[0].receive_address ? data[0].receive_address : "")
+          //       })
+          //   }
+          // }
         }
 
 
