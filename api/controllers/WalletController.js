@@ -2936,7 +2936,7 @@ module.exports = {
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
-              availableBalance = remainningAmount - 45;
+              availableBalance = remainningAmount - (45/division);
             } else if (coinData.coin_code == 'SUSU') {
               var feesValue = 0.01
               availableBalance = remainningAmount - 0.01;
@@ -3040,7 +3040,7 @@ module.exports = {
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
-              availableBalance = remainningAmount - 45;
+              availableBalance = remainningAmount - parseFloat(45/division).toFixed(8);
             }
 
             return res
