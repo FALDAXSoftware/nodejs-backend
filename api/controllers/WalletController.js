@@ -1192,7 +1192,6 @@ module.exports = {
           data: walletDataCreate
         })
       } else if (walletDataCreate) {
-        console.log("walletDataCreate", walletDataCreate)
         return res.json({
           status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
           message: (coin_code != "SUSU") ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
