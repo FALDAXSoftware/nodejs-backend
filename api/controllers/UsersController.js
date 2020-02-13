@@ -1940,9 +1940,6 @@ module.exports = {
       }
 
       if (start_date && end_date) {
-        // query += whereAppended ?
-        //   " AND " :
-        //   " WHERE ";
 
         query += " AND users.created_at >= '" + await sails
           .helpers
@@ -1953,14 +1950,6 @@ module.exports = {
 
       countQuery = query;
 
-      // if (sort_col && sort_order) {
-      //   let sortVal = (sort_order == 'descend' ?
-      //     'DESC' :
-      //     'ASC');
-      //   query += " ORDER BY users." + sort_col + " " + sortVal;
-      // } else {
-      //   query += " ORDER BY users.id DESC";
-      // }
       let new_sort = '';
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
@@ -1971,14 +1960,8 @@ module.exports = {
         new_sort += " ORDER BY users.created_at DESC";
       }
 
-
-
-      // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      console.log("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
-      // let usersData = await sails.sendNativeQuery("Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-      //   "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
+
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
@@ -2032,17 +2015,14 @@ module.exports = {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
 
       if (country && country != "") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+
+        query += " AND "
         whereAppended = true;
         query += "  users.country='" + country + "'";
       }
@@ -2057,14 +2037,6 @@ module.exports = {
       }
 
       countQuery = query;
-      // if (sort_col && sort_order) {
-      //   let sortVal = (sort_order == 'descend' ?
-      //     'DESC' :
-      //     'ASC');
-      //   query += " ORDER BY users." + sort_col + " " + sortVal;
-      // } else {
-      //   query += " ORDER BY users.created_at DESC";
-      // }
       let new_sort = '';
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
@@ -2075,11 +2047,8 @@ module.exports = {
         new_sort += " ORDER BY users.created_at DESC";
       }
 
-      // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      // let usersData = await sails.sendNativeQuery("Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
-      //   "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query, [])
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
@@ -2129,17 +2098,13 @@ module.exports = {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
         }
         query += ")"
       }
 
       if (country && country != "") {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+        query += " AND "
         whereAppended = true;
         query += "  users.country='" + country + "'";
       }
