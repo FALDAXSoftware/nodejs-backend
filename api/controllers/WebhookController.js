@@ -449,7 +449,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
@@ -567,7 +567,7 @@ module.exports = {
       //   sails.config.local.LoggerIncoming
       // );
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("teth", req.body.walletId, req.body.address);
+        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         // if (addressLable.includes("-")) {
