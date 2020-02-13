@@ -2936,7 +2936,7 @@ module.exports = {
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
-              availableBalance = remainningAmount - (45/division);
+              availableBalance = remainningAmount - (45 / division);
             } else if (coinData.coin_code == 'SUSU') {
               var feesValue = 0.01
               availableBalance = remainningAmount - 0.01;
@@ -2947,7 +2947,7 @@ module.exports = {
               .json({
                 "status": 200,
                 "message": sails.__("Available Balance").message,
-                "data": parseFloat(availableBalance).toFixed(8)
+                "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
               })
           } else {
             return res
@@ -2970,7 +2970,7 @@ module.exports = {
           .json({
             "status": 200,
             "message": sails.__("Available Balance").message,
-            "data": parseFloat(availableBalance).toFixed(8)
+            "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
           })
       }
 
@@ -3040,7 +3040,7 @@ module.exports = {
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
-              availableBalance = remainningAmount - parseFloat(45/division).toFixed(8);
+              availableBalance = remainningAmount - parseFloat(45 / division).toFixed(8);
             }
 
             return res
@@ -3048,7 +3048,7 @@ module.exports = {
               .json({
                 "status": 200,
                 "message": sails.__("Available Balance").message,
-                "data": parseFloat(availableBalance).toFixed(8)
+                "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
               })
           } else {
             return res
@@ -3071,7 +3071,7 @@ module.exports = {
           .json({
             "status": 200,
             "message": sails.__("Available Balance").message,
-            "data": parseFloat(availableBalance).toFixed(8)
+            "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
           })
       }
 
