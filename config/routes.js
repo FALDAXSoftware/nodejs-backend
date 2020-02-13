@@ -536,4 +536,5 @@ module.exports.routes = {
 
   'get /users/get-available-balance': 'WalletController.getWalletAvailableBalance',
   'get /admin/get-admin-available-balance': 'WalletController.getAdminWalletAvailableBalance',
+  'get /admin/get-warm-available-balance': 'WalletController.getWarmAvailableBalance',
 };

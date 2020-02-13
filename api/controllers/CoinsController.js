@@ -78,7 +78,7 @@ module.exports = {
         // limit + " OFFSET " + (limit * (page - 1)));
         let balanceRes = await Coins.find({
           deleted_at: null,
-          is_active: true,
+          // is_active: true,
           or: [{
             coin_name: {
               contains: data
@@ -109,7 +109,7 @@ module.exports = {
         let allCoinsCount = await Coins.count({
           where: {
             deleted_at: null,
-            is_active: true,
+            // is_active: true,
             or: [{
               coin_name: {
                 contains: data
@@ -138,7 +138,7 @@ module.exports = {
         let balanceRes = await Coins
           .find({
             deleted_at: null,
-            is_active: true
+            // is_active: true
           })
           .paginate(page - 1, parseInt(limit))
           .populate('userWallets', {
@@ -160,7 +160,7 @@ module.exports = {
         let allCoinsCount = await Coins.count({
           where: {
             deleted_at: null,
-            is_active: true
+            // is_active: true
           }
         });
 

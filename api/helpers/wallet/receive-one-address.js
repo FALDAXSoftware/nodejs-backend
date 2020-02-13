@@ -36,8 +36,6 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
-    console.log("access_token_value",access_token_value)
-    console.log("sails.config.local.BITGO_ENV_MODE",sails.config.local.BITGO_ENV_MODE)
     //Configuring bitgo
     var bitgo = new BitGoJS.BitGo({
       env: sails.config.local.BITGO_ENV_MODE,
@@ -51,15 +49,56 @@ module.exports = {
       coin: inputs.coin
     });
 
-  console.log("coin",coin);
 
     var walletData = await Wallet.findOne({
       deleted_at: null,
       coin_id: coin.id,
       user_id: parseInt(inputs.user.id),
     })
-    console.log("coin", coin)
-    console.log((coin.type == 1))
+
+    if( coin.iserc == true ){
+      const get_eth_data = await Coins.findOne({
+        deleted_at: null,
+        is_active: true,
+        coin_code:{
+          'in':["eth", "teth"]
+        }
+      });
+      var eth_address_data = await Wallet.findOne({
+        deleted_at: null,
+        coin_id: get_eth_data.id,
+        user_id: parseInt(inputs.user.id)
+      });
+
+      if( eth_address_data && eth_address_data.send_address != null && eth_address_data.receive_address != null ){
+        let check_erc_data = await Wallet.findOne({
+          deleted_at: null,
+          coin_id: coin.id,
+          user_id: parseInt(inputs.user.id)
+        });
+        if( check_erc_data ){
+          return exits.success(1);
+        }else{
+          var create_erc_address = await Wallet
+            .create({
+              user_id: parseInt(inputs.user.id),
+              deleted_at: null,
+              coin_id: coin.id,
+              wallet_id: 'wallet',
+              is_active: true,
+              balance: 0.0,
+              placed_balance: 0.0,
+              address_label: eth_address_data.address_label,
+              is_admin: false,
+              send_address: eth_address_data.send_address,
+              receive_address: eth_address_data.receive_address
+            }).fetch();
+            return exits.success(create_erc_address);
+        }
+      }else{
+        return exits.success(0);
+      }
+    }
     let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
     if (coin.type == 1) {
       //For all the coins accept USD EURO and ETH
