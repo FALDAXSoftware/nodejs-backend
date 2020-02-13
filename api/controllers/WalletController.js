@@ -3030,13 +3030,15 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
-              availableBalance = remainningAmount - (2 * reposneData.fee)
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
+              console.log(availableBalance)
             } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
               var reposneData = await sails
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
               feeValue = (reposneData / division)
+              console.log(feeValue)
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
