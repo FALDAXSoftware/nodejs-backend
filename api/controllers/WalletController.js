@@ -154,25 +154,29 @@ module.exports = {
       }
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
-                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc
+                    coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.is_active=true AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL`
+                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL
+                    ORDER BY coins.coin_name ASC`
 
-      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,currency_conversion.quote
+      let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                              WHERE coins.is_active=true AND coins.deleted_at IS NULL
+                              WHERE coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
-                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))`
+                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))
+                              ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       var susucoinData = await sails.helpers.getUsdSusucoinValue();
-      console.log("susucoinData", susucoinData)
+      // console.log("susucoinData", susucoinData)
       susucoinData = JSON.parse(susucoinData);
       susucoinData = susucoinData.data
-
+      let deactivated_asset_lists=[];
+      let activated_asset_lists=[];
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
+
         // if (balanceWalletData.rows[i].iserc == false) {
         balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
@@ -200,31 +204,65 @@ module.exports = {
           else
             balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
         }
+        if( balanceWalletData.rows[i].is_active == true ){
+          activated_asset_lists.push( balanceWalletData.rows[i] );
+        }else{
+          deactivated_asset_lists.push( balanceWalletData.rows[i] );
+        }
         // }
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
-
+      // console.log("nonBalanceWalletData",nonBalanceWalletData.rows)
+      // let eth_asset = false;
+      // for(var k=0;k<nonBalanceWalletData.rows.length;k++){
+      //   if( (nonBalanceWalletData.rows[k].coin_code == 'eth' || nonBalanceWalletData.rows[k].coin_code=='teth') && nonBalanceWalletData.rows[k].is_active == true){
+      //       eth_asset = true;
+      //       break;
+      //       }
+      // }
+      // console.log("eth_asset",eth_asset);
+      let all_erctoken_lists = [];
+      let all_assets_lists = [];
       for (var i = 0; i < (nonBalanceWalletData.rows).length; i++) {
+
+        // if( eth_asset == false && nonBalanceWalletData.rows[i].iserc == true ){
+        //   continue;
+        // }
+
         if (nonBalanceWalletData.rows[i].quote != undefined) {
           nonBalanceWalletData.rows[i].quote.EUR.price = ((nonBalanceWalletData.rows[i].quote.EUR.price) != null ? (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
           // nonBalanceWalletData.rows[i].quote.USD.price = (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
           nonBalanceWalletData.rows[i].quote.INR.price = ((nonBalanceWalletData.rows[i].quote.INR.price) != null ? (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
+
           if (nonBalanceWalletData.rows[i].quote.USD) {
             var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0)
+            if (get_price.length > 0){
               nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            else
+            }else{
               nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            }
           }
         }
+        if( nonBalanceWalletData.rows[i].iserc == true ){
+          all_erctoken_lists.push(nonBalanceWalletData.rows[i]);
+        }else{
+          all_assets_lists.push(nonBalanceWalletData.rows[i]);
+        }
       }
-
+      var all_balance_wallets_list={};
+      all_balance_wallets_list.activated_asset_lists = activated_asset_lists;
+      all_balance_wallets_list.deactivated_asset_lists = deactivated_asset_lists;
+      var all_non_wallets_list={};
+      all_non_wallets_list.all_assets_lists = all_assets_lists;
+      all_non_wallets_list.all_erctoken_lists = all_erctoken_lists;
       return res.json({
         status: 200,
         message: sails.__("Balance retrieved success").message,
         balanceData: balanceWalletData.rows,
         nonBalanceData: nonBalanceWalletData.rows,
+        // balanceData: all_balance_wallets_list,
+        // nonBalanceData: all_non_wallets_list,
         currency_list: sails.config.local.CURRENCY_LIST
       });
 
@@ -933,7 +971,7 @@ module.exports = {
       }
       let coinData = await Coins.findOne({
         select: [
-          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit", "iserc"
+          "id", "coin_code", "coin_icon", "coin_name", "coin", "min_limit", "max_limit", "iserc","is_active"
         ],
         where: {
           coin_code: coinReceive,
@@ -968,7 +1006,7 @@ module.exports = {
           var coinDataValue = await Coins.findOne({
             where: {
               deleted_at: null,
-              is_active: true,
+              // is_active: true,
               id: coinData.id
             }
           })
@@ -1114,7 +1152,8 @@ module.exports = {
             walletUserData,
             'default_send_Coin_fee': parseFloat(coinFee.value),
             currencyConversionData,
-            withdrawRequestData
+            withdrawRequestData,
+            is_active:coinData.is_active
           });
         } else {
           return res.json({
