@@ -512,17 +512,17 @@ module.exports = {
                   placed_balance: 0.0,
                   address_label: addressLable,
                   is_admin: false,
-                  send_address: (data[0].send_address?data[0].send_address:""),
+                  send_address: (data[0].send_address ? data[0].send_address : ""),
                   receive_address: address.address
                 }).fetch();
-            }else{
+            } else {
               await Wallet
                 .update({
                   id: walletValue[0].id
                 })
                 .set({
-                  send_address:(data[0].send_address?data[0].send_address:""),
-                  receive_address:address.address
+                  send_address: (data[0].send_address ? data[0].send_address : ""),
+                  receive_address: address.address
                 })
             }
           }
@@ -626,16 +626,16 @@ module.exports = {
                   address_label: addressLable,
                   is_admin: false,
                   send_address: address.address,
-                  receive_address: (data[0].receive_address?data[0].receive_address:"")
+                  receive_address: (data[0].receive_address ? data[0].receive_address : "")
                 }).fetch();
-            }else{
+            } else {
               await Wallet
                 .update({
                   id: walletValue[0].id
                 })
                 .set({
-                  send_address:address.address,
-                  receive_address:(data[0].receive_address?data[0].receive_address:"")
+                  send_address: address.address,
+                  receive_address: (data[0].receive_address ? data[0].receive_address : "")
                 })
             }
           }
@@ -710,7 +710,7 @@ module.exports = {
             console.log("amount", amount)
             var network_fees = parseFloat(walletHistory.estimated_network_fees * division).toFixed(8)
             let warmWalletBefore = await sails.helpers.bitgo.getWallet(req.body.coin, req.body.wallet);
-            if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp" || coin.iserc==true) {
+            if (req.body.coin == "teth" || req.body.coin == "eth" || req.body.coin == "txrp" || req.body.coin == "xrp" || coin.iserc == true) {
               amount = amount.toString();
             } else {
               amount = parseFloat(amount)
@@ -898,13 +898,6 @@ module.exports = {
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
         console.log("transfer", transfer)
 
-        // await logger.info({
-        //   "module": "WebhookRecieve",
-        //   "user_id": 0,
-        //   "url": req.url,
-        //   "type": sails.config.local.LoggerWebhook,
-        //   "body":transfer
-        // }, sails.config.local.LoggerSuccess)
         if (transfer.state == "confirmed" && transfer.type == "receive") {
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
@@ -1175,7 +1168,7 @@ module.exports = {
                     estimated_network_fees: parseFloat((feeValue)).toFixed(8),
                     actual_network_fees: parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8),
                     faldax_fee: 0.0,
-                    actual_amount: parseFloat(dest.value).toFixed(8),
+                    actual_amount: parseFloat(dest.value / division).toFixed(8),
                     warm_wallet_balance_before: parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                     transaction_from: sails.config.local.RECEIVE_TO_WARM,
                     residual_amount: parseFloat((feeValue)).toFixed(8) - parseFloat(warmwallet_balance_check.transfer.feeString / (division)).toFixed(8)
