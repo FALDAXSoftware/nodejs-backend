@@ -29,10 +29,7 @@ module.exports = {
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
           query += " AND "
-          query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
-          // if (!isNaN(data)) {
-          //   query += " OR transaction_table.amount=" + data;
-          // }
+          query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(coins.coin_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%'";
           query += ")"
         }
       }
@@ -61,7 +58,7 @@ module.exports = {
       }
 
       countQuery = query;
-
+      console.log(query)
       if (sort_col && sort_order) {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
