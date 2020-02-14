@@ -532,7 +532,8 @@ module.exports = {
                             if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                               var amountValue = parseFloat(amount * division).toFixed(8);
                             } else {
-                              var valueFee = parseFloat(networkFees).toFixed(8)
+                              var estimatePass = parseFloat(networkFees / 3).toFixed(8)
+                              var valueFee = parseFloat(2 * estimatePass).toFixed(8)
                               var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
@@ -540,7 +541,7 @@ module.exports = {
                             console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("total_payout", total_payout)
-                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
+                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 3).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (division))
                             var totalFeeSub = 0;
@@ -650,7 +651,7 @@ module.exports = {
                               transaction_id: transaction.txid,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                              estimated_network_fees: parseFloat(2 * estimatePass).toFixed(8),
                               is_done: false,
                               actual_amount: amount,
                               sender_user_balance_before: user_wallet_balance,
