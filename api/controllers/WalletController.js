@@ -651,7 +651,7 @@ module.exports = {
                               transaction_id: transaction.txid,
                               faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
                               actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(2 * estimatePass).toFixed(8),
+                              estimated_network_fees: parseFloat(valueFee).toFixed(8),
                               is_done: false,
                               actual_amount: amount,
                               sender_user_balance_before: user_wallet_balance,
