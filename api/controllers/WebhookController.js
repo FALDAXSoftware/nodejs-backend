@@ -729,7 +729,8 @@ module.exports = {
             });
 
             console.log(sendTransfer);
-
+            var estimateFees = parseFloat(walletHistory.estimated_network_fees / 3);
+            estimateFees = parseFloat(estimateFees * 2)
             // Log transaction in transaction table
             await TransactionTable.create({
               coin_id: walletHistory.coin_id,
@@ -740,7 +741,7 @@ module.exports = {
               transaction_type: 'send',
               is_executed: true,
               transaction_id: sendTransfer.txid,
-              estimated_network_fees: walletHistory.estimated_network_fees,
+              estimated_network_fees: estimateFees,
               actual_network_fees: parseFloat(sendTransfer.transfer.feeString / division).toFixed(8),
               faldax_fee: 0.0,
               actual_amount: walletHistory.actual_amount,
