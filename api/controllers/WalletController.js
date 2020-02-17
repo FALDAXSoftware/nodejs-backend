@@ -259,10 +259,10 @@ module.exports = {
       return res.json({
         status: 200,
         message: sails.__("Balance retrieved success").message,
-        balanceData: balanceWalletData.rows,
-        nonBalanceData: nonBalanceWalletData.rows,
-        // balanceData: all_balance_wallets_list,
-        // nonBalanceData: all_non_wallets_list,
+        // balanceData: balanceWalletData.rows,
+        // nonBalanceData: nonBalanceWalletData.rows,
+        balanceData: all_balance_wallets_list,
+        nonBalanceData: all_non_wallets_list,
         currency_list: sails.config.local.CURRENCY_LIST
       });
 
