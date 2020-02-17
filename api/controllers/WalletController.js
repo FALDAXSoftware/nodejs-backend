@@ -498,9 +498,12 @@ module.exports = {
 
                   //Checking if wallet is found or not
                   if (wallet) {
-
+                    console.log("wallet", wallet)
+                    console.log("(parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)", (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION))
+                    console.log(parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION));
+                    console.log("(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)", (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))
                     //If placed balance is greater than the amount to be send
-                    if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+                    if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
                       //If coin is of bitgo type
                       if (coin.type == 1) {
@@ -529,11 +532,18 @@ module.exports = {
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
+                            var valueFee;
                             if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                               var amountValue = parseFloat(amount * division).toFixed(8);
+                              var estimatePass = parseFloat(networkFees / 3).toFixed(8)
+                              console.log("estimatePass", estimatePass)
+                              valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("valueFee", valueFee)
                             } else {
                               var estimatePass = parseFloat(networkFees / 3).toFixed(8)
-                              var valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("estimatePass", estimatePass)
+                              valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("valueFee", valueFee)
                               var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
@@ -637,6 +647,8 @@ module.exports = {
                                 balance: (wallet.balance - totalFeeSub).toFixed(8),
                                 placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
+
+                            console.log()
 
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
@@ -1551,7 +1563,7 @@ module.exports = {
         //Checking if wallet is found or not
         if (wallet) {
           //If placed balance is greater than the amount to be send
-          if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+          if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
             //If coin is of bitgo type
             if (coin.type == 1) {
