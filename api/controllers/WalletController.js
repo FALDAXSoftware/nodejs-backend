@@ -529,11 +529,18 @@ module.exports = {
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
+                            var valueFee;
                             if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                               var amountValue = parseFloat(amount * division).toFixed(8);
+                              var estimatePass = parseFloat(networkFees / 3).toFixed(8)
+                              console.log("estimatePass", estimatePass)
+                              valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("valueFee", valueFee)
                             } else {
                               var estimatePass = parseFloat(networkFees / 3).toFixed(8)
-                              var valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("estimatePass", estimatePass)
+                              valueFee = parseFloat(2 * estimatePass).toFixed(8)
+                              console.log("valueFee", valueFee)
                               var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
@@ -637,6 +644,8 @@ module.exports = {
                                 balance: (wallet.balance - totalFeeSub).toFixed(8),
                                 placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
+
+                            console.log()
 
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
