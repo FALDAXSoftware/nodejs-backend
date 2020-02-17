@@ -747,7 +747,7 @@ module.exports = {
               actual_amount: walletHistory.actual_amount,
               warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
               transaction_from: sails.config.local.SEND_TO_DESTINATION,
-              residual_amount: parseFloat(walletHistory.estimated_network_fees) - parseFloat(sendTransfer.transfer.feeString / division).toFixed(8)
+              residual_amount: parseFloat(estimateFees) - parseFloat(sendTransfer.transfer.feeString / division).toFixed(8)
             });
           } else {
             let walletHistoryValue = await WalletHistory.findOne({
@@ -784,6 +784,10 @@ module.exports = {
               });
 
               console.log(sendTransferValue);
+              var residualValue = 0.0;
+              var feeEstimate = parseFloat(walletHistoryValue.estimated_network_fees / 3).toFixed(8);
+              feeEstimate = feeEstimate * 2;
+              residualValue = feeEstimate - parseFloat(sendTransferValue.transfer.feeString / division).toFixed(8)
 
               // Log transaction in transaction table
               await TransactionTable.create({
@@ -802,7 +806,7 @@ module.exports = {
                 actual_amount: walletHistoryValue.actual_amount,
                 warm_wallet_balance_before: parseFloat(warmWalletBefore.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                 transaction_from: sails.config.local.SEND_TO_DESTINATION,
-                residual_amount: parseFloat(walletHistoryValue.estimated_network_fees) - parseFloat(sendTransferValue.transfer.feeString / 1e8).toFixed(8)
+                residual_amount: parseFloat(residualValue).toFixed(8)
               });
             }
           }
