@@ -498,9 +498,12 @@ module.exports = {
 
                   //Checking if wallet is found or not
                   if (wallet) {
-
+                    console.log("wallet", wallet)
+                    console.log("(parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)", (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION))
+                    console.log(parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION));
+                    console.log("(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)", (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))
                     //If placed balance is greater than the amount to be send
-                    if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+                    if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
                       //If coin is of bitgo type
                       if (coin.type == 1) {
@@ -1560,7 +1563,7 @@ module.exports = {
         //Checking if wallet is found or not
         if (wallet) {
           //If placed balance is greater than the amount to be send
-          if ((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+          if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
             //If coin is of bitgo type
             if (coin.type == 1) {
