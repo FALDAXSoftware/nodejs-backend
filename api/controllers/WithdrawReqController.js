@@ -121,7 +121,6 @@ module.exports = {
         actual_amount
       } = req.body;
 
-      console.log(req.body);
 
       if (status == true) {
         var coin = await Coins.findOne({
@@ -130,15 +129,18 @@ module.exports = {
           is_active: true
         })
 
+        var division = sails.config.local.DIVIDE_EIGHT;
+        if (coin.coin_code == 'xrp' || coin.coin_code == 'txrp') {
+          division = sails.config.local.DIVIDE_SIX;
+        } else if (coin.coin_code == 'eth' || coin.coin_code == 'teth' || coin.iserc == true) {
+          division = sails.config.local.DIVIDE_EIGHTEEN;
+        }
+        console.log(req.body);
+
         let warmWalletData = await sails
           .helpers
           .wallet
-          .getWalletAddressBalance(coin.warm_wallet_address, coin.coin_code);
-
-        let sendWalletData = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coin.hot_send_wallet_address, coin.coin_code);
+          .getWalletAddressBalance(coin.hot_receive_wallet_address, coin.coin_code);
 
         if (coin) {
           var wallet = await Wallet.findOne({
@@ -172,19 +174,22 @@ module.exports = {
                     //Execute Transaction
                     // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
-                    var amountToBeSnd = parseFloat(parseFloat(actual_amount) + parseFloat(network_fee)).toFixed(8);
-                    amountToBeSnd = parseFloat(amountToBeSnd * 1e8).toFixed(8)
-                    console.log("amountToBeSnd", amountToBeSnd)
+                    if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
+                      var amountValue = parseFloat(amount * division).toFixed(8);
+                    } else {
+                      var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
+                      var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                    }
                     // Send to hot warm wallet and make entry in diffrent table for both warm to
                     // receive and receive to destination
-                    let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountToBeSnd).toString())
+                    let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString())
                     console.log("transaction", transaction)
                     var total_payout = parseFloat(actual_amount) + parseFloat(faldax_fee)
                     console.log("total_payout", total_payout)
                     var network_fees = (transaction.transfer.feeString);
-                    var network_feesValue = parseFloat(network_fees / (1e8))
+                    var network_feesValue = parseFloat(network_fees / (division))
                     var totalFeeSub = 0;
-                    totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_fee)).toFixed(8)
+                    totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
                     totalFeeSub = parseFloat(totalFeeSub) + parseFloat(actual_amount) + parseFloat(faldax_fee)
                     console.log("totalFeeSub", totalFeeSub)
 
@@ -220,7 +225,7 @@ module.exports = {
                         .fetch();
                       let walletHistoryValue = {
                         coin_id: wallet.coin_id,
-                        source_address: warmWalletData.receiveAddress.address,
+                        source_address: wallet.receive_address,
                         destination_address: adminWalletDetails.receive_address,
                         user_id: 36,
                         is_admin: true,
@@ -243,7 +248,7 @@ module.exports = {
                     //Here remainning entry as well as address change
                     let walletHistory = {
                       coin_id: wallet.coin_id,
-                      source_address: wallet.send_address,
+                      source_address: wallet.receive_address,
                       destination_address: destination_address,
                       user_id: user_id,
                       amount: (total_payout),
@@ -278,10 +283,10 @@ module.exports = {
                     // from warm wallet to hot send wallet
                     let addObject = {
                       coin_id: coin.id,
-                      source_address: warmWalletData.receiveAddress.address,
-                      destination_address: wallet.send_address,
+                      source_address: wallet.receive_address,
+                      destination_address: destination_address,
                       user_id: user_id,
-                      amount: parseFloat(amountToBeSnd / 1e8).toFixed(8),
+                      amount: parseFloat(amountValue / division).toFixed(8),
                       transaction_type: 'send',
                       is_executed: true,
                       transaction_id: transaction.txid,
@@ -292,7 +297,7 @@ module.exports = {
                       actual_amount: actual_amount,
                       sender_user_balance_before: user_wallet_balance,
                       warm_wallet_balance_before: parseFloat(warmWalletData.balance / 1e8).toFixed(sails.config.local.TOTAL_PRECISION),
-                      transaction_from: sails.config.local.WARM_TO_SEND
+                      transaction_from: sails.config.local.SEND_TO_DESTINATION
                     }
 
                     await TransactionTable.create({
@@ -322,7 +327,7 @@ module.exports = {
                       user_id: user_id,
                     })
 
-                    totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
+                    totalFeeSub = parseFloat(walletHistoryDataValue.amount);
 
                     var userData = await Users.findOne({
                       where: {
