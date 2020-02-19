@@ -37,6 +37,32 @@ module.exports = {
       //     risingFallingData = resData;
       //     return exits.success(risingFallingData);
       //   });
+      var risingFallingData = []
+      var coinData = await Coins.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          iserc: false
+        }
+      })
+      for (var i = 0; i < coinData.length; i++) {
+        if (coinData[i].coin_code != 'SUSU' && coinData[i] != "terc") {
+          var currencyConversionValue = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: coinData[i].id
+            }
+          })
+          risingFallingData.push(currencyConversionValue)
+          console.log(risingFallingData)
+        } else if (coinData[i].coin_code == "SUSU") {
+          var susucoinData = await sails.helpers.getUsdSusucoinValue();
+          susucoinData = JSON.parse(susucoinData);
+          susucoinData = susucoinData.data
+          risingFallingData.push(susucoinData)
+        }
+      }
+      return exits.success(risingFallingData);
     } catch (err) {
       console.log("Error in rising falling data ::::: ", err);
     }

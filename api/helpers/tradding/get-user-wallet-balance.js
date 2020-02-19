@@ -48,6 +48,8 @@ module.exports = {
       }
     })
 
+    console.log(inputs.currency)
+
     var cryptoId = await Coins.findOne({
       where: {
         is_active: true,
@@ -64,7 +66,7 @@ module.exports = {
         user_id: inputs.user_id
       }
     });
-
+    console.log(userWalletCurrencyBalance)
     var currencyMessage = '';
     if (userWalletCurrencyBalance.length == 0) {
       currencyMessage = "Please create wallet for " + inputs.currency;
@@ -78,6 +80,8 @@ module.exports = {
         user_id: inputs.user_id
       }
     });
+
+    console.log("userWalletCryptoBalance", userWalletCryptoBalance)
 
     var cryptoMessage = '';
     if (userWalletCryptoBalance.length == 0) {
@@ -184,6 +188,7 @@ module.exports = {
       'fees': cryptoTakerFee.taker_fee
     };
 
+    console.log(userWalletBalance)
     // Send back the result through the success exit.
     return exits.success(userWalletBalance);
 
