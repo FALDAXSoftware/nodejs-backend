@@ -153,7 +153,7 @@ module.exports = {
         filter = ` wallets.user_id = ${user_id}`
       }
       let query = `SELECT
-                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon, coins.deleted_at,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
@@ -200,25 +200,28 @@ module.exports = {
           balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
           balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
         } else {
-          balanceWalletData.rows[i].quote = {
-            EUR: {
-              price: susucoinData.EUR,
-            },
-            INR: {
-              price: susucoinData.INR,
-            },
-            USD: {
-              price: susucoinData.USD,
-            }
+          if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
+            balanceWalletData.rows[i].quote = {
+              EUR: {
+                price: susucoinData.EUR,
+              },
+              INR: {
+                price: susucoinData.INR,
+              },
+              USD: {
+                price: susucoinData.USD,
+              }
 
-          }
+            }
         }
-        if (balanceWalletData.rows[i].quote.USD) {
-          var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-          if (get_price.length > 0)
-            balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-          else
-            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+        if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].coin_code != "terc") {
+          if (balanceWalletData.rows[i].quote.USD) {
+            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+            if (get_price.length > 0)
+              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            else
+              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          }
         }
         if (balanceWalletData.rows[i].is_active == true) {
           // if( balanceWalletData.rows[i].iserc== true ){
