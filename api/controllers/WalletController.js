@@ -176,7 +176,7 @@ module.exports = {
           coin_code: 'SUSU'
         }
       })
-      if (coinData.deleted_at != null) {
+      if (coinData.deleted_at == null) {
         var susucoinData = await sails.helpers.getUsdSusucoinValue();
         // console.log("susucoinData", susucoinData)
         susucoinData = JSON.parse(susucoinData);
