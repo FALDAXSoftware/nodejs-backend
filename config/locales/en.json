@@ -2783,7 +2783,8 @@
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
-		"message": "Trade data retrieved successfully."
+		"message": "Trade data retrieved successfully.",
+		"": ""
 	},
 	"Withdraw Fee has been retrieved successfully": {
 		"page": "CMS - Withdraw fees lists",
@@ -2825,7 +2826,8 @@
 		"context": "Verification successfull",
 		"message_type": "success",
 		"message_english": "Verification successful.",
-		"message": "Verification successful."
+		"message": "Verification successful.",
+		"": ""
 	},
 	"Ticket lists": {
 		"page": "Ticket lists, CMS - Ticket lists",
@@ -2924,5 +2926,12 @@
 		"message_type": "success",
 		"message_english": "User Available balance after fees has been retrieved successfully.",
 		"message": "User Available balance after fees has been retrieved successfully."
+	},
+	"Coin Inactive": {
+		"page": "User - Create Address",
+		"context": "Coin is inactive and user tries to create the address",
+		"message_type": "success",
+		"message_english": "Wallet cannot be created, as asset is inactive",
+		"message": "Wallet cannot be created, as asset is inactive"
 	}
 }
