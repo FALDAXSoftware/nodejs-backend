@@ -623,7 +623,7 @@ module.exports = {
                                 .fetch();
                               let walletHistoryValue = {
                                 coin_id: wallet.coin_id,
-                                source_address: warmWalletData.receiveAddress.address,
+                                source_address: wallet.receive_address,
                                 destination_address: adminWalletDetails.receive_address,
                                 user_id: 36,
                                 is_admin: true,
@@ -681,8 +681,8 @@ module.exports = {
                             // from warm wallet to hot send wallet
                             let addObject = {
                               coin_id: coin.id,
-                              source_address: warmWalletData.receiveAddress.address,
-                              destination_address: wallet.send_address,
+                              source_address: wallet.receive_address,
+                              destination_address: destination_address,
                               user_id: user_id,
                               amount: parseFloat(amountValue / division).toFixed(8),
                               transaction_type: 'send',
@@ -3104,6 +3104,7 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              console.log(reposneData)
               feeValue = (reposneData / division)
               availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
@@ -3131,11 +3132,19 @@ module.exports = {
               })
           }
         }
+      } else {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Coin Not Found").message,
+            "data": parseFloat(0).toFixed(8)
+          })
       }
     } catch (error) {
 
       if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
         var availableBalance = remainningAmount - (2 * get_network_fees)
         return res
           .status(200)
@@ -3238,7 +3247,7 @@ module.exports = {
     } catch (error) {
 
       if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
         var availableBalance = remainningAmount - (2 * get_network_fees)
         return res
           .status(200)
