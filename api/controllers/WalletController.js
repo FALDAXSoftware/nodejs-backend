@@ -200,19 +200,18 @@ module.exports = {
           balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
           balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
         } else {
-          if (balanceWalletData.rows[i])
-            balanceWalletData.rows[i].quote = {
-              EUR: {
-                price: susucoinData.EUR,
-              },
-              INR: {
-                price: susucoinData.INR,
-              },
-              USD: {
-                price: susucoinData.USD,
-              }
-
+          balanceWalletData.rows[i].quote = {
+            EUR: {
+              price: susucoinData.EUR,
+            },
+            INR: {
+              price: susucoinData.INR,
+            },
+            USD: {
+              price: susucoinData.USD,
             }
+
+          }
         }
         if (balanceWalletData.rows[i].quote.USD) {
           var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
