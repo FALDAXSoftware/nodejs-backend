@@ -799,33 +799,40 @@ module.exports = {
                           "network_fee": networkFees
                         }
                         console.log(value);
-                        var responseValue = await request({
-                          url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
-                          method: "POST",
-                          headers: {
+                        var responseValue = new Promise(async (resolve, reject) => {
+                          request({
+                            url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
+                            method: "POST",
+                            headers: {
 
-                            'x-token': 'faldax-susucoin-node',
-                            'Content-Type': 'application/json'
-                          },
-                          body: value,
-                          json: true
-                        }, function (err, httpResponse, body) {
-                          console.log("body", body)
-                          console.log(err)
-                          if (err) {
-                            return (err);
-                          }
-                          if (body.error) {
-                            return (body);
-                          }
-                          return (body);
-                          // return body;
-                        });
+                              'x-token': 'faldax-susucoin-node',
+                              'Content-Type': 'application/json'
+                            },
+                            body: value,
+                            json: true
+                          }, function (err, httpResponse, body) {
+                            console.log("body", body)
+                            console.log(err)
+                            if (err) {
+                              reject(err);
+                            }
+                            if (body.error) {
+                              resolve(body);
+                            }
+                            resolve(body);
+                            // return body;
+                          });
+                        })
+
+                        // var value = Promise.resolve(responseValue)
+                        var value = await responseValue;
+                        console.log("value", value);
+
                         return res
                           .status(200)
                           .json({
                             "status": 200,
-                            "message": total_fees + " " + coin.coin_code + " " + sails.__("Token send success").message
+                            "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       }
                     } else {
@@ -1357,12 +1364,6 @@ module.exports = {
 
   createAdminReceiveAddressCoin: async function (req, res) {
     try {
-      // await logger.info({
-      //   "module": "Admin Create User Wallet",
-      //   "user_id": "user_" + req.user.id,
-      //   "url": req.url,
-      //   "type": "Entry"
-      // }, "Entered the function")
       var {
         coin_code,
         user_id
