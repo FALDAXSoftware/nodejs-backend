@@ -155,7 +155,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -182,7 +182,7 @@ module.exports = {
                 .json({
                   "status": 500,
                   "err": sails.__("Something Wrong").message,
-                  error_at:error.stack
+                  error_at: error.stack
                 })
             } else {
               if (file.length <= 0) {
@@ -191,7 +191,7 @@ module.exports = {
                   .json({
                     status: 500,
                     "err": sails.__("Something Wrong").message,
-                    error_at:sails.__("Something Wrong").message
+                    error_at: sails.__("Something Wrong").message
                   });
               }
               return res.json({
@@ -215,7 +215,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -396,7 +396,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("No KYC").message,
-            error_at:sails.__("No KYC").message
+            error_at: sails.__("No KYC").message
           });
       }
     } catch (error) {
@@ -406,7 +406,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -454,7 +454,7 @@ module.exports = {
             .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
-
+      console.log(query)
       if (sortCol && sortOrder) {
         var sortVal
         if (sortCol = "account_tier") {
@@ -478,7 +478,7 @@ module.exports = {
       let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email, users.account_tier" + query, [])
 
       KYCData = KYCData.rows;
-
+      console.log("Select COUNT(kyc.id)" + countQuery)
       let KYCCount = await sails.sendNativeQuery("Select COUNT(kyc.id)" + countQuery, [])
       KYCCount = KYCCount.rows[0].count;
 
@@ -498,7 +498,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -524,7 +524,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("No KYC").message,
-            error_at:sails.__("No KYC").message
+            error_at: sails.__("No KYC").message
           });
       }
     } catch (error) {
@@ -534,7 +534,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }
