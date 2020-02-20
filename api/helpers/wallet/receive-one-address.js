@@ -45,7 +45,7 @@ module.exports = {
     //Fetching coin list
     const coin = await Coins.findOne({
       deleted_at: null,
-      // is_active: true,
+      is_active: true,
       coin: inputs.coin
     });
 
