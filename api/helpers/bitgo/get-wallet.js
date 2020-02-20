@@ -51,7 +51,6 @@ module.exports = {
       },
       json: true
     }, async function (err, httpResponse, body) {
-      console.log("wallet", err);
       if (err) {
         return exits.error(err);
       }
