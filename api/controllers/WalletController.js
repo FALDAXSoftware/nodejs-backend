@@ -153,7 +153,7 @@ module.exports = {
         filter = ` wallets.user_id = ${user_id}`
       }
       let query = `SELECT
-                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon,
+                    coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon, coins.deleted_at,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
@@ -161,21 +161,37 @@ module.exports = {
                     WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL
                     ORDER BY coins.coin_name ASC`
 
+      console.log(query)
+
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                              WHERE coins.deleted_at IS NULL
+                              WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
-      var susucoinData = await sails.helpers.getUsdSusucoinValue();
-      // console.log("susucoinData", susucoinData)
-      susucoinData = JSON.parse(susucoinData);
-      susucoinData = susucoinData.data
+      var coinData = await Coins.findOne({
+        where: {
+          coin_code: 'SUSU'
+        }
+      })
+      if (coinData.deleted_at == null) {
+        var susucoinData = await sails.helpers.getUsdSusucoinValue();
+        // console.log("susucoinData", susucoinData)
+        susucoinData = JSON.parse(susucoinData);
+        susucoinData = susucoinData.data
+      }
       let deactivated_asset_lists = [];
       let activated_asset_lists = [];
+      let eth_asset = false;
       for (var i = 0; i < balanceWalletData.rows.length; i++) {
+        for (var k = 0; k < balanceWalletData.rows.length; k++) {
+          if ((balanceWalletData.rows[k].coin_code == 'eth' || balanceWalletData.rows[k].coin_code == 'teth') && balanceWalletData.rows[k].is_active == true) {
+            eth_asset = true;
+            break;
+          }
+        }
 
         // if (balanceWalletData.rows[i].iserc == false) {
         balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
@@ -184,29 +200,47 @@ module.exports = {
           balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
           balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
         } else {
-          balanceWalletData.rows[i].quote = {
-            EUR: {
-              price: susucoinData.EUR,
-            },
-            INR: {
-              price: susucoinData.INR,
-            },
-            USD: {
-              price: susucoinData.USD,
-            }
+          if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
+            balanceWalletData.rows[i].quote = {
+              EUR: {
+                price: susucoinData.EUR,
+              },
+              INR: {
+                price: susucoinData.INR,
+              },
+              USD: {
+                price: susucoinData.USD,
+              }
 
+            }
+        }
+        if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].coin_code != "terc") {
+          if (balanceWalletData.rows[i].quote.USD) {
+            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+            if (get_price.length > 0)
+              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            else
+              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
         }
-        if (balanceWalletData.rows[i].quote.USD) {
-          var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-          if (get_price.length > 0)
-            balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-          else
-            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-        }
         if (balanceWalletData.rows[i].is_active == true) {
+          // if( balanceWalletData.rows[i].iserc== true ){
+          //   if(eth_asset == true){
+          //     activated_asset_lists.push(balanceWalletData.rows[i]);
+          //   }
+          // }else{
+          //   activated_asset_lists.push(balanceWalletData.rows[i]);
+          // }
           activated_asset_lists.push(balanceWalletData.rows[i]);
         } else {
+          // console.log("balanceWalletData.rows[i]",balanceWalletData.rows[i]);
+          // if( balanceWalletData.rows[i].iserc == true  ){
+          //   if(eth_asset == false){
+          //     deactivated_asset_lists.push(balanceWalletData.rows[i]);
+          //   }
+          // }else{
+          //   deactivated_asset_lists.push(balanceWalletData.rows[i]);
+          // }
           deactivated_asset_lists.push(balanceWalletData.rows[i]);
         }
         // }
@@ -245,7 +279,9 @@ module.exports = {
           }
         }
         if (nonBalanceWalletData.rows[i].iserc == true) {
-          all_erctoken_lists.push(nonBalanceWalletData.rows[i]);
+          if (eth_asset == true) {
+            all_erctoken_lists.push(nonBalanceWalletData.rows[i]);
+          }
         } else {
           all_assets_lists.push(nonBalanceWalletData.rows[i]);
         }
@@ -259,10 +295,10 @@ module.exports = {
       return res.json({
         status: 200,
         message: sails.__("Balance retrieved success").message,
-        balanceData: balanceWalletData.rows,
-        nonBalanceData: nonBalanceWalletData.rows,
-        // balanceData: all_balance_wallets_list,
-        // nonBalanceData: all_non_wallets_list,
+        // balanceData: balanceWalletData.rows,
+        // nonBalanceData: nonBalanceWalletData.rows,
+        balanceData: all_balance_wallets_list,
+        nonBalanceData: all_non_wallets_list,
         currency_list: sails.config.local.CURRENCY_LIST
       });
 
@@ -369,7 +405,7 @@ module.exports = {
       var limitAmount;
       var limitAmountMonthly;
 
-      let coin = await Coins.findOne({
+      var coin = await Coins.findOne({
         deleted_at: null,
         is_active: true,
         coin_code: coin_code
@@ -511,12 +547,7 @@ module.exports = {
                         let warmWalletData = await sails
                           .helpers
                           .wallet
-                          .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-
-                        let sendWalletData = await sails
-                          .helpers
-                          .wallet
-                          .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+                          .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
 
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
@@ -535,7 +566,7 @@ module.exports = {
                             var valueFee;
                             if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                               var amountValue = parseFloat(amount * division).toFixed(8);
-                              var estimatePass = parseFloat(networkFees / 3).toFixed(8)
+                              var estimatePass = parseFloat(networkFees / 2).toFixed(8)
                               console.log("estimatePass", estimatePass)
                               valueFee = parseFloat(2 * estimatePass).toFixed(8)
                               console.log("valueFee", valueFee)
@@ -544,18 +575,19 @@ module.exports = {
                               console.log("estimatePass", estimatePass)
                               valueFee = parseFloat(2 * estimatePass).toFixed(8)
                               console.log("valueFee", valueFee)
-                              var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                              var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
-                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
+                            // SEND to Warm wallet to Hot Send
+                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
                             console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("total_payout", total_payout)
-                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 3).toFixed(8);
+                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
                             var network_fees = (transaction.transfer.feeString);
                             var network_feesValue = parseFloat(network_fees / (division))
                             var totalFeeSub = 0;
-                            totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
+                            totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
                             totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("totalFeeSub", totalFeeSub)
                             var adminWalletDetails = await Wallet.findOne({
@@ -572,12 +604,9 @@ module.exports = {
                               var totalAdminFees = 0;
                               console.log("adminWalletDetails", adminWalletDetails.balance)
                               console.log("faldaxFees", faldaxFees)
-                              let admin_network_fees = 0.0;
-                              if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
-                                admin_network_fees = parseFloat(networkFees).toFixed(8);
-                              }
-                              var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
-                              var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(admin_network_fees);
+
+                              var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
+                              var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
                               totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
                               var updatedData = await Wallet
                                 .update({
@@ -594,7 +623,7 @@ module.exports = {
                                 .fetch();
                               let walletHistoryValue = {
                                 coin_id: wallet.coin_id,
-                                source_address: warmWalletData.receiveAddress.address,
+                                source_address: wallet.receive_address,
                                 destination_address: adminWalletDetails.receive_address,
                                 user_id: 36,
                                 is_admin: true,
@@ -616,7 +645,7 @@ module.exports = {
                             //Here remainning ebtry as well as address change
                             let walletHistory = {
                               coin_id: wallet.coin_id,
-                              source_address: wallet.send_address,
+                              source_address: wallet.receive_address,
                               destination_address: destination_address,
                               user_id: user_id,
                               amount: (total_payout),
@@ -648,14 +677,12 @@ module.exports = {
                                 placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
                               });
 
-                            console.log()
-
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
                             let addObject = {
                               coin_id: coin.id,
-                              source_address: warmWalletData.receiveAddress.address,
-                              destination_address: wallet.send_address,
+                              source_address: wallet.receive_address,
+                              destination_address: destination_address,
                               user_id: user_id,
                               amount: parseFloat(amountValue / division).toFixed(8),
                               transaction_type: 'send',
@@ -668,7 +695,7 @@ module.exports = {
                               actual_amount: amount,
                               sender_user_balance_before: user_wallet_balance,
                               warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
-                              transaction_from: sails.config.local.WARM_TO_SEND
+                              transaction_from: sails.config.local.SEND_TO_DESTINATION
                             }
 
                             await TransactionTable.create({
@@ -688,7 +715,6 @@ module.exports = {
                               user_id: user_id,
                             })
 
-                            totalFeeSub = parseFloat(walletHistoryDataValue.amount) + parseFloat(walletHistoryDataValue.estimated_network_fees);
                             userData.coinName = coin.coin_code;
                             userData.amountReceived = parseFloat(totalFeeSub).toFixed(8);
                             if (userNotification != undefined) {
@@ -732,7 +758,7 @@ module.exports = {
                             });
                             //Insert request in withdraw request
                             var requestObject = {
-                              source_address: wallet.send_address,
+                              source_address: wallet.receive_address,
                               destination_address: destination_address,
                               user_id: user_id,
                               amount: (total_fees),
@@ -991,6 +1017,7 @@ module.exports = {
           deleted_at: null
         }
       });
+
       console.log(coinData)
       if (coinData != undefined) {
         // Explicitly call toJson of Model
@@ -1026,7 +1053,7 @@ module.exports = {
           for (var j = 0; j < walletTransData.length; j++) {
             if (walletTransData[j].transaction_type == 'send') {
               walletTransData[j].faldax_fee = parseFloat(walletTransData[j].faldax_fee).toFixed(10);
-              walletTransData[j].network_fees = parseFloat(walletTransData[j].estimated_network_fees)
+              walletTransData[j].network_fees = parseFloat(walletTransData[j].actual_network_fees)
               walletTransData[j].amount = (coinDataValue.coin_code != "SUSU") ? (parseFloat(parseFloat(walletTransData[j].amount) - parseFloat(walletTransData[j].faldax_fee))) : (parseFloat(walletTransData[j].actual_amount).toFixed(10));
               walletTransData[j].total = (parseFloat(walletTransData[j].amount) + (parseFloat(walletTransData[j].network_fees)) + parseFloat(walletTransData[j].faldax_fee));
             } else if (walletTransData[j].transaction_type == 'receive') {
@@ -1155,6 +1182,39 @@ module.exports = {
         walletUserData['min_limit'] = coinData.min_limit;
         walletUserData['max_limit'] = coinData.max_limit;
         walletUserData['iserc'] = coinData.iserc
+        let eth_for_erc_status = false;
+        let eth_for_erc_address = false;
+        if (coinData.iserc == true) {
+          let eth_data = await Coins.findOne({
+            select: [
+              "iserc", "is_active"
+            ],
+            where: {
+              coin_code: {
+                in: ["teth", "eth"]
+              },
+              deleted_at: null
+            }
+          });
+          if (eth_data != undefined) {
+            if (eth_data.is_active == true) {
+              let wallet_eth_data = await Wallet.findOne({
+                user_id: (req.user.id),
+                coin_id: eth_data.id,
+                deleted_at: null,
+                is_active: true
+              });
+              if (wallet_eth_data) {
+                eth_for_erc_status = true;
+                if (wallet_eth_data.send_address != null && wallet_eth_data.receive_address != null) {
+                  eth_for_erc_address = true;
+                }
+              }
+
+            }
+
+          }
+        }
 
         if (walletTransData) {
           return res.json({
@@ -1166,7 +1226,9 @@ module.exports = {
             'default_send_Coin_fee': parseFloat(coinFee.value),
             currencyConversionData,
             withdrawRequestData,
-            is_active: coinData.is_active
+            is_active: coinData.is_active,
+            eth_for_erc_status: eth_for_erc_status,
+            eth_for_erc_address: eth_for_erc_address
           });
         } else {
           return res.json({
@@ -1207,7 +1269,22 @@ module.exports = {
       var {
         coin_code
       } = req.allParams();
+      console.log(req.allParams())
       var user_id = req.user.id;
+      var coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          coin: coin_code
+        }
+      })
+      if (coinData.is_active == false) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("Coin Inactive").message
+          })
+      }
       var userData = [];
       userData = await Users.findOne({
         deleted_at: null,
@@ -1268,9 +1345,16 @@ module.exports = {
         });
     }
   },
+
   /**
-  Create receive address for one coin
-  **/
+   * API for creating receive Address for User from CMS
+   * Renders page for admin wants to create user address
+   *
+   * @param <user_id, coin_code>
+   *
+   * @return <Success message for successfully address created or error>
+   */
+
   createAdminReceiveAddressCoin: async function (req, res) {
     try {
       // await logger.info({
@@ -1283,6 +1367,20 @@ module.exports = {
         coin_code,
         user_id
       } = req.allParams();
+      var coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          coin: coin_code
+        }
+      })
+      if (coinData.is_active == false) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("Coin Inactive").message
+          })
+      }
       var userData = [];
       userData = await Users.findOne({
         deleted_at: null,
@@ -1381,9 +1479,16 @@ module.exports = {
         });
     }
   },
+
   /**
-  Create receive address for one coin for admin
-  **/
+   * API for creating receive Address for Admin from CMS
+   * Renders page for admin wants to create admin address
+   *
+   * @param <user_id, coin_code>
+   *
+   * @return <Success message for successfully address created or error>
+   */
+
   createAdminReceiveAddressCoinForAdmin: async function (req, res) {
     try {
       // await logger.info({
@@ -1396,6 +1501,20 @@ module.exports = {
         coin_code,
         user_id
       } = req.allParams();
+      var coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          coin: coin_code
+        }
+      })
+      if (coinData.is_active == false) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("Coin Inactive").message
+          })
+      }
       var userData = [];
       userData = await Admin.findOne({
         deleted_at: null,
@@ -1492,9 +1611,16 @@ module.exports = {
         });
     }
   },
+
   /**
-  Admin Send Funds API
-  **/
+   * API for sending coin from Admin Address
+   * Renders page for admin when admin wants to send coin
+   *
+   * @param <amount, destination_address, coin_code, networkFees, total_fees>
+   *
+   * @return <Success message for successfully send coin or error>
+   */
+
   sendCoinAdmin: async function (req, res) {
     try {
       let {
@@ -1577,13 +1703,7 @@ module.exports = {
               let warmWalletData = await sails
                 .helpers
                 .wallet
-                .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-
-              let sendWalletData = await sails
-                .helpers
-                .wallet
-                .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
-              // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
+                .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
 
               if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                 // Send to hot warm wallet and make entry in diffrent table for both warm to
@@ -1592,17 +1712,16 @@ module.exports = {
                 if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
                   var amountValue = parseFloat(amount * division).toFixed(8);
                 } else {
-                  var valueFee = parseFloat(networkFees).toFixed(8)
-                  var sendAmount = parseFloat(parseFloat(amount) + parseFloat(valueFee)).toFixed(8)
+                  var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
                   var amountValue = parseFloat(sendAmount * division).toFixed(8)
                 }
-
-                let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, wallet.send_address, (amountValue).toString());
+                console.log(amountValue)
+                let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
                 //Here remainning ebtry as well as address change
                 var network_fees = (transaction.transfer.feeString);
                 var network_feesValue = parseFloat(network_fees / (division))
                 var totalFeeSub = 0;
-                totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees)).toFixed(8)
+                totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
                 totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
                 console.log("totalFeeSub", totalFeeSub)
                 let walletHistory = {
@@ -1634,12 +1753,9 @@ module.exports = {
                 console.log("amount", amount)
                 var user_wallet_balance = wallet.balance;
                 let admin_network_fees = 0.0;
-                if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
-                  admin_network_fees = parseFloat(networkFees).toFixed(8);
-                }
                 console.log("wallet", wallet)
-                var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub) + parseFloat(admin_network_fees)
-                var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub) + parseFloat(admin_network_fees);
+                var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub)
+                var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub);
                 // update wallet balance
                 await Wallet
                   .update({
@@ -1654,8 +1770,8 @@ module.exports = {
                 // from warm wallet to hot send wallet
                 let addObject = {
                   coin_id: coin.id,
-                  source_address: warmWalletData.receiveAddress.address,
-                  destination_address: wallet.send_address,
+                  source_address: wallet.receive_address,
+                  destination_address: destination_address,
                   user_id: user_id,
                   amount: parseFloat(amountValue / division).toFixed(8),
                   transaction_type: 'send',
@@ -1670,7 +1786,7 @@ module.exports = {
                   sender_user_balance_before: user_wallet_balance,
                   warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
                   // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
-                  transaction_from: sails.config.local.WARM_TO_SEND
+                  transaction_from: sails.config.local.SEND_TO_DESTINATION
                 }
 
                 await TransactionTable.create({
@@ -1900,9 +2016,16 @@ module.exports = {
         });
     }
   },
+
   /**
-  Get Withrawls Fees
-  **/
+   * API for getting withdrawal fees
+   * Renders page for admin when admin wants to get withdrawal fee
+   *
+   * @param <>
+   *
+   * @return <Success message for successfully getting fee value or error>
+   */
+
   getWithdrawlFee: async function (req, res) {
     try {
       // await logger.info({
@@ -2543,10 +2666,10 @@ module.exports = {
 
         }
         if (data.coin == "eth" || data.coin == "teth" || coinData.iserc == true) {
-          reposneDataValue = 3 * (reposneData)
+          reposneDataValue = 2 * (reposneData)
         } else {
           console.log("reposneData", reposneData);
-          reposneDataValue = 3 * (reposneData.fee);
+          reposneDataValue = 2 * (reposneData.fee);
         }
 
         return res
@@ -2718,8 +2841,6 @@ module.exports = {
     }
   },
 
-
-
   /**
  Get HotReceiveWallet Information
  **/
@@ -2824,10 +2945,10 @@ module.exports = {
         }
         var reposneDataValue;
         if (data.coin == "eth" || data.coin == "teth" || coinData.iserc == true) {
-          reposneDataValue = 3 * (reposneData)
+          reposneDataValue = 2 * (reposneData)
         } else {
           console.log("reposneData", reposneData);
-          reposneDataValue = 3 * (reposneData.fee);
+          reposneDataValue = 2 * (reposneData.fee);
         }
 
         console.log("reposneData", reposneData);
@@ -2976,15 +3097,16 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
-              availableBalance = remainningAmount - (3 * (reposneData.fee / division))
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
             } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
               // remainningAmountValue = remainningAmount * division
               var reposneData = await sails
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
+              console.log(reposneData)
               feeValue = (reposneData / division)
-              availableBalance = remainningAmount - (3 * feeValue);
+              availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
               availableBalance = remainningAmount - (45 / division);
@@ -3010,12 +3132,20 @@ module.exports = {
               })
           }
         }
+      } else {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Coin Not Found").message,
+            "data": parseFloat(0).toFixed(8)
+          })
       }
     } catch (error) {
 
       if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
-        var availableBalance = remainningAmount - (3 * get_network_fees)
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
+        var availableBalance = remainningAmount - (2 * get_network_fees)
         return res
           .status(200)
           .json({
@@ -3081,7 +3211,7 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
-              availableBalance = remainningAmount - (3 * (reposneData.fee / division))
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
               console.log(availableBalance)
             } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
               var reposneData = await sails
@@ -3090,7 +3220,7 @@ module.exports = {
                 .getNetworkFee(coinData.coin_code, (remainningAmount), warmWallet.receiveAddress.address);
               feeValue = (reposneData / division)
               console.log(feeValue)
-              availableBalance = remainningAmount - (3 * feeValue);
+              availableBalance = remainningAmount - (2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
               availableBalance = remainningAmount - parseFloat(45 / division).toFixed(8);
@@ -3117,8 +3247,8 @@ module.exports = {
     } catch (error) {
 
       if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
-        var availableBalance = remainningAmount - (3 * get_network_fees)
+        get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
+        var availableBalance = remainningAmount - (2 * get_network_fees)
         return res
           .status(200)
           .json({
@@ -3185,7 +3315,7 @@ module.exports = {
                 .helpers
                 .wallet
                 .getNetworkFee(coinData.coin_code, (remainningAmount / division), walletData.receiveAddress.address);
-              availableBalance = remainningAmount - (3 * (reposneData.fee / division))
+              availableBalance = remainningAmount - (2 * (reposneData.fee / division))
               console.log(availableBalance)
             } else if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
               console.log(remainningAmount)
@@ -3196,7 +3326,7 @@ module.exports = {
               feeValue = (reposneData / division)
               console.log(remainningAmount)
               console.log(feeValue)
-              availableBalance = parseFloat(remainningAmount) - parseFloat(3 * feeValue);
+              availableBalance = parseFloat(remainningAmount) - parseFloat(2 * feeValue);
             } else if (coinData.coin_code == 'txrp' || coinData.coin_code == 'xrp') {
               var feesValue = parseFloat(45 / division).toFixed(8)
               availableBalance = remainningAmount - parseFloat(45 / division).toFixed(8);
@@ -3225,7 +3355,7 @@ module.exports = {
 
       if (error.name == "ImplementationError") {
         get_network_fees = await sails.helpers.feesCalculation(coinData.coin.toLowerCase(), remainningAmount);
-        var availableBalance = remainningAmount - (3 * get_network_fees)
+        var availableBalance = remainningAmount - (2 * get_network_fees)
         return res
           .status(200)
           .json({

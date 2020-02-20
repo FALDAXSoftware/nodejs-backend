@@ -3478,22 +3478,28 @@ module.exports = {
       } = req.allParams();
 
       var filter = ''
+      var value = ''
       if (data && data != '' && data != null) {
         data = data.trim();
         filter = " AND LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(referral.txid) LIKE '%" + data.toLowerCase() + "%'";
       }
 
-      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(8,8)))as amount , referral.coin_name, coins.coin_icon,
+      if (coin_code) {
+        coin_code = coin_code.trim();
+        value = " AND LOWER(referral.coin_name) LIKE '%" + coin_code.toLowerCase() + "%'";
+      }
+
+      var get_reffered_data = (`SELECT (cast(referral.amount as decimal(12,8)))as amount , referral.coin_name, coins.coin_icon,
                                     users.email, referral.txid, referral.updated_at
                                     FROM referral LEFT JOIN users
                                     ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
                                     WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter}
-                                    AND users.deleted_at IS NULL AND referral.coin_name = '${coin_code}'
+                                    AND users.deleted_at IS NULL${value}
                                     GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
                                     ORDER BY coins.id , referral.updated_at DESC`);
-
+      console.log(get_reffered_data)
       countQuery = get_reffered_data
 
       get_reffered_data += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
