@@ -1759,7 +1759,8 @@ module.exports = {
           .set({
             email: userDetail.email,
             deleted_by: 2, //deleted by admin
-            deleted_at: new Date()
+            deleted_at: new Date(),
+            is_active: false
           })
 
         res.json({
