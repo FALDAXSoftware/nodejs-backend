@@ -133,6 +133,7 @@ module.exports.http = {
         return next();
       }
 
+
       function IsValidJSONString(str) {
         try {
           JSON.parse(str);
@@ -151,6 +152,15 @@ module.exports.http = {
       };
       var body;
       res.end = async function (chunk) {
+        let all_response_object = {
+          "strict-transport-security":"max-age=63072000; includeSubDomains; preload",
+          "x-content-type-options":"nosniff",
+          "x-frame-options":"sameorigin",
+          "x-xss-protection":"1; mode=block",
+          "referrer-policy":"same-origin"
+        }
+        res.writeHead(res.statusCode,all_response_object);
+
         if (chunk) chunks.push(chunk);
         body = Buffer.concat(chunks).toString('utf8');
         oldEnd.apply(res, arguments);
