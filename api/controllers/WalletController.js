@@ -214,7 +214,7 @@ module.exports = {
 
             }
         }
-        if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].coin_code != "terc") {
+        if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].iserc == false) {
           if (balanceWalletData.rows[i].quote.USD) {
             var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
             if (get_price.length > 0)
