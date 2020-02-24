@@ -908,7 +908,8 @@ module.exports = {
           .status(201)
           .json({
             status: 201,
-            message: sails.__('withdraw request confirm').message
+            message: sails.__('withdraw request confirm').message,
+            error_at: error.stack
           })
       }
       // await logger.error({
