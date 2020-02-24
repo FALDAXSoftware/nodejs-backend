@@ -1759,7 +1759,8 @@ module.exports = {
           .set({
             email: userDetail.email,
             deleted_by: 2, //deleted by admin
-            deleted_at: new Date()
+            deleted_at: new Date(),
+            is_active: false
           })
 
         res.json({
@@ -2566,7 +2567,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc']
         })
         .sort('created_at DESC');
 
@@ -2582,6 +2583,17 @@ module.exports = {
               deleted_at: null,
               user_id: 36
             });
+          if (wallet_details == undefined && assets_data[i].iserc == true) {
+            var walletValue = await Wallet
+              .findOne({
+                is_active: true,
+                is_admin: true,
+                coin_id: 2,
+                deleted_at: null,
+                user_id: 36
+              });
+            wallet_details = walletValue;
+          }
           if (assets_data[i].coin_code != 'SUSU') {
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
@@ -2601,7 +2613,6 @@ module.exports = {
 
 
           if (wallet_details != undefined) {
-            assets_data[i].send_address = wallet_details.send_address;
             assets_data[i].receive_address = wallet_details.receive_address;
             temp_wallet_total = parseFloat(wallet_details.placed_balance);
           }

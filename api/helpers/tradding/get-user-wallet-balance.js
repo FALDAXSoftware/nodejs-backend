@@ -42,46 +42,58 @@ module.exports = {
 
     var coinId = await Coins.findOne({
       where: {
-        is_active: true,
         deleted_at: null,
         coin: inputs.currency
       }
     })
 
+    console.log(inputs.currency)
+    var currencyMessage = '';
+    if (coinId != undefined) {
+      if (coinId.is_active == false || coinId.is_active == "false") {
+        currencyMessage = "Coin is Currently inactive"
+      } else {
+        userWalletCurrencyBalance = await Wallet.find({
+          where: {
+            coin_id: coinId.id,
+            deleted_at: null,
+            is_active: true,
+            user_id: inputs.user_id
+          }
+        });
+        if (userWalletCurrencyBalance.length == 0) {
+          currencyMessage = "Please create wallet for " + inputs.currency;
+        }
+      }
+    }
+
     var cryptoId = await Coins.findOne({
       where: {
-        is_active: true,
         deleted_at: null,
         coin: inputs.crypto
       }
     })
 
-    userWalletCurrencyBalance = await Wallet.find({
-      where: {
-        coin_id: coinId.id,
-        deleted_at: null,
-        is_active: true,
-        user_id: inputs.user_id
-      }
-    });
-
-    var currencyMessage = '';
-    if (userWalletCurrencyBalance.length == 0) {
-      currencyMessage = "Please create wallet for " + inputs.currency;
-    }
-
-    userWalletCryptoBalance = await Wallet.find({
-      where: {
-        coin_id: cryptoId.id,
-        deleted_at: null,
-        is_active: true,
-        user_id: inputs.user_id
-      }
-    });
-
     var cryptoMessage = '';
-    if (userWalletCryptoBalance.length == 0) {
-      cryptoMessage = "Please create the wallet for " + inputs.crypto;
+    if (cryptoId != undefined) {
+      if (cryptoId.is_active == false) {
+        currencyMessage = "Coin is Inactive"
+      } else {
+        userWalletCryptoBalance = await Wallet.find({
+          where: {
+            coin_id: cryptoId.id,
+            deleted_at: null,
+            is_active: true,
+            user_id: inputs.user_id
+          }
+        });
+
+        console.log("userWalletCryptoBalance", userWalletCryptoBalance)
+
+        if (userWalletCryptoBalance.length == 0) {
+          cryptoMessage = "Please create the wallet for " + inputs.crypto;
+        }
+      }
     }
 
     var sellBookValue,
@@ -184,6 +196,7 @@ module.exports = {
       'fees': cryptoTakerFee.taker_fee
     };
 
+    console.log(userWalletBalance)
     // Send back the result through the success exit.
     return exits.success(userWalletBalance);
 
