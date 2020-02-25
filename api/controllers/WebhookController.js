@@ -346,9 +346,16 @@ module.exports = {
                 amount: (amount).toFixed(8),
                 transaction_type: 'receive',
                 transaction_id: req.body.hash,
+                actual_amount: (amount).toFixed(8),
                 receiver_user_balance_before: userWallet.balance,
                 warm_wallet_balance_before: (parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION)),
-                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
+                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION,
+                actual_network_fees: 0.0,
+                faldax_fee: 0.0,
+                estimated_network_fees: 0.0,
+                residual_amount: 0.0,
+                is_done: false,
+                is_admin: false
               }
 
               await TransactionTable.create({
