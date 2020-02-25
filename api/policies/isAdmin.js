@@ -41,7 +41,8 @@ module.exports = async function (req, res, next) {
       "admin/get-market-snapshot",
       "admin/users/list",
       "admin/get-admin-available-balance",
-      "admin/get-warm-available-balance"
+      "admin/get-warm-available-balance",
+      "admin/send-warm-balance"
     ]
 
     let urlPrefix = urlArray[1];

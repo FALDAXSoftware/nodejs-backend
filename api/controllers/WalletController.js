@@ -684,7 +684,7 @@ module.exports = {
                               source_address: wallet.receive_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: parseFloat(amountValue / division).toFixed(8),
+                              amount: parseFloat(totalFeeSub / division).toFixed(8),
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
@@ -3383,7 +3383,9 @@ module.exports = {
         amount,
         destination_address,
         coin_code
-      } = req.allParams();
+      } = req.body;
+
+      console.log(req.body);
 
       let coin = await Coins.findOne({
         deleted_at: null,
@@ -3410,71 +3412,73 @@ module.exports = {
       }
 
       if (coin) {
+        console.log("warm", warmWalletData.balance)
+        console.log(warmWalletData)
 
         //If placed balance is greater than the amount to be send
-        if ((warmWalletData.balance).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(amount)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+        // if ((parseFloat(warmWalletData.balance)).toFixed(sails.config.local.TOTAL_PRECISION) >= (parseFloat(amount)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
-          //If coin is of bitgo type
-          if (coin.type == 1) {
-            //Check for warm wallet minimum thresold
-            // console.log(warmWalletData.balance)
-            // console.log(coin.min_thresold);
-            // console.log(warmWalletData.balance >= coin.min_thresold)
-            //Execute Transaction
+        //If coin is of bitgo type
+        if (coin.type == 1) {
+          //Check for warm wallet minimum thresold
+          // console.log(warmWalletData.balance)
+          // console.log(coin.min_thresold);
+          // console.log(warmWalletData.balance >= coin.min_thresold)
+          //Execute Transaction
 
 
-            let warmWalletData = await sails
-              .helpers
-              .wallet
-              .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
+          let warmWalletData = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
 
-            let sendWalletData = await sails
-              .helpers
-              .wallet
-              .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
-            // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
+          let sendWalletData = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+          // console.log("SEND WALLET DATA >>>>>>>>>>>>>>>>>>", sendWalletData);
 
-            if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold && (warmWalletData.balance) > (amount * division)) {
-              // Send to hot warm wallet and make entry in diffrent table for both warm to
-              // receive and receive to destination
-              // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
-              if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
-                var amountValue = parseFloat(amount * division).toFixed(8);
-              } else {
-                var sendAmount = parseFloat(parseFloat(amount))
-                var amountValue = parseFloat(sendAmount * division).toFixed(8)
-              }
-
-              let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, destination_address, (amountValue).toString());
-              console.log("transaction", transaction)
-              //Here remainning ebtry as well as address change
-              var network_fees = (transaction.transfer.feeString);
-              var network_feesValue = parseFloat(network_fees / (division))
-              var totalFeeSub = 0;
-              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue).toFixed(8));
-              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
-              console.log("totalFeeSub", totalFeeSub)
-
-              return res.json({
-                status: 200,
-                message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
-              });
+          if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - amount) >= 0 && (warmWalletData.balance - amount) >= coin.min_thresold && (warmWalletData.balance) > (amount * division)) {
+            // Send to hot warm wallet and make entry in diffrent table for both warm to
+            // receive and receive to destination
+            // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
+            if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
+              var amountValue = parseFloat(amount * division).toFixed(8);
             } else {
-              return res.status(500)
-                .json({
-                  status: 500,
-                  "message": sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
-                })
+              var sendAmount = parseFloat(parseFloat(amount))
+              var amountValue = parseFloat(sendAmount * division).toFixed(8)
             }
-          }
-        } else {
-          return res
-            .status(400)
-            .json({
-              status: 400,
-              message: sails.__("Insufficent balance wallet").message
+
+            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, destination_address, (amountValue).toString());
+            console.log("transaction", transaction)
+            //Here remainning ebtry as well as address change
+            var network_fees = (transaction.transfer.feeString);
+            var network_feesValue = parseFloat(network_fees / (division))
+            var totalFeeSub = 0;
+            totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue).toFixed(8));
+            totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
+            console.log("totalFeeSub", totalFeeSub)
+
+            return res.json({
+              status: 200,
+              message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
             });
+          } else {
+            return res.status(500)
+              .json({
+                status: 500,
+                "message": sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
+              })
+          }
         }
+        // } else {
+        //   return res
+        //     .status(400)
+        //     .json({
+        //       status: 400,
+        //       message: sails.__("Insufficent balance wallet").message
+        //     });
+        // }
       } else {
         return res
           .status(400)
