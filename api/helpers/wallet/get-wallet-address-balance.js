@@ -50,7 +50,8 @@ module.exports = {
             }
           })
           if (inputs.coin_code == "txrp" || inputs.coin_code == "xrp" || inputs.coin_code == 'teth' || inputs.coin_code == 'eth' || coinData.iserc == true) {
-            resData.balance = resData.balanceString;
+            console.log("INSIDE IF>>>>>>")
+            walletAddressData.balance = resData.balanceString;
           }
           return exits.success(walletAddressData);
         });
