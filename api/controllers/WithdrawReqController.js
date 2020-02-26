@@ -621,7 +621,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Insufficient Balance in warm Wallet").message,
+            "message": sails.__("Insufficient Balance in warm Wallet").message,
             error_at: sails.__("Insufficient Balance in warm Wallet").message
           })
       }
