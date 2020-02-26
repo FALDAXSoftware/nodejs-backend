@@ -2910,8 +2910,8 @@
 		"page": "CMS - Approve/Disapprove withdraw requests",
 		"context": "Insufficient Balance in warm Wallet",
 		"message_type": "error",
-		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
-		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
+		"message_english": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction.",
+		"message": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction."
 	},
 	"Your User has been deactivated": {
 		"page": "User -Acrtive/deactive",
