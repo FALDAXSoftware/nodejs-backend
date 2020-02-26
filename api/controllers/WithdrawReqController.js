@@ -170,7 +170,7 @@ module.exports = {
                 if (coin.type == 1) {
 
                   //Check for warm wallet minimum thresold
-                  if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - totalAmount) >= 0 && (warmWalletData.balance - totalAmount) >= coin.min_thresold && (warmWalletData.balance) > (totalAmount * 1e8)) {
+                  if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - totalAmount) >= 0 && (warmWalletData.balance - totalAmount) >= coin.min_thresold && (warmWalletData.balance) > (totalAmount * division)) {
                     //Execute Transaction
                     // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
