@@ -1757,94 +1757,229 @@ module.exports = {
                   var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
                   var amountValue = parseFloat(sendAmount * division).toFixed(8)
                 }
-                console.log(amountValue)
-                let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
-                //Here remainning ebtry as well as address change
-                var network_fees = (transaction.transfer.feeString);
-                var network_feesValue = parseFloat(network_fees / (division))
-                var totalFeeSub = 0;
-                totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
-                totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
-                console.log("totalFeeSub", totalFeeSub)
-                let walletHistory = {
-                  coin_id: wallet.coin_id,
-                  source_address: wallet.send_address,
-                  destination_address: destination_address,
-                  user_id: user_id,
-                  amount: amount,
-                  transaction_type: 'send',
-                  transaction_id: transaction.txid,
-                  is_executed: false,
-                  is_admin: true,
-                  faldax_fee: 0.0,
-                  actual_network_fees: network_feesValue,
-                  estimated_network_fees: parseFloat(networkFees).toFixed(8),
-                  is_done: false,
-                  actual_amount: amount
-                }
 
-                console.log(walletHistory);
+                var getDestinationValue = await Wallet.findOne({
+                  where: {
+                    deleted_at: null,
+                    coin_id: coin.id,
+                    receive_address: destination_address,
+                    is_active: true
+                  }
+                }).sort('id DESC');
 
-                // Make changes in code for receive webhook and then send to receive address
-                // Entry in wallet history
-                await WalletHistory.create({
-                  ...walletHistory
-                });
-
-                console.log("wallet.balance", wallet.balance)
-                console.log("amount", amount)
-                var user_wallet_balance = wallet.balance;
-                let admin_network_fees = 0.0;
-                console.log("wallet", wallet)
-                var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub)
-                var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub);
-                // update wallet balance
-                await Wallet
-                  .update({
-                    id: wallet.id
-                  })
-                  .set({
-                    balance: updateBalance,
-                    placed_balance: updatePlacedBalance
+                if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
+                  let walletHistory = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: amount,
+                    transaction_type: 'send',
+                    transaction_id: '',
+                    is_executed: false,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount
+                  }
+                  await WalletHistory.create({
+                    ...walletHistory
                   });
 
-                // Adding the transaction details in transaction table This is entry for sending
-                // from warm wallet to hot send wallet
-                let addObject = {
-                  coin_id: coin.id,
-                  source_address: wallet.receive_address,
-                  destination_address: destination_address,
-                  user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
-                  transaction_type: 'send',
-                  transaction_id: transaction.txid,
-                  is_executed: true,
-                  is_admin: true,
-                  faldax_fee: 0.0,
-                  actual_network_fees: network_feesValue,
-                  estimated_network_fees: parseFloat(networkFees).toFixed(8),
-                  is_done: false,
-                  actual_amount: amount,
-                  sender_user_balance_before: user_wallet_balance,
-                  warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
-                  // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
-                  transaction_from: sails.config.local.SEND_TO_DESTINATION
+                  console.log("wallet.balance", wallet.balance)
+                  console.log("amount", amount)
+                  var user_wallet_balance = wallet.balance
+                  var receiver_wallet_balance = getDestinationValue.balance;
+
+                  var userBalanceUpdate = parseFloat(wallet.balance) - parseFloat(amount);
+                  var userPlacedBalanceUpdate = parseFloat(wallet.placed_balance) - parseFloat(amount);
+                  var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
+                  var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
+
+                  await Wallet
+                    .update({
+                      id: wallet.id
+                    })
+                    .set({
+                      balance: userBalanceUpdate,
+                      placed_balance: userPlacedBalanceUpdate
+                    });
+
+                  await Wallet
+                    .update({
+                      id: getDestinationValue.id
+                    })
+                    .set({
+                      balance: receiverBalanceUpdate,
+                      placed_balance: receiverPlacedBalanceUpdate
+                    });
+
+                  let walletHistoryReceiver = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: getDestinationValue.receive_address,
+                    amount: amount,
+                    transaction_type: 'receive',
+                    transaction_id: '',
+                    is_executed: false,
+                    is_admin: false,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount
+                  }
+
+                  await WalletHistory.create({
+                    ...walletHistory
+                  });
+
+                  let addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'send',
+                    transaction_id: '',
+                    is_executed: true,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: user_wallet_balance,
+                    // warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.SEND_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+
+                  let addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'receive',
+                    transaction_id: '',
+                    is_executed: true,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: receiver_wallet_balance,
+                    // warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+                  return res.json({
+                    status: 200,
+                    message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  });
+                } else {
+                  console.log(amountValue)
+                  let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
+                  //Here remainning ebtry as well as address change
+                  var network_fees = (transaction.transfer.feeString);
+                  var network_feesValue = parseFloat(network_fees / (division))
+                  var totalFeeSub = 0;
+                  totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
+                  totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
+                  console.log("totalFeeSub", totalFeeSub)
+                  let walletHistory = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: amount,
+                    transaction_type: 'send',
+                    transaction_id: transaction.txid,
+                    is_executed: false,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: network_feesValue,
+                    estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount
+                  }
+
+                  console.log(walletHistory);
+
+                  // Make changes in code for receive webhook and then send to receive address
+                  // Entry in wallet history
+                  await WalletHistory.create({
+                    ...walletHistory
+                  });
+
+                  console.log("wallet.balance", wallet.balance)
+                  console.log("amount", amount)
+                  var user_wallet_balance = wallet.balance;
+                  let admin_network_fees = 0.0;
+                  console.log("wallet", wallet)
+                  var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub)
+                  var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub);
+                  // update wallet balance
+                  await Wallet
+                    .update({
+                      id: wallet.id
+                    })
+                    .set({
+                      balance: updateBalance,
+                      placed_balance: updatePlacedBalance
+                    });
+
+                  // Adding the transaction details in transaction table This is entry for sending
+                  // from warm wallet to hot send wallet
+                  let addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'send',
+                    transaction_id: transaction.txid,
+                    is_executed: true,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: network_feesValue,
+                    estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: user_wallet_balance,
+                    warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.SEND_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+
+                  // await logger.info({
+                  //   "module": "Wallet Send Coin Admin",
+                  //   "user_id": "user_" + req.user.id,
+                  //   "url": req.url,
+                  //   "type": "Success"
+                  // }, sails.__("Token send success").message)
+                  return res.json({
+                    status: 200,
+                    message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  });
                 }
-
-                await TransactionTable.create({
-                  ...addObject
-                });
-
-                // await logger.info({
-                //   "module": "Wallet Send Coin Admin",
-                //   "user_id": "user_" + req.user.id,
-                //   "url": req.url,
-                //   "type": "Success"
-                // }, sails.__("Token send success").message)
-                return res.json({
-                  status: 200,
-                  message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
-                });
               } else {
                 return res.status(500)
                   .json({
