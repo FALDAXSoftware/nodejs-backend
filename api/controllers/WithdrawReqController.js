@@ -192,21 +192,21 @@ module.exports = {
 
                     if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
                       var totalFeeSub = 0;
-                      totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees / 2));
-                      totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
+                      totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_fee / 2));
+                      totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldax_fee)
                       var walletHistory = {
                         coin_id: wallet.coin_id,
                         source_address: wallet.receive_address,
                         destination_address: destination_address,
                         user_id: user_id,
-                        amount: parseFloat(amount) + parseFloat(faldaxFees),
+                        amount: parseFloat(amount) + parseFloat(faldax_fee),
                         transaction_type: 'send',
                         transaction_id: '',
                         is_executed: false,
                         is_admin: false,
-                        faldax_fee: faldaxFees,
-                        actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
-                        estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                        faldax_fee: faldax_fee,
+                        actual_network_fees: parseFloat(network_fee / 2).toFixed(8),
+                        estimated_network_fees: parseFloat(network_fee).toFixed(8),
                         is_done: true,
                         actual_amount: amount
                       }
@@ -218,8 +218,8 @@ module.exports = {
                       var user_wallet_balance = wallet.balance
                       var receiver_wallet_balance = getDestinationValue.balance;
 
-                      var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
-                      var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
+                      var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldax_fee) + parseFloat(network_fee / 2));
+                      var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldax_fee) + parseFloat(network_fee / 2));
                       var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
                       var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
 
@@ -268,14 +268,14 @@ module.exports = {
                         source_address: wallet.receive_address,
                         destination_address: destination_address,
                         user_id: user_id,
-                        amount: parseFloat(amount) + parseFloat(faldaxFees),
+                        amount: parseFloat(amount) + parseFloat(faldax_fee),
                         transaction_type: 'send',
                         transaction_id: '',
                         is_executed: true,
                         is_admin: false,
-                        faldax_fee: faldaxFees,
-                        actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
-                        estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                        faldax_fee: faldax_fee,
+                        actual_network_fees: parseFloat(network_fee / 2).toFixed(8),
+                        estimated_network_fees: parseFloat(network_fee).toFixed(8),
                         is_done: true,
                         actual_amount: amount,
                         sender_user_balance_before: user_wallet_balance,
@@ -322,9 +322,9 @@ module.exports = {
                       if (adminWalletDetails != undefined) {
                         var totalAdminFees = 0;
 
-                        var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
-                        var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
-                        totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees) + parseFloat(networkFees / 2)
+                        var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldax_fee) + parseFloat(network_fee / 2);
+                        var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldax_fee) + parseFloat(network_fee / 2);
+                        totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldax_fee) + parseFloat(network_fee / 2)
                         var updatedData = await Wallet
                           .update({
                             deleted_at: null,
@@ -348,7 +348,7 @@ module.exports = {
                           transaction_type: 'send',
                           transaction_id: '',
                           is_executed: false,
-                          faldax_fee: faldaxFees,
+                          faldax_fee: faldax_fee,
                           actual_network_fees: 0.0,
                           estimated_network_fees: 0.0,
                           is_done: false,
@@ -368,7 +368,7 @@ module.exports = {
                       var total_payout = parseFloat(actual_amount) + parseFloat(faldax_fee)
                       console.log("total_payout", total_payout)
                       if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                        network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
+                        network_fees = (network_fee * sails.config.local.DIVIDE_NINE)
                         var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
                       } else {
                         var network_fees = (transaction.transfer.feeString);
