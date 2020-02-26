@@ -60,7 +60,7 @@ module.exports = {
           where: {
             deleted_at: null,
             is_active: true,
-            coin: (coin)
+            coin: (coin).toUpperCase()
           }
         })
       }

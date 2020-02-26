@@ -592,27 +592,26 @@ module.exports = {
                               var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
-                            // SEND to Warm wallet to Hot Send
+
+                            // if (coin.coin_code == "txrp" || coin.coin_code == "xrp") {
+                            //   // Send to Hot Receive to Hot Send
+                            //   let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, hotSendWalletData.receiveAddress.address, (amountValue).toString());
+                            // } else {
+                            //   // SEND to Hot Receive to Destination
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
+                            // }
                             console.log("transaction", transaction)
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("total_payout", total_payout)
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
-                            // if (coin.coin_code == "teth" || coin.coin_code == 'eth') {
-                            //   var valueOfFee = await sails.helpers.bitgo.getTransferValue(coin.coin_code, coin.hot_receive_wallet_address);
-                            //   console.log("valueOfFee", valueOfFee.transfers[0]);
-                            //   var network_fees = valueOfFee.transfers[0].feeString;
-                            //   console.log("network_fees", network_fees)
-                            // } else {
+
                             if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                              // division = sails.config.local.DIVIDE_NINE;
                               network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
                               var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
                             } else {
                               var network_fees = (transaction.transfer.feeString);
                               var network_feesValue = parseFloat(network_fees / (division))
                             }
-                            // }
                             console.log("network_fees", network_fees)
                             console.log("network_feesValue", network_feesValue)
 
@@ -2981,8 +2980,11 @@ module.exports = {
           coin_code: data.coin
         }
       })
+
+      console.log("coinData", coinData);
       if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
-        var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+        console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
+        var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase());
 
         console.log("valid", valid)
         if (!valid) {
@@ -2990,7 +2992,7 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "err": sails.__("Enter Valid Address").message
+              "message": sails.__("Enter Valid Address").message
             })
         }
       }
