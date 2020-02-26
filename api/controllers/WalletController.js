@@ -1815,7 +1815,7 @@ module.exports = {
               // Sending SUSU coin
               var value = {
                 "user_id": parseInt(user_id),
-                "amount": parseFloat(total_fees),
+                "amount": parseFloat(amount),
                 "destination_address": destination_address,
                 "faldax_fee": 0.0,
                 "network_fee": networkFees,
@@ -1823,42 +1823,40 @@ module.exports = {
               }
 
               console.log("value", value);
-              var responseValue = await request({
-                url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
-                method: "POST",
-                headers: {
 
-                  'x-token': 'faldax-susucoin-node',
-                  'Content-Type': 'application/json'
-                },
-                body: value,
-                json: true
-              }, function (err, httpResponse, body) {
-                console.log("body", body)
-                console.log(err)
-                if (err) {
-                  return (err);
-                }
-                if (body.error) {
-                  return (body);
-                }
-                // return body;
-                if (body.status == 200) {
-                  return res
-                    .status(200)
-                    .json({
-                      "status": 200,
-                      "message": total_fees + " " + coin.coin_code + " " + sails.__("Token send success").message
-                    })
-                } else {
-                  return res
-                    .status(201)
-                    .json({
-                      "status": 201,
-                      "message": body.message
-                    })
-                }
-              });
+              var responseValue = new Promise(async (resolve, reject) => {
+                request({
+                  url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
+                  method: "POST",
+                  headers: {
+
+                    'x-token': 'faldax-susucoin-node',
+                    'Content-Type': 'application/json'
+                  },
+                  body: value,
+                  json: true
+                }, function (err, httpResponse, body) {
+                  console.log("body", body)
+                  console.log(err)
+                  if (err) {
+                    reject(err);
+                  }
+                  if (body.error) {
+                    resolve(body);
+                  }
+                  resolve(body);
+                  // return body;
+                });
+              })
+              var value = await responseValue;
+              console.log("value", value);
+
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
+                })
             }
 
           } else {
