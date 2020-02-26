@@ -359,11 +359,18 @@ module.exports = {
                           ...walletHistoryValue
                         });
                       }
+                      await WithdrawRequest
+                        .update({
+                          "id": id
+                        })
+                        .set({
+                          "is_approve": true
+                        })
                     } else {
 
                       // Send to hot warm wallet and make entry in diffrent table for both warm to
                       // receive and receive to destination
-                      let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString())
+                      var transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString())
                       console.log("transaction", transaction)
                       var total_payout = parseFloat(actual_amount) + parseFloat(faldax_fee)
                       console.log("total_payout", total_payout)
@@ -489,24 +496,21 @@ module.exports = {
                       await TransactionTable.create({
                         ...addObject
                       });
-
-
+                      await WithdrawRequest
+                        .update({
+                          "id": id
+                        })
+                        .set({
+                          "is_approve": true,
+                          "transaction_id": transaction.txid
+                        })
                     }
                     // //This is for sending from hot send wallet to destination address let
                     // addObjectSendData = {   coin_id: coin.id,   source_address:
                     // sendWalletData.receiveAddress.address,   destination_address:
                     // destination_address,   user_id: user_id,   amount: amount,
                     // transaction_type: 'send',   is_executed: false } await
-                    // TransactionTable.create({   ...addObjectSendData });
-
-                    await WithdrawRequest
-                      .update({
-                        "id": id
-                      })
-                      .set({
-                        "is_approve": true,
-                        "transaction_id": transaction.txid
-                      })
+                    // TransactionTable.create({   ...addObjectSendData })
 
                     var walletHistoryDataValue = await WalletHistory.findOne({
                       transaction_id: transaction.txid,
