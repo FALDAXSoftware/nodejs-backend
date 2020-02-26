@@ -2043,7 +2043,7 @@ module.exports = {
                     transaction_type: 'receive',
                     transaction_id: '',
                     is_executed: true,
-                    is_admin: true,
+                    is_admin: false,
                     faldax_fee: 0.0,
                     actual_network_fees: 0.0,
                     estimated_network_fees: parseFloat(0.0).toFixed(8),
