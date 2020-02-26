@@ -411,7 +411,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU") {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
         var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
 
         console.log("valid", valid)
@@ -1684,7 +1684,7 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      if (coin.coin_code != "SUSU") {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
         var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
 
         console.log("valid", valid)
@@ -2689,7 +2689,7 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU") {
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
         var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
 
         console.log("valid", valid)
@@ -2981,7 +2981,7 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU") {
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
         var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
 
         console.log("valid", valid)
