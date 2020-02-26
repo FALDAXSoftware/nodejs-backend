@@ -90,7 +90,7 @@ module.exports = {
     }
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, (withdraw_request.amount - withdraw_request.faldax_fee) as amount, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code " + query, [])
+    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, (withdraw_request.amount) as amount, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code " + query, [])
     withdrawReqData = withdrawReqData.rows;
 
     let withdrawReqCount = await sails.sendNativeQuery("Select COUNT(withdraw_request.id)" + countQuery, [])
@@ -175,9 +175,9 @@ module.exports = {
                     // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
                     if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
-                      var amountValue = parseFloat(amount * division).toFixed(8);
+                      var amountValue = parseFloat(actual_amount * division).toFixed(8);
                     } else {
-                      var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
+                      var sendAmount = parseFloat(parseFloat(actual_amount)).toFixed(8)
                       var amountValue = parseFloat(sendAmount * division).toFixed(8)
                     }
                     // Send to hot warm wallet and make entry in diffrent table for both warm to
