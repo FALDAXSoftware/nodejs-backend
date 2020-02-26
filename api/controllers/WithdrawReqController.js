@@ -366,6 +366,24 @@ module.exports = {
                         .set({
                           "is_approve": true
                         })
+
+                      // var walletHistoryDataValue = await WalletHistory.findOne({
+                      //   deleted_at: null,
+                      //   coin_id: wallet.coin_id,
+                      //   user_id: user_id,
+                      // })
+
+                      var userData = await Users.findOne({
+                        where: {
+                          id: user_id,
+                          is_active: true,
+                          deleted_at: null
+                        }
+                      });
+                      if (userData) {
+                        // Send Email to the user to inform, wallet has created
+                        await sails.helpers.notification.send.email("approve_withdraw_request", userData);
+                      }
                     } else {
 
                       // Send to hot warm wallet and make entry in diffrent table for both warm to
@@ -504,6 +522,25 @@ module.exports = {
                           "is_approve": true,
                           "transaction_id": transaction.txid
                         })
+                      var walletHistoryDataValue = await WalletHistory.findOne({
+                        transaction_id: transaction.txid,
+                        deleted_at: null,
+                        coin_id: wallet.coin_id,
+                        user_id: user_id,
+                      })
+                      totalFeeSub = parseFloat(walletHistoryDataValue.amount);
+
+                      var userData = await Users.findOne({
+                        where: {
+                          id: user_id,
+                          is_active: true,
+                          deleted_at: null
+                        }
+                      });
+                      if (userData) {
+                        // Send Email to the user to inform, wallet has created
+                        await sails.helpers.notification.send.email("approve_withdraw_request", userData);
+                      }
                     }
                     // //This is for sending from hot send wallet to destination address let
                     // addObjectSendData = {   coin_id: coin.id,   source_address:
@@ -511,27 +548,6 @@ module.exports = {
                     // destination_address,   user_id: user_id,   amount: amount,
                     // transaction_type: 'send',   is_executed: false } await
                     // TransactionTable.create({   ...addObjectSendData })
-
-                    var walletHistoryDataValue = await WalletHistory.findOne({
-                      transaction_id: transaction.txid,
-                      deleted_at: null,
-                      coin_id: wallet.coin_id,
-                      user_id: user_id,
-                    })
-
-                    totalFeeSub = parseFloat(walletHistoryDataValue.amount);
-
-                    var userData = await Users.findOne({
-                      where: {
-                        id: user_id,
-                        is_active: true,
-                        deleted_at: null
-                      }
-                    });
-                    if (userData) {
-                      // Send Email to the user to inform, wallet has created
-                      await sails.helpers.notification.send.email("approve_withdraw_request", userData);
-                    }
                     return res
                       .status(200)
                       .json({
