@@ -2933,5 +2933,12 @@
 		"message_type": "success",
 		"message_english": "Wallet cannot be created, as asset is inactive",
 		"message": "Wallet cannot be created, as asset is inactive"
+	},
+	"Enter Valid Address": {
+		"page": "User - Send Coin",
+		"context": "Address is invalid",
+		"message_type": "error",
+		"message_english": "Please enter valid destination address",
+		"message": "Please enter valid destination address"
 	}
 }

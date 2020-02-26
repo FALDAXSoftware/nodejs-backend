@@ -9,7 +9,7 @@ var moment = require('moment');
 var speakeasy = require('speakeasy');
 var logger = require("./logger")
 const request = require('request');
-
+var WAValidator = require('wallet-address-validator');
 
 module.exports = {
   /**
@@ -411,6 +411,18 @@ module.exports = {
         coin_code: coin_code
       });
 
+      var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
+
       console.log("coin", coin)
 
       var division = sails.config.local.DIVIDE_EIGHT;
@@ -584,8 +596,24 @@ module.exports = {
                             var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
                             console.log("total_payout", total_payout)
                             var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
-                            var network_fees = (transaction.transfer.feeString);
-                            var network_feesValue = parseFloat(network_fees / (division))
+                            // if (coin.coin_code == "teth" || coin.coin_code == 'eth') {
+                            //   var valueOfFee = await sails.helpers.bitgo.getTransferValue(coin.coin_code, coin.hot_receive_wallet_address);
+                            //   console.log("valueOfFee", valueOfFee.transfers[0]);
+                            //   var network_fees = valueOfFee.transfers[0].feeString;
+                            //   console.log("network_fees", network_fees)
+                            // } else {
+                            if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                              // division = sails.config.local.DIVIDE_NINE;
+                              network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
+                              var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
+                            } else {
+                              var network_fees = (transaction.transfer.feeString);
+                              var network_feesValue = parseFloat(network_fees / (division))
+                            }
+                            // }
+                            console.log("network_fees", network_fees)
+                            console.log("network_feesValue", network_feesValue)
+
                             var totalFeeSub = 0;
                             totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
                             totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
@@ -1654,6 +1682,17 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+      var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (coin_code == 'xrp' || coin_code == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
@@ -2646,6 +2685,17 @@ module.exports = {
           coin_code: data.coin
         }
       })
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
@@ -2925,6 +2975,17 @@ module.exports = {
           coin_code: data.coin
         }
       })
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
