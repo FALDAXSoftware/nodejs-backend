@@ -606,9 +606,9 @@ module.exports = {
 
                               // IF faldax user, then update ledger
                               var totalFeeSub = 0;
-                              // totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
-                              totalFeeSub = parseFloat(amount) + parseFloat(faldaxFees)
-                              // update wallet balance
+                              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
+                              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
+                              // update sender wallet balance
                               await Wallet
                               .update({
                                 id: wallet.id
