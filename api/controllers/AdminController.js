@@ -2595,11 +2595,12 @@ module.exports = {
             wallet_details = walletValue;
           }
           if (assets_data[i].coin_code != 'SUSU') {
+            console.log("asset_id", asset_id)
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
               coin_id: asset_id
             })
-            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined && currency_conversion.qoute != null) ? (currency_conversion.qoute.USD.price) : (0.0)
+            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
           } else if (assets_data[i].coin_code == 'SUSU') {
             console.log("wallet_details", wallet_details);
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
