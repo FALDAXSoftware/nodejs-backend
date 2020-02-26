@@ -673,7 +673,7 @@ module.exports = {
                                 source_address: wallet.receive_address,
                                 destination_address: destination_address,
                                 user_id: user_id,
-                                amount: parseFloat(amount) + parseFloat(faldaxFees),
+                                amount: totalFeeSub,
                                 transaction_type: 'send',
                                 transaction_id: '',
                                 is_executed: true,
