@@ -1937,7 +1937,7 @@ module.exports = {
                     receive_address: destination_address,
                     is_active: true
                   }
-                }).sort('id DESC');
+                });
 
                 if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
                   var walletHistory = {
