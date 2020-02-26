@@ -523,10 +523,6 @@ module.exports = {
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
-          console.log("walletHistoryData", walletHistoryData);
-          console.log("amount", amount);
-          console.log("limitAmount", limitAmount);
-          console.log((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount);
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
@@ -548,10 +544,6 @@ module.exports = {
 
                   //Checking if wallet is found or not
                   if (wallet) {
-                    console.log("wallet", wallet)
-                    console.log("(parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)", (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION))
-                    console.log(parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION));
-                    console.log("(wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)", (wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION))
                     //If placed balance is greater than the amount to be send
                     if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
@@ -594,174 +586,329 @@ module.exports = {
                             }
                             // If XRP and internal address
                             // Check internal address or not
-                            var check_internal_address = await Wallet.findOne({
+                            var getDestinationValue = await Wallet.findOne({
                               where: {
                                 deleted_at: null,
                                 coin_id: coin.id,
-                                is_active: true,
-                                receive_address:destination_address
-                              }
-                            })
-                            if ( (coin.coin_code == "txrp" || coin.coin_code == "xrp") && check_internal_address && check_internal_address != undefined) {
-
-                              // IF faldax user, then update ledger
-                              var totalFeeSub = 0;
-                              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
-                              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
-                              // update sender wallet balance
-                              await Wallet
-                              .update({
-                                id: wallet.id
-                              })
-                              .set({
-                                balance: (wallet.balance - totalFeeSub).toFixed(8),
-                                placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
-                              });
-
-                            }
-                            // SEND to Warm wallet to Hot Send
-                            let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
-                            // }
-                            console.log("transaction", transaction)
-                            var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
-                            console.log("total_payout", total_payout)
-                            var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
-
-                            if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                              network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
-                              var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
-                            } else {
-                              var network_fees = (transaction.transfer.feeString);
-                              var network_feesValue = parseFloat(network_fees / (division))
-                            }
-                            console.log("network_fees", network_fees)
-                            console.log("network_feesValue", network_feesValue)
-
-                            var totalFeeSub = 0;
-                            totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
-                            totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
-                            console.log("totalFeeSub", totalFeeSub)
-                            var adminWalletDetails = await Wallet.findOne({
-                              where: {
-                                deleted_at: null,
-                                coin_id: coin.id,
-                                is_active: true,
-                                user_id: 36,
-                                is_admin: true
+                                receive_address: destination_address,
+                                is_active: true
                               }
                             });
 
-                            if (adminWalletDetails != undefined) {
-                              var totalAdminFees = 0;
-                              console.log("adminWalletDetails", adminWalletDetails.balance)
-                              console.log("faldaxFees", faldaxFees)
+                            if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
+                              var totalFeeSub = 0;
+                              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees / 2));
+                              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
+                              var walletHistory = {
+                                coin_id: wallet.coin_id,
+                                source_address: wallet.receive_address,
+                                destination_address: destination_address,
+                                user_id: user_id,
+                                amount: parseFloat(amount) + parseFloat(faldaxFees),
+                                transaction_type: 'send',
+                                transaction_id: '',
+                                is_executed: false,
+                                is_admin: false,
+                                faldax_fee: faldaxFees,
+                                actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                                estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                                is_done: true,
+                                actual_amount: amount
+                              }
+                              await WalletHistory.create({
+                                ...walletHistory
+                              });
 
-                              var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
-                              var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
-                              totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
-                              var updatedData = await Wallet
+                              var user_wallet_placed_balance = wallet.placed_balance
+                              var user_wallet_balance = wallet.balance
+                              var receiver_wallet_balance = getDestinationValue.balance;
+
+                              var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
+                              var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
+                              var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
+                              var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
+
+
+                              await Wallet
                                 .update({
+                                  id: wallet.id
+                                })
+                                .set({
+                                  balance: userBalanceUpdate,
+                                  placed_balance: userPlacedBalanceUpdate
+                                });
+
+                              await Wallet
+                                .update({
+                                  id: getDestinationValue.id
+                                })
+                                .set({
+                                  balance: receiverBalanceUpdate,
+                                  placed_balance: receiverPlacedBalanceUpdate
+                                });
+
+                              var walletHistoryReceiver = {
+                                coin_id: wallet.coin_id,
+                                source_address: wallet.receive_address,
+                                destination_address: destination_address,
+                                user_id: getDestinationValue.user_id,
+                                amount: amount,
+                                transaction_type: 'receive',
+                                transaction_id: '',
+                                is_executed: false,
+                                is_admin: false,
+                                faldax_fee: 0.0,
+                                actual_network_fees: 0.0,
+                                estimated_network_fees: parseFloat(0.0).toFixed(8),
+                                is_done: true,
+                                actual_amount: amount
+                              }
+
+                              await WalletHistory.create({
+                                ...walletHistoryReceiver
+                              });
+
+                              var addObject = {
+                                coin_id: coin.id,
+                                source_address: wallet.receive_address,
+                                destination_address: destination_address,
+                                user_id: user_id,
+                                amount: parseFloat(amount) + parseFloat(faldaxFees),
+                                transaction_type: 'send',
+                                transaction_id: '',
+                                is_executed: true,
+                                is_admin: false,
+                                faldax_fee: faldaxFees,
+                                actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
+                                estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                                is_done: true,
+                                actual_amount: amount,
+                                sender_user_balance_before: user_wallet_balance,
+                                transaction_from: sails.config.local.SEND_TO_DESTINATION
+                              }
+
+                              await TransactionTable.create({
+                                ...addObject
+                              });
+
+                              var addObject = {
+                                coin_id: coin.id,
+                                source_address: wallet.receive_address,
+                                destination_address: destination_address,
+                                user_id: getDestinationValue.user_id,
+                                amount: parseFloat(amount),
+                                transaction_type: 'receive',
+                                transaction_id: '',
+                                is_executed: true,
+                                is_admin: false,
+                                faldax_fee: 0.0,
+                                actual_network_fees: 0.0,
+                                estimated_network_fees: parseFloat(0.0).toFixed(8),
+                                is_done: true,
+                                actual_amount: amount,
+                                sender_user_balance_before: receiver_wallet_balance,
+                                transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
+                              }
+
+                              await TransactionTable.create({
+                                ...addObject
+                              });
+                              // Update Admin Faldax Wallet
+                              var adminWalletDetails = await Wallet.findOne({
+                                where: {
                                   deleted_at: null,
                                   coin_id: coin.id,
                                   is_active: true,
                                   user_id: 36,
                                   is_admin: true
-                                })
-                                .set({
-                                  balance: updatedBalance,
-                                  placed_balance: updatedPlacedBalance
-                                })
-                                .fetch();
-                              let walletHistoryValue = {
+                                }
+                              });
+
+                              if (adminWalletDetails != undefined) {
+                                var totalAdminFees = 0;
+
+                                var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
+                                var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
+                                totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees) + parseFloat(networkFees / 2)
+                                var updatedData = await Wallet
+                                  .update({
+                                    deleted_at: null,
+                                    coin_id: coin.id,
+                                    is_active: true,
+                                    user_id: 36,
+                                    is_admin: true
+                                  })
+                                  .set({
+                                    balance: updatedBalance,
+                                    placed_balance: updatedPlacedBalance
+                                  })
+                                  .fetch();
+                                let walletHistoryValue = {
+                                  coin_id: wallet.coin_id,
+                                  source_address: wallet.receive_address,
+                                  destination_address: adminWalletDetails.receive_address,
+                                  user_id: 36,
+                                  is_admin: true,
+                                  amount: (totalAdminFees),
+                                  transaction_type: 'send',
+                                  transaction_id: '',
+                                  is_executed: false,
+                                  faldax_fee: faldaxFees,
+                                  actual_network_fees: 0.0,
+                                  estimated_network_fees: 0.0,
+                                  is_done: false,
+                                  actual_amount: amount
+                                }
+
+                                await WalletHistory.create({
+                                  ...walletHistoryValue
+                                });
+                              }
+                            } else { //
+                              // SEND to Warm wallet to Hot Send
+                              let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
+                              // }
+                              console.log("transaction", transaction)
+                              var total_payout = parseFloat(amount) + parseFloat(faldaxFees)
+                              console.log("total_payout", total_payout)
+                              var singleNetworkFee = parseFloat(parseFloat(networkFees) / 2).toFixed(8);
+
+                              if (coin.coin_code == "teth" || coin.coin_code == "eth") {
+                                network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
+                                var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
+                              } else {
+                                var network_fees = (transaction.transfer.feeString);
+                                var network_feesValue = parseFloat(network_fees / (division))
+                              }
+                              console.log("network_fees", network_fees)
+                              console.log("network_feesValue", network_feesValue)
+
+                              var totalFeeSub = 0;
+                              totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
+                              totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
+                              console.log("totalFeeSub", totalFeeSub)
+                              var adminWalletDetails = await Wallet.findOne({
+                                where: {
+                                  deleted_at: null,
+                                  coin_id: coin.id,
+                                  is_active: true,
+                                  user_id: 36,
+                                  is_admin: true
+                                }
+                              });
+
+                              if (adminWalletDetails != undefined) {
+                                var totalAdminFees = 0;
+                                console.log("adminWalletDetails", adminWalletDetails.balance)
+                                console.log("faldaxFees", faldaxFees)
+
+                                var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
+                                var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
+                                totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
+                                var updatedData = await Wallet
+                                  .update({
+                                    deleted_at: null,
+                                    coin_id: coin.id,
+                                    is_active: true,
+                                    user_id: 36,
+                                    is_admin: true
+                                  })
+                                  .set({
+                                    balance: updatedBalance,
+                                    placed_balance: updatedPlacedBalance
+                                  })
+                                  .fetch();
+                                let walletHistoryValue = {
+                                  coin_id: wallet.coin_id,
+                                  source_address: wallet.receive_address,
+                                  destination_address: adminWalletDetails.receive_address,
+                                  user_id: 36,
+                                  is_admin: true,
+                                  amount: (totalAdminFees),
+                                  transaction_type: 'send',
+                                  transaction_id: transaction.txid,
+                                  is_executed: false,
+                                  faldax_fee: faldaxFees,
+                                  actual_network_fees: 0.0,
+                                  estimated_network_fees: 0.0,
+                                  is_done: false,
+                                  actual_amount: amount
+                                }
+
+                                await WalletHistory.create({
+                                  ...walletHistoryValue
+                                });
+                              }
+                              //Here remainning ebtry as well as address change
+                              let walletHistory = {
                                 coin_id: wallet.coin_id,
                                 source_address: wallet.receive_address,
-                                destination_address: adminWalletDetails.receive_address,
-                                user_id: 36,
-                                is_admin: true,
-                                amount: (totalAdminFees),
+                                destination_address: destination_address,
+                                user_id: user_id,
+                                amount: (total_payout),
                                 transaction_type: 'send',
                                 transaction_id: transaction.txid,
                                 is_executed: false,
-                                faldax_fee: faldaxFees,
-                                actual_network_fees: 0.0,
-                                estimated_network_fees: 0.0,
+                                is_admin: false,
+                                faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
+                                actual_network_fees: network_feesValue,
+                                estimated_network_fees: parseFloat(networkFees).toFixed(8),
                                 is_done: false,
                                 actual_amount: amount
                               }
 
+                              // Make changes in code for receive webhook and then send to receive address
+                              // Entry in wallet history
                               await WalletHistory.create({
-                                ...walletHistoryValue
+                                ...walletHistory
                               });
-                            }
-                            //Here remainning ebtry as well as address change
-                            let walletHistory = {
-                              coin_id: wallet.coin_id,
-                              source_address: wallet.receive_address,
-                              destination_address: destination_address,
-                              user_id: user_id,
-                              amount: (total_payout),
-                              transaction_type: 'send',
-                              transaction_id: transaction.txid,
-                              is_executed: false,
-                              is_admin: false,
-                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
-                              actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(networkFees).toFixed(8),
-                              is_done: false,
-                              actual_amount: amount
-                            }
 
-                            // Make changes in code for receive webhook and then send to receive address
-                            // Entry in wallet history
-                            await WalletHistory.create({
-                              ...walletHistory
-                            });
+                              var user_wallet_balance = wallet.balance;
+                              // update wallet balance
+                              var data = await Wallet
+                                .update({
+                                  id: wallet.id
+                                })
+                                .set({
+                                  balance: (wallet.balance - totalFeeSub).toFixed(8),
+                                  placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
+                                });
 
-                            var user_wallet_balance = wallet.balance;
-                            // update wallet balance
-                            var data = await Wallet
-                              .update({
-                                id: wallet.id
+                              // Adding the transaction details in transaction table This is entry for sending
+                              // from warm wallet to hot send wallet
+
+                              console.log("totalFeeSub Before", totalFeeSub)
+                              let addObject = {
+                                coin_id: coin.id,
+                                source_address: wallet.receive_address,
+                                destination_address: destination_address,
+                                user_id: user_id,
+                                amount: parseFloat(totalFeeSub).toFixed(8),
+                                transaction_type: 'send',
+                                is_executed: true,
+                                transaction_id: transaction.txid,
+                                faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
+                                actual_network_fees: network_feesValue,
+                                estimated_network_fees: parseFloat(valueFee).toFixed(8),
+                                is_done: false,
+                                actual_amount: amount,
+                                sender_user_balance_before: user_wallet_balance,
+                                warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                                transaction_from: sails.config.local.SEND_TO_DESTINATION
+                              }
+
+                              await TransactionTable.create({
+                                ...addObject
+                              });
+
+                              var walletHistoryDataValue = await WalletHistory.findOne({
+                                transaction_id: transaction.txid,
+                                deleted_at: null,
+                                coin_id: wallet.coin_id,
+                                user_id: user_id,
                               })
-                              .set({
-                                balance: (wallet.balance - totalFeeSub).toFixed(8),
-                                placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
-                              });
-
-                            // Adding the transaction details in transaction table This is entry for sending
-                            // from warm wallet to hot send wallet
-
-                            console.log("totalFeeSub Before", totalFeeSub)
-                            let addObject = {
-                              coin_id: coin.id,
-                              source_address: wallet.receive_address,
-                              destination_address: destination_address,
-                              user_id: user_id,
-                              amount: parseFloat(totalFeeSub).toFixed(8),
-                              transaction_type: 'send',
-                              is_executed: true,
-                              transaction_id: transaction.txid,
-                              faldax_fee: (parseFloat(faldaxFees)).toFixed(8),
-                              actual_network_fees: network_feesValue,
-                              estimated_network_fees: parseFloat(valueFee).toFixed(8),
-                              is_done: false,
-                              actual_amount: amount,
-                              sender_user_balance_before: user_wallet_balance,
-                              warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
-                              transaction_from: sails.config.local.SEND_TO_DESTINATION
                             }
-
-                            await TransactionTable.create({
-                              ...addObject
-                            });
-
-                            var walletHistoryDataValue = await WalletHistory.findOne({
-                              transaction_id: transaction.txid,
-                              deleted_at: null,
-                              coin_id: wallet.coin_id,
-                              user_id: user_id,
-                            })
-
+                            // Send Notification
                             var userNotification = await UserNotification.findOne({
                               user_id: userData.id,
                               deleted_at: null,
