@@ -592,6 +592,33 @@ module.exports = {
                               var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
                               var amountValue = parseFloat(sendAmount * division).toFixed(8)
                             }
+                            // If XRP and internal address
+                            // Check internal address or not
+                            var check_internal_address = await Wallet.findOne({
+                              where: {
+                                deleted_at: null,
+                                coin_id: coin.id,
+                                is_active: true,
+                                receive_address:destination_address
+                              }
+                            })
+                            if ( (coin.coin_code == "txrp" || coin.coin_code == "xrp") && check_internal_address && check_internal_address != undefined) {
+
+                              // IF faldax user, then update ledger
+                              var totalFeeSub = 0;
+                              // totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
+                              totalFeeSub = parseFloat(amount) + parseFloat(faldaxFees)
+                              // update wallet balance
+                              await Wallet
+                              .update({
+                                id: wallet.id
+                              })
+                              .set({
+                                balance: (wallet.balance - totalFeeSub).toFixed(8),
+                                placed_balance: (wallet.placed_balance - totalFeeSub).toFixed(8)
+                              });
+
+                            }
                             // SEND to Warm wallet to Hot Send
                             let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
                             console.log("transaction", transaction)
@@ -734,17 +761,17 @@ module.exports = {
                               ...addObject
                             });
 
-                            var userNotification = await UserNotification.findOne({
-                              user_id: userData.id,
-                              deleted_at: null,
-                              slug: 'withdraw'
-                            })
-
                             var walletHistoryDataValue = await WalletHistory.findOne({
                               transaction_id: transaction.txid,
                               deleted_at: null,
                               coin_id: wallet.coin_id,
                               user_id: user_id,
+                            })
+
+                            var userNotification = await UserNotification.findOne({
+                              user_id: userData.id,
+                              deleted_at: null,
+                              slug: 'withdraw'
                             })
 
                             userData.coinName = coin.coin_code;
