@@ -523,6 +523,9 @@ module.exports = {
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
+          limitAmount = parseFloat(limitAmount);
+          walletHistoryData = parseFloat(walletHistoryData);
+          limitAmountMonthly = parseFloat(limitAmountMonthly);
           // Limited amount is greater than the total sum of day
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
@@ -623,8 +626,8 @@ module.exports = {
                               var user_wallet_balance = wallet.balance
                               var receiver_wallet_balance = getDestinationValue.balance;
 
-                              var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
-                              var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
+                              var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
+                              var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
                               var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
                               var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
 
@@ -1934,11 +1937,9 @@ module.exports = {
                     receive_address: destination_address,
                     is_active: true
                   }
-                });
+                }).sort('id DESC');
 
                 if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
-                  var totalFeeSub = 0;
-                  totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
                   var walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
@@ -1947,7 +1948,7 @@ module.exports = {
                     amount: amount,
                     transaction_type: 'send',
                     transaction_id: '',
-                    is_executed: true,
+                    is_executed: false,
                     is_admin: true,
                     faldax_fee: 0.0,
                     actual_network_fees: 0.0,
@@ -1959,12 +1960,13 @@ module.exports = {
                     ...walletHistory
                   });
 
+                  console.log("wallet.balance", wallet.balance)
+                  console.log("amount", amount)
                   var user_wallet_balance = wallet.balance
-                  var user_wallet_placed_balance = wallet.placed_balance;
                   var receiver_wallet_balance = getDestinationValue.balance;
 
-                  var userBalanceUpdate = parseFloat(user_wallet_balance) - parseFloat(amount);
-                  var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - parseFloat(amount);
+                  var userBalanceUpdate = parseFloat(wallet.balance) - parseFloat(amount);
+                  var userPlacedBalanceUpdate = parseFloat(wallet.placed_balance) - parseFloat(amount);
                   var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
                   var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
 
@@ -1990,7 +1992,7 @@ module.exports = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
-                    user_id: getDestinationValue.user_id,
+                    user_id: getDestinationValue.receive_address,
                     amount: amount,
                     transaction_type: 'receive',
                     transaction_id: '',
@@ -2023,6 +2025,8 @@ module.exports = {
                     is_done: false,
                     actual_amount: amount,
                     sender_user_balance_before: user_wallet_balance,
+                    // warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
                     transaction_from: sails.config.local.SEND_TO_DESTINATION
                   }
 
@@ -2034,7 +2038,7 @@ module.exports = {
                     coin_id: coin.id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
-                    user_id: getDestinationValue.user_id,
+                    user_id: user_id,
                     amount: parseFloat(amountValue / division).toFixed(8),
                     transaction_type: 'receive',
                     transaction_id: '',
@@ -2056,7 +2060,7 @@ module.exports = {
                   });
                   return res.json({
                     status: 200,
-                    message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                    message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                   });
                 } else {
                   console.log(amountValue)
