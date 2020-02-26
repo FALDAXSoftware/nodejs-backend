@@ -411,16 +411,18 @@ module.exports = {
         coin_code: coin_code
       });
 
-      var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+      if (coin.coin_code != "SUSU") {
+        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
 
-      console.log("valid", valid)
-      if (!valid) {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Enter Valid Address").message
-          })
+        console.log("valid", valid)
+        if (!valid) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Enter Valid Address").message
+            })
+        }
       }
 
       console.log("coin", coin)
@@ -1682,16 +1684,18 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+      if (coin.coin_code != "SUSU") {
+        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
 
-      console.log("valid", valid)
-      if (!valid) {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Enter Valid Address").message
-          })
+        console.log("valid", valid)
+        if (!valid) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Enter Valid Address").message
+            })
+        }
       }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (coin_code == 'xrp' || coin_code == 'txrp') {
@@ -2685,16 +2689,18 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+      if (coinData.coin_code != "SUSU") {
+        var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
 
-      console.log("valid", valid)
-      if (!valid) {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Enter Valid Address").message
-          })
+        console.log("valid", valid)
+        if (!valid) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Enter Valid Address").message
+            })
+        }
       }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
@@ -2975,16 +2981,18 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+      if (coinData.coin_code != "SUSU") {
+        var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
 
-      console.log("valid", valid)
-      if (!valid) {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Enter Valid Address").message
-          })
+        console.log("valid", valid)
+        if (!valid) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Enter Valid Address").message
+            })
+        }
       }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
