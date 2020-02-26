@@ -9,7 +9,7 @@ var moment = require('moment');
 var speakeasy = require('speakeasy');
 var logger = require("./logger")
 const request = require('request');
-
+var WAValidator = require('wallet-address-validator');
 
 module.exports = {
   /**
@@ -410,6 +410,18 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
 
       console.log("coin", coin)
 
@@ -1654,6 +1666,17 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (coin_code == 'xrp' || coin_code == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
@@ -2646,6 +2669,17 @@ module.exports = {
           coin_code: data.coin
         }
       })
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
@@ -2925,6 +2959,17 @@ module.exports = {
           coin_code: data.coin
         }
       })
+      var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+
+      console.log("valid", valid)
+      if (!valid) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Enter Valid Address").message
+          })
+      }
       var division = sails.config.local.DIVIDE_EIGHT;
       if (data.coin == 'xrp' || data.coin == 'txrp') {
         division = sails.config.local.DIVIDE_SIX;
