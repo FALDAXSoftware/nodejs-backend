@@ -1768,7 +1768,7 @@ module.exports = {
                 }).sort('id DESC');
 
                 if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
-                  let walletHistory = {
+                  var walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
@@ -1816,7 +1816,7 @@ module.exports = {
                       placed_balance: receiverPlacedBalanceUpdate
                     });
 
-                  let walletHistoryReceiver = {
+                  var walletHistoryReceiver = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
@@ -1834,10 +1834,10 @@ module.exports = {
                   }
 
                   await WalletHistory.create({
-                    ...walletHistory
+                    ...walletHistoryReceiver
                   });
 
-                  let addObject = {
+                  var addObject = {
                     coin_id: coin.id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
@@ -1862,7 +1862,7 @@ module.exports = {
                     ...addObject
                   });
 
-                  let addObject = {
+                  var addObject = {
                     coin_id: coin.id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
@@ -1900,7 +1900,7 @@ module.exports = {
                   totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
                   totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
                   console.log("totalFeeSub", totalFeeSub)
-                  let walletHistory = {
+                  var walletHistory = {
                     coin_id: wallet.coin_id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
@@ -1944,7 +1944,7 @@ module.exports = {
 
                   // Adding the transaction details in transaction table This is entry for sending
                   // from warm wallet to hot send wallet
-                  let addObject = {
+                  var addObject = {
                     coin_id: coin.id,
                     source_address: wallet.receive_address,
                     destination_address: destination_address,
