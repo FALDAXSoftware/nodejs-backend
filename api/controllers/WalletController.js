@@ -571,7 +571,7 @@ module.exports = {
                               valueFee = parseFloat(2 * estimatePass).toFixed(8)
                               console.log("valueFee", valueFee)
                             } else {
-                              var estimatePass = parseFloat(networkFees / 3).toFixed(8)
+                              var estimatePass = parseFloat(networkFees / 2).toFixed(8)
                               console.log("estimatePass", estimatePass)
                               valueFee = parseFloat(2 * estimatePass).toFixed(8)
                               console.log("valueFee", valueFee)
@@ -679,12 +679,14 @@ module.exports = {
 
                             // Adding the transaction details in transaction table This is entry for sending
                             // from warm wallet to hot send wallet
+
+                            console.log("totalFeeSub Before", totalFeeSub)
                             let addObject = {
                               coin_id: coin.id,
                               source_address: wallet.receive_address,
                               destination_address: destination_address,
                               user_id: user_id,
-                              amount: parseFloat(totalFeeSub / division).toFixed(8),
+                              amount: parseFloat(totalFeeSub).toFixed(8),
                               transaction_type: 'send',
                               is_executed: true,
                               transaction_id: transaction.txid,
@@ -1080,10 +1082,6 @@ module.exports = {
             coin_id: coinData.id
           }
         }).sort('created_at DESC')
-
-        for (var k = 0; k < withdrawRequestData.length; k++) {
-          withdrawRequestData[k].amount = parseFloat(withdrawRequestData[k].amount) - parseFloat(withdrawRequestData[k].faldax_fee);
-        }
 
         let coinFee = await AdminSetting.findOne({
           where: {
