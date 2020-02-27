@@ -39,7 +39,7 @@ module.exports = {
                   .json({
                     status: 500,
                     "err": sails.__("Something Wrong").message,
-                    error_at: error.stack
+                    error_at: err.stack
                   });
               }
               let timestamp = new Date().getTime().toString();
