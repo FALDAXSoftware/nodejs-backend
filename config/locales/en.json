@@ -2940,13 +2940,8 @@
 		"message_type": "error",
 		"message_english": "Please enter valid destination address",
 		"message": "Please enter valid destination address"
-<<<<<<< HEAD
 	},
 	"coin inactive or not": {
-=======
-	},
-	"coin inactive or not": {
->>>>>>> 142f21403794cc1f18c9c6fac81785e8a4dc5ff2
 		"page": "Admin -Faldax Send Coin",
 		"context": "Coin not found or is made inactive",
 		"message_type": "error",
