@@ -44,8 +44,8 @@ module.exports = {
               }
               let timestamp = new Date().getTime().toString();
               let resumeFileExtension = uploadedFiles[0].filename.split(".")[uploadedFiles[0].filename.split(".").length - 1]
-              let resumeFileName = timestamp + "_" + file + "." + resumeFileExtension
-              let s3ResumeUpload = await UploadFiles.newUpload(uploadedFiles[0].fd, 'career/' + resumeFileName)
+              let resumeFileName = 'career/' +timestamp + "_" + file + "." + resumeFileExtension
+              let s3ResumeUpload = await UploadFiles.newUpload(uploadedFiles[0].fd, resumeFileName)
               let coverFileName = null
               insertParams[file] = resumeFileName;
 
