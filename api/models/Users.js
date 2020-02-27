@@ -147,6 +147,11 @@ module.exports = {
       defaultsTo: false,
       allowNull: true
     },
+    is_user_updated: {
+      type: 'boolean',
+      columnName: 'is_user_updated',
+      defaultsTo: false
+    },
     is_twofactor: {
       type: 'boolean',
       columnName: "is_twofactor",
