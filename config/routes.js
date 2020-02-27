@@ -537,5 +537,7 @@ module.exports.routes = {
   'get /users/get-available-balance': 'WalletController.getWalletAvailableBalance',
   'get /admin/get-admin-available-balance': 'WalletController.getAdminWalletAvailableBalance',
   'get /admin/get-warm-available-balance': 'WalletController.getWarmAvailableBalance',
-  'post /admin/send-warm-balance': 'WalletController.getAdminWarmSend'
+  'post /admin/send-warm-balance': 'WalletController.getAdminWarmSend',
+
+  'get /users/get-user-trade-status': 'UsersController.getUserTradeStatus',
 };
