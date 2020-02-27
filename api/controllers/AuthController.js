@@ -334,7 +334,19 @@ module.exports = {
                     device_token: req.body.device_token ?
                       req.body.device_token : null
                   });
-
+                  // User KYC
+                  let userKyc = await KYC.findOne({
+                    user_id: user_detail.id
+                  });
+                  user_detail.is_kyc_done = 0;
+                  if (userKyc) {
+                    if (userKyc.steps == 3) {
+                      user_detail.is_kyc_done = 1;
+                      if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+                        user_detail.is_kyc_done = 2;
+                      }
+                    }
+                  }
                   return res.status(200).json({
                     status: 200,
                     user: user_detail,
