@@ -2940,5 +2940,7 @@
 		"message_type": "error",
 		"message_english": "Please enter valid destination address",
 		"message": "Please enter valid destination address"
-	}
+	},
+	"You are not allowed to trade in this regoin as your state is illegal": "You are not allowed to trade in this regoin as your state is illegal",
+	"You are allowed to trade": "You are allowed to trade"
 }

@@ -3560,7 +3560,7 @@ module.exports = {
         if (user_coins != undefined) {
           coins[i].send_address = user_coins.send_address;
           coins[i].receive_address = user_coins.receive_address;
-          coins[i].balance = user_coins.balance
+          coins[i].placed_balance = user_coins.balance
         }
         all_data.push(coins[i]);
       }
@@ -3679,5 +3679,57 @@ module.exports = {
         });
     }
   },
+
+  /*
+  Get User Trade Status
+  */
+  getUserTradeStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+
+      let userKyc = await KYC.findOne({
+        user_id: user_id
+      });
+      var data = {};
+      data.is_kyc_done = 0;
+      if (userKyc) {
+        if (userKyc.steps == 3) {
+          data.is_kyc_done = 1;
+          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+            data.is_kyc_done = 2;
+          }
+        }
+      }
+      var geo_fencing_data = await sails
+        .helpers
+        .userTradeChecking(user_id);
+      console.log(geo_fencing_data)
+      data.is_allowed = geo_fencing_data.response;
+      if (geo_fencing_data.response != true) {
+        res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": geo_fencing_data.msg,
+            "data": data
+          });
+      } else {
+        res.json({
+          "status": 200,
+          "message": geo_fencing_data.msg,
+          "data": data
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  }
 
 };
