@@ -170,7 +170,7 @@ module.exports = {
                 if (coin.type == 1) {
 
                   //Check for warm wallet minimum thresold
-                  if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - totalAmount) >= 0 && (warmWalletData.balance - totalAmount) >= coin.min_thresold && (warmWalletData.balance) > (totalAmount * 1e8)) {
+                  if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - totalAmount) >= 0 && (warmWalletData.balance - totalAmount) >= coin.min_thresold && (warmWalletData.balance) > (totalAmount * division)) {
                     //Execute Transaction
                     // var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
 
@@ -192,21 +192,21 @@ module.exports = {
 
                     if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
                       var totalFeeSub = 0;
-                      totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(networkFees / 2));
-                      totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldaxFees)
+                      totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_fee / 2));
+                      totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount) + parseFloat(faldax_fee)
                       var walletHistory = {
                         coin_id: wallet.coin_id,
                         source_address: wallet.receive_address,
                         destination_address: destination_address,
                         user_id: user_id,
-                        amount: parseFloat(amount) + parseFloat(faldaxFees),
+                        amount: parseFloat(amount) + parseFloat(faldax_fee),
                         transaction_type: 'send',
                         transaction_id: '',
                         is_executed: false,
                         is_admin: false,
-                        faldax_fee: faldaxFees,
-                        actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
-                        estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                        faldax_fee: faldax_fee,
+                        actual_network_fees: parseFloat(network_fee / 2).toFixed(8),
+                        estimated_network_fees: parseFloat(network_fee).toFixed(8),
                         is_done: true,
                         actual_amount: amount
                       }
@@ -218,8 +218,8 @@ module.exports = {
                       var user_wallet_balance = wallet.balance
                       var receiver_wallet_balance = getDestinationValue.balance;
 
-                      var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
-                      var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
+                      var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldax_fee) + parseFloat(network_fee / 2));
+                      var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldax_fee) + parseFloat(network_fee / 2));
                       var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
                       var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
 
@@ -268,14 +268,14 @@ module.exports = {
                         source_address: wallet.receive_address,
                         destination_address: destination_address,
                         user_id: user_id,
-                        amount: parseFloat(amount) + parseFloat(faldaxFees),
+                        amount: parseFloat(amount) + parseFloat(faldax_fee),
                         transaction_type: 'send',
                         transaction_id: '',
                         is_executed: true,
                         is_admin: false,
-                        faldax_fee: faldaxFees,
-                        actual_network_fees: parseFloat(networkFees / 2).toFixed(8),
-                        estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                        faldax_fee: faldax_fee,
+                        actual_network_fees: parseFloat(network_fee / 2).toFixed(8),
+                        estimated_network_fees: parseFloat(network_fee).toFixed(8),
                         is_done: true,
                         actual_amount: amount,
                         sender_user_balance_before: user_wallet_balance,
@@ -322,9 +322,9 @@ module.exports = {
                       if (adminWalletDetails != undefined) {
                         var totalAdminFees = 0;
 
-                        var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
-                        var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees) + parseFloat(networkFees / 2);
-                        totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees) + parseFloat(networkFees / 2)
+                        var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldax_fee) + parseFloat(network_fee / 2);
+                        var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldax_fee) + parseFloat(network_fee / 2);
+                        totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldax_fee) + parseFloat(network_fee / 2)
                         var updatedData = await Wallet
                           .update({
                             deleted_at: null,
@@ -348,7 +348,7 @@ module.exports = {
                           transaction_type: 'send',
                           transaction_id: '',
                           is_executed: false,
-                          faldax_fee: faldaxFees,
+                          faldax_fee: faldax_fee,
                           actual_network_fees: 0.0,
                           estimated_network_fees: 0.0,
                           is_done: false,
@@ -359,16 +359,41 @@ module.exports = {
                           ...walletHistoryValue
                         });
                       }
+                      await WithdrawRequest
+                        .update({
+                          "id": id
+                        })
+                        .set({
+                          "is_approve": true
+                        })
+
+                      // var walletHistoryDataValue = await WalletHistory.findOne({
+                      //   deleted_at: null,
+                      //   coin_id: wallet.coin_id,
+                      //   user_id: user_id,
+                      // })
+
+                      var userData = await Users.findOne({
+                        where: {
+                          id: user_id,
+                          is_active: true,
+                          deleted_at: null
+                        }
+                      });
+                      if (userData) {
+                        // Send Email to the user to inform, wallet has created
+                        await sails.helpers.notification.send.email("approve_withdraw_request", userData);
+                      }
                     } else {
 
                       // Send to hot warm wallet and make entry in diffrent table for both warm to
                       // receive and receive to destination
-                      let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString())
+                      var transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString())
                       console.log("transaction", transaction)
                       var total_payout = parseFloat(actual_amount) + parseFloat(faldax_fee)
                       console.log("total_payout", total_payout)
                       if (coin.coin_code == "teth" || coin.coin_code == "eth") {
-                        network_fees = (networkFees * sails.config.local.DIVIDE_NINE)
+                        network_fees = (network_fee * sails.config.local.DIVIDE_NINE)
                         var network_feesValue = parseFloat(network_fees / (sails.config.local.DIVIDE_NINE))
                       } else {
                         var network_fees = (transaction.transfer.feeString);
@@ -489,45 +514,40 @@ module.exports = {
                       await TransactionTable.create({
                         ...addObject
                       });
+                      await WithdrawRequest
+                        .update({
+                          "id": id
+                        })
+                        .set({
+                          "is_approve": true,
+                          "transaction_id": transaction.txid
+                        })
+                      var walletHistoryDataValue = await WalletHistory.findOne({
+                        transaction_id: transaction.txid,
+                        deleted_at: null,
+                        coin_id: wallet.coin_id,
+                        user_id: user_id,
+                      })
+                      totalFeeSub = parseFloat(walletHistoryDataValue.amount);
 
-
+                      var userData = await Users.findOne({
+                        where: {
+                          id: user_id,
+                          is_active: true,
+                          deleted_at: null
+                        }
+                      });
+                      if (userData) {
+                        // Send Email to the user to inform, wallet has created
+                        await sails.helpers.notification.send.email("approve_withdraw_request", userData);
+                      }
                     }
                     // //This is for sending from hot send wallet to destination address let
                     // addObjectSendData = {   coin_id: coin.id,   source_address:
                     // sendWalletData.receiveAddress.address,   destination_address:
                     // destination_address,   user_id: user_id,   amount: amount,
                     // transaction_type: 'send',   is_executed: false } await
-                    // TransactionTable.create({   ...addObjectSendData });
-
-                    await WithdrawRequest
-                      .update({
-                        "id": id
-                      })
-                      .set({
-                        "is_approve": true,
-                        "transaction_id": transaction.txid
-                      })
-
-                    var walletHistoryDataValue = await WalletHistory.findOne({
-                      transaction_id: transaction.txid,
-                      deleted_at: null,
-                      coin_id: wallet.coin_id,
-                      user_id: user_id,
-                    })
-
-                    totalFeeSub = parseFloat(walletHistoryDataValue.amount);
-
-                    var userData = await Users.findOne({
-                      where: {
-                        id: user_id,
-                        is_active: true,
-                        deleted_at: null
-                      }
-                    });
-                    if (userData) {
-                      // Send Email to the user to inform, wallet has created
-                      await sails.helpers.notification.send.email("approve_withdraw_request", userData);
-                    }
+                    // TransactionTable.create({   ...addObjectSendData })
                     return res
                       .status(200)
                       .json({
@@ -621,7 +641,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Insufficient Balance in warm Wallet").message,
+            "message": sails.__("Insufficient Balance in warm Wallet").message,
             error_at: sails.__("Insufficient Balance in warm Wallet").message
           })
       }
