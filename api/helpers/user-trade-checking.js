@@ -35,7 +35,7 @@ module.exports = {
       if (userKyc) {
         if (userKyc.direct_response == null && userKyc.webhook_response == null) {
           response = false;
-          msg = 'Your KYC is under process. Please wait until KYC is approved'
+          msg = sails.__("Your KYC is under process. Please wait until KYC is approved").message;
         }
         countryData = await Countries.find({
           where: {
@@ -47,7 +47,7 @@ module.exports = {
 
           if (countryData[0].legality == 1) {
             response = true;
-            msg = "You are allowed to trade"
+            msg = sails.__("You are allowed to trade").message;
           } else if (countryData[0].legality == 4) {
             stateData = await State.findOne({
               where: {
@@ -60,27 +60,27 @@ module.exports = {
 
               if (stateData.legality == 1) {
                 response = true;
-                msg = "You are allowed to trade"
+                msg = sails.__("You are allowed to trade").message;
               } else {
                 response = false;
-                msg = 'You are not allowed to trade in this regoin as your state is illegal'
+                msg = sails.__("You are not allowed to trade in this regoin as your state is illegal").message;
 
               }
             } else {
               response = false;
-              msg = 'You are not allowed to trade in this regoin'
+              msg = sails.__("You are not allowed to trade in this regoin").message;
             }
           } else {
             response = false;
-            msg = 'You are not allowed to trade in this regoin as country is illegal'
+            msg = sails.__("You are not allowed to trade in this regoin as country is illegal").message;
           }
         } else {
           response = false;
-          msg = 'You need to complete your KYC to trade in FALDAX';
+          msg = sails.__("You need to complete your KYC to trade in FALDAX").message;
         }
       } else {
         response = false;
-        msg = 'You need to complete your KYC to trade in FALDAX';
+        msg = sails.__("You need to complete your KYC to trade in FALDAX").message;
       }
 
       sendInfo = {
