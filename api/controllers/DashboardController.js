@@ -232,7 +232,7 @@ module.exports = {
 
       let monthDate = moment().subtract(30, 'days').format();
       let activeUsers = await Users.count({
-        is_verified: true,
+        // is_verified: true,
         is_active: true,
         deleted_at: null
       });
