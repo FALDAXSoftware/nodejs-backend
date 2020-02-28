@@ -334,7 +334,19 @@ module.exports = {
                     device_token: req.body.device_token ?
                       req.body.device_token : null
                   });
-
+                  // User KYC
+                  let userKyc = await KYC.findOne({
+                    user_id: user_detail.id
+                  });
+                  user_detail.is_kyc_done = 0;
+                  if (userKyc) {
+                    if (userKyc.steps == 3) {
+                      user_detail.is_kyc_done = 1;
+                      if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+                        user_detail.is_kyc_done = 2;
+                      }
+                    }
+                  }
                   return res.status(200).json({
                     status: 200,
                     user: user_detail,
@@ -908,8 +920,8 @@ module.exports = {
     try {
       const user_details = await Users.findOne({
         email: req.body.email,
-        deleted_at: null,
-        is_active: true
+        // deleted_at: null,
+        // is_active: true
       });
       if (!user_details) {
         return res
@@ -926,6 +938,18 @@ module.exports = {
             "status": 401,
             err: sails.__("Contact Admin").message
           });
+      }
+      if (user_details.deleted_at && user_details.deleted_by == 2) {
+        return res.status(403).json({
+          "status": 403,
+          err: sails.__('Deleted By Admin').message
+        });
+      }
+      if (user_details.deleted_at && user_details.deleted_by == 1) {
+        return res.status(403).json({
+          "status": 403,
+          err: sails.__('Deleted By User').message
+        });
       }
       if (user_details.is_verified == false || user_details.is_new_email_verified == false) {
         return res
