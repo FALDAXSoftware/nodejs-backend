@@ -920,8 +920,8 @@ module.exports = {
     try {
       const user_details = await Users.findOne({
         email: req.body.email,
-        deleted_at: null,
-        is_active: true
+        // deleted_at: null,
+        // is_active: true
       });
       if (!user_details) {
         return res
@@ -938,6 +938,18 @@ module.exports = {
             "status": 401,
             err: sails.__("Contact Admin").message
           });
+      }
+      if (user_details.deleted_at && user_details.deleted_by == 2) {
+        return res.status(403).json({
+          "status": 403,
+          err: sails.__('Deleted By Admin').message
+        });
+      }
+      if (user_details.deleted_at && user_details.deleted_by == 1) {
+        return res.status(403).json({
+          "status": 403,
+          err: sails.__('Deleted By User').message
+        });
       }
       if (user_details.is_verified == false || user_details.is_new_email_verified == false) {
         return res
