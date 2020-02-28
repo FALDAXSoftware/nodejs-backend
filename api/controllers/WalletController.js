@@ -626,8 +626,8 @@ module.exports = {
                               var user_wallet_balance = wallet.balance
                               var receiver_wallet_balance = getDestinationValue.balance;
 
-                              var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
-                              var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees)+ parseFloat(networkFees / 2));
+                              var userBalanceUpdate = parseFloat(user_wallet_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
+                              var userPlacedBalanceUpdate = parseFloat(user_wallet_placed_balance) - (parseFloat(amount) + parseFloat(faldaxFees) + parseFloat(networkFees / 2));
                               var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
                               var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
 
@@ -3619,6 +3619,13 @@ module.exports = {
               })
           }
         }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("coin inactive or not").message
+          })
       }
     } catch (error) {
 
@@ -3635,9 +3642,9 @@ module.exports = {
       }
 
       return res
-        .status(500)
+        .status(401)
         .json({
-          status: 500,
+          status: 401,
           "error": sails.__("Something Wrong").message,
           error_at: error.stack
         });

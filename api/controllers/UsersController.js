@@ -925,6 +925,8 @@ module.exports = {
                 user['country_code'] = req.body.country_code;
               }
 
+              user['is_user_updated'] = true;
+
               var updatedUsers = await Users
                 .update({
                   email: user.email,

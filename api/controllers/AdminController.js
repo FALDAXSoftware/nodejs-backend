@@ -2567,7 +2567,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
         })
         .sort('created_at DESC');
 
