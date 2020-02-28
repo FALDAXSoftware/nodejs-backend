@@ -2783,7 +2783,8 @@
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
-		"message": "Trade data retrieved successfully."
+		"message": "Trade data retrieved successfully.",
+		"": ""
 	},
 	"Withdraw Fee has been retrieved successfully": {
 		"page": "CMS - Withdraw fees lists",
@@ -2825,7 +2826,8 @@
 		"context": "Verification successfull",
 		"message_type": "success",
 		"message_english": "Verification successful.",
-		"message": "Verification successful."
+		"message": "Verification successful.",
+		"": ""
 	},
 	"Ticket lists": {
 		"page": "Ticket lists, CMS - Ticket lists",
@@ -2908,7 +2910,70 @@
 		"page": "CMS - Approve/Disapprove withdraw requests",
 		"context": "Insufficient Balance in warm Wallet",
 		"message_type": "error",
-		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
-		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
+		"message_english": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction.",
+		"message": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction."
+	},
+	"Your User has been deactivated": {
+		"page": "User -Acrtive/deactive",
+		"context": "User has been deactivated",
+		"message_type": "error",
+		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
+		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
+	},
+	"Available Balance": {
+		"page": "User - Available Balance for user to send after fees deduction",
+		"context": "Available Balance for the user",
+		"message_type": "success",
+		"message_english": "User Available balance after fees has been retrieved successfully.",
+		"message": "User Available balance after fees has been retrieved successfully."
+	},
+	"Coin Inactive": {
+		"page": "User - Create Address",
+		"context": "Coin is inactive and user tries to create the address",
+		"message_type": "success",
+		"message_english": "Wallet cannot be created, as asset is inactive",
+		"message": "Wallet cannot be created, as asset is inactive"
+	},
+	"Enter Valid Address": {
+		"page": "User - Send Coin",
+		"context": "Address is invalid",
+		"message_type": "error",
+		"message_english": "Please enter valid destination address",
+		"message": "Please enter valid destination address"
+	},
+	"coin inactive or not": {
+		"page": "Admin -Faldax Send Coin",
+		"context": "Coin not found or is made inactive",
+		"message_type": "error",
+		"message_english": "Coin has been made inactive or Coin has been Found",
+		"message": "Coin has been made inactive or Coin has been Found"
+	},
+	"Your KYC is under process. Please wait until KYC is approved": {
+		"page": "When user submit kyc",
+		"context": "Your KYC is under process. Please wait until KYC is approved",
+		"message_type": "success",
+		"message_english": "Your KYC is under process. Please wait until KYC is approved",
+		"message": "Your KYC is under process. Please wait until KYC is approved"
+	},
+	"You are allowed to trade": {
+		"page": "When trade is allowed in user's region",
+		"context": "You are allowed to trade",
+		"message_type": "success",
+		"message_english": "You are allowed to trade",
+		"message": "You are allowed to trade"
+	},
+	"You are not allowed to trade in this regoin as your state is illegal": {
+		"page": "When user is doing trade in user's region",
+		"context": "You are not allowed to trade in this regoin as your state is illegal",
+		"message_type": "error",
+		"message_english": "You are not allowed to trade in this regoin as your state is illegal",
+		"message": "You are not allowed to trade in this regoin as your state is illegal"
+	},
+	"You are not allowed to trade in this regoin as country is illegal": {
+		"page": "When user is doing trade in user's region",
+		"context": "You are not allowed to trade in this regoin as country is illegal",
+		"message_type": "error",
+		"message_english": "You are not allowed to trade in this regoin as country is illegal",
+		"message": "You are not allowed to trade in this regoin as country is illegal"
 	}
 }
