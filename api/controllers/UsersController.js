@@ -3709,9 +3709,9 @@ module.exports = {
       data.is_allowed = geo_fencing_data.response;
       if (geo_fencing_data.response != true) {
         res
-          .status(500)
+          .status(200)
           .json({
-            "status": 500,
+            "status": 200,
             "message": geo_fencing_data.msg,
             "data": data
           });
