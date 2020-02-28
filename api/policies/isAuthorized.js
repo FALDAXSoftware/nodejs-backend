@@ -199,8 +199,14 @@ module.exports = async function (req, res, next) {
         id: req.user.id
       });
       if (userData != undefined && userData.isAdmin != true) {
-
-        if (userData.deleted_at == null && userData.is_active == true) {
+        if (userData.is_verified == false || userData.is_new_email_verified == false) {
+          return res
+            .status(403)
+            .json({
+              "status": 403,
+              err: sails.__("account not not verified by admin").message
+            });
+        }else if (userData.deleted_at == null && userData.is_active == true) {
           next();
         } else if (userData.deleted_at != null) {
           return res
