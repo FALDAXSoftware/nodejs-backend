@@ -28,10 +28,23 @@ module.exports.http = {
      * (This Sails app's routes are handled by the "router" middleware below.)  *
      *                                                                          *
      ***************************************************************************/
-
+    csp: require('lusca').csp({
+      policy: {
+        'default-src': "https://*.cloudflare.com https://*.faldax.com https://s3.us-east-2.amazonaws.com/ https://*.amazonaws.com https://*.faldax.com; base-uri 'self' https://*.faldax.com;",
+        'form-action':"'self' https://checkout.simplexcc.com https://*.hsforms.com;",
+        'img-src':"'self' data: https://*.hubspot.com https://*.amazonaws.com https://*.google-analytics.com ;",
+        'font-src':"'self' https://*.fontawesome.com https://*.bootstrapcdn.com https://*.gstatic.com; ",
+        'style-src':"'unsafe-inline' 'self' https://*.fontawesome.com https://*.amazonaws.com https://*.cloudflare.com https://*.googleapis.com https://*.bootstrapcdn.com ; ",
+        'script-src':"'unsafe-inline' 'strict-dynamic' 'self' https://*.fontawesome.com https://www.googletagmanager.com https://*.hs-scripts.com https://*.hsforms.net https://*.hsforms.com  https://*.cloudflare.com https://*.faldax.com https://www.google.com https://*.hs-analytics.net https://*.usemessages.com https://*.google-analytics.com wss://*.faldax.com https://*.gstatic.com;",
+        'object-src':"'none' blob: ;",
+        'connect-src':"'self' https://*.s3.amazonaws.com https://*.fontawesome.com https://*.faldax.com/ https://*.hubspot.com wss://*.faldax.com ; ",
+        'frame-src':"'self' https://www.google.com https://*.hubspot.com https://*.hsforms.com https://s3.us-east-2.amazonaws.com/"
+      }
+    }),
     order: [
       'cookieParser',
       'session',
+      'csp',
       'bodyParser',
       'requestLogger',
       'responseLogger',
@@ -41,6 +54,7 @@ module.exports.http = {
       'www',
       'favicon'
     ],
+
 
 
     /***************************************************************************
@@ -165,7 +179,7 @@ module.exports.http = {
           "X-Frame-Options": "sameorigin",
           "X-XSS-Protection": "1; mode=block",
           "Referrer-Policy": "same-origin",
-          "Content-Security-Policy":"default-src https://*.cloudflare.com https://*.faldax.com https://s3.us-east-2.amazonaws.com/ https://*.amazonaws.com https://*.faldax.com; base-uri 'self' https://*.faldax.com; form-action 'self' https://checkout.simplexcc.com https://*.hsforms.com; img-src 'self' data: https://*.hubspot.com https://*.amazonaws.com https://*.google-analytics.com ; font-src 'self' https://*.fontawesome.com https://*.bootstrapcdn.com https://*.gstatic.com; style-src 'unsafe-inline' 'self' https://*.fontawesome.com https://*.amazonaws.com https://*.cloudflare.com https://*.googleapis.com https://*.bootstrapcdn.com ; script-src 'unsafe-inline' 'strict-dynamic' 'self' https://*.fontawesome.com https://www.googletagmanager.com https://*.hs-scripts.com https://*.hsforms.net https://*.hsforms.com  https://*.cloudflare.com https://*.faldax.com https://www.google.com https://*.hs-analytics.net https://*.usemessages.com https://*.google-analytics.com wss://*.faldax.com https://*.gstatic.com; object-src 'none' blob: ; connect-src 'self' https://*.s3.amazonaws.com https://*.fontawesome.com https://*.faldax.com/ https://*.hubspot.com wss://*.faldax.com ; frame-src 'self' https://www.google.com https://*.hubspot.com https://*.hsforms.com https://s3.us-east-2.amazonaws.com/"
+          // "Content-Security-Policy":"default-src https://*.cloudflare.com https://*.faldax.com https://s3.us-east-2.amazonaws.com/ https://*.amazonaws.com https://*.faldax.com; base-uri 'self' https://*.faldax.com; form-action 'self' https://checkout.simplexcc.com https://*.hsforms.com; img-src 'self' data: https://*.hubspot.com https://*.amazonaws.com https://*.google-analytics.com ; font-src 'self' https://*.fontawesome.com https://*.bootstrapcdn.com https://*.gstatic.com; style-src 'unsafe-inline' 'self' https://*.fontawesome.com https://*.amazonaws.com https://*.cloudflare.com https://*.googleapis.com https://*.bootstrapcdn.com ; script-src 'unsafe-inline' 'strict-dynamic' 'self' https://*.fontawesome.com https://www.googletagmanager.com https://*.hs-scripts.com https://*.hsforms.net https://*.hsforms.com  https://*.cloudflare.com https://*.faldax.com https://www.google.com https://*.hs-analytics.net https://*.usemessages.com https://*.google-analytics.com wss://*.faldax.com https://*.gstatic.com; object-src 'none' blob: ; connect-src 'self' https://*.s3.amazonaws.com https://*.fontawesome.com https://*.faldax.com/ https://*.hubspot.com wss://*.faldax.com ; frame-src 'self' https://www.google.com https://*.hubspot.com https://*.hsforms.com https://s3.us-east-2.amazonaws.com/"
         }
         res.writeHead(res.statusCode,all_response_object);
 
