@@ -152,12 +152,19 @@ module.exports.http = {
       };
       var body;
       res.end = async function (chunk) {
+        // let all_response_object = {
+        //   "strict-transport-security":"max-age=63072000; includeSubDomains; preload",
+        //   "x-content-type-options":"nosniff",
+        //   "x-frame-options":"sameorigin",
+        //   "x-xss-protection":"1; mode=block",
+        //   "referrer-policy":"same-origin"
+        // }
         let all_response_object = {
-          "strict-transport-security":"max-age=63072000; includeSubDomains; preload",
-          "x-content-type-options":"nosniff",
-          "x-frame-options":"sameorigin",
-          "x-xss-protection":"1; mode=block",
-          "referrer-policy":"same-origin"
+          "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "sameorigin",
+          "X-XSS-Protection": "1; mode=block",
+          "Referrer-Policy": "same-origin"
         }
         res.writeHead(res.statusCode,all_response_object);
 
