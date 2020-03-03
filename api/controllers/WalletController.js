@@ -331,7 +331,7 @@ module.exports = {
         networkFees,
         faldaxFees
       } = req.allParams();
-
+      console.log("Req Params : ", req.allParams())
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -343,18 +343,26 @@ module.exports = {
         .startOf('day')
         .format();
 
-      var dateTimeMonthly = moment(yesterday).local().format();
-      var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
-      localTimeMonthly = moment(localTimeMonthly).format()
+      var dateTimeDaily = moment(yesterday).local().format();
+      var localTimeDaily = moment.utc(dateTimeDaily).toDate();
+      localTimeDaily = moment(localTimeDaily).format()
 
       var monthlyData = moment()
         .startOf('month')
         .format();
 
-      var dateTimeDaily = moment(yesterday).local().format();
-      var localTimeDaily = moment.utc(dateTimeDaily).toDate();
-      localTimeDaily = moment(localTimeDaily).format()
+      var dateTimeMonthly = moment(monthlyData).local().format();
+      var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
+      localTimeMonthly = moment(localTimeMonthly).format()
 
+      // console.log("today",today);
+      // console.log("dateTime",dateTime);
+      // console.log("localTime",localTime);
+      // console.log("yesterday",yesterday);
+      // console.log("dateTimeMonthly",dateTimeMonthly);
+      // console.log("localTimeMonthly",localTimeMonthly);
+      // console.log("dateTimeDaily",dateTimeDaily);
+      // console.log("localTimeDaily",localTimeDaily);
       var userData = await Users.findOne({
         deleted_at: null,
         id: user_id,
@@ -466,6 +474,7 @@ module.exports = {
             coin_id: coin.id
           })
           if (userTierData.length == 0 || userTierData == undefined) {
+            console.log("Asset Tier Limit", userTierData);
             if (userData != undefined) {
               //If user wise limit is not found than search according to tier wise
               let limitTierData = await Limit.findOne({
@@ -484,17 +493,19 @@ module.exports = {
               }
             }
           } else if (userTierData.length > 0) {
+            console.log("User Tier Limit", userTierData);
             limitAmount = userTierData[0].daily_withdraw_crypto;
             limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
             limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
             limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly = null)
           } else {
+            console.log("No Tier Limit");
             limitAmount = null;
             limitAmountMonthly = null;
           }
 
           //Getting total value of daily withdraw
-          let walletHistoryData = await WalletHistory
+          let walletHistoryDataMonthly = await WalletHistory
             .sum('amount')
             .where({
               user_id: user_id,
@@ -508,7 +519,7 @@ module.exports = {
             });
 
           // Getting total value of monthly withdraw
-          let walletHistoryDataMonthly = await WalletHistory
+          let walletHistoryData = await WalletHistory
             .sum('amount')
             .where({
               user_id: user_id,
@@ -520,23 +531,40 @@ module.exports = {
                 '<=': (localTime)
               }
             });
+          // console.log("B limitAmount",limitAmount);
+          // console.log("B limitAmountMonthly",limitAmountMonthly);
+          // console.log("B walletHistoryData",walletHistoryData);
+          // console.log("B walletHistoryDataMonthly",walletHistoryDataMonthly);
+          // console.log("B limitAmount",limitAmount);
+          // console.log("B amount",amount);
+          // console.log("B limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
+          walletHistoryDataMonthly = parseFloat(walletHistoryDataMonthly);
           limitAmount = parseFloat(limitAmount);
           walletHistoryData = parseFloat(walletHistoryData);
           limitAmountMonthly = parseFloat(limitAmountMonthly);
+          amount = parseFloat(amount);
           // Limited amount is greater than the total sum of day
+          // console.log("limitAmount",limitAmount);
+          // console.log("limitAmountMonthly",limitAmountMonthly);
+          // console.log("walletHistoryData",walletHistoryData);
+          // console.log("walletHistoryDataMonthly",walletHistoryDataMonthly);
+          // console.log("limitAmount",limitAmount);
+          // console.log("amount",amount);
+          // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
+            // return res.status(500).json({status:500})
           if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
             //If total amount + amount to be send is less than limited amount
-            if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
+            if ((walletHistoryData + amount) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
               //Checking monthly limit is greater than the total sum of month
               if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                 // If total amount monthly + amount to be send is less than limited amount of month
-                if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
+                if ((walletHistoryDataMonthly + amount) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                   let wallet = await Wallet.findOne({
                     deleted_at: null,
@@ -3518,7 +3546,7 @@ module.exports = {
           })
       }
     } catch (error) {
-
+      console.log("error",error);
       if (error.name == "ImplementationError") {
         get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
         var availableBalance = remainningAmount - (2 * get_network_fees)
