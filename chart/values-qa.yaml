@@ -42,7 +42,7 @@ ingress:
   path: /*
 
   hosts:
-    - backend.faldax.com
+    - qa-backend.faldax.com
   tls: []
   # - secretName: chart-example-tls
   #    hosts:
