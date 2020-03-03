@@ -35,7 +35,7 @@ volumes: [
               sh "cat .keyiv >> .env && rm .keyiv"
               sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
               sh "docker push  ${imageRepo}/backend:${imageTag}"
-              sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag},ingress.hosts[0]=${namespace}-backend.faldax.com ${namespace}-backend -f chart/values-${namespace}.yaml chart/"
+              sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag} ${namespace}-backend -f chart/values-${namespace}.yaml chart/"
                  }
          }
          }
