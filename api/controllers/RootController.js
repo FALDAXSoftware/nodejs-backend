@@ -45,60 +45,6 @@ module.exports = {
         deleted_at: null
       });
 
-      var emailData = await Users.find({
-        select: [
-          'email'
-        ],
-        where: {
-          deleted_at: null,
-          is_active: true,
-          is_verified: true
-        }
-      });
-
-      // var usersEmail = ((emailData.email).join(','));
-      var all_user_emails = [];
-      emailData.map(function (each) {
-        all_user_emails.push(each.email);
-        return each;
-      });
-      var splitted_users = all_user_emails.join(",");
-      var value = Object.values(all_user_emails)
-
-      let slug = "";
-      if (status == "true" || status == true) {
-        slug = "panic_status_enabled"
-      } else {
-        slug = "panic_status_disabled"
-      }
-      let template = await EmailTemplate.findOne({
-        slug
-      });
-      let user_language = (user.default_language ? user.default_language : 'en');
-      let language_content = template.all_content[user_language].content;
-      let language_subject = template.all_content[user_language].subject;
-      for (var i = 0; i < all_user_emails.length; i++) {
-        let emailContent = await sails
-          .helpers
-          .utilities
-          .formatEmail(language_content, {
-            recipientName: ''
-          })
-        if (template) {
-          sails
-            .hooks
-            .email
-            .send("general-email", {
-              content: emailContent
-            }, {
-              to: all_user_emails[i],
-              to: value,
-              subject: language_subject
-            }, function (err) {
-              console.log("err", err);
-            });
-        }
-      }
       if (!user) {
         return res
           .status(401)
@@ -107,6 +53,7 @@ module.exports = {
             "err": sails.__("user inactive").message
           });
       }
+
       let verified = speakeasy
         .totp
         .verify({
@@ -115,6 +62,69 @@ module.exports = {
           token: otp
         });
       if (verified) {
+        var emailData = await Users.find({
+          select: [
+            'email'
+          ],
+          where: {
+            deleted_at: null,
+            is_active: true,
+            is_verified: true
+          }
+        });
+
+        // var usersEmail = ((emailData.email).join(','));
+        var all_user_emails = [];
+        emailData.map(function (each) {
+          all_user_emails.push(each.email);
+          return each;
+        });
+        var splitted_users = all_user_emails.join(",");
+        var value = Object.values(all_user_emails)
+
+        let slug = "";
+        if (status == "true" || status == true) {
+          slug = "panic_status_enabled"
+        } else {
+          slug = "panic_status_disabled"
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let user_language = (user.default_language ? user.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
+        // console.log("all_user_emails", all_user_emails.length)
+        if (all_user_emails.length > 0) {
+          for (var i = 0; i < all_user_emails.length; i++) {
+            // console.log(all_user_emails[i])
+            if (all_user_emails[i] && all_user_emails[i] != undefined) {
+              let emailContent = await sails
+                .helpers
+                .utilities
+                .formatEmail(language_content, {
+                  recipientName: ''
+                })
+              // console.log("emailContent", emailContent)
+              if (template) {
+                // console.log(template)
+                sails
+                  .hooks
+                  .email
+                  .send("general-email", {
+                    content: emailContent
+                  }, {
+                    to: all_user_emails[i],
+                    // to: value,
+                    subject: language_subject
+                  }, function (err) {
+                    console.log("err", err);
+                  });
+              }
+            }
+          }
+        }
+        // if (verified) {
         await AdminSetting.update({
           slug: "panic_status"
         }).set({
