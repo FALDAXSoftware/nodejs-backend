@@ -1656,7 +1656,7 @@ module.exports = {
       var referCount = await sails.sendNativeQuery(referQuery, [])
       referCount = referCount.rows;
 
-      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, coins.id as coin_id
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1666,6 +1666,7 @@ module.exports = {
 
       var walletCount = await sails.sendNativeQuery(walletQuery, []);
       walletCount = walletCount.rows;
+      console.log(walletCount)
 
       if (walletCount.length > 0) {
         for (var i = 0; i < walletCount.length; i++) {
@@ -1681,10 +1682,20 @@ module.exports = {
             }
           }
           if (walletCount[i].coin_name != "SUSU") {
-            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-            walletCount[i].fiat = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0);
-            var fiatValue = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0)
+            var currencyConversionData = await CurrencyConversion.findOne({
+              where: {
+                deleted_at: null,
+                coin_id: walletCount[i].coin_id
+              }
+            })
+            console.log(currencyConversionData);
+            var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+            walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+            console.log(walletCount[i]);
+            var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
+            console.log("fiatValue", fiatValue)
             usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
+            console.log("usd_price", usd_price);
           } else {
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
