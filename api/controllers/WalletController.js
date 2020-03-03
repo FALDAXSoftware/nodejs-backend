@@ -555,7 +555,7 @@ module.exports = {
           // console.log("amount",amount);
           // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
             // return res.status(500).json({status:500})
-          if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
+          if (limitAmount >= walletHistoryData && (limitAmount != null && limitAmount != undefined)) {
 
             //If total amount + amount to be send is less than limited amount
             if ((walletHistoryData + amount) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
