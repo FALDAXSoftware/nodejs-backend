@@ -31,8 +31,12 @@ module.exports = {
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-      if (call_simplex.status == 200 && call_simplex.data.digital_money.amount < 0) {
-        call_simplex.data.digital_money.amount = 0;
+      console.log("call_simplex", call_simplex)
+      if (call_simplex.status == 200 && call_simplex.data && call_simplex.data.digital_money.amount) {
+        // call_simplex.data.digital_money.amount = 0;
+      } else {
+        call_simplex.status = 500;
+        call_simplex.err = call_simplex.message;
       }
       return res.json(call_simplex);
 
@@ -42,7 +46,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -72,7 +76,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -99,7 +103,7 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("panic button enabled").message,
-            error_at:sails.__("panic button enabled").message
+            error_at: sails.__("panic button enabled").message
           })
       }
 
@@ -114,7 +118,7 @@ module.exports = {
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg).message,
-          error_at:sails.__(geo_fencing_data.msg).message
+          error_at: sails.__(geo_fencing_data.msg).message
         });
       } else {
         // Check Security
@@ -126,7 +130,7 @@ module.exports = {
             .json({
               "status": 500,
               "err": check_security.message,
-              error_at:check_security.message
+              error_at: check_security.message
             });
         }
 
@@ -207,7 +211,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -414,7 +418,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -461,7 +465,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -486,7 +490,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -519,7 +523,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },
@@ -553,7 +557,7 @@ module.exports = {
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
-        error_at:error.stack
+        error_at: error.stack
       });
     }
   },

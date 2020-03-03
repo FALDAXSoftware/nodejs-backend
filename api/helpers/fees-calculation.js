@@ -40,9 +40,11 @@ module.exports = {
     try {
       var coin = inputs.coin;
       var feesValue;
-      if( coin == 'susu' ){
+      if (coin == 'susu') {
         coin = 'SUSU';
       }
+
+      console.log(coin)
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
@@ -50,6 +52,20 @@ module.exports = {
           coin_code: (coin)
         }
       })
+
+      console.log(coinData)
+
+      if (coinData == undefined) {
+        coinData = await Coins.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            coin: (coin).toUpperCase()
+          }
+        })
+      }
+
+      console.log(coinData)
 
       if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({

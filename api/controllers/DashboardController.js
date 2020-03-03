@@ -73,10 +73,10 @@ module.exports = {
 
       var currency = 'USD'
 
-      // let risingFalling = await sails
-      //   .helpers
-      //   .dashboard
-      //   .getRisingFallingData(currency);
+      let risingFalling = await sails
+        .helpers
+        .dashboard
+        .getRisingFallingData(currency);
       res.json({
         "status": 200,
         "message": sails.__("Rising Falling data retrived success").message,
@@ -232,7 +232,7 @@ module.exports = {
 
       let monthDate = moment().subtract(30, 'days').format();
       let activeUsers = await Users.count({
-        is_verified: true,
+        // is_verified: true,
         is_active: true,
         deleted_at: null
       });
@@ -344,6 +344,7 @@ module.exports = {
         is_approve: null,
       });
       let q = {}
+      console.log("req.query", req.query)
       if (req.query.kyc_start_date && req.query.kyc_end_date) {
         q = {
           updated_at: {
@@ -354,18 +355,18 @@ module.exports = {
       }
       let kyc_approved = await KYC.count({
         //is_approve: true,
-        //deleted_at: null,
+        deleted_at: null,
         ...q,
         direct_response: 'ACCEPT',
       })
-      let total_kyc = await KYC.count({
-        //deleted_at: null,
-        ...q
-      })
+      // let total_kyc = await KYC.count({
+      //   deleted_at: null,
+      //   ...q
+      // })
       let kyc_disapproved = await KYC.count({
         //is_approve: false,
         direct_response: 'DENY',
-        //deleted_at: null,
+        deleted_at: null,
         ...q
       })
       let kyc_pending = await KYC.count({
@@ -374,6 +375,8 @@ module.exports = {
         //is_approve: true,
         ...q
       })
+
+      total_kyc = kyc_approved + kyc_disapproved + kyc_pending
 
       let AccHrDate = new Date();
       AccHrDate.setDate(AccHrDate.getDate() - 1)

@@ -1759,7 +1759,8 @@ module.exports = {
           .set({
             email: userDetail.email,
             deleted_by: 2, //deleted by admin
-            deleted_at: new Date()
+            deleted_at: new Date(),
+            is_active: false
           })
 
         res.json({
@@ -2566,7 +2567,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
         })
         .sort('created_at DESC');
 
@@ -2582,12 +2583,24 @@ module.exports = {
               deleted_at: null,
               user_id: 36
             });
+          if (wallet_details == undefined && assets_data[i].iserc == true) {
+            var walletValue = await Wallet
+              .findOne({
+                is_active: true,
+                is_admin: true,
+                coin_id: 2,
+                deleted_at: null,
+                user_id: 36
+              });
+            wallet_details = walletValue;
+          }
           if (assets_data[i].coin_code != 'SUSU') {
+            console.log("asset_id", asset_id)
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
               coin_id: asset_id
             })
-            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined && currency_conversion.qoute != null) ? (currency_conversion.qoute.USD.price) : (0.0)
+            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
           } else if (assets_data[i].coin_code == 'SUSU') {
             console.log("wallet_details", wallet_details);
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
@@ -2601,7 +2614,6 @@ module.exports = {
 
 
           if (wallet_details != undefined) {
-            assets_data[i].send_address = wallet_details.send_address;
             assets_data[i].receive_address = wallet_details.receive_address;
             temp_wallet_total = parseFloat(wallet_details.placed_balance);
           }

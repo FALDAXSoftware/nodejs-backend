@@ -45,7 +45,7 @@ module.exports = {
     //Fetching coin list
     const coin = await Coins.findOne({
       deleted_at: null,
-      // is_active: true,
+      is_active: true,
       coin: inputs.coin
     });
 
@@ -56,12 +56,12 @@ module.exports = {
       user_id: parseInt(inputs.user.id),
     })
 
-    if( coin.iserc == true ){
+    if (coin.iserc == true) {
       const get_eth_data = await Coins.findOne({
         deleted_at: null,
         is_active: true,
-        coin_code:{
-          'in':["eth", "teth"]
+        coin_code: {
+          'in': ["eth", "teth"]
         }
       });
       var eth_address_data = await Wallet.findOne({
@@ -70,15 +70,15 @@ module.exports = {
         user_id: parseInt(inputs.user.id)
       });
 
-      if( eth_address_data && eth_address_data.send_address != null && eth_address_data.receive_address != null ){
+      if (eth_address_data && eth_address_data.send_address != null && eth_address_data.receive_address != null) {
         let check_erc_data = await Wallet.findOne({
           deleted_at: null,
           coin_id: coin.id,
           user_id: parseInt(inputs.user.id)
         });
-        if( check_erc_data ){
+        if (check_erc_data) {
           return exits.success(1);
-        }else{
+        } else {
           var create_erc_address = await Wallet
             .create({
               user_id: parseInt(inputs.user.id),
@@ -90,12 +90,11 @@ module.exports = {
               placed_balance: 0.0,
               address_label: eth_address_data.address_label,
               is_admin: false,
-              send_address: eth_address_data.send_address,
               receive_address: eth_address_data.receive_address
             }).fetch();
-            return exits.success(create_erc_address);
+          return exits.success(create_erc_address);
         }
-      }else{
+      } else {
         return exits.success(0);
       }
     }
@@ -125,13 +124,10 @@ module.exports = {
             //Address generation for receiving coin
             let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
 
-            //Address generation for sending the coin
-            let sendAddress = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_send_wallet_address, address_label);
             let obj = {
               wallet_id: "wallet",
               coin_id: parseInt(coin.id),
               receive_address: address.address,
-              send_address: sendAddress.address,
               user_id: parseInt(inputs.user.id),
               balance: 0.0,
               placed_balance: 0.0,
@@ -182,7 +178,6 @@ module.exports = {
           var walletData = await Wallet
             .update({
               "receive_address": body.data.receive_address,
-              "send_address": body.data.send_address,
               deleted_at: null
             })
             .set({
@@ -193,8 +188,7 @@ module.exports = {
           var walletData = await Wallet.findOne({
             where: {
               deleted_at: null,
-              "receive_address": body.data.receive_address,
-              "send_address": body.data.send_address
+              "receive_address": body.data.receive_address
             }
           })
         }
