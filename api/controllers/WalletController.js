@@ -216,11 +216,11 @@ module.exports = {
         }
         if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].iserc == false) {
           if (balanceWalletData.rows[i].quote.USD) {
-            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0)
-              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            else
-              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            // var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+            // if (get_price.length > 0)
+            //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            // else
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
         }
         if (balanceWalletData.rows[i].is_active == true) {
@@ -554,7 +554,7 @@ module.exports = {
           // console.log("limitAmount",limitAmount);
           // console.log("amount",amount);
           // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
-            // return res.status(500).json({status:500})
+          // return res.status(500).json({status:500})
           if (limitAmount >= walletHistoryData && (limitAmount != null && limitAmount != undefined)) {
 
             //If total amount + amount to be send is less than limited amount
@@ -1330,15 +1330,15 @@ module.exports = {
 
           console.log("currencyConversionData", currencyConversionData)
           if (currencyConversionData) {
-            if (currencyConversionData.quote.USD) {
-              var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-              if (get_price[0] != undefined) {
-                currencyConversionData.quote.USD.price = get_price[0].ask_price
-              } else {
-                currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
-              }
-            }
+            // if (currencyConversionData.quote.USD) {
+            //   var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+            //   if (get_price[0] != undefined) {
+            //     currencyConversionData.quote.USD.price = get_price[0].ask_price
+            //   } else {
+            currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+            // }
           }
+          // }
         } else {
           var value = await sails.helpers.getUsdSusucoinValue();
           value = JSON.parse(value);
@@ -3230,8 +3230,8 @@ module.exports = {
   },
 
   /**
- Get HotReceiveWallet Information
- **/
+  Get HotReceiveWallet Information
+  **/
   getHotReceiveWalletInfo: async function (req, res) {
     try {
       let {
@@ -3546,7 +3546,7 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log("error",error);
+      console.log("error", error);
       if (error.name == "ImplementationError") {
         get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
         var availableBalance = remainningAmount - (2 * get_network_fees)
