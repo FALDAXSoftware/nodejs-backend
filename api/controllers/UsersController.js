@@ -218,7 +218,14 @@ module.exports = {
                     "status": 200,
                     "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
                       sails.__("verification code").message : sails.__("verification link").message,
-                    email_verify_token
+                    email_verify_token,
+                    "data": {
+                      recipientName: user_detail.first_name,
+                      token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+                      tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                        email_verify_code : email_verify_token
+                    },
+                    "emailContent": JSON.stringify(emailContent)
                   });
                 }
               });
