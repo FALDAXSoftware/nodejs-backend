@@ -33,7 +33,7 @@ volumes: [
                   s3Download(file:'.keyiv', bucket: 'env.faldax', path: "keyiv/${namespace}/.keyiv", force: true)
                 }
                 sh "ls -a"
-                sh "cat .keyiv >> .env && rm .keyiv"
+                // sh "cat .keyiv >> .env && rm .keyiv"
                 sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
                 sh "docker push  ${imageRepo}/backend:${imageTag}"
                 sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag} ${namespace}-backend -f chart/values-${namespace}.yaml chart/"
@@ -44,7 +44,7 @@ volumes: [
                   s3Download(file:'.keyiv', bucket: 'env.faldax', path: "keyiv/${namespace}/.keyiv", force: true)
                 }
                 sh "ls -a"
-                sh "cat .keyiv >> .env && rm .keyiv"
+                // sh "cat .keyiv >> .env && rm .keyiv"
                 sh "docker build -t ${imageRepo}/backend:${imageTag}  ."
                 sh "docker push  ${imageRepo}/backend:${imageTag}"
                 sh "helm upgrade --install --namespace ${namespace} --set image.tag=${imageTag} ${namespace}-backend -f chart/values-${namespace}.yaml chart-prod/"
