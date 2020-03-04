@@ -26,7 +26,8 @@ volumes: [
               shortGitCommit = "${gitCommit[0..10]}${env.BUILD_NUMBER}"
               imageTag = shortGitCommit
               namespace = getNamespace(myRepo.GIT_BRANCH);
-              if ( "${env.GIT_BRANCH}" != "master" || namespace){
+              echo "${myRepo.GIT_BRANCH}"
+              if ( "${myRepo.GIT_BRANCH}" != "master" && namespace ){
                 withAWS(credentials:'jenkins_s3_upload') {
                   s3Download(file:'.env', bucket:'env.faldax', path:"node-backend/${namespace}/.env", force:true)
                   s3Download(file:'.keyiv', bucket: 'env.faldax', path: "keyiv/${namespace}/.keyiv", force: true)
