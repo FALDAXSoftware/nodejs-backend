@@ -385,10 +385,10 @@ module.exports = {
                       if (user_detail.email != undefined)
                         await sails.helpers.notification.send.email("login_new_ip", user_detail)
                     }
-                    if (userNotification.text == true || userNotification.text == "true") {
-                      if (user_detail.phone_number && user_detail.phone_number != undefined && user_detail.phone_number != null && user_detail.phone_number != '')
-                        await sails.helpers.notification.send.text("login_new_ip", user_detail)
-                    }
+                    // if (userNotification.text == true || userNotification.text == "true") {
+                    //   if (user_detail.phone_number && user_detail.phone_number != undefined && user_detail.phone_number != null && user_detail.phone_number != '')
+                    //     await sails.helpers.notification.send.text("login_new_ip", user_detail)
+                    // }
                   }
 
                   let emailContent = await sails.helpers.utilities.formatEmail(language_content, {
