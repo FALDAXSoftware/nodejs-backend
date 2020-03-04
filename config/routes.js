@@ -34,6 +34,7 @@ module.exports.routes = {
   'get /admin/get-slug-value/:slug': 'AdminController.getEachCoinFee',
   'put /admin/update-fees-value': 'AdminController.updateCoinFee',
   'get /metabase-details': 'RootController.testMetabaseIntegrate',
+  'get /admin-business-wallet-details': 'AdminController.getAdminBusinessWalletDetails',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
@@ -285,17 +286,17 @@ module.exports.routes = {
   'get /coin-currency-list-conversion': 'Coins.getCurrencyForConversion',
 
   // Socket Routes
-  'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
-  'get /socket/get-sell-book': 'SellController.getSellBookDetails',
-  'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
-  'get /socket/get-card-data': 'DashboardController.getCardData',
-  'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
-  'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
-  'get /socket/get-pair-details': 'Coins.getPairDetails',
+  // 'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
+  // 'get /socket/get-sell-book': 'SellController.getSellBookDetails',
+  // 'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
+  // 'get /socket/get-card-data': 'DashboardController.getCardData',
+  // 'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
+  // 'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
+  // 'get /socket/get-pair-details': 'Coins.getPairDetails',
 
   //Get Instrument
-  'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
-  'get /socket/get-user-balance': 'TradeController.getUserWallet',
+  // 'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
+  // 'get /socket/get-user-balance': 'TradeController.getUserWallet',
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
@@ -309,7 +310,7 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket': 'RootController.enableWebSocket',
+  // 'get /enable-web-socket': 'RootController.enableWebSocket',
 
   // Tradding View Chart
   'get /tradingview/config': 'TradingView.getConfig',
@@ -483,7 +484,7 @@ module.exports.routes = {
   'post /admin/update-role-permission': 'AdminController.updateRolePermission',
 
   // Socket for Conversion
-  'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue',
+  // 'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue',
 
   // Metabase Routes
   'get /admin/get-account-report': 'MetabaseController.getAccountClassReport',
@@ -517,6 +518,7 @@ module.exports.routes = {
   "get /admin/get-hotsend-wallet-transaction": "WalletController.getHotSendWalletTransaction",
   "get /admin/get-hotreceive-wallet-data": "WalletController.getHotReceiveWalletInfo",
   "get /admin/get-hotreceive-wallet-transaction": "WalletController.getHotReceiveWalletTransaction",
+  "get /admin/get-bussiness-wallet-data": "WalletController.getBusinessWalletCoinTransaction",
   // Temp
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
@@ -540,4 +542,6 @@ module.exports.routes = {
   'post /admin/send-warm-balance': 'WalletController.getAdminWarmSend',
 
   'get /users/get-user-trade-status': 'UsersController.getUserTradeStatus',
+
+  'get /users/tempupdate': 'CountriesController.tempupdate',
 };

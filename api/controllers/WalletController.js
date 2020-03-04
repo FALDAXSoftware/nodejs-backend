@@ -216,11 +216,11 @@ module.exports = {
         }
         if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].iserc == false) {
           if (balanceWalletData.rows[i].quote.USD) {
-            var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0)
-              balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            else
-              balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            // var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+            // if (get_price.length > 0)
+            //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+            // else
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
         }
         if (balanceWalletData.rows[i].is_active == true) {
@@ -331,7 +331,7 @@ module.exports = {
         networkFees,
         faldaxFees
       } = req.allParams();
-
+      console.log("Req Params : ", req.allParams())
       let user_id = req.user.id;
       var today = moment().utc().format();
 
@@ -343,18 +343,26 @@ module.exports = {
         .startOf('day')
         .format();
 
-      var dateTimeMonthly = moment(yesterday).local().format();
-      var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
-      localTimeMonthly = moment(localTimeMonthly).format()
+      var dateTimeDaily = moment(yesterday).local().format();
+      var localTimeDaily = moment.utc(dateTimeDaily).toDate();
+      localTimeDaily = moment(localTimeDaily).format()
 
       var monthlyData = moment()
         .startOf('month')
         .format();
 
-      var dateTimeDaily = moment(yesterday).local().format();
-      var localTimeDaily = moment.utc(dateTimeDaily).toDate();
-      localTimeDaily = moment(localTimeDaily).format()
+      var dateTimeMonthly = moment(monthlyData).local().format();
+      var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
+      localTimeMonthly = moment(localTimeMonthly).format()
 
+      // console.log("today",today);
+      // console.log("dateTime",dateTime);
+      // console.log("localTime",localTime);
+      // console.log("yesterday",yesterday);
+      // console.log("dateTimeMonthly",dateTimeMonthly);
+      // console.log("localTimeMonthly",localTimeMonthly);
+      // console.log("dateTimeDaily",dateTimeDaily);
+      // console.log("localTimeDaily",localTimeDaily);
       var userData = await Users.findOne({
         deleted_at: null,
         id: user_id,
@@ -466,6 +474,7 @@ module.exports = {
             coin_id: coin.id
           })
           if (userTierData.length == 0 || userTierData == undefined) {
+            console.log("Asset Tier Limit", userTierData);
             if (userData != undefined) {
               //If user wise limit is not found than search according to tier wise
               let limitTierData = await Limit.findOne({
@@ -484,17 +493,19 @@ module.exports = {
               }
             }
           } else if (userTierData.length > 0) {
+            console.log("User Tier Limit", userTierData);
             limitAmount = userTierData[0].daily_withdraw_crypto;
             limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
             limitAmountMonthly = userTierData[0].monthly_withdraw_crypto;
             limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly = null)
           } else {
+            console.log("No Tier Limit");
             limitAmount = null;
             limitAmountMonthly = null;
           }
 
           //Getting total value of daily withdraw
-          let walletHistoryData = await WalletHistory
+          let walletHistoryDataMonthly = await WalletHistory
             .sum('amount')
             .where({
               user_id: user_id,
@@ -508,7 +519,7 @@ module.exports = {
             });
 
           // Getting total value of monthly withdraw
-          let walletHistoryDataMonthly = await WalletHistory
+          let walletHistoryData = await WalletHistory
             .sum('amount')
             .where({
               user_id: user_id,
@@ -520,23 +531,40 @@ module.exports = {
                 '<=': (localTime)
               }
             });
+          // console.log("B limitAmount",limitAmount);
+          // console.log("B limitAmountMonthly",limitAmountMonthly);
+          // console.log("B walletHistoryData",walletHistoryData);
+          // console.log("B walletHistoryDataMonthly",walletHistoryDataMonthly);
+          // console.log("B limitAmount",limitAmount);
+          // console.log("B amount",amount);
+          // console.log("B limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
+          walletHistoryDataMonthly = parseFloat(walletHistoryDataMonthly);
           limitAmount = parseFloat(limitAmount);
           walletHistoryData = parseFloat(walletHistoryData);
           limitAmountMonthly = parseFloat(limitAmountMonthly);
+          amount = parseFloat(amount);
           // Limited amount is greater than the total sum of day
-          if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
+          // console.log("limitAmount",limitAmount);
+          // console.log("limitAmountMonthly",limitAmountMonthly);
+          // console.log("walletHistoryData",walletHistoryData);
+          // console.log("walletHistoryDataMonthly",walletHistoryDataMonthly);
+          // console.log("limitAmount",limitAmount);
+          // console.log("amount",amount);
+          // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
+          // return res.status(500).json({status:500})
+          if (limitAmount >= walletHistoryData && (limitAmount != null && limitAmount != undefined)) {
 
             //If total amount + amount to be send is less than limited amount
-            if ((parseFloat(walletHistoryData) + parseFloat(amount)) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
+            if ((walletHistoryData + amount) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
 
               //Checking monthly limit is greater than the total sum of month
               if (limitAmountMonthly >= walletHistoryDataMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                 // If total amount monthly + amount to be send is less than limited amount of month
-                if ((parseFloat(walletHistoryDataMonthly) + parseFloat(amount)) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
+                if ((walletHistoryDataMonthly + amount) <= limitAmountMonthly || (limitAmountMonthly == null || limitAmountMonthly == undefined)) {
 
                   let wallet = await Wallet.findOne({
                     deleted_at: null,
@@ -1302,15 +1330,15 @@ module.exports = {
 
           console.log("currencyConversionData", currencyConversionData)
           if (currencyConversionData) {
-            if (currencyConversionData.quote.USD) {
-              var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-              if (get_price[0] != undefined) {
-                currencyConversionData.quote.USD.price = get_price[0].ask_price
-              } else {
-                currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
-              }
-            }
+            // if (currencyConversionData.quote.USD) {
+            //   var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+            //   if (get_price[0] != undefined) {
+            //     currencyConversionData.quote.USD.price = get_price[0].ask_price
+            //   } else {
+            currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
+            // }
           }
+          // }
         } else {
           var value = await sails.helpers.getUsdSusucoinValue();
           value = JSON.parse(value);
@@ -3202,8 +3230,8 @@ module.exports = {
   },
 
   /**
- Get HotReceiveWallet Information
- **/
+  Get HotReceiveWallet Information
+  **/
   getHotReceiveWalletInfo: async function (req, res) {
     try {
       let {
@@ -3518,7 +3546,7 @@ module.exports = {
           })
       }
     } catch (error) {
-
+      console.log("error", error);
       if (error.name == "ImplementationError") {
         get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
         var availableBalance = remainningAmount - (2 * get_network_fees)
@@ -3877,5 +3905,97 @@ module.exports = {
           error_at: error.stack
         });
     }
-  }
+  },
+  /**
+  Get Wallet Coin Transaction of Admin Business Wallet
+  **/
+  getBusinessWalletCoinTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        sort_col,
+        sort_order,
+        page,
+        limit,
+        data,
+        start_date,
+        end_date,
+        t_type
+      } = req.allParams();
+
+      var user_id = req.user.id;
+      user_id = 37;
+      var filter = '';
+
+      if (coin_code && coin_code != '' && coin_code != null) {
+        if (coin_code == "susu") {
+          filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+        } else {
+          filter += ` AND coins.coin_code = '${coin_code}'`
+        }
+      }
+      if (data && data != '' && data != null) {
+        filter += ' AND'
+        filter += " (LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
+      }
+      var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
+                          (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(10,8))) as amount,
+                          transaction_table.transaction_id, transaction_table.*,
+                          transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
+                          FROM public.transaction_table LEFT JOIN coins
+                          ON transaction_table.coin_id = coins.id
+                          WHERE coins.is_active = 'true' AND transaction_table.deleted_at IS NULL
+                          AND transaction_table.user_id = ${user_id}${filter}`
+      if (t_type) {
+        walletLogs += " AND LOWER(transaction_table.transaction_type) LIKE '%" + t_type.toLowerCase() + "' "
+      }
+
+
+      if (start_date && end_date) {
+        walletLogs += " AND "
+
+        walletLogs += " transaction_table.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
+      countQuery = walletLogs;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        walletLogs += " ORDER BY transaction_table." + sort_col + " " + sortVal;
+      }
+
+      walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+      walletValue = walletValue.rows
+
+      tradeCount = await sails.sendNativeQuery(countQuery, [])
+      tradeCount = tradeCount.rows.length;
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Admin wallet history success").message,
+          walletValue,
+          tradeCount
+        })
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 };

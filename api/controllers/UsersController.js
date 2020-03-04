@@ -1107,10 +1107,13 @@ module.exports = {
     })
     var data = '/USD'
 
-    let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
-    let allValue = await sails.sendNativeQuery("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query, [])
+    // let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
+    // console.log("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query)
+    let allValue = await sails.sendNativeQuery("Select * from currency_conversion WHERE deleted_at IS NULL", [])
 
     var values = allValue.rows;
+
+    console.log(values)
 
     var m = 0;
     sum = [];
@@ -1124,8 +1127,9 @@ module.exports = {
 
     for (var i = 0; i < referredData.length; i++) {
       for (var j = 0; j < values.length; j++) {
-        if (referredData[i].coin_name + '/USD' == values[j].coin) {
-          referredData[i].quote.USD.price = values[j].ask_price;
+        console.log(values[j])
+        if (referredData[i].coin_name == values[j].symbol) {
+          referredData[i].quote.USD.price = values[j].quote.USD.price;
         }
       }
     }
@@ -1141,8 +1145,8 @@ module.exports = {
 
     for (var i = 0; i < leftReferredData.length; i++) {
       for (var j = 0; j < values.length; j++) {
-        if (leftReferredData[i].coin_name + '/USD' == values[j].coin) {
-          leftReferredData[i].quote.USD.price = values[j].ask_price;
+        if (leftReferredData[i].coin_name == values[j].symbol) {
+          leftReferredData[i].quote.USD.price = values[j].quote.USD.price;
         }
       }
     }
@@ -1552,18 +1556,38 @@ module.exports = {
             }
           }
         }
-        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-        walletCount[i].fiat = (get_jst_price && get_jst_price.length > 0) ? (get_jst_price[0].ask_price) : (0.0)
-        usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
+        // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+        // walletCount[i].fiat = (get_jst_price && get_jst_price.length > 0) ? (get_jst_price[0].ask_price) : (0.0)
+        var currencyConversionData = await CurrencyConversion.findOne({
+          where: {
+            deleted_at: null,
+            coin_id: walletCount[i].coin_id
+          }
+        })
+        console.log(currencyConversionData);
+        var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+        walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+        console.log(walletCount[i]);
+        var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
+        console.log("fiatValue", fiatValue)
+        usd_price = usd_price + ((walletCount[i].totalAmount) * fiatVal);
       }
     } else if (referCount.length > 0) {
       for (var i = 0; i < referCount.length; i++) {
         walletArray.push(referCount[i]);
         total = total + referCount[i].amount
         referCount[i].totalAmount = referCount[i].amount
-        var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
-        referCount[i].fiat = get_jst_price[0].ask_price;
-        usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
+        // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+        var currencyConversionData = await CurrencyConversion.findOne({
+          where: {
+            deleted_at: null,
+            coin_id: walletCount[i].coin_id
+          }
+        })
+        console.log(currencyConversionData);
+        var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+        referCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);;
+        usd_price = usd_price + ((referCount[i].amount) * fiatVal);
       }
     }
 
@@ -1656,7 +1680,7 @@ module.exports = {
       var referCount = await sails.sendNativeQuery(referQuery, [])
       referCount = referCount.rows;
 
-      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, coins.id as coin_id
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1666,6 +1690,7 @@ module.exports = {
 
       var walletCount = await sails.sendNativeQuery(walletQuery, []);
       walletCount = walletCount.rows;
+      console.log(walletCount)
 
       if (walletCount.length > 0) {
         for (var i = 0; i < walletCount.length; i++) {
@@ -1681,10 +1706,20 @@ module.exports = {
             }
           }
           if (walletCount[i].coin_name != "SUSU") {
-            var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-            walletCount[i].fiat = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0);
-            var fiatValue = (get_jst_price && (get_jst_price.length > 0)) ? (get_jst_price[0].ask_price) : (0)
+            var currencyConversionData = await CurrencyConversion.findOne({
+              where: {
+                deleted_at: null,
+                coin_id: walletCount[i].coin_id
+              }
+            })
+            console.log(currencyConversionData);
+            var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+            walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+            console.log(walletCount[i]);
+            var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
+            console.log("fiatValue", fiatValue)
             usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
+            console.log("usd_price", usd_price);
           } else {
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
@@ -1720,9 +1755,16 @@ module.exports = {
           walletArray.push(referCount[i]);
           total = total + referCount[i].amount
           referCount[i].totalAmount = referCount[i].amount
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
-          referCount[i].fiat = get_jst_price[0].ask_price;
-          usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
+          var currencyConversionData = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: walletCount[i].coin_id
+            }
+          })
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+          var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+          referCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);;
+          usd_price = usd_price + ((referCount[i].amount) * fiatValue);
         }
         if (total > 0) {
           res
@@ -1785,7 +1827,7 @@ module.exports = {
       var referCount = await sails.sendNativeQuery(referQuery, [])
       referCount = referCount.rows;
 
-      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, wallets.receive_address
+      let walletQuery = `SELECT coins.coin as coin_name,wallets.balance, wallets.receive_address, coins.id as coin_id
                             FROM public.wallets
                             LEFT JOIN coins
                             ON coins.id = wallets.coin_id
@@ -1809,28 +1851,40 @@ module.exports = {
               }
             }
           }
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
-          walletCount[i].fiat = get_jst_price[0].ask_price;
-          usd_price = usd_price + ((walletCount[i].totalAmount) * get_jst_price[0].ask_price);
-        }
 
-        if (total > 0) {
-          res
-            .status(201)
-            .json({
-              "status": 201,
-              "message": sails.__("please remove your funds").message,
-              data: walletArray,
-              usd_price,
-              user
+          if (walletCount[i].coin_name != "SUSU") {
+            var currencyConversionData = await CurrencyConversion.findOne({
+              where: {
+                deleted_at: null,
+                coin_id: walletCount[i].coin_id
+              }
             })
-        } else {
-          res
-            .status(200)
-            .json({
-              "status": 200,
-              "message": sails.__("no funds left").message
-            })
+            console.log(currencyConversionData);
+            var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+            walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+            // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
+            // walletCount[i].fiat = get_jst_price[0].ask_price;
+            usd_price = usd_price + ((walletCount[i].totalAmount) * fiatVal);
+          }
+
+          if (total > 0) {
+            res
+              .status(201)
+              .json({
+                "status": 201,
+                "message": sails.__("please remove your funds").message,
+                data: walletArray,
+                usd_price,
+                user
+              })
+          } else {
+            res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("no funds left").message
+              })
+          }
         }
       } else if (referCount.length > 0) {
         for (var i = 0; i < referCount.length; i++) {
@@ -1838,9 +1892,18 @@ module.exports = {
           walletArray.push(referCount[i]);
           total = total + referCount[i].amount
           referCount[i].totalAmount = referCount[i].amount
-          var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
-          referCount[i].fiat = get_jst_price[0].ask_price;
-          usd_price = usd_price + ((referCount[i].amount) * get_jst_price[0].ask_price);
+          // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(referCount[i].coin_name + '/USD', "Buy");
+          // referCount[i].fiat = get_jst_price[0].ask_price;
+          var currencyConversionData = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: walletCount[i].coin_id
+            }
+          })
+          console.log(currencyConversionData);
+          var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+          walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+          usd_price = usd_price + ((referCount[i].amount) * fiatVal);
         }
         if (total > 0) {
           res
@@ -3562,7 +3625,8 @@ module.exports = {
         if (user_coins != undefined) {
           coins[i].send_address = user_coins.send_address;
           coins[i].receive_address = user_coins.receive_address;
-          coins[i].placed_balance = user_coins.balance
+          coins[i].placed_balance = user_coins.balance;
+          coins[i].balance = user_coins.balance;
         }
         all_data.push(coins[i]);
       }
