@@ -194,6 +194,8 @@ module.exports = {
           let user_language = (user_detail.default_language ? user_detail.default_language : 'en');
           let language_content = template.all_content[user_language].content;
           let language_subject = template.all_content[user_language].subject;
+          console.log("sails.config.urlconf.APP_URL", sails.config.urlconf.APP_URL)
+          console.log(sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token)
           let emailContent = await sails
             .helpers
             .utilities
@@ -218,7 +220,14 @@ module.exports = {
                     "status": 200,
                     "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
                       sails.__("verification code").message : sails.__("verification link").message,
-                    email_verify_token
+                    email_verify_token,
+                    "data": {
+                      recipientName: user_detail.first_name,
+                      token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
+                      tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
+                        email_verify_code : email_verify_token
+                    },
+                    "emailContent": JSON.stringify(emailContent)
                   });
                 }
               });
