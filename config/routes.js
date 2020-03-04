@@ -285,17 +285,17 @@ module.exports.routes = {
   'get /coin-currency-list-conversion': 'Coins.getCurrencyForConversion',
 
   // Socket Routes
-  'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
-  'get /socket/get-sell-book': 'SellController.getSellBookDetails',
-  'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
-  'get /socket/get-card-data': 'DashboardController.getCardData',
-  'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
-  'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
-  'get /socket/get-pair-details': 'Coins.getPairDetails',
+  // 'get /socket/get-buy-book': 'BuyController.getBuyBookDetails',
+  // 'get /socket/get-sell-book': 'SellController.getSellBookDetails',
+  // 'get /socket/get-trade-history': 'TradeController.getAllTradeHistory',
+  // 'get /socket/get-card-data': 'DashboardController.getCardData',
+  // 'get /socket/get-user-trade-data': 'TradeController.getUserTradeHistory',
+  // 'get /socket/get-depth-chart-data': 'TradeController.getDepthchartData',
+  // 'get /socket/get-pair-details': 'Coins.getPairDetails',
 
   //Get Instrument
-  'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
-  'get /socket/get-user-balance': 'TradeController.getUserWallet',
+  // 'get /socket/get-instrument-data': 'PairsController.getInstrumentPair',
+  // 'get /socket/get-user-balance': 'TradeController.getUserWallet',
   'get /stop-limit-execute': 'TradeController.stopLimitExecute',
 
   //Cancel Pending Order
@@ -309,7 +309,7 @@ module.exports.routes = {
   'get /get-ticket': 'TicketController.getAllTicketByID',
 
   //Socket route server
-  'get /enable-web-socket': 'RootController.enableWebSocket',
+  // 'get /enable-web-socket': 'RootController.enableWebSocket',
 
   // Tradding View Chart
   'get /tradingview/config': 'TradingView.getConfig',
@@ -483,7 +483,7 @@ module.exports.routes = {
   'post /admin/update-role-permission': 'AdminController.updateRolePermission',
 
   // Socket for Conversion
-  'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue',
+  // 'get /socket/get-conversionDetail': 'JSTController.getSocketJSTValue',
 
   // Metabase Routes
   'get /admin/get-account-report': 'MetabaseController.getAccountClassReport',
