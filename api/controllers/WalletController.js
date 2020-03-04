@@ -3905,5 +3905,97 @@ module.exports = {
           error_at: error.stack
         });
     }
-  }
+  },
+  /**
+  Get Wallet Coin Transaction of Admin Business Wallet
+  **/
+  getBusinessWalletCoinTransaction: async function (req, res) {
+    try {
+      var {
+        coin_code,
+        sort_col,
+        sort_order,
+        page,
+        limit,
+        data,
+        start_date,
+        end_date,
+        t_type
+      } = req.allParams();
+
+      var user_id = req.user.id;
+      user_id = 37;
+      var filter = '';
+
+      if (coin_code && coin_code != '' && coin_code != null) {
+        if (coin_code == "susu") {
+          filter += ` AND coins.coin_code = '${coin_code.toUpperCase()}'`
+        } else {
+          filter += ` AND coins.coin_code = '${coin_code}'`
+        }
+      }
+      if (data && data != '' && data != null) {
+        filter += ' AND'
+        filter += " (LOWER(transaction_table.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(transaction_table.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
+      }
+      var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
+                          (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(10,8))) as amount,
+                          transaction_table.transaction_id, transaction_table.*,
+                          transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
+                          FROM public.transaction_table LEFT JOIN coins
+                          ON transaction_table.coin_id = coins.id
+                          WHERE coins.is_active = 'true' AND transaction_table.deleted_at IS NULL
+                          AND transaction_table.user_id = ${user_id}${filter}`
+      if (t_type) {
+        walletLogs += " AND LOWER(transaction_table.transaction_type) LIKE '%" + t_type.toLowerCase() + "' "
+      }
+
+
+      if (start_date && end_date) {
+        walletLogs += " AND "
+
+        walletLogs += " transaction_table.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND transaction_table.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
+      countQuery = walletLogs;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        walletLogs += " ORDER BY transaction_table." + sort_col + " " + sortVal;
+      }
+
+      walletLogs += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      var walletValue = await sails.sendNativeQuery(walletLogs, []);
+
+      walletValue = walletValue.rows
+
+      tradeCount = await sails.sendNativeQuery(countQuery, [])
+      tradeCount = tradeCount.rows.length;
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Admin wallet history success").message,
+          walletValue,
+          tradeCount
+        })
+    } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 };

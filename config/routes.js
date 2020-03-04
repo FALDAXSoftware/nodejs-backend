@@ -34,6 +34,7 @@ module.exports.routes = {
   'get /admin/get-slug-value/:slug': 'AdminController.getEachCoinFee',
   'put /admin/update-fees-value': 'AdminController.updateCoinFee',
   'get /metabase-details': 'RootController.testMetabaseIntegrate',
+  'get /admin-business-wallet-details': 'AdminController.getAdminBusinessWalletDetails',
 
   // Webhook  routes
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
@@ -517,6 +518,7 @@ module.exports.routes = {
   "get /admin/get-hotsend-wallet-transaction": "WalletController.getHotSendWalletTransaction",
   "get /admin/get-hotreceive-wallet-data": "WalletController.getHotReceiveWalletInfo",
   "get /admin/get-hotreceive-wallet-transaction": "WalletController.getHotReceiveWalletTransaction",
+  "get /admin/get-bussiness-wallet-data": "WalletController.getBusinessWalletCoinTransaction",
   // Temp
   "get /admin/get-market-snapshot": "AdminController.getTempMarketsnapshot",
   "get /admin/get-static-page-links": "AdminController.getStaticLinks",
@@ -540,4 +542,6 @@ module.exports.routes = {
   'post /admin/send-warm-balance': 'WalletController.getAdminWarmSend',
 
   'get /users/get-user-trade-status': 'UsersController.getUserTradeStatus',
+
+  'get /users/tempupdate': 'CountriesController.tempupdate',
 };
