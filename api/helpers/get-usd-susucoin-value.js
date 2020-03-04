@@ -7,7 +7,7 @@ module.exports = {
     },
 
     fn: async function (inputs, exits) {
-        console.log(sails.config.local.SUSUCOIN_URL + "get-currency-converted-value")
+        // console.log(sails.config.local.SUSUCOIN_URL + "get-currency-converted-value")
         await request({
             url: sails.config.local.SUSUCOIN_URL + "get-currency-converted-value",
             method: "GET",
@@ -16,7 +16,7 @@ module.exports = {
                 'Content-Type': 'application/json'
             }
         }, function (err, httpResponse, body) {
-            console.log(body)
+            // console.log(body)
             if (err) {
                 return exits.error(err);
             }
