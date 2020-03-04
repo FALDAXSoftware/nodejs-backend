@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: 100.69.158.196/backend
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -26,12 +26,12 @@ configuration:
       Fixtures.identify(:sdf'
       sdf
       'sdf
-      ')  
+      ')
 
 
 ingress:
   enabled: true
-  annotations: 
+  annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:496403030999:certificate/c789b806-1990-4ff0-8e95-011a9727b80c
@@ -39,28 +39,47 @@ ingress:
     kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   path: /*
-  
+
   hosts:
-    - backend.faldax.com
+    - mainnet-backend.faldax.com
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+resources:
+  limits:
+   cpu: 200m
+   memory: 256Mi
+  requests:
+   cpu: 200m
+   memory: 256Mi
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+controller:
+  autoscaling:
+    enabled: false
+
+health:
+  enable: true
+  livenessProbe:
+    path: /health-check
+    port: 1337
+    initialDelaySeconds: 120
+    periodSeconds: 30
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    path: /health-check
+    port: 1337
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5

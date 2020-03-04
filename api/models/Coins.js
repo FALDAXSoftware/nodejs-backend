@@ -23,6 +23,11 @@ module.exports = {
       columnName: 'min_thresold',
       defaultsTo: 0
     },
+    jst_min_coin_limit: {
+      type: 'number',
+      columnName: 'jst_min_coin_limit',
+      defaultsTo: 0
+    },
     coin_code: {
       type: 'string',
       columnName: 'coin_code',
@@ -56,14 +61,24 @@ module.exports = {
       columnName: 'kraken_coin_name',
       required: true
     },
-    isERC: {
+    iserc: {
       type: 'boolean',
-      columnName: 'isERC',
+      columnName: 'iserc',
       defaultsTo: false
     },
     is_address_created_signup: {
       type: 'boolean',
       columnName: 'is_address_created_signup',
+      defaultsTo: false
+    },
+    is_simplex_supported: {
+      type: 'boolean',
+      columnName: 'is_simplex_supported',
+      defaultsTo: false
+    },
+    is_jst_supported: {
+      type: 'boolean',
+      columnName: 'is_jst_supported',
       defaultsTo: false
     },
     hot_send_wallet_address: {

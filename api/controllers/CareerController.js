@@ -5,108 +5,150 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var UploadFiles = require('../services/UploadFiles');
+var logger = require("./logger");
 
 module.exports = {
   applyJob: async function (req, res) {
-
-    let jobDetail = await Jobs.findOne({ id: req.body.job_id });
-    if (jobDetail) {
-      req
-        .file('resume')
-        .upload(async function (err, uploadedDoc) {
-          try {
-            if (uploadedDoc.length > 0) {
-              let filename = uploadedDoc[0].filename;
-              var name = filename.substring(filename.indexOf("."));
-              let timestamp = new Date()
-                .getTime()
-                .toString();
-              var uploadFileName = timestamp + name;
-              var uploadResume = await UploadFiles.upload(uploadedDoc[0].fd, 'career/' + uploadFileName);
-
-              if (uploadResume) {
-                req
-                  .file('cover_letter')
-                  .upload(async function (err, uploadedLetter) {
-                    try {
-                      var cover_letter = null;
-                      if (uploadedLetter && uploadedLetter.length > 0) {
-                        let cover_file = uploadedLetter[0].filename;
-                        var name = cover_file.substring(cover_file.indexOf("."));
-                        let timestamp = new Date()
-                          .getTime()
-                          .toString();
-                        var uploadCoverName = timestamp + name;
-                        cover_letter = await UploadFiles.upload(uploadedLetter[0].fd, 'career/' + uploadCoverName);
-                      }
-
-                      var uploadLetter = cover_letter;
-
-                      let jobDetails = await Career.create({
-                        first_name: req.body.first_name,
-                        last_name: req.body.last_name,
-                        email: req.body.email,
-                        position: req.body.position,
-                        phone_number: req.body.phone_number,
-                        website_url: req.body.website_url,
-                        linkedin_profile: req.body.linkedin_profile,
-                        resume: 'career/' + uploadFileName,
-                        job_id: jobDetail.id,
-                        cover_letter: (uploadLetter !== null
-                          ? ('career/' + uploadLetter)
-                          : null),
-                        created_at: new Date()
-                      }).fetch();
-                      if (jobDetails) {
-                        return res.json({
-                          status: 200,
-                          message: sails.__("job applied success")
-                        })
-                      } else {
-                        return res
-                          .status(500)
-                          .json({
-                            status: 500,
-                            "err": sails.__("Something Wrong")
-                          });
-                      }
-                    } catch (e) {
-                      throw e;
-                    }
-                  })
-              }
-            } else {
-              return res.json({
-                "status": 400,
-                "message": sails.__("Resume is not present.")
-              });
-            }
-          } catch (e) {
-            throw e;
-          }
-        });
-    } else {
-      return res.json({
-        "status": 400,
-        "message": sails.__("Job id is not valid.")
+    try {
+      let jobDetail = await Jobs.find({
+        id: req.body.job_id,
+        is_active: true
       });
+      if (jobDetail) {
+        var paramNames = ["resume", "cover_letter"];
+        let all_data = {};
+        var insertParams = {};
+        insertParams.first_name = req.body.first_name;
+        insertParams.last_name = req.body.last_name;
+        insertParams.email = req.body.email;
+        insertParams.position = req.body.position;
+        insertParams.phone_number = req.body.phone_number;
+        insertParams.website_url = req.body.website_url;
+        insertParams.linkedin_profile = req.body.linkedin_profile;
+        insertParams.job_id = req.body.job_id;
+        insertParams.created_at = new Date();
+        var i = 1;
+        async.map(paramNames, async function (file, cb) {
+          await req.file(file).upload(async function (err, uploadedFiles) {
+            if (uploadedFiles.length > 0) {
+              // save the file, and then:
+              // return cb(err, files);
+              if (err) {
+                return res
+                  .status(500)
+                  .json({
+                    status: 500,
+                    "err": sails.__("Something Wrong").message,
+                    error_at: err.stack
+                  });
+              }
+              let timestamp = new Date().getTime().toString();
+              let resumeFileExtension = uploadedFiles[0].filename.split(".")[uploadedFiles[0].filename.split(".").length - 1]
+              let resumeFileName = 'career/' +timestamp + "_" + file + "." + resumeFileExtension
+              let s3ResumeUpload = await UploadFiles.newUpload(uploadedFiles[0].fd, resumeFileName)
+              let coverFileName = null
+              insertParams[file] = resumeFileName;
+
+            }
+            if (i == paramNames.length) {
+              let jobDetails = await Career.create(insertParams).fetch();
+              return res.json({
+                status: 200,
+                message: sails.__("job applied success").message
+              })
+            }
+            i++;
+
+          });
+        });
+        // await req.file('resume').upload(async function (error, uploadedFiles) {
+        //   console.log("uploadedFiles",uploadedFiles);
+        //   if (error) {
+        //     return res
+        //       .status(500)
+        //       .json({
+        //         status: 500,
+        //         "err": sails.__("Something Wrong").message,
+        //         error_at:error.stack
+        //       });
+        //   }
+
+        //   let timestamp = new Date().getTime().toString();
+        //   let resumeFileExtension = uploadedFiles[0].filename.split(".")[uploadedFiles[0].filename.split(".").length - 1]
+        //   let resumeFileName = timestamp + "_resume." + resumeFileExtension
+        //   let s3ResumeUpload = await UploadFiles.newUpload(uploadedFiles[0].fd, 'career/' + resumeFileName)
+        //   let coverFileName = null
+        //   console.log("req.file('cover_letter')",req.file('cover_letter'));
+        //   await req.file('cover_letter').upload(async function (error, uploadedFile2) {
+        //     console.log("uploadedFile2",uploadedFile2);
+        //   })
+        // return res.json({
+        //   status: 200,
+        //   message: sails.__("job applied success").message
+        // })
+        // if (uploadedFiles.length > 1) {
+        //   let coverFileExtension = uploadedFiles[1].filename.split(".")[uploadedFiles[1].filename.split(".").length - 1]
+        //   coverFileName = timestamp + "_cover." + coverFileExtension
+        //   let s3CoverUpload = await UploadFiles.newUpload(uploadedFiles[1].fd, 'career/' + coverFileName)
+        // }
+        // var insertParams = {
+        //   first_name: req.body.first_name,
+        //   last_name: req.body.last_name,
+        //   email: req.body.email,
+        //   position: req.body.position,
+        //   phone_number: req.body.phone_number,
+        //   website_url: req.body.website_url,
+        //   linkedin_profile: req.body.linkedin_profile,
+        //   resume: resumeFileName,
+        //   job_id: req.body.job_id,
+        //   cover_letter: (coverFileName ? coverFileName : null),
+        //   created_at: new Date()
+        // }
+
+        // let jobDetails = await Career.create(insertParams).fetch();
+        // return res.json({
+        //   status: 200,
+        //   message: sails.__("job applied success").message
+        // })
+
+        // })
+      } else {
+        return res.json({
+          "status": 400,
+          "message": sails.__("Job id is not valid.").message
+        });
+      }
+    } catch (err) {
+      console.log("err", err);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: err.stack
+        });
     }
+
   },
 
   getAllJobs: async function (req, res) {
     let allJobCategories = await JobCategory
-      .find({ deleted_at: null })
+      .find({
+        deleted_at: null
+      })
       .populate('jobs', {
         where: {
           is_active: true,
           deleted_at: null
         }
       });
-    let careerDesc = await Statics.findOne({ slug: 'career' });
+    let careerDesc = await Statics.findOne({
+      slug: 'career'
+    });
     if (allJobCategories) {
       return res.json({
         "status": 200,
-        "message": sails.__("All jobs retrived success"),
+        "message": sails.__("All jobs retrived success").message,
         "data": allJobCategories,
         careerDesc
       });
@@ -115,24 +157,32 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: sails.__("Something Wrong").message
         });
     }
   },
 
   getAllJobCategories: async function (req, res) {
     try {
-      let { active } = req.allParams();
+      let {
+        active
+      } = req.allParams();
       if (active == 'true') {
-        var allJobCategories = await JobCategory.find({ deleted_at: null, is_active: true }).sort('id ASC');
+        var allJobCategories = await JobCategory.find({
+          deleted_at: null,
+          is_active: true
+        }).sort('id DESC');
       } else {
-        var allJobCategories = await JobCategory.find({ deleted_at: null }).sort('id ASC');
+        var allJobCategories = await JobCategory.find({
+          deleted_at: null
+        }).sort('id DESC');
       }
 
       if (allJobCategories) {
         return res.json({
           "status": 200,
-          "message": sails.__("All job categories retrived success"),
+          "message": sails.__("All job categories retrived success").message,
           "data": allJobCategories
         });
       } else {
@@ -140,22 +190,31 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   getAllJobsCMS: async function (req, res) {
     try {
-      let { page, limit, data, sortCol, sortOrder } = req.allParams();
+      let {
+        page,
+        limit,
+        data,
+        sortCol,
+        sortOrder
+      } = req.allParams();
       let query = " from jobs LEFT JOIN job_category ON jobs.category_id = job_category.id WHERE jobs.deleted_at IS NULL ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
@@ -164,12 +223,12 @@ module.exports = {
       }
       countQuery = query;
       if (sortCol && sortOrder) {
-        let sortVal = (sortOrder == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sortOrder == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sortCol + " " + sortVal;
       } else {
-        query += " ORDER BY jobs.id ASC";
+        query += " ORDER BY jobs.id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       let allJobs = await sails.sendNativeQuery("Select jobs.*, job_category.category" + query, [])
@@ -181,29 +240,35 @@ module.exports = {
       if (allJobs) {
         return res.json({
           "status": 200,
-          "message": sails.__("All jobs retrived success"),
+          "message": sails.__("All jobs retrived success").message,
           "data": allJobs,
           allJobsCount
         });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   getJobDetail: async function (req, res) {
     try {
-      let { id } = req.allParams();
-      let jobDetail = await Jobs.findOne({ id });
+      let {
+        id
+      } = req.allParams();
+      let jobDetail = await Jobs.findOne({
+        id
+      });
       if (jobDetail) {
         return res.json({
           "status": 200,
-          "message": sails.__("Job details retrived success"),
+          "message": sails.__("Job details retrived success").message,
           "data": jobDetail
         });
       } else {
@@ -211,15 +276,17 @@ module.exports = {
           .status(400)
           .json({
             status: 400,
-            "err": sails.__("Job does not exists")
+            "err": sails.__("Job does not exists").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -239,45 +306,53 @@ module.exports = {
       if (addedJob) {
         return res.json({
           "status": 200,
-          "message": sails.__("Job added success")
+          "message": sails.__("Job added success").message
         });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   editJob: async function (req, res) {
     try {
-      let job = await Jobs.findOne({ id: req.body.job_id })
+      let job = await Jobs.findOne({
+        id: req.body.job_id
+      })
       if (job) {
         let updatedJob = await Jobs
-          .update({ id: req.body.job_id })
+          .update({
+            id: req.body.job_id
+          })
           .set(req.body)
           .fetch();
         if (updatedJob) {
           return res.json({
             "status": 200,
-            "message": sails.__("Job updated success")
+            "message": sails.__("Job updated success").message
           });
         } else {
           return res
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at: sails.__("Something Wrong").message
             });
         }
       } else {
@@ -285,53 +360,65 @@ module.exports = {
           .status(400)
           .json({
             status: 400,
-            "err": sails.__("Job not found")
+            "err": sails.__("Job not found").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(err.message)
       return res
         .status(400)
         .json({
           status: 400,
-          "err": sails.__("Job not found")
+          "err": sails.__("Job not found").message,
+          error_at: error.stack
         });
     }
   },
 
   deleteJob: async function (req, res) {
     try {
-      let { job_id } = req.allParams();
+      let {
+        job_id
+      } = req.allParams();
       if (!job_id) {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("Job id is not sent")
+            "err": sails.__("Job id is not sent").message,
+            error_at: sails.__("Job id is not sent").message
           });
       }
       let deletedJob = await Jobs
-        .update({ id: job_id })
-        .set({ deleted_at: new Date() })
+        .update({
+          id: job_id
+        })
+        .set({
+          deleted_at: new Date()
+        })
         .fetch();
       if (deletedJob) {
         return res.json({
           "status": 200,
-          "message": sails.__("Job removed success")
+          "message": sails.__("Job removed success").message
         });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -354,9 +441,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -367,17 +454,19 @@ module.exports = {
       if (applications) {
         return res.json({
           "status": 200,
-          "message": sails.__("All jobs retrived success"),
+          "message": sails.__("All jobs retrived success").message,
           "data": applications,
           applicationCount
         });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -386,6 +475,18 @@ module.exports = {
     try {
 
       if (req.body) {
+        let existingCategory = await JobCategory.findOne({
+          category: req.body.category,
+          is_active: true
+        });
+        if (existingCategory) {
+          return res.json({
+            "status": 500,
+            "err": sails.__("Job Category Exists").message,
+            error_at: sails.__("Job Category Exists").message
+          });
+        }
+
         req.body.is_active = true;
         var addCategoryData = await JobCategory
           .create(req.body)
@@ -394,7 +495,7 @@ module.exports = {
         if (addCategoryData) {
           return res.json({
             "status": 200,
-            "message": sails.__("Job Category added success"),
+            "message": sails.__("Job Category added success").message,
             "data": addCategoryData
           });
         } else {
@@ -402,7 +503,8 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Something Wrong")
+              "err": sails.__("Something Wrong").message,
+              error_at: sails.__("Something Wrong").message
             });
         }
       } else {
@@ -410,32 +512,44 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   updateJobCategory: async function (req, res) {
     try {
-      var { id, is_active, category } = req.body;
+      var {
+        id,
+        is_active,
+        category
+      } = req.body;
 
       var updatedJobData = await JobCategory
-        .update({ id })
-        .set({ is_active, category })
+        .update({
+          id
+        })
+        .set({
+          is_active,
+          category
+        })
         .fetch();
 
       if (updatedJobData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Job Category updated success"),
+          "message": sails.__("Job Category updated success").message,
           "data": updatedJobData
         });
       } else {
@@ -443,15 +557,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   }

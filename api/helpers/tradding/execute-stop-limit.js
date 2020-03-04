@@ -16,6 +16,8 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     var now = moment();
+
+    // Fetching pending order details from pending book
     var pendingDetails = await sails
       .helpers
       .tradding
@@ -63,12 +65,16 @@ module.exports = {
 
       if (pendingDetails.length > 0) {
         if (order_type == "StopLimit" && side == "Buy") {
+
+          // Execution stop limit buy order
           var pendingBuy = await sails
             .helpers
             .tradding
             .stop
             .stopLimitBuy(now, pending_order_book);
         } else if (order_type == "StopLimit" && side == "Sell") {
+
+          // Executinh the stop limit order
           var pendingSell = await sails
             .helpers
             .tradding

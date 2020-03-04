@@ -11,11 +11,11 @@
 module.exports.policies = {
 
   /***************************************************************************
-  *                                                                          *
-  * Default policy for all controllers and actions, unless overridden.       *
-  * (`true` allows public access)                                            *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Default policy for all controllers and actions, unless overridden.       *
+   * (`true` allows public access)                                            *
+   *                                                                          *
+   ***************************************************************************/
 
   // '*': true,
   '*': [
@@ -25,7 +25,9 @@ module.exports.policies = {
     'create': 'checkReCaptcha',
     'getCountries': true,
     'getCountriesData': true,
-    'verifyNewEmail': true
+    'verifyNewEmail': true,
+    // "getReferredData": true,
+    // "getReferralList": true
     // 'updateSendCoinFee': true, 'updateUserDetails': true We dont need
     // authorization here, allowing public access,
   },
@@ -34,6 +36,10 @@ module.exports.policies = {
     "login": true,
     "forgotPassword": true,
     "resetPassword": true, // We dont need authorization here, allowing public access,
+    "getAdminWalletDetails": true,
+    "getTempMarketsnapshot": true
+    // "getCoinFees": true/
+    // "getBatchDetails": true
   },
   'CountriesController': {
     '*': true
@@ -61,21 +67,32 @@ module.exports.policies = {
   'RootController': {
     'getContactInfo': true,
     "webhookOnReciveBitgo": true,
-    "queryTest": true,
     "sendOpenTicketForm": true,
     "enableWebSocket": true,
     "createAllWallet": true,
     "sendSubscriberForm": true,
     "sendListTokenForm": true,
+    "sendTokenComingSoonForm": true,
     "callKrakenAPI": true,
     "bitgoTest": true,
-    "testemail": true
+    "testemail": true,
+    "queryTest": true,
+    "createWallet": true,
+    "queryTestThresold": true,
+    "getEncryptKey": true,
+    "testPanicStatus": true,
+    "testMetabaseIntegrate": true,
+    "checkSystemHealth": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
-  // 'WalletController':{
-  //   "getCoinBalanceForWallet":true
-  // },
+  'WalletController': {
+    "addWalletBalance": true,
+    "updateWalletBalance": true,
+    "getMonthlyDailyValue": true,
+    // "getNetworkFeeData": true
+    // "checkWalletBalance": true
+  },
   'CareerController': {
     "applyJob": "checkReCaptcha",
     "*": true,
@@ -92,7 +109,8 @@ module.exports.policies = {
   },
   "CoinsController": {
     "createWallet": true,
-    "createAllWallet": true
+    "createAllWallet": true,
+    "getWarmWalletBalance": true
   },
   "TradeController": {
     "stopLimitExecute": true
@@ -120,9 +138,37 @@ module.exports.policies = {
     "getWithdrawlFunds": true,
     "getRecentWithdrawlStatus": true,
     "withdrwalCancellationStatus": true,
-    "queryTradeInformation": true
+    "queryTradeInformation": true,
+    "testLogs": true
   },
   "WebhookController": {
     "*": true
+  },
+  "ThresoldController": {
+    "addThresoldValue": true
+  },
+  // "NotificationsController": {
+  //   "getNotificationList": true
+  // }
+  "TierController": {
+    "updateTierList": true,
+    // "updateUserTierRequest": true,
+    // "getUserTierRequest": true
+    // "upgradeUserTier": true
+    // "getTierData": true
+  },
+  "SimplexController": {
+    // "getUserQouteDetails": true,
+    // "getPartnerData": true,
+    "checkPaymentStatus": true,
+    "deleteEvent": true,
+    "getSimplexList": true,
+    "getQouteDetails": true,
+    "deleteAllEvents": true
+    // "getSimplexCoinList": true
+  },
+  "JSTController": {
+    "getJSTPriceValueAuth": true,
+    "getPairList": true
   }
 };

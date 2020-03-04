@@ -70,7 +70,10 @@ module.exports = {
     try {
       var userIds = [];
       userIds.push(inputs.user_id);
-      let {crypto, currency} = await sails
+      let {
+        crypto,
+        currency
+      } = await sails
         .helpers
         .utilities
         .getCurrencies(inputs.symbol);
@@ -95,6 +98,10 @@ module.exports = {
         .getMakerTakerFees(crypto, currency);
       var now = new Date();
 
+      var priceValue = (inputs.orderQuantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+
+      var limitPriceValue = (inputs.limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+
       var sellLimitOrderData = {
         'user_id': inputs.user_id,
         'symbol': inputs.symbol,
@@ -103,11 +110,11 @@ module.exports = {
         'created': now,
         'updated': now,
         'fill_price': 0.0,
-        'limit_price': inputs.limit_price,
+        'limit_price': limitPriceValue,
         'stop_price': 0.0,
-        'price': inputs.limit_price,
-        'quantity': inputs.orderQuantity,
-        'fix_quantity': inputs.orderQuantity,
+        'price': limitPriceValue,
+        'quantity': priceValue,
+        'fix_quantity': priceValue,
         'order_status': "open",
         'currency': currency,
         'settle_currency': crypto,
@@ -118,7 +125,7 @@ module.exports = {
         ...sellLimitOrderData
       }
       resultData.isMarket = false;
-      resultData.fix_quantity = inputs.orderQuantity;
+      resultData.fix_quantity = priceValue;
       resultData.maker_fee = fees.makerFee;
       resultData.taker_fee = fees.takerFee;
 
@@ -130,7 +137,7 @@ module.exports = {
 
       if (buyBook && buyBook.length > 0) {
         var currentPrice = buyBook[0].price;
-        if (inputs.limit_price <= currentPrice) {
+        if (limitPriceValue <= currentPrice) {
           var limitMatchData = await sails
             .helpers
             .tradding
@@ -161,6 +168,33 @@ module.exports = {
               .tradding
               .sell
               .addSellOrder(sellLimitOrderData);
+
+            for (var i = 0; i < userIds.length; i++) {
+              // Notification Sending for users
+              var userNotification = await UserNotification.findOne({
+                user_id: userIds[i],
+                deleted_at: null,
+                slug: 'trade_execute'
+              })
+              var user_data = await Users.findOne({
+                deleted_at: null,
+                id: userIds[i],
+                is_active: true
+              });
+              if (user_data != undefined) {
+                if (userNotification != undefined) {
+                  if (userNotification.email == true || userNotification.email == "true") {
+                    if (user_data.email != undefined)
+                      await sails.helpers.notification.send.email("order_added", user_data)
+                  }
+                  if (userNotification.text == true || userNotification.text == "true") {
+                    if (user_data.phone_number != undefined)
+                      await sails.helpers.notification.send.text("order_added", user_data)
+                  }
+                }
+              }
+            }
+
             //Add Socket Here Emit
             await sails
               .helpers
@@ -184,6 +218,33 @@ module.exports = {
             .tradding
             .sell
             .addSellOrder(sellLimitOrderData);
+
+          for (var i = 0; i < userIds.length; i++) {
+            // Notification Sending for users
+            var userNotification = await UserNotification.findOne({
+              user_id: userIds[i],
+              deleted_at: null,
+              slug: 'trade_execute'
+            })
+            var user_data = await Users.findOne({
+              deleted_at: null,
+              id: userIds[i],
+              is_active: true
+            });
+            if (user_data != undefined) {
+              if (userNotification != undefined) {
+                if (userNotification.email == true || userNotification.email == "true") {
+                  if (user_data.email != undefined)
+                    await sails.helpers.notification.send.email("order_added", user_data)
+                }
+                if (userNotification.text == true || userNotification.text == "true") {
+                  if (user_data.phone_number != undefined)
+                    await sails.helpers.notification.send.text("order_added", user_data)
+                }
+              }
+            }
+          }
+
           //Add Socket Here Emit
           await sails
             .helpers

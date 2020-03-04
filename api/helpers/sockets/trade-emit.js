@@ -40,6 +40,7 @@ module.exports = {
     sails
       .sockets
       .broadcast(inputs.crypto + "-" + inputs.currency, "buybookUpdate", buyBookDetails);
+
     let sellBookDetails = await sails
       .helpers
       .tradding
@@ -87,6 +88,7 @@ module.exports = {
       });
     // Broadcast balance update for all user
     for (let index = 0; index < filteredUsers.length; index++) {
+      console.log(filteredUsers)
       const element = filteredUsers[index];
       let userBalanceDetails = await sails
         .helpers

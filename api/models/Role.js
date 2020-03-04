@@ -24,6 +24,11 @@ module.exports = {
       defaultsTo: false,
       columnName: 'users',
     },
+    tiers: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'tiers',
+    },
     countries: {
       type: "boolean",
       defaultsTo: false,
@@ -94,6 +99,11 @@ module.exports = {
       columnName: 'news',
       defaultsTo: false,
     },
+    network_fee: {
+      type: "boolean",
+      columnName: 'network_fee',
+      defaultsTo: false,
+    },
     add_user: {
       type: "boolean",
       columnName: 'add_user',
@@ -118,6 +128,36 @@ module.exports = {
       type: "boolean",
       columnName: 'news_source',
       defaultsTo: false,
+    },
+    two_factor_requests: {
+      type: "boolean",
+      columnName: 'two_factor_requests',
+      defaultsTo: false,
+    },
+    notifications: {
+      type: "boolean",
+      columnName: 'notifications',
+      defaultsTo: false,
+    },
+    wallet_dashboard: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'wallet_dashboard',
+    },
+    batch_and_balance: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'batch_and_balance',
+    },
+    simplex_token: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'simplex_token',
+    },
+    offers: {
+      type: "boolean",
+      defaultsTo: false,
+      columnName: 'offers',
     },
     is_active: {
       type: 'boolean',
@@ -153,4 +193,3 @@ module.exports = {
     next();
   },
 };
-

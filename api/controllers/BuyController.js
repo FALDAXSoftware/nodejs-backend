@@ -5,16 +5,18 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+var logger = require("./logger");
+
 module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * API for getting buy book details
-    * Renders this api when buy book details need to be fetched
-    *
-    * @param <room, previous room>
-    *
-    * @return <Buy book details or error data>
+   * API for getting buy book details
+   * Renders this api when buy book details need to be fetched
+   *
+   * @param <room, previous room>
+   *
+   * @return <Buy book details or error data>
    */
 
   getBuyBookDetails: async function (req, res) {
@@ -31,7 +33,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
@@ -42,10 +44,13 @@ module.exports = {
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -54,11 +59,18 @@ module.exports = {
                         .tradding
                         .buy
                         .getBuyBookOrders(crypto, currency);
+
+                      // for (var i = 0; i < buyBookDetails.length; i++) {
+                      //   buyBookDetails[i].price = (buyBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   buyBookDetails[i].limit_price = (buyBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   buyBookDetails[i].quantity = (buyBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                      // }
+
                       if (buyBookDetails) {
                         return res.json({
                           status: 200,
                           data: buyBookDetails,
-                          "message": sails.__("Buy data retrived success")
+                          "message": sails.__("Buy data retrived success").message
                         });
                       }
                     }
@@ -74,10 +86,13 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -87,11 +102,17 @@ module.exports = {
                   .buy
                   .getBuyBookOrders(crypto, currency);
 
+                // for (var i = 0; i < buyBookDetails.length; i++) {
+                //   buyBookDetails[i].price = (buyBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   buyBookDetails[i].limit_price = (buyBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   buyBookDetails[i].quantity = (buyBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                // }
+
                 if (buyBookDetails) {
                   return res.json({
                     status: 200,
                     data: buyBookDetails,
-                    "message": sails.__("Buy data retrived success")
+                    "message": sails.__("Buy data retrived success").message
                   });
                 }
               }
@@ -102,13 +123,18 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
-        .json({ "status": 500, "err": err });
+        .json({
+          "status": 500,
+          "err": error,
+          error_at:error.stack
+        });
     }
   },
 
@@ -149,9 +175,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -168,17 +194,19 @@ module.exports = {
       if (buyBookData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Buy Order list"),
+          "message": sails.__("Buy Order list").message,
           "data": buyBookData,
           buyBookCount
         });
       }
-    } catch (err) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

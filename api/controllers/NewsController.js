@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger");
 module.exports = {
   // Get All News Pagination
   getAllNews: async function (req, res) {
@@ -45,15 +45,15 @@ module.exports = {
         query += " posted_at >= '" + await sails
           .helpers
           .dateFormat(start_date) + " 00:00:00' AND posted_at <= '" + await sails
-            .helpers
-            .dateFormat(end_date) + " 23:59:59'";
+          .helpers
+          .dateFormat(end_date) + " 23:59:59'";
       }
 
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -68,37 +68,48 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("News retrived success"),
+        "message": sails.__("News retrived success").message,
         "data": news,
         newsCount
       });
     } catch (error) {
-      console.log('error', error)
+      // console.log('error', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
   // Change News Status
   changeNewsStatus: async function (req, res) {
     try {
-      let { id, is_active } = req.body;
+      let {
+        id,
+        is_active
+      } = req.body;
       await News
-        .update({ id: id })
-        .set({ is_active });
+        .update({
+          id: id
+        })
+        .set({
+          is_active
+        });
       return res.json({
         "status": 200,
-        "message": sails.__("News Status Update success")
+        "message": sails.__("News Status Update success").message
       });
     } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   },
@@ -106,26 +117,32 @@ module.exports = {
   // get news details
   getNewsDetails: async function (req, res) {
     try {
-      let { news_id } = req.allParams();
-      let newsDetails = await News.findOne({ id: news_id });
+      let {
+        news_id
+      } = req.allParams();
+      let newsDetails = await News.findOne({
+        id: news_id
+      });
       if (newsDetails) {
         return res.json({
           "status": 200,
-          "message": sails.__("News Status Update success"),
+          "message": sails.__("News retrived success").message,
           data: newsDetails
         });
       } else {
         return res.json({
           "status": 400,
-          "message": sails.__("No news found")
+          "message": sails.__("No news found").message
         });
       }
     } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

@@ -112,5 +112,13 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     }
+  },
+  beforeCreate: (values, next) => {
+    values.created_at = new Date();
+    next();
+  },
+  beforeUpdate: (values, next) => {
+    values.updated_at = new Date();
+    next();
   }
 };

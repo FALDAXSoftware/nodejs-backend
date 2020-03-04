@@ -19,7 +19,7 @@ module.exports = {
     if (allTradingFees) {
       return res.json({
         "status": 200,
-        "message": sails.__("All fees retrived success"),
+        "message": sails.__("All fees retrived success").message,
         "data": allTradingFees,
         feesCount
       });
@@ -28,29 +28,39 @@ module.exports = {
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:sails.__("Something Wrong").message
         });
     }
   },
 
   editFees: async function (req, res) {
-    let fees = await Fees.findOne({ id: req.body.fee_id, deleted_at: null })
+    let fees = await Fees.findOne({
+      id: req.body.fee_id,
+      deleted_at: null
+    })
     if (fees) {
       let updatedFee = await Fees
-        .update({ id: req.body.fee_id })
-        .set({ taker_fee: req.body.taker_fee, maker_fee: req.body.maker_fee })
+        .update({
+          id: req.body.fee_id
+        })
+        .set({
+          taker_fee: req.body.taker_fee,
+          maker_fee: req.body.maker_fee
+        })
         .fetch();
       if (updatedFee) {
         return res.json({
           "status": 200,
-          "message": sails.__("Fees updated success")
+          "message": sails.__("Fees updated success").message
         });
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at:sails.__("Something Wrong").message
           });
       }
     } else {
@@ -58,7 +68,7 @@ module.exports = {
         .status(400)
         .json({
           status: 400,
-          "err": sails.__("No Data")
+          "err": sails.__("No record found").message
         });
     }
   }

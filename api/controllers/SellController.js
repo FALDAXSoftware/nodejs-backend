@@ -4,17 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger")
 module.exports = {
   //---------------------------Web Api------------------------------
 
   /**
-    * API for getting sell book details
-    * Renders this api when sell book details need to be fetched
-    *
-    * @param <socket, room>
-    *
-    * @return <Sell book value or error>
+   * API for getting sell book details
+   * Renders this api when sell book details need to be fetched
+   *
+   * @param <socket, room>
+   *
+   * @return <Sell book value or error>
    */
 
   getSellBookDetails: async function (req, res) {
@@ -31,7 +31,7 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
                 sails
@@ -42,10 +42,13 @@ module.exports = {
                         .status(403)
                         .json({
                           status: 403,
-                          "message": sails.__("error")
+                          "message": sails.__("error").message
                         });
                     } else {
-                      let { crypto, currency } = await sails
+                      let {
+                        crypto,
+                        currency
+                      } = await sails
                         .helpers
                         .utilities
                         .getCurrencies(room);
@@ -55,11 +58,17 @@ module.exports = {
                         .sell
                         .getSellBookOrders(crypto, currency);
 
+                      // for (var i = 0; i < sellBookDetails.length; i++) {
+                      //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                      //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                      // }
+
                       if (sellBookDetails) {
                         return res.json({
                           status: 200,
                           data: sellBookDetails,
-                          "message": sails.__("Sell data retrived success")
+                          "message": sails.__("Sell data retrived success").message
                         });
                       }
                     }
@@ -75,10 +84,13 @@ module.exports = {
                   .status(403)
                   .json({
                     status: 403,
-                    "message": sails.__("error")
+                    "message": sails.__("error").message
                   });
               } else {
-                let { crypto, currency } = await sails
+                let {
+                  crypto,
+                  currency
+                } = await sails
                   .helpers
                   .utilities
                   .getCurrencies(room);
@@ -88,11 +100,17 @@ module.exports = {
                   .sell
                   .getSellBookOrders(crypto, currency);
 
+                // for (var i = 0; i < sellBookDetails.length; i++) {
+                //   sellBookDetails[i].price = (sellBookDetails[i].price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].limit_price = (sellBookDetails[i].limit_price).toFixed(sails.config.local.PRICE_PRECISION);
+                //   sellBookDetails[i].quantity = (sellBookDetails[i].quantity).toFixed(sails.config.local.QUANTITY_PRECISION);
+                // }
+
                 if (sellBookDetails) {
                   return res.json({
                     status: 200,
                     data: sellBookDetails,
-                    "message": sails.__("Sell data retrived success")
+                    "message": sails.__("Sell data retrived success").message
                   });
                 }
               }
@@ -103,11 +121,19 @@ module.exports = {
           .status(403)
           .json({
             status: 403,
-            "message": sails.__("error")
+            "message": sails.__("error").message
           });
       }
-    } catch (err) {
-      console.log('>>>', err)
+    } catch (error) {
+      // console.log('>>>', error)
+      // await logger.error(error.message)
+      return res
+          .status(500)
+          .json({
+            status: 500,
+            "message": sails.__("error").message,
+            error_at:error.stack
+          });
     }
   },
 
@@ -115,10 +141,13 @@ module.exports = {
     try {
       sails
         .sockets
-        .broadcast('test', { 'message': 'test' });
+        .broadcast('test', {
+          'message': 'test'
+        });
 
     } catch (err) {
       console.log('>getData>>', err)
+      await logger.error(err.message)
     }
   },
 
@@ -159,9 +188,9 @@ module.exports = {
       }
       countQuery = query;
       if (sort_col && sort_order) {
-        let sortVal = (sort_order == 'descend'
-          ? 'DESC'
-          : 'ASC');
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
         query += " ORDER BY id DESC";
@@ -178,18 +207,20 @@ module.exports = {
       if (sellBookData) {
         return res.json({
           "status": 200,
-          "message": sails.__("Sell Order list"),
+          "message": sails.__("Sell Order list").message,
           "data": sellBookData,
           sellBookCount
         });
       }
-    } catch (err) {
-      console.log('>err>>', err)
+    } catch (error) {
+      // console.log('>err>>', error)
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
         });
     }
   }

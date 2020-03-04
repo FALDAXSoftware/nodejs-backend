@@ -5,75 +5,126 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const BitGoJS = require('bitgo');
+const speakeasy = require('speakeasy');
+var aesjs = require('aes-js');
+var logger = require("./logger");
 
 module.exports = {
   getPanicStatus: async function (req, res) {
     try {
-      let status = await AdminSetting.findOne({
+      let panicStatus = await AdminSetting.findOne({
         slug: "panic_status"
       });
       return res.json({
         status: 200,
-        message: sails.__("Panic Status"),
-        status
+        message: sails.__("Panic Status").message,
+        panicStatus
       });
     } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
 
   panicBtn: async function (req, res) {
     try {
-      // let btnCall = await sails
-      //   .helpers
-      //   .panicButton();
-
-      // if (btnCall.length > 0) {
-      //   btnCall.forEach(async (element) => {
-      //     let userDetails = await Users.find({ id: element });
-      //     let slug = "panic_email"
-      //     let template = await EmailTemplate.findOne({ slug });
-      //     let emailContent = await sails.helpers.utilities.formatEmail(template.content, {
-      //       recipientName: userDetails[0].first_name,
-      //     })
-      //     sails
-      //       .hooks
-      //       .email.send("general-email", {
-      //         content: emailContent
-      //       }, {
-      //           to: "krina.soni@openxcellinc.com",
-      //           subject: "Panic Button"
-      //         }, function (err) {
-      //           if (!err) {
-      //             return res.json({
-      //               "status": 200,
-      //               "message": sails.__("Email sent success")
-      //             });
-      //           }
-      //         })
-      //   });
-      // }
-
-      let { otp, status } = req.allParams();
+      let {
+        otp,
+        status
+      } = req.allParams();
       let user_id = req.user.id;
-      let user = await Admin.findOne({ id: user_id, is_active: true, deleted_at: null });
+      let user = await Admin.findOne({
+        id: user_id,
+        is_active: true,
+        deleted_at: null
+      });
+
       if (!user) {
         return res
           .status(401)
           .json({
             "status": 401,
-            "err": sails.__("user inactive")
+            "err": sails.__("user inactive").message
           });
       }
+
       let verified = speakeasy
         .totp
-        .verify({ secret: user.twofactor_secret, encoding: "base32", token: otp });
+        .verify({
+          secret: user.twofactor_secret,
+          encoding: "base32",
+          token: otp
+        });
       if (verified) {
+        var emailData = await Users.find({
+          select: [
+            'email'
+          ],
+          where: {
+            deleted_at: null,
+            is_active: true,
+            is_verified: true
+          }
+        });
+
+        // var usersEmail = ((emailData.email).join(','));
+        var all_user_emails = [];
+        emailData.map(function (each) {
+          all_user_emails.push(each.email);
+          return each;
+        });
+        var splitted_users = all_user_emails.join(",");
+        var value = Object.values(all_user_emails)
+
+        let slug = "";
+        if (status == "true" || status == true) {
+          slug = "panic_status_enabled"
+        } else {
+          slug = "panic_status_disabled"
+        }
+        let template = await EmailTemplate.findOne({
+          slug
+        });
+        let user_language = (user.default_language ? user.default_language : 'en');
+        let language_content = template.all_content[user_language].content;
+        let language_subject = template.all_content[user_language].subject;
+        // console.log("all_user_emails", all_user_emails.length)
+        if (all_user_emails.length > 0) {
+          for (var i = 0; i < all_user_emails.length; i++) {
+            // console.log(all_user_emails[i])
+            if (all_user_emails[i] && all_user_emails[i] != undefined) {
+              let emailContent = await sails
+                .helpers
+                .utilities
+                .formatEmail(language_content, {
+                  recipientName: ''
+                })
+              // console.log("emailContent", emailContent)
+              if (template) {
+                // console.log(template)
+                sails
+                  .hooks
+                  .email
+                  .send("general-email", {
+                    content: emailContent
+                  }, {
+                    to: all_user_emails[i],
+                    // to: value,
+                    subject: language_subject
+                  }, function (err) {
+                    console.log("err", err);
+                  });
+              }
+            }
+          }
+        }
+        // if (verified) {
         await AdminSetting.update({
           slug: "panic_status"
         }).set({
@@ -82,22 +133,26 @@ module.exports = {
         return res
           .json({
             "status": 200,
-            "message": "Panic status changed successfully."
+            "message": sails.__("Panic status changed successfully").message
           });
       } else {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": "OTP is wrong!!"
+            "err": sails.__("invalid otp").message,
+            error_at: sails.__("invalid otp").message
           });
       }
     } catch (error) {
+      // console.log(error);
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -105,8 +160,11 @@ module.exports = {
   callKrakenAPI: async function (req, res) {
     var data = await sails
       .helpers
-      .krakenApi('1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX');
-    return res.json({ status: 200, "data": data });
+      .krakenApi();
+    return res.json({
+      status: 200,
+      "data": data
+    });
   },
 
   sendOpenTicketForm: async function (req, res) {
@@ -121,15 +179,32 @@ module.exports = {
     return res.view('pages/listYourToken');
   },
 
+  sendTokenComingSoonForm: async function (req, res) {
+    return res.view('pages/tokenComingSoon');
+  },
+
   getContactInfo: async function (req, res) {
-    let adminSettingDetails = await AdminSetting.find();
+    let adminSettingDetails = await AdminSetting.find({
+      where: {
+        deleted_at: null,
+        or: [{
+          slug: 'fb_profile'
+        }, {
+          slug: 'linkedin_profile'
+        },
+        {
+          slug: 'twitter_profile'
+        }
+        ]
+      }
+    });
     let contacts = {};
     adminSettingDetails.forEach(element => {
       contacts[element.slug] = element.value;
     });
     return res.json({
       status: 200,
-      message: sails.__("contact details retrived success"),
+      message: sails.__("contact details retrived success").message,
       data: contacts
     })
   },
@@ -141,38 +216,51 @@ module.exports = {
         .keys(req.body)
         .forEach(async function eachKey(key) {
           contactDetails = await AdminSetting
-            .update({ slug: key })
-            .set({ value: req.body[key] })
+            .update({
+              slug: key
+            })
+            .set({
+              value: req.body[key]
+            })
             .fetch();
         });
       if (contactDetails) {
         return res.json({
           status: 200,
-          message: sails.__("Contact details updated success")
+          message: sails.__("Contact details updated success").message
         })
       } else {
         return res
           .status(500)
           .json({
             status: 500,
-            "err": sails.__("Something Wrong")
+            "err": sails.__("Something Wrong").message,
+            error_at: sails.__("Something Wrong").message
           });
       }
     } catch (error) {
       console.log('index', error)
+      await logger.error(error.message)
     }
   },
 
   webhookOnReciveBitgo: async function (req, res) {
     if (req.body.state == "confirmed") {
-      var bitgo = new BitGoJS.BitGo({ env: sails.config.local.BITGO_ENV_MODE, accessToken: sails.config.local.BITGO_ACCESS_TOKEN });
+      var bitgo = new BitGoJS.BitGo({
+        env: sails.config.local.BITGO_ENV_MODE,
+        accessToken: sails.config.local.BITGO_ACCESS_TOKEN
+      });
       var wallet = await bitgo
         .coin(req.body.coin)
         .wallets()
-        .get({ id: req.body.wallet });
+        .get({
+          id: req.body.wallet
+        });
       let transferId = req.body.transfer;
       wallet
-        .getTransfer({ id: transferId })
+        .getTransfer({
+          id: transferId
+        })
         .then(async function (transfer) {
           if (transfer.state == "confirmed") {
             // Object Of receiver
@@ -180,7 +268,11 @@ module.exports = {
             // Object of sender
             let source = transfer.outputs[1];
             // receiver wallet
-            let userWallet = await Wallet.findOne({ receive_address: dest.address, deleted_at: null, is_active: true });
+            let userWallet = await Wallet.findOne({
+              receive_address: dest.address,
+              deleted_at: null,
+              is_active: true
+            });
             // transaction amount
             let amount = (dest.value / 100000000);
             // user wallet exitence check
@@ -201,7 +293,9 @@ module.exports = {
               });
               // update wallet balance
               await Wallet
-                .update({ id: userWallet.id })
+                .update({
+                  id: userWallet.id
+                })
                 .set({
                   balance: userWallet.balance + amount,
                   placed_balance: userWallet.placed_balance + amount
@@ -214,21 +308,32 @@ module.exports = {
   },
 
   queryTest: async function (req, res) {
-    // var bitcoinistNews = await sails
-    //   .helpers
-    //   .bitcoinistNewsUpdate();
-    // var bitcoinNews = await sails
-    //   .helpers
-    //   .bitcoinNews();
-    // var ccnPodcast = await sails
-    //   .helpers
-    //   .ccnPodcast();
-    // var coinTelegraph = await sails
-    //   .helpers
-    //   .coinTelegraph();
-    let formatedEmail = await sails.helpers.utilities.formatEmail("{{test1}} Lorem ipsum dolor sit amet, consectetur {{test2}} adipiscing elit. Vestibulum nec mauris eu velit ultricies tristique non vel metus. ", { test1: "qwertyuiop", test2: "asdfghjkl" });
-    res.json({
-      formatedEmail
+    // let user_id = 1347;
+    // let slug = 'kyc'
+    let data = await sails.helpers.notification.checkAdminWalletNotification();
+    return res.json({
+      success: true
+    });
+  },
+
+  getEncryptKey: async function (req, res) {
+    var key = sails.config.local.key;
+    var iv = sails.config.local.iv;
+    console.log(key);
+    console.log(iv)
+    var value = req.body.encryptKey;
+    console.log(value);
+    // var encryptData = await sails.helpers.getEncryptData(value);
+    // console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData("47c69b1635c867f3a032434f2b2e");
+    console.log("decryptData", decryptData)
+    return res.json(200);
+  },
+
+  queryTestThresold: async function (req, res) {
+    let data = await sails.helpers.notification.checkTheresoldNotification();
+    return res.json({
+      success: true
     });
   },
 
@@ -236,9 +341,18 @@ module.exports = {
     try {
       return res
         .status(101)
-        .json({ status: 101 });
-    } catch (err) {
-      console.log("error :: ", err);
+        .json({
+          status: 101
+        });
+    } catch (error) {
+      // console.log("error :: ", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          err: sails.__("Something Wrong").message,
+          error_at: error.stack
+        })
     }
   },
 
@@ -249,6 +363,21 @@ module.exports = {
       .createAll();
     return res.end();
   },
+
+  createWallet: async function (req, res) {
+
+    var {
+      coin_code,
+      wallet_type
+    } = req.allParams();
+
+    await sails
+      .helpers
+      .wallet
+      .create(coin_code, wallet_type);
+    return res.end();
+  },
+
 
   bitgoTest: async function (req, res) {
     await sails.helpers.bitgo.getWallet("tbtc", "5ce2deb441a6330d04e59f9b799a182a");
@@ -269,20 +398,78 @@ module.exports = {
     // console.log(transfer);
 
   },
-  testemail: function (req, res) {
-    sails
-      .hooks
-      .email.send("testemail", {
-      }, {
-          to: "ankit.morker@openxcellinc.com",
-          subject: "test email"
-        }, function (err) {
-          if (!err) {
-            return res.json({
-              "status": 200,
-              "message": "dkhsd"
-            });
-          }
-        });
+  // testemail: function (req, res) {
+  //   sails
+  //     .hooks
+  //     .email.send("testemail", {}, {
+  //       to: "ankit.morker@openxcellinc.com",
+  //       subject: "test email"
+  //     }, function (err) {
+  //       if (!err) {
+  //         return res.json({
+  //           "status": 200,
+  //           "message": "dkhsd"
+  //         });
+  //       }
+  //     });
+  // },
+
+  testMetabaseIntegrate: async function (req, res) {
+    var frameURL = await sails.helpers.metabaseSetup();
+    return res.json({
+      "status": 200,
+      "data": frameURL
+    })
+  },
+
+  testPanicStatus: async function (req, res) {
+    try {
+      var panicStatus = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'panic_status'
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("panic button status").message,
+          "data": panicStatus.value
+        })
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+
+  checkSystemHealth: async function (req, res) {
+    try {
+      var system_health = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: 'system_health'
+        }
+      })
+
+      if (system_health && system_health.value == "ok_from_db") {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("system_health_ok").message,
+        })
+      }
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok").message,
+        error_at: sails.__("system_health_not_ok").message
+      })
+    } catch (error) {
+      return res.status(500).json({
+        "status": 500,
+        "message": sails.__("system_health_not_ok").message,
+        error_at: error.stack
+      })
+    }
   }
 };

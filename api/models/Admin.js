@@ -60,6 +60,11 @@ module.exports = {
       columnName: 'reset_token',
       allowNull: true
     },
+    whitelist_ip: {
+      type: 'string',
+      columnName: 'whitelist_ip',
+      allowNull: true
+    },
     created_at: {
       type: 'ref',
       columnType: 'datetime',
@@ -88,11 +93,15 @@ module.exports = {
     role_id: {
       columnName: 'role_id',
       model: 'role'
-    }
+    },
+    is_whitelist_ip: {
+      type: 'boolean',
+      columnName: 'is_whitelist_ip'
+    },
   },
   beforeCreate: (values, next) => {
     Admin
-      .findOne({ 'email': values.email })
+      .findOne({ 'email': values.email,'deleted_at': null })
       .exec(function (err, found) {
         if (!found) {
           bcrypt
@@ -114,7 +123,7 @@ module.exports = {
   },
   beforeUpdate: (values, next) => {
     Admin
-      .findOne({ 'email': values.email })
+      .findOne({ 'email': values.email,'deleted_at': null })
       .exec(async function (err, found) {
         if (err) {
           next(err);

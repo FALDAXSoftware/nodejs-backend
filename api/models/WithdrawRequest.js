@@ -27,7 +27,8 @@ module.exports = {
     },
     is_approve: {
       type: 'boolean',
-      columnName: 'is_approve'
+      columnName: 'is_approve',
+      allowNull: true
     },
     transaction_type: {
       type: 'string',
@@ -44,6 +45,30 @@ module.exports = {
     is_executed: {
       type: 'boolean',
       columnName: 'is_executed'
+    },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
+    },
+    faldax_fee: {
+      type: "number",
+      columnName: "faldax_fee"
+    },
+    transaction_id: {
+      type: "string",
+      columnName: "transaction_id"
+    },
+    amount: {
+      type: "number",
+      columnName: "amount"
+    },
+    network_fee: {
+      type: "number",
+      columnName: "network_fee"
+    },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
     },
     created_at: {
       type: 'ref',

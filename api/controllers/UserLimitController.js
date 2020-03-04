@@ -5,30 +5,33 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var moment = require('moment');
+var logger = require("./logger")
 module.exports = {
   // ---------------------------Web Api------------------------------
   // -------------------------------CMS Api--------------------------
   getAllUserLimit: async function (req, res) {
     try {
-      const { user_id } = req.allParams();
+      const {
+        user_id
+      } = req.allParams();
 
       if (user_id) {
         let query = 'FROM coins LEFT JOIN (SELECT * FROM user_limit WHERE user_id = ' + user_id + ' AND deleted_at IS NULL) AS specific_user_limit ON coins.id = specific_user_limit.coin_id WHERE coins.deleted_at IS NULL AND coins.is_active = true';
 
-        let limitData = await sails.sendNativeQuery("Select *" + query, [])
+        let limitData = await sails.sendNativeQuery("Select coins.id as coin_table_id,coins.coin_code,coins.coin,coins.min_limit, coins.max_limit,specific_user_limit.*" + query, [])
 
         limitData = limitData.rows;
 
         if (limitData.length > 0) {
           return res.json({
             "status": 200,
-            "message": sails.__("User Limit list"),
+            "message": sails.__("User Limit list").message,
             "data": limitData
           });
         } else {
           return res.json({
             "status": 200,
-            "message": sails.__("No User Limit Data List"),
+            "message": sails.__("No User Limit Data List").message,
             "data": limitData
           });
         }
@@ -37,16 +40,18 @@ module.exports = {
           .status(500)
           .json({
             status: 500,
-            "err": "User id not found"
+            "err": sails.__("User not found").message,
+            error_at: sails.__("User not found").message
           });
       }
-    }
-    catch (error) {
+    } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   },
@@ -54,68 +59,121 @@ module.exports = {
   updateUserLimit: async function (req, res) {
     try {
       if (req.body.user_id && req.body.coin_id) {
-        const limit_details = await UserLimit.findOne({ user_id: req.body.user_id, coin_id: req.body.coin_id, deleted_at: null });
+        const limit_details = await UserLimit.findOne({
+          user_id: req.body.user_id,
+          coin_id: req.body.coin_id,
+          deleted_at: null
+        });
         var updatedLimit;
-        if (limit_details == undefined || limit_details == null || !limit_details) {
-          if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
-            updatedLimit = await UserLimit
-              .create(req.body);
 
+        if (limit_details == undefined || limit_details == null || !limit_details) {
+          // if (req.body.monthly_withdraw_crypto !== null && req.body.monthly_withdraw_fiat !== null && req.body.daily_withdraw_crypto !== null && req.body.daily_withdraw_fiat !== null)
+          updatedLimit = await UserLimit.create({
+            ...req.body
+          }).fetch();
           if (!updatedLimit) {
             return res.json({
               "status": 500,
-              "message": sails.__("Something Wrong")
+              "message": sails.__("Something Wrong").message,
+              error_at: sails.__("Something Wrong").message
             });
           }
           return res.json({
             "status": 200,
-            "message": sails.__('Create User Limit')
+            "message": sails.__('Create User Limit').message
           });
         } else {
           if (req.body.monthly_withdraw_crypto == null && req.body.monthly_withdraw_fiat == null && req.body.daily_withdraw_crypto == null && req.body.daily_withdraw_fiat == null) {
             updatedLimit = await UserLimit
-              .update({ user_id: req.body.user_id, coin_id: req.body.coin_id })
-              .set({ deleted_at: moment().format() })
+              .update({
+                user_id: req.body.user_id,
+                coin_id: req.body.coin_id
+              })
+              .set({
+                deleted_at: moment().format()
+              })
               .fetch();
             if (!updatedLimit) {
               return res.json({
                 "status": 500,
-                "message": sails.__("Something Wrong")
+                "message": sails.__("Something Wrong").message,
+                error_at: sails.__("Something Wrong").message
               });
             }
             return res.json({
               "status": 200,
-              "message": sails.__('Delete User Limit')
+              "message": sails.__('Delete User Limit').message
             });
           } else {
             updatedLimit = await UserLimit
-              .update({ user_id: req.body.user_id, coin_id: req.body.coin_id })
+              .update({
+                user_id: req.body.user_id,
+                coin_id: req.body.coin_id
+              })
               .set(req.body)
               .fetch();
             if (!updatedLimit) {
               return res.json({
                 "status": 500,
-                "message": sails.__("Something Wrong")
+                "message": sails.__("Something Wrong").message,
+                error_at: sails.__("Something Wrong").message
               });
             }
-            return res.json({
-              "status": 200,
-              "message": sails.__('Update User Limit')
+            // User Limit Increased/Decreased Information Email
+
+            let user = await Users.find({
+              select: ['first_name', 'email','default_language'],
+              where: {
+                id: req.body.user_id
+              }
             });
+
+            let slug = "user_limit_updation"
+            let template = await EmailTemplate.findOne({
+              slug
+            });
+            let user_language = (user.default_language ? user.default_language : 'en');
+            let language_content = template.all_content[user_language].content;
+            let language_subject = template.all_content[user_language].subject;
+            let emailContent = await sails
+              .helpers
+              .utilities
+              .formatEmail(language_content, {
+                recipientName: user[0].first_name,
+              });
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: user[0].email,
+                subject: language_subject
+              }, function (err) {
+                if (!err) {
+                  return res.json({
+                    "status": 200,
+                    "message": sails.__("Update User Limit").message
+                  });
+                }
+              })
           }
         }
       } else {
         return res.json({
           "status": 500,
-          "message": sails.__("User Id and Coin ID necessary")
+          "message": sails.__("User Id and Coin ID necessary").message,
+          error_at: sails.__("User Id and Coin ID necessary").message
         })
       }
     } catch (error) {
+      // await logger.error(error.message)
       return res
         .status(500)
         .json({
           status: 500,
-          "err": sails.__("Something Wrong")
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
         });
     }
   }

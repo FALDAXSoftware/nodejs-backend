@@ -29,15 +29,32 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    let { emailContent, data } = inputs
+    let {
+      emailContent,
+      data
+    } = inputs
     let rex = /{{([^}]+)}}/g;
     let key;
-    while (key = rex.exec(emailContent)) {
-      emailContent = emailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');
+    if ("object" in data) {
+      data = data.object;
     }
-    exits.success(emailContent);
+    var tempEmailContent = emailContent;
+    while (key = rex.exec(emailContent)) {
+      // emailContent = emailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');  
+      var temp_var = '';
+      if (Array.isArray(data[key[1]])) {
+        temp_var = ''
+        data[key[1]].forEach(function (each, index) {
+          temp_var += JSON.stringify(each) + '<br>'
+        })
+      } else {
+        temp_var = data[key[1]];
+      }
+      // tempEmailContent = tempEmailContent.replace(key[0], data[key[1]] ? data[key[1]] : '');
+      tempEmailContent = tempEmailContent.replace(key[0], data[key[1]] ? temp_var : '');
+    }
+    exits.success(tempEmailContent);
   }
 
 
 };
-

@@ -31,16 +31,16 @@ module.exports = {
     // Get fiat value.
     var fiatValue;
     // TODO Send back the result through the success exit.
-    fetch('https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount=' + inputs.amount + '&symbol=' + inputs.currency + 'BTC&convert=USD', {
-        method: "GET",
-        headers: {
-          'X-CMC_PRO_API_KEY': process.env.MARKETPRICE
-        }
-      })
-      .then(resData => resData.json())
-      .then(resData => {
-        fiatValue = resData;
-      })
+    // fetch('https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount=' + inputs.amount + '&symbol=' + inputs.currency + 'BTC&convert=USD', {
+    //     method: "GET",
+    //     headers: {
+    //       'X-CMC_PRO_API_KEY': process.env.MARKETPRICE
+    //     }
+    //   })
+    //   .then(resData => resData.json())
+    //   .then(resData => {
+    //     fiatValue = resData;
+    //   })
 
     return exits.success(fiatValue);
 

@@ -4,22 +4,24 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+var logger = require("./logger")
 module.exports = {
   // ---------------------------Web Api------------------------------ Get Coin
 
   /**
-    * API for getting coin information
-    * Renders this api when coin info needs to be fetched
-    *
-    * @param <coin_code>
-    *
-    * @return <Coin node Info or error data>
+   * API for getting coin information
+   * Renders this api when coin info needs to be fetched
+   *
+   * @param <coin_code>
+   *
+   * @return <Coin node Info or error data>
    */
 
   getCoinInfo: async function (req, res) {
     try {
-      var { coin_code } = req.allParams();
+      var {
+        coin_code
+      } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -46,27 +48,30 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("node info retrieval success"),
+        "message": sails.__("node info retrieval success").message,
         "data": getInfo
       });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
 
   },
 
   /**
-    * API for getting coin address for user
-    * Renders this api when coin address needs to be generated
-    *
-    * @param <coin_code>
-    *
-    * @return <Coin address generated or error data>
+   * API for getting coin address for user
+   * Renders this api when coin address needs to be generated
+   *
+   * @param <coin_code>
+   *
+   * @return <Coin address generated or error data>
    */
 
   getCoinNewAddress: async function (req, res) {
     try {
-      var { coin_code } = req.allParams();
+      var {
+        coin_code
+      } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -108,27 +113,30 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("address create success"),
+        "message": sails.__("address create success").message,
         "data": getInfo
       });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
 
   },
 
   /**
-    * API for getting transaction list
-    * Renders this api when coin transaction list needs to be fetched
-    *
-    * @param <coin_code>
-    *
-    * @return <Coin node transaction list or error data>
+   * API for getting transaction list
+   * Renders this api when coin transaction list needs to be fetched
+   *
+   * @param <coin_code>
+   *
+   * @return <Coin node transaction list or error data>
    */
 
   getTransactionList: async function (req, res) {
     try {
-      var { coin_code } = req.allParams();
+      var {
+        coin_code
+      } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -136,31 +144,37 @@ module.exports = {
           .type2Coins
           .stratis
           .getTransactionList(coin_code);
-      } else if (sails.config.local.coinArray[coin_code].type == 2) { }
+      } else if (sails.config.local.coinArray[coin_code].type == 2) {}
 
       return res.json({
         "status": 200,
-        "message": sails.__("transaction list success"),
+        "message": sails.__("transaction list success").message,
         "data": getInfo
       });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
 
   },
 
   /**
-    * API for sending coin to another address
-    * Renders this api when coin needs to be send to other address
-    *
-    * @param <coin_code, to_address, amount, message>
-    *
-    * @return <success message for coin sending or error>
+   * API for sending coin to another address
+   * Renders this api when coin needs to be send to other address
+   *
+   * @param <coin_code, to_address, amount, message>
+   *
+   * @return <success message for coin sending or error>
    */
 
   sendCoin: async function (req, res) {
     try {
-      var { coin_code, to_address, amount, message } = req.body;
+      var {
+        coin_code,
+        to_address,
+        amount,
+        message
+      } = req.body;
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 1) {
         getInfo = await sails
@@ -198,26 +212,29 @@ module.exports = {
 
       return res.json({
         "status": 200,
-        "message": sails.__("send coin success"),
+        "message": sails.__("send coin success").message,
         "data": getInfo
       });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
   },
 
   /**
-    * API for listing address that has been generated
-    * Renders this api when coin address list needs to be fetched
-    *
-    * @param <coin_code>
-    *
-    * @return <Coin address list generated or error data>
+   * API for listing address that has been generated
+   * Renders this api when coin address list needs to be fetched
+   *
+   * @param <coin_code>
+   *
+   * @return <Coin address list generated or error data>
    */
 
   listAddresses: async function (req, res) {
     try {
-      var { coin_code } = req.allParams();
+      var {
+        coin_code
+      } = req.allParams();
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 3) {
         getInfo = await sails
@@ -226,24 +243,32 @@ module.exports = {
           .neoListAddress(coin_code);
       }
 
-      return res.json({ "status": 200, "message": sails.__("list address success"), "data": getInfo });
+      return res.json({
+        "status": 200,
+        "message": sails.__("list address success").message,
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
   },
 
   /**
-    * API for getting user wallet balance
-    * Renders this api when user wants to fetch coin balance
-    *
-    * @param <coin_code, address>
-    *
-    * @return <User coin address balance or error data>
+   * API for getting user wallet balance
+   * Renders this api when user wants to fetch coin balance
+   *
+   * @param <coin_code, address>
+   *
+   * @return <User coin address balance or error data>
    */
 
   getAddressBalance: async function (req, res) {
     try {
-      var { coin_code, address } = req.body;
+      var {
+        coin_code,
+        address
+      } = req.body;
       var getInfo;
       if (sails.config.local.coinArray[coin_code].type == 6) {
         getInfo = await sails
@@ -256,9 +281,14 @@ module.exports = {
           .type2Coins
           .tetherGetWalletBalance(coin_code, address);
       }
-      return res.json({ "status": 200, "message": sails.__("user address balance success"), "data": getInfo });
+      return res.json({
+        "status": 200,
+        "message": sails.__("user address balance success").message,
+        "data": getInfo
+      });
     } catch (err) {
       console.log(err);
+      await logger.error(err.message)
     }
   }
 }

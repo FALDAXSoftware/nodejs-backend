@@ -24,6 +24,11 @@ module.exports = {
       type: "string",
       columnName: "destination_address"
     },
+    is_admin: {
+      type: 'boolean',
+      columnName: 'is_admin',
+      defaultsTo: false
+    },
     user_id: {
       columnName: "user_id",
       model: "users"
@@ -31,6 +36,31 @@ module.exports = {
     amount: {
       type: "number",
       columnName: "amount"
+    },
+    actual_network_fees: {
+      type: "number",
+      columnName: "actual_network_fees"
+    },
+    estimated_network_fees: {
+      type: "number",
+      columnName: "estimated_network_fees"
+    },
+    residual_amount: {
+      type: 'number',
+      columnName: "residual_amount"
+    },
+    is_done: {
+      type: 'boolean',
+      columnName: 'is_done',
+      defaultsTo: false
+    },
+    faldax_fee: {
+      type: "number",
+      columnName: "faldax_fee"
+    },
+    actual_amount: {
+      type: "number",
+      columnName: "actual_amount"
     },
     transaction_type: {
       type: "string",

@@ -23,7 +23,9 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
       var country;
-      var userKyc = await KYC.findOne({user_id: inputs.user_id});
+      var userKyc = await KYC.findOne({
+        user_id: inputs.user_id
+      });
       var countryData;
       var stateData;
       var response;
@@ -31,6 +33,10 @@ module.exports = {
       var sendInfo;
 
       if (userKyc) {
+        if (userKyc.direct_response == null && userKyc.webhook_response == null) {
+          response = false;
+          msg = sails.__("Your KYC is under process. Please wait until KYC is approved").message;
+        }
         countryData = await Countries.find({
           where: {
             name: userKyc.country
@@ -38,9 +44,10 @@ module.exports = {
         });
 
         if (countryData != undefined && countryData.length > 0) {
+
           if (countryData[0].legality == 1) {
             response = true;
-            msg = "You are allowed to trade"
+            msg = sails.__("You are allowed to trade").message;
           } else if (countryData[0].legality == 4) {
             stateData = await State.findOne({
               where: {
@@ -48,30 +55,32 @@ module.exports = {
                 name: userKyc.state
               }
             });
-            if (stateData != undefined && stateData.length > 0) {
+
+            if (stateData != undefined) {
+
               if (stateData.legality == 1) {
                 response = true;
-                msg = "You are allowed to trade"
+                msg = sails.__("You are allowed to trade").message;
               } else {
                 response = false;
-                msg = 'You are not allowed to trade in this regoin'
+                msg = sails.__("You are not allowed to trade in this regoin as your state is illegal").message;
 
               }
             } else {
               response = false;
-              msg = 'You are not allowed to trade in this regoin'
+              msg = sails.__("You are not allowed to trade in this regoin").message;
             }
           } else {
             response = false;
-            msg = 'You are not allowed to trade in this regoin'
+            msg = sails.__("You are not allowed to trade in this regoin as country is illegal").message;
           }
         } else {
           response = false;
-          msg = 'You need to complete your KYC to trade in FALDAX';
+          msg = sails.__("You need to complete your KYC to trade in FALDAX").message;
         }
       } else {
         response = false;
-        msg = 'You need to complete your KYC to trade in FALDAX';
+        msg = sails.__("You need to complete your KYC to trade in FALDAX").message;
       }
 
       sendInfo = {
