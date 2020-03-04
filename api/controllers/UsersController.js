@@ -194,6 +194,8 @@ module.exports = {
           let user_language = (user_detail.default_language ? user_detail.default_language : 'en');
           let language_content = template.all_content[user_language].content;
           let language_subject = template.all_content[user_language].subject;
+          console.log("sails.config.urlconf.APP_URL", sails.config.urlconf.APP_URL)
+          console.log(sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token)
           let emailContent = await sails
             .helpers
             .utilities
