@@ -264,10 +264,10 @@ module.exports = {
                   })
                   .fetch()
 
-                console.log("user_data", user_data)
+                console.log("user_data", user_data[0])
 
                 var userNotification = await UserNotification.findOne({
-                  user_id: user_data.id,
+                  user_id: user_data[0].id,
                   deleted_at: null,
                   slug: 'kyc_approved'
                 })
@@ -275,36 +275,36 @@ module.exports = {
                 console.log("userNotification", userNotification)
                 if (userNotification != undefined) {
                   if (userNotification.email == true || userNotification.email == "true") {
-                    if (user_data.email != undefined)
-                      await sails.helpers.notification.send.email("kyc_approved", user_data)
+                    if (user_data[0].email != undefined)
+                      await sails.helpers.notification.send.email("kyc_approved", user_data[0])
                   }
                   if (userNotification.text == true || userNotification.text == "true") {
-                    if (user_data.phone_number != undefined && user_data.phone_number != null && user_data.phone_number != '')
-                      await sails.helpers.notification.send.text("kyc_approved", user_data)
+                    if (user_data[0].phone_number != undefined && user_data[0].phone_number != null && user_data[0].phone_number != '')
+                      await sails.helpers.notification.send.text("kyc_approved", user_data[0])
                   }
                 }
-                if (user_data != undefined) {
+                if (user_data[0] != undefined) {
                   let slug = 'kyc_approved';
                   let template = await EmailTemplate.findOne({
                     slug
                   });
-                  let user_language = (user_data.default_language ? user_data.default_language : 'en');
+                  let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
                   let language_content = template.all_content[user_language].content;
                   let language_subject = template.all_content[user_language].subject;
                   let emailContent = await sails
                     .helpers
                     .utilities
                     .formatEmail(language_content, {
-                      recipientName: user_data.first_name
+                      recipientName: user_data[0].first_name
                     })
-                  console.log("user_data.email", user_data.email)
+                  console.log("user_data[0].email", user_data[0].email)
                   sails
                     .hooks
                     .email
                     .send("general-email", {
                       content: emailContent
                     }, {
-                      to: user_data.email,
+                      to: user_data[0].email,
                       subject: language_subject
                     }, function (err) {
                       if (err) {
