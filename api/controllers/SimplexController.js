@@ -60,15 +60,19 @@ module.exports = {
       data.client_ip = ip;
       data.end_user_id = "14569251558";
 
-      var qouteDetail = await sails.helpers.simplex.getQouteDetails(data);
+      data.action = '/simplex/simplex-details';
+      data.method = 'POST';
+      var call_simplex = await sails.helpers.simplex.sbBackend(data);
+      console.log("call_simplex", call_simplex)
+      if (call_simplex.status == 200 && call_simplex.data && call_simplex.data.digital_money.amount) {
+        // call_simplex.data.digital_money.amount = 0;
+      } else {
+        call_simplex.status = 500;
+        call_simplex.err = call_simplex.message;
+      }
 
-      return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": sails.__("qoute details success").message,
-          "data": qouteDetail
-        });
+      return res.json(call_simplex);
+
 
     } catch (error) {
       // console.log(error);
