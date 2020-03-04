@@ -264,11 +264,15 @@ module.exports = {
                   })
                   .fetch()
 
+                console.log("user_data", user_data)
+
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data.id,
                   deleted_at: null,
                   slug: 'kyc_approved'
                 })
+
+                console.log("userNotification", userNotification)
                 if (userNotification != undefined) {
                   if (userNotification.email == true || userNotification.email == "true") {
                     if (user_data.email != undefined)
@@ -293,7 +297,7 @@ module.exports = {
                     .formatEmail(language_content, {
                       recipientName: user_data.first_name
                     })
-
+                  console.log("user_data.email", user_data.email)
                   sails
                     .hooks
                     .email
