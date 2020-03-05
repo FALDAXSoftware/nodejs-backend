@@ -356,11 +356,13 @@ module.exports = {
                   }
                 }
 
+                console.log("user_data[0]", user_data[0])
                 if (user_data[0] != undefined) {
                   let slug = 'kyc_rejected';
                   let template = await EmailTemplate.findOne({
                     slug
                   });
+                  console.log(template)
                   let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
                   let language_content = template.all_content[user_language].content;
                   let language_subject = template.all_content[user_language].subject;
@@ -370,6 +372,8 @@ module.exports = {
                     .formatEmail(language_content, {
                       recipientName: user_data[0].first_name
                     })
+
+                  console.log("emailContent", emailContent)
                   console.log("user_data[0].email", user_data[0].email)
                   sails
                     .hooks
