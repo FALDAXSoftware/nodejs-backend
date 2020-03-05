@@ -2975,5 +2975,12 @@
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as country is illegal",
 		"message": "You are not allowed to trade in this regoin as country is illegal"
+	},
+	"File Max Size": {
+		"page": "Identity Verification - When user uploads KYC",
+		"context": "Maximum File size allowed is 5 MB",
+		"message_type": "error",
+		"message_english": "Maximum File size allowed is 5 MB",
+		"message": "Maximum File size allowed is 5 MB"
 	}
 }
