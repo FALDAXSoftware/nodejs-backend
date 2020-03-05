@@ -132,9 +132,13 @@ module.exports = {
           password: req.body.password
         }
 
-        var user_detail = await Users.findOne({
+        var user_detail = await Users.find({
           email: query.email
-        });
+        }).sort('id DESC');
+
+        user_detail = user_detail[0];
+
+        console.log(user_detail)
 
         if (user_detail) {
           // Set language to user's default
@@ -309,6 +313,7 @@ module.exports = {
                   }
                 }
 
+                // ip = '180.211.110.146'
                 // Check For New Ip
                 let loginData = await LoginHistory.find({
                   user: user_detail.id,
@@ -496,7 +501,7 @@ module.exports = {
           new_ip_verification_token: req.body.token
         });
 
-
+        console.log(user_detail);
 
         if (user_detail) {
 
@@ -918,11 +923,12 @@ module.exports = {
 
   forgotPassword: async function (req, res) {
     try {
-      const user_details = await Users.findOne({
+      var user_details = await Users.find({
         email: req.body.email,
         // deleted_at: null,
         // is_active: true
-      });
+      }).sort('id DESC');
+      user_details = user_details[0];
       if (!user_details) {
         return res
           .status(401)

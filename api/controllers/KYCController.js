@@ -171,10 +171,14 @@ module.exports = {
 
   uploadKYCDoc: async function (req, res) {
     try {
+      // console.log(req.file('image'));
+      console.log(req._fileparser.upstreams.length)
       if (req._fileparser.upstreams.length) {
         req
           .file('image')
           .upload(function (error, file) {
+            console.log(file[0])
+            console.log((file[0].size) > 5242880)
             // console.log(error);
             if (error) {
               return res
@@ -184,6 +188,14 @@ module.exports = {
                   "err": sails.__("Something Wrong").message,
                   error_at: error.stack
                 })
+            } else if ((file[0].size) > 5242880) {
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("File Max Size").message,
+                  error_at: sails.__("Something Wrong").message
+                });
             } else {
               if (file.length <= 0) {
                 return res
@@ -312,6 +324,68 @@ module.exports = {
                       }
                     })
                 }
+              } else if (resultState[data.state] == "DENY") {
+                var user_data_kyc = await KYC.findOne({
+                  mtid: data.mtid
+                });
+
+                var user_data = await Users.find({
+                  where: {
+                    id: user_data_kyc.user_id,
+                    deleted_at: null,
+                    is_active: true
+                  }
+                })
+
+                console.log("user_data", user_data[0])
+
+                var userNotification = await UserNotification.findOne({
+                  user_id: user_data[0].id,
+                  deleted_at: null,
+                  slug: 'kyc_rejected'
+                })
+
+                if (userNotification != undefined) {
+                  if (userNotification.email == true || userNotification.email == "true") {
+                    if (user_data[0].email != undefined)
+                      await sails.helpers.notification.send.email("kyc_rejected", user_data[0])
+                  }
+                  if (userNotification.text == true || userNotification.text == "true") {
+                    if (user_data[0].phone_number != undefined && user_data[0].phone_number != null && user_data[0].phone_number != '')
+                      await sails.helpers.notification.send.text("kyc_rejected", user_data[0])
+                  }
+                }
+
+                if (user_data[0] != undefined) {
+                  let slug = 'kyc_rejected';
+                  let template = await EmailTemplate.findOne({
+                    slug
+                  });
+                  let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
+                  let language_content = template.all_content[user_language].content;
+                  let language_subject = template.all_content[user_language].subject;
+                  let emailContent = await sails
+                    .helpers
+                    .utilities
+                    .formatEmail(language_content, {
+                      recipientName: user_data[0].first_name
+                    })
+                  console.log("user_data[0].email", user_data[0].email)
+                  sails
+                    .hooks
+                    .email
+                    .send("general-email", {
+                      content: emailContent
+                    }, {
+                      to: user_data[0].email,
+                      subject: language_subject
+                    }, function (err) {
+                      if (err) {
+                        console.log("err in sending email, while kyc approved", err);
+                      }
+                    })
+                }
+
               }
             }
           }
