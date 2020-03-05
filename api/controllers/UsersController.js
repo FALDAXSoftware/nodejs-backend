@@ -2214,13 +2214,13 @@ module.exports = {
 
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
-      console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
-      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      // console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      //   "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
