@@ -1519,17 +1519,6 @@ module.exports = {
           "err": sails.__("User not found").message
         });
     }
-    // Update to deleted
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        email: user.email,
-        deleted_by: 1, //deleted by user
-        deleted_at: new Date(),
-        is_active: false
-      });
 
     var total = 0;
     var usd_price = 0;
@@ -1599,6 +1588,18 @@ module.exports = {
         usd_price = usd_price + ((referCount[i].amount) * fiatVal);
       }
     }
+
+    // Update to deleted
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_by: 1, //deleted by user
+        deleted_at: new Date(),
+        is_active: false
+      });
 
     var valueEmail = {};
     valueEmail.recipientName = user.first_name;

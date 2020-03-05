@@ -171,10 +171,14 @@ module.exports = {
 
   uploadKYCDoc: async function (req, res) {
     try {
+      // console.log(req.file('image'));
+      console.log(req._fileparser.upstreams.length)
       if (req._fileparser.upstreams.length) {
         req
           .file('image')
           .upload(function (error, file) {
+            console.log(file[0])
+            console.log((file[0].size) > 5242880)
             // console.log(error);
             if (error) {
               return res
@@ -184,6 +188,14 @@ module.exports = {
                   "err": sails.__("Something Wrong").message,
                   error_at: error.stack
                 })
+            } else if ((file[0].size) > 5242880) {
+              return res
+                .status(500)
+                .json({
+                  status: 500,
+                  "err": sails.__("File Max Size").message,
+                  error_at: sails.__("Something Wrong").message
+                });
             } else {
               if (file.length <= 0) {
                 return res
