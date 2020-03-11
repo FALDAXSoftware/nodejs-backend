@@ -36,13 +36,15 @@ ingress:
     kubernetes.io/tls-acme: "true"
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:496403030999:certificate/c789b806-1990-4ff0-8e95-011a9727b80c
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=600
     kubernetes.io/ingress.class: alb
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   path: /*
+
   hosts:
-    - dev-backend.faldax.com
+    - qa-backend.faldax.com
   tls: []
-  #  - secretName: chart-example-tls
+  # - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
@@ -53,16 +55,6 @@ resources:
   requests:
    cpu: 200m
    memory: 256Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-controller:
-  autoscaling:
-    enabled: false
 
 health:
   enable: true
@@ -82,3 +74,28 @@ health:
     failureThreshold: 5
     successThreshold: 1
     timeoutSeconds: 5
+
+nodeSelector: {}
+
+tolerations:
+- key: env
+  operator: Equal
+  value: qa
+  effect: NoSchedule
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: env
+          operator: In
+          values:
+          - qa
+
+controller:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 90
