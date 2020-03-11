@@ -39,7 +39,7 @@ module.exports = {
       var existedUser = await Users.findOne({
         email,
         // deleted_at: null,
-        is_active: true
+        // is_active: true
       });
       if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
         return res
@@ -220,14 +220,7 @@ module.exports = {
                     "status": 200,
                     "message": (req.body.device_type == 1 || req.body.device_type == 2) ?
                       sails.__("verification code").message : sails.__("verification link").message,
-                    email_verify_token,
-                    "data": {
-                      recipientName: user_detail.first_name,
-                      token: sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token,
-                      tokenCode: (req.body.device_type == 1 || req.body.device_type == 2) ?
-                        email_verify_code : email_verify_token
-                    },
-                    "emailContent": JSON.stringify(emailContent)
+                    email_verify_token
                   });
                 }
               });
@@ -3806,6 +3799,30 @@ module.exports = {
           error_at: error.stack
         });
     }
-  }
+  },
+
+  // Temp customer id update
+  // tempCustomerIdUpdate: async function( req, res ){
+  //    let userdata = await Users.find({
+  //      customer_id:null
+  //    })
+  //    console.log("userdata",userdata);
+  //    for( var i=0;i<userdata.length;i++ ){
+  //     var id = userdata[i].id;
+  //     var userUpdate = await Users
+  //       .update({
+  //         id: id
+  //       })
+  //       .set({
+  //         "customer_id": "F-" + id.toString(16).toUpperCase()
+  //       });
+  //     console.log(id, "F-" + id.toString(16).toUpperCase());
+  //    }
+  //   // "customer_id": "F-" + id.toString(16).toUpperCase(),
+  //   res.json({
+  //     "status": 200,
+  //     "message": "dsdsdsd"
+  //   });
+  // }
 
 };
