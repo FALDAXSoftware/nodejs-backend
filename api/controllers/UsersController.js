@@ -39,7 +39,7 @@ module.exports = {
       var existedUser = await Users.findOne({
         email,
         // deleted_at: null,
-        is_active: true
+        // is_active: true
       });
       if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
         return res
@@ -194,6 +194,8 @@ module.exports = {
           let user_language = (user_detail.default_language ? user_detail.default_language : 'en');
           let language_content = template.all_content[user_language].content;
           let language_subject = template.all_content[user_language].subject;
+          console.log("sails.config.urlconf.APP_URL", sails.config.urlconf.APP_URL)
+          console.log(sails.config.urlconf.APP_URL + '/login?token=' + email_verify_token)
           let emailContent = await sails
             .helpers
             .utilities
@@ -1510,17 +1512,6 @@ module.exports = {
           "err": sails.__("User not found").message
         });
     }
-    // Update to deleted
-    await Users
-      .update({
-        id: user.id
-      })
-      .set({
-        email: user.email,
-        deleted_by: 1, //deleted by user
-        deleted_at: new Date(),
-        is_active: false
-      });
 
     var total = 0;
     var usd_price = 0;
@@ -1590,6 +1581,18 @@ module.exports = {
         usd_price = usd_price + ((referCount[i].amount) * fiatVal);
       }
     }
+
+    // Update to deleted
+    await Users
+      .update({
+        id: user.id
+      })
+      .set({
+        email: user.email,
+        deleted_by: 1, //deleted by user
+        deleted_at: new Date(),
+        is_active: false
+      });
 
     var valueEmail = {};
     valueEmail.recipientName = user.first_name;
@@ -2204,13 +2207,13 @@ module.exports = {
 
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
-      console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
-      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      // console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      //   "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
@@ -3796,6 +3799,30 @@ module.exports = {
           error_at: error.stack
         });
     }
-  }
+  },
+
+  // Temp customer id update
+  // tempCustomerIdUpdate: async function( req, res ){
+  //    let userdata = await Users.find({
+  //      customer_id:null
+  //    })
+  //    console.log("userdata",userdata);
+  //    for( var i=0;i<userdata.length;i++ ){
+  //     var id = userdata[i].id;
+  //     var userUpdate = await Users
+  //       .update({
+  //         id: id
+  //       })
+  //       .set({
+  //         "customer_id": "F-" + id.toString(16).toUpperCase()
+  //       });
+  //     console.log(id, "F-" + id.toString(16).toUpperCase());
+  //    }
+  //   // "customer_id": "F-" + id.toString(16).toUpperCase(),
+  //   res.json({
+  //     "status": 200,
+  //     "message": "dsdsdsd"
+  //   });
+  // }
 
 };
