@@ -150,7 +150,7 @@ module.exports = {
       walletPassphrase: wallet_passphrase
     };
 
-    send_data.amount = parseFloat(inputs.amount);
+    send_data.amount = parseInt(inputs.amount);
     if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" || coinData.iserc == true) {
       send_data.amount = (inputs.amount).toString();
     }
