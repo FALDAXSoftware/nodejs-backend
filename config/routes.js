@@ -545,4 +545,7 @@ module.exports.routes = {
 
   // 'get /users/tempupdate': 'CountriesController.tempupdate',
   // 'get /users/tempcustomeridupdate': 'UsersController.tempCustomerIdUpdate',
+
+  // Get Panic History
+  'get /admin/get-panic-history': 'RootController.getPanicHistory'
 };

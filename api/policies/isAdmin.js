@@ -42,7 +42,8 @@ module.exports = async function (req, res, next) {
       "admin/users/list",
       "admin/get-admin-available-balance",
       "admin/get-warm-available-balance",
-      "admin/send-warm-balance"
+      "admin/send-warm-balance",
+      "admin/get-panic-history"
     ]
 
     let urlPrefix = urlArray[1];
