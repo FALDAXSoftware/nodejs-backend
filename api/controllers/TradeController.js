@@ -1885,12 +1885,16 @@ module.exports = {
       } else if (trade_type == 2) { // Simplex
         let query = " from simplex_trade_history LEFT JOIN users ON simplex_trade_history.user_id = users.id";
         let whereAppended = false;
-        query += " WHERE simplex_trade_history.is_processed = true"
-        whereAppended = true
+        // query += " WHERE simplex_trade_history.is_processed = true"
+        whereAppended = false
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
+            query += whereAppended ?
+              " AND " :
+              " WHERE ";
             whereAppended = true;
-            query += " AND"
+            // whereAppended = true;
+            // query += " AND"
             query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(simplex_trade_history.symbol) LIKE '%" + data.toLowerCase() + "%' OR simplex_trade_history.payment_id LIKE '%" + data + "%' OR simplex_trade_history.quote_id LIKE '%" + data + "%' OR simplex_trade_history.address LIKE '%" + data.toLowerCase() + " %'";
             if (!isNaN(data)) {
               query += " OR simplex_trade_history.quantity = '" + data + "' OR simplex_trade_history.fill_price = '" + data + "'"
@@ -1945,6 +1949,8 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+
+        console.log("Select users.email, simplex_trade_history.*" + query);
 
         tradeData = await sails.sendNativeQuery("Select users.email, simplex_trade_history.*" + query, [])
 
