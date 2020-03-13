@@ -239,6 +239,8 @@ module.exports = {
               source = transfer.inputs[0]
             }
 
+
+
             if (dest == undefined) {
               dest = transfer.inputs[0]
             }
@@ -256,15 +258,6 @@ module.exports = {
             });
 
             if (userWallet == undefined) {
-              var userSendWallet = await Wallet.findOne({
-                send_address: dest.address,
-                deleted_at: null,
-                is_active: true,
-                coin_id: coinDataValue.id
-              });
-            }
-
-            if (userWallet == undefined && userSendWallet == undefined) {
               if (source != undefined) {
                 userWallet = await Wallet.findOne({
                   receive_address: source.address,
@@ -272,17 +265,29 @@ module.exports = {
                   is_active: true,
                   coin_id: coinDataValue.id
                 });
-
+                console.log("userWallet", userWallet)
                 if (userWallet == undefined) {
-                  userWallet = await Wallet.findOne({
-                    send_address: source.address,
-                    deleted_at: null,
-                    is_active: true,
-                    coin_id: coinDataValue.id
-                  });
+                  if (transfer.outputs.length > 2) {
+                    for (var i = 0; i < transfer.outputs.length; i++) {
+                      if (userWallet == undefined) {
+                        userWallet = await Wallet.findOne({
+                          receive_address: transfer.outputs[i].address,
+                          deleted_at: null,
+                          is_active: true,
+                          coin_id: coinDataValue.id
+                        })
+                        console.log("User Wallet at " + userWallet + " at transfer.output", transfer.outputs[i]);
+                        if (userWallet && userWallet != undefined) {
+                          source = transfer.outputs[i];
+                          break;
+                        }
+                      }
+                    }
+                  }
                 }
               }
-
+              console.log("source", source)
+              console.log("dest", dest)
               if (userWallet) {
                 let temp = dest;
                 dest = source;
@@ -292,6 +297,8 @@ module.exports = {
             let coin = await Coins.findOne({
               id: userWallet.coin_id
             });
+
+            console.log(coin);
             // Check For Token
             if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
               let token = await Coins.findOne({
