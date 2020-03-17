@@ -325,8 +325,8 @@
 		"page": "GeoFencing",
 		"context": "You are not allowed to trade",
 		"message_type": "error",
-		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. ",
-		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. "
+		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates.",
+		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates."
 	},
 	"You need to complete you KYC before trading": {
 		"page": "KYC needed",
@@ -588,7 +588,7 @@
 		"message": "Please provide a current password, a new password, and a confirm password."
 	},
 	"password must match": {
-		"page": "Edit profile/Signup",
+		"page": "Edit profile\/Signup",
 		"context": "New and confirm password should match",
 		"message_type": "error",
 		"message_english": "New and confirm password should match.",
@@ -616,7 +616,7 @@
 		"message": "Password has been changed successfully."
 	},
 	"user inactive": {
-		"page": "Delete account class, Setup/Verify/Disable Two-factor, Panic button enable/disalbe",
+		"page": "Delete account class, Setup\/Verify\/Disable Two-factor, Panic button enable\/disalbe",
 		"context": "User not found or it's not active",
 		"message_type": "error",
 		"message_english": "User was not found or is inactive.",
@@ -658,7 +658,7 @@
 		"message": "Two-factor authentication has been disabled."
 	},
 	"Users list": {
-		"page": "CMS - Active/Inactive/Deleted User lists",
+		"page": "CMS - Active\/Inactive\/Deleted User lists",
 		"context": "Users list has been retrieved successfully",
 		"message_type": "success",
 		"message_english": "Users list has been retrieved successfully.",
@@ -666,10 +666,10 @@
 	},
 	"user referral updated": {
 		"page": "CMS - Update user's default referral percentage",
-		"context": "User’s referral percentage has been successfully updated.",
+		"context": "User\u9225\u6a9a referral percentage has been successfully updated.",
 		"message_type": "success",
-		"message_english": "User’s referral percentage has been successfully updated.",
-		"message": "User’s referral percentage has been successfully updated."
+		"message_english": "User\u2019s referral percentage has been successfully updated.",
+		"message": "User\u2019s referral percentage has been successfully updated."
 	},
 	"coin fee update success": {
 		"page": "CMS - Asset fees update",
@@ -687,10 +687,10 @@
 	},
 	"User Status Updated": {
 		"page": "CMS - User status change",
-		"context": "The user’s verified status has been successfully updated.",
+		"context": "The user\u9225\u6a9a verified status has been successfully updated.",
 		"message_type": "success",
-		"message_english": "The user’s verified status has been successfully updated.",
-		"message": "The user’s verified status has been successfully updated."
+		"message_english": "The user\u2019s verified status has been successfully updated.",
+		"message": "The user\u2019s verified status has been successfully updated."
 	},
 	"Countries retirved success": {
 		"page": "CMS - Get Country lists",
@@ -736,10 +736,10 @@
 	},
 	"send coin success": {
 		"page": "Internal tradding - Asset send",
-		"context": "Asset/Token has been sent successfully",
+		"context": "Asset\/Token has been sent successfully",
 		"message_type": "success",
-		"message_english": "Asset/Token has been sent successfully.",
-		"message": "Asset/Token has been sent successfully."
+		"message_english": "Asset\/Token has been sent successfully.",
+		"message": "Asset\/Token has been sent successfully."
 	},
 	"list address success": {
 		"page": "Internal tradding - Address lists",
@@ -812,7 +812,7 @@
 		"message": "Role has been successfully updated."
 	},
 	"Invalid Role Id.": {
-		"page": "Update/Delete role",
+		"page": "Update\/Delete role",
 		"context": "Invalid Role Id.",
 		"message_type": "error",
 		"message_english": "Invalid Role Id.",
@@ -1022,7 +1022,7 @@
 		"message": "Asset Icon has not been sent."
 	},
 	"coin id is not sent": {
-		"page": "CMS - Create/Delete asset",
+		"page": "CMS - Create\/Delete asset",
 		"context": "Asset Id has not been sent",
 		"message_type": "error",
 		"message_english": "Asset Id has not been sent.",
@@ -1179,8 +1179,8 @@
 		"page": "Login, CMS - Login",
 		"context": "Email or password has not been sent",
 		"message_type": "error",
-		"message_english": "Network error, information not received. Please try again. ",
-		"message": "Network error, information not received. Please try again. "
+		"message_english": "Network error, information not received. Please try again.",
+		"message": "Network error, information not received. Please try again."
 	},
 	"Invalid verification token": {
 		"page": "Verify new IP",
@@ -1316,14 +1316,14 @@
 		"message": "In order to continue please include an email and a role."
 	},
 	"Employee not found": {
-		"page": "CMS - Delete/Update employee, Change IP whiltelist Status, Get Two-factor list of employee, Approve/Disapprove Two-factor requests",
+		"page": "CMS - Delete\/Update employee, Change IP whiltelist Status, Get Two-factor list of employee, Approve\/Disapprove Two-factor requests",
 		"context": "Entered employee could not be found.",
 		"message_type": "error",
 		"message_english": "Entered employee could not be found.",
 		"message": "Entered employee could not be found."
 	},
 	"Employee id is not sent.": {
-		"page": "CMS - Delete/Update employee",
+		"page": "CMS - Delete\/Update employee",
 		"context": "Employee id has not been sent.",
 		"message_type": "error",
 		"message_english": "Employee ID is required.",
@@ -1407,7 +1407,7 @@
 		"message": "Account class has been successfully deleted."
 	},
 	"Wallet Not Found": {
-		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
+		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve\/Disapprove withdraw requests",
 		"context": "User Wallet has not been found",
 		"message_type": "error",
 		"message_english": "User Wallet not found.",
@@ -1438,11 +1438,11 @@
 		"page": "Withdraw asset",
 		"context": "Your withdraw request has been submitted successfully. We will update you soon.",
 		"message_type": "success",
-		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. ",
-		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. "
+		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications.",
+		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications."
 	},
 	"Insufficent balance wallet": {
-		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
+		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve\/Disapprove withdraw requests",
 		"context": "Your account balance is currently too low to send this amount. If you think this is incorrect, please contact customer support.",
 		"message_type": "error",
 		"message_english": "Your account balance is currently too low to send this amount. If you think this is incorrect, please contact customer support.",
@@ -1589,14 +1589,14 @@
 		"message": "News source update has failed."
 	},
 	"Withdraw Request Cancel": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
+		"page": "CMS - Approve\/Disapprove withdraw requests",
 		"context": "Withdraw Request has been disapproved successfully.",
 		"message_type": "success",
 		"message_english": "Withdraw Request has been disapproved successfully.",
 		"message": "Withdraw Request has been disapproved successfully."
 	},
 	"Insufficent balance wallet user": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
+		"page": "CMS - Approve\/Disapprove withdraw requests",
 		"context": "Insufficient wallet balance in user",
 		"message_type": "error",
 		"message_english": "Insufficient wallet balance in users wallet.",
@@ -1645,7 +1645,7 @@
 		"message": "Trading pair already exists."
 	},
 	"Panic Status": {
-		"page": "Panic status on/of",
+		"page": "Panic status on\/of",
 		"context": "Panic status has been retrieved successfully",
 		"message_type": "success",
 		"message_english": "Panic status has been retrieved successfully.",
@@ -1807,10 +1807,10 @@
 	},
 	"Your request for twofactors is sent": {
 		"page": "Forgot Two-factor",
-		"context": "Your request of Two-factor/Backup code, has been sent to support team for verification.",
+		"context": "Your request of Two-factor\/Backup code, has been sent to support team for verification.",
 		"message_type": "success",
-		"message_english": "Your request of Two-factor/Backup code has been sent to support team for verification.",
-		"message": "Your request of Two-factor/Backup code has been sent to support team for verification."
+		"message_english": "Your request of Two-factor\/Backup code has been sent to support team for verification.",
+		"message": "Your request of Two-factor\/Backup code has been sent to support team for verification."
 	},
 	"Twofactors already requested": {
 		"page": "Forgot Two-factor",
@@ -1827,14 +1827,14 @@
 		"message": "Only valid images (jpeg, png, jpg) are allowed."
 	},
 	"No record found": {
-		"page": "CMS - Approve/Disapprove Two-factor requests, Contact lists, Admin wallet details, Batch listing",
+		"page": "CMS - Approve\/Disapprove Two-factor requests, Contact lists, Admin wallet details, Batch listing",
 		"context": "No data found.",
 		"message_type": "success",
 		"message_english": "No data found.",
 		"message": "No data found."
 	},
 	"Record found": {
-		"page": "Security Status, CMS - Approve/Disapprove Two-factor requests, Admin wallet details, Batch listing",
+		"page": "Security Status, CMS - Approve\/Disapprove Two-factor requests, Admin wallet details, Batch listing",
 		"context": "Data found.",
 		"message_type": "success",
 		"message_english": "Data found.",
@@ -1848,7 +1848,7 @@
 		"message": "Two-factor requests has been listed successfully."
 	},
 	"Twofactor request closed": {
-		"page": "CMS - Approve/Disapprove Two-factor requests",
+		"page": "CMS - Approve\/Disapprove Two-factor requests",
 		"context": "This request is already closed.",
 		"message_type": "success",
 		"message_english": "This request is already closed.",
@@ -1886,8 +1886,8 @@
 		"page": "Forgot password",
 		"context": "Your email id has not been verified. Please verify your email id",
 		"message_type": "error",
-		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed. ",
-		"message": "Your email address is not verified. Please check your email for a verification link to proceed. "
+		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed.",
+		"message": "Your email address is not verified. Please check your email for a verification link to proceed."
 	},
 	"Deleted By User": {
 		"page": "Login, Verify New IP",
@@ -1904,7 +1904,7 @@
 		"message": "Two-Factor Authentication request has been rejected."
 	},
 	"Threshold updated": {
-		"page": "Add/Update user thresholds, CMS - Add/Update admin thresholds",
+		"page": "Add\/Update user thresholds, CMS - Add\/Update admin thresholds",
 		"context": "Your asset threshold preferences have been updated.",
 		"message_type": "success",
 		"message_english": "Your asset threshold preferences have been updated.",
@@ -2408,7 +2408,7 @@
 		"message": "Minimum order limit has not been satisfied."
 	},
 	"fees greater than 0": {
-		"page": "Update withdrawl/faldax fees",
+		"page": "Update withdrawl\/faldax fees",
 		"context": "Withdrawal fees must be greater than zero.",
 		"message_type": "error",
 		"message_english": "Withdrawal fees must be greater than zero.",
@@ -2429,7 +2429,7 @@
 		"message": "FALDAX fees must be greater than zero."
 	},
 	"User has been deleted, So funds cannot be transferred": {
-		"page": "CMS - Approve/Disapprove withdraws requests",
+		"page": "CMS - Approve\/Disapprove withdraws requests",
 		"context": "User has been deleted. Funds cannot be transferred.",
 		"message_type": "error",
 		"message_english": "User has been deleted. Funds cannot be transferred.",
@@ -2513,7 +2513,7 @@
 		"message": "Please select a user."
 	},
 	"tier data retrieve": {
-		"page": "Tier request/data",
+		"page": "Tier request\/data",
 		"context": "tier data has been retrieved successfully",
 		"message_type": "success",
 		"message_english": "Tier data has been retrieved successfully.",
@@ -2528,7 +2528,7 @@
 	},
 	"No records for offercode": {
 		"page": "CMS - Offercode usage",
-		"context": "No records found for offercode attempted/applied.",
+		"context": "No records found for offercode attempted\/applied.",
 		"message_type": "success",
 		"message_english": "No records found for this offer code.",
 		"message": "No records found for this offer code."
@@ -2758,7 +2758,7 @@
 		"message": "Network Fee has been retrieved successfully."
 	},
 	"Panic status changed successfully": {
-		"page": "CMS - Panic button enable/disable",
+		"page": "CMS - Panic button enable\/disable",
 		"context": "The panic status has been successfully changed.",
 		"message_type": "success",
 		"message_english": "The panic status has been successfully changed.",
@@ -2783,8 +2783,7 @@
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
-		"message": "Trade data retrieved successfully.",
-		"": ""
+		"message": "Trade data retrieved successfully."
 	},
 	"Withdraw Fee has been retrieved successfully": {
 		"page": "CMS - Withdraw fees lists",
@@ -2801,11 +2800,18 @@
 		"message": "Invalid Parameters."
 	},
 	"Insufficient Balance in warm Wallet": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
+		"page": "CMS - Approve\/Disapprove withdraw requests",
 		"context": "Insufficient Balance in warm Wallet",
 		"message_type": "error",
 		"message_english": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support.",
 		"message": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support."
+	},
+	"Insufficient Balance in warm Wallet Withdraw Request": {
+		"page": "CMS - Approve\/Disapprove withdraw requests",
+		"context": "Insufficient Balance in warm Wallet",
+		"message_type": "error",
+		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
+		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
 	},
 	"Invalid data provided": {
 		"page": "If invalid data provided",
@@ -2826,8 +2832,7 @@
 		"context": "Verification successfull",
 		"message_type": "success",
 		"message_english": "Verification successful.",
-		"message": "Verification successful.",
-		"": ""
+		"message": "Verification successful."
 	},
 	"Ticket lists": {
 		"page": "Ticket lists, CMS - Ticket lists",
@@ -2847,8 +2852,8 @@
 		"page": "Middleware(If user has deleted)",
 		"context": "Your User has been deleted",
 		"message_type": "error",
-		"message_english": "Your user account has been deleted. ",
-		"message": "Your user account has been deleted. "
+		"message_english": "Your user account has been deleted.",
+		"message": "Your user account has been deleted."
 	},
 	"Invalid Authorization token": {
 		"page": "Middleware(If invalid access token)",
@@ -2879,14 +2884,14 @@
 		"message": "Sorry! The offer code you entered is either expired or not applicable for your account."
 	},
 	"Asset fees limit update": {
-		"page": "CMS - Asset static fees/limit update",
+		"page": "CMS - Asset static fees\/limit update",
 		"context": "Asset static fees or limit update",
 		"message_type": "success",
 		"message_english": "Asset details updated successfully.",
 		"message": "Asset details updated successfully."
 	},
 	"Asset fees limit lists": {
-		"page": "CMS - Asset static fees/limit lists",
+		"page": "CMS - Asset static fees\/limit lists",
 		"context": "Asset static fees or limit lists",
 		"message_type": "success",
 		"message_english": "Asset details has been retrieved successfully.",
@@ -2906,15 +2911,8 @@
 		"message_english": "User Account has been created Successfully. Verification Link has been sent to user.",
 		"message": "User Account has been created Successfully. Verification Link has been sent to user."
 	},
-	"Insufficient Balance in warm Wallet Withdraw Request": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
-		"context": "Insufficient Balance in warm Wallet",
-		"message_type": "error",
-		"message_english": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction.",
-		"message": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction."
-	},
 	"Your User has been deactivated": {
-		"page": "User -Acrtive/deactive",
+		"page": "User -Acrtive\/deactive",
 		"context": "User has been deactivated",
 		"message_type": "error",
 		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
