@@ -823,6 +823,7 @@ module.exports = {
         let user_details = await Users.findOne({
           reset_token
         });
+        sails.hooks.i18n.setLocale(user_details.default_language);
         if (user_details == undefined) {
           return res
             .status(400)
@@ -928,6 +929,8 @@ module.exports = {
         // deleted_at: null,
         // is_active: true
       }).sort('id DESC');
+      console.log(user_details)
+      sails.hooks.i18n.setLocale(user_details[0].default_language);
       user_details = user_details[0];
       if (!user_details) {
         return res
