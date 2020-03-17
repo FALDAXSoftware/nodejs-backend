@@ -200,6 +200,7 @@ module.exports = async function (req, res, next) {
         id: req.user.id
       });
       if (userData != undefined && userData.isAdmin != true) {
+        console.log("INSIDE TYHIUS")
         if (userData.is_verified == false || userData.is_new_email_verified == false) {
           return res
             .status(403)
@@ -207,7 +208,16 @@ module.exports = async function (req, res, next) {
               "status": 403,
               err: sails.__("account not not verified by admin").message
             });
-        }else if (userData.deleted_at == null && userData.is_active == true) {
+        } else if (userData.deleted_at == null && userData.is_active == true) {
+          console.log("req.headers", req.headers)
+          console.log("userData.default_language", userData.default_language)
+          if (req.headers && req.headers["lang"] && req.headers["lang"] != "") {
+            sails.hooks.i18n.setLocale(req.headers["lang"]);
+          } else if (userData != undefined) {
+            sails.hooks.i18n.setLocale(userData.default_language);
+          } else {
+            sails.hooks.i18n.setLocale("en");
+          }
           next();
         } else if (userData.deleted_at != null) {
           return res
@@ -246,6 +256,15 @@ module.exports = async function (req, res, next) {
             opts.ip = ip;
             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
             if (checkexist == 2) {
+              console.log("req.headers", req.headers)
+              console.log("userData.default_language", userData.default_language)
+              if (req.headers && req.headers["lang"] && req.headers["lang"] != "") {
+                sails.hooks.i18n.setLocale(req.headers["lang"]);
+              } else if (userData != undefined) {
+                sails.hooks.i18n.setLocale(userData.default_language);
+              } else {
+                sails.hooks.i18n.setLocale("en");
+              }
               next();
             } else if (checkexist == 1) {
               return res
@@ -255,13 +274,40 @@ module.exports = async function (req, res, next) {
                   "err": sails.__("Time for whitelist has been expired.").message
                 });
             } else {
+              console.log("req.headers", req.headers)
+              console.log("userData.default_language", userData.default_language)
+              if (req.headers && req.headers["lang"] && req.headers["lang"] != "") {
+                sails.hooks.i18n.setLocale(req.headers["lang"]);
+              } else if (userData != undefined) {
+                sails.hooks.i18n.setLocale(userData.default_language);
+              } else {
+                sails.hooks.i18n.setLocale("en");
+              }
               next();
             }
           } else {
+            console.log("req.headers", req.headers)
+            console.log("userData.default_language", userData.default_language)
+            if (req.headers && req.headers["lang"] && req.headers["lang"] != "") {
+              sails.hooks.i18n.setLocale(req.headers["lang"]);
+            } else if (userData != undefined) {
+              sails.hooks.i18n.setLocale(userData.default_language);
+            } else {
+              sails.hooks.i18n.setLocale("en");
+            }
             next();
           }
         }
       } else {
+        console.log("req.headers", req.headers)
+        // console.log("userData.default_language", userData.default_language)
+        if (req.headers && req.headers["lang"] && req.headers["lang"] != "") {
+          sails.hooks.i18n.setLocale(req.headers["lang"]);
+        } else if (userData != undefined) {
+          sails.hooks.i18n.setLocale(userData.default_language);
+        } else {
+          sails.hooks.i18n.setLocale("en");
+        }
         next();
       }
     }
