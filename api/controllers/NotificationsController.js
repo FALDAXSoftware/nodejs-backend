@@ -32,7 +32,12 @@ module.exports = {
         }
       });
       console.log(userData)
-      if (userData.default_language == "ja") {
+      if (userData.default_language == "ja" && !req.headers['accept-language']) {
+        for (var i = 0; i < notificationList.length; i++) {
+          notificationList[i].title = notificationList[i].title_ja;
+          delete notificationList[i].title_ja;
+        }
+      } else if (req.headers['accept-language'] == "ja") {
         for (var i = 0; i < notificationList.length; i++) {
           notificationList[i].title = notificationList[i].title_ja;
           delete notificationList[i].title_ja;

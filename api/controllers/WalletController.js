@@ -197,8 +197,27 @@ module.exports = {
         balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
         if (balanceWalletData.rows[i].quote != null) {
-          balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
-          balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+          console.log(balanceWalletData.rows[i].quote)
+          if (balanceWalletData.rows[i].quote.EUR != undefined && balanceWalletData.rows[i].quote.INR != undefined) {
+            balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          } else {
+            console.log("EUR ELSE")
+            balanceWalletData.rows[i].quote = {
+              EUR: {
+                price: 0.0
+              },
+              INR: {
+                price: 0.0
+              },
+              USD: {
+                price: (balanceWalletData.rows[i].quote.USD.price)
+              }
+            }
+          }
+          // balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null && balanceWalletData.rows[i].quote.EUR) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+          // balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null && balanceWalletData.rows[i].quote.INR) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
         } else {
           if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
             balanceWalletData.rows[i].quote = {

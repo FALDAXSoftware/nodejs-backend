@@ -1377,6 +1377,35 @@ module.exports = {
             "err": sails.__("2 factor already disabled").message
           });
       }
+
+      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: userData.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
+      }
       await Users
         .update({
           id: user.id,
