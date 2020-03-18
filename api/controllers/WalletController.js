@@ -239,7 +239,7 @@ module.exports = {
             // if (get_price.length > 0)
             //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
             // else
-            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            // balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
         }
         if (balanceWalletData.rows[i].is_active == true) {
