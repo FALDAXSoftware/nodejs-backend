@@ -537,6 +537,7 @@ module.exports = {
                   deposit_method: req.body.deposit_method,
                   kraken_coin_name: req.body.kraken_coin_name,
                   iserc: req.body.iserc,
+                  is_active: false,
                   //wallet_address: req.body.wallet_address,
                   created_at: new Date(),
                   coin: (req.body.coin_code).toUpperCase(),
