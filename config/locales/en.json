@@ -666,7 +666,7 @@
 	},
 	"user referral updated": {
 		"page": "CMS - Update user's default referral percentage",
-		"context": "User鈥檚 referral percentage has been successfully updated.",
+		"context": "User's referral percentage has been successfully updated.",
 		"message_type": "success",
 		"message_english": "User’s referral percentage has been successfully updated.",
 		"message": "User’s referral percentage has been successfully updated."
@@ -687,7 +687,7 @@
 	},
 	"User Status Updated": {
 		"page": "CMS - User status change",
-		"context": "The user鈥檚 verified status has been successfully updated.",
+		"context": "The user's verified status has been successfully updated.",
 		"message_type": "success",
 		"message_english": "The user’s verified status has been successfully updated.",
 		"message": "The user’s verified status has been successfully updated."
