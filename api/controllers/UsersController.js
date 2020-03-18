@@ -1355,6 +1355,7 @@ module.exports = {
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
+      console.log(req.body)
       let user = await Users.findOne({
         id: user_id,
         is_active: true,
@@ -1376,6 +1377,35 @@ module.exports = {
             "status": 401,
             "err": sails.__("2 factor already disabled").message
           });
+      }
+
+      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: user.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
       }
       await Users
         .update({
@@ -2728,7 +2758,9 @@ module.exports = {
             is_active: true,
             is_verified: false,
             password: user.password,
-            full_name: full_name
+            full_name: full_name,
+            referral_code: randomize('Aa0', 10),
+            is_user_updated: true
           })
           .fetch();
 

@@ -400,9 +400,9 @@ module.exports = {
     console.log(iv)
     var value = req.body.encryptKey;
     console.log(value);
-    // var encryptData = await sails.helpers.getEncryptData(value);
-    // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("47c69b1635c867f3a032434f2b2e");
+    var encryptData = await sails.helpers.getEncryptData(value);
+    console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData(encryptData);
     console.log("decryptData", decryptData)
     return res.json(200);
   },
