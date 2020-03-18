@@ -141,6 +141,7 @@ module.exports = {
         console.log(user_detail)
 
         if (user_detail) {
+          console.log(user_detail)
           // Set language to user's default
           if (user_detail.default_language && user_detail.default_language != "") {
             sails.hooks.i18n.setLocale(user_detail.default_language);
