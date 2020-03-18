@@ -1355,6 +1355,7 @@ module.exports = {
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
+      console.log(req.body)
       let user = await Users.findOne({
         id: user_id,
         is_active: true,
@@ -1391,7 +1392,7 @@ module.exports = {
         let verified = speakeasy
           .totp
           .verify({
-            secret: userData.twofactor_secret,
+            secret: user.twofactor_secret,
             encoding: 'base32',
             token: req.body.otp,
             window: 2
@@ -2757,7 +2758,9 @@ module.exports = {
             is_active: true,
             is_verified: false,
             password: user.password,
-            full_name: full_name
+            full_name: full_name,
+            referral_code: randomize('Aa0', 10),
+            is_user_updated: true
           })
           .fetch();
 
