@@ -325,8 +325,8 @@
 		"page": "GeoFencing",
 		"context": "You are not allowed to trade",
 		"message_type": "error",
-		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. ",
-		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. "
+		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates.",
+		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates."
 	},
 	"You need to complete you KYC before trading": {
 		"page": "KYC needed",
@@ -666,7 +666,7 @@
 	},
 	"user referral updated": {
 		"page": "CMS - Update user's default referral percentage",
-		"context": "User’s referral percentage has been successfully updated.",
+		"context": "User's referral percentage has been successfully updated.",
 		"message_type": "success",
 		"message_english": "User’s referral percentage has been successfully updated.",
 		"message": "User’s referral percentage has been successfully updated."
@@ -687,7 +687,7 @@
 	},
 	"User Status Updated": {
 		"page": "CMS - User status change",
-		"context": "The user’s verified status has been successfully updated.",
+		"context": "The user's verified status has been successfully updated.",
 		"message_type": "success",
 		"message_english": "The user’s verified status has been successfully updated.",
 		"message": "The user’s verified status has been successfully updated."
@@ -1179,8 +1179,8 @@
 		"page": "Login, CMS - Login",
 		"context": "Email or password has not been sent",
 		"message_type": "error",
-		"message_english": "Network error, information not received. Please try again. ",
-		"message": "Network error, information not received. Please try again. "
+		"message_english": "Network error, information not received. Please try again.",
+		"message": "Network error, information not received. Please try again."
 	},
 	"Invalid verification token": {
 		"page": "Verify new IP",
@@ -1438,8 +1438,8 @@
 		"page": "Withdraw asset",
 		"context": "Your withdraw request has been submitted successfully. We will update you soon.",
 		"message_type": "success",
-		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. ",
-		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. "
+		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications.",
+		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications."
 	},
 	"Insufficent balance wallet": {
 		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
@@ -1886,8 +1886,8 @@
 		"page": "Forgot password",
 		"context": "Your email id has not been verified. Please verify your email id",
 		"message_type": "error",
-		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed. ",
-		"message": "Your email address is not verified. Please check your email for a verification link to proceed. "
+		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed.",
+		"message": "Your email address is not verified. Please check your email for a verification link to proceed."
 	},
 	"Deleted By User": {
 		"page": "Login, Verify New IP",
@@ -2783,8 +2783,7 @@
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
-		"message": "Trade data retrieved successfully.",
-		"": ""
+		"message": "Trade data retrieved successfully."
 	},
 	"Withdraw Fee has been retrieved successfully": {
 		"page": "CMS - Withdraw fees lists",
@@ -2806,6 +2805,13 @@
 		"message_type": "error",
 		"message_english": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support.",
 		"message": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support."
+	},
+	"Insufficient Balance in warm Wallet Withdraw Request": {
+		"page": "CMS - Approve/Disapprove withdraw requests",
+		"context": "Insufficient Balance in warm Wallet",
+		"message_type": "error",
+		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
+		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
 	},
 	"Invalid data provided": {
 		"page": "If invalid data provided",
@@ -2847,8 +2853,8 @@
 		"page": "Middleware(If user has deleted)",
 		"context": "Your User has been deleted",
 		"message_type": "error",
-		"message_english": "Your user account has been deleted. ",
-		"message": "Your user account has been deleted. "
+		"message_english": "Your user account has been deleted.",
+		"message": "Your user account has been deleted."
 	},
 	"Invalid Authorization token": {
 		"page": "Middleware(If invalid access token)",
@@ -2905,13 +2911,6 @@
 		"message_type": "success",
 		"message_english": "User Account has been created Successfully. Verification Link has been sent to user.",
 		"message": "User Account has been created Successfully. Verification Link has been sent to user."
-	},
-	"Insufficient Balance in warm Wallet Withdraw Request": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
-		"context": "Insufficient Balance in warm Wallet",
-		"message_type": "error",
-		"message_english": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction.",
-		"message": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction."
 	},
 	"Your User has been deactivated": {
 		"page": "User -Acrtive/deactive",
