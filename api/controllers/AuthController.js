@@ -148,6 +148,7 @@ module.exports = {
           } else {
             sails.hooks.i18n.setLocale("en");
           }
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
@@ -824,7 +825,7 @@ module.exports = {
         let user_details = await Users.findOne({
           reset_token
         });
-        sails.hooks.i18n.setLocale(user_details.default_language);
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (user_details == undefined) {
           return res
             .status(400)
@@ -931,7 +932,7 @@ module.exports = {
         // is_active: true
       }).sort('id DESC');
       console.log(user_details)
-      sails.hooks.i18n.setLocale(user_details[0].default_language);
+      sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       user_details = user_details[0];
       if (!user_details) {
         return res
