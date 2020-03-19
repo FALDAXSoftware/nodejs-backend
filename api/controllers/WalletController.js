@@ -3497,6 +3497,7 @@ module.exports = {
       var {
         coin
       } = req.allParams();
+      console.log("Language >>>>", req.headers["accept-language"])
       var availableBalance = 0.0;
       var coinData = await Coins.findOne({
         where: {

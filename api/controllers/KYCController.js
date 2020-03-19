@@ -295,35 +295,35 @@ module.exports = {
                       await sails.helpers.notification.send.text("kyc_approved", user_data[0])
                   }
                 }
-                if (user_data[0] != undefined) {
-                  let slug = 'kyc_approved';
-                  let template = await EmailTemplate.findOne({
-                    slug
-                  });
-                  let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
-                  let language_content = template.all_content[user_language].content;
-                  let language_subject = template.all_content[user_language].subject;
-                  let emailContent = await sails
-                    .helpers
-                    .utilities
-                    .formatEmail(language_content, {
-                      recipientName: user_data[0].first_name
-                    })
-                  console.log("user_data[0].email", user_data[0].email)
-                  sails
-                    .hooks
-                    .email
-                    .send("general-email", {
-                      content: emailContent
-                    }, {
-                      to: user_data[0].email,
-                      subject: language_subject
-                    }, function (err) {
-                      if (err) {
-                        console.log("err in sending email, while kyc approved", err);
-                      }
-                    })
-                }
+                // if (user_data[0] != undefined) {
+                //   let slug = 'kyc_approved';
+                //   let template = await EmailTemplate.findOne({
+                //     slug
+                //   });
+                //   let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
+                //   let language_content = template.all_content[user_language].content;
+                //   let language_subject = template.all_content[user_language].subject;
+                //   let emailContent = await sails
+                //     .helpers
+                //     .utilities
+                //     .formatEmail(language_content, {
+                //       recipientName: user_data[0].first_name
+                //     })
+                //   console.log("user_data[0].email", user_data[0].email)
+                //   sails
+                //     .hooks
+                //     .email
+                //     .send("general-email", {
+                //       content: emailContent
+                //     }, {
+                //       to: user_data[0].email,
+                //       subject: language_subject
+                //     }, function (err) {
+                //       if (err) {
+                //         console.log("err in sending email, while kyc approved", err);
+                //       }
+                //     })
+                // }
               } else if (resultState[data.state] == "DENY") {
                 var user_data_kyc = await KYC.findOne({
                   mtid: data.mtid
@@ -357,38 +357,38 @@ module.exports = {
                 }
 
                 console.log("user_data[0]", user_data[0])
-                if (user_data[0] != undefined) {
-                  let slug = 'kyc_rejected';
-                  let template = await EmailTemplate.findOne({
-                    slug
-                  });
-                  console.log(template)
-                  let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
-                  let language_content = template.all_content[user_language].content;
-                  let language_subject = template.all_content[user_language].subject;
-                  let emailContent = await sails
-                    .helpers
-                    .utilities
-                    .formatEmail(language_content, {
-                      recipientName: user_data[0].first_name
-                    })
+                // if (user_data[0] != undefined) {
+                //   let slug = 'kyc_rejected';
+                //   let template = await EmailTemplate.findOne({
+                //     slug
+                //   });
+                //   console.log(template)
+                //   let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
+                //   let language_content = template.all_content[user_language].content;
+                //   let language_subject = template.all_content[user_language].subject;
+                //   let emailContent = await sails
+                //     .helpers
+                //     .utilities
+                //     .formatEmail(language_content, {
+                //       recipientName: user_data[0].first_name
+                //     })
 
-                  console.log("emailContent", emailContent)
-                  console.log("user_data[0].email", user_data[0].email)
-                  sails
-                    .hooks
-                    .email
-                    .send("general-email", {
-                      content: emailContent
-                    }, {
-                      to: user_data[0].email,
-                      subject: language_subject
-                    }, function (err) {
-                      if (err) {
-                        console.log("err in sending email, while kyc approved", err);
-                      }
-                    })
-                }
+                //   console.log("emailContent", emailContent)
+                //   console.log("user_data[0].email", user_data[0].email)
+                //   sails
+                //     .hooks
+                //     .email
+                //     .send("general-email", {
+                //       content: emailContent
+                //     }, {
+                //       to: user_data[0].email,
+                //       subject: language_subject
+                //     }, function (err) {
+                //       if (err) {
+                //         console.log("err in sending email, while kyc approved", err);
+                //       }
+                //     })
+                // }
 
               }
             }
