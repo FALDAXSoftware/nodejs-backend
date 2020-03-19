@@ -778,6 +778,7 @@ module.exports = {
 
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = dataResponse.response;
+    // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
         "status": 200,
@@ -890,6 +891,7 @@ module.exports = {
                   .set(user)
                   .fetch();
                 delete updatedUsers.password
+                sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
                 return res.json({
                   "status": 200,
                   "message": sails.__("User Update").message
@@ -934,7 +936,10 @@ module.exports = {
                   email: user.email,
                   deleted_at: null
                 })
-                .set(user);
+                .set(user)
+                .fetch();
+
+              sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
 
               return res.json({
                 "status": 200,
