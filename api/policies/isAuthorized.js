@@ -12,7 +12,7 @@ module.exports = async function (req, res, next) {
   var token;
 
   try {
-    console.log(req.body)
+    console.log(req.headers)
     if (req.isSocket) {
       if (req.headers && req.headers.authorization) {
         var parts = req
