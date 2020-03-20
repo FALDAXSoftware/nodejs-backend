@@ -407,6 +407,15 @@ module.exports = {
         is_active: true
       });
 
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
+
       if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
         if (!req.body.otp) {
           return res
@@ -1217,6 +1226,19 @@ module.exports = {
         coin
       } = req.allParams();
       var user_id = req.user.id;
+      var userData = await Users.findOne({
+        is_active: true,
+        deleted_at: null,
+        id: user_id
+      })
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
       var receiveCoin = await sails
         .helpers
         .wallet
@@ -1284,6 +1306,21 @@ module.exports = {
       console.log("req.isAdmin", req.user.isAdmin)
       if (req.user.isAdmin == true || req.user.isAdmin == "true") {
         req.user.id = 36
+      } else {
+        var userData = await Users.findOne({
+          is_active: true,
+          deleted_at: null,
+          id: req.user.id
+        })
+        console.log(userData)
+        if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Please Complete You profile").message
+            })
+        }
       }
       let coinData = await Coins.findOne({
         select: [
@@ -1544,6 +1581,19 @@ module.exports = {
       } = req.allParams();
       console.log(req.allParams())
       var user_id = req.user.id;
+      var userData = await Users.findOne({
+        is_active: true,
+        deleted_at: null,
+        id: user_id
+      })
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
