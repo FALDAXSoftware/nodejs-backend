@@ -2917,69 +2917,76 @@
 		"context": "User has been deactivated",
 		"message_type": "error",
 		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
-		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
+		"message": "Due to inactivity your account has been deactivated by an administrator. Please contact support."
 	},
 	"Available Balance": {
 		"page": "User - Available Balance for user to send after fees deduction",
 		"context": "Available Balance for the user",
 		"message_type": "success",
 		"message_english": "User Available balance after fees has been retrieved successfully.",
-		"message": "User Available balance after fees has been retrieved successfully."
+		"message": "User's available balance after fees has been successfully retrieved."
 	},
 	"Coin Inactive": {
 		"page": "User - Create Address",
 		"context": "Coin is inactive and user tries to create the address",
 		"message_type": "success",
 		"message_english": "Wallet cannot be created, as asset is inactive",
-		"message": "Wallet cannot be created, as asset is inactive"
+		"message": "Currently a wallet for this currency cannot be created."
 	},
 	"Enter Valid Address": {
 		"page": "User - Send Coin",
 		"context": "Address is invalid",
 		"message_type": "error",
 		"message_english": "Please enter valid destination address",
-		"message": "Please enter valid destination address"
+		"message": "Please enter a valid destination address"
 	},
 	"coin inactive or not": {
 		"page": "Admin -Faldax Send Coin",
 		"context": "Coin not found or is made inactive",
 		"message_type": "error",
 		"message_english": "Coin has been made inactive or Coin has been Found",
-		"message": "Coin has been made inactive or Coin has been Found"
+		"message": "This asset is temporarily frozen or inactive. Please contact support further details. "
 	},
 	"Your KYC is under process. Please wait until KYC is approved": {
 		"page": "When user submit kyc",
 		"context": "Your KYC is under process. Please wait until KYC is approved",
 		"message_type": "success",
 		"message_english": "Your KYC is under process. Please wait until KYC is approved",
-		"message": "Your KYC is under process. Please wait until KYC is approved"
+		"message": "Your identity verification is currently in process. Please wait until your identity verification is complete."
 	},
 	"You are allowed to trade": {
 		"page": "When trade is allowed in user's region",
 		"context": "You are allowed to trade",
 		"message_type": "success",
 		"message_english": "You are allowed to trade",
-		"message": "You are allowed to trade"
+		"message": "All trading services are available in your area."
 	},
 	"You are not allowed to trade in this regoin as your state is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as your state is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as your state is illegal",
-		"message": "You are not allowed to trade in this regoin as your state is illegal"
+		"message": "You cannot trade cryptocurrency in your current region. It is illegal to trade in this state."
 	},
 	"You are not allowed to trade in this regoin as country is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as country is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as country is illegal",
-		"message": "You are not allowed to trade in this regoin as country is illegal"
+		"message": "You cannot trade cryptocurrency in your current region. It is illegal to trade in this country."
 	},
 	"File Max Size": {
 		"page": "Identity Verification - When user uploads KYC",
 		"context": "Maximum File size allowed is 5 MB",
 		"message_type": "error",
 		"message_english": "Maximum File size allowed is 5 MB",
-		"message": "Maximum File size allowed is 5 MB"
-	}
+		"message": "Maximum file size allowed is 5 MB"
+	},
+  "Please Complete You profile": {
+    "page": "Wallet- Send Coin, Address Creation",
+    "context": "Please complete you profile details to do wallet actions",
+    "message_type": "error",
+    "message_english": "Please complete you profile details to do wallet actions",
+    "message": "Please complete you profile details to do wallet actions"
+  }
 }
