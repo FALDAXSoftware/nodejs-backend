@@ -36,6 +36,7 @@ module.exports = {
     try {
 
       if (req.body.email_verify_token) {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         let user = await Users.findOne({
           email_verify_token: req.body.email_verify_token
         });
