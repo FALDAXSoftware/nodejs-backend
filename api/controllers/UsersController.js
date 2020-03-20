@@ -31,6 +31,11 @@ module.exports = {
   create: async function (req, res) {
     try {
       var referred_id = null;
+      if (req.body.default_language && req.body.default_language != "") {
+        sails.hooks.i18n.setLocale(req.body.default_language);
+      } else {
+        sails.hooks.i18n.setLocale("en");
+      }
       let email = req
         .body
         .email

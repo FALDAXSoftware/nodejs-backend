@@ -2902,83 +2902,90 @@
 		"context": "If email does not exists in the system",
 		"message_type": "error",
 		"message_english": "Account does not exists with this email id",
-		"message": "Account does not exists with this email id"
+		"message": "アカウントは、この電子メールIDに存在しません。"
 	},
 	"verification link sent to user": {
 		"page": "CMS - Add User",
 		"context": "When admin create the user from CMS",
 		"message_type": "success",
 		"message_english": "User Account has been created Successfully. Verification Link has been sent to user.",
-		"message": "User Account has been created Successfully. Verification Link has been sent to user."
+		"message": "ユーザーアカウントが正常に作成されました。検証リンクがユーザーに送信されました。"
 	},
 	"Your User has been deactivated": {
 		"page": "User -Acrtive\/deactive",
 		"context": "User has been deactivated",
 		"message_type": "error",
 		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
-		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
+		"message": "不活動によるアカウントは、管理者によって無効にされています。連絡先のサポートをしてください。"
 	},
 	"Available Balance": {
 		"page": "User - Available Balance for user to send after fees deduction",
 		"context": "Available Balance for the user",
 		"message_type": "success",
 		"message_english": "User Available balance after fees has been retrieved successfully.",
-		"message": "User Available balance after fees has been retrieved successfully."
+		"message": "手数料の後にユーザーの利用可能残高が正常に取得されています。"
 	},
 	"Coin Inactive": {
 		"page": "User - Create Address",
 		"context": "Coin is inactive and user tries to create the address",
 		"message_type": "success",
 		"message_english": "Wallet cannot be created, as asset is inactive",
-		"message": "Wallet cannot be created, as asset is inactive"
+		"message": "現在、この通貨の財布を作成することはできません。"
 	},
 	"Enter Valid Address": {
 		"page": "User - Send Coin",
 		"context": "Address is invalid",
 		"message_type": "error",
 		"message_english": "Please enter valid destination address",
-		"message": "Please enter valid destination address"
+		"message": "有効な宛先アドレスを入力してください。"
 	},
 	"coin inactive or not": {
 		"page": "Admin -Faldax Send Coin",
 		"context": "Coin not found or is made inactive",
 		"message_type": "error",
 		"message_english": "Coin has been made inactive or Coin has been Found",
-		"message": "Coin has been made inactive or Coin has been Found"
+		"message": "この資産は、一時的に凍結または非アクティブです。連絡先は、さらに詳細をサポートしてください。"
 	},
 	"Your KYC is under process. Please wait until KYC is approved": {
 		"page": "When user submit kyc",
 		"context": "Your KYC is under process. Please wait until KYC is approved",
 		"message_type": "success",
 		"message_english": "Your KYC is under process. Please wait until KYC is approved",
-		"message": "Your KYC is under process. Please wait until KYC is approved"
+		"message": "あなたの本人確認は、現在処理中です。ご本人確認が完了するまでお待ちください。"
 	},
 	"You are allowed to trade": {
 		"page": "When trade is allowed in user's region",
 		"context": "You are allowed to trade",
 		"message_type": "success",
 		"message_english": "You are allowed to trade",
-		"message": "You are allowed to trade"
+		"message": "すべての取引サービスは、お住まいの地域でご利用いただけます。"
 	},
 	"You are not allowed to trade in this regoin as your state is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as your state is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as your state is illegal",
-		"message": "You are not allowed to trade in this regoin as your state is illegal"
+		"message": "あなたの現在の領域にcryptocurrencyを取引することはできません。この状態で取引することは違法です。"
 	},
 	"You are not allowed to trade in this regoin as country is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as country is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as country is illegal",
-		"message": "You are not allowed to trade in this regoin as country is illegal"
+		"message": "あなたの現在の領域にcryptocurrencyを取引することはできません。この国で取引することは違法です。"
 	},
 	"File Max Size": {
 		"page": "Identity Verification - When user uploads KYC",
 		"context": "Maximum File size allowed is 5 MB",
 		"message_type": "error",
 		"message_english": "Maximum File size allowed is 5 MB",
-		"message": "Maximum File size allowed is 5 MB"
-	}
+		"message": "許可される最大ファイルサイズは5 MBです"
+	},
+  "Please Complete You profile": {
+    "page": "Wallet- Send Coin, Address Creation",
+    "context": "Please complete you profile details to do wallet actions",
+    "message_type": "error",
+    "message_english": "Please complete you profile details to do wallet actions",
+    "message": "あなたの財布のアクションを行うには、プロファイルの詳細を記入してください"
+  }
 }
