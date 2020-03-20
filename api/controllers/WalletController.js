@@ -412,7 +412,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Please Complete You profile").message
+            "err": sails.__("Please Complete You profile").message
           })
       }
 
@@ -1236,7 +1236,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Please Complete You profile").message
+            "err": sails.__("Please Complete You profile").message
           })
       }
       var receiveCoin = await sails
@@ -1318,7 +1318,7 @@ module.exports = {
             .status(500)
             .json({
               "status": 500,
-              "error": sails.__("Please Complete You profile").message
+              "err": sails.__("Please Complete You profile").message
             })
         }
       }
@@ -1591,7 +1591,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "message": sails.__("Please Complete You profile").message
+            "err": sails.__("Please Complete You profile").message
           })
       }
       var coinData = await Coins.findOne({
