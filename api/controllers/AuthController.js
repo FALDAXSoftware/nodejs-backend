@@ -143,11 +143,11 @@ module.exports = {
         if (user_detail) {
           console.log(user_detail)
           // Set language to user's default
-          if (user_detail.default_language && user_detail.default_language != "") {
-            sails.hooks.i18n.setLocale(user_detail.default_language);
-          } else {
-            sails.hooks.i18n.setLocale("en");
-          }
+          // if (user_detail.default_language && user_detail.default_language != "") {
+          //   sails.hooks.i18n.setLocale(user_detail.default_language);
+          // } else {
+          //   sails.hooks.i18n.setLocale("en");
+          // }
           sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({

@@ -140,6 +140,7 @@ module.exports = async function (req, res, next) {
           token = credentials;
         }
       } else {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         return res
           .status(403)
           .json({
@@ -167,6 +168,7 @@ module.exports = async function (req, res, next) {
             token = credentials;
           }
         } else {
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           return res
             .status(403)
             .json({
@@ -175,6 +177,7 @@ module.exports = async function (req, res, next) {
             });
         }
       } else {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         return res
           .status(401)
           .json({
@@ -183,6 +186,7 @@ module.exports = async function (req, res, next) {
           });
       }
     } else {
+      sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       return res
         .status(401)
         .json({
@@ -202,6 +206,7 @@ module.exports = async function (req, res, next) {
       });
       if (userData != undefined && userData.isAdmin != true) {
         console.log("INSIDE TYHIUS")
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (userData.is_verified == false || userData.is_new_email_verified == false) {
           return res
             .status(403)
@@ -334,6 +339,7 @@ module.exports = async function (req, res, next) {
     }
   } catch (error) {
     console.log(error)
+    sails.hooks.i18n.setLocale(req.headers["accept-language"]);
     return res
       .status(403)
       .json({
