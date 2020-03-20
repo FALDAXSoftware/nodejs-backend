@@ -214,10 +214,13 @@ module.exports = async function (req, res, next) {
           console.log("userData.default_language", userData.default_language)
           console.log(req.headers["accept-language"])
           if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+            console.log("INSIDE IF>>>>>>>")
             sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           } else if (userData != undefined) {
+            console.log("INSIDE ELSE IF>>>>>>>")
             sails.hooks.i18n.setLocale(userData.default_language);
           } else {
+            console.log("ELSE>>>>>>>")
             sails.hooks.i18n.setLocale("en");
           }
           next();
@@ -262,10 +265,13 @@ module.exports = async function (req, res, next) {
               console.log("userData.default_language", userData.default_language)
               console.log(req.headers["accept-language"])
               if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+                console.log("INSIDE IF>>>>>>>")
                 sails.hooks.i18n.setLocale(req.headers["accept-language"]);
               } else if (userData != undefined) {
+                console.log("INSIDE ELSE IF>>>>>>>")
                 sails.hooks.i18n.setLocale(userData.default_language);
               } else {
+                console.log("ELSE>>>>>>>")
                 sails.hooks.i18n.setLocale("en");
               }
               next();
@@ -281,10 +287,13 @@ module.exports = async function (req, res, next) {
               console.log("userData.default_language", userData.default_language)
               console.log(req.headers["accept-language"])
               if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+                console.log("INSIDE IF>>>>>>>")
                 sails.hooks.i18n.setLocale(req.headers["accept-language"]);
               } else if (userData != undefined) {
+                console.log("INSIDE ELSE IF>>>>>>>")
                 sails.hooks.i18n.setLocale(userData.default_language);
               } else {
+                console.log("ELSE>>>>>>>")
                 sails.hooks.i18n.setLocale("en");
               }
               next();
@@ -294,10 +303,13 @@ module.exports = async function (req, res, next) {
             console.log("userData.default_language", userData.default_language)
             console.log(req.headers["accept-language"])
             if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+              console.log("INSIDE IF>>>>>>>")
               sails.hooks.i18n.setLocale(req.headers["accept-language"]);
             } else if (userData != undefined) {
+              console.log("INSIDE ELSE IF>>>>>>>")
               sails.hooks.i18n.setLocale(userData.default_language);
             } else {
+              console.log("ELSE>>>>>>>")
               sails.hooks.i18n.setLocale("en");
             }
             next();
@@ -308,10 +320,13 @@ module.exports = async function (req, res, next) {
         console.log(req.headers["accept-language"])
         // console.log("userData.default_language", userData.default_language)
         if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+          console.log("INSIDE IF>>>>>>>")
           sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         } else if (userData != undefined) {
+          console.log("INSIDE ELSE IF>>>>>>>")
           sails.hooks.i18n.setLocale(userData.default_language);
         } else {
+          console.log("ELSE>>>>>>>")
           sails.hooks.i18n.setLocale("en");
         }
         next();
