@@ -95,22 +95,30 @@ module.exports.cron = {
   updateJSTPrice: {
     schedule: '* * * * *',
     onTick: async function () {
-      if (sails.config.local.CRON_STATUS == "true") {
+      // if (sails.config.local.CRON_STATUS == "true") {
         // Updating Thresold Value according to the latest value
-        await sails.helpers.fixapi.getMarketPrice("XRP/USD");
-        await sails.helpers.fixapi.getMarketPrice("BTC/USD");
-        await sails.helpers.fixapi.getMarketPrice("LTC/USD");
-        await sails.helpers.fixapi.getMarketPrice("ETH/USD");
-        await sails.helpers.fixapi.getMarketPrice("BCH/USD");
-        await sails.helpers.fixapi.getMarketPrice("ETH/BTC");
-        await sails.helpers.fixapi.getMarketPrice("LTC/BTC");
-        await sails.helpers.fixapi.getMarketPrice("XRP/BTC");
-        await sails.helpers.fixapi.getMarketPrice("LTC/ETH");
-        await sails.helpers.fixapi.getMarketPrice("XRP/ETH");
+        await sails.helpers.fixapi.getMarketPrice("XRPUSD",0);
+        await sails.helpers.fixapi.getMarketPrice("XRPUSD",1);
+        await sails.helpers.fixapi.getMarketPrice("BTCUSD",0);
+        await sails.helpers.fixapi.getMarketPrice("BTCUSD",1);
+        await sails.helpers.fixapi.getMarketPrice("LTCUSD",0);
+        await sails.helpers.fixapi.getMarketPrice("LTCUSD",1);
+        await sails.helpers.fixapi.getMarketPrice("ETHUSD",0);
+        await sails.helpers.fixapi.getMarketPrice("ETHUSD",1);
+        await sails.helpers.fixapi.getMarketPrice("BCHUSD",0);
+        await sails.helpers.fixapi.getMarketPrice("BCHUSD",1);
+        await sails.helpers.fixapi.getMarketPrice("ETHBTC",0);
+        await sails.helpers.fixapi.getMarketPrice("ETHBTC",1);
+        await sails.helpers.fixapi.getMarketPrice("LTCBTC",0);
+        await sails.helpers.fixapi.getMarketPrice("LTCBTC",1);
+        await sails.helpers.fixapi.getMarketPrice("XRPBTC",0);
+        await sails.helpers.fixapi.getMarketPrice("XRPBTC",1);
+        // await sails.helpers.fixapi.getMarketPrice("LTCETH");
+        // await sails.helpers.fixapi.getMarketPrice("XRPETH");
 
         // Checking the condition for notification
         // await sails.helpers.notification.checkTheresoldNotification();
-      }
+      // }
     }
   },
 
