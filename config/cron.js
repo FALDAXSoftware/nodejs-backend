@@ -95,7 +95,7 @@ module.exports.cron = {
   updateJSTPrice: {
     schedule: '* * * * *',
     onTick: async function () {
-      // if (sails.config.local.CRON_STATUS == "true") {
+      if (sails.config.local.CRON_STATUS == "true") {
         // Updating Thresold Value according to the latest value
         await sails.helpers.fixapi.getMarketPrice("XRPUSD",0);
         await sails.helpers.fixapi.getMarketPrice("XRPUSD",1);
@@ -118,7 +118,7 @@ module.exports.cron = {
 
         // Checking the condition for notification
         // await sails.helpers.notification.checkTheresoldNotification();
-      // }
+      }
     }
   },
 
