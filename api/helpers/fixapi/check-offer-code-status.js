@@ -207,10 +207,10 @@ module.exports = {
         var each_coin = coin_pair.split("/");
         var query = {};
         if (side == "Buy") {
-          query.coin = each_coin[0] + "/USD";
+          query.coin = each_coin[0] + "USD";
           query.ask_price = { '>': 0 };
         } else {
-          query.coin = each_coin[1] + "/USD";
+          query.coin = each_coin[1] + "USD";
           query.bid_price = { '>': 0 };
         }
         var get_price = await PriceHistory.find({
