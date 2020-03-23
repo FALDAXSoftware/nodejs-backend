@@ -2988,5 +2988,12 @@
     "message_type": "error",
     "message_english": "Please complete you profile details to do wallet actions",
     "message": "Please complete you profile details to do wallet actions"
+  },
+  "Pair does not supported": {
+    "page": "Conversion",
+    "context": "When check for unsupported asset pair",
+    "message_type": "error",
+    "message_english": "This pair does not supported in current system.",
+    "message": "This pair does not supported in current system."
   }
 }
