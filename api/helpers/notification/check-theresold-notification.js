@@ -39,7 +39,7 @@ module.exports = {
 
       for (var i = 0; i < assetValue.length; i++) {
         for (var k = 0; k < values.length; k++) {
-          var coinValue = assetValue[i].coin + '/USD'
+          var coinValue = assetValue[i].coin + 'USD'
           if (values[k].coin == coinValue) {
             userData.coinName = assetValue[i].coin
             if (assetValue[i].upper_limit != undefined && assetValue[i].upper_limit != null) {
