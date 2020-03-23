@@ -74,25 +74,25 @@ module.exports = {
           .set(req.body)
           .fetch();
 
-        var user_value = await Users.findOne({
-          where: {
-            deleted_at: null,
-            is_active: true,
-            id: user_id
-          }
-        });
+        // var user_value = await Users.findOne({
+        //   where: {
+        //     deleted_at: null,
+        //     is_active: true,
+        //     id: user_id
+        //   }
+        // });
 
-        if (user_value != undefined) {
-          var user_update = await Users.
-            update({
-              deleted_at: null,
-              is_active: true,
-              id: user_id
-            })
-            .set({
-              phone_number: req.body.phone_number
-            })
-        }
+        // if (user_value != undefined) {
+        //   var user_update = await Users.
+        //     update({
+        //       deleted_at: null,
+        //       is_active: true,
+        //       id: user_id
+        //     })
+        //     .set({
+        //       phone_number: req.body.phone_number
+        //     })
+        // }
         if (updated_kyc) {
           // KYC API start if (updated_kyc[0].steps == 3) {     var greeting = await
           // sails.helpers.kycpicUpload(updated_kyc[0]);     console.log('greeting',
