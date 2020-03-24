@@ -170,5 +170,8 @@ module.exports.policies = {
   "JSTController": {
     "getJSTPriceValueAuth": true,
     "getPairList": true
+  },
+  "PairsController": {
+    "getAllPairData": true
   }
 };
