@@ -288,10 +288,10 @@ module.exports = {
           // nonBalanceWalletData.rows[i].quote.USD.price = (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
           // nonBalanceWalletData.rows[i].quote.INR.price = ((nonBalanceWalletData.rows[i].quote.INR.price) != null ? (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
 
-          if (nonBalanceWalletData.rows[i].quote.EUR != undefined && nonBalanceWalletData.rows[i].quote.INR != undefined) {
+          if (nonBalanceWalletData.rows[i].quote.EUR != undefined && nonBalanceWalletData.rows[i].quote.INR != undefined && nonBalanceWalletData.rows[i].quote.USD != undefined) {
             nonBalanceWalletData.rows[i].quote.EUR.price = (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION)
             nonBalanceWalletData.rows[i].quote.INR.price = (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION)
-            nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote != undefined && nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           } else {
             console.log("EUR ELSE")
             nonBalanceWalletData.rows[i].quote = {
@@ -302,7 +302,7 @@ module.exports = {
                 price: 0.0
               },
               USD: {
-                price: (nonBalanceWalletData.rows[i].quote.USD.price)
+                price: (nonBalanceWalletData.rows[i].quote.USD != undefined) ? (nonBalanceWalletData.rows[i].quote.USD.price) : (0.0)
               }
             }
           }
