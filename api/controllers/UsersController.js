@@ -31,11 +31,12 @@ module.exports = {
   create: async function (req, res) {
     try {
       var referred_id = null;
-      if (req.body.default_language && req.body.default_language != "") {
-        sails.hooks.i18n.setLocale(req.body.default_language);
-      } else {
-        sails.hooks.i18n.setLocale("en");
-      }
+      sails.hooks.i18n.setLocale(req.headers["accept-language"])
+      // if (req.body.default_language && req.body.default_language != "") {
+      //   sails.hooks.i18n.setLocale(req.body.default_language);
+      // } else {
+      //   sails.hooks.i18n.setLocale("en");
+      // }
       let email = req
         .body
         .email
@@ -886,7 +887,7 @@ module.exports = {
                       user.state :
                       user_details["state"], user.city_town ?
                       user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      user_details["city_town"], user.postal_code, user.dob,user.phone_number);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -927,7 +928,7 @@ module.exports = {
                     user.state :
                     user_details["state"], user.city_town ?
                     user.city_town :
-                    user_details["city_town"], user.postal_code);
+                    user_details["city_town"], user.postal_code, user.dob,user.phone_number);
               }
 
               if (req.body.country_code) {

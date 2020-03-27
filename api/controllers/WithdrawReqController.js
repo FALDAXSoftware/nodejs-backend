@@ -129,12 +129,12 @@ module.exports = {
           is_active: true
         })
 
-        var division = sails.config.local.DIVIDE_EIGHT;
-        if (coin.coin_code == 'xrp' || coin.coin_code == 'txrp') {
-          division = sails.config.local.DIVIDE_SIX;
-        } else if (coin.coin_code == 'eth' || coin.coin_code == 'teth' || coin.iserc == true) {
-          division = sails.config.local.DIVIDE_EIGHTEEN;
-        }
+        var division = coin.coin_precision;
+        // if (coin.coin_code == 'xrp' || coin.coin_code == 'txrp') {
+        //   division = sails.config.local.DIVIDE_SIX;
+        // } else if (coin.coin_code == 'eth' || coin.coin_code == 'teth' || coin.iserc == true) {
+        //   division = sails.config.local.DIVIDE_EIGHTEEN;
+        // }
         console.log(req.body);
 
         let warmWalletData = await sails
