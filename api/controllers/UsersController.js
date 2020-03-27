@@ -887,7 +887,7 @@ module.exports = {
                       user.state :
                       user_details["state"], user.city_town ?
                       user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      user_details["city_town"], user.postal_code, user.dob,user.phone_number);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -928,7 +928,7 @@ module.exports = {
                     user.state :
                     user_details["state"], user.city_town ?
                     user.city_town :
-                    user_details["city_town"], user.postal_code);
+                    user_details["city_town"], user.postal_code, user.dob,user.phone_number);
               }
 
               if (req.body.country_code) {
