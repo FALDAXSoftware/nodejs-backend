@@ -467,7 +467,11 @@ module.exports = {
       });
 
       if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
-        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -482,12 +486,12 @@ module.exports = {
 
       console.log("coin", coin)
 
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
 
       console.log("division", division)
 
@@ -1972,7 +1976,11 @@ module.exports = {
         coin_code: coin_code
       });
       if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
-        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -1984,12 +1992,12 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
       if (coin.type == 1) {
 
         let warmWalletData = await sails
@@ -3112,7 +3120,11 @@ module.exports = {
         }
       })
       if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
-        var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -3124,12 +3136,13 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (data.coin == 'xrp' || data.coin == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
-        division = sails.config.local.DIVIDE_NINE;
-      }
+      // var division = sails.config.local.DIVIDE_EIGHT;
+      // if (data.coin == 'xrp' || data.coin == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
+      //   division = sails.config.local.DIVIDE_NINE;
+      // }
+      var division = coinData.coin_precision;
       if (data.coin != "SUSU") {
         var reposneData = {};
         if (data.coin == 'xrp' || data.coin == 'txrp') {
@@ -3407,7 +3420,11 @@ module.exports = {
       console.log("coinData", coinData);
       if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
         console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
-        var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -3419,12 +3436,12 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (data.coin == 'xrp' || data.coin == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
-        division = sails.config.local.DIVIDE_NINE;
-      }
+      var division = coinData.coin_precision;
+      // if (data.coin == 'xrp' || data.coin == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
+      //   division = sails.config.local.DIVIDE_NINE;
+      // }
       if (data.coin != "SUSU") {
         var reposneData = {};
         if (data.coin == 'xrp' || data.coin == 'txrp') {
@@ -3577,12 +3594,13 @@ module.exports = {
           console.log("walletBalance * (faldax_fee_value / 100)", parseFloat(walletBalance * (faldax_fee_value / 100)));
           var remainningAmount = parseFloat(walletBalance) - parseFloat(walletBalance * (faldax_fee_value / 100));
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            console.log("division", division)
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
             let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false && coinData.coin_code != 'SUSU') {
               // remainningAmountValue = remainningAmount * division
@@ -3691,12 +3709,12 @@ module.exports = {
           var walletBalance = walletUserData.placed_balance;
           var remainningAmount = parseFloat(walletBalance);
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
             let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
               // remainningAmountValue = remainningAmount * division
@@ -3803,12 +3821,12 @@ module.exports = {
           remainningAmount = remainningAmount - get_static_fees_data
           console.log("remainningAmount", remainningAmount)
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
 
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
               var reposneData = await sails
@@ -3890,12 +3908,12 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
 
       if (coin.type == 1) {
 
