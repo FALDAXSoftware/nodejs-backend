@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+var moment = require("moment");
 module.exports = {
 
 
@@ -57,6 +58,18 @@ module.exports = {
       description: 'zip',
       defaultsTo: ''
     },
+    date_of_birth: {
+      type: 'string',
+      example: 'Doe',
+      description: 'date_of_birth',
+      defaultsTo: ''
+    },
+    phone: {
+      type: 'string',
+      example: 'Doe',
+      description: 'phone',
+      defaultsTo: ''
+    },
   },
 
 
@@ -110,6 +123,19 @@ module.exports = {
         "value": inputs.zip
       });
     }
+    if (inputs.date_of_birth != "") {
+      properties.push({
+        "property": "date_of_birth",
+        "value": moment(inputs.date_of_birth, 'DD-MM-YYYY').format('YYYY-MM-DD')
+      });
+    }
+    if (inputs.phone != "") {
+      properties.push({
+        "property": "phone",
+        "value": inputs.phone
+      });
+    }
+
     fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.update.replace(":vid", inputs.vid) + "?hapikey=" + sails.config.local.hubspot.apiKey,
       {
         method: "POST",
