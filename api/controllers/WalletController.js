@@ -307,14 +307,14 @@ module.exports = {
             }
           }
 
-          if (nonBalanceWalletData.rows[i].quote.USD) {
-            var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0) {
-              nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            } else {
-              nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-            }
-          }
+        //   if (nonBalanceWalletData.rows[i].quote.USD) {
+        //     var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
+        //     if (get_price.length > 0) {
+        //       nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+        //     } else {
+        //       nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+        //     }
+        //   }
         }
         if (nonBalanceWalletData.rows[i].iserc == true) {
           if (eth_asset == true) {
