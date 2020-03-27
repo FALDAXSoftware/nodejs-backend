@@ -28,11 +28,16 @@ module.exports = {
       columnName: 'ask_size',
       required: true
     },
-    coin: {
+    type: {
       type: 'string',
-      columnName: 'coin',
-      // required: true
-      allowNull: true
+      columnName: 'type',
+      required: true
+    },
+    market_snapshot: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'market_snapshot',
+      defaultsTo: {}
     },
     bid_size: {
       type: 'number',
