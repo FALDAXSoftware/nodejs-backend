@@ -3513,7 +3513,9 @@ module.exports = {
       var coinData = await Coins.findOne({
         select: [
           'hot_receive_wallet_address',
-          'coin_code'
+          'coin_code',
+          'coin_precision',
+          'iserc'
         ],
         where: {
           is_active: true,
@@ -3543,7 +3545,8 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "data": warmWalletData
+          "data": warmWalletData,
+          coinData
         })
     } catch (error) {
       // console.log(error);
