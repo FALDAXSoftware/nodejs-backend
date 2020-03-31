@@ -90,7 +90,7 @@ module.exports = {
     }
 
     query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, (withdraw_request.amount) as amount, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code " + query, [])
+    let withdrawReqData = await sails.sendNativeQuery("Select withdraw_request.*, (withdraw_request.amount) as amount, users.email,users.first_name,users.last_name, coins.coin_name, UPPER(coins.coin_code) as coin_code, coins.coin_precision " + query, [])
     withdrawReqData = withdrawReqData.rows;
 
     let withdrawReqCount = await sails.sendNativeQuery("Select COUNT(withdraw_request.id)" + countQuery, [])
