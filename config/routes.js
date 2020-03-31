@@ -328,7 +328,7 @@ module.exports.routes = {
   'get /call-helper': 'RootController.callKrakenAPI',
 
   //Kraken API
-  'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
+  'get /get-order-book-data': 'KrakenController.getOrderBookData',
   'post /add-order': 'KrakenController.addOrder',
   'get /deposit-address/:symbol': 'KrakenController.depositAddress',
   'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus',
