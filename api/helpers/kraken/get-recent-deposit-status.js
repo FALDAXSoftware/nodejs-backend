@@ -70,9 +70,11 @@ module.exports = {
           deleted_at: null
         }
       });
+
+      var value = await kraken.api('DepositMethods', { asset: inputs.asset })
       status = await kraken.api('DepositStatus', {
         asset: inputs.asset,
-        method: methodData.deposit_method
+        method: value.result[0].method
       });
       return exits.success(status);
     } catch (err) {

@@ -17,6 +17,16 @@ module.exports = {
       columnName: 'symbol',
       required: true
     },
+    coin_name: {
+      type: 'string',
+      columnName: 'coin_name',
+      required: true
+    },
+    original_value: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'original_value'
+    },
     quote: {
       type: 'ref',
       columnType: 'json',

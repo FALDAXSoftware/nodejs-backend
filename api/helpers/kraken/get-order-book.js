@@ -64,16 +64,20 @@ module.exports = {
       var pair_name = await Pairs.find({
         where: {
           kraken_pair: {
-            '!=': null
+            '!=': null,
+            '!=':''
           },
           deleted_at: null,
           is_active: true
         }
       })
+      console.log(pair_name);
       for (let i = 0; i < pair_name.length; i++) {
+        console.log("status - - - - ",pair_name[i].kraken_pair)
         status = await kraken.api('Depth', {
           pair: pair_name[i].kraken_pair
         });
+        console.log("status - - - - ",pair_name[i].kraken_pair,status)
         var value = pair_name[i].symbol;
         var askValue = JSON.stringify(status.result[value].asks[0]);
         var bidValue = JSON.stringify(status.result[value].bids[0])
