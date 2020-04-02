@@ -550,5 +550,9 @@ module.exports.routes = {
   'get /admin/get-panic-history': 'RootController.getPanicHistory',
 
   // Get All Pair Value
-  'get /users/get-all-pair': "PairsController.getAllPairData"
+  'get /users/get-all-pair': "PairsController.getAllPairData",
+
+  // Layout API
+  'get /users/get-users-layout': "LayoutController.getUserLayout",
+  'post /users/update-users-layout': "LayoutController.updateUserLayout"
 };
