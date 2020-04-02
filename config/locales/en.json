@@ -2982,18 +2982,32 @@
 		"message_english": "Maximum File size allowed is 5 MB",
 		"message": "Maximum file size allowed is 5 MB"
 	},
-  "Please Complete You profile": {
-    "page": "Wallet- Send Coin, Address Creation",
-    "context": "Please complete you profile details to do wallet actions",
-    "message_type": "error",
-    "message_english": "Please complete you profile details to do wallet actions",
-    "message": "Please complete you profile details to do wallet actions"
-  },
-  "Pair does not supported": {
-    "page": "Conversion",
-    "context": "When check for unsupported asset pair",
-    "message_type": "error",
-    "message_english": "This pair does not supported in current system.",
-    "message": "This pair does not supported in current system."
-  }
+	"Please Complete You profile": {
+		"page": "Wallet- Send Coin, Address Creation",
+		"context": "Please complete you profile details to do wallet actions",
+		"message_type": "error",
+		"message_english": "Please complete you profile details to do wallet actions",
+		"message": "Please complete you profile details to do wallet actions"
+	},
+	"Pair does not supported": {
+		"page": "Conversion",
+		"context": "When check for unsupported asset pair",
+		"message_type": "error",
+		"message_english": "This pair does not supported in current system.",
+		"message": "This pair does not supported in current system."
+	},
+	"Layout Data Success": {
+		"page": "Dashboard, Trade",
+		"context": "For getting user dashboard layout",
+		"message_type": "error",
+		"message_english": "User Dashboard and Trade layout has been fetched successfully.",
+		"message": "User Dashboard and Trade layout has been fetched successfully."
+	},
+	"Layout updated success": {
+		"page": "Dashboard, Trade",
+		"context": "For updating user dashboard layout",
+		"message_type": "error",
+		"message_english": "User Dashboard and Trade layout has been updated successfully.",
+		"message": "User Dashboard and Trade layout has been updated successfully."
+	}
 }

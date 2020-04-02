@@ -21,7 +21,6 @@ module.exports = {
         "data": 1
       });
     } catch (error) {
-      // console.log(error);
       return res.json({
         status: 500,
         "err": sails.__("Something Wrong").message,
