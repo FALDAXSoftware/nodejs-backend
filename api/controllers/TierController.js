@@ -66,109 +66,109 @@ module.exports = {
     }
   },
 
-  //document upload to IDM Platform API
-  tierDocumentUpload: async function (req, res) {
-    try {
-      let {
-        description,
-        appId
-      } = req.allParams();
-      req.file('document').upload(async function (err, uploadedFiles) {
-        var fs = require("fs");
-        let kycDocUploadDetails = {};
-        // kycDocUploadDetails.file = (uploadedFiles[0].fd);
-        kycDocUploadDetails.description = description;
-        kycDocUploadDetails.file = fs.createReadStream(uploadedFiles[0].fd);
+  // //document upload to IDM Platform API
+  // tierDocumentUpload: async function (req, res) {
+  //   try {
+  //     let {
+  //       description,
+  //       appId
+  //     } = req.allParams();
+  //     req.file('document').upload(async function (err, uploadedFiles) {
+  //       var fs = require("fs");
+  //       let kycDocUploadDetails = {};
+  //       // kycDocUploadDetails.file = (uploadedFiles[0].fd);
+  //       kycDocUploadDetails.description = description;
+  //       kycDocUploadDetails.file = fs.createReadStream(uploadedFiles[0].fd);
 
-        // console.log('kycDocUploadDetails', kycDocUploadDetails)
-        let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-        // console.log("idm_key", idm_key);
-        // console.log("filep", req._fileparser.upstreams.length);
-        if (req._fileparser.upstreams.length) {
-          request.post({
-            headers: {
-              'Authorization': 'Basic ' + idm_key,
-              'Content-Type': 'multipart/mixed'
-            },
-            // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-            url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
-            //
-            encoding: null, //  if you expect binary data
-            responseType: 'buffer',
-            body: JSON.stringify(kycDocUploadDetails)
-          }, async function (error, response, body) {
-            try {
-              console.log("error", error);
-              // console.log('response', response);
-              // console.log('body', body);
-              // console.log('response_body', response.body);
-              if (response) {
+  //       // console.log('kycDocUploadDetails', kycDocUploadDetails)
+  //       let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
+  //       // console.log("idm_key", idm_key);
+  //       // console.log("filep", req._fileparser.upstreams.length);
+  //       if (req._fileparser.upstreams.length) {
+  //         request.post({
+  //           headers: {
+  //             'Authorization': 'Basic ' + idm_key,
+  //             'Content-Type': 'multipart/mixed'
+  //           },
+  //           // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
+  //           url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
+  //           //
+  //           encoding: null, //  if you expect binary data
+  //           responseType: 'buffer',
+  //           body: JSON.stringify(kycDocUploadDetails)
+  //         }, async function (error, response, body) {
+  //           try {
+  //             console.log("error", error);
+  //             // console.log('response', response);
+  //             // console.log('body', body);
+  //             // console.log('response_body', response.body);
+  //             if (response) {
 
-              } else {
+  //             } else {
 
-              }
-            } catch (error) {
-              console.log('error', error);
-            }
-          });
-        } else {
-          return res.status(200).json({
-            'status': 200,
-            'message': sails.__("Image Required").message
-          })
-        }
+  //             }
+  //           } catch (error) {
+  //             console.log('error', error);
+  //           }
+  //         });
+  //       } else {
+  //         return res.status(200).json({
+  //           'status': 200,
+  //           'message': sails.__("Image Required").message
+  //         })
+  //       }
 
-      });
-      return 1;
-      if (req.file('document') && description) {
-        let kycDocUploadDetails = new FormData();
+  //     });
+  //     return 1;
+  //     if (req.file('document') && description) {
+  //       let kycDocUploadDetails = new FormData();
 
-        kycDocUploadDetails.append("description", description);
-        kycDocUploadDetails.append("file", req.file('document'));
-        // kycDocUploadDetails.file = req.file('document');
+  //       kycDocUploadDetails.append("description", description);
+  //       kycDocUploadDetails.append("file", req.file('document'));
+  //       // kycDocUploadDetails.file = req.file('document');
 
-        let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-        if (req._fileparser.upstreams.length) {
-          request.post({
-            headers: {
-              'Authorization': 'Basic ' + idm_key
-            },
-            // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-            url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
-            //
-            body: kycDocUploadDetails
-          }, async function (error, response, body) {
-            try {
-              if (response) {
+  //       let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
+  //       if (req._fileparser.upstreams.length) {
+  //         request.post({
+  //           headers: {
+  //             'Authorization': 'Basic ' + idm_key
+  //           },
+  //           // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
+  //           url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
+  //           //
+  //           body: kycDocUploadDetails
+  //         }, async function (error, response, body) {
+  //           try {
+  //             if (response) {
 
-              } else {
+  //             } else {
 
-              }
-            } catch (error) {
-              console.log('error', error);
-            }
-          });
-        } else {
-          return res.status(200).json({
-            'status': 200,
-            'message': sails.__("Image Required").message
-          })
-        }
-      } else {
-        console.log('>>>>else')
-      }
-    } catch (error) {
-      // console.log("errrrr:", error);
-      // await logger.error(error.message)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          err: sails.__("Something Wrong").message,
-          error_at: error.stack
-        })
-    }
-  },
+  //             }
+  //           } catch (error) {
+  //             console.log('error', error);
+  //           }
+  //         });
+  //       } else {
+  //         return res.status(200).json({
+  //           'status': 200,
+  //           'message': sails.__("Image Required").message
+  //         })
+  //       }
+  //     } else {
+  //       console.log('>>>>else')
+  //     }
+  //   } catch (error) {
+  //     // console.log("errrrr:", error);
+  //     // await logger.error(error.message)
+  //     return res
+  //       .status(500)
+  //       .json({
+  //         status: 500,
+  //         err: sails.__("Something Wrong").message,
+  //         error_at: error.stack
+  //       })
+  //   }
+  // },
 
   // Upgrade User Tier
   upgradeUserTier: async function (req, res) {
