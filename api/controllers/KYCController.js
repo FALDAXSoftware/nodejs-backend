@@ -272,7 +272,7 @@ module.exports = {
                     is_active: true
                   })
                   .set({
-                    account_tier: 1
+                    account_tier: parseInt(user_data_kyc.account_tier) + 1
                   })
                   .fetch()
 
@@ -618,6 +618,41 @@ module.exports = {
           "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
+    }
+  },
+
+  userDocumentUpload: async function (req, res) {
+    try {
+
+      if (req._fileparser.upstreams.length) {
+        req
+          .file('file')
+          .upload(async function (error, uploadFile) {
+            try {
+              console.log(uploadFile)
+              var data = uploadFile[0];
+
+              console.log("data", data)
+
+              data.user_id = req.user.id;
+
+              console.log(data)
+
+              var dataValue = await sails.helpers.uploadTierDocument(data)
+              console.log("dataValue", dataValue)
+              return res.json(dataValue)
+            } catch (error) {
+              console.log(error);
+            }
+          });
+      } else {
+        return res.status(200).json({
+          'status': 200,
+          'message': sails.__("Image Required").message
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 };
