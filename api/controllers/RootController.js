@@ -399,10 +399,10 @@ module.exports = {
     console.log(key);
     console.log(iv)
     var value = req.body.encryptKey;
-    console.log(value);
-    var encryptData = await sails.helpers.getEncryptData(value);
-    console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData(encryptData);
+    // console.log(value);
+    // var encryptData = await sails.helpers.getEncryptData(value);
+    // console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData("5beb91212ff755f49c2c505c00658eb38eedc977ab5c941a9f5ac0ef167d7bcacd8baa51e5b9a18c389911bc086195cef2aad6ebc7bf5cbcd306a8759b8d2f76");
     console.log("decryptData", decryptData)
     return res.json(200);
   },
@@ -547,6 +547,22 @@ module.exports = {
         "message": sails.__("system_health_not_ok").message,
         error_at: error.stack
       })
+    }
+  },
+
+  getTransactionID: async function (req, res) {
+    try {
+      var {
+        email
+      } = req.allParams();
+
+      var data = await sails.helpers.getTransactionId(email);
+      return res.json({
+        status: 200,
+        data: data
+      })
+    } catch (error) {
+      console.log(error)
     }
   }
 };

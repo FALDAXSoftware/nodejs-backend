@@ -27,6 +27,7 @@ module.exports.routes = {
   'post /toggle-panic-status': 'RootController.panicBtn',
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
+  'get /get-transaction-id': "RootController.getTransactionID",
   // 'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
   'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
@@ -554,5 +555,8 @@ module.exports.routes = {
 
   // Layout API
   'get /users/get-users-layout': "LayoutController.getUserLayout",
-  'post /users/update-users-layout': "LayoutController.updateUserLayout"
+  'post /users/update-users-layout': "LayoutController.updateUserLayout",
+
+  // Upload UserDocuments
+  'post /users/upload-user-documents': "KYCController.userDocumentUpload"
 };
