@@ -3009,5 +3009,12 @@
 		"message_type": "error",
 		"message_english": "User Dashboard and Trade layout has been updated successfully.",
 		"message": "User Dashboard and Trade layout has been updated successfully."
+	},
+	"Both coins could not be same": {
+		"page": "Pairs- CMS",
+		"context": "Add Pair",
+		"message_type": "error",
+		"message_english": "Both coin code for pair should be same.",
+		"message": "Both coin code for pair should be same."
 	}
 }
