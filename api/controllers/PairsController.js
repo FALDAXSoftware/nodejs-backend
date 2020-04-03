@@ -163,6 +163,15 @@ module.exports = {
   createPair: async function (req, res) {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code2) {
+        if (req.body.coin_code1 == req.body.coin_code2) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Both coins could not be same").message,
+              error_at: sails.__("Both coins could not be same").message
+            })
+        }
         let coinID_1 = await Coins.findOne({
           coin: req.body.coin_code1
         });
