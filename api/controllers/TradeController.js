@@ -1959,7 +1959,7 @@ module.exports = {
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
       } else if (trade_type == 3) { // JST
-        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id";
+        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id ";
         let whereAppended = false;
 
         if ((data && data != "")) {
@@ -2012,8 +2012,8 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
-        tradeData = await sails.sendNativeQuery(`Select trade_history.*,users.email` + query, [])
+        console.log(`Select trade_history.*,users.email` + query)
+        tradeData = await sails.sendNativeQuery(`Select trade_history.*,users.email, requetsed.email as requested_email` + query, [])
 
         tradeData = tradeData.rows;
 
