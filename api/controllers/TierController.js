@@ -196,7 +196,8 @@ module.exports = {
         end_date,
         sort_col,
         sort_order,
-        status
+        status,
+        type
       } = req.allParams();
 
       var query;
@@ -216,6 +217,10 @@ module.exports = {
 
       if (data && data != "" && data != null) {
         query += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(tier_request.unique_key) LIKE '%" + data.toLowerCase() + "%')";
+      }
+
+      if (type) {
+        query += " AND tier_request.type = '" + type + "'";
       }
 
       if (start_date && end_date) {
