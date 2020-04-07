@@ -12,6 +12,10 @@ module.exports = {
       type: 'number',
       columnName: 'tier_step'
     },
+    unique_key: {
+      type: "string",
+      columnName: "unique_key"
+    },
     user_id: {
       columnName: "user_id",
       model: "users"
