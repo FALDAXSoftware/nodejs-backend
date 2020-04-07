@@ -3016,5 +3016,12 @@
 		"message_type": "error",
 		"message_english": "Both coin code for pair should be same.",
 		"message": "Both coin code for pair should be same."
+	},
+	"tier upgrade request success": {
+		"page": "Account Tier Management- CMS",
+		"context": "Change User Status",
+		"message_type": "error",
+		"message_english": "User Tier Reuqest has been changed successfully.",
+		"message": "User Tier Reuqest has been changed successfully."
 	}
 }
