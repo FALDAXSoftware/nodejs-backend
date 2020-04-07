@@ -245,8 +245,7 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      console.log(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
-      tier_request.is_approved, users.email, users.first_name, users.last_name ` + query)
+
       tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
       tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type ` + query, [])
 
@@ -255,23 +254,17 @@ module.exports = {
       tradeCount = await sails.sendNativeQuery("Select COUNT(tier_request.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
 
-      // var getUserApprovedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = true AND tier_request.deleted_at IS NULL");
-      // getUserApprovedTierData = getUserApprovedTierData.rows;
-
-      // var getUserRejectedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = false AND tier_request.deleted_at IS NULL");
-      // getUserRejectedTierData = getUserRejectedTierData.rows;
-
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("tier data retrieve").message,
-          tradeData
+          tradeData,
+          tradeCount
         })
 
     } catch (error) {
-      // console.log(error);
-      // await logger.error(error.message)
+      console.log(error);
       return res
         .status(500)
         .json({
