@@ -28,6 +28,7 @@ module.exports = {
     fn: async function (inputs, exits) {
         try {
             var data = inputs.params;
+            console.log(data)
             var userData = await Users.findOne({
                 where: {
                     id: data.user_id,
@@ -55,24 +56,39 @@ module.exports = {
                 },
                 formData: {
                     'appId': userKYCDetails.mtid,
+                    'description': data.description,
                     'file': {
-                        'value': fs.createReadStream(data.fd),
+                        'value': fs.createReadStream(data.file.fd),
                         'options': {
-                            'filename': data.filename,
+                            'filename': data.file.filename,
                             'contentType': null
                         }
                     }
                 }
             };
 
+            console.log("options", options)
+
             var responseValue = new Promise(async (resolve, reject) => {
-                await request(options, function (error, response) {
+                await request(options, async function (error, response) {
                     if (error) throw new Error(error);
                     console.log(response.body);
                     var value = JSON.parse(response.body)
                     console.log("value", value)
                     console.log(value.success)
                     if (value.success == "file saved") {
+                        console.log({
+                            unique_key: data.description,
+                            user_id: data.user_id,
+                            tier_step: userData.account_tier,
+                            created_at: new Date()
+                        })
+                        var dataValue = await TierRequest.create({
+                            unique_key: data.description,
+                            user_id: data.user_id,
+                            tier_step: parseInt(userData.account_tier) + 1,
+                            created_at: new Date()
+                        })
                         var object = {
                             "status": 200,
                             "data": "Your file has been uploaded successfully."
