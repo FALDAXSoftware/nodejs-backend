@@ -84,7 +84,7 @@ module.exports = {
             id: id
           }
         });
-        console.log(upgradeTier)
+
         if (upgradeTier.length > 0) {
           console.log("status", status)
           if (status == true || status == "true") {
@@ -117,6 +117,49 @@ module.exports = {
               user_id: user_id,
               is_approved: null
             })
+        }
+
+        if (tier_step == 2) {
+          var flag = 0;
+          var tierData = await TierRequest.find({
+            where: {
+              deleted_at: null,
+              user_id: user_id
+            }
+          });
+
+          console.log(tierData)
+
+          if (tierData.length == 3) {
+            for (var i = 0; i < tierData.length; i++) {
+              if (tierData[i].is_approved == true) {
+                flag = parseInt(flag) + 1
+              }
+            }
+          }
+          console.log(flag)
+          var userData = await Users.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }
+          })
+          if (flag == 3) {
+            var userValue = await Users
+              .update({
+                where: {
+                  deleted_at: null,
+                  is_active: true,
+                  id: user_id
+                }
+              })
+              .set({
+                account_tier: parseInt(userData.account_tier) + 1
+              })
+          }
+        } else if (tier_step == 3) {
+
         }
         return res
           .status(200)
@@ -200,7 +243,7 @@ module.exports = {
       console.log(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
       tier_request.is_approved, users.email, users.first_name, users.last_name ` + query)
       tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
-      tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn ` + query, [])
+      tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type ` + query, [])
 
       tradeData = tradeData.rows;
 
