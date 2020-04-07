@@ -626,6 +626,24 @@ module.exports = {
   userDocumentUpload: async function (req, res) {
     try {
 
+      var data = req.body.data;
+
+      var userData = await Users.findOne({
+        where: {
+          id: req.user.id,
+          deleted_at: null,
+          is_active: true
+        }
+      });
+
+      await TierRequest.create({
+        unique_key: randomize('Aa0', 10),
+        user_id: req.user.id,
+        tier_step: parseInt(userData.account_tier) + 1,
+        created_at: new Date(),
+        ssn: data
+      })
+
       if (req._fileparser.upstreams.length) {
         req
           .file('file')
