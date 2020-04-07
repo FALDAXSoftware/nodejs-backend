@@ -66,110 +66,6 @@ module.exports = {
     }
   },
 
-  // //document upload to IDM Platform API
-  // tierDocumentUpload: async function (req, res) {
-  //   try {
-  //     let {
-  //       description,
-  //       appId
-  //     } = req.allParams();
-  //     req.file('document').upload(async function (err, uploadedFiles) {
-  //       var fs = require("fs");
-  //       let kycDocUploadDetails = {};
-  //       // kycDocUploadDetails.file = (uploadedFiles[0].fd);
-  //       kycDocUploadDetails.description = description;
-  //       kycDocUploadDetails.file = fs.createReadStream(uploadedFiles[0].fd);
-
-  //       // console.log('kycDocUploadDetails', kycDocUploadDetails)
-  //       let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-  //       // console.log("idm_key", idm_key);
-  //       // console.log("filep", req._fileparser.upstreams.length);
-  //       if (req._fileparser.upstreams.length) {
-  //         request.post({
-  //           headers: {
-  //             'Authorization': 'Basic ' + idm_key,
-  //             'Content-Type': 'multipart/mixed'
-  //           },
-  //           // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-  //           url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
-  //           //
-  //           encoding: null, //  if you expect binary data
-  //           responseType: 'buffer',
-  //           body: JSON.stringify(kycDocUploadDetails)
-  //         }, async function (error, response, body) {
-  //           try {
-  //             console.log("error", error);
-  //             // console.log('response', response);
-  //             // console.log('body', body);
-  //             // console.log('response_body', response.body);
-  //             if (response) {
-
-  //             } else {
-
-  //             }
-  //           } catch (error) {
-  //             console.log('error', error);
-  //           }
-  //         });
-  //       } else {
-  //         return res.status(200).json({
-  //           'status': 200,
-  //           'message': sails.__("Image Required").message
-  //         })
-  //       }
-
-  //     });
-  //     return 1;
-  //     if (req.file('document') && description) {
-  //       let kycDocUploadDetails = new FormData();
-
-  //       kycDocUploadDetails.append("description", description);
-  //       kycDocUploadDetails.append("file", req.file('document'));
-  //       // kycDocUploadDetails.file = req.file('document');
-
-  //       let idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-  //       if (req._fileparser.upstreams.length) {
-  //         request.post({
-  //           headers: {
-  //             'Authorization': 'Basic ' + idm_key
-  //           },
-  //           // url: 'https://edna.identitymind.com/im/account/consumer/' + appId + '/files',
-  //           url: 'https://edna.identitymind.com/im/account/consumer/8bb1146e615e4c3dab63180db81732f1/files',
-  //           //
-  //           body: kycDocUploadDetails
-  //         }, async function (error, response, body) {
-  //           try {
-  //             if (response) {
-
-  //             } else {
-
-  //             }
-  //           } catch (error) {
-  //             console.log('error', error);
-  //           }
-  //         });
-  //       } else {
-  //         return res.status(200).json({
-  //           'status': 200,
-  //           'message': sails.__("Image Required").message
-  //         })
-  //       }
-  //     } else {
-  //       console.log('>>>>else')
-  //     }
-  //   } catch (error) {
-  //     // console.log("errrrr:", error);
-  //     // await logger.error(error.message)
-  //     return res
-  //       .status(500)
-  //       .json({
-  //         status: 500,
-  //         err: sails.__("Something Wrong").message,
-  //         error_at: error.stack
-  //       })
-  //   }
-  // },
-
   // Upgrade User Tier
   upgradeUserTier: async function (req, res) {
     try {
@@ -231,23 +127,84 @@ module.exports = {
   getUserTierRequest: async function (req, res) {
     try {
 
-      var getUserPendingTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL");
-      getUserPendingTierData = getUserPendingTierData.rows;
+      let {
+        page,
+        limit,
+        data,
+        step,
+        start_date,
+        end_date,
+        sort_col,
+        sort_order,
+        status
+      } = req.allParams();
 
-      var getUserApprovedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = true AND tier_request.deleted_at IS NULL");
-      getUserApprovedTierData = getUserApprovedTierData.rows;
+      var query;
+      if (status == 1) {
+        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
+                          WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL
+                          AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+      } else if (status == 2) {
+        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
+                        WHERE tier_request.is_approved = 'true' AND tier_request.deleted_at IS NULL
+                        AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+      } else if (status == 3) {
+        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
+                        WHERE tier_request.is_approved = 'false' AND tier_request.deleted_at IS NULL
+                        AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+      }
+      // var query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
+      //                     WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL
+      //                     AND users.deleted_at IS NULL AND tier_step = ${step}`
 
-      var getUserRejectedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = false AND tier_request.deleted_at IS NULL");
-      getUserRejectedTierData = getUserRejectedTierData.rows;
+      if (data && data != "" && data != null) {
+        query += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(tier_request.unique_key) LIKE '%" + data.toLowerCase() + "%')";
+      }
+
+      if (start_date && end_date) {
+        query += whereAppended ?
+          " AND " :
+          " WHERE ";
+
+        query += " tier_request.created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND tier_request.created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
+      countQuery = query;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      console.log(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
+      tier_request.is_approved, users.email, users.first_name, users.last_name ` + query)
+      tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
+      tier_request.is_approved, users.email, users.first_name, users.last_name ` + query, [])
+
+      tradeData = tradeData.rows;
+
+      tradeCount = await sails.sendNativeQuery("Select COUNT(tier_request.id)" + countQuery, [])
+      tradeCount = tradeCount.rows[0].count;
+
+      // var getUserApprovedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = true AND tier_request.deleted_at IS NULL");
+      // getUserApprovedTierData = getUserApprovedTierData.rows;
+
+      // var getUserRejectedTierData = await sails.sendNativeQuery("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.is_approved, users.email, users.first_name, users.last_name FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id WHERE tier_request.is_approved = false AND tier_request.deleted_at IS NULL");
+      // getUserRejectedTierData = getUserRejectedTierData.rows;
 
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("tier data retrieve").message,
-          getUserPendingTierData,
-          getUserApprovedTierData,
-          getUserRejectedTierData
+          tradeData
         })
 
     } catch (error) {
