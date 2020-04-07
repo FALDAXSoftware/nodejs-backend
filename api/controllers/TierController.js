@@ -70,29 +70,46 @@ module.exports = {
   upgradeUserTier: async function (req, res) {
     try {
       var {
-        tier_step
+        tier_step,
+        id,
+        status,
+        user_id
       } = req.allParams();
-
-      var user_id = req.user.id;
 
       if (tier_step == 2 || tier_step == 3 || tier_step == 4) {
         var upgradeTier = await TierRequest.find({
           where: {
             deleted_at: null,
-            user_id: user_id
+            user_id: user_id,
+            id: id
           }
         });
-
+        console.log(upgradeTier)
         if (upgradeTier.length > 0) {
-          var upgradeData = await TierRequest
-            .update({
-              deleted_at: null,
-              user_id: user_id
-            })
-            .set({
-              tier_step: tier_step,
-              is_approved: null
-            })
+          console.log("status", status)
+          if (status == true || status == "true") {
+            var upgradeData = await TierRequest
+              .update({
+                deleted_at: null,
+                user_id: user_id,
+                id: id
+              })
+              .set({
+                tier_step: tier_step,
+                is_approved: true
+              })
+          } else if (status == false || status == "false") {
+            var upgradeData = await TierRequest
+              .update({
+                deleted_at: null,
+                user_id: user_id,
+                id: id
+              })
+              .set({
+                tier_step: tier_step,
+                is_approved: false
+              })
+          }
         } else {
           var upgradeData = await TierRequest
             .create({
@@ -153,9 +170,6 @@ module.exports = {
                         WHERE tier_request.is_approved = 'false' AND tier_request.deleted_at IS NULL
                         AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
       }
-      // var query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
-      //                     WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL
-      //                     AND users.deleted_at IS NULL AND tier_step = ${step}`
 
       if (data && data != "" && data != null) {
         query += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(tier_request.unique_key) LIKE '%" + data.toLowerCase() + "%')";
@@ -186,7 +200,7 @@ module.exports = {
       console.log(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
       tier_request.is_approved, users.email, users.first_name, users.last_name ` + query)
       tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
-      tier_request.is_approved, users.email, users.first_name, users.last_name ` + query, [])
+      tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn ` + query, [])
 
       tradeData = tradeData.rows;
 
