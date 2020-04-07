@@ -67,8 +67,6 @@ module.exports = {
                 }
             };
 
-            console.log("options", options)
-
             var responseValue = new Promise(async (resolve, reject) => {
                 await request(options, async function (error, response) {
                     if (error) throw new Error(error);
@@ -81,13 +79,15 @@ module.exports = {
                             unique_key: data.description,
                             user_id: data.user_id,
                             tier_step: userData.account_tier,
-                            created_at: new Date()
+                            created_at: new Date(),
+                            type: data.type
                         })
                         var dataValue = await TierRequest.create({
                             unique_key: data.description,
                             user_id: data.user_id,
                             tier_step: parseInt(userData.account_tier) + 1,
-                            created_at: new Date()
+                            created_at: new Date(),
+                            type: data.type
                         })
                         var object = {
                             "status": 200,

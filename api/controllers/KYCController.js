@@ -626,8 +626,8 @@ module.exports = {
   userDocumentUpload: async function (req, res) {
     try {
 
-      var data = req.body.data;
-
+      var value = req.body.ssn;
+      console.log("req.body", req.body)
       var userData = await Users.findOne({
         where: {
           id: req.user.id,
@@ -641,31 +641,49 @@ module.exports = {
         user_id: req.user.id,
         tier_step: parseInt(userData.account_tier) + 1,
         created_at: new Date(),
-        ssn: data
+        ssn: value,
+        type: 3
       })
-
+      console.log("req._fileparser.upstreams.length", req._fileparser.upstreams.length)
       if (req._fileparser.upstreams.length) {
         req
-          .file('file')
+          .file('valid_id')
           .upload(async function (error, uploadFile) {
             try {
               console.log(uploadFile)
               console.log(uploadFile.length)
               var data = {};
               var lenghtValue = uploadFile.length
-
-              console.log("data", data)
               data.user_id = req.user.id;
-              for (i = 0; i < lenghtValue; i++) {
-                console.log("uploadFile[i]", uploadFile[i])
-                data.file = uploadFile[i]
-                data.description = randomize('Aa0', 10);
+              console.log("uploadFile[i]", uploadFile[0])
+              data.file = uploadFile[0]
+              data.description = randomize('Aa0', 10);
+              data.type = 1;
 
-                // console.log(data)
+              var dataValue = await sails.helpers.uploadTierDocument(data)
+              console.log("dataValue", dataValue)
 
-                var dataValue = await sails.helpers.uploadTierDocument(data)
-                console.log("dataValue", dataValue)
-              }
+            } catch (error) {
+              console.log(error);
+            }
+          });
+
+        req
+          .file('residence_proof')
+          .upload(async function (error, uploadFile) {
+            try {
+              console.log("Residenc Proof", uploadFile)
+              console.log(uploadFile.length)
+              var data = {};
+              var lenghtValue = uploadFile.length
+              data.user_id = req.user.id;
+              console.log("uploadFile[i]", uploadFile[0])
+              data.file = uploadFile[0]
+              data.description = randomize('Aa0', 10);
+              data.type = 2;
+
+              var dataValue = await sails.helpers.uploadTierDocument(data)
+              console.log("dataValue", dataValue)
 
               return res.json(dataValue)
             } catch (error) {
