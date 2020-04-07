@@ -7,6 +7,8 @@
 var UploadFiles = require('../services/UploadFiles');
 var csc = require('country-state-city');
 var logger = require("./logger");
+const uuidv1 = require('uuid/v1');
+var randomize = require('randomatic');
 
 module.exports = {
 
@@ -630,16 +632,23 @@ module.exports = {
           .upload(async function (error, uploadFile) {
             try {
               console.log(uploadFile)
-              var data = uploadFile[0];
+              console.log(uploadFile.length)
+              var data = {};
+              var lenghtValue = uploadFile.length
 
               console.log("data", data)
-
               data.user_id = req.user.id;
+              for (i = 0; i < lenghtValue; i++) {
+                console.log("uploadFile[i]", uploadFile[i])
+                data.file = uploadFile[i]
+                data.description = randomize('Aa0', 10);
 
-              console.log(data)
+                // console.log(data)
 
-              var dataValue = await sails.helpers.uploadTierDocument(data)
-              console.log("dataValue", dataValue)
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+                console.log("dataValue", dataValue)
+              }
+
               return res.json(dataValue)
             } catch (error) {
               console.log(error);
