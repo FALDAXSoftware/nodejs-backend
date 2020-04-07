@@ -16,6 +16,10 @@ module.exports = {
       type: "string",
       columnName: "unique_key"
     },
+    ssn: {
+      type: "string",
+      columnName: "ssn"
+    },
     user_id: {
       columnName: "user_id",
       model: "users"
