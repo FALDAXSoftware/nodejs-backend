@@ -6,6 +6,7 @@
  */
 var request = require('request');
 var logger = require("./logger")
+var randomize = require('randomatic');
 
 module.exports = {
 
@@ -28,8 +29,32 @@ module.exports = {
       });
 
       for (let index = 0; index < tierDetails.length; index++) {
-        if (tierDetails[index].tier_step == userData.account_tier) {
+        if (tierDetails[index].tier_step == (parseInt(userData.account_tier) + 1)) {
           tierDetails[index].is_active = true;
+          var tierDetailsValue = await TierRequest.find({
+            where: {
+              deleted_at: null,
+              user_id: user_id,
+              tier_step: (parseInt(userData.account_tier) + 1)
+            }
+          });
+
+          if (tierDetailsValue.length > 0) {
+            var object = [];
+            var objectValue = [];
+            for (var i = 0; i < tierDetailsValue.length; i++) {
+              if (tierDetailsValue[i].is_approved == false) {
+                object.push(tierDetailsValue[i].type)
+              } else if (tierDetailsValue[i].is_approved == null) {
+                objectValue.push(tierDetailsValue[i].type)
+              }
+            }
+
+            tierDetails[index].is_declined = object
+            if (objectValue.length > 0) {
+              tierDetails[index].under_approval = objectValue
+            }
+          }
           if (index != 0)
             for (var i = 1; i <= index; i++) {
               tierDetails[index - i].is_verified = true;
@@ -54,8 +79,7 @@ module.exports = {
           })
       }
     } catch (error) {
-      // console.log(error);
-      // await logger.error(error.message)
+      console.log(error);
       return res
         .status(500)
         .json({
@@ -473,6 +497,161 @@ module.exports = {
           "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
+    }
+  },
+
+  uploadRejectedDocument: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var dataBody = req.body;
+      var tierDetails = await TierRequest.find({
+        where: {
+          deleted_at: null,
+          user_id: user_id,
+          is_approved: false
+        }
+      });
+
+      console.log("dataBody", dataBody);
+      console.log("tierDetails", tierDetails)
+
+      if ((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && (dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true")) {
+        var flag = 0;
+        for (var i = 0; i < tierDetails.length; i++) {
+          if (tierDetails[i].type != 3) {
+            if (tierDetails[i].is_approved == false) {
+              flag = parseInt(flag) + 1;
+            }
+          }
+        }
+
+        if (flag = 2) {
+          req
+            .file('valid_id')
+            .upload(async function (error, uploadFile) {
+              try {
+                var data = {};
+                data.user_id = user_id;
+                data.file = uploadFile[0]
+                data.description = randomize('Aa0', 10);
+                data.type = 1;
+
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+
+                if (dataValue.status == 200) {
+                  req
+                    .file('residence_proof')
+                    .upload(async function (error1, uploadFile1) {
+                      try {
+                        var data1 = {};
+                        data1.user_id = user_id;
+                        data1.file = uploadFile1[0]
+                        data1.description = randomize('Aa0', 10);
+                        data1.type = 2;
+
+                        var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                        return res.json(dataValue1)
+                      } catch (error1) {
+                        console.log(error1);
+                      }
+                    });
+                }
+
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Your Current is approved or under approval")
+            })
+        }
+      } else if (dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") {
+        var flag = false;
+        console.log("flag", flag)
+        for (var i = 0; i < tierDetails.length; i++) {
+          console.log("tierDetails[i].type", tierDetails[i].type)
+          if (tierDetails[i].type == 1) {
+            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
+            if (tierDetails[i].is_approved == false) {
+              flag = true;
+            }
+          }
+        }
+        console.log("flag after", flag)
+        if (flag == true) {
+          req
+            .file('valid_id')
+            .upload(async function (error, uploadFile) {
+              try {
+                var data = {};
+                data.user_id = req.user.id;
+                data.file = uploadFile[0]
+                data.description = randomize('Aa0', 10);
+                data.type = 1;
+
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+
+                return res.json(dataValue);
+
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Your Current is approved or under approval").message
+            })
+        }
+      } else if (dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true") {
+        var flag = false;
+        for (var i = 0; i < tierDetails.length; i++) {
+          if (tierDetails[i].type == 2) {
+            if (tierDetails[i].is_approved == false) {
+              flag = true;
+            }
+          }
+        }
+        console.log("after flag", flag)
+        if (flag == true) {
+          req
+            .file('residence_proof')
+            .upload(async function (error1, uploadFile1) {
+              try {
+                console.log(error1);
+                console.log(uploadFile1)
+                var data1 = {};
+                data1.user_id = req.user.id;
+                data1.file = uploadFile1[0]
+                data1.description = randomize('Aa0', 10);
+                data1.type = 2;
+
+                console.log(data1)
+                var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                return res.json(dataValue1)
+              } catch (error1) {
+                console.log(error1);
+              }
+            });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Your Current is approved or under approval").message
+            })
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }
