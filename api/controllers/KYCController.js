@@ -627,7 +627,7 @@ module.exports = {
     try {
 
       var value = req.body.ssn;
-      console.log("req.body", req.body)
+
       var userData = await Users.findOne({
         where: {
           id: req.user.id,
@@ -644,60 +644,64 @@ module.exports = {
         ssn: value,
         type: 3
       })
-      console.log("req._fileparser.upstreams.length", req._fileparser.upstreams.length)
-      if (req._fileparser.upstreams.length) {
-        req
-          .file('valid_id')
-          .upload(async function (error, uploadFile) {
-            try {
-              console.log(uploadFile)
-              console.log(uploadFile.length)
-              var data = {};
-              var lenghtValue = uploadFile.length
-              data.user_id = req.user.id;
-              console.log("uploadFile[i]", uploadFile[0])
-              data.file = uploadFile[0]
-              data.description = randomize('Aa0', 10);
-              data.type = 1;
 
-              var dataValue = await sails.helpers.uploadTierDocument(data)
-              console.log("dataValue", dataValue)
+      req
+        .file('valid_id')
+        .upload(async function (error, uploadFile) {
+          try {
+            var data = {};
+            data.user_id = req.user.id;
+            data.file = uploadFile[0]
+            data.description = randomize('Aa0', 10);
+            data.type = 1;
 
-            } catch (error) {
-              console.log(error);
+            var dataValue = await sails.helpers.uploadTierDocument(data)
+
+            if (dataValue.status == 200) {
+              req
+                .file('residence_proof')
+                .upload(async function (error1, uploadFile1) {
+                  try {
+                    var data1 = {};
+                    data1.user_id = req.user.id;
+                    data1.file = uploadFile1[0]
+                    data1.description = randomize('Aa0', 10);
+                    data1.type = 2;
+
+                    var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                    return res.json(dataValue1)
+                  } catch (error1) {
+                    console.log(error1);
+                  }
+                });
             }
-          });
 
-        req
-          .file('residence_proof')
-          .upload(async function (error, uploadFile) {
-            try {
-              console.log("Residenc Proof", uploadFile)
-              console.log(uploadFile.length)
-              var data = {};
-              var lenghtValue = uploadFile.length
-              data.user_id = req.user.id;
-              console.log("uploadFile[i]", uploadFile[0])
-              data.file = uploadFile[0]
-              data.description = randomize('Aa0', 10);
-              data.type = 2;
-
-              var dataValue = await sails.helpers.uploadTierDocument(data)
-              console.log("dataValue", dataValue)
-
-              return res.json(dataValue)
-            } catch (error) {
-              console.log(error);
-            }
-          });
-      } else {
-        return res.status(200).json({
-          'status': 200,
-          'message': sails.__("Image Required").message
-        })
-      }
+          } catch (error) {
+            console.log(error);
+          }
+        });
     } catch (error) {
       console.log(error)
+    }
+  },
+
+  userUploadTier3Document: async function (req, res) {
+    try {
+      req
+        .file('idcp')
+        .upload(async function (error, uploadFile) {
+          var data = {};
+          data.user_id = req.user.id;
+          data.file = uploadFile[0]
+          data.description = randomize('Aa0', 10);
+          data.type = 1;
+
+          var dataValue = await sails.helpers.uploadTierDocument(data)
+
+        });
+    } catch (error) {
+      console.log(error);
     }
   }
 };
