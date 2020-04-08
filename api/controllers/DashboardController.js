@@ -388,6 +388,44 @@ module.exports = {
           '<=': AccHrDate
         }
       })
+
+      let TierList = [2, 3, 4]
+      var TierData = []
+      for (var i = 0; i < TierList.length; i++) {
+        let approveTier = await TierRequest.count({
+          where: {
+            deleted_at: null,
+            is_approved: true,
+            tier_step: TierList[i]
+          }
+        })
+
+        var data = {}
+        data[TierList[i]] = approveTier
+        TierData.push(data)
+
+        let disapproveTier = await TierRequest.count({
+          where: {
+            deleted_at: null,
+            is_approved: false,
+            tier_step: TierList[i]
+          }
+        })
+
+        data[TierList[i]] = disapproveTier
+        TierData.push(data)
+
+        let underApproveTier = await TierRequest.count({
+          where: {
+            deleted_at: null,
+            is_approved: null,
+            tier_step: TierList[i]
+          }
+        })
+
+        data[TierList[i]] = underApproveTier
+        TierData.push(data)
+      }
       return res.json({
         "status": 200,
         "message": sails.__("Dashboard Data retrieved success").message,
@@ -417,7 +455,8 @@ module.exports = {
         userSignUpCountValue,
         transactionValue,
         feesTransactionValue,
-        walletFeesTransactionValue
+        walletFeesTransactionValue,
+        TierData
       });
     } catch (error) {
       // await logger.error(error.message)

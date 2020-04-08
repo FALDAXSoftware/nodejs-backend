@@ -1979,7 +1979,7 @@ module.exports = {
             " AND " :
             " WHERE ";
           whereAppended = true;
-          query += " trade_history.user_id=" + user_id
+          query += " trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id
         }
 
         if (t_type) {
