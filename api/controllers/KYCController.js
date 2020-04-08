@@ -704,7 +704,7 @@ module.exports = {
       console.log("dataBody", dataBody);
       console.log("tierDetails", tierDetailsValue)
 
-      if (tierDetailsValue.length == 0) {
+      if (tierDetailsValue.length == 1) {
         req
           .file('valid_id')
           .upload(async function (error, uploadFile) {
