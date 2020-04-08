@@ -3023,5 +3023,12 @@
 		"message_type": "error",
 		"message_english": "User Tier Reuqest has been changed successfully.",
 		"message": "User Tier Reuqest has been changed successfully."
+	},
+	"Your Current is approved or under approval": {
+		"page": "Account Tier Management- User",
+		"context": "When User uploads rejected document",
+		"message_type": "error",
+		"message_english": "Your Current Tier is approved or under approval",
+		"message": "Your Current Tier is approved or under approval"
 	}
 }
