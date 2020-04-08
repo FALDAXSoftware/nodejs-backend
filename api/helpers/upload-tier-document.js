@@ -28,7 +28,7 @@ module.exports = {
     fn: async function (inputs, exits) {
         try {
             var data = inputs.params;
-            console.log(data)
+
             var userData = await Users.findOne({
                 where: {
                     id: data.user_id,
@@ -70,25 +70,39 @@ module.exports = {
             var responseValue = new Promise(async (resolve, reject) => {
                 await request(options, async function (error, response) {
                     if (error) throw new Error(error);
-                    console.log(response.body);
                     var value = JSON.parse(response.body)
-                    console.log("value", value)
-                    console.log(value.success)
                     if (value.success == "file saved") {
-                        console.log({
-                            unique_key: data.description,
-                            user_id: data.user_id,
-                            tier_step: userData.account_tier,
-                            created_at: new Date(),
-                            type: data.type
+                        var tierData = await TierRequest.findOne({
+                            where: {
+                                user_id: data.user_id,
+                                deleted_at: null,
+                                type: data.type,
+                                tier_step: parseInt(userData.account_tier) + 1
+                            }
                         })
-                        var dataValue = await TierRequest.create({
-                            unique_key: data.description,
-                            user_id: data.user_id,
-                            tier_step: parseInt(userData.account_tier) + 1,
-                            created_at: new Date(),
-                            type: data.type
-                        })
+
+                        console.log("tierData", tierData)
+                        if (tierData != undefined) {
+                            var dataValue = await TierRequest
+                                .update({
+                                    user_id: data.user_id,
+                                    deleted_at: null,
+                                    type: data.type,
+                                    tier_step: parseInt(userData.account_tier) + 1
+                                })
+                                .set({
+                                    unique_key: data.description,
+                                    is_approved: null
+                                })
+                        } else {
+                            var dataValue = await TierRequest.create({
+                                unique_key: data.description,
+                                user_id: data.user_id,
+                                tier_step: parseInt(userData.account_tier) + 1,
+                                created_at: new Date(),
+                                type: data.type
+                            })
+                        }
                         var object = {
                             "status": 200,
                             "data": "Your file has been uploaded successfully."
@@ -97,8 +111,6 @@ module.exports = {
                     }
                 });
             })
-
-            console.log(await responseValue)
 
             return exits.success(responseValue)
 

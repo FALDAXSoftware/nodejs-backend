@@ -2667,6 +2667,7 @@ module.exports = {
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
                           WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
                           ORDER BY id DESC`;
+          console.log("query_jst", query_jst)
           let jst_fees = await sails.sendNativeQuery(query_jst, []);
           var temp_jst_total = 0;
           if (jst_fees.rowCount > 0) {
