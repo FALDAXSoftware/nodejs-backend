@@ -695,6 +695,7 @@ module.exports = {
       var tierDetails = await TierRequest.find({
         where: {
           deleted_at: null,
+          tier_step: 2,
           user_id: req.user.id,
           is_approved: false
         }
