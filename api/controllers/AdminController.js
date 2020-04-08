@@ -1600,7 +1600,7 @@ module.exports = {
           expire_time: null
         }]
       };
-      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
+      let get_data = await IPWhitelist.hiteListData("", params, limit, page);
 
       if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
@@ -2601,6 +2601,27 @@ module.exports = {
         })
         .sort('created_at DESC');
 
+      var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
+                        FROM (
+                          (
+                          SELECT user_coin, sum(user_fee) as user_fee
+                          FROM trade_history
+                          GROUP BY user_coin
+                          )
+                            UNION
+                        (
+                          SELECT requested_coin, sum(requested_fee) as requested_fee
+                          FROM trade_history
+                          GROUP BY requested_coin
+                        )
+                        ) b GROUP BY b.user_coin`
+
+      var tradeData = await sails.sendNativeQuery(tradeSql, []);
+      console.log("tradeData", tradeData)
+      var sqlData = tradeData.rows;
+      console.log("sqlData", sqlData);
+
+
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
@@ -2662,6 +2683,19 @@ module.exports = {
             })
           }
           assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          // var dataValue = (sqlData.user_coin).has(asset_name)
+
+          // var flag = false;
+          var value = 0;
+          for (var k = 0; k < sqlData.length; k++) {
+            if (asset_name == sqlData[k].user_coin) {
+              value = sqlData[k].sum
+            }
+          }
+
+          console.log(value)
+
+          assets_data[i].trade_earned = value.sum
 
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
@@ -2683,6 +2717,7 @@ module.exports = {
           assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
           assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
         }
+
 
         return res.status(200).json({
           "status": 200,
