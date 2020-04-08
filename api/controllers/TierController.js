@@ -653,5 +653,189 @@ module.exports = {
     } catch (error) {
       console.log(error);
     }
+  },
+
+  uploadTier3Document: async function (req, res) {
+    try {
+      var dataBody = req.body;
+
+      var tierDetailsValue = await TierRequest.find({
+        where: {
+          deleted_at: null,
+          user_id: req.user.id,
+          tier_step: 3
+        }
+      });
+
+      var tierDetails = await TierRequest.find({
+        where: {
+          deleted_at: null,
+          tier_step: 3,
+          user_id: req.user.id,
+          is_approved: false
+        }
+      })
+
+      console.log("tierDetailsValue", tierDetailsValue)
+
+      if (tierDetailsValue.length == 0) {
+        req
+          .file('idcp')
+          .upload(async function (error, uploadFile) {
+            try {
+              console.log(uploadFile)
+              var data = {};
+              data.user_id = req.user.id;
+              data.file = uploadFile[0]
+              data.description = randomize('Aa0', 10);
+              data.type = 1;
+
+              console.log("data", data)
+
+              var dataValue = await sails.helpers.uploadTierDocument(data)
+
+              if (dataValue.status == 200) {
+                req
+                  .file('proof_of_assets_form')
+                  .upload(async function (error1, uploadFile1) {
+                    try {
+                      console.log(uploadFile1);
+                      var data1 = {};
+                      data1.user_id = req.user.id;
+                      data1.file = uploadFile1[0]
+                      data1.description = randomize('Aa0', 10);
+                      data1.type = 2;
+
+                      console.log("data1", data1)
+
+                      var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                      return res.json(dataValue1)
+                    } catch (error1) {
+                      console.log(error1);
+                    }
+                  });
+              }
+
+            } catch (error) {
+              console.log(error);
+            }
+          });
+      } else if (((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && (dataBody.proof_of_assets_flag == true || dataBody.proof_of_assets_flag == "true")) && tierDetails != undefined) {
+        var flag = 0;
+        for (var i = 0; i < tierDetails.length; i++) {
+          if (tierDetails[i].type != 3) {
+            if (tierDetails[i].is_approved == false) {
+              flag = parseInt(flag) + 1;
+            }
+          }
+        }
+
+        if (flag == 2) {
+          req
+            .file('idcp')
+            .upload(async function (error, uploadFile) {
+              try {
+                var data = {};
+                data.user_id = req.user.id;
+                data.file = uploadFile[0]
+                data.description = randomize('Aa0', 10);
+                data.type = 1;
+
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+
+                if (dataValue.status == 200) {
+                  req
+                    .file('proof_of_assets_form')
+                    .upload(async function (error1, uploadFile1) {
+                      try {
+                        var data1 = {};
+                        data1.user_id = req.user.id;
+                        data1.file = uploadFile1[0]
+                        data1.description = randomize('Aa0', 10);
+                        data1.type = 2;
+
+                        var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                        return res.json(dataValue1)
+                      } catch (error1) {
+                        console.log(error1);
+                      }
+                    });
+                }
+
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        }
+      } else if ((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && tierDetails != undefined) {
+        var flag = false;
+
+        for (var i = 0; i < tierDetails.length; i++) {
+          console.log("tierDetails[i].type", tierDetails[i].type)
+          if (tierDetails[i].type == 1) {
+            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
+            if (tierDetails[i].is_approved == false) {
+              flag = true;
+            }
+          }
+        }
+
+        if (flag == true) {
+          req
+            .file('idcp')
+            .upload(async function (error, uploadFile) {
+              try {
+                var data = {};
+                data.user_id = req.user.id;
+                data.file = uploadFile[0]
+                data.description = randomize('Aa0', 10);
+                data.type = 1;
+
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+                return res.json(dataValue)
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        }
+
+      } else if ((dataBody.proof_of_assets_flag == true || dataBody.proof_of_assets_flag == "true") && tierDetails != undefined) {
+        var flag = false;
+
+        for (var i = 0; i < tierDetails.length; i++) {
+          console.log("tierDetails[i].type", tierDetails[i].type)
+          if (tierDetails[i].type == 2) {
+            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
+            if (tierDetails[i].is_approved == false) {
+              flag = true;
+            }
+          }
+        }
+
+        if (flag == true) {
+          req
+            .file('proof_of_assets_form')
+            .upload(async function (error, uploadFile) {
+              try {
+                var data = {};
+                data.user_id = req.user.id;
+                data.file = uploadFile[0]
+                data.description = randomize('Aa0', 10);
+                data.type = 1;
+
+                var dataValue = await sails.helpers.uploadTierDocument(data)
+                return res.json(dataValue)
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        }
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
