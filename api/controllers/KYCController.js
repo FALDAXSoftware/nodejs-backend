@@ -627,9 +627,19 @@ module.exports = {
     try {
 
       var flagReUpload = req.body.reupload;
+      console.log("req.body", req.body)
 
       if (req.body.ssn) {
 
+        console.log("INSIDE IF")
+
+        var getTierDetails = await TierRequest.findOne({
+          where: {
+            deleted_at: null,
+            user_id: req.user.id,
+            type: 3
+          }
+        });
         if (flagReUpload == true) {
           var getTierDetails = await TierRequest.findOne({
             where: {
