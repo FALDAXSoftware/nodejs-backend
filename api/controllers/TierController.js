@@ -148,7 +148,8 @@ module.exports = {
           var tierData = await TierRequest.find({
             where: {
               deleted_at: null,
-              user_id: user_id
+              user_id: user_id,
+              tier_step: 2
             }
           });
 
@@ -183,7 +184,45 @@ module.exports = {
               })
           }
         } else if (tier_step == 3) {
+          var flag = 0;
+          var tierData = await TierRequest.find({
+            where: {
+              deleted_at: null,
+              user_id: user_id,
+              tier_step: 3
+            }
+          });
 
+          console.log(tierData)
+
+          if (tierData.length == 2) {
+            for (var i = 0; i < tierData.length; i++) {
+              if (tierData[i].is_approved == true) {
+                flag = parseInt(flag) + 1
+              }
+            }
+          }
+          console.log(flag)
+          var userData = await Users.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }
+          })
+          if (flag == 2) {
+            var userValue = await Users
+              .update({
+                where: {
+                  deleted_at: null,
+                  is_active: true,
+                  id: user_id
+                }
+              })
+              .set({
+                account_tier: parseInt(userData.account_tier) + 1
+              })
+          }
         }
         return res
           .status(200)
@@ -677,6 +716,8 @@ module.exports = {
       })
 
       console.log("tierDetailsValue", tierDetailsValue)
+      console.log("tierDetails", tierDetails);
+      console.log("dataBody", dataBody)
 
       if (tierDetailsValue.length == 0) {
         req
@@ -743,6 +784,7 @@ module.exports = {
             });
         }
       } else if ((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && tierDetails != undefined) {
+        console.log("INSIDe IF")
         var flag = false;
 
         for (var i = 0; i < tierDetails.length; i++) {
