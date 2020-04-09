@@ -885,6 +885,13 @@ module.exports = {
               "err": sails.__("Your Current is approved or under approval").message
             })
         }
+      } else if ((dataBody.valid_id_flag == false || dataBody.valid_id_flag == "false") && (dataBody.proof_residence_flag == false || dataBody.proof_residence_flag == "false") && (flagReUpload == true || flagReUpload == "true")) {
+        return res
+          .staus(200)
+          .json({
+            "status": 200,
+            "data": "Your SSN number has been uploaded successfully."
+          })
       }
 
     } catch (error) {
