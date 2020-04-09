@@ -56,7 +56,7 @@ module.exports.http = {
       var middlewareFn = skipper({
         strict: true,
         limit: '5mb',
-        maxTimeToBuffer: 3000
+        maxTimeToBuffer: 10000
       });
       return middlewareFn;
     })(),
