@@ -640,7 +640,7 @@ module.exports = {
             type: 3
           }
         });
-        if (flagReUpload == true) {
+        if (flagReUpload == true || flagReUpload == "true") {
           var getTierDetails = await TierRequest.findOne({
             where: {
               deleted_at: null,
