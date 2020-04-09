@@ -71,6 +71,7 @@ module.exports = {
             var responseValue = new Promise(async (resolve, reject) => {
                 await request(options, async function (error, response) {
                     if (error) throw new Error(error);
+                    console.log(response.body)
                     var value = JSON.parse(response.body)
                     if (value.success == "file saved") {
                         var tierData = await TierRequest.findOne({

@@ -680,41 +680,26 @@ module.exports = {
 
       if (tierDetailsValue.length == 0) {
         req
-          .file('idcp')
+          .file('files')
           .upload(async function (error, uploadFile) {
             try {
               console.log(uploadFile)
               var data = {};
-              data.user_id = req.user.id;
-              data.file = uploadFile[0]
-              data.description = randomize('Aa0', 10);
-              data.type = 1;
+              if (uploadFile.length > 0) {
+                var dataValue;
+                for (var i = 0; i < uploadFile.length; i++) {
+                  data.user_id = req.user.id;
+                  data.file = uploadFile[i]
+                  data.description = randomize('Aa0', 10);
+                  data.type = (i == 0) ? 1 : 2;
 
-              console.log("data", data)
+                  console.log("data", data)
 
-              var dataValue = await sails.helpers.uploadTierDocument(data)
-
-              if (dataValue.status == 200) {
-                req
-                  .file('proof_of_assets_form')
-                  .upload(async function (error1, uploadFile1) {
-                    try {
-                      console.log(uploadFile1);
-                      var data1 = {};
-                      data1.user_id = req.user.id;
-                      data1.file = uploadFile1[0]
-                      data1.description = randomize('Aa0', 10);
-                      data1.type = 2;
-
-                      console.log("data1", data1)
-
-                      var dataValue1 = await sails.helpers.uploadTierDocument(data1)
-
-                      return res.json(dataValue1)
-                    } catch (error1) {
-                      console.log(error1);
-                    }
-                  });
+                  dataValue = await sails.helpers.uploadTierDocument(data)
+                  console.log(dataValue)
+                }
+                console.log(dataValue)
+                return res.json(dataValue)
               }
 
             } catch (error) {
@@ -733,35 +718,23 @@ module.exports = {
 
         if (flag == 2) {
           req
-            .file('idcp')
+            .file('files')
             .upload(async function (error, uploadFile) {
               try {
+                console.log(uploadFile)
                 var data = {};
-                data.user_id = req.user.id;
-                data.file = uploadFile[0]
-                data.description = randomize('Aa0', 10);
-                data.type = 1;
+                if (uploadFile.length > 0) {
+                  for (var i = 0; i < uploadFile.length; i++) {
+                    data.user_id = req.user.id;
+                    data.file = uploadFile[i]
+                    data.description = randomize('Aa0', 10);
+                    data.type = (i == 0) ? 1 : 2;
 
-                var dataValue = await sails.helpers.uploadTierDocument(data)
+                    console.log("data", data)
 
-                if (dataValue.status == 200) {
-                  req
-                    .file('proof_of_assets_form')
-                    .upload(async function (error1, uploadFile1) {
-                      try {
-                        var data1 = {};
-                        data1.user_id = req.user.id;
-                        data1.file = uploadFile1[0]
-                        data1.description = randomize('Aa0', 10);
-                        data1.type = 2;
-
-                        var dataValue1 = await sails.helpers.uploadTierDocument(data1)
-
-                        return res.json(dataValue1)
-                      } catch (error1) {
-                        console.log(error1);
-                      }
-                    });
+                    var dataValue = await sails.helpers.uploadTierDocument(data)
+                  }
+                  return res.json(dataValue)
                 }
 
               } catch (error) {
@@ -784,7 +757,7 @@ module.exports = {
 
         if (flag == true) {
           req
-            .file('idcp')
+            .file('files')
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
@@ -799,6 +772,13 @@ module.exports = {
                 console.log(error);
               }
             });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Your Current is approved or under approval").message
+            })
         }
 
       } else if ((dataBody.proof_of_assets_flag == true || dataBody.proof_of_assets_flag == "true") && tierDetails != undefined) {
@@ -816,7 +796,7 @@ module.exports = {
 
         if (flag == true) {
           req
-            .file('proof_of_assets_form')
+            .file('files')
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
@@ -831,6 +811,13 @@ module.exports = {
                 console.log(error);
               }
             });
+        } else {
+          return res
+            .status(500)
+            .json({
+              status: 500,
+              "err": sails.__("Your Current is approved or under approval").message
+            })
         }
       }
 
