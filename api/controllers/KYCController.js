@@ -912,7 +912,7 @@ module.exports = {
       } else if (tierDetails.type == 1) {
 
         req
-          .file('valid_id')
+          .file('files')
           .upload(async function (error, uploadFile) {
             try {
               var data = {};
@@ -935,7 +935,7 @@ module.exports = {
       } else if (tierDetails.type == 2) {
 
         req
-          .file('residence_proof')
+          .file('files')
           .upload(async function (error1, uploadFile1) {
             try {
               console.log(error1);
