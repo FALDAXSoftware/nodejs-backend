@@ -713,42 +713,43 @@ module.exports = {
 
       console.log("dataBody", dataBody);
       console.log("tierDetails", tierDetailsValue)
+      console.log("tierDetailsValue.length", tierDetailsValue.length)
 
       if (tierDetailsValue.length == 1) {
         req
           .file('valid_id')
           .upload(async function (error, uploadFile) {
             try {
+              console.log("error", error)
+              console.log("uploadFile", uploadFile)
               var data = {};
               data.user_id = req.user.id;
               data.file = uploadFile[0]
               data.description = randomize('Aa0', 10);
               data.type = 1;
-
+              console.log("data", data)
               var dataValue = await sails.helpers.uploadTierDocument(data)
-
-              if (dataValue.status == 200) {
-                req
-                  .file('residence_proof')
-                  .upload(async function (error1, uploadFile1) {
-                    try {
-                      var data1 = {};
-                      data1.user_id = req.user.id;
-                      data1.file = uploadFile1[0]
-                      data1.description = randomize('Aa0', 10);
-                      data1.type = 2;
-
-                      var dataValue1 = await sails.helpers.uploadTierDocument(data1)
-
-                      return res.json(dataValue1)
-                    } catch (error1) {
-                      console.log(error1);
-                    }
-                  });
-              }
-
             } catch (error) {
               console.log(error);
+            }
+          });
+
+        req
+          .file('residence_proof')
+          .upload(async function (error1, uploadFile1) {
+            try {
+              console.log(uploadFile1)
+              var data1 = {};
+              data1.user_id = req.user.id;
+              data1.file = uploadFile1[0]
+              data1.description = randomize('Aa0', 10);
+              data1.type = 2;
+
+              var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+              return res.json(dataValue1)
+            } catch (error1) {
+              console.log(error1);
             }
           });
       } else if (((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && (dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true")) && tierDetails != undefined) {
@@ -774,28 +775,27 @@ module.exports = {
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
 
-                if (dataValue.status == 200) {
-                  req
-                    .file('residence_proof')
-                    .upload(async function (error1, uploadFile1) {
-                      try {
-                        var data1 = {};
-                        data1.user_id = user_id;
-                        data1.file = uploadFile1[0]
-                        data1.description = randomize('Aa0', 10);
-                        data1.type = 2;
-
-                        var dataValue1 = await sails.helpers.uploadTierDocument(data1)
-
-                        return res.json(dataValue1)
-                      } catch (error1) {
-                        console.log(error1);
-                      }
-                    });
-                }
-
               } catch (error) {
                 console.log(error);
+              }
+            });
+
+          req
+            .file('residence_proof')
+            .upload(async function (error1, uploadFile1) {
+              try {
+                console.log(uploadFile1)
+                var data1 = {};
+                data1.user_id = req.user.id;
+                data1.file = uploadFile1[0]
+                data1.description = randomize('Aa0', 10);
+                data1.type = 2;
+
+                var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+
+                return res.json(dataValue1)
+              } catch (error1) {
+                console.log(error1);
               }
             });
         } else {
@@ -889,25 +889,6 @@ module.exports = {
 
     } catch (error) {
       console.log(error)
-    }
-  },
-
-  userUploadTier3Document: async function (req, res) {
-    try {
-      req
-        .file('idcp')
-        .upload(async function (error, uploadFile) {
-          var data = {};
-          data.user_id = req.user.id;
-          data.file = uploadFile[0]
-          data.description = randomize('Aa0', 10);
-          data.type = 1;
-
-          var dataValue = await sails.helpers.uploadTierDocument(data)
-
-        });
-    } catch (error) {
-      console.log(error);
     }
   }
 };

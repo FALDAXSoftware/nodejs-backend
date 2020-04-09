@@ -28,6 +28,7 @@ module.exports = {
     fn: async function (inputs, exits) {
         try {
             var data = inputs.params;
+            console.log(data)
 
             var userData = await Users.findOne({
                 where: {
