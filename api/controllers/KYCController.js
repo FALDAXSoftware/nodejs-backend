@@ -712,8 +712,8 @@ module.exports = {
       })
 
       console.log("dataBody", dataBody);
-      console.log("tierDetails", tierDetailsValue)
-      console.log("tierDetailsValue.length", tierDetailsValue.length)
+      console.log("dataBody.valid_id_flag", dataBody.valid_id_flag)
+      console.log("dataBody.proof_residence_flag", dataBody.proof_residence_flag)
 
       if (tierDetailsValue.length == 1) {
         req
@@ -887,7 +887,7 @@ module.exports = {
         }
       } else if ((dataBody.valid_id_flag == false || dataBody.valid_id_flag == "false") && (dataBody.proof_residence_flag == false || dataBody.proof_residence_flag == "false") && (flagReUpload == true || flagReUpload == "true")) {
         return res
-          .staus(200)
+          .status(200)
           .json({
             "status": 200,
             "data": "Your SSN number has been uploaded successfully."
