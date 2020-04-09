@@ -2562,8 +2562,12 @@ module.exports = {
         data,
         start_date,
         end_date,
-        t_type
+        t_type,
+        side,
+        order_type
       } = req.allParams();
+
+      console.log(req.allParams())
 
       var user_id = req.user.id;
       user_id = 36;
@@ -2836,6 +2840,85 @@ module.exports = {
             "status": 200,
             "message": sails.__("Admin wallet history success").message,
             walletValue,
+            tradeCount
+          })
+      } else if (wallet_type == 5) {
+
+        console.log(coin_code)
+
+        if (coin_code && coin_code != '' && coin_code != null) {
+          if (coin_code == "susu") {
+            filter += ` AND (trade_history.settle_currency = '${coin_code.toUpperCase()}' OR trade_history.currency = '${coin_code.toUpperCase()}')`
+          } else {
+            filter += ` AND (trade_history.settle_currency = '${coin_code.toUpperCase()}' OR trade_history.currency = '${coin_code.toUpperCase()}')`
+          }
+          queryAppended = true
+        }
+
+        if (data && data != '' && data != null) {
+          filter += ' AND'
+          filter += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.email) LIKE '%" + data.toLowerCase() + "%')";
+        }
+
+        var tradeQuery = `SELECT trade_history.*, coins.*, users.email, users.first_name, users.last_name,
+                            user1.email, user1.first_name, user1.last_name
+                            FROM trade_history
+                            LEFT JOIN coins 
+                            ON trade_history.currency = coins.coin
+                            LEFT JOIN coins as coin1
+                            ON trade_history.settle_currency = coin1.coin
+                            LEFT join users
+                            ON trade_history.user_id = users.id
+                            LEFT JOIN users as user1
+                            ON trade_history.requested_user_id = user1.id
+                            WHERE trade_history.deleted_at IS NULL${filter}`
+
+        console
+
+        if (side && side != '' && side != null) {
+          tradeQuery += " AND trade_history.side = '" + side + "' "
+        }
+
+        if (order_type && order_type != '' && order_type != null) {
+          tradeQuery += " AND trade_history.order_type = '" + order_type + "' "
+        }
+
+        if (start_date && end_date) {
+          tradeQuery += " AND "
+
+          tradeQuery += " trade_history.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND users.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        countQuery = tradeQuery;
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          tradeQuery += " ORDER BY trade_history." + sort_col + " " + sortVal;
+        } else {
+          tradeQuery += " ORDER BY trade_history.created_at DESC"
+        }
+
+        tradeQuery += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        console.log(tradeQuery)
+        var tradeValue = await sails.sendNativeQuery(tradeQuery, []);
+
+        tradeValue = tradeValue.rows
+
+        tradeCount = await sails.sendNativeQuery(countQuery, [])
+        tradeCount = tradeCount.rows.length;
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Admin trade history success").message,
+            tradeValue,
             tradeCount
           })
       }
