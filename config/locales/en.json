@@ -3030,5 +3030,12 @@
 		"message_type": "error",
 		"message_english": "Your Current Tier is approved or under approval",
 		"message": "Your Current Tier is approved or under approval"
+	},
+	"Admin trade history success": {
+		"page": "Wallet Dashboard- CMS",
+		"context": "When Admin views particular coin",
+		"message_type": "success",
+		"message_english": "Transation History has been retrieved successfully.",
+		"message": "Transation History has been retrieved successfully."
 	}
 }
