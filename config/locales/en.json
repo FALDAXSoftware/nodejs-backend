@@ -3037,5 +3037,19 @@
 		"message_type": "success",
 		"message_english": "Transation History has been retrieved successfully.",
 		"message": "Transation History has been retrieved successfully."
+	},
+	"Layout data has been added successfully": {
+		"page": "Custom dashboard- User",
+		"context": "When user add data for shareable code",
+		"message_type": "success",
+		"message_english": "Layout Data for shareable code has been added successfully.",
+		"message": "Layout Data for shareable code has been added successfully."
+	},
+	"Code Data has retrieved success": {
+		"page": "Custom dashboard- User",
+		"context": "When user gets data for shareable code",
+		"message_type": "success",
+		"message_english": "Layout Data for shareable code has been retrieved successfully.",
+		"message": "Layout Data for shareable code has been retrieved successfully."
 	}
 }

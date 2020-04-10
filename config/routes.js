@@ -562,5 +562,9 @@ module.exports.routes = {
   'post /users/update-users-layout': "LayoutController.updateUserLayout",
 
   // Upload UserDocuments
-  'post /users/upload-user-documents': "KYCController.userDocumentUpload"
+  'post /users/upload-user-documents': "KYCController.userDocumentUpload",
+
+  // Custom Dashboard Shareable Layout
+  'post /users/add-sharebale-code': "ShareableLayoutController.addCodeLayoutData",
+  "post /users/get-shareable-code": "ShareableLayoutController.getCodeLayout"
 };
