@@ -277,7 +277,7 @@ module.exports = {
       var query;
       if (status == 1) {
         query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
-                          WHERE tier_request.is_approved IS NULL AND tier_request.deleted_at IS NULL
+                          WHERE tier_request.deleted_at IS NULL
                           AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
       } else if (status == 2) {
         query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
