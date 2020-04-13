@@ -3051,5 +3051,19 @@
 		"message_type": "success",
 		"message_english": "Layout Data for shareable code has been retrieved successfully.",
 		"message": "Layout Data for shareable code has been retrieved successfully."
+	},
+	"Static Tier Pdfs retrived successfully": {
+		"page": "Tier PDF lists",
+		"context": "Static Tier Pdfs retrived successfully",
+		"message_type": "success",
+		"message_english": "Static Tier Pdfs retrieved successfully.",
+		"message": "Static Tier Pdfs retrieved successfully."
+	},
+	"Static Tier Pdfs updated successfully": {
+		"page": "Tier PDF update",
+		"context": "Static Tier Pdfs updated successfully",
+		"message_type": "success",
+		"message_english": "Static Tier Pdfs updated successfully.",
+		"message": "Static Tier Pdfs updated successfully."
 	}
 }

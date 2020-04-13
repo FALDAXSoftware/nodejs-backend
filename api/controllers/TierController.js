@@ -31,6 +31,17 @@ module.exports = {
       for (let index = 0; index < tierDetails.length; index++) {
         if (tierDetails[index].tier_step == (parseInt(userData.account_tier) + 1)) {
           tierDetails[index].is_active = true;
+          if ((parseInt(userData.account_tier) + 1) == 3) {
+            var dataLink = await AdminSetting.findOne({
+              where: {
+                deleted_at: null,
+                slug: "proof_of_assets_form"
+              }
+            })
+          }
+
+          console.log("dataLink", dataLink)
+          tierDetails[index].link = dataLink.value;
           var tierDetailsValue = await TierRequest.find({
             where: {
               deleted_at: null,
@@ -309,10 +320,54 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
+      console.log(query)
+
+      console.log("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type" + query)
+
       tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
       tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type ` + query, [])
 
       tradeData = tradeData.rows;
+      console.log(tradeData)
+      // if (status == 2 && step == 2) {
+      //   var data1 = {};
+      //   for (var i = 0; i < tradeData.length; i++) {
+      //     if (data1.includes(tradeData[i].user_id)) {
+      //       data1[tradeData[i].user_id].push(tradeData[i])
+      //     } else {
+      //       data1[tradeData[i].user_id] = []
+      //       data1[tradeData[i].user_id].push(tradeData[i])
+      //     }
+      //   }
+      // }
+
+      // var groups = Object.create(null),
+      //   result
+
+      // tradeData.forEach(function (a) {
+      //   groups[a.email] = groups[a.email] || [];
+      //   groups[a.email].push(a);
+      // });
+
+      // var finalData = [];
+
+      // result = Object.keys(groups).map(function (k) {
+      //   var temp = {};
+      //   temp[k] = groups[k];
+      //   if (step == 2 && status == 2) {
+      //     if ((Object.keys(temp[k]).length) == 3) {
+      //       finalData.push(temp[k])
+      //     }
+      //   } else if (step == 3 && status == 2) {
+      //     if ((Object.keys(temp[k]).length) == 2) {
+      //       finalData.push(temp[k])
+      //     }
+      //   }
+      //   return temp;
+      // });
+
+      // console.log("finalData", finalData)
+      // console.log("result", result)
 
       tradeCount = await sails.sendNativeQuery("Select COUNT(tier_request.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
@@ -322,6 +377,8 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("tier data retrieve").message,
+          // tradeData: (status == 2) ? (finalData) : (result),
+          // tradeCount: (status == 2) ? (finalData.length) : (result.length)
           tradeData,
           tradeCount
         })
