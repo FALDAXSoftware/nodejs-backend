@@ -96,7 +96,8 @@ module.exports = {
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
           signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
-          default_language: (req.body.default_language ? req.body.default_language : "en")
+          default_language: (req.body.default_language ? req.body.default_language : "en"),
+          account_tier: 0
         }).fetch();
         var now = moment.now();
 
@@ -887,7 +888,7 @@ module.exports = {
                       user.state :
                       user_details["state"], user.city_town ?
                       user.city_town :
-                      user_details["city_town"], user.postal_code, user.dob,user.phone_number);
+                      user_details["city_town"], user.postal_code, user.dob, user.phone_number);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -928,7 +929,7 @@ module.exports = {
                     user.state :
                     user_details["state"], user.city_town ?
                     user.city_town :
-                    user_details["city_town"], user.postal_code, user.dob,user.phone_number);
+                    user_details["city_town"], user.postal_code, user.dob, user.phone_number);
               }
 
               if (req.body.country_code) {

@@ -274,7 +274,7 @@ module.exports = {
                     is_active: true
                   })
                   .set({
-                    account_tier: parseInt(user_data_kyc.account_tier) + 1
+                    account_tier: 1
                   })
                   .fetch()
 

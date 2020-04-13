@@ -341,32 +341,33 @@ module.exports = {
       //   }
       // }
 
-      var groups = Object.create(null),
-        result
+      // var groups = Object.create(null),
+      //   result
 
-      tradeData.forEach(function (a) {
-        groups[a.user_id] = groups[a.user_id] || [];
-        groups[a.user_id].push(a);
-      });
+      // tradeData.forEach(function (a) {
+      //   groups[a.email] = groups[a.email] || [];
+      //   groups[a.email].push(a);
+      // });
 
-      var finalData = [];
+      // var finalData = [];
 
-      result = Object.keys(groups).map(function (k) {
-        var temp = {};
-        temp[k] = groups[k];
-        if (step == 2 && status == 2) {
-          if ((Object.keys(temp[k]).length) == 3) {
-            finalData.push(temp[k])
-          }
-        } else if (step == 3 && status == 2) {
-          if ((Object.keys(temp[k]).length) == 2) {
-            finalData.push(temp[k])
-          }
-        }
-        return temp;
-      });
+      // result = Object.keys(groups).map(function (k) {
+      //   var temp = {};
+      //   temp[k] = groups[k];
+      //   if (step == 2 && status == 2) {
+      //     if ((Object.keys(temp[k]).length) == 3) {
+      //       finalData.push(temp[k])
+      //     }
+      //   } else if (step == 3 && status == 2) {
+      //     if ((Object.keys(temp[k]).length) == 2) {
+      //       finalData.push(temp[k])
+      //     }
+      //   }
+      //   return temp;
+      // });
 
-      console.log("result", result)
+      // console.log("finalData", finalData)
+      // console.log("result", result)
 
       tradeCount = await sails.sendNativeQuery("Select COUNT(tier_request.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
@@ -376,8 +377,10 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("tier data retrieve").message,
-          tradeData: (status == 2) ? (finalData) : (result),
-          tradeCount: (status == 2) ? (finalData.length) : (result.length)
+          // tradeData: (status == 2) ? (finalData) : (result),
+          // tradeCount: (status == 2) ? (finalData.length) : (result.length)
+          tradeData,
+          tradeCount
         })
 
     } catch (error) {
