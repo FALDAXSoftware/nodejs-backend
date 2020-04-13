@@ -907,7 +907,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "data": "Your SSN number has been uploaded successfully."
+            "message": "Your SSN number has been uploaded successfully."
           })
       } else if (tierDetails.type == 1) {
 
@@ -924,7 +924,7 @@ module.exports = {
               data.type = 1;
 
               var dataValue = await sails.helpers.uploadTierDocument(data)
-
+              dataValue.message = dataValue.data
               return res.json(dataValue);
 
             } catch (error) {
@@ -948,6 +948,7 @@ module.exports = {
 
               console.log(data1)
               var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+              dataValue1.message = dataValue1.data
 
               return res.json(dataValue1)
             } catch (error1) {
@@ -960,7 +961,7 @@ module.exports = {
           .status(500)
           .json({
             "status": 500,
-            "data": "No id has been provided"
+            "message": "No id has been provided"
           })
       }
     } catch (error) {

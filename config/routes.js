@@ -566,5 +566,9 @@ module.exports.routes = {
 
   // Custom Dashboard Shareable Layout
   'post /users/add-sharebale-code': "ShareableLayoutController.addCodeLayoutData",
-  "post /users/get-shareable-code": "ShareableLayoutController.getCodeLayout"
+  "post /users/get-shareable-code": "ShareableLayoutController.getCodeLayout",
+
+  // Tier Static PDF
+  "get /admin/get-tier-pdf": "AdminController.getTierStaticLink",
+  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf"
 };
