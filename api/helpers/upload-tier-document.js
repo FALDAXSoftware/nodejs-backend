@@ -48,7 +48,29 @@ module.exports = {
             var transaction_id = await sails.helpers.getTransactionId(userData.email);
 
             var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-            var options = {
+
+            var options = {}
+            // console.log(data);
+            console.log("data.type", data.type)
+            // if (data.type == 3) {
+            //     var value = {
+            //         ssn: data.ssn,
+            //         description: data.description
+            //     }
+            //     options = {
+            //         'method': 'POST',
+            //         'url': sails.config.local.IDM_URL + '/' + transaction_id + "/files",
+            //         'headers': {
+            //             'Authorization': 'Basic ' + idm_key,
+            //             'Content-Type': 'application/json;'
+            //         },
+            //         formData: {
+            //             'appId': userKYCDetails.mtid,
+            //             'description': value
+            //         }
+            //     };
+            // } else {
+            options = {
                 'method': 'POST',
                 'url': sails.config.local.IDM_URL + '/' + transaction_id + "/files",
                 'headers': {
@@ -67,6 +89,9 @@ module.exports = {
                     }
                 }
             };
+            // }
+
+            console.log("options", options)
 
             var responseValue = new Promise(async (resolve, reject) => {
                 await request(options, async function (error, response) {
@@ -76,7 +101,7 @@ module.exports = {
                     if (value.success == "file saved") {
                         var tierData = await TierRequest.findOne({
                             where: {
-                                user_id: data.user_id,
+                                request_id: data.request_id,
                                 deleted_at: null,
                                 type: data.type,
                                 tier_step: parseInt(userData.account_tier) + 1
@@ -87,28 +112,30 @@ module.exports = {
                         if (tierData != undefined) {
                             var dataValue = await TierRequest
                                 .update({
-                                    user_id: data.user_id,
+                                    request_id: data.request_id,
                                     deleted_at: null,
                                     type: data.type,
                                     tier_step: parseInt(userData.account_tier) + 1
                                 })
                                 .set({
-                                    unique_key: data.description,
-                                    is_approved: null
+                                    // unique_key: data.description,
+                                    is_approved: false
                                 })
-                        } else {
-                            var dataValue = await TierRequest.create({
-                                unique_key: data.description,
-                                user_id: data.user_id,
-                                tier_step: parseInt(userData.account_tier) + 1,
-                                created_at: new Date(),
-                                type: data.type
-                            })
                         }
+                        // else {
+                        var dataValue = await TierRequest.create({
+                            unique_key: data.description,
+                            request_id: data.request_id,
+                            tier_step: parseInt(userData.account_tier) + 1,
+                            created_at: new Date(),
+                            type: data.type
+                        })
+                        // }
                         var object = {
                             "status": 200,
                             "data": "Your file has been uploaded successfully."
                         }
+                        console.log("object", object)
                         resolve(object)
                     }
                 });
