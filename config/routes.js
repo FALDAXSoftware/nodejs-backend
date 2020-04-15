@@ -405,6 +405,7 @@ module.exports.routes = {
   // Tier Wise API
   'post /upload-tier-document': 'TierController.tierDocumentUpload',
   'get /get-tier-details': 'TierController.getUserTierList',
+  'post /users/get-user-tier-details': 'TierController.getUserTierData',
   'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
   'get /admin/get-tier-details': 'TierController.getTierList',

@@ -3065,5 +3065,12 @@
 		"message_type": "success",
 		"message_english": "Static Tier Pdfs updated successfully.",
 		"message": "Static Tier Pdfs updated successfully."
+	},
+	"tier details users retrieve success": {
+		"page": "Tier Details -Front",
+		"context": "Tier individual data has been retrieved success",
+		"message_type": "success",
+		"message_english": "Tier individual data has been retrieved success.",
+		"message": "Tier individual data has been retrieved success."
 	}
 }
