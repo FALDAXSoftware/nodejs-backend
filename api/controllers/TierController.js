@@ -258,18 +258,20 @@ module.exports = {
       }
 
       var type = 0;
-      for (var i = 0; i < length; i++) {
-        type = parseInt(type) + 1;
-        var tierData = await TierRequest.find({
-          where: {
-            deleted_at: null,
-            request_id: data.request_id,
-            tier_step: data.tier_step,
-            type: type
-          }
-        }).sort('id DESC');
+      if (data.request_id && data.request_id != "") {
+        for (var i = 0; i < length; i++) {
+          type = parseInt(type) + 1;
+          var tierData = await TierRequest.find({
+            where: {
+              deleted_at: null,
+              request_id: data.request_id,
+              tier_step: data.tier_step,
+              type: type
+            }
+          }).sort('id DESC');
 
-        finalData.push(tierData[0]);
+          finalData.push(tierData[0]);
+        }
       }
 
       return res
@@ -389,6 +391,35 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getRequestTierData: async function (req, res) {
+    try {
+      var data = req.body
+
+      var getRequestData = await TierRequest.find({
+        where: {
+          deleted_at: null,
+          request_id: request_id,
+          tier_step: data.tier_step
+        }
+      });
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": ""
+        })
+    } catch (error) {
       return res
         .status(500)
         .json({
