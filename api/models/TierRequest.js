@@ -24,9 +24,9 @@ module.exports = {
       type: "string",
       columnName: "ssn"
     },
-    user_id: {
-      columnName: "user_id",
-      model: "users"
+    request_id: {
+      type: "number",
+      columnName: "request_id"
     },
     is_approved: {
       type: 'boolean',
