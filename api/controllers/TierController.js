@@ -28,48 +28,29 @@ module.exports = {
         }
       });
 
-      for (let index = 0; index < tierDetails.length; index++) {
-        if (tierDetails[index].tier_step == (parseInt(userData.account_tier) + 1)) {
-          tierDetails[index].is_active = true;
-          if ((parseInt(userData.account_tier) + 1) == 3) {
-            var dataLink = await AdminSetting.findOne({
-              where: {
-                deleted_at: null,
-                slug: "proof_of_assets_form"
-              }
-            })
-          }
-
-          console.log("dataLink", dataLink)
-          tierDetails[index].link = dataLink.value;
-          var tierDetailsValue = await TierRequest.find({
+      for (var i = 0; i < tierDetails.length; i++) {
+        if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
+          tierDetails[i].is_active = true;
+          var accountTierDetails = await TierMainRequest.findOne({
             where: {
-              deleted_at: null,
               user_id: user_id,
-              tier_step: (parseInt(userData.account_tier) + 1)
+              tier_step: tierDetails[i].tier_step,
+              deleted_at: null
             }
           });
 
-          if (tierDetailsValue.length > 0) {
-            var object = [];
-            var objectValue = [];
-            for (var i = 0; i < tierDetailsValue.length; i++) {
-              if (tierDetailsValue[i].is_approved == false) {
-                object.push(tierDetailsValue[i].type)
-              } else if (tierDetailsValue[i].is_approved == null) {
-                objectValue.push(tierDetailsValue[i].type)
-              }
-            }
+          var object = {
+            request_id: accountTierDetails.id,
+            user_status: accountTierDetails.user_status,
+            approved: accountTierDetails.approved
+          }
+          tierDetails[i].account_details = object;
 
-            tierDetails[index].is_declined = object
-            if (objectValue.length > 0) {
-              tierDetails[index].under_approval = objectValue
+          if (i != 0) {
+            for (var j = 1; j <= i; j++) {
+              tierDetails[i - i].is_verified = true;
             }
           }
-          if (index != 0)
-            for (var i = 1; i <= index; i++) {
-              tierDetails[index - i].is_verified = true;
-            }
         }
       }
 
@@ -108,14 +89,14 @@ module.exports = {
         tier_step,
         id,
         status,
-        user_id
+        request_id
       } = req.allParams();
 
       if (tier_step == 2 || tier_step == 3 || tier_step == 4) {
         var upgradeTier = await TierRequest.find({
           where: {
             deleted_at: null,
-            user_id: user_id,
+            request_id: request_id,
             id: id
           }
         });
@@ -130,9 +111,16 @@ module.exports = {
                 id: id
               })
               .set({
-                tier_step: tier_step,
                 is_approved: true
               })
+              .fetch();
+
+            var getData = await TierMainRequest.find({
+              where: {
+                deleted_at: null,
+                id: request_id
+              }
+            })
           } else if (status == false || status == "false") {
             var upgradeData = await TierRequest
               .update({
@@ -166,13 +154,13 @@ module.exports = {
 
           console.log(tierData)
 
-          if (tierData.length == 3) {
-            for (var i = 0; i < tierData.length; i++) {
-              if (tierData[i].is_approved == true) {
-                flag = parseInt(flag) + 1
-              }
+          // if (tierData.length == 3) {
+          for (var i = 0; i < tierData.length; i++) {
+            if (tierData[i].is_approved == true) {
+              flag = parseInt(flag) + 1
             }
           }
+          // }
           console.log(flag)
           var userData = await Users.findOne({
             where: {
@@ -255,6 +243,55 @@ module.exports = {
     }
   },
 
+  getUserTierData: async function (req, res) {
+    try {
+      var data = req.body;
+
+      var length = 0
+
+      var finalData = [];
+
+      if (data.tier_step == 2) {
+        length = 4;
+      } else if (data.tier_step == 3) {
+        length = 2;
+      }
+
+      var type = 0;
+      for (var i = 0; i < length; i++) {
+        type = parseInt(type) + 1;
+        var tierData = await TierRequest.find({
+          where: {
+            deleted_at: null,
+            request_id: data.request_id,
+            tier_step: data.tier_step,
+            type: type
+          }
+        }).sort('id DESC');
+
+        finalData.push(tierData[0]);
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("tier details users retrieve success").message,
+          data: finalData
+        })
+
+
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
   // ------------------------ CMS API --------------------------------------------
 
   // Get Admin User List for Tier Upgradation
@@ -270,41 +307,49 @@ module.exports = {
         end_date,
         sort_col,
         sort_order,
-        status,
-        type
+        status
       } = req.allParams();
 
       var query;
       if (status == 1) {
-        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
-                          WHERE tier_request.deleted_at IS NULL
-                          AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+        query = `FROM tier_main_request
+                    LEFT JOIN users
+                    ON tier_main_request.user_id = users.id
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    AND users.is_active = true AND tier_main_request.approved IS NULL
+                    AND tier_main_request.tier_step = ${step}`
       } else if (status == 2) {
-        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
-                        WHERE tier_request.is_approved = 'true' AND tier_request.deleted_at IS NULL
-                        AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+        query = `FROM tier_main_request
+                    LEFT JOIN users
+                    ON tier_main_request.user_id = users.id
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    AND users.is_active = true AND tier_main_request.approved = true
+                    AND tier_main_request.tier_step = ${step}`
       } else if (status == 3) {
-        query = `FROM tier_request LEFT JOIN users ON tier_request.user_id = users.id 
-                        WHERE tier_request.is_approved = 'false' AND tier_request.deleted_at IS NULL
-                        AND users.deleted_at IS NULL AND tier_request.tier_step = ${step}`
+        query = `FROM tier_main_request
+                    LEFT JOIN users
+                    ON tier_main_request.user_id = users.id
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    AND users.is_active = true AND tier_main_request.approved = false
+                    AND tier_main_request.tier_step = ${step}`
       }
 
       if (data && data != "" && data != null) {
-        query += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(tier_request.unique_key) LIKE '%" + data.toLowerCase() + "%')";
+        query += " AND (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%'  OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%')";
       }
 
-      if (type) {
-        query += " AND tier_request.type = '" + type + "'";
-      }
+      // if (type) {
+      //   query += " AND tier_request.type = '" + type + "'";
+      // }
 
       if (start_date && end_date) {
         query += whereAppended ?
           " AND " :
           " WHERE ";
 
-        query += " tier_request.created_at >= '" + await sails
+        query += " tier_main_request.created_at >= '" + await sails
           .helpers
-          .dateFormat(start_date) + " 00:00:00' AND tier_request.created_at <= '" + await sails
+          .dateFormat(start_date) + " 00:00:00' AND tier_main_request.created_at <= '" + await sails
             .helpers
             .dateFormat(end_date) + " 23:59:59'";
       }
@@ -322,54 +367,14 @@ module.exports = {
 
       console.log(query)
 
-      console.log("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type" + query)
+      // console.log("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type" + query)
 
-      tradeData = await sails.sendNativeQuery(`SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,
-      tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type ` + query, [])
+      tradeData = await sails.sendNativeQuery(`SELECT tier_main_request.*, users.email, users.first_name, users.last_name ` + query, [])
 
       tradeData = tradeData.rows;
       console.log(tradeData)
-      // if (status == 2 && step == 2) {
-      //   var data1 = {};
-      //   for (var i = 0; i < tradeData.length; i++) {
-      //     if (data1.includes(tradeData[i].user_id)) {
-      //       data1[tradeData[i].user_id].push(tradeData[i])
-      //     } else {
-      //       data1[tradeData[i].user_id] = []
-      //       data1[tradeData[i].user_id].push(tradeData[i])
-      //     }
-      //   }
-      // }
 
-      // var groups = Object.create(null),
-      //   result
-
-      // tradeData.forEach(function (a) {
-      //   groups[a.email] = groups[a.email] || [];
-      //   groups[a.email].push(a);
-      // });
-
-      // var finalData = [];
-
-      // result = Object.keys(groups).map(function (k) {
-      //   var temp = {};
-      //   temp[k] = groups[k];
-      //   if (step == 2 && status == 2) {
-      //     if ((Object.keys(temp[k]).length) == 3) {
-      //       finalData.push(temp[k])
-      //     }
-      //   } else if (step == 3 && status == 2) {
-      //     if ((Object.keys(temp[k]).length) == 2) {
-      //       finalData.push(temp[k])
-      //     }
-      //   }
-      //   return temp;
-      // });
-
-      // console.log("finalData", finalData)
-      // console.log("result", result)
-
-      tradeCount = await sails.sendNativeQuery("Select COUNT(tier_request.id)" + countQuery, [])
+      tradeCount = await sails.sendNativeQuery("Select COUNT(tier_main_request.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
 
       return res
@@ -377,8 +382,7 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("tier data retrieve").message,
-          // tradeData: (status == 2) ? (finalData) : (result),
-          // tradeCount: (status == 2) ? (finalData.length) : (result.length)
+
           tradeData,
           tradeCount
         })

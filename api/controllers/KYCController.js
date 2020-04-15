@@ -627,36 +627,111 @@ module.exports = {
     try {
 
       var flagReUpload = req.body.reupload;
+      var twofactor = req.body.twofactor;
       console.log("req.body", req.body)
+
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: req.user.id
+        }
+      })
+      var tirDetails = await TierMainRequest.findOne({
+        where: {
+          deleted_at: null,
+          tier_step: (parseInt(userData.account_tier) + 1),
+          user_id: req.user.id
+        }
+      });
+
+      var valueObject = {
+        1: false,
+        2: false,
+        3: false,
+        4: (userData.is_twofactor == true) ? true : false
+      }
+      var idValue = 0;
+      if (tirDetails == undefined) {
+        var addValue = await TierMainRequest.create({
+          user_id: req.user.id,
+          tier_step: (parseInt(userData.account_tier) + 1),
+          created_at: new Date(),
+          approved: false,
+          user_status: valueObject
+        }).fetch();
+        idValue = addValue.id
+      } else {
+        idValue = tirDetails.id
+      }
+
+      console.log("idValue", idValue)
+
+
+      if (flagReUpload != "true" || flagReUpload != true) {
+        if (userData != undefined && userData.is_twofactor == false) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "message": sails.__("Please Enable 2FA to continue").message
+            })
+        } else if (userData.is_twofactor == true && (flagReUpload == false || flagReUpload == "false") && (twofactor == true || twofactor == "true")) {
+          await TierRequest.create({
+            unique_key: randomize('Aa0', 10),
+            request_id: idValue,
+            tier_step: parseInt(userData.account_tier) + 1,
+            created_at: new Date(),
+            is_approved: true,
+            type: 4
+          })
+        }
+      }
 
       if (req.body.ssn) {
 
-        console.log("INSIDE IF")
-
-        var getTierDetails = await TierRequest.findOne({
+        var getTierDetails = await TierRequest.find({
           where: {
             deleted_at: null,
-            user_id: req.user.id,
+            request_id: idValue,
             type: 3
           }
         });
         if (flagReUpload == true || flagReUpload == "true") {
-          var getTierDetails = await TierRequest.findOne({
+          var getTierDetails = await TierRequest.find({
             where: {
               deleted_at: null,
-              user_id: req.user.id,
+              request_id: idValue,
               type: 3
             }
           });
 
           if (getTierDetails && getTierDetails.length > 0) {
-            if (getTierDetails.is_approved == true || getTierDetails.is_approved == null) {
+            var flag = false
+            for (var i = 0; i < getTierDetails.length; i++) {
+              if (getTierDetails[i].is_approved == true || getTierDetails[i].is_approved == null) {
+                flag = true;
+              }
+            }
+            if (flag == true) {
               return res
                 .status(500)
                 .json({
                   status: 500,
                   "err": sails.__("Your Current is approved or under approval").message
                 })
+            } else {
+              for (var i = 0; i < getTierDetails.length; i++) {
+                var tierUpdate = await TierRequest
+                  .update({
+                    deleted_at: null,
+                    request_id: idValue,
+                    type: 3
+                  })
+                  .set({
+                    is_approved: false
+                  })
+              }
             }
           }
         }
@@ -670,28 +745,17 @@ module.exports = {
           }
         });
 
-        if (getTierDetails != undefined) {
-          var updateDetails = await TierRequest
-            .update({
-              deleted_at: null,
-              user_id: req.user.id,
-              type: 3
-            })
-            .set({
-              unique_key: randomize('Aa0', 10),
-              ssn: value,
-              is_approved: null
-            })
-        } else {
-          await TierRequest.create({
-            unique_key: randomize('Aa0', 10),
-            user_id: req.user.id,
-            tier_step: parseInt(userData.account_tier) + 1,
-            created_at: new Date(),
-            ssn: value,
-            type: 3
-          })
-        }
+        console.log("userData", userData)
+        var valueTier = await TierRequest.create({
+          unique_key: randomize('Aa0', 10),
+          request_id: idValue,
+          tier_step: parseInt(userData.account_tier) + 1,
+          created_at: new Date(),
+          ssn: value,
+          type: 3
+        }).fetch();
+        console.log("valueTier", valueTier)
+
       }
 
 
@@ -700,7 +764,7 @@ module.exports = {
       var tierDetailsValue = await TierRequest.find({
         where: {
           deleted_at: null,
-          user_id: req.user.id
+          request_id: idValue
         }
       });
 
@@ -708,31 +772,42 @@ module.exports = {
         where: {
           deleted_at: null,
           tier_step: 2,
-          user_id: req.user.id,
+          request_id: idValue,
           is_approved: false
         }
-      })
+      });
+
+      console.log("tierDetails", tierDetails)
 
       console.log("dataBody", dataBody);
       console.log("dataBody.valid_id_flag", dataBody.valid_id_flag)
       console.log("dataBody.proof_residence_flag", dataBody.proof_residence_flag)
+      var user_id = req.user.id
 
-      if (tierDetailsValue.length == 1) {
+      console.log("tierDetailsValue", tierDetailsValue)
+
+      if (tierDetailsValue != undefined && req.body.request_id && req.body.request_id == null && (flagReUpload != true || flagReUpload != "true")) {
+        console.log("INSIDE IF")
         req
           .file('files')
           .upload(async function (error, uploadFile) {
             try {
               var user_id = req.user.id
               console.log("uploadFile", uploadFile)
+              console.log("uploadFile.length", uploadFile.length)
               if (uploadFile.length > 0) {
                 for (var i = 0; i < uploadFile.length; i++) {
                   var data = {};
-                  data.user_id = user_id;
+                  data.request_id = idValue;
                   data.file = uploadFile[i]
                   data.description = randomize('Aa0', 10);
                   data.type = (i == 0) ? 1 : 2;
+                  data.user_id = user_id;
+
+                  console.log("data", data)
 
                   var dataValue = await sails.helpers.uploadTierDocument(data)
+                  console.log("dataValue", dataValue)
                 }
               }
               return res.json(dataValue)
@@ -760,10 +835,11 @@ module.exports = {
                 if (uploadFile.length > 0) {
                   for (var i = 0; i < uploadFile.length; i++) {
                     var data = {};
-                    data.user_id = user_id;
+                    data.request_id = idValue;
                     data.file = uploadFile[i]
                     data.description = randomize('Aa0', 10);
                     data.type = (i == 0) ? 1 : 2;
+                    data.user_id = user_id;
 
                     var dataValue = await sails.helpers.uploadTierDocument(data)
                   }
@@ -801,10 +877,11 @@ module.exports = {
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
-                data.user_id = req.user.id;
+                data.request_id = idValue;
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
                 data.type = 1;
+                data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
 
@@ -840,10 +917,11 @@ module.exports = {
                 console.log(error1);
                 console.log(uploadFile1)
                 var data1 = {};
-                data1.user_id = req.user.id;
+                data1.request_id = idValue;
                 data1.file = uploadFile1[0]
                 data1.description = randomize('Aa0', 10);
                 data1.type = 2;
+                data.user_id = user_id;
 
                 console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
