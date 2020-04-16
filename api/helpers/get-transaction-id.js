@@ -23,9 +23,9 @@ module.exports = {
 
     fn: async function (inputs, exits) {
         var transaction_id;
-
+        console.log("inputs.email", inputs.email)
         var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
-
+        console.log("idm_key", idm_key)
         var details = {
             "man": inputs.email
         }
@@ -38,6 +38,7 @@ module.exports = {
             json: details
         }, async function (error, response, body) {
             try {
+                console.log("body.tid", body.tid)
                 return exits.success(body.tid)
             } catch (error) {
                 console.log('error', error);
