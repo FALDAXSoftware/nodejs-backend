@@ -3086,5 +3086,19 @@
 		"message_type": "success",
 		"message_english": "Particular tier is under process or has been approved",
 		"message": "Particular tier is under process or has been approved"
+	},
+	"Force Accept Success": {
+		"page": "Tier Details Force Accept -CMS",
+		"context": "User Tier has been force accepted successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been force accepted successffully",
+		"message": "User Tier has been force accepted successffully"
+	},
+	"Force Reject Success": {
+		"page": "Tier Details Force Reject -CMS",
+		"context": "User Tier has been force Rejected successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been force Rejected successffully",
+		"message": "User Tier has been force Rejected successffully"
 	}
 }
