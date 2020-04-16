@@ -57,7 +57,7 @@ module.exports.datastores = {
     // url: "postgresql://faldaxdev:nBhAJbxd2LcpBjWJ@dev-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     ssl: false,
     pool: true,
-    connectionLimit: 2,
+    connectionLimit: 10,
     waitForConnections: true
   },
 };
