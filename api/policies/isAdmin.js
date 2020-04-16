@@ -46,7 +46,8 @@ module.exports = async function (req, res, next) {
       "admin/get-panic-history",
       "admin/all-pairs",
       "admin/get-tier-details",
-      "admin/get-tier-data"
+      "admin/get-tier-data",
+      "admin/get-tier-details"
     ]
 
     let urlPrefix = urlArray[1];
