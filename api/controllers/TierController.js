@@ -956,12 +956,20 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
     }
   },
 
   uploadTier3Document: async function (req, res) {
     try {
       var dataBody = req.allParams();
+      var user_id = req.user.id;
 
       var tierDetailsValue = await TierMainRequest.findOne({
         where: {
@@ -1012,6 +1020,7 @@ module.exports = {
                 var dataValue;
                 for (var i = 0; i < uploadFile.length; i++) {
                   data.request_id = idValue;
+                  data.user_id = user_id;
                   data.file = uploadFile[i]
                   data.description = randomize('Aa0', 10);
                   data.type = (i == 0) ? 1 : 2;
@@ -1049,6 +1058,7 @@ module.exports = {
                 if (uploadFile.length > 0) {
                   for (var i = 0; i < uploadFile.length; i++) {
                     data.request_id = idValue;
+                    data.user_id = user_id;
                     data.file = uploadFile[i]
                     data.description = randomize('Aa0', 10);
                     data.type = (i == 0) ? 1 : 2;
@@ -1089,6 +1099,7 @@ module.exports = {
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
                 data.type = 1;
+                data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
                 return res.json(dataValue)
@@ -1128,6 +1139,7 @@ module.exports = {
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
                 data.type = 1;
+                data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
                 return res.json(dataValue)
@@ -1147,6 +1159,77 @@ module.exports = {
 
     } catch (error) {
       console.log(error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  userForceAccept: async function (req, res) {
+    try {
+      var value = req.allParams();
+
+      var getTierValue = await TierMainRequest.findOne({
+        where: {
+          deleted_at: null,
+          id: value.id
+        }
+      })
+
+      if (getTierValue != undefined) {
+        if (value.status == "true" || value.status == true) {
+          var getTierValue = await TierMainRequest
+            .update({
+              id: value.id,
+              deleted_at: null
+            })
+            .set({
+              approved: true
+            })
+
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("Force Accept Success").message
+            })
+        } else if (value.status == false || value.status == "false") {
+          var getTierValue = await TierMainRequest
+            .update({
+              id: value.id,
+              deleted_at: null
+            })
+            .set({
+              approved: false
+            })
+
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("Force Reject Success").message
+            })
+        }
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("no tier details retrieve success").message
+          })
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
     }
   }
 }
