@@ -3072,5 +3072,19 @@
 		"message_type": "success",
 		"message_english": "Tier individual data has been retrieved success.",
 		"message": "Tier individual data has been retrieved success."
+	},
+	"Request User retrieve success": {
+		"page": "Tier Details -CMS",
+		"context": "Tier Request ID has been updated successfully.",
+		"message_type": "success",
+		"message_english": "Tier Request ID has been updated successfully.",
+		"message": "Tier Request ID has been updated successfully."
+	},
+	"Tier Request Under Process": {
+		"page": "Tier Details Image Upload -CMS",
+		"context": "Particular tier is under process or has been approved",
+		"message_type": "success",
+		"message_english": "Particular tier is under process or has been approved",
+		"message": "Particular tier is under process or has been approved"
 	}
 }

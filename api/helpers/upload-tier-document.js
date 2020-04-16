@@ -38,6 +38,8 @@ module.exports = {
                 }
             });
 
+            console.log("userData.email", userData.email)
+
             var userKYCDetails = await KYC.findOne({
                 where: {
                     deleted_at: null,
@@ -45,7 +47,11 @@ module.exports = {
                 }
             });
 
+            console.log("userKYCDetails", userKYCDetails)
+
             var transaction_id = await sails.helpers.getTransactionId(userData.email);
+
+            console.log("transaction_id", transaction_id)
 
             var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
 
@@ -99,7 +105,7 @@ module.exports = {
                     console.log(response.body)
                     var value = JSON.parse(response.body)
                     if (value.success == "file saved") {
-                        var tierData = await TierRequest.findOne({
+                        var tierData = await TierRequest.find({
                             where: {
                                 request_id: data.request_id,
                                 deleted_at: null,
@@ -109,19 +115,19 @@ module.exports = {
                         })
 
                         console.log("tierData", tierData)
-                        if (tierData != undefined) {
-                            var dataValue = await TierRequest
-                                .update({
-                                    request_id: data.request_id,
-                                    deleted_at: null,
-                                    type: data.type,
-                                    tier_step: parseInt(userData.account_tier) + 1
-                                })
-                                .set({
-                                    // unique_key: data.description,
-                                    is_approved: false
-                                })
-                        }
+                        // if (tierData != undefined) {
+                        //     var dataValue = await TierRequest
+                        //         .update({
+                        //             request_id: data.request_id,
+                        //             deleted_at: null,
+                        //             type: data.type,
+                        //             tier_step: parseInt(userData.account_tier) + 1
+                        //         })
+                        //         .set({
+                        //             // unique_key: data.description,
+                        //             is_approved: false
+                        //         })
+                        // }
                         // else {
                         var dataValue = await TierRequest.create({
                             unique_key: data.description,
@@ -129,7 +135,8 @@ module.exports = {
                             tier_step: parseInt(userData.account_tier) + 1,
                             created_at: new Date(),
                             type: data.type
-                        })
+                        }).fetch();
+                        console.log(dataValue)
                         // }
                         var object = {
                             "status": 200,

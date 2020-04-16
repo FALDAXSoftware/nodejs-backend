@@ -39,16 +39,20 @@ module.exports = {
             }
           });
 
-          var object = {
-            request_id: accountTierDetails.id,
-            user_status: accountTierDetails.user_status,
-            approved: accountTierDetails.approved
+          if (accountTierDetails != undefined) {
+            var object = {
+              request_id: accountTierDetails.id,
+              user_status: accountTierDetails.user_status,
+              approved: accountTierDetails.approved
+            }
+            tierDetails[i].account_details = object;
           }
-          tierDetails[i].account_details = object;
 
           if (i != 0) {
-            for (var j = 1; j <= i; j++) {
-              tierDetails[i - i].is_verified = true;
+            for (var j = 0; j < i; j++) {
+              console.log(j)
+              console.log("tierDetails[i - i]", tierDetails[i - i])
+              tierDetails[j].is_verified = true;
             }
           }
         }
@@ -101,17 +105,89 @@ module.exports = {
           }
         });
 
+        console.log("upgradeTier", upgradeTier)
+
         if (upgradeTier.length > 0) {
           console.log("status", status)
           if (status == true || status == "true") {
             var upgradeData = await TierRequest
               .update({
                 deleted_at: null,
-                user_id: user_id,
+                request_id: request_id,
                 id: id
               })
               .set({
-                is_approved: true
+                is_approved: status
+              })
+              .fetch();
+
+            console.log("upgradeData", upgradeData)
+
+            var getData = await TierMainRequest.find({
+              where: {
+                deleted_at: null,
+                id: request_id
+              }
+            })
+
+            if (getData != undefined) {
+              var statusValue = getData[0].user_status;
+              var typeValue = upgradeData[0].type;
+              var object = {}
+              if (typeValue == 1) {
+                object = {
+                  "1": status,
+                  "2": statusValue[2],
+                  "3": statusValue[3],
+                  "4": true
+                }
+              } else if (typeValue == 2) {
+                object = {
+                  "1": statusValue[1],
+                  "2": status,
+                  "3": statusValue[3],
+                  "4": true
+                }
+              } else if (typeValue == 3) {
+                object = {
+                  "1": statusValue[1],
+                  "2": statusValue[2],
+                  "3": status,
+                  "4": true
+                }
+              }
+
+              console.log("Object ???????", object)
+
+              var dataUpdate = await TierMainRequest
+                .update({
+                  deleted_at: null,
+                  id: request_id
+                })
+                .set({
+                  user_status: object
+                })
+                .fetch();
+
+              console.log("dataUpdate", dataUpdate);
+            }
+
+            console.log("getData", getData[0].user_status)
+            var statusValue = getData[0].user_status;
+            var typeValue = upgradeData[0].type
+            // var value = JSON.parse(statusValue);
+            // console.log("value>>>>", value)
+            console.log("status Value", statusValue[typeValue])
+          } else if (status == false || status == "false") {
+
+            var tierDataValue = await TierRequest
+              .update({
+                deleted_at: null,
+                request_id: request_id,
+                id: id
+              })
+              .set({
+                is_approved: status
               })
               .fetch();
 
@@ -121,17 +197,45 @@ module.exports = {
                 id: request_id
               }
             })
-          } else if (status == false || status == "false") {
-            var upgradeData = await TierRequest
-              .update({
-                deleted_at: null,
-                user_id: user_id,
-                id: id
-              })
-              .set({
-                tier_step: tier_step,
-                is_approved: false
-              })
+
+            if (tierDataValue != undefined) {
+
+              var statusValue = getData[0].user_status;
+              var typeValue = tierDataValue[0].type;
+              var object = {}
+              if (typeValue == 1) {
+                object = {
+                  "1": status,
+                  "2": statusValue[2],
+                  "3": statusValue[3],
+                  "4": true
+                }
+              } else if (typeValue == 2) {
+                object = {
+                  "1": statusValue[1],
+                  "2": status,
+                  "3": statusValue[3],
+                  "4": true
+                }
+              } else if (typeValue == 3) {
+                object = {
+                  "1": statusValue[1],
+                  "2": statusValue[2],
+                  "3": status,
+                  "4": true
+                }
+              }
+
+              var upgradeData = await TierRequest
+                .update({
+                  deleted_at: null,
+                  request_id: request_id,
+                  id: id
+                })
+                .set({
+                  user_status: object
+                })
+            }
           }
         } else {
           var upgradeData = await TierRequest
@@ -143,86 +247,125 @@ module.exports = {
         }
 
         if (tier_step == 2) {
-          var flag = 0;
-          var tierData = await TierRequest.find({
+          var tierDataFinal = await TierMainRequest.findOne({
             where: {
               deleted_at: null,
-              user_id: user_id,
-              tier_step: 2
-            }
-          });
-
-          console.log(tierData)
-
-          // if (tierData.length == 3) {
-          for (var i = 0; i < tierData.length; i++) {
-            if (tierData[i].is_approved == true) {
-              flag = parseInt(flag) + 1
-            }
-          }
-          // }
-          console.log(flag)
-          var userData = await Users.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              id: user_id
+              id: request_id,
+              tier_step: tier_step
             }
           })
-          if (flag == 3) {
-            var userValue = await Users
+
+          var finalStatus = tierDataFinal.user_status;
+          var flag = 0;
+
+          for (var i = 0; i < 4; i++) {
+            if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
+              flag = parseInt(flag) + 1;
+            }
+          }
+
+          console.log(flag)
+
+          if (flag == 4) {
+            var tierDataUpdate = await TierMainRequest
               .update({
-                where: {
-                  deleted_at: null,
-                  is_active: true,
-                  id: user_id
-                }
+                deleted_at: null,
+                id: request_id,
+                tier_step: tier_step
               })
               .set({
-                account_tier: parseInt(userData.account_tier) + 1
+                approved: true
+              })
+
+            console.log("tierDataFinal.user_id", tierDataFinal.user_id)
+
+            var userValue = await Users.findOne({
+              where: {
+                deleted_at: null,
+                is_active: true,
+                id: tierDataFinal.user_id
+              }
+            })
+
+            var userData = await Users
+              .update({
+                deleted_at: null,
+                is_active: true,
+                id: tierDataFinal.user_id
+              })
+              .set({
+                account_tier: parseInt(userValue.account_tier) + 1
+              })
+          }
+
+          var flag1 = 0;
+
+          for (var j = 0; j < 4; j++) {
+            if (finalStatus[i] == false || finalStatus[i] == "false") {
+              flag = parseInt(flag1) + 1;
+            }
+          }
+
+          if (flag1 == 4) {
+            var tierDataUpdate = await TierMainRequest
+              .update({
+                deleted_at: null,
+                id: request_id,
+                tier_step: tier_step
+              })
+              .set({
+                approved: false
               })
           }
         } else if (tier_step == 3) {
-          var flag = 0;
-          var tierData = await TierRequest.find({
+          var tierDataFinal = await TierMainRequest.findOne({
             where: {
               deleted_at: null,
-              user_id: user_id,
-              tier_step: 3
-            }
-          });
-
-          console.log(tierData)
-
-          if (tierData.length == 2) {
-            for (var i = 0; i < tierData.length; i++) {
-              if (tierData[i].is_approved == true) {
-                flag = parseInt(flag) + 1
-              }
-            }
-          }
-          console.log(flag)
-          var userData = await Users.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              id: user_id
+              id: request_id,
+              tier_step: tier_step
             }
           })
-          if (flag == 2) {
-            var userValue = await Users
+
+          var finalStatus = tierDataFinal.user_status;
+          var flag = 0;
+
+          for (var i = 0; i < 3; i++) {
+            if (finalStatus[i] == true || finalStatus[i] == "true") {
+              flag = parseInt(flag) + 1;
+            }
+          }
+
+          if (flag == 3) {
+            var tierDataUpdate = await TierMainRequest
               .update({
-                where: {
-                  deleted_at: null,
-                  is_active: true,
-                  id: user_id
-                }
+                deleted_at: null,
+                id: request_id,
+                tier_step: tier_step
               })
               .set({
-                account_tier: parseInt(userData.account_tier) + 1
+                approved: true
+              })
+          }
+
+          for (var i = 0; i < 3; i++) {
+            if (finalStatus[i] == false || finalStatus[i] == "false") {
+              flag = parseInt(flag) + 1;
+            }
+          }
+
+          if (flag == 3) {
+            var tierDataUpdate = await TierMainRequest
+              .update({
+                deleted_at: null,
+                id: request_id,
+                tier_step: tier_step
+              })
+              .set({
+                approved: false
               })
           }
         }
+
         return res
           .status(200)
           .json({
@@ -247,32 +390,61 @@ module.exports = {
     try {
       var data = req.body;
 
+      var user_id = req.user.id;
+
       var length = 0
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
 
       var finalData = [];
 
-      if (data.tier_step == 2) {
+      if ((parseInt(userData.account_tier) + 1) == 2) {
         length = 4;
-      } else if (data.tier_step == 3) {
+      } else if ((parseInt(userData.account_tier) + 1) == 3) {
         length = 2;
       }
 
-      var type = 0;
-      if (data.request_id && data.request_id != "") {
-        for (var i = 0; i < length; i++) {
-          type = parseInt(type) + 1;
-          var tierData = await TierRequest.find({
-            where: {
-              deleted_at: null,
-              request_id: data.request_id,
-              tier_step: data.tier_step,
-              type: type
-            }
-          }).sort('id DESC');
 
-          finalData.push(tierData[0]);
+      var tierValue = await TierMainRequest.find({
+        where: {
+          deleted_at: null,
+          user_id: user_id,
+          tier_step: (parseInt(userData.account_tier) + 1)
+        }
+      });
+
+      if (tierValue.length > 0) {
+        data.request_id = tierValue[0].id;
+
+        console.log("data.request_id", data.request_id)
+
+        var type = 0;
+        if (data.request_id && data.request_id != "") {
+          console.log(length);
+          for (var i = 0; i < length; i++) {
+            type = parseInt(type) + 1;
+            var tierData = await TierRequest.find({
+              where: {
+                deleted_at: null,
+                request_id: data.request_id,
+                tier_step: (parseInt(userData.account_tier) + 1),
+                type: type
+              }
+            }).sort('id DESC');
+
+            console.log("tierData[0]", tierData[0])
+
+            if (tierData[0] != undefined)
+              finalData.push(tierData[0]);
+          }
         }
       }
+
 
       return res
         .status(200)
@@ -408,7 +580,7 @@ module.exports = {
       var getRequestData = await TierRequest.find({
         where: {
           deleted_at: null,
-          request_id: request_id,
+          request_id: data.request_id,
           tier_step: data.tier_step
         }
       });
@@ -417,7 +589,8 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "message": ""
+          "message": sails.__("Request User retrieve success").message,
+          "data": getRequestData
         })
     } catch (error) {
       return res
@@ -788,9 +961,9 @@ module.exports = {
 
   uploadTier3Document: async function (req, res) {
     try {
-      var dataBody = req.body;
+      var dataBody = req.allParams();
 
-      var tierDetailsValue = await TierRequest.find({
+      var tierDetailsValue = await TierMainRequest.findOne({
         where: {
           deleted_at: null,
           user_id: req.user.id,
@@ -798,12 +971,29 @@ module.exports = {
         }
       });
 
+      var idValue = 0;
+      var object = {
+        "1": false,
+        "2": false
+      }
+      if (tierDetailsValue == undefined) {
+        var getDetails = await TierMainRequest.create({
+          created_at: new Date(),
+          tier_step: 3,
+          user_id: req.user.id,
+          user_status: object
+        }).fetch();
+
+        idValue = getDetails.id
+      } else {
+        idValue = tierDetailsValue.id
+      }
+
       var tierDetails = await TierRequest.find({
         where: {
           deleted_at: null,
           tier_step: 3,
-          user_id: req.user.id,
-          is_approved: false
+          request_id: idValue
         }
       })
 
@@ -811,7 +1001,7 @@ module.exports = {
       console.log("tierDetails", tierDetails);
       console.log("dataBody", dataBody)
 
-      if (tierDetailsValue.length == 0) {
+      if (tierDetails.length == 0) {
         req
           .file('files')
           .upload(async function (error, uploadFile) {
@@ -821,7 +1011,7 @@ module.exports = {
               if (uploadFile.length > 0) {
                 var dataValue;
                 for (var i = 0; i < uploadFile.length; i++) {
-                  data.user_id = req.user.id;
+                  data.request_id = idValue;
                   data.file = uploadFile[i]
                   data.description = randomize('Aa0', 10);
                   data.type = (i == 0) ? 1 : 2;
@@ -858,7 +1048,7 @@ module.exports = {
                 var data = {};
                 if (uploadFile.length > 0) {
                   for (var i = 0; i < uploadFile.length; i++) {
-                    data.user_id = req.user.id;
+                    data.request_id = idValue;
                     data.file = uploadFile[i]
                     data.description = randomize('Aa0', 10);
                     data.type = (i == 0) ? 1 : 2;
@@ -895,7 +1085,7 @@ module.exports = {
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
-                data.user_id = req.user.id;
+                data.request_id = idValue;
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
                 data.type = 1;
@@ -934,7 +1124,7 @@ module.exports = {
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
-                data.user_id = req.user.id;
+                data.request_id = idValue;
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
                 data.type = 1;
