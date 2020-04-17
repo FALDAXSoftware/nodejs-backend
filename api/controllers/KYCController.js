@@ -657,7 +657,6 @@ module.exports = {
           user_id: req.user.id,
           tier_step: (parseInt(userData.account_tier) + 1),
           created_at: new Date(),
-          approved: false,
           user_status: valueObject
         }).fetch();
         idValue = addValue.id
@@ -676,9 +675,8 @@ module.exports = {
               "status": 500,
               "message": sails.__("Please Enable 2FA to continue").message
             })
-        } else if (userData.is_twofactor == true && (flagReUpload.reupload == false || flagReUpload.reupload == "false") && (flagReUpload.twofactor == true || flagReUpload.twofactor == "true")) {
+        } else if (userData.is_twofactor == true && (flagReUpload.twofactor && (flagReUpload.twofactor == true || flagReUpload.twofactor == "true"))) {
           await TierRequest.create({
-            unique_key: randomize('Aa0', 10),
             request_id: idValue,
             tier_step: parseInt(userData.account_tier) + 1,
             created_at: new Date(),
@@ -735,7 +733,7 @@ module.exports = {
             }
           }
         }
-        var value = req.body.ssn;
+        var value = req.allParams();
 
         var userData = await Users.findOne({
           where: {
@@ -747,11 +745,10 @@ module.exports = {
 
         console.log("userData", userData)
         var valueTier = await TierRequest.create({
-          unique_key: randomize('Aa0', 10),
           request_id: idValue,
           tier_step: parseInt(userData.account_tier) + 1,
           created_at: new Date(),
-          ssn: value,
+          ssn: value.ssn,
           type: 3
         }).fetch();
         console.log("valueTier", valueTier)
