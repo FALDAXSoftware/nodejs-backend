@@ -49,10 +49,6 @@ module.exports = {
 
             console.log("userKYCDetails", userKYCDetails)
 
-            var transaction_id = await sails.helpers.getTransactionId(userData.email);
-
-            console.log("transaction_id", transaction_id)
-
             var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
 
             var options = {}
@@ -78,7 +74,7 @@ module.exports = {
             // } else {
             options = {
                 'method': 'POST',
-                'url': sails.config.local.IDM_URL + '/' + transaction_id + "/files",
+                'url': sails.config.local.IDM_URL + '/' + userKYCDetails.mtid + "/files",
                 'headers': {
                     'Authorization': 'Basic ' + idm_key,
                     'Content-Type': 'multipart/form-data;'
@@ -115,20 +111,6 @@ module.exports = {
                         })
 
                         console.log("tierData", tierData)
-                        // if (tierData != undefined) {
-                        //     var dataValue = await TierRequest
-                        //         .update({
-                        //             request_id: data.request_id,
-                        //             deleted_at: null,
-                        //             type: data.type,
-                        //             tier_step: parseInt(userData.account_tier) + 1
-                        //         })
-                        //         .set({
-                        //             // unique_key: data.description,
-                        //             is_approved: false
-                        //         })
-                        // }
-                        // else {
                         var dataValue = await TierRequest.create({
                             unique_key: data.description,
                             request_id: data.request_id,
