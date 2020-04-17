@@ -1039,16 +1039,17 @@ module.exports = {
             }
           });
       } else if (((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && (dataBody.proof_of_assets_flag == true || dataBody.proof_of_assets_flag == "true")) && tierDetails != undefined) {
+        console.log("INSIDE BOTH FLAGS")
         var flag = 0;
         for (var i = 0; i < tierDetails.length; i++) {
-          if (tierDetails[i].type != 3) {
-            if (tierDetails[i].is_approved == false) {
-              flag = parseInt(flag) + 1;
-            }
+          // if (tierDetails[i].type != 3) {
+          if (tierDetails[i].is_approved == false) {
+            flag = parseInt(flag) + 1;
           }
+          // }
         }
 
-        if (flag == 2) {
+        if (flag >= 2) {
           req
             .file('files')
             .upload(async function (error, uploadFile) {
@@ -1138,7 +1139,7 @@ module.exports = {
                 data.request_id = idValue;
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
-                data.type = 1;
+                data.type = 2;
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
