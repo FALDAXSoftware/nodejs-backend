@@ -1966,7 +1966,7 @@ module.exports = {
           if (data && data != "" && data != null) {
             query += " WHERE"
             whereAppended = true;
-            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
               query += " OR quantity=" + data + " OR fill_price=" + data
             }
