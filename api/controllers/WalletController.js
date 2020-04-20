@@ -3376,7 +3376,7 @@ module.exports = {
           coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
           coinData[i].address = wallet_data.receiveAddress.address;
         } else if (coinData[i].coin_code == "SUSU") {
-          var responseValue = new Promise(async (resolve, reject) => {
+          var responseValue = await new Promise(async (resolve, reject) => {
             request({
               url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
               method: "GET",
@@ -3400,7 +3400,9 @@ module.exports = {
             });
           })
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
-          coinData[i].address = ""
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
+          coinData[i].coin_precision = "1e0"
         }
       }
       return res
