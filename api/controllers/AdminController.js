@@ -3943,7 +3943,8 @@ module.exports = {
       var roleValue = await Role.findOne({
         select: [
           'name',
-          'created_at'
+          'created_at',
+          'allowed_pairs'
         ],
         where: {
           deleted_at: null,
@@ -4005,9 +4006,9 @@ module.exports = {
   **/
   updateRolePermission: async function (req, res) {
     try {
-
       var data = req.body.permissions;
       var role_id = req.body.role_id;
+      var allowed_pairs = req.body.allowed_pairs;
 
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
@@ -4053,6 +4054,17 @@ module.exports = {
             }
           }
         }
+      }
+
+      /* Update Allowed pairs in Role for TradeDesk */
+      if( allowed_pairs != "" && allowed_pairs != null ){
+        await Role
+        .update({
+          id: role_id
+        })
+        .set({
+          allowed_pairs: allowed_pairs
+        })
       }
 
       if (data.length > 0) {
