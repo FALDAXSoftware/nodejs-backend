@@ -325,8 +325,8 @@
 		"page": "GeoFencing",
 		"context": "You are not allowed to trade",
 		"message_type": "error",
-		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. ",
-		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates. "
+		"message_english": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates.",
+		"message": "Trading from your region is currently prohibited. Please sign up for our newsletter for updates."
 	},
 	"You need to complete you KYC before trading": {
 		"page": "KYC needed",
@@ -666,7 +666,7 @@
 	},
 	"user referral updated": {
 		"page": "CMS - Update user's default referral percentage",
-		"context": "User’s referral percentage has been successfully updated.",
+		"context": "User's referral percentage has been successfully updated.",
 		"message_type": "success",
 		"message_english": "User’s referral percentage has been successfully updated.",
 		"message": "User’s referral percentage has been successfully updated."
@@ -687,7 +687,7 @@
 	},
 	"User Status Updated": {
 		"page": "CMS - User status change",
-		"context": "The user’s verified status has been successfully updated.",
+		"context": "The user's verified status has been successfully updated.",
 		"message_type": "success",
 		"message_english": "The user’s verified status has been successfully updated.",
 		"message": "The user’s verified status has been successfully updated."
@@ -1179,8 +1179,8 @@
 		"page": "Login, CMS - Login",
 		"context": "Email or password has not been sent",
 		"message_type": "error",
-		"message_english": "Network error, information not received. Please try again. ",
-		"message": "Network error, information not received. Please try again. "
+		"message_english": "Network error, information not received. Please try again.",
+		"message": "Network error, information not received. Please try again."
 	},
 	"Invalid verification token": {
 		"page": "Verify new IP",
@@ -1438,8 +1438,8 @@
 		"page": "Withdraw asset",
 		"context": "Your withdraw request has been submitted successfully. We will update you soon.",
 		"message_type": "success",
-		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. ",
-		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications. "
+		"message_english": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications.",
+		"message": "Your withdraw request has been submitted successfully. Please check for updates via text and email notifications."
 	},
 	"Insufficent balance wallet": {
 		"page": "Withdraw asset, CMS - Withdraw asset, CMS - Approve/Disapprove withdraw requests",
@@ -1886,8 +1886,8 @@
 		"page": "Forgot password",
 		"context": "Your email id has not been verified. Please verify your email id",
 		"message_type": "error",
-		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed. ",
-		"message": "Your email address is not verified. Please check your email for a verification link to proceed. "
+		"message_english": "Your email address is not verified. Please check your email for a verification link to proceed.",
+		"message": "Your email address is not verified. Please check your email for a verification link to proceed."
 	},
 	"Deleted By User": {
 		"page": "Login, Verify New IP",
@@ -2783,8 +2783,7 @@
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
-		"message": "Trade data retrieved successfully.",
-		"": ""
+		"message": "Trade data retrieved successfully."
 	},
 	"Withdraw Fee has been retrieved successfully": {
 		"page": "CMS - Withdraw fees lists",
@@ -2806,6 +2805,13 @@
 		"message_type": "error",
 		"message_english": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support.",
 		"message": "This transaction cannot proceed at this time. Please wait for a short period of time and try again or Contact Support."
+	},
+	"Insufficient Balance in warm Wallet Withdraw Request": {
+		"page": "CMS - Approve/Disapprove withdraw requests",
+		"context": "Insufficient Balance in warm Wallet",
+		"message_type": "error",
+		"message_english": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction.",
+		"message": "Insufficient balance in warm wallet. Please refill warm wallet to proceed this transaction."
 	},
 	"Invalid data provided": {
 		"page": "If invalid data provided",
@@ -2847,8 +2853,8 @@
 		"page": "Middleware(If user has deleted)",
 		"context": "Your User has been deleted",
 		"message_type": "error",
-		"message_english": "Your user account has been deleted. ",
-		"message": "Your user account has been deleted. "
+		"message_english": "Your user account has been deleted.",
+		"message": "Your user account has been deleted."
 	},
 	"Invalid Authorization token": {
 		"page": "Middleware(If invalid access token)",
@@ -2906,81 +2912,88 @@
 		"message_english": "User Account has been created Successfully. Verification Link has been sent to user.",
 		"message": "User Account has been created Successfully. Verification Link has been sent to user."
 	},
-	"Insufficient Balance in warm Wallet Withdraw Request": {
-		"page": "CMS - Approve/Disapprove withdraw requests",
-		"context": "Insufficient Balance in warm Wallet",
-		"message_type": "error",
-		"message_english": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction.",
-		"message": "Insufficient balance in receive wallet. Please refill receive wallet to proceed this transaction."
-	},
 	"Your User has been deactivated": {
 		"page": "User -Acrtive/deactive",
 		"context": "User has been deactivated",
 		"message_type": "error",
 		"message_english": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again.",
-		"message": "Your account has been deactivated by the admin due to some inactivity. Please contact support or try again."
+		"message": "Due to inactivity your account has been deactivated by an administrator. Please contact support."
 	},
 	"Available Balance": {
 		"page": "User - Available Balance for user to send after fees deduction",
 		"context": "Available Balance for the user",
 		"message_type": "success",
 		"message_english": "User Available balance after fees has been retrieved successfully.",
-		"message": "User Available balance after fees has been retrieved successfully."
+		"message": "User's available balance after fees has been successfully retrieved."
 	},
 	"Coin Inactive": {
 		"page": "User - Create Address",
 		"context": "Coin is inactive and user tries to create the address",
 		"message_type": "success",
 		"message_english": "Wallet cannot be created, as asset is inactive",
-		"message": "Wallet cannot be created, as asset is inactive"
+		"message": "Currently a wallet for this currency cannot be created."
 	},
 	"Enter Valid Address": {
 		"page": "User - Send Coin",
 		"context": "Address is invalid",
 		"message_type": "error",
 		"message_english": "Please enter valid destination address",
-		"message": "Please enter valid destination address"
+		"message": "Please enter a valid destination address"
 	},
 	"coin inactive or not": {
 		"page": "Admin -Faldax Send Coin",
 		"context": "Coin not found or is made inactive",
 		"message_type": "error",
 		"message_english": "Coin has been made inactive or Coin has been Found",
-		"message": "Coin has been made inactive or Coin has been Found"
+		"message": "This asset is temporarily frozen or inactive. Please contact support further details. "
 	},
 	"Your KYC is under process. Please wait until KYC is approved": {
 		"page": "When user submit kyc",
 		"context": "Your KYC is under process. Please wait until KYC is approved",
 		"message_type": "success",
 		"message_english": "Your KYC is under process. Please wait until KYC is approved",
-		"message": "Your KYC is under process. Please wait until KYC is approved"
+		"message": "Your identity verification is currently in process. Please wait until your identity verification is complete."
 	},
 	"You are allowed to trade": {
 		"page": "When trade is allowed in user's region",
 		"context": "You are allowed to trade",
 		"message_type": "success",
 		"message_english": "You are allowed to trade",
-		"message": "You are allowed to trade"
+		"message": "All trading services are available in your area."
 	},
 	"You are not allowed to trade in this regoin as your state is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as your state is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as your state is illegal",
-		"message": "You are not allowed to trade in this regoin as your state is illegal"
+		"message": "You cannot trade cryptocurrency in your current region. It is illegal to trade in this state."
 	},
 	"You are not allowed to trade in this regoin as country is illegal": {
 		"page": "When user is doing trade in user's region",
 		"context": "You are not allowed to trade in this regoin as country is illegal",
 		"message_type": "error",
 		"message_english": "You are not allowed to trade in this regoin as country is illegal",
-		"message": "You are not allowed to trade in this regoin as country is illegal"
+		"message": "You cannot trade cryptocurrency in your current region. It is illegal to trade in this country."
 	},
 	"File Max Size": {
 		"page": "Identity Verification - When user uploads KYC",
 		"context": "Maximum File size allowed is 5 MB",
 		"message_type": "error",
 		"message_english": "Maximum File size allowed is 5 MB",
-		"message": "Maximum File size allowed is 5 MB"
-	}
+		"message": "Maximum file size allowed is 5 MB"
+	},
+  "Please Complete You profile": {
+    "page": "Wallet- Send Coin, Address Creation",
+    "context": "Please complete you profile details to do wallet actions",
+    "message_type": "error",
+    "message_english": "Please complete you profile details to do wallet actions",
+    "message": "Please complete you profile details to do wallet actions"
+  },
+  "Pair does not supported": {
+    "page": "Conversion",
+    "context": "When check for unsupported asset pair",
+    "message_type": "error",
+    "message_english": "This pair does not supported in current system.",
+    "message": "This pair does not supported in current system."
+  }
 }

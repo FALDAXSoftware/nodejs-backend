@@ -197,8 +197,27 @@ module.exports = {
         balanceWalletData.rows[i].balance = (balanceWalletData.rows[i].balance).toFixed(sails.config.local.TOTAL_PRECISION);
         balanceWalletData.rows[i].placed_balance = (balanceWalletData.rows[i].placed_balance).toFixed(sails.config.local.TOTAL_PRECISION);
         if (balanceWalletData.rows[i].quote != null) {
-          balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
-          balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+          console.log(balanceWalletData.rows[i].quote)
+          if (balanceWalletData.rows[i].quote.EUR != undefined && balanceWalletData.rows[i].quote.INR != undefined) {
+            balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          } else {
+            console.log("EUR ELSE")
+            balanceWalletData.rows[i].quote = {
+              EUR: {
+                price: 0.0
+              },
+              INR: {
+                price: 0.0
+              },
+              USD: {
+                price: (balanceWalletData.rows[i].quote.USD.price)
+              }
+            }
+          }
+          // balanceWalletData.rows[i].quote.EUR.price = (balanceWalletData.rows[i].quote != null && balanceWalletData.rows[i].quote.EUR) ? (balanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
+          // balanceWalletData.rows[i].quote.INR.price = (balanceWalletData.rows[i].quote != null && balanceWalletData.rows[i].quote.INR) ? (balanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : (0.0);
         } else {
           if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
             balanceWalletData.rows[i].quote = {
@@ -220,7 +239,7 @@ module.exports = {
             // if (get_price.length > 0)
             //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
             // else
-            balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+            // balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
           }
         }
         if (balanceWalletData.rows[i].is_active == true) {
@@ -265,18 +284,37 @@ module.exports = {
         // }
 
         if (nonBalanceWalletData.rows[i].quote != undefined) {
-          nonBalanceWalletData.rows[i].quote.EUR.price = ((nonBalanceWalletData.rows[i].quote.EUR.price) != null ? (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
+          // nonBalanceWalletData.rows[i].quote.EUR.price = ((nonBalanceWalletData.rows[i].quote.EUR.price) != null ? (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
           // nonBalanceWalletData.rows[i].quote.USD.price = (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION);
-          nonBalanceWalletData.rows[i].quote.INR.price = ((nonBalanceWalletData.rows[i].quote.INR.price) != null ? (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
+          // nonBalanceWalletData.rows[i].quote.INR.price = ((nonBalanceWalletData.rows[i].quote.INR.price) != null ? (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0);
 
-          if (nonBalanceWalletData.rows[i].quote.USD) {
-            var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
-            if (get_price.length > 0) {
-              nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            } else {
-              nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          if (nonBalanceWalletData.rows[i].quote.EUR != undefined && nonBalanceWalletData.rows[i].quote.INR != undefined && nonBalanceWalletData.rows[i].quote.USD != undefined) {
+            nonBalanceWalletData.rows[i].quote.EUR.price = (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            nonBalanceWalletData.rows[i].quote.INR.price = (nonBalanceWalletData.rows[i].quote.INR.price).toFixed(sails.config.local.TOTAL_PRECISION)
+            nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote != undefined && nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          } else {
+            console.log("EUR ELSE")
+            nonBalanceWalletData.rows[i].quote = {
+              EUR: {
+                price: 0.0
+              },
+              INR: {
+                price: 0.0
+              },
+              USD: {
+                price: (nonBalanceWalletData.rows[i].quote != undefined) ? (nonBalanceWalletData.rows[i].quote.USD.price) : (0.0)
+              }
             }
           }
+
+          //   if (nonBalanceWalletData.rows[i].quote.USD) {
+          //     var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
+          //     if (get_price.length > 0) {
+          //       nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+          //     } else {
+          //       nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          //     }
+          //   }
         }
         if (nonBalanceWalletData.rows[i].iserc == true) {
           if (eth_asset == true) {
@@ -369,6 +407,15 @@ module.exports = {
         is_active: true
       });
 
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
+
       if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
         if (!req.body.otp) {
           return res
@@ -420,7 +467,11 @@ module.exports = {
       });
 
       if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
-        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -435,12 +486,12 @@ module.exports = {
 
       console.log("coin", coin)
 
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
 
       console.log("division", division)
 
@@ -1179,6 +1230,19 @@ module.exports = {
         coin
       } = req.allParams();
       var user_id = req.user.id;
+      var userData = await Users.findOne({
+        is_active: true,
+        deleted_at: null,
+        id: user_id
+      })
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
       var receiveCoin = await sails
         .helpers
         .wallet
@@ -1246,6 +1310,21 @@ module.exports = {
       console.log("req.isAdmin", req.user.isAdmin)
       if (req.user.isAdmin == true || req.user.isAdmin == "true") {
         req.user.id = 36
+      } else {
+        var userData = await Users.findOne({
+          is_active: true,
+          deleted_at: null,
+          id: req.user.id
+        })
+        console.log(userData)
+        if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Please Complete You profile").message
+            })
+        }
       }
       let coinData = await Coins.findOne({
         select: [
@@ -1506,6 +1585,19 @@ module.exports = {
       } = req.allParams();
       console.log(req.allParams())
       var user_id = req.user.id;
+      var userData = await Users.findOne({
+        is_active: true,
+        deleted_at: null,
+        id: user_id
+      })
+      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("Please Complete You profile").message
+          })
+      }
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
@@ -1884,7 +1976,11 @@ module.exports = {
         coin_code: coin_code
       });
       if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
-        var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -1896,12 +1992,12 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
       if (coin.type == 1) {
 
         let warmWalletData = await sails
@@ -2488,7 +2584,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address,
-                         wallet_history.amount,
+                         wallet_history.amount, coins.coin_precision,
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.residual_amount,
                           wallet_history.created_at, coins.coin_code
@@ -2549,7 +2645,7 @@ module.exports = {
         }
         var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
                             (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(10,8))) as amount,
-                            transaction_table.transaction_id, transaction_table.*,
+                            transaction_table.transaction_id, transaction_table.*, coins.coin_precision,
                             transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
                             FROM public.transaction_table LEFT JOIN coins
                             ON transaction_table.coin_id = coins.id
@@ -2636,7 +2732,7 @@ module.exports = {
                               CONCAT((jst_trade_history.faldax_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as faldax_fees,
                               CONCAT((jst_trade_history.network_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as network_fees,
                               CONCAT((jst_trade_history.difference_faldax_commission), ' ',(jst_trade_history.settle_currency)) as comission,
-                              users.email,jst_trade_history.exec_id, coins.coin_code
+                              users.email,jst_trade_history.exec_id, coins.coin_precision, coins.coin_code
                               FROM public.jst_trade_history LEFT JOIN coins
                               ON coins.coin = jst_trade_history.currency OR coins.coin = jst_trade_history.settle_currency
                               LEFT JOIN users ON users.id = jst_trade_history.user_id
@@ -2697,7 +2793,7 @@ module.exports = {
 
         var walletLogs = `SELECT wallets.id, users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance,
-                            wallets.receive_address, coins.coin_code,
+                            wallets.receive_address, coins.coin_code, coins.coin_precision,
                             wallets.send_address, users.full_name, coins.coin
                             FROM public.wallets LEFT JOIN users
                             ON users.id = wallets.user_id
@@ -3024,7 +3120,11 @@ module.exports = {
         }
       })
       if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
-        var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -3036,12 +3136,13 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (data.coin == 'xrp' || data.coin == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
-        division = sails.config.local.DIVIDE_NINE;
-      }
+      // var division = sails.config.local.DIVIDE_EIGHT;
+      // if (data.coin == 'xrp' || data.coin == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
+      //   division = sails.config.local.DIVIDE_NINE;
+      // }
+      var division = coinData.coin_precision;
       if (data.coin != "SUSU") {
         var reposneData = {};
         if (data.coin == 'xrp' || data.coin == 'txrp') {
@@ -3259,7 +3360,7 @@ module.exports = {
       var coinData = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address', 'coin_precision']
         })
         .sort('id ASC');
 
@@ -3319,7 +3420,11 @@ module.exports = {
       console.log("coinData", coinData);
       if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
         console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
-        var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase());
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase());
+        }
 
         console.log("valid", valid)
         if (!valid) {
@@ -3331,12 +3436,12 @@ module.exports = {
             })
         }
       }
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (data.coin == 'xrp' || data.coin == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
-        division = sails.config.local.DIVIDE_NINE;
-      }
+      var division = coinData.coin_precision;
+      // if (data.coin == 'xrp' || data.coin == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (data.coin == 'eth' || data.coin == 'teth' || coinData.iserc == true) {
+      //   division = sails.config.local.DIVIDE_NINE;
+      // }
       if (data.coin != "SUSU") {
         var reposneData = {};
         if (data.coin == 'xrp' || data.coin == 'txrp') {
@@ -3408,7 +3513,9 @@ module.exports = {
       var coinData = await Coins.findOne({
         select: [
           'hot_receive_wallet_address',
-          'coin_code'
+          'coin_code',
+          'coin_precision',
+          'iserc'
         ],
         where: {
           is_active: true,
@@ -3438,7 +3545,8 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "data": warmWalletData
+          "data": warmWalletData,
+          coinData
         })
     } catch (error) {
       // console.log(error);
@@ -3459,6 +3567,7 @@ module.exports = {
       var {
         coin
       } = req.allParams();
+      console.log("Language >>>>", req.headers["accept-language"])
       var availableBalance = 0.0;
       var coinData = await Coins.findOne({
         where: {
@@ -3488,12 +3597,13 @@ module.exports = {
           console.log("walletBalance * (faldax_fee_value / 100)", parseFloat(walletBalance * (faldax_fee_value / 100)));
           var remainningAmount = parseFloat(walletBalance) - parseFloat(walletBalance * (faldax_fee_value / 100));
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            console.log("division", division)
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
             let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false && coinData.coin_code != 'SUSU') {
               // remainningAmountValue = remainningAmount * division
@@ -3602,12 +3712,12 @@ module.exports = {
           var walletBalance = walletUserData.placed_balance;
           var remainningAmount = parseFloat(walletBalance);
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
             let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
               // remainningAmountValue = remainningAmount * division
@@ -3714,12 +3824,12 @@ module.exports = {
           remainningAmount = remainningAmount - get_static_fees_data
           console.log("remainningAmount", remainningAmount)
           if (remainningAmount > 0) {
-            var division = 1e8;
-            if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
-              division = 1e18;
-            } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
-              division = 1e6;
-            }
+            var division = coinData.coin_precision;
+            // if (coinData.coin_code == 'teth' || coinData.coin_code == 'eth' || coinData.iserc == true) {
+            //   division = 1e18;
+            // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
+            //   division = 1e6;
+            // }
 
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
               var reposneData = await sails
@@ -3801,12 +3911,12 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      var division = sails.config.local.DIVIDE_EIGHT;
-      if (coin_code == 'xrp' || coin_code == 'txrp') {
-        division = sails.config.local.DIVIDE_SIX;
-      } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
-        division = sails.config.local.DIVIDE_EIGHTEEN;
-      }
+      var division = coin.coin_precision;
+      // if (coin_code == 'xrp' || coin_code == 'txrp') {
+      //   division = sails.config.local.DIVIDE_SIX;
+      // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
+      //   division = sails.config.local.DIVIDE_EIGHTEEN;
+      // }
 
       if (coin.type == 1) {
 
@@ -3940,7 +4050,7 @@ module.exports = {
       }
       var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
                           (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(12,8))) as amount,
-                          transaction_table.transaction_id, transaction_table.*,
+                          transaction_table.transaction_id, transaction_table.*, coins.coin_precision,
                           transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
                           FROM public.transaction_table LEFT JOIN coins
                           ON transaction_table.coin_id = coins.id

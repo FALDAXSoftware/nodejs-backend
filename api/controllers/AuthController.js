@@ -36,6 +36,7 @@ module.exports = {
     try {
 
       if (req.body.email_verify_token) {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         let user = await Users.findOne({
           email_verify_token: req.body.email_verify_token
         });
@@ -141,12 +142,14 @@ module.exports = {
         console.log(user_detail)
 
         if (user_detail) {
+          console.log(user_detail)
           // Set language to user's default
-          if (user_detail.default_language && user_detail.default_language != "") {
-            sails.hooks.i18n.setLocale(user_detail.default_language);
-          } else {
-            sails.hooks.i18n.setLocale("en");
-          }
+          // if (user_detail.default_language && user_detail.default_language != "") {
+          //   sails.hooks.i18n.setLocale(user_detail.default_language);
+          // } else {
+          //   sails.hooks.i18n.setLocale("en");
+          // }
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
@@ -313,23 +316,22 @@ module.exports = {
                   }
                 }
 
-                // ip = '180.211.110.146'
                 // Check For New Ip
                 let loginData = await LoginHistory.find({
                   user: user_detail.id,
                   ip: ip
                 });
                 if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
-                  if (req.body.device_token) {
-                    var today = moment().utc().format();
-                    var yesterday = moment(user_detail.device_token_expiration).format();
-                    if (yesterday < today) {
-                      return res.status(400).json({
-                        "status": 400,
-                        "err": sails.__("Verification Expired").message
-                      })
-                    }
-                  }
+                  // if (req.body.device_token) {
+                  //   var today = moment().utc().format();
+                  //   var yesterday = moment(user_detail.device_token_expiration).format();
+                  //   if (yesterday < today) {
+                  //     return res.status(400).json({
+                  //       "status": 400,
+                  //       "err": sails.__("Verification Expired").message
+                  //     })
+                  //   }
+                  // }
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
@@ -823,6 +825,7 @@ module.exports = {
         let user_details = await Users.findOne({
           reset_token
         });
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (user_details == undefined) {
           return res
             .status(400)
@@ -928,6 +931,8 @@ module.exports = {
         // deleted_at: null,
         // is_active: true
       }).sort('id DESC');
+      console.log(user_details)
+      sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       user_details = user_details[0];
       if (!user_details) {
         return res

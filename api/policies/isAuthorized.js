@@ -12,6 +12,7 @@ module.exports = async function (req, res, next) {
   var token;
 
   try {
+    console.log(req.headers)
     if (req.isSocket) {
       if (req.headers && req.headers.authorization) {
         var parts = req
@@ -139,6 +140,7 @@ module.exports = async function (req, res, next) {
           token = credentials;
         }
       } else {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         return res
           .status(403)
           .json({
@@ -166,6 +168,7 @@ module.exports = async function (req, res, next) {
             token = credentials;
           }
         } else {
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           return res
             .status(403)
             .json({
@@ -174,6 +177,7 @@ module.exports = async function (req, res, next) {
             });
         }
       } else {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         return res
           .status(401)
           .json({
@@ -182,6 +186,7 @@ module.exports = async function (req, res, next) {
           });
       }
     } else {
+      sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       return res
         .status(401)
         .json({
@@ -195,11 +200,13 @@ module.exports = async function (req, res, next) {
       .jwtVerify(token);
     if (verifyData) {
       req.user = verifyData;
-      console.log(req.user.id)
+      // console.log(req.user.id)
       var userData = await Users.findOne({
         id: req.user.id
       });
       if (userData != undefined && userData.isAdmin != true) {
+        // console.log("INSIDE TYHIUS")
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (userData.is_verified == false || userData.is_new_email_verified == false) {
           return res
             .status(403)
@@ -207,7 +214,20 @@ module.exports = async function (req, res, next) {
               "status": 403,
               err: sails.__("account not not verified by admin").message
             });
-        }else if (userData.deleted_at == null && userData.is_active == true) {
+        } else if (userData.deleted_at == null && userData.is_active == true) {
+          // console.log("req.headers", req.headers)
+          // console.log("userData.default_language", userData.default_language)
+          // console.log(req.headers["accept-language"])
+          if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+            // console.log("INSIDE IF>>>>>>>")
+            sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+          } else if (userData != undefined) {
+            // console.log("INSIDE ELSE IF>>>>>>>")
+            sails.hooks.i18n.setLocale(userData.default_language);
+          } else {
+            // console.log("ELSE>>>>>>>")
+            sails.hooks.i18n.setLocale("en");
+          }
           next();
         } else if (userData.deleted_at != null) {
           return res
@@ -246,6 +266,19 @@ module.exports = async function (req, res, next) {
             opts.ip = ip;
             var checkexist = await IPWhitelist.checkWhitelistValid(opts);
             if (checkexist == 2) {
+              // console.log("req.headers", req.headers)
+              // console.log("userData.default_language", userData.default_language)
+              // console.log(req.headers["accept-language"])
+              if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+                // console.log("INSIDE IF>>>>>>>")
+                sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+              } else if (userData != undefined) {
+                // console.log("INSIDE ELSE IF>>>>>>>")
+                sails.hooks.i18n.setLocale(userData.default_language);
+              } else {
+                // console.log("ELSE>>>>>>>")
+                sails.hooks.i18n.setLocale("en");
+              }
               next();
             } else if (checkexist == 1) {
               return res
@@ -255,18 +288,58 @@ module.exports = async function (req, res, next) {
                   "err": sails.__("Time for whitelist has been expired.").message
                 });
             } else {
+              // console.log("req.headers", req.headers)
+              // console.log("userData.default_language", userData.default_language)
+              // console.log(req.headers["accept-language"])
+              if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+                // console.log("INSIDE IF>>>>>>>")
+                sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+              } else if (userData != undefined) {
+                // console.log("INSIDE ELSE IF>>>>>>>")
+                sails.hooks.i18n.setLocale(userData.default_language);
+              } else {
+                // console.log("ELSE>>>>>>>")
+                sails.hooks.i18n.setLocale("en");
+              }
               next();
             }
           } else {
+            // console.log("req.headers", req.headers)
+            // console.log("userData.default_language", userData.default_language)
+            // console.log(req.headers["accept-language"])
+            if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+              // console.log("INSIDE IF>>>>>>>")
+              sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+            } else if (userData != undefined) {
+              // console.log("INSIDE ELSE IF>>>>>>>")
+              sails.hooks.i18n.setLocale(userData.default_language);
+            } else {
+              // console.log("ELSE>>>>>>>")
+              sails.hooks.i18n.setLocale("en");
+            }
             next();
           }
         }
       } else {
+        // console.log("req.headers", req.headers)
+        // console.log(req.headers["accept-language"])
+        // console.log("userData.default_language", userData.default_language)
+        if (req.headers && req.headers["accept-language"] && req.headers["accept-language"] != "") {
+          // console.log("INSIDE IF>>>>>>>")
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+        } else if (userData != undefined) {
+          // console.log("INSIDE ELSE IF>>>>>>>")
+          sails.hooks.i18n.setLocale(userData.default_language);
+        } else {
+          // console.log("ELSE>>>>>>>")
+          sails.hooks.i18n.setLocale("en");
+        }
         next();
       }
     }
   } catch (error) {
     console.log(error)
+    sails.hooks.i18n.setLocale(req.headers["accept-language"]);
     return res
       .status(403)
       .json({

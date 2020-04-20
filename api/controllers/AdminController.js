@@ -1284,6 +1284,36 @@ module.exports = {
             "err": sails.__("2 factor already disabled").message
           });
       }
+
+      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: user.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
+      }
+
       await Admin
         .update({
           id: user.id,
@@ -2567,7 +2597,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
         })
         .sort('created_at DESC');
 
@@ -4274,7 +4304,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
         })
         .sort('created_at DESC');
 

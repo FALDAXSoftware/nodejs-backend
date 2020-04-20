@@ -200,12 +200,13 @@ module.exports = {
           coin_code: req.body.coin
         });
         console.log("Confirmed On Receive ?????????", req.body);
-        var division = sails.config.local.DIVIDE_EIGHT;
-        if (req.body.coin == "teth" || req.body.coin == "eth" || coin.iserc == true) {
-          division = sails.config.local.DIVIDE_EIGHTEEN;
-        } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
-          division = sails.config.local.DIVIDE_SIX;
-        }
+        var division;
+        // if (req.body.coin == "teth" || req.body.coin == "eth" || coin.iserc == true) {
+        //   division = sails.config.local.DIVIDE_EIGHTEEN;
+        // } else if (req.body.coin == "txrp" || req.body.coin == "xrp") {
+        //   division = sails.config.local.DIVIDE_SIX;
+        // }
+        division = coin.coin_precision
         let isToken = false;
         let transferId = req.body.transfer;
         console.log("transferId", transferId)
@@ -256,15 +257,6 @@ module.exports = {
             });
 
             if (userWallet == undefined) {
-              var userSendWallet = await Wallet.findOne({
-                send_address: dest.address,
-                deleted_at: null,
-                is_active: true,
-                coin_id: coinDataValue.id
-              });
-            }
-
-            if (userWallet == undefined && userSendWallet == undefined) {
               if (source != undefined) {
                 userWallet = await Wallet.findOne({
                   receive_address: source.address,
@@ -272,17 +264,74 @@ module.exports = {
                   is_active: true,
                   coin_id: coinDataValue.id
                 });
-
+                console.log("userWallet", userWallet)
                 if (userWallet == undefined) {
-                  userWallet = await Wallet.findOne({
-                    send_address: source.address,
-                    deleted_at: null,
-                    is_active: true,
-                    coin_id: coinDataValue.id
-                  });
+                  if (transfer.outputs && transfer.outputs != undefined && transfer.outputs.length > 0) {
+                    if (transfer.outputs.length > 2) {
+                      var flag = false;
+                      for (var i = 0; i < transfer.outputs.length; i++) {
+                        if (userWallet == undefined && flag == false) {
+                          userWallet = await Wallet.findOne({
+                            receive_address: transfer.outputs[i].address,
+                            deleted_at: null,
+                            is_active: true,
+                            coin_id: coinDataValue.id
+                          })
+                          console.log("User Wallet at " + userWallet + " at transfer.output", transfer.outputs[i]);
+                          if (userWallet && userWallet != undefined) {
+                            source = transfer.outputs[i];
+                            flag = true;
+                            break;
+                          }
+                        }
+                      }
+                      if (flag == false) {
+                        if (transfer.entries != undefined) {
+                          if (transfer.entries.length > 2) {
+                            for (var i = 0; i < transfer.entries.length; i++) {
+                              if (userWallet == undefined) {
+                                userWallet = await Wallet.findOne({
+                                  receive_address: transfer.entries[i].address,
+                                  deleted_at: null,
+                                  is_active: true,
+                                  coin_id: coinDataValue.id
+                                })
+
+                                console.log("User Wallet at " + userWallet + " at transfer.output", transfer.entries[i]);
+                                if (userWallet && userWallet != undefined) {
+                                  source = transfer.entries[i];
+                                  break;
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  } else if (transfer.entries && transfer.entries != undefined && transfer.entries.length > 0) {
+                    if (transfer.entries.length > 2) {
+                      for (var i = 0; i < transfer.entries.length; i++) {
+                        if (userWallet == undefined) {
+                          userWallet = await Wallet.findOne({
+                            receive_address: transfer.entries[i].address,
+                            deleted_at: null,
+                            is_active: true,
+                            coin_id: coinDataValue.id
+                          })
+
+                          console.log("User Wallet at " + userWallet + " at transfer.output", transfer.entries[i]);
+                          if (userWallet && userWallet != undefined) {
+                            source = transfer.entries[i];
+                            break;
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
-
+              console.log("source", source)
+              console.log("dest", dest)
               if (userWallet) {
                 let temp = dest;
                 dest = source;
@@ -292,6 +341,8 @@ module.exports = {
             let coin = await Coins.findOne({
               id: userWallet.coin_id
             });
+
+            console.log(coin);
             // Check For Token
             if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
               let token = await Coins.findOne({

@@ -15,7 +15,26 @@ module.exports = {
    * @param <coin name, room, previous room>
    *
    * @return <Instruments data or error data>
-   */
+  */
+
+  getAllPairData: async function (req, res) {
+    try {
+      var pairData = await Pairs.find({
+        where: {
+          deleted_at: null,
+          is_active: true
+        }
+      });
+      console.log(pairData.length)
+      return res.json({
+        'status': 200,
+        'message': "All Pair data has been retrieved successfully",
+        data: pairData
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },
 
   getInstrumentPair: async function (req, res) {
     let coin = req.query.coin;
@@ -61,7 +80,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -136,7 +155,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -159,7 +178,7 @@ module.exports = {
           return res.status(500).json({
             "status": 500,
             "err": sails.__("pair already exist").message,
-            error_at:sails.__("pair already exist").message
+            error_at: sails.__("pair already exist").message
           });
         }
 
@@ -201,7 +220,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -254,7 +273,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

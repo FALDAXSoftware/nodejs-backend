@@ -31,6 +31,12 @@ module.exports = {
   create: async function (req, res) {
     try {
       var referred_id = null;
+      sails.hooks.i18n.setLocale(req.headers["accept-language"])
+      // if (req.body.default_language && req.body.default_language != "") {
+      //   sails.hooks.i18n.setLocale(req.body.default_language);
+      // } else {
+      //   sails.hooks.i18n.setLocale("en");
+      // }
       let email = req
         .body
         .email
@@ -778,6 +784,7 @@ module.exports = {
 
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = dataResponse.response;
+    // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
         "status": 200,
@@ -880,7 +887,7 @@ module.exports = {
                       user.state :
                       user_details["state"], user.city_town ?
                       user.city_town :
-                      user_details["city_town"], user.postal_code);
+                      user_details["city_town"], user.postal_code, user.dob,user.phone_number);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -890,6 +897,7 @@ module.exports = {
                   .set(user)
                   .fetch();
                 delete updatedUsers.password
+                sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
                 return res.json({
                   "status": 200,
                   "message": sails.__("User Update").message
@@ -920,7 +928,7 @@ module.exports = {
                     user.state :
                     user_details["state"], user.city_town ?
                     user.city_town :
-                    user_details["city_town"], user.postal_code);
+                    user_details["city_town"], user.postal_code, user.dob,user.phone_number);
               }
 
               if (req.body.country_code) {
@@ -934,7 +942,10 @@ module.exports = {
                   email: user.email,
                   deleted_at: null
                 })
-                .set(user);
+                .set(user)
+                .fetch();
+
+              sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
 
               return res.json({
                 "status": 200,
@@ -1355,6 +1366,7 @@ module.exports = {
   disableTwoFactor: async function (req, res) {
     try {
       let user_id = req.user.id;
+      console.log(req.body)
       let user = await Users.findOne({
         id: user_id,
         is_active: true,
@@ -1376,6 +1388,35 @@ module.exports = {
             "status": 401,
             "err": sails.__("2 factor already disabled").message
           });
+      }
+
+      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: user.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
       }
       await Users
         .update({
@@ -1988,7 +2029,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
@@ -1996,7 +2037,7 @@ module.exports = {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2030,14 +2071,14 @@ module.exports = {
 
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
 
 
       //let userCount = await sails.sendNativeQuery("Select COUNT(users.id)" + countQuery, [])
-      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
@@ -2075,7 +2116,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
@@ -2083,7 +2124,7 @@ module.exports = {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2117,12 +2158,12 @@ module.exports = {
 
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
-      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
 
-      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
@@ -2159,14 +2200,14 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(send_address)send_address,wallets.user_id,wallets.receive_address from wallets ORDER BY send_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id=users.id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.send_address) LIKE '%" + data + "%'";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2207,13 +2248,13 @@ module.exports = {
 
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
       usersData = usersData.rows;
       // console.log("SELECT * FROM (Select users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
       //   "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ")
-      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.send_address,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+      let userCount = await sails.sendNativeQuery("SELECT count(*) FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users ", [])
       userCount = userCount.rows[0].count;
 
@@ -2728,7 +2769,9 @@ module.exports = {
             is_active: true,
             is_verified: false,
             password: user.password,
-            full_name: full_name
+            full_name: full_name,
+            referral_code: randomize('Aa0', 10),
+            is_user_updated: true
           })
           .fetch();
 
