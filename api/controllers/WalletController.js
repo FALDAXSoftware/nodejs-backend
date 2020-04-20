@@ -3375,16 +3375,32 @@ module.exports = {
           console.log("wallet_data", wallet_data);
           coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
           coinData[i].address = wallet_data.receiveAddress.address;
-        } else {
-          var walletData = await Wallet.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              "wallet_id": "warm_wallet"
-            }
-          });
-          coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
-          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+        } else if (coinData[i].coin_code == "SUSU") {
+          var responseValue = new Promise(async (resolve, reject) => {
+            request({
+              url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
+              method: "GET",
+              headers: {
+
+                'x-token': 'faldax-susucoin-node',
+                'Content-Type': 'application/json'
+              },
+              json: true
+            }, function (err, httpResponse, body) {
+              console.log("body", body)
+              console.log(err)
+              if (err) {
+                reject(err);
+              }
+              if (body.error) {
+                resolve(body);
+              }
+              resolve(body);
+              // return body;
+            });
+          })
+          coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          coinData[i].address = ""
         }
       }
       return res
