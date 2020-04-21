@@ -3107,5 +3107,19 @@
 		"message_type": "success",
 		"message_english": "User Tier has been added to pending successffully",
 		"message": "User Tier has been added to pending successffully"
+	},
+	"Tier 4 Pdfs retrived successfully": {
+		"page": "Tier 4 PDF lists",
+		"context": "Tier 4 Pdfs retrived successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs retrieved successfully.",
+		"message": "Tier 4 Pdfs retrieved successfully."
+	},
+	"Tier 4 Pdfs updated successfully": {
+		"page": "Tier 4 PDF update",
+		"context": "Tier 4 Pdfs updated successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs updated successfully.",
+		"message": "Tier 4 Pdfs updated successfully."
 	}
 }
