@@ -303,6 +303,11 @@ module.exports = {
       columnName: 'default_language',
       defaultsTo: "en"
     },
+    is_tradedesk_user: {
+      type: 'boolean',
+      columnName: 'is_tradedesk_user',
+      defaultsTo: false
+    }
   },
   beforeCreate: (values, next) => {
     Users
