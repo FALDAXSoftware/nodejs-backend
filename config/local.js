@@ -256,5 +256,6 @@ module.exports.local = {
   DIVIDE_EIGHT: 1e8,
   DIVIDE_EIGHTEEN: 1e18,
   DIVIDE_NINE: 1e9,
-  TESTNET: process.env.TESTNET
+  TESTNET: process.env.TESTNET,
+  TRADEDESK_USER_ID:process.env.TRADEDESK_USER_ID
 }
