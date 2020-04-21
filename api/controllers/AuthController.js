@@ -143,6 +143,14 @@ module.exports = {
 
         if (user_detail) {
           console.log(user_detail)
+          if( user_detail.id == sails.config.local.TRADEDESK_USER_ID && user_detail.is_tradedesk_user == true){
+            return res
+              .status(401)
+              .json({
+                status: 401,
+                err: sails.__('Unauthorized Access').message
+              });
+          }
           // Set language to user's default
           // if (user_detail.default_language && user_detail.default_language != "") {
           //   sails.hooks.i18n.setLocale(user_detail.default_language);
