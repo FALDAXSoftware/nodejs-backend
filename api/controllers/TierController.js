@@ -1392,5 +1392,95 @@ module.exports = {
           error_at: error.stack
         });
     }
+  },
+
+  uploadTier4UserDocument: async function (req, res) {
+    try {
+      var dataBody = req.allParams();
+      var user_id = req.user.id;
+
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      })
+
+      var getTierValue = await TierMainRequest.findOne({
+        where: {
+          user_id: user_id,
+          deleted_at: null,
+          tier_step: parseInt(userData.account_tier) + 1
+        }
+      });
+
+      console.log("getTierValue", getTierValue)
+
+      var idValue = 0;
+
+      var valueObject = {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false,
+        6: false,
+        7: false,
+        8: false,
+        9: false,
+        10: false,
+        11: false,
+        12: false
+      }
+
+      if (getTierValue == undefined) {
+        var getTierData = await TierMainRequest.create({
+          deleted_at: null,
+          created_at: new Date(),
+          user_id: user_id,
+          tier_step: parseInt(userData.account_tier) + 1,
+          user_status: valueObject
+        }).fetch();
+
+        idValue = getTierData.id;
+      } else {
+        idValue = getTierValue.id
+      }
+
+      req
+        .file('files')
+        .upload(async function (error, uploadFile) {
+          try {
+            console.log(uploadFile)
+            console.log("error", error)
+            var data = {};
+            // if (uploadFile.length > 0) {
+            var dataValue;
+            data.request_id = idValue;
+            data.user_id = user_id;
+            data.file = uploadFile[0];
+            data.description = randomize('Aa0', 10);
+            data.type = dataBody.type;
+
+            console.log("data", data)
+
+            dataValue = await sails.helpers.uploadTierDocument(data)
+            console.log(dataValue)
+            return res.json(dataValue)
+
+          } catch (error) {
+            console.log(error);
+          }
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
   }
 }
