@@ -443,6 +443,8 @@ module.exports = {
         length = 4;
       } else if (data.tier_step == 3) {
         length = 2;
+      } else if (data.tier_step == 4) {
+        length = 16;
       }
 
 
