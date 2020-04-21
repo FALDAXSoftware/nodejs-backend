@@ -3756,6 +3756,7 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
+      console.log("userData", userData)
 
       if (userData != undefined) {
         var emailData = await Users.update({
