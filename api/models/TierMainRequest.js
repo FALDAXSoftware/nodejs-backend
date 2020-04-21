@@ -21,6 +21,18 @@ module.exports = {
             columnName: 'approved',
             allowNull: true
         },
+        public_note: {
+            type: "string",
+            columnName: "public_note"
+        },
+        private_note: {
+            type: "string",
+            columnName: "private_note"
+        },
+        updated_by: {
+            type: "string",
+            columnName: "updated_by"
+        },
         user_id: {
             columnName: "user_id",
             model: "users"
