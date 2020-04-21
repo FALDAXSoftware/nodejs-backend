@@ -3100,5 +3100,12 @@
 		"message_type": "success",
 		"message_english": "User Tier has been force Rejected successffully",
 		"message": "User Tier has been force Rejected successffully"
+	},
+	"Force Pending Success": {
+		"page": "Tier Details Force Pending -CMS",
+		"context": "User Tier has been added to pending successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been added to pending successffully",
+		"message": "User Tier has been added to pending successffully"
 	}
 }

@@ -96,6 +96,18 @@ module.exports = {
         request_id
       } = req.allParams();
 
+      var adminName;
+
+      if (req.user.isAdmin) {
+        var userData = await Admin.findOne({
+          id: req.user.id
+        });
+
+        adminName = userData.first_name;
+      }
+
+      var bodyValue = req.body;
+
       if (tier_step == 2 || tier_step == 3 || tier_step == 4) {
         var upgradeTier = await TierRequest.find({
           where: {
@@ -117,7 +129,10 @@ module.exports = {
                 id: id
               })
               .set({
-                is_approved: status
+                is_approved: status,
+                updated_by: adminName,
+                private_note: bodyValue.private_note,
+                public_note: bodyValue.public_note
               })
               .fetch();
 
@@ -187,7 +202,10 @@ module.exports = {
                 id: id
               })
               .set({
-                is_approved: status
+                is_approved: status,
+                public_note: bodyValue.public_note,
+                private_note: bodyValue.private_note,
+                updated_by: adminName
               })
               .fetch();
 
@@ -392,7 +410,7 @@ module.exports = {
           })
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       // await logger.error(error.message)
       return res
         .status(500)
@@ -457,8 +475,11 @@ module.exports = {
 
             console.log("tierData[0]", tierData[0])
 
-            if (tierData[0] != undefined)
+            if (tierData[0] != undefined) {
+              delete tierData[0].private_note;
+              delete tierData[0].updated_by;
               finalData.push(tierData[0]);
+            }
           }
         }
       }
@@ -1067,6 +1088,7 @@ module.exports = {
           .upload(async function (error, uploadFile) {
             try {
               console.log(uploadFile)
+              console.log("error", error)
               var data = {};
               if (uploadFile.length > 0) {
                 var dataValue;
@@ -1226,6 +1248,18 @@ module.exports = {
     try {
       var value = req.allParams();
 
+      var bodyValue = req.body;
+
+      var adminName;
+
+      if (req.user.isAdmin) {
+        var userData = await Admin.findOne({
+          id: req.user.id
+        });
+
+        adminName = userData.first_name;
+      }
+
       var getTierValue = await TierMainRequest.findOne({
         where: {
           deleted_at: null,
@@ -1241,7 +1275,10 @@ module.exports = {
               deleted_at: null
             })
             .set({
-              approved: true
+              approved: true,
+              updated_by: adminName,
+              private_note: bodyValue.private_note,
+              public_note: bodyValue.public_note
             }).fetch();
 
           var userValue = await Users.findOne({
@@ -1277,7 +1314,10 @@ module.exports = {
               deleted_at: null
             })
             .set({
-              approved: false
+              approved: false,
+              updated_by: adminName,
+              private_note: bodyValue.private_note,
+              public_note: bodyValue.public_note
             });
 
 
@@ -1297,11 +1337,7 @@ module.exports = {
             } else if (parseInt(userValue.account_tier) == getTierValue.tier_step) {
               tierValue = parseInt(getTierValue.tier_step) - 1;
             }
-            // else if (getTierValue.approved == null || (getTierValue.approved == false)) {
-            //   tierValue = parseInt(getTierValue.tier_step) - 1
-            // } else if (getTierValue.approved == true || getTierValue.approved == "true") {
-            //   tierValue = parseInt(getTierValue.tier_step) - 1
-            // }
+
             var userDataUpdate = await Users
               .update({
                 deleted_at: null,
@@ -1318,6 +1354,25 @@ module.exports = {
             .json({
               "status": 200,
               "message": sails.__("Force Reject Success").message
+            })
+        } else if (value.status == "truefalse") {
+          var getTierValueUpdate = await TierMainRequest
+            .update({
+              id: value.id,
+              deleted_at: null
+            })
+            .set({
+              approved: null,
+              updated_by: adminName,
+              private_note: bodyValue.private_note,
+              public_note: bodyValue.public_note
+            }).fetch();
+
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("Force Pending Success").message
             })
         }
       } else {

@@ -28,6 +28,10 @@ module.exports = {
       type: "string",
       columnName: "private_note"
     },
+    updated_by: {
+      type: "string",
+      columnName: "updated_by"
+    },
     ssn: {
       type: "string",
       columnName: "ssn"
