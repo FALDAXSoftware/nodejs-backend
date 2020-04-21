@@ -573,5 +573,9 @@ module.exports.routes = {
 
   // Tier Static PDF
   "get /admin/get-tier-pdf": "AdminController.getTierStaticLink",
-  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf"
+  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf",
+  "get /admin/get-tier-4-pdf": "AdminController.getTier4StaticLink",
+  "post /admin/upload-tier-4-pdf": "AdminController.uploadTier4StaticPdf",
+
+  "post /users/upload-tier4-document": "TierController.uploadTier4UserDocument"
 };
