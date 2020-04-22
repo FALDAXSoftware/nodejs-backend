@@ -4440,7 +4440,12 @@ module.exports = {
       var static_pages = await AdminSetting.find({
         where: {
           deleted_at: null,
-          type: 'static_form_tier_3'
+          or: [{
+            type: 'static_form_tier_3'
+          },
+          {
+            type: 'static_form_tier_4'
+          }]
         }
       })
       return res
