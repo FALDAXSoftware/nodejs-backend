@@ -111,7 +111,12 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
-    }
+    },
+    placed_by: {
+      type: 'string',
+      columnName: 'placed_by',
+      allowNull: true
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
