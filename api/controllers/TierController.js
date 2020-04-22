@@ -58,6 +58,11 @@ module.exports = {
         }
       }
 
+      // console.log("tierDetails", tierDetails[tierDetails.length - 1])
+
+      if ((parseInt(userData.account_tier) + 1) != 4)
+        tierDetails[tierDetails.length - 1].is_active = true;
+
       if (tierDetails) {
         return res
           .status(200)
@@ -145,56 +150,81 @@ module.exports = {
               }
             })
 
+            console.log("getData", getData)
+
             if (getData != undefined) {
               var statusValue = getData[0].user_status;
+
+              console.log("statusValue", statusValue)
               var typeValue = upgradeData[0].type;
+              console.log("typeValue", typeValue)
               var object = {}
               if (typeValue == 1) {
                 object = {
                   "1": status,
                   "2": statusValue[2],
                   "3": statusValue[3],
-                  "4": true
+                  "4": statusValue[4]
                 }
               } else if (typeValue == 2) {
                 object = {
                   "1": statusValue[1],
                   "2": status,
                   "3": statusValue[3],
-                  "4": true
+                  "4": statusValue[4]
                 }
               } else if (typeValue == 3) {
                 object = {
                   "1": statusValue[1],
                   "2": statusValue[2],
                   "3": status,
-                  "4": true
+                  "4": statusValue[4]
+                }
+              } else {
+                object = {
+                  "1": statusValue[1],
+                  "2": statusValue[2],
+                  "3": statusValue[3],
+                  "4": statusValue[4],
+                  "5": (typeValue == 5) ? (true) : (statusValue[5]),
+                  "6": (typeValue == 6) ? (true) : (statusValue[6]),
+                  "7": (typeValue == 7) ? (true) : (statusValue[7]),
+                  "8": (typeValue == 8) ? (true) : (statusValue[8]),
+                  "9": (typeValue == 9) ? (true) : (statusValue[9]),
+                  "10": (typeValue == 10) ? (true) : (statusValue[10]),
+                  "11": (typeValue == 11) ? (true) : (statusValue[11]),
+                  "12": (typeValue == 12) ? (true) : (statusValue[12]),
+                  "13": (typeValue == 13) ? (true) : (statusValue[13]),
+                  "14": (typeValue == 14) ? (true) : (statusValue[14]),
+                  "15": (typeValue == 15) ? (true) : (statusValue[15]),
+                  "16": (typeValue == 16) ? (true) : (statusValue[16])
                 }
               }
-
-              console.log("Object ???????", object)
-
-              var dataUpdate = await TierMainRequest
-                .update({
-                  deleted_at: null,
-                  id: request_id
-                })
-                .set({
-                  user_status: object
-                })
-                .fetch();
-
-              console.log("dataUpdate", dataUpdate);
             }
 
-            console.log("getData", getData[0].user_status)
-            var statusValue = getData[0].user_status;
-            var typeValue = upgradeData[0].type
+            console.log("Object ???????", object)
+
+            var dataUpdate = await TierMainRequest
+              .update({
+                deleted_at: null,
+                id: request_id
+              })
+              .set({
+                user_status: object
+              })
+              .fetch();
+
+            console.log("dataUpdate", dataUpdate);
+            // }
+            // console.log("getData", getData[0].user_status)
+            // var statusValue = getData[0].user_status;
+            // var typeValue = upgradeData[0].type
             // var value = JSON.parse(statusValue);
             // console.log("value>>>>", value)
-            console.log("status Value", statusValue[typeValue])
-          } else if (status == false || status == "false") {
+            // console.log("status Value", statusValue[typeValue])
 
+          } else if (status == false || status == "false") {
+            console.log("INSIDE LESE IF")
             var tierDataValue = await TierRequest
               .update({
                 deleted_at: null,
@@ -218,6 +248,8 @@ module.exports = {
 
             if (tierDataValue != undefined) {
 
+              console.log("getData[0].user_status", getData[0].user_status)
+
               var statusValue = getData[0].user_status;
               var typeValue = tierDataValue[0].type;
               var object = {}
@@ -226,189 +258,299 @@ module.exports = {
                   "1": status,
                   "2": statusValue[2],
                   "3": statusValue[3],
-                  "4": true
+                  "4": statusValue[4]
                 }
               } else if (typeValue == 2) {
                 object = {
                   "1": statusValue[1],
                   "2": status,
                   "3": statusValue[3],
-                  "4": true
+                  "4": statusValue[4]
                 }
               } else if (typeValue == 3) {
                 object = {
                   "1": statusValue[1],
                   "2": statusValue[2],
                   "3": status,
-                  "4": true
+                  "4": statusValue[4]
+                }
+              } else {
+                object = {
+                  "1": statusValue[1],
+                  "2": statusValue[2],
+                  "3": statusValue[3],
+                  "4": statusValue[4],
+                  "5": (typeValue == 5) ? (status) : (statusValue[5]),
+                  "6": (typeValue == 6) ? (status) : (statusValue[6]),
+                  "7": (typeValue == 7) ? (status) : (statusValue[7]),
+                  "8": (typeValue == 8) ? (status) : (statusValue[8]),
+                  "9": (typeValue == 9) ? (status) : (statusValue[9]),
+                  "10": (typeValue == 10) ? (status) : (statusValue[10]),
+                  "11": (typeValue == 11) ? (status) : (statusValue[11]),
+                  "12": (typeValue == 12) ? (status) : (statusValue[12]),
+                  "13": (typeValue == 13) ? (status) : (statusValue[13]),
+                  "14": (typeValue == 14) ? (status) : (statusValue[14]),
+                  "15": (typeValue == 15) ? (status) : (statusValue[15]),
+                  "16": (typeValue == 16) ? (status) : (statusValue[16])
                 }
               }
-
-              var upgradeData = await TierRequest
-                .update({
-                  deleted_at: null,
-                  request_id: request_id,
-                  id: id
-                })
-                .set({
-                  user_status: object
-                })
             }
-          }
-        } else {
-          var upgradeData = await TierRequest
-            .create({
-              tier_step: tier_step,
-              user_id: user_id,
-              is_approved: null
-            })
-        }
 
-        if (tier_step == 2) {
-          var tierDataFinal = await TierMainRequest.findOne({
-            where: {
-              deleted_at: null,
-              id: request_id,
-              tier_step: tier_step
-            }
-          })
-
-          var finalStatus = tierDataFinal.user_status;
-          var flag = 0;
-
-          for (var i = 0; i < 4; i++) {
-            if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
-              flag = parseInt(flag) + 1;
-            }
-          }
-
-          console.log(flag)
-
-          if (flag == 4) {
-            var tierDataUpdate = await TierMainRequest
+            var upgradeData = await TierRequest
               .update({
                 deleted_at: null,
-                id: request_id,
-                tier_step: tier_step
+                request_id: request_id,
+                id: id
               })
               .set({
-                approved: true
-              })
-
-            console.log("tierDataFinal.user_id", tierDataFinal.user_id)
-
-            var userValue = await Users.findOne({
-              where: {
-                deleted_at: null,
-                is_active: true,
-                id: tierDataFinal.user_id
-              }
-            })
-
-            var userData = await Users
-              .update({
-                deleted_at: null,
-                is_active: true,
-                id: tierDataFinal.user_id
-              })
-              .set({
-                account_tier: parseInt(userValue.account_tier) + 1
-              })
-          }
-
-          var flag1 = 0;
-
-          for (var j = 0; j < 4; j++) {
-            if (finalStatus[i] == false || finalStatus[i] == "false") {
-              flag = parseInt(flag1) + 1;
-            }
-          }
-
-          if (flag1 == 4) {
-            var tierDataUpdate = await TierMainRequest
-              .update({
-                deleted_at: null,
-                id: request_id,
-                tier_step: tier_step
-              })
-              .set({
-                approved: false
-              })
-          }
-        } else if (tier_step == 3) {
-          var tierDataFinal = await TierMainRequest.findOne({
-            where: {
-              deleted_at: null,
-              id: request_id,
-              tier_step: tier_step
-            }
-          })
-
-          var finalStatus = tierDataFinal.user_status;
-          var flag = 0;
-
-          for (var i = 0; i < 2; i++) {
-            if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
-              flag = parseInt(flag) + 1;
-            }
-          }
-
-          if (flag == 2) {
-            var tierDataUpdate = await TierMainRequest
-              .update({
-                deleted_at: null,
-                id: request_id,
-                tier_step: tier_step
-              })
-              .set({
-                approved: true
-              })
-
-            var userValue = await Users.findOne({
-              where: {
-                deleted_at: null,
-                is_active: true,
-                id: tierDataFinal.user_id
-              }
-            })
-
-            var userData = await Users
-              .update({
-                deleted_at: null,
-                is_active: true,
-                id: tierDataFinal.user_id
-              })
-              .set({
-                account_tier: parseInt(userValue.account_tier) + 1
-              })
-          }
-
-          for (var i = 0; i < 2; i++) {
-            if (finalStatus[i] == false || finalStatus[i] == "false") {
-              flag = parseInt(flag) + 1;
-            }
-          }
-
-          if (flag == 3) {
-            var tierDataUpdate = await TierMainRequest
-              .update({
-                deleted_at: null,
-                id: request_id,
-                tier_step: tier_step
-              })
-              .set({
-                approved: false
+                user_status: object
               })
           }
         }
-
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("tier upgrade request success").message
-          })
+        // }
       }
+
+      if (tier_step == 2) {
+        var tierDataFinal = await TierMainRequest.findOne({
+          where: {
+            deleted_at: null,
+            id: request_id,
+            tier_step: tier_step
+          }
+        })
+
+        var finalStatus = tierDataFinal.user_status;
+        var flag = 0;
+
+        for (var i = 0; i < 4; i++) {
+          if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
+            flag = parseInt(flag) + 1;
+          }
+        }
+
+        console.log(flag)
+
+        if (flag == 4) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: true
+            })
+
+          console.log("tierDataFinal.user_id", tierDataFinal.user_id)
+
+          var userValue = await Users.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            }
+          })
+
+          var getTier = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: parseInt(userValue.account_tier) + 1
+            }
+          });
+
+          // if (getTier != undefined) {
+          //   var accountDetails = getTier.minimum_activity_thresold;
+          //   accountDetails = parseFloat(accountDetails);
+
+          //   var date2 = new Date();
+
+          //   var date1 = moment();
+          //   console.log(date1)
+          //   var date2 = userValue.created_at;
+          //   console.log(date2);
+          //   var difference = date1.diff(date2, 'days')
+          //   console.log(difference);
+
+          //   if (difference >= accountDetails.Account_Age) {
+          //     var walletTransaction
+          //     if()
+          //   }
+          // }
+
+          var userData = await Users
+            .update({
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            })
+            .set({
+              account_tier: parseInt(userValue.account_tier) + 1
+            })
+        }
+
+        var flag1 = 0;
+
+        for (var j = 0; j < 4; j++) {
+          if (finalStatus[i] == false || finalStatus[i] == "false") {
+            flag = parseInt(flag1) + 1;
+          }
+        }
+
+        if (flag1 == 4) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: false
+            })
+        }
+      } else if (tier_step == 3) {
+        var tierDataFinal = await TierMainRequest.findOne({
+          where: {
+            deleted_at: null,
+            id: request_id,
+            tier_step: tier_step
+          }
+        })
+
+        var finalStatus = tierDataFinal.user_status;
+        var flag = 0;
+
+        for (var i = 0; i < 2; i++) {
+          if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
+            flag = parseInt(flag) + 1;
+          }
+        }
+
+        if (flag == 2) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: true
+            })
+
+          var userValue = await Users.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            }
+          })
+
+          var userData = await Users
+            .update({
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            })
+            .set({
+              account_tier: parseInt(userValue.account_tier) + 1
+            })
+        }
+
+        for (var i = 0; i < 2; i++) {
+          if (finalStatus[i] == false || finalStatus[i] == "false") {
+            flag = parseInt(flag) + 1;
+          }
+        }
+
+        if (flag == 3) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: false
+            })
+        }
+      } else if (tier_step == 4) {
+        var tierDataFinal = await TierMainRequest.findOne({
+          where: {
+            deleted_at: null,
+            id: request_id,
+            tier_step: tier_step
+          }
+        })
+
+        var finalStatus = tierDataFinal.user_status;
+        var flag = 0;
+
+        for (var i = 0; i < 12; i++) {
+          if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
+            flag = parseInt(flag) + 1;
+          }
+        }
+
+        console.log(flag)
+
+        if (flag == 12) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: true
+            })
+
+          console.log("tierDataFinal.user_id", tierDataFinal.user_id)
+
+          var userValue = await Users.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            }
+          })
+
+          var userData = await Users
+            .update({
+              deleted_at: null,
+              is_active: true,
+              id: tierDataFinal.user_id
+            })
+            .set({
+              account_tier: 4
+            })
+        }
+
+        var flag1 = 0;
+
+        for (var j = 0; j < 12; j++) {
+          if (finalStatus[i] == false || finalStatus[i] == "false") {
+            flag = parseInt(flag1) + 1;
+          }
+        }
+
+        if (flag1 == 12) {
+          var tierDataUpdate = await TierMainRequest
+            .update({
+              deleted_at: null,
+              id: request_id,
+              tier_step: tier_step
+            })
+            .set({
+              approved: false
+            })
+        }
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("tier upgrade request success").message
+        })
     } catch (error) {
       console.log(error);
       // await logger.error(error.message)
@@ -455,6 +597,8 @@ module.exports = {
           tier_step: data.tier_step
         }
       });
+
+      console.log("tierValue", tierValue)
 
       if (tierValue.length > 0) {
         data.request_id = tierValue[0].id;
@@ -628,6 +772,23 @@ module.exports = {
       } else if (data.tier_step == 3) {
         typeObject.push(1);
         typeObject.push(2);
+      } else if (data.tier_step == 4) {
+        typeObject.push(1);
+        typeObject.push(2);
+        typeObject.push(3);
+        typeObject.push(4)
+        typeObject.push(5);
+        typeObject.push(6);
+        typeObject.push(7);
+        typeObject.push(8)
+        typeObject.push(9);
+        typeObject.push(10);
+        typeObject.push(11);
+        typeObject.push(12)
+        typeObject.push(13);
+        typeObject.push(14);
+        typeObject.push(15);
+        typeObject.push(16)
       }
 
 
@@ -1433,7 +1594,11 @@ module.exports = {
         9: false,
         10: false,
         11: false,
-        12: false
+        12: false,
+        13: false,
+        14: false,
+        15: false,
+        16: false
       }
 
       if (getTierValue == undefined) {
