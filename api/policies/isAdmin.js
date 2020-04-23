@@ -49,6 +49,7 @@ module.exports = async function (req, res, next) {
       "admin/get-tier-data",
       "admin/get-tier-details",
       "admin/force-change-status",
+      "admin/get-tier-details-value"
       // "admin/upgrade-user-tier"
       // "admin/get-tier-4-pdf"
     ]
