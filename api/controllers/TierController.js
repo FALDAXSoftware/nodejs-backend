@@ -28,40 +28,47 @@ module.exports = {
         }
       });
 
-      for (var i = 0; i < tierDetails.length; i++) {
-        if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
-          tierDetails[i].is_active = true;
-          var accountTierDetails = await TierMainRequest.findOne({
-            where: {
-              user_id: user_id,
-              tier_step: tierDetails[i].tier_step,
-              deleted_at: null
-            }
-          });
+      if (userData.account_tier == 4) {
+        for (var i = 0; i < tierDetails.length; i++) {
+          tierDetails[i].is_verified = true;
+        }
+      } else {
+        for (var i = 0; i < tierDetails.length; i++) {
+          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
+            tierDetails[i].is_active = true;
+            var accountTierDetails = await TierMainRequest.findOne({
+              where: {
+                user_id: user_id,
+                tier_step: tierDetails[i].tier_step,
+                deleted_at: null
+              }
+            });
 
-          if (accountTierDetails != undefined) {
-            var object = {
-              request_id: accountTierDetails.id,
-              user_status: accountTierDetails.user_status,
-              approved: accountTierDetails.approved
+            if (accountTierDetails != undefined) {
+              var object = {
+                request_id: accountTierDetails.id,
+                user_status: accountTierDetails.user_status,
+                approved: accountTierDetails.approved
+              }
+              tierDetails[i].account_details = object;
             }
-            tierDetails[i].account_details = object;
-          }
 
-          if (i != 0) {
-            for (var j = 0; j < i; j++) {
-              console.log(j)
-              console.log("tierDetails[i - i]", tierDetails[i - i])
-              tierDetails[j].is_verified = true;
+            if (i != 0) {
+              for (var j = 0; j < i; j++) {
+                console.log(j)
+                console.log("tierDetails[i - i]", tierDetails[i - i])
+                tierDetails[j].is_verified = true;
+              }
             }
           }
         }
+        if ((parseInt(userData.account_tier) + 1) != 4)
+          tierDetails[tierDetails.length - 1].is_active = true;
       }
+
 
       // console.log("tierDetails", tierDetails[tierDetails.length - 1])
 
-      if ((parseInt(userData.account_tier) + 1) != 4)
-        tierDetails[tierDetails.length - 1].is_active = true;
 
       if (tierDetails) {
         return res
@@ -628,6 +635,47 @@ module.exports = {
             }
           }
         }
+      } else {
+        // var getTier = await Tiers.findOne({
+        //   where: {
+        //     deleted_at: null,
+        //     tier_step: parseInt(userData.account_tier) + 1
+        //   }
+        // });
+
+
+        // if (getTier != undefined) {
+        //   var accountDetails = getTier.minimum_activity_thresold;
+        //   accountDetails = parseFloat(accountDetails);
+
+        //   var date2 = new Date();
+
+        //   var date1 = moment();
+        //   console.log(date1)
+        //   var date2 = userData.created_at;
+        //   console.log(date2);
+        //   var difference = date1.diff(date2, 'days')
+        //   console.log(difference);
+
+        //   if (difference >= accountDetails.Account_Age) {
+        //     // var walletTransaction = await WalletHistory
+        //     var getDetailsQuery = `SELECT count('wallet_history.id') ,sum(wallet_history.amount), coins.coin,
+        //                               json_agg(currency_conversion.quote->'USD'->'price')
+        //                               FROM coins
+        //                               LEFT JOIN wallet_history
+        //                               ON coins.id = wallet_history.coin_id
+        //                               LEFT JOIN currency_conversion
+        //                               ON currency_conversion.coin_id = coins.id
+        //                               WHERE wallet_history.deleted_at IS NULL AND coins.is_active = 'true' AND coins.deleted_at IS NULL
+        //                               AND wallet_history.user_id = ${user_id}
+        //                               GROUP BY coins.coin`
+        //     tradeData = await sails.sendNativeQuery(getDetailsQuery, [])
+
+        //     tradeData = tradeData.rows;
+        //     console.log(tradeData)
+        //     // if ()
+        //   }
+        // }
       }
 
 

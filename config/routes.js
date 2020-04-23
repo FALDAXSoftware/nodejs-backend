@@ -410,7 +410,7 @@ module.exports.routes = {
   "post /admin/get-tier-details": "TierController.getRequestTierData",
   "post /admin/force-change-status": "TierController.userForceAccept",
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
-  'get /admin/get-tier-details': 'TierController.getTierList',
+  'get /admin/get-tier-details-value': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
   'post /admin/upgrade-user-tier': 'TierController.upgradeUserTier',
