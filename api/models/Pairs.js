@@ -73,6 +73,16 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    crypto_minimum:{
+      type: 'number',
+      columnName: 'crypto_minimum',
+      defaultsTo: 0
+    },
+    crypto_maximum:{
+      type: 'number',
+      columnName: 'crypto_maximum',
+      defaultsTo: 0
     }
   },
   beforeCreate: (values, next) => {

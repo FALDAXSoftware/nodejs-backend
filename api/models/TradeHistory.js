@@ -162,7 +162,12 @@ module.exports = {
       columnType: 'json',
       columnName: 'execution_report',
       defaultsTo: {}
-    }
+    },
+    placed_by: {
+      type: 'string',
+      columnName: 'placed_by',
+      allowNull: true
+    },
   },
   beforeCreate: function (values, next) {
     values.created_at = new Date();
