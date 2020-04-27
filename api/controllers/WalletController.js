@@ -3119,7 +3119,10 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+
+      console.log("coinData", coinData.iserc)
+      console.log(coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false)
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
