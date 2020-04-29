@@ -3121,5 +3121,19 @@
 		"message_type": "success",
 		"message_english": "Tier 4 Pdfs updated successfully.",
 		"message": "Tier 4 Pdfs updated successfully."
+	},
+	"Tier Upgrade not applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "Tier upgrade not applicable.",
+		"message": "Tier upgrade not applicable."
+	},
+	"Tier upgrade applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "sucess",
+		"message_english": "Tier upgrade applicable.",
+		"message": "Tier upgrade applicable."
 	}
 }
