@@ -209,6 +209,9 @@ module.exports = {
         console.log("call_simplex",call_simplex);
         let {isSourceMobile} = req.allParams();
         if( isSourceMobile == true || isSourceMobile == 'true' ){
+          if( call_simplex.status != 200 ){
+            return res.json(call_simplex);
+          }
           call_simplex = call_simplex.data;
           let queryString=sails.config.local.APP_URL+"/simplex-mobile?";
           queryString += `version=${call_simplex.version}`
