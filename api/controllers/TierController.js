@@ -1751,6 +1751,7 @@ module.exports = {
       let requirementSetSecond = getTierData.requirements_two;
       let requirementSetFirstCheck = false;
       let getTradeCount = sails.helpers.tradding.trade.getUserTradeDetails( user_id, true);
+      let getTradeData = sails.helpers.tradding.trade.getUserTradeDetails( user_id, false);
       if( today >= eligibleUpgrateAge ){ // check for age
         requirementSetFirstCheck = true;
       }else if( getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions) ){
