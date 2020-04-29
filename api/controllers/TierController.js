@@ -7,6 +7,7 @@
 var request = require('request');
 var logger = require("./logger")
 var randomize = require('randomatic');
+var moment = require('moment');
 
 module.exports = {
 
@@ -722,21 +723,21 @@ module.exports = {
         query = `FROM tier_main_request
                     LEFT JOIN users
                     ON tier_main_request.user_id = users.id
-                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL
                     AND users.is_active = true AND tier_main_request.approved IS NULL
                     AND tier_main_request.tier_step = ${step}`
       } else if (status == 2) {
         query = `FROM tier_main_request
                     LEFT JOIN users
                     ON tier_main_request.user_id = users.id
-                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL
                     AND users.is_active = true AND tier_main_request.approved = true
                     AND tier_main_request.tier_step = ${step}`
       } else if (status == 3) {
         query = `FROM tier_main_request
                     LEFT JOIN users
                     ON tier_main_request.user_id = users.id
-                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL 
+                    WHERE tier_main_request.deleted_at IS NULL AND users.deleted_at IS NULL
                     AND users.is_active = true AND tier_main_request.approved = false
                     AND tier_main_request.tier_step = ${step}`
       }
@@ -1688,6 +1689,82 @@ module.exports = {
             console.log(error);
           }
         });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+  /* Check Pre Tier Upgrade */
+  checkTierUpgrade: async function (req, res) {
+    try {
+      var body = req.body;
+      var user_id = req.user.id;
+      console.log("user_id",user_id);
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      })
+      if( parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1) ){
+        return res
+        .status(500)
+          .json({
+            status: 500,
+            message: sails.__("Tier Upgrade not applicable").message
+          });
+      }
+      // Get Tier Requirement Set
+      var getTierData = await Tiers.findOne({
+        where: {
+          deleted_at: null,
+          tier_step: parseInt(userData.account_tier) + 1
+        }
+      });
+      /* Check for First Requiremnt fulfillment */
+      let today = moment();
+      let requirementSetFirst = getTierData.minimum_activity_thresold;
+      var getTierValue = await TierMainRequest.findOne({
+        where: {
+          user_id: user_id,
+          deleted_at: null,
+          tier_step: parseInt(userData.account_tier)
+        }
+      });
+      if( !getTierValue.approved || getTierValue.approved == null ){
+        return res
+          .status(500)
+            .json({
+              status: 500,
+              message: sails.__("Tier Upgrade not applicable").message
+            });
+      }
+      let previousTierUpgradedOn = moment(getTierValue);
+      let eligibleUpgrateAge = moment(previousTierUpgradedOn.created_at).add( parseInt(requirementSetFirst.Account_Age), 'days');
+
+      let requirementSetSecond = getTierData.requirements_two;
+      let requirementSetFirstCheck = false;
+      let getTradeCount = sails.helpers.tradding.trade.getUserTradeDetails( user_id, true);
+      let getTradeData = sails.helpers.tradding.trade.getUserTradeDetails( user_id, false);
+      if( today >= eligibleUpgrateAge ){ // check for age
+        requirementSetFirstCheck = true;
+      }else if( getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions) ){
+        requirementSetFirstCheck = true;
+      }
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Tier upgrade applicable").message
+        })
+
     } catch (error) {
       return res
         .status(500)
