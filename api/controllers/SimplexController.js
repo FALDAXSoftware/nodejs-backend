@@ -217,12 +217,12 @@ module.exports = {
           queryString += `&payment_id=${call_simplex.payment_id}`
           queryString += `&quote_id=${call_simplex.quote_id}`
           queryString += `&user_id=${call_simplex.user_id}`
-          queryString += `&destination_wallet[address]=${call_simplex["destination_wallet[address]"]}`
-          queryString += `&destination_wallet[currency]=${call_simplex["destination_wallet[currency]"]}`
-          queryString += `&fiat_total_amount[amount]=${call_simplex["fiat_total_amount[amount]"]}`
-          queryString += `&fiat_total_amount[currency]=${call_simplex["fiat_total_amount[currency]"]}`
-          queryString += `&digital_total_amount[amount]=${call_simplex["digital_total_amount[amount]"]}`
-          queryString += `&digital_total_amount[currency]=${call_simplex["digital_total_amount[currency]"]}`
+          queryString += `&destination_wallet_address=${call_simplex["destination_wallet[address]"]}`
+          queryString += `&destination_wallet_currency=${call_simplex["destination_wallet[currency]"]}`
+          queryString += `&fiat_total_amount_amount=${call_simplex["fiat_total_amount[amount]"]}`
+          queryString += `&fiat_total_amount_currency=${call_simplex["fiat_total_amount[currency]"]}`
+          queryString += `&digital_total_amount_amount=${call_simplex["digital_total_amount[amount]"]}`
+          queryString += `&digital_total_amount_currency=${call_simplex["digital_total_amount[currency]"]}`
           queryString += `&action=${call_simplex.action}`;
           return res.json({status:200, data:{url:queryString}});
         }else{
