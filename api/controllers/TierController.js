@@ -29,6 +29,15 @@ module.exports = {
         }
       });
 
+      tierDetails = tierDetails.map( (each)=>{
+        if( each.daily_withdraw_limit == -1){
+          each.daily_withdraw_limit = 'Unlimited'
+        }
+        if( each.monthly_withdraw_limit == -1){
+          each.monthly_withdraw_limit = 'Unlimited'
+        }
+        return each;
+      })
       if (userData.account_tier == 4) {
         for (var i = 0; i < tierDetails.length; i++) {
           tierDetails[i].is_verified = true;
@@ -1730,40 +1739,77 @@ module.exports = {
       /* Check for First Requiremnt fulfillment */
       let today = moment();
       let requirementSetFirst = getTierData.minimum_activity_thresold;
-      var getTierValue = await TierMainRequest.findOne({
-        where: {
-          user_id: user_id,
-          deleted_at: null,
-          tier_step: parseInt(userData.account_tier)
-        }
-      });
-      if( !getTierValue.approved || getTierValue.approved == null ){
-        return res
-          .status(500)
-            .json({
-              status: 500,
-              message: sails.__("Tier Upgrade not applicable").message
-            });
-      }
-      let previousTierUpgradedOn = moment(getTierValue);
-      let eligibleUpgrateAge = moment(previousTierUpgradedOn.created_at).add( parseInt(requirementSetFirst.Account_Age), 'days');
 
-      let requirementSetSecond = getTierData.requirements_two;
-      let requirementSetFirstCheck = false;
-      let getTradeCount = sails.helpers.tradding.trade.getUserTradeDetails( user_id, true);
-      let getTradeData = sails.helpers.tradding.trade.getUserTradeDetails( user_id, false);
+      const summaryReport = {};
+      const summaryReport_Req1 = {};
+      const summaryReport_Req2 = {};
+      /* Check for Requirement Set 1 */
+      let previousTierUpgradedOn = (userData);
+      let eligibleUpgrateAge = moment(previousTierUpgradedOn.account_verified_at).add( parseInt(requirementSetFirst.Account_Age), 'days');
+
+      let getTradeCount = await sails.helpers.tradding.trade.getUserTradeDetails( userData, true);
+      let getTotalTradeInFiat = await sails.helpers.tradding.trade.getUserTradeDetails( userData, false);
+      let req1_ageCheck = false;
+      let req1_tradeCountCheck = false;
+      let req1_tradeTotalFiatCheck = false;
       if( today >= eligibleUpgrateAge ){ // check for age
-        requirementSetFirstCheck = true;
-      }else if( getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions) ){
-        requirementSetFirstCheck = true;
+        req1_ageCheck = true;
+      }
+      let ageRemaining = eligibleUpgrateAge.diff( today,'days' ) // Remaining Age
+      if( ageRemaining > 0 ){
+        summaryReport_Req1.ageRemaining = ageRemaining;
       }
 
-      return res
+      if( getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions) ){
+        req1_tradeCountCheck = true;
+      }
+
+      let tradeCountRemaining = parseInt(requirementSetFirst.Minimum_Total_Transactions)- getTradeCount;
+      if( tradeCountRemaining > 0 ){
+        summaryReport_Req1.tradeCountRemaining = tradeCountRemaining;
+      }
+
+      if( (getTotalTradeInFiat.length > 0 && getTotalTradeInFiat[0].total_amount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) ){
+        req1_tradeTotalFiatCheck = true;
+      }
+      let tradeTotalFiatRemaining = parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) - (getTotalTradeInFiat[0].total_amount);
+      if( tradeTotalFiatRemaining > 0 ){
+        summaryReport_Req1.tradeTotalFiatRemaining = tradeTotalFiatRemaining;
+      }
+
+      /* Check for Requirement Set 2 */
+      let requirementSetSecond = (getTierData.requirements_two);
+      let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance( user_id );
+      let req2_tradeWalletCheck = false;
+      if( (getTotalWalletInFiat.length > 0 && getTotalWalletInFiat[0].total_balance_fiat) >= parseInt(requirementSetSecond.Total_Wallet_Balance) ){
+        req2_tradeWalletCheck = true;
+      }
+
+      let userWalletFiatRemaining = parseInt(requirementSetSecond.Total_Wallet_Balance) - (getTotalWalletInFiat[0].total_balance_fiat);
+      if( userWalletFiatRemaining > 0 ){
+        summaryReport_Req2.userWalletFiatRemaining = userWalletFiatRemaining;
+      }
+      summaryReport["requirement_1"] = summaryReport_Req1;
+      summaryReport["requirement_2"] = summaryReport_Req2;
+      console.log(summaryReport);
+      /* If any requirement fulfills, then allow to upgrade */
+
+      if( (req1_ageCheck == true && req1_tradeCountCheck == true && req1_tradeTotalFiatCheck == true) || req2_tradeWalletCheck == true  ){
+        return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("Tier upgrade applicable").message
         })
+      }else{
+        return res
+          .status(202)
+          .json({
+            "status": 202,
+            "message": sails.__("Need to fulfill requirements for tier").message,
+            "data":summaryReport
+          })
+      }
 
     } catch (error) {
       return res
