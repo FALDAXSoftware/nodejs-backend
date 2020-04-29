@@ -168,6 +168,19 @@ module.exports = {
       columnName: 'placed_by',
       allowNull: true
     },
+    fiat_values: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'fiat_values',
+      defaultsTo: {
+        asset1_usd:0.0,
+        asset1_eur:0.0,
+        asset1_inr:0.0,
+        asset2_usd:0.0,
+        asset2_eur:0.0,
+        asset2_inr:0.0
+      }
+    }
   },
   beforeCreate: function (values, next) {
     values.created_at = new Date();
