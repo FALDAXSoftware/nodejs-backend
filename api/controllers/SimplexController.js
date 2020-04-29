@@ -206,8 +206,10 @@ module.exports = {
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
         var call_simplex = await sails.helpers.simplex.sbBackend(data);
+        console.log("call_simplex",call_simplex);
         let {isSourceMobile} = req.allParams();
         if( isSourceMobile == true || isSourceMobile == 'true' ){
+          call_simplex = call_simplex.data;
           let queryString=sails.config.local.APP_URL+"/simplex-mobile?";
           queryString += `version=${call_simplex.version}`
           queryString += `&partner=${call_simplex.partner}`
