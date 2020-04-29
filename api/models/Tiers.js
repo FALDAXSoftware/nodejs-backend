@@ -44,6 +44,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    requirements_two: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'requirements_two'
     }
   },
   beforeCreate: (values, next) => {

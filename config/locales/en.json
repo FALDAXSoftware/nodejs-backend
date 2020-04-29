@@ -3135,5 +3135,12 @@
 		"message_type": "sucess",
 		"message_english": "Tier upgrade applicable.",
 		"message": "Tier upgrade applicable."
+	},
+	"Need to fulfill requirements for tier": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier, and requirement not matched",
+		"message_type": "error",
+		"message_english": "Your current status does not match with next tier requirements.",
+		"message": "Your current status does not match with next tier requirements."
 	}
 }
