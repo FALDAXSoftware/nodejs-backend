@@ -520,7 +520,6 @@ module.exports = {
     }
   },
 
-
   checkSystemHealth: async function (req, res) {
     try {
       var system_health = await AdminSetting.findOne({
@@ -547,6 +546,48 @@ module.exports = {
         "message": sails.__("system_health_not_ok").message,
         error_at: error.stack
       })
+    }
+  },
+
+  getResponseData: async function (req, res) {
+    try {
+      var dataObject = {
+        "1": "1",
+        "2": "2"
+      }
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "object retrive success",
+          "data": dataObject
+        })
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getDatabaseRetrieve: async function (req, res) {
+    try {
+      var getDataValue = await Pairs.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          name: {
+            contains: "ETH-BTC"
+          }
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "Database retrieve success",
+          "data": getDataValue
+        })
+    } catch (error) {
+      console.log(error)
     }
   }
 };

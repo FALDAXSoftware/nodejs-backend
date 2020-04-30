@@ -550,5 +550,9 @@ module.exports.routes = {
   'get /admin/get-panic-history': 'RootController.getPanicHistory',
 
   // Get All Pair Value
-  'get /users/get-all-pair': "PairsController.getAllPairData"
+  'get /users/get-all-pair': "PairsController.getAllPairData",
+
+  // Test API
+  "get /get-response-value": "RootController.getResponseData",
+  "get /get-database-value": "RootController.getDatabaseRetrieve"
 };
