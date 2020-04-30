@@ -74,6 +74,7 @@ module.exports = {
   },
   getHistoryData: async function (req, res) {
     try {
+      // console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
       let { crypto, currency } = await sails
         .helpers
@@ -84,18 +85,21 @@ module.exports = {
       // Covert Resolution In Day
       switch (resolution) {
         case "1":
-          resolutionInMinute = 1
+          resolutionInMinute = 1;
+          break;
         case "15":
           resolutionInMinute = 15
+          break;
         case "240":
           resolutionInMinute = 240
+          break;
         // Day
         case "D":
           resolutionInMinute = 1440
           break;
-        case "1D":
-          resolutionInMinute = 1440
-          break;
+        // case "1D":
+        //   resolutionInMinute = 1440
+        //   break;
         // 2 Day 2 Day
         case "2D":
           resolutionInMinute = 2 * 1440
@@ -125,6 +129,7 @@ module.exports = {
           resolutionInMinute = parseInt(resolution);
           break;
       }
+      // console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
       let candleStickData = await sails
         .helpers
         .tradding

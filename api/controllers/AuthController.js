@@ -144,7 +144,7 @@ module.exports = {
 
         if (user_detail) {
           console.log(user_detail)
-          if( user_detail.id == sails.config.local.TRADEDESK_USER_ID && user_detail.is_tradedesk_user == true){
+          if (user_detail.id == sails.config.local.TRADEDESK_USER_ID && user_detail.is_tradedesk_user == true) {
             return res
               .status(401)
               .json({
@@ -170,6 +170,15 @@ module.exports = {
               "status": 403,
               err: sails.__('Deleted By User').message
             });
+          }
+
+          if (user_detail.is_active == false) {
+            return res
+              .status(403)
+              .json({
+                "status": 403,
+                "err": sails.__("Contact Admin").message
+              });
           }
 
           Users
@@ -445,14 +454,6 @@ module.exports = {
             });
 
           // please verify your new email address." });   } }
-          if (user_detail.is_active == false) {
-            return res
-              .status(403)
-              .json({
-                "status": 403,
-                "err": sails.__("Contact Admin").message
-              });
-          }
         } else {
           return res
             .status(401)

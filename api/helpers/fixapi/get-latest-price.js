@@ -25,24 +25,25 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    var coin = inputs.coin
-    // var which_price = {};
-    var query = {};
-    query.coin = coin;
-    if (inputs.side == "Buy") {
-      query.type = "1";
-      query.ask_price = { '>': 0 };
-    } else {
-      query.type = "0";
-      query.bid_price = { '>': 0 };
-    }
-    console.log("query", query);
-    var get_price = await PriceHistory.find({
-      where: query,
-    }).sort('id DESC').limit(1)
-    // TODO Send back the result through the success exit.
-    console.log("get_price", get_price);
-    return exits.success(get_price);
+    // var coin = inputs.coin
+    // // var which_price = {};
+    // var query = {};
+    // query.coin = coin;
+    // if (inputs.side == "Buy") {
+    //   query.type = "1";
+    //   query.ask_price = { '>': 0 };
+    // } else {
+    //   query.type = "0";
+    //   query.bid_price = { '>': 0 };
+    // }
+    // console.log("query", query);
+    // var get_price = await PriceHistory.find({
+    //   where: query,
+    // }).sort('id DESC').limit(1)
+    // // TODO Send back the result through the success exit.
+    // console.log("get_price", get_price);
+    // var get_price = {};
+    // return exits.success(get_price);
   }
 
 
