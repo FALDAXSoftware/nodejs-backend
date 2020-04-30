@@ -552,8 +552,20 @@ module.exports = {
   getResponseData: async function (req, res) {
     try {
       var dataObject = {
-        "1": "1",
-        "2": "2"
+        "id": 10,
+        "created_at": "2018-12-17T00:47:15.444Z",
+        "updated_at": "2019-06-11T10:52:21.151Z",
+        "deleted_at": null,
+        "name": "ETH-BTC",
+        "coin_code1": "2",
+        "coin_code2": "1",
+        "maker_fee": 0,
+        "taker_fee": 0.14,
+        "is_active": true,
+        "symbol": "XETHXXBT",
+        "kraken_pair": "ETH-XBT",
+        "ask_price": 0.03358,
+        "bid_price": 0.03357
       }
       return res
         .status(200)
