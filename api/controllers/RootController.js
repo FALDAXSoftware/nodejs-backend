@@ -564,5 +564,13 @@ module.exports = {
     } catch (error) {
       console.log(error)
     }
+  },
+
+  getResponseData: async function (req, res) {
+    try {
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 };
