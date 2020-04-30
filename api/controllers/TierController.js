@@ -29,11 +29,11 @@ module.exports = {
         }
       });
 
-      tierDetails = tierDetails.map( (each)=>{
-        if( each.daily_withdraw_limit == -1){
+      tierDetails = tierDetails.map((each) => {
+        if (each.daily_withdraw_limit == -1) {
           each.daily_withdraw_limit = 'Unlimited'
         }
-        if( each.monthly_withdraw_limit == -1){
+        if (each.monthly_withdraw_limit == -1) {
           each.monthly_withdraw_limit = 'Unlimited'
         }
         return each;
@@ -619,6 +619,31 @@ module.exports = {
 
       if (tierValue.length > 0) {
         data.request_id = tierValue[0].id;
+
+        if (tierValue[0].approved == "false" || tierValue[0].approved == false) {
+          console.log("INSIDE IF")
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("your application has been force rejected").message,
+              "data": {
+                "public_note": tierValue[0].public_note,
+                approved: tierValue[0].approved,
+                "request_id": tierValue[0].id
+              }
+            })
+        }
+
+        if (tierValue[0].approved == "true" || tierValue[0].approved == true) {
+          // console.log("INSIDE IF")
+          return res
+            .status(203)
+            .json({
+              "status": 203,
+              "message": sails.__("your application has been force accepted").message
+            })
+        }
 
         console.log("data.request_id", data.request_id)
 
@@ -1713,7 +1738,7 @@ module.exports = {
     try {
       var body = req.body;
       var user_id = req.user.id;
-      console.log("user_id",user_id);
+      console.log("user_id", user_id);
       var userData = await Users.findOne({
         where: {
           deleted_at: null,
@@ -1721,9 +1746,9 @@ module.exports = {
           id: user_id
         }
       })
-      if( parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1) ){
+      if (parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1)) {
         return res
-        .status(500)
+          .status(500)
           .json({
             status: 500,
             message: sails.__("Tier Upgrade not applicable").message
@@ -1745,48 +1770,48 @@ module.exports = {
       const summaryReport_Req2 = {};
       /* Check for Requirement Set 1 */
       let previousTierUpgradedOn = (userData);
-      let eligibleUpgrateAge = moment(previousTierUpgradedOn.account_verified_at).add( parseInt(requirementSetFirst.Account_Age), 'days');
+      let eligibleUpgrateAge = moment(previousTierUpgradedOn.account_verified_at).add(parseInt(requirementSetFirst.Account_Age), 'days');
 
-      let getTradeCount = await sails.helpers.tradding.trade.getUserTradeDetails( userData, true);
-      let getTotalTradeInFiat = await sails.helpers.tradding.trade.getUserTradeDetails( userData, false);
+      let getTradeCount = await sails.helpers.tradding.trade.getUserTradeDetails(userData, true);
+      let getTotalTradeInFiat = await sails.helpers.tradding.trade.getUserTradeDetails(userData, false);
       let req1_ageCheck = false;
       let req1_tradeCountCheck = false;
       let req1_tradeTotalFiatCheck = false;
-      if( today >= eligibleUpgrateAge ){ // check for age
+      if (today >= eligibleUpgrateAge) { // check for age
         req1_ageCheck = true;
       }
-      let ageRemaining = eligibleUpgrateAge.diff( today,'days' ) // Remaining Age
-      if( ageRemaining > 0 ){
+      let ageRemaining = eligibleUpgrateAge.diff(today, 'days') // Remaining Age
+      if (ageRemaining > 0) {
         summaryReport_Req1.ageRemaining = ageRemaining;
       }
 
-      if( getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions) ){
+      if (getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions)) {
         req1_tradeCountCheck = true;
       }
 
-      let tradeCountRemaining = parseInt(requirementSetFirst.Minimum_Total_Transactions)- getTradeCount;
-      if( tradeCountRemaining > 0 ){
+      let tradeCountRemaining = parseInt(requirementSetFirst.Minimum_Total_Transactions) - getTradeCount;
+      if (tradeCountRemaining > 0) {
         summaryReport_Req1.tradeCountRemaining = tradeCountRemaining;
       }
 
-      if( (getTotalTradeInFiat.length > 0 && getTotalTradeInFiat[0].total_amount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) ){
+      if ((getTotalTradeInFiat.length > 0 && getTotalTradeInFiat[0].total_amount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions)) {
         req1_tradeTotalFiatCheck = true;
       }
       let tradeTotalFiatRemaining = parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) - (getTotalTradeInFiat[0].total_amount);
-      if( tradeTotalFiatRemaining > 0 ){
+      if (tradeTotalFiatRemaining > 0) {
         summaryReport_Req1.tradeTotalFiatRemaining = tradeTotalFiatRemaining;
       }
 
       /* Check for Requirement Set 2 */
       let requirementSetSecond = (getTierData.requirements_two);
-      let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance( user_id );
+      let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance(user_id);
       let req2_tradeWalletCheck = false;
-      if( (getTotalWalletInFiat.length > 0 && getTotalWalletInFiat[0].total_balance_fiat) >= parseInt(requirementSetSecond.Total_Wallet_Balance) ){
+      if ((getTotalWalletInFiat.length > 0 && getTotalWalletInFiat[0].total_balance_fiat) >= parseInt(requirementSetSecond.Total_Wallet_Balance)) {
         req2_tradeWalletCheck = true;
       }
 
       let userWalletFiatRemaining = parseInt(requirementSetSecond.Total_Wallet_Balance) - (getTotalWalletInFiat[0].total_balance_fiat);
-      if( userWalletFiatRemaining > 0 ){
+      if (userWalletFiatRemaining > 0) {
         summaryReport_Req2.userWalletFiatRemaining = userWalletFiatRemaining;
       }
       summaryReport["requirement_1"] = summaryReport_Req1;
@@ -1794,20 +1819,20 @@ module.exports = {
       console.log(summaryReport);
       /* If any requirement fulfills, then allow to upgrade */
 
-      if( (req1_ageCheck == true && req1_tradeCountCheck == true && req1_tradeTotalFiatCheck == true) || req2_tradeWalletCheck == true  ){
+      if ((req1_ageCheck == true && req1_tradeCountCheck == true && req1_tradeTotalFiatCheck == true) || req2_tradeWalletCheck == true) {
         return res
-        .status(200)
-        .json({
-          "status": 200,
-          "message": sails.__("Tier upgrade applicable").message
-        })
-      }else{
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Tier upgrade applicable").message
+          })
+      } else {
         return res
           .status(202)
           .json({
             "status": 202,
             "message": sails.__("Need to fulfill requirements for tier").message,
-            "data":summaryReport
+            "data": summaryReport
           })
       }
 
