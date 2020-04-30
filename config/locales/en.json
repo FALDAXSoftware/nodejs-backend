@@ -3142,5 +3142,19 @@
 		"message_type": "error",
 		"message_english": "Your current status does not match with next tier requirements.",
 		"message": "Your current status does not match with next tier requirements."
+	},
+	"your application has been force rejected": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been rejected.",
+		"message": "Your application has been rejected."
+	},
+	"your application has been force accepted": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been accepted by admin",
+		"message": "Your application has been accepted by admin"
 	}
 }
