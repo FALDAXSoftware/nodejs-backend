@@ -58,15 +58,19 @@ module.exports = {
         let calculate_offer_amount = 0;
         if (req_body.original_pair == req_body.order_pair) {
           var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Buy");
-          var asset1_usd_value = asset1_value[0].ask_price;
+          // var asset1_usd_value = asset1_value[0].ask_price;
+          var asset1_usd_value = 0.0;
           var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Buy");
-          var asset2_usd_value = asset2_value[0].ask_price;
+          // var asset2_usd_value = asset2_value[0].ask_price;
+          var asset2_usd_value = 0.0;
           calculate_offer_amount = asset1_usd_value;
         } else {
           var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Sell");
-          var asset1_usd_value = asset1_value[0].bid_price;
+          // var asset1_usd_value = asset1_value[0].bid_price;
+          var asset1_usd_value = 0.0;
           var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Sell");
-          var asset2_usd_value = asset2_value[0].bid_price;
+          // var asset2_usd_value = asset2_value[0].bid_price;
+          var asset2_usd_value = 0.0;
           calculate_offer_amount = asset2_usd_value;
         }
         // Check Offercode Status
@@ -110,6 +114,7 @@ module.exports = {
           if (usd_value) { // if USD Value has entered
             var price_value = await sails.helpers.fixapi.getLatestPrice(currency + 'USD', (req_body.Side == 1 ? "Buy" : "Sell"));
             console.log("price_value", price_value);
+            price_value[0].ask_price = 0.0
             if (req_body.Side == 1) {
               price_value_usd = (1 / price_value[0].ask_price);
             }
@@ -142,7 +147,7 @@ module.exports = {
             if (!usd_value && usd_value != '') { (original_value = get_faldax_fee) }
             req_body.OrderQty = get_faldax_fee;
           }
-          console.log("get_faldax_fee before",get_faldax_fee)
+          console.log("get_faldax_fee before", get_faldax_fee)
           if (req_body.offer_code && req_body.offer_code != '') {
             dataValueOne = await offerApplyOrder(req_body, faldax_fee_value, flag);
             var faldax_feeRemainning = dataValueOne.final_faldax_fees_actual - dataValueOne.faldax_fees_offer;
@@ -167,7 +172,7 @@ module.exports = {
           }
 
           original_value = totalValue;
-          console.log("get_faldax_fee",get_faldax_fee)
+          console.log("get_faldax_fee", get_faldax_fee)
           returnData = {
             "network_fee": (get_network_fees > 0) ? (get_network_fees) : (0.0),
             "faldax_fee": (faldax_fee_value > 0) ? (faldax_fee_value) : (0.0),

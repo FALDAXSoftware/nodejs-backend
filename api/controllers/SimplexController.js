@@ -130,9 +130,9 @@ module.exports = {
         if (check_security.status != 200) {
           return res
             // .status(check_security.status)
-            .status(500)
+            .status(check_security.status)
             .json({
-              "status": 500,
+              "status": check_security.status,
               "err": check_security.message,
               error_at: check_security.message
             });
@@ -206,14 +206,14 @@ module.exports = {
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
         var call_simplex = await sails.helpers.simplex.sbBackend(data);
-        console.log("call_simplex",call_simplex);
-        let {isSourceMobile} = req.allParams();
-        if( isSourceMobile == true || isSourceMobile == 'true' ){
-          if( call_simplex.status != 200 ){
+        console.log("call_simplex", call_simplex);
+        let { isSourceMobile } = req.allParams();
+        if (isSourceMobile == true || isSourceMobile == 'true') {
+          if (call_simplex.status != 200) {
             return res.json(call_simplex);
           }
           call_simplex = call_simplex.data;
-          let queryString=sails.config.local.APP_URL+"/simplex-mobile?";
+          let queryString = sails.config.local.APP_URL + "/simplex-mobile?";
           queryString += `version=${call_simplex.version}`
           queryString += `&partner=${call_simplex.partner}`
           queryString += `&payment_flow_type=${call_simplex.payment_flow_type}`
@@ -229,8 +229,8 @@ module.exports = {
           queryString += `&digital_total_amount_amount=${call_simplex["digital_total_amount[amount]"]}`
           queryString += `&digital_total_amount_currency=${call_simplex["digital_total_amount[currency]"]}`
           queryString += `&action=${call_simplex.action}`;
-          return res.json({status:200, data:{url:queryString}});
-        }else{
+          return res.json({ status: 200, data: { url: queryString } });
+        } else {
           return res.json(call_simplex);
         }
       }
