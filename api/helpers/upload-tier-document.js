@@ -47,14 +47,42 @@ module.exports = {
                 }
             });
 
+            var appId = userKYCDetails.mtid
+
             console.log("userKYCDetails", userKYCDetails)
 
             var idm_key = await sails.helpers.getDecryptData(sails.config.local.IDM_TOKEN);
 
+            if (data.type == 1 && data.tier_step == 4) {
+                var tierDetails = await TierRequest.findOne({
+                    where: {
+                        deleted_at: null,
+                        request_id: data.request_id,
+                        type: 1,
+                        tier_step: data.tier_step
+                    }
+                })
+            }
+
+            console.log("tierDetails", tierDetails)
+
+            if (data.tier == 4 && data.type == 1 && tierDetails == undefined) {
+                var getTierDetails = await sails.helpers.getTransactionId(userData.email);
+                await KYC
+                    .update({
+                        deleted_at: null,
+                        user_id: data.user_id
+                    })
+                    .set({
+                        "mtid": getTierDetails
+                    })
+                appId = getTierDetails;
+            }
+
             var options = {}
             // console.log(data);
             console.log("data.type", data.type)
-            // if (data.type == 3) {
+            // if (data.type ==  3) {
             //     var value = {
             //         ssn: data.ssn,
             //         description: data.description
@@ -72,6 +100,8 @@ module.exports = {
             //         }
             //     };
             // } else {
+
+            console.log("data.file", data.file)
             options = {
                 'method': 'POST',
                 'url': sails.config.local.IDM_URL + '/' + userKYCDetails.mtid + "/files",
@@ -101,20 +131,11 @@ module.exports = {
                     console.log(response.body)
                     var value = JSON.parse(response.body)
                     if (value.success == "file saved") {
-                        var tierData = await TierRequest.find({
-                            where: {
-                                request_id: data.request_id,
-                                deleted_at: null,
-                                type: data.type,
-                                tier_step: parseInt(userData.account_tier) + 1
-                            }
-                        })
 
-                        console.log("tierData", tierData)
                         var dataValue = await TierRequest.create({
                             unique_key: data.description,
                             request_id: data.request_id,
-                            tier_step: parseInt(userData.account_tier) + 1,
+                            tier_step: (data.tier) ? (data.tier) : (parseInt(userData.account_tier) + 1),
                             created_at: new Date(),
                             type: data.type
                         }).fetch();

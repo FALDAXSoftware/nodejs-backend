@@ -417,6 +417,8 @@ module.exports.routes = {
   'get /admin/user-tier-request': 'TierController.getUserTierRequest',
   'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
   'post /admin/upload-user-documents': "KYCController.adminUploadUserDocument",
+  "get /admin/user-tier-unlock-check": "TierController.getUserAdminTierUnlock",
+  "get /admin/user-tier-unlock": "TierController.adminUnlockTier",
 
 
   'put /admin/batches/update': 'AdminController.updateBatch',

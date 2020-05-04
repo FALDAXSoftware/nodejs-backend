@@ -47,12 +47,16 @@ module.exports = async function (req, res, next) {
       "admin/all-pairs",
       "admin/get-tier-details",
       "admin/get-tier-data",
-      "admin/get-tier-details",
+      // "admin/get-tier-details",
       "admin/force-change-status",
-      "admin/get-tier-details-value"
+      "admin/get-tier-details-value",
+      "admin/user-tier-unlock-check"
+      // "admin/get-tier-details"
       // "admin/upgrade-user-tier"
       // "admin/get-tier-4-pdf"
     ]
+
+    console.log("urlValue", urlValue)
 
     let urlPrefix = urlArray[1];
     if (urlPrefix.toLowerCase() == "admin") {
@@ -64,14 +68,18 @@ module.exports = async function (req, res, next) {
         if (userData != undefined) {
           if (userData.deleted_at == null) {
             if (routeArray.indexOf(urlValue) > -1) {
+              console.log("INSIDE IF>>>>")
               return next();
             } else {
+              console.log("INSIDE ELSE")
               var permissionData = await Permissions.findOne({
                 where: {
                   route_name: (urlValue).trim(),
                   deleted_at: null
                 }
               })
+
+              console.log("permissionData", permissionData)
               if (permissionData != undefined) {
                 var role_permission = await AdminPermission.find({
                   where: {
