@@ -54,6 +54,8 @@ module.exports = {
       name: req.query.symbol,
       pointvalue: 1,
       pricescale: 100,
+      volume_precision: 8,
+      pricescale: 100000000,
       // session: "0930-1630",
       supported_resolutions: [
         "1",
