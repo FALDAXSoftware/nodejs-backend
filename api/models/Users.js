@@ -312,6 +312,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'account_verified_at'
+    },
+    is_institutional_account: {
+      type: 'boolean',
+      columnName: 'is_institutional_account',
+      defaultsTo: false
     }
   },
   beforeCreate: (values, next) => {

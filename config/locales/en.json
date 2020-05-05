@@ -2779,7 +2779,7 @@
 		"message": "Referral Percentage has been retrieved successfully."
 	},
 	"Trade data retrived successfully": {
-		"page": "CMS - Trade data lists",
+		"page": "CMS - Trade data lists, Front - Trade history",
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
@@ -3156,5 +3156,19 @@
 		"message_type": "error",
 		"message_english": "Your application has been accepted by admin",
 		"message": "Your application has been accepted by admin"
+	},
+	"Api key is missing": {
+		"page": "On each Authernicated routes",
+		"context": "When api key is not sent",
+		"message_type": "error",
+		"message_english": "Missing API key.",
+		"message": "Missing API key."
+	},
+	"Api key is invalid": {
+		"page": "On each Authernicated routes",
+		"context": "When api key is invalid",
+		"message_type": "error",
+		"message_english": "API key is invalid.",
+		"message": "API key is invalid."
 	}
 }

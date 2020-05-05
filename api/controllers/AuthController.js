@@ -372,6 +372,14 @@ module.exports = {
                       }
                     }
                   }
+
+                  // If institutional account then get api key
+                  if( user_detail.is_institutional_account ){
+                    let get_api_keys = await sails.helpers.getUserApiKeys( user_detail.id );
+                    if( get_api_keys ){
+                      user_detail.api_key = get_api_keys.api_key;
+                    }
+                  }
                   return res.status(200).json({
                     status: 200,
                     user: user_detail,
@@ -577,6 +585,13 @@ module.exports = {
           var token = await sails
             .helpers
             .jwtIssue(user_detail.id);
+          // If institutional account then get api key
+          if( user_detail.is_institutional_account ){
+            let get_api_keys = await sails.helpers.getUserApiKeys( user_detail.id );
+            if( get_api_keys ){
+              user_detail.api_key = get_api_keys.api_key;
+            }
+          }
           return res.json({
             status: 200,
             user: user_detail,
