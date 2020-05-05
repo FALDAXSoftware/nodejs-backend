@@ -408,12 +408,12 @@ module.exports.routes = {
   'post /users/get-user-tier-details': 'TierController.getUserTierData',
   'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
   "post /admin/get-tier-details": "TierController.getRequestTierData",
-  "get /admin/force-change-status": "TierController.userForceAccept",
+  "post /admin/force-change-status": "TierController.userForceAccept",
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
-  'get /admin/get-tier-details': 'TierController.getTierList',
+  'get /admin/get-tier-details-value': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
-  'get /admin/upgrade-user-tier': 'TierController.upgradeUserTier',
+  'post /admin/upgrade-user-tier': 'TierController.upgradeUserTier',
   'get /admin/user-tier-request': 'TierController.getUserTierRequest',
   'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
   'post /admin/upload-user-documents': "KYCController.adminUploadUserDocument",
@@ -573,5 +573,11 @@ module.exports.routes = {
 
   // Tier Static PDF
   "get /admin/get-tier-pdf": "AdminController.getTierStaticLink",
-  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf"
+  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf",
+  "get /admin/get-tier-4-pdf": "AdminController.getTier4StaticLink",
+  "post /admin/upload-tier-4-pdf": "AdminController.uploadTier4StaticPdf",
+
+  "post /users/upload-tier4-document": "TierController.uploadTier4UserDocument",
+
+  "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
 };

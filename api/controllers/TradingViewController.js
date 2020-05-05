@@ -47,13 +47,15 @@ module.exports = {
     res.json({
       description: req.query.symbol,
       // "exchange-listed": "Faldax", "exchange-traded": "Faldax",
-      has_intraday: false,
+      has_intraday: true,
       has_no_volume: false,
       minmov: 1,
       minmov2: 0,
       name: req.query.symbol,
       pointvalue: 1,
       pricescale: 100,
+      volume_precision: 8,
+      pricescale: 100000000,
       // session: "0930-1630",
       supported_resolutions: [
         "1",
@@ -74,8 +76,9 @@ module.exports = {
   },
   getHistoryData: async function (req, res) {
     try {
-      let {symbol, resolution, from, to} = req.allParams();
-      let {crypto, currency} = await sails
+      // console.log("req.allParams()", req.allParams())
+      let { symbol, resolution, from, to } = req.allParams();
+      let { crypto, currency } = await sails
         .helpers
         .utilities
         .getCurrencies(symbol);
@@ -83,42 +86,52 @@ module.exports = {
       let resolutionInMinute = 0;
       // Covert Resolution In Day
       switch (resolution) {
-          // Day
+        case "1":
+          resolutionInMinute = 1;
+          break;
+        case "15":
+          resolutionInMinute = 15
+          break;
+        case "240":
+          resolutionInMinute = 240
+          break;
+        // Day
         case "D":
           resolutionInMinute = 1440
           break;
-        case "1D":
-          resolutionInMinute = 1440
-          break;
-          // 2 Day 2 Day
+        // case "1D":
+        //   resolutionInMinute = 1440
+        //   break;
+        // 2 Day 2 Day
         case "2D":
           resolutionInMinute = 2 * 1440
           break;
-          // 3 Day
+        // 3 Day
         case "3D":
           resolutionInMinute = 3 * 1440
           break;
-          // Week
+        // Week
         case "W":
           resolutionInMinute = 7 * 1440
           break;
-          // 3 Week
+        // 3 Week
         case "3W":
           resolutionInMinute = 3 * 7 * 1440
           break;
-          // Month
+        // Month
         case "M":
           resolutionInMinute = 30 * 1440
           break;
-          // 6 Month
+        // 6 Month
         case "6M":
           resolutionInMinute = 6 * 30 * 1440
           break;
-          // Minutes -> Day
+        // Minutes -> Day
         default:
           resolutionInMinute = parseInt(resolution);
           break;
       }
+      // console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
       let candleStickData = await sails
         .helpers
         .tradding
@@ -136,7 +149,7 @@ module.exports = {
       } else {
         return res
           .status(200)
-          .json({s: "no_data"});
+          .json({ s: "no_data" });
       }
     } catch (error) {
       console.log(error);

@@ -3100,5 +3100,61 @@
 		"message_type": "success",
 		"message_english": "User Tier has been force Rejected successffully",
 		"message": "User Tier has been force Rejected successffully"
+	},
+	"Force Pending Success": {
+		"page": "Tier Details Force Pending -CMS",
+		"context": "User Tier has been added to pending successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been added to pending successffully",
+		"message": "User Tier has been added to pending successffully"
+	},
+	"Tier 4 Pdfs retrived successfully": {
+		"page": "Tier 4 PDF lists",
+		"context": "Tier 4 Pdfs retrived successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs retrieved successfully.",
+		"message": "Tier 4 Pdfs retrieved successfully."
+	},
+	"Tier 4 Pdfs updated successfully": {
+		"page": "Tier 4 PDF update",
+		"context": "Tier 4 Pdfs updated successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs updated successfully.",
+		"message": "Tier 4 Pdfs updated successfully."
+	},
+	"Tier Upgrade not applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "Tier upgrade not applicable.",
+		"message": "Tier upgrade not applicable."
+	},
+	"Tier upgrade applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "sucess",
+		"message_english": "Tier upgrade applicable.",
+		"message": "Tier upgrade applicable."
+	},
+	"Need to fulfill requirements for tier": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier, and requirement not matched",
+		"message_type": "error",
+		"message_english": "Your current status does not match with next tier requirements.",
+		"message": "Your current status does not match with next tier requirements."
+	},
+	"your application has been force rejected": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been rejected.",
+		"message": "Your application has been rejected."
+	},
+	"your application has been force accepted": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been accepted by admin",
+		"message": "Your application has been accepted by admin"
 	}
 }

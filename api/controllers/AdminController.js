@@ -3943,7 +3943,8 @@ module.exports = {
       var roleValue = await Role.findOne({
         select: [
           'name',
-          'created_at'
+          'created_at',
+          'allowed_pairs'
         ],
         where: {
           deleted_at: null,
@@ -4005,9 +4006,9 @@ module.exports = {
   **/
   updateRolePermission: async function (req, res) {
     try {
-
       var data = req.body.permissions;
       var role_id = req.body.role_id;
+      var allowed_pairs = req.body.allowed_pairs;
 
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
@@ -4053,6 +4054,17 @@ module.exports = {
             }
           }
         }
+      }
+
+      /* Update Allowed pairs in Role for TradeDesk */
+      if (allowed_pairs != "" && allowed_pairs != null) {
+        await Role
+          .update({
+            id: role_id
+          })
+          .set({
+            allowed_pairs: allowed_pairs
+          })
       }
 
       if (data.length > 0) {
@@ -4428,7 +4440,12 @@ module.exports = {
       var static_pages = await AdminSetting.find({
         where: {
           deleted_at: null,
-          type: 'static_form_tier'
+          or: [{
+            type: 'static_form_tier_3'
+          },
+          {
+            type: 'static_form_tier_4'
+          }]
         }
       })
       return res
@@ -4487,6 +4504,101 @@ module.exports = {
                 .json({
                   "status": 200,
                   "message": sails.__("Static Tier Pdfs updated successfully").message
+                })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong").message,
+                  error_at: sails.__("Something Wrong").message
+                });
+            }
+          } else {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": sails.__('Invalid data provided').message
+              });
+          }
+        })
+    } catch (error) {
+      // console.log(error);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getTier4StaticLink: async function (req, res) {
+    try {
+      var static_pages = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          type: 'static_form_tier_4'
+        }
+      })
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Tier 4 Pdfs retrived successfully").message,
+          "data": static_pages
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  uploadTier4StaticPdf: async function (req, res) {
+    try {
+      const pdfObject = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: req.body.slug
+        }
+      })
+      if (!pdfObject) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__('Invalid data provided').message
+          });
+      }
+      req
+        .file('pdf_file')
+        .upload(async function (error, uploadedFiles) {
+          if (error) {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "message": sails.__("Something Wrong").message,
+                error_at: error.stack
+              });
+          }
+          if (uploadedFiles.length > 0) {
+            console.log("pdfObject.value", pdfObject.value)
+            console.log("uploadedFiles[0].fd", uploadedFiles[0].fd)
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
+            if (uploadedFilesRes) {
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": sails.__("Tier 4 Pdfs updated successfully").message
                 })
             } else {
               return res

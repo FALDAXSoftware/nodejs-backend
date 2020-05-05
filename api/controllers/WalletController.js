@@ -2564,7 +2564,8 @@ module.exports = {
         end_date,
         t_type,
         side,
-        order_type
+        order_type,
+        coin
       } = req.allParams();
 
       console.log(req.allParams())
@@ -2844,13 +2845,22 @@ module.exports = {
           })
       } else if (wallet_type == 5) {
 
-        console.log(coin_code)
+        console.log(coin)
 
-        if (coin_code && coin_code != '' && coin_code != null) {
-          if (coin_code == "susu") {
-            filter += ` AND (trade_history.settle_currency = '${coin_code.toUpperCase()}' OR trade_history.currency = '${coin_code.toUpperCase()}')`
+        if (coin && coin != '' && coin != null) {
+          var getCoinDetails = await Coins.findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              coin_code: coin
+            }
+          });
+
+          console.log("getCoinDetails", getCoinDetails)
+          if (coin == "susu") {
+            filter += ` AND (trade_history.settle_currency = '${(getCoinDetails.coin).toUpperCase()}' OR trade_history.currency = '${(getCoinDetails.coin).toUpperCase()}')`
           } else {
-            filter += ` AND (trade_history.settle_currency = '${coin_code.toUpperCase()}' OR trade_history.currency = '${coin_code.toUpperCase()}')`
+            filter += ` AND (trade_history.settle_currency = '${(getCoinDetails.coin).toUpperCase()}' OR trade_history.currency = '${(getCoinDetails.coin).toUpperCase()}')`
           }
           queryAppended = true
         }
@@ -2860,8 +2870,8 @@ module.exports = {
           filter += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.email) LIKE '%" + data.toLowerCase() + "%')";
         }
 
-        var tradeQuery = `SELECT trade_history.*, coins.*, users.email, users.first_name, users.last_name,
-                            user1.email, user1.first_name, user1.last_name
+        var tradeQuery = `SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+                            user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name
                             FROM trade_history
                             LEFT JOIN coins 
                             ON trade_history.currency = coins.coin
@@ -2873,10 +2883,8 @@ module.exports = {
                             ON trade_history.requested_user_id = user1.id
                             WHERE trade_history.deleted_at IS NULL${filter}`
 
-        console
-
-        if (side && side != '' && side != null) {
-          tradeQuery += " AND trade_history.side = '" + side + "' "
+        if (t_type && t_type != '' && t_type != null) {
+          tradeQuery += " AND trade_history.side = '" + t_type + "' "
         }
 
         if (order_type && order_type != '' && order_type != null) {
