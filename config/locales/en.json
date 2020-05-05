@@ -3191,5 +3191,47 @@
 		"message_type": "error",
 		"message_english": "User tier has been unlocked successfully.",
 		"message": "User tier has been unlocked successfully."
+	},
+	"Tier has also been upgraded": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "User tier has already been unlocked.",
+		"message": "User tier has already been unlocked."
+	},
+	"Tier Value Success": {
+		"page": "Tier upgrade - CMS",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "User tier value has been retrieved successfully.",
+		"message": "User tier value has been retrieved successfully."
+	},
+	"User Tier Daily Limit Exceeded": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User daily limit exceeded for the transaction. Daily Limit for your tier is ",
+		"message": "User daily limit exceeded for the transaction. Daily Limit for your tier is "
+	},
+	"User Tier Monthly Limit Exceeded": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User Monthly limit exceeded for the transaction. Monthly Limit for your tier is ",
+		"message": "User Monthly limit exceeded for the transaction. Monthly Limit for your tier is "
+	},
+	"User Can do transaction": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User can do the transaction",
+		"message": "User can do the transaction"
+	},
+	"User not able to do transactions": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User is not able to do any transaction. You need to upgrade your tier to do transactions.",
+		"message": "User is not able to do any transaction. You need to upgrade your tier to do transactions."
 	}
 }

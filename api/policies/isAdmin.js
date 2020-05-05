@@ -50,10 +50,12 @@ module.exports = async function (req, res, next) {
       // "admin/get-tier-details",
       "admin/force-change-status",
       "admin/get-tier-details-value",
-      "admin/user-tier-unlock-check"
+      "admin/user-tier-unlock-check",
       // "admin/get-tier-details"
       // "admin/upgrade-user-tier"
       // "admin/get-tier-4-pdf"
+      "admin/user-tier-unlock",
+      "admin/get-user-tier-value"
     ]
 
     console.log("urlValue", urlValue)

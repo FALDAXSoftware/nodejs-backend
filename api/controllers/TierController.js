@@ -500,7 +500,7 @@ module.exports = {
         var finalStatus = tierDataFinal.user_status;
         var flag = 0;
 
-        for (var i = 0; i < 12; i++) {
+        for (var i = 0; i < 16; i++) {
           if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
             flag = parseInt(flag) + 1;
           }
@@ -508,7 +508,7 @@ module.exports = {
 
         console.log(flag)
 
-        if (flag == 12) {
+        if (flag == 16) {
           var tierDataUpdate = await TierMainRequest
             .update({
               deleted_at: null,
@@ -542,18 +542,18 @@ module.exports = {
 
         var flag1 = 0;
 
-        for (var j = 0; j < 12; j++) {
+        for (var j = 0; j < 16; j++) {
           if (finalStatus[i] == false || finalStatus[i] == "false") {
             flag = parseInt(flag1) + 1;
           }
         }
 
-        if (flag1 == 12) {
+        if (flag1 == 16) {
           var tierDataUpdate = await TierMainRequest
             .update({
               deleted_at: null,
               id: request_id,
-              tier_step: tier_step
+              tier_step: 4
             })
             .set({
               approved: false
@@ -1524,7 +1524,7 @@ module.exports = {
               updated_by: adminName,
               private_note: bodyValue.private_note,
               public_note: bodyValue.public_note
-            });
+            }).fetch();
 
 
           var userValue = await Users.findOne({
@@ -1551,7 +1551,7 @@ module.exports = {
                 id: getTierValue.user_id
               })
               .set({
-                account_tier: tierValue
+                account_tier: Update.account_tier
               })
 
             userValue.reason = bodyValue.public_note;
@@ -1792,20 +1792,71 @@ module.exports = {
         }
       })
 
-      if (tier_step == (parseInt(userData.account_tier) + 1)) {
-        var tierUpgrade = await TierMainRequest.create({
-          unlock_by_admin: true,
-          user_id: user_id,
-          created_at: new Date(),
-          tier_step: tier_step
-        }).fetch();
+      if (tier_step == (parseInt(userData.account_tier) + 1) || tier_step == 4) {
+        var getTierData = await TierMainRequest.findOne({
+          where: {
+            deleted_at: null,
+            user_id: user_id,
+            tier_step: tier_step
+          }
+        })
 
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("User Unlock Tier Success").message
-          })
+        if (getTierData == undefined) {
+          var objectValue = {};
+          if (tier_step == 2) {
+            objectValue = {
+              "1": false,
+              "2": false,
+              "3": false,
+              "4": false
+            }
+          } else if (tier_step == 3) {
+            objectValue = {
+              "1": false,
+              "2": false
+            }
+          } else if (tier_step == 4) {
+            objectValue = {
+              "1": false,
+              "2": false,
+              "3": false,
+              "4": false,
+              "5": false,
+              "6": false,
+              "7": false,
+              "8": false,
+              "9": false,
+              "10": false,
+              "11": false,
+              "12": false,
+              "13": false,
+              "14": false,
+              "15": false,
+              "16": false
+            }
+          }
+          var tierUpgrade = await TierMainRequest.create({
+            unlock_by_admin: true,
+            user_id: user_id,
+            created_at: new Date(),
+            tier_step: tier_step,
+            user_status: objectValue,
+            previous_tier: userData.account_tier
+          }).fetch();
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("User Unlock Tier Success").message
+            })
+        } else {
+          return res
+            .status(200)
+            .json({
+              "status": 500,
+              "message": sails.__("Tier has also been upgraded").message
+            })
+        }
       } else {
         return res
           .status(500)
@@ -1881,6 +1932,61 @@ module.exports = {
           })
       }
 
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getUserTierValue: async function (req, res) {
+    try {
+      var { user_id } = req.allParams();
+      var getTierValue = await TierMainRequest.find({
+        where: {
+          deleted_at: null,
+          user_id: user_id,
+          unlock_by_admin: true
+        }
+      }).sort('id DESC')
+      console.log("getTierValue", getTierValue)
+      if (getTierValue.length > 0) {
+        var data = {
+          "tier": getTierValue[0].tier_step,
+          "unlock_admin": getTierValue[0].unlock_by_admin,
+          "is_approved": getTierValue[0].approved
+        }
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Tier Value Success").message,
+            "data": data
+          })
+      } else {
+        var userData = await Users.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            id: user_id
+          }
+        })
+        var data = {
+          "teir": userData.account_tier,
+          "unlock_by_admin": false
+        }
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Tier Value Success").message,
+            "data": data
+          })
+      }
     } catch (error) {
       return res
         .status(500)

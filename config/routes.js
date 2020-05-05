@@ -419,7 +419,7 @@ module.exports.routes = {
   'post /admin/upload-user-documents': "KYCController.adminUploadUserDocument",
   "get /admin/user-tier-unlock-check": "TierController.getUserAdminTierUnlock",
   "get /admin/user-tier-unlock": "TierController.adminUnlockTier",
-
+  "get /admin/get-user-tier-value": "TierController.getUserTierValue",
 
   'put /admin/batches/update': 'AdminController.updateBatch',
   'get /admin/get-batch-value': 'AdminController.GetBatchValue',
@@ -582,4 +582,7 @@ module.exports.routes = {
   "post /users/upload-tier4-document": "TierController.uploadTier4UserDocument",
 
   "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
+
+  // Wallet Send coin Limit Checking
+  "get /users/check-transaction-limit": "WalletController.getUserAvailableLimit"
 };

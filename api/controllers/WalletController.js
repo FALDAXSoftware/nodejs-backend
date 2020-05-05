@@ -582,13 +582,6 @@ module.exports = {
                 '<=': (localTime)
               }
             });
-          // console.log("B limitAmount",limitAmount);
-          // console.log("B limitAmountMonthly",limitAmountMonthly);
-          // console.log("B walletHistoryData",walletHistoryData);
-          // console.log("B walletHistoryDataMonthly",walletHistoryDataMonthly);
-          // console.log("B limitAmount",limitAmount);
-          // console.log("B amount",amount);
-          // console.log("B limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
 
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
@@ -597,15 +590,7 @@ module.exports = {
           walletHistoryData = parseFloat(walletHistoryData);
           limitAmountMonthly = parseFloat(limitAmountMonthly);
           amount = parseFloat(amount);
-          // Limited amount is greater than the total sum of day
-          // console.log("limitAmount",limitAmount);
-          // console.log("limitAmountMonthly",limitAmountMonthly);
-          // console.log("walletHistoryData",walletHistoryData);
-          // console.log("walletHistoryDataMonthly",walletHistoryDataMonthly);
-          // console.log("limitAmount",limitAmount);
-          // console.log("amount",amount);
-          // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
-          // return res.status(500).json({status:500})
+
           if (limitAmount >= walletHistoryData && (limitAmount != null && limitAmount != undefined)) {
 
             //If total amount + amount to be send is less than limited amount
@@ -640,14 +625,6 @@ module.exports = {
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait === undefined) {
-                          console.log("warmWalletData", warmWalletData);
-                          //Check for warm wallet minimum thresold
-                          console.log("Warmwalletbalance before", warmWalletData.balance);
-                          // total_fees = 1;
-                          console.log("warmWalletData.balance >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold)
-                          console.log("(warmWalletData.balance - total_fees) >= 0", (warmWalletData.balance - total_fees) >= 0)
-                          console.log("(warmWalletData.balance - total_fees) >= coin.min_thresold", (warmWalletData.balance - total_fees) >= coin.min_thresold)
-                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * 1e8))
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
@@ -3269,23 +3246,26 @@ module.exports = {
           })
       }
     } catch (error) {
-      if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(req.body.coin.toLowerCase(), (req.body.amount));
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "data": parseFloat(get_network_fees).toFixed(sails.config.local.TOTAL_PRECISION),
-            error_at: error.stack
-          })
-      }
+      console.log("error", error)
+      // console.lo
+      // if (error.name == "ImplementationError") {
+      get_network_fees = await sails.helpers.feesCalculation(req.body.coin.toLowerCase(), (req.body.amount));
+      console.log("get_network_fees", get_network_fees)
       return res
-        .status(500)
+        .status(200)
         .json({
-          status: 500,
-          "err": sails.__("Something Wrong").message,
+          "status": 200,
+          "data": parseFloat(get_network_fees).toFixed(sails.config.local.TOTAL_PRECISION),
           error_at: error.stack
-        });
+        })
+      // }
+      // return res
+      //   .status(500)
+      //   .json({
+      //     status: 500,
+      //     "err": sails.__("Something Wrong").message,
+      //     error_at: error.stack
+      //   });
     }
   },
   /**
@@ -3747,26 +3727,26 @@ module.exports = {
           })
       }
     } catch (error) {
-      console.log("error", error);
-      if (error.name == "ImplementationError") {
-        get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
-        var availableBalance = remainningAmount - (2 * get_network_fees)
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("Available Balance").message,
-            "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
-          })
-      }
-
+      // console.log("error", error);
+      // if (error.name == "ImplementationError") {
+      get_network_fees = await sails.helpers.feesCalculation(coinData.coin_code.toLowerCase(), remainningAmount);
+      var availableBalance = remainningAmount - (2 * get_network_fees)
       return res
-        .status(500)
+        .status(200)
         .json({
-          status: 500,
-          "error": sails.__("Something Wrong").message,
-          error_at: error.stack
-        });
+          "status": 200,
+          "message": sails.__("Available Balance").message,
+          "data": (availableBalance > 0) ? (parseFloat(availableBalance).toFixed(8)) : (0.0)
+        })
+      // }
+
+      // return res
+      //   .status(500)
+      //   .json({
+      //     status: 500,
+      //     "error": sails.__("Something Wrong").message,
+      //     error_at: error.stack
+      //   });
     }
   },
 
@@ -4199,4 +4179,125 @@ module.exports = {
         });
     }
   },
+
+  /**
+   * Get User Avaiable Limits
+   */
+  getUserAvailableLimit: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var now = moment().utc().format();
+      var yesterday = moment()
+        .startOf('day')
+        .utc()
+        .format();
+
+      var previousMonth = moment()
+        .startOf('month')
+        .utc()
+        .format();
+
+      // Get User and tier information
+      var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
+                      FROM users
+                      LEFT JOIN tiers
+                      ON (users.account_tier) = tiers.tier_step
+                      WHERE users.deleted_at IS NULL AND users.is_active = 'true'
+                      AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
+      var userTierSql = await sails.sendNativeQuery(tierSql);
+      userTierSql = userTierSql.rows;
+
+      if ((userTierSql[0].monthly_withdraw_limit == null) || userTierSql[0].daily_withdraw_limit == null) {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("User not able to do transactions").message
+          })
+      }
+      // Daily Limit Checking
+      var getUserDailyHistory = `SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount,
+                                  SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as request_amount
+                                  FROM coins
+                                  LEFT JOIN withdraw_request
+                                  ON withdraw_request.coin_id = coins.id
+                                  LEFT JOIN wallet_history
+                                  ON wallet_history.coin_id = coins.id
+                                  LEFT JOIN currency_conversion
+                                  ON currency_conversion.symbol = coins.coin
+                                  WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                  AND wallet_history.deleted_at IS NULL AND withdraw_request.is_approve IS NULL
+                                  AND wallet_history.transaction_type = 'send' AND withdraw_request.deleted_at IS NULL
+                                  AND (wallet_history.user_id = ${user_id} OR withdraw_request.user_id = ${user_id})
+                                  AND ((wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}')
+                                  OR (withdraw_request.created_at >= '${yesterday}' AND withdraw_request.created_at <= '${now}'))`
+      var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
+      userDailyHistory = userDailyHistory.rows
+      console.log("userDailyHistory", userDailyHistory)
+
+      // Monthly Limit Checking
+      var getUserMonthlyHistory = `SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount,
+                                    SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as request_amount
+                                    FROM coins
+                                    LEFT JOIN withdraw_request
+                                    ON withdraw_request.coin_id = coins.id
+                                    LEFT JOIN wallet_history
+                                    ON wallet_history.coin_id = coins.id
+                                    LEFT JOIN currency_conversion
+                                    ON currency_conversion.symbol = coins.coin
+                                    WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                    AND wallet_history.deleted_at IS NULL AND withdraw_request.is_approve IS NULL
+                                    AND wallet_history.transaction_type = 'send' AND withdraw_request.deleted_at IS NULL
+                                    AND (wallet_history.user_id = ${user_id} OR withdraw_request.user_id = ${user_id})
+                                    AND ((wallet_history.created_at >= '${previousMonth}' AND wallet_history.created_at <= '${now}')
+                                    OR (withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'))`
+      var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
+      userMonthlyHistory = userMonthlyHistory.rows;
+      console.log("userMonthlyHistory", userMonthlyHistory)
+
+      var dailyTotalVolume = 0.0;
+      var monthlyTotalVolume = 0.0;
+      dailyTotalVolume = parseFloat(userDailyHistory[0].history_amount) + parseFloat(userDailyHistory[0].request_amount);
+      monthlyTotalVolume = parseFloat(userMonthlyHistory[0].history_amount) + parseFloat(userMonthlyHistory[0].request_amount);
+      console.log("userTierSql[0]", dailyTotalVolume)
+      console.log("monthlyTotalVolume", monthlyTotalVolume)
+      if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || Number.isNaN(dailyTotalVolume) || userTierSql.account_tier == 3 || userTierSql.account_tier == 4) {
+        if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || Number.isNaN(monthlyTotalVolume) || userTierSql.account_tier == 3 || userTierSql.account_tier == 4) {
+          var data = {
+            "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) + " USD" : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)) + " USD",
+            "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) + " USD" : (parseFloat(userTierSql[0].monthly_withdraw_limit - monthlyTotalVolume)) + " USD"
+          }
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("User Can do transaction").message,
+              "data": data
+            })
+        } else {
+          return res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit + " USD"
+            })
+        }
+      } else {
+        return res
+          .status(201)
+          .json({
+            "status": 201,
+            "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit + " USD"
+          })
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  }
 };
