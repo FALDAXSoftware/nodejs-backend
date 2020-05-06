@@ -645,11 +645,19 @@ module.exports = {
         }
       });
 
-      var valueObject = {
-        1: false,
-        2: false,
-        3: false,
-        4: (userData.is_twofactor == true) ? true : false
+      var valueObject
+      if ((parseInt(userData.account_tier) + 1) == 2) {
+        valueObject = {
+          1: false,
+          2: false,
+          3: false,
+          4: (userData.is_twofactor == true) ? true : false
+        }
+      } else {
+        valueObject = {
+          1: false,
+          2: false
+        }
       }
       var idValue = 0;
       if (tirDetails == undefined) {
@@ -657,10 +665,21 @@ module.exports = {
           user_id: req.user.id,
           tier_step: (parseInt(userData.account_tier) + 1),
           created_at: new Date(),
-          user_status: valueObject
+          user_status: valueObject,
+          previous_tier: userData.account_tier
         }).fetch();
         idValue = addValue.id
       } else {
+        var updateValue = await TierMainRequest
+          .update({
+            deleted_at: null,
+            tier_step: (parseInt(userData.account_tier) + 1),
+            user_id: req.user.id
+          })
+          .set({
+            user_status: valueObject,
+            previous_tier: userData.account_tier
+          })
         idValue = tirDetails.id
       }
 
@@ -818,7 +837,7 @@ module.exports = {
                   console.log("dataValue", dataValue)
                 }
               }
-              return res.json(dataValue)
+              return res.status(dataValue.status).json(dataValue);
 
             } catch (error) {
               console.log(error);
@@ -851,9 +870,10 @@ module.exports = {
                     data.user_id = user_id;
 
                     dataValue = await sails.helpers.uploadTierDocument(data)
+                    console.log("dataValue", dataValue)
                   }
                 }
-                return res.json(dataValue)
+                return res.status(dataValue.status).json(dataValue);
 
               } catch (error) {
                 console.log(error);
@@ -893,8 +913,8 @@ module.exports = {
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
-
-                return res.json(dataValue);
+                console.log("dataValue", dataValue)
+                return res.status(dataValue.status).json(dataValue);
 
               } catch (error) {
                 console.log(error);
@@ -935,7 +955,7 @@ module.exports = {
                 console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
 
-                return res.json(dataValue1)
+                return res.status(dataValue.status).json(dataValue);
               } catch (error1) {
                 console.log(error1);
               }

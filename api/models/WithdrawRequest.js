@@ -25,6 +25,10 @@ module.exports = {
       columnName: 'user_id',
       required: true
     },
+    fiat_values: {
+      type: "json",
+      columnName: "fiat_values"
+    },
     is_approve: {
       type: 'boolean',
       columnName: 'is_approve',

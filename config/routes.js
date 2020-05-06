@@ -408,6 +408,8 @@ module.exports.routes = {
   'post /users/get-user-tier-details': 'TierController.getUserTierData',
   'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
   "post /admin/get-tier-details": "TierController.getRequestTierData",
+  "get /admin/get-all-tier-details": "TierController.getAllTierDetails",
+  "get /admin/get-tier-id-value": "TierController.getTierIdValue",
   "post /admin/force-change-status": "TierController.userForceAccept",
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
   'get /admin/get-tier-details-value': 'TierController.getTierList',
@@ -417,7 +419,9 @@ module.exports.routes = {
   'get /admin/user-tier-request': 'TierController.getUserTierRequest',
   'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
   'post /admin/upload-user-documents': "KYCController.adminUploadUserDocument",
-
+  "get /admin/user-tier-unlock-check": "TierController.getUserAdminTierUnlock",
+  "get /admin/user-tier-unlock": "TierController.adminUnlockTier",
+  "get /admin/get-user-tier-value": "TierController.getUserTierValue",
 
   'put /admin/batches/update': 'AdminController.updateBatch',
   'get /admin/get-batch-value': 'AdminController.GetBatchValue',
@@ -580,4 +584,7 @@ module.exports.routes = {
   "post /users/upload-tier4-document": "TierController.uploadTier4UserDocument",
 
   "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
+
+  // Wallet Send coin Limit Checking
+  "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit"
 };
