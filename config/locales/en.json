@@ -3233,5 +3233,12 @@
 		"message_type": "error",
 		"message_english": "User is not able to do any transaction. You need to upgrade your tier to do transactions.",
 		"message": "User is not able to do any transaction. You need to upgrade your tier to do transactions."
+	},
+	"All Tier Data retrieve success": {
+		"page": "Tier - CMS",
+		"context": "Get all tier data",
+		"message_type": "error",
+		"message_english": "All tier data has been retrieved successfully.",
+		"message": "All tier data has been retrieved successfully."
 	}
 }

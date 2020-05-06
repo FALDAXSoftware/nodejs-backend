@@ -841,7 +841,7 @@ module.exports = {
             tier_step: data.tier_step,
             type: typeObject[i]
           }
-        }).sort('id DESC');
+        }).sort('created_at DESC');
 
         if (getRequestData.length > 1) {
           for (var j = 0; j < getRequestData.length; j++) {
@@ -950,43 +950,6 @@ module.exports = {
     }
   },
 
-  getTierList: async function (req, res) {
-    try {
-      var tierDetails = await Tiers.find({
-        where: {
-          deleted_at: null
-        }
-      }).sort('id DESC');
-
-      if (tierDetails) {
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("tier details retrieve success").message,
-            "data": tierDetails
-          })
-      } else {
-        return res
-          .status(201)
-          .json({
-            "status": 201,
-            "message": sails.__("no tier details retrieve success").message
-          })
-      }
-    } catch (error) {
-      // console.log(error);
-      // await logger.error(error.message)
-      return res
-        .status(500)
-        .json({
-          status: 500,
-          "err": sails.__("Something Wrong").message,
-          error_at: error.stack
-        });
-    }
-  },
-
   updateTierList: async function (req, res) {
     try {
       var data = req.body;
@@ -1007,7 +970,8 @@ module.exports = {
             minimum_activity_thresold: data.minimum_activity_thresold,
             daily_withdraw_limit: data.daily_withdraw_limit,
             monthly_withdraw_limit: data.monthly_withdraw_limit,
-            requirements: data.requirements
+            requirements: data.requirements,
+            requirements_two: data.requirements_two
           });
       }
 
@@ -1309,7 +1273,7 @@ module.exports = {
                   console.log(dataValue)
                 }
                 console.log(dataValue)
-                return res.json(dataValue)
+                return res.status(dataValue.status).json(dataValue);
               }
 
             } catch (error) {
@@ -1346,7 +1310,7 @@ module.exports = {
 
                     var dataValue = await sails.helpers.uploadTierDocument(data)
                   }
-                  return res.json(dataValue)
+                  return res.status(dataValue.status).json(dataValue);
                 }
 
               } catch (error) {
@@ -1381,7 +1345,7 @@ module.exports = {
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
-                return res.json(dataValue)
+                return res.status(dataValue.status).json(dataValue);
               } catch (error) {
                 console.log(error);
               }
@@ -1421,7 +1385,7 @@ module.exports = {
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
-                return res.json(dataValue)
+                return res.status(dataValue.status).json(dataValue);
               } catch (error) {
                 console.log(error);
               }
@@ -1684,7 +1648,7 @@ module.exports = {
 
             dataValue = await sails.helpers.uploadTierDocument(data)
             console.log(dataValue)
-            return res.json(dataValue)
+            return res.status(dataValue.status).json(dataValue);
 
           } catch (error) {
             console.log(error);
@@ -1704,6 +1668,7 @@ module.exports = {
   checkTierUpgrade: async function (req, res) {
     try {
       var body = req.body;
+      console.log(body);
       var user_id = req.user.id;
       console.log("user_id", user_id);
 
@@ -1725,7 +1690,9 @@ module.exports = {
         }
       })
 
-      if (tierDetailsValue && tierDetailsValue.length > 0) {
+      console.log("tierDetailsValue", tierDetailsValue)
+
+      if (tierDetailsValue != undefined) {
         return res
           .status(200)
           .json({
@@ -1987,6 +1954,32 @@ module.exports = {
             "data": data
           })
       }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getAllTierDetails: async function (req, res) {
+    try {
+      var allTierValue = await Tiers.find({
+        where: {
+          deleted_at: null
+        }
+      }).sort('tier_step ASC')
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("All Tier Data retrieve success").message,
+          "data": allTierValue
+        })
     } catch (error) {
       return res
         .status(500)

@@ -47,7 +47,7 @@ module.exports = {
                 }
             });
 
-            var appId = userKYCDetails.mtid
+            var appId = (userKYCDetails != undefined) ? (userKYCDetails.mtid) : (0)
 
             console.log("userKYCDetails", userKYCDetails)
 
@@ -68,15 +68,33 @@ module.exports = {
 
             if (data.tier == 4 && data.type == 1 && tierDetails == undefined) {
                 var getTierDetails = await sails.helpers.getTransactionId(userData.email);
-                await KYC
-                    .update({
+                var kycdata = await KYC.findOne({
+                    where: {
                         deleted_at: null,
                         user_id: data.user_id
-                    })
-                    .set({
-                        "mtid": getTierDetails
-                    })
-                appId = getTierDetails;
+                    }
+                });
+
+                console.log("kycdata", kycdata)
+
+                if (kycdata != undefined) {
+                    await KYC
+                        .update({
+                            deleted_at: null,
+                            user_id: data.user_id
+                        })
+                        .set({
+                            "mtid": getTierDetails
+                        })
+                    appId = getTierDetails;
+                } else {
+                    var dataValue = await KYC.create({
+                        user_id: data.user_id,
+                        "mtid": getTierDetails,
+                        created_at: new Date()
+                    }).fetch();
+                    appId = getTierDetails;
+                }
             }
 
             var options = {}
@@ -104,13 +122,13 @@ module.exports = {
             console.log("data.file", data.file)
             options = {
                 'method': 'POST',
-                'url': sails.config.local.IDM_URL + '/' + userKYCDetails.mtid + "/files",
+                'url': sails.config.local.IDM_URL + '/' + appId + "/files",
                 'headers': {
                     'Authorization': 'Basic ' + idm_key,
                     'Content-Type': 'multipart/form-data;'
                 },
                 formData: {
-                    'appId': userKYCDetails.mtid,
+                    'appId': appId,
                     'description': data.description,
                     'file': {
                         'value': fs.createReadStream(data.file.fd),
@@ -125,32 +143,46 @@ module.exports = {
 
             console.log("options", options)
 
-            var responseValue = new Promise(async (resolve, reject) => {
-                await request(options, async function (error, response) {
+            var responseValue = await new Promise(async (resolve, reject) => {
+                request(options, async function (error, response) {
                     if (error) throw new Error(error);
                     console.log(response.body)
-                    var value = JSON.parse(response.body)
-                    if (value.success == "file saved") {
+                    // console.log("error", response)
+                    // console.log("status", response.statusCode)
+                    // console.log("console.log(response.body)", JSON.parse(response.body))
 
-                        var dataValue = await TierRequest.create({
-                            unique_key: data.description,
-                            request_id: data.request_id,
-                            tier_step: (data.tier) ? (data.tier) : (parseInt(userData.account_tier) + 1),
-                            created_at: new Date(),
-                            type: data.type
-                        }).fetch();
-                        console.log(dataValue)
-                        // }
+                    if (response.statusCode == 500) {
+                        console.log("INSIDE IF")
                         var object = {
-                            "status": 200,
-                            "data": "Your file has been uploaded successfully."
+                            "status": 500,
+                            "error": "Please reupload your document"
                         }
                         console.log("object", object)
                         resolve(object)
+                    } else {
+                        var value = JSON.parse(response.body)
+                        if (value.success == "file saved") {
+
+                            var dataValue = await TierRequest.create({
+                                unique_key: data.description,
+                                request_id: data.request_id,
+                                tier_step: (data.tier) ? (data.tier) : (parseInt(userData.account_tier) + 1),
+                                created_at: new Date(),
+                                type: data.type
+                            }).fetch();
+                            console.log(dataValue)
+                            // }
+                            var object = {
+                                "status": 200,
+                                "data": "Your file has been uploaded successfully."
+                            }
+                            console.log("object", object)
+                            resolve(object)
+                        }
                     }
                 });
             })
-
+            console.log("responseValue", responseValue)
             return exits.success(responseValue)
 
         } catch (error) {

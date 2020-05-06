@@ -12,9 +12,12 @@ module.exports = async function (req, res, next) {
   try {
     // TODO
     let urlValue = req.url.trim();
+    console.log("urlValue", urlValue)
     let urlArray = req.route.path.split("/");
+    console.log("urlArray", urlArray)
     let urlSplit = req.route.path.split(":")
     urlValue = urlSplit[0];
+    console.log("urlValue", urlValue)
     urlSplit = urlValue.split("?");
     urlValue = urlSplit[0];
     urlValue = urlValue.replace(/^\/|\/$/g, '')
@@ -55,7 +58,8 @@ module.exports = async function (req, res, next) {
       // "admin/upgrade-user-tier"
       // "admin/get-tier-4-pdf"
       "admin/user-tier-unlock",
-      "admin/get-user-tier-value"
+      "admin/get-user-tier-value",
+      "admin/get-all-tier-details"
     ]
 
     console.log("urlValue", urlValue)

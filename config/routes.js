@@ -408,6 +408,8 @@ module.exports.routes = {
   'post /users/get-user-tier-details': 'TierController.getUserTierData',
   'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
   "post /admin/get-tier-details": "TierController.getRequestTierData",
+  "get /admin/get-all-tier-details": "TierController.getAllTierDetails",
+  "get /admin/get-tier-id-value": "TierController.getTierIdValue",
   "post /admin/force-change-status": "TierController.userForceAccept",
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
   'get /admin/get-tier-details-value': 'TierController.getTierList',
@@ -584,5 +586,5 @@ module.exports.routes = {
   "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
 
   // Wallet Send coin Limit Checking
-  "get /users/check-transaction-limit": "WalletController.getUserAvailableLimit"
+  "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit"
 };

@@ -72,32 +72,34 @@ module.exports = {
             req1_ageCheck = true;
         }
         let ageRemaining = eligibleUpgrateAge.diff(today, 'days') // Remaining Age
-        if (ageRemaining > 0) {
-            summaryReport_Req1.ageRemaining = ageRemaining;
-        } else {
-            summaryReport_Req1.ageRemaining = Math.abs(ageRemaining)
-        }
+        ageRemaining = today.diff(moment(previousTierUpgradedOn.account_verified_at), 'days')
+        console.log("ageRemaining", ageRemaining)
+        // if (ageRemaining > 0) {
+        summaryReport_Req1.ageRemaining = ageRemaining;
+        // } else {
+        //     summaryReport_Req1.ageRemaining = Math.abs(ageRemaining)
+        // }
 
         if (getTradeCount >= parseInt(requirementSetFirst.Minimum_Total_Transactions)) {
             req1_tradeCountCheck = true;
         }
 
         let tradeCountRemaining = parseInt(requirementSetFirst.Minimum_Total_Transactions) - getTradeCount;
-        if (tradeCountRemaining > 0) {
-            summaryReport_Req1.tradeCountRemaining = tradeCountRemaining;
-        } else {
-            summaryReport_Req1.tradeCountRemaining = getTradeCount
-        }
+        // if (tradeCountRemaining > 0) {
+        summaryReport_Req1.tradeCountRemaining = getTradeCount;
+        // } else {
+        //     summaryReport_Req1.tradeCountRemaining = getTradeCount
+        // }
 
         if ((getTotalTradeInFiat.length > 0 && getTotalTradeInFiat[0].total_amount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions)) {
             req1_tradeTotalFiatCheck = true;
         }
         let tradeTotalFiatRemaining = parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) - (getTotalTradeInFiat[0].total_amount);
-        if (tradeTotalFiatRemaining > 0) {
-            summaryReport_Req1.tradeTotalFiatRemaining = tradeTotalFiatRemaining;
-        } else {
-            summaryReport_Req1.tradeTotalFiatRemaining = getTotalTradeInFiat[0].total_amount;
-        }
+        // if (tradeTotalFiatRemaining > 0) {
+        summaryReport_Req1.tradeTotalFiatRemaining = getTotalTradeInFiat[0].total_amount;
+        // } else {
+        //     summaryReport_Req1.tradeTotalFiatRemaining = getTotalTradeInFiat[0].total_amount;
+        // }
 
         let requirementSetSecond = (getTierData.requirements_two);
         let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance(user_id);
@@ -107,11 +109,11 @@ module.exports = {
         }
 
         let userWalletFiatRemaining = parseInt(requirementSetSecond.Total_Wallet_Balance) - (getTotalWalletInFiat[0].total_balance_fiat);
-        if (userWalletFiatRemaining > 0) {
-            summaryReport_Req2.userWalletFiatRemaining = userWalletFiatRemaining;
-        } else {
-            summaryReport_Req2.userWalletFiatRemaining = getTotalWalletInFiat[0].total_balance_fiat
-        }
+        // if (userWalletFiatRemaining > 0) {
+        summaryReport_Req2.userWalletFiatRemaining = getTotalWalletInFiat[0].total_balance_fiat;
+        // } else {
+        //     summaryReport_Req2.userWalletFiatRemaining = getTotalWalletInFiat[0].total_balance_fiat
+        // }
 
         summaryReport["requirement_1"] = summaryReport_Req1;
         summaryReport["requirement_2"] = summaryReport_Req2;

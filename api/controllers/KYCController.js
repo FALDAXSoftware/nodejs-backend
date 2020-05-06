@@ -837,7 +837,7 @@ module.exports = {
                   console.log("dataValue", dataValue)
                 }
               }
-              return res.json(dataValue)
+              return res.status(dataValue.status).json(dataValue);
 
             } catch (error) {
               console.log(error);
@@ -870,9 +870,10 @@ module.exports = {
                     data.user_id = user_id;
 
                     dataValue = await sails.helpers.uploadTierDocument(data)
+                    console.log("dataValue", dataValue)
                   }
                 }
-                return res.json(dataValue)
+                return res.status(dataValue.status).json(dataValue);
 
               } catch (error) {
                 console.log(error);
@@ -912,8 +913,8 @@ module.exports = {
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
-
-                return res.json(dataValue);
+                console.log("dataValue", dataValue)
+                return res.status(dataValue.status).json(dataValue);
 
               } catch (error) {
                 console.log(error);
@@ -954,7 +955,7 @@ module.exports = {
                 console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
 
-                return res.json(dataValue1)
+                return res.status(dataValue.status).json(dataValue);
               } catch (error1) {
                 console.log(error1);
               }
