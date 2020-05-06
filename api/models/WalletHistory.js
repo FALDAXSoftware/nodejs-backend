@@ -24,6 +24,10 @@ module.exports = {
       type: "string",
       columnName: "destination_address"
     },
+    fiat_values: {
+      type: "json",
+      columnName: "fiat_values"
+    },
     is_admin: {
       type: 'boolean',
       columnName: 'is_admin',

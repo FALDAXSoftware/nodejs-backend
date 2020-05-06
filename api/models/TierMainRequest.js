@@ -21,6 +21,15 @@ module.exports = {
             columnName: 'approved',
             allowNull: true
         },
+        unlock_by_admin: {
+            type: 'boolean',
+            columnName: 'unlock_by_admin',
+            allowNull: true
+        },
+        previous_tier: {
+            type: 'number',
+            columnName: 'previous_tier'
+        },
         public_note: {
             type: "string",
             columnName: "public_note"

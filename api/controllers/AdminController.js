@@ -113,8 +113,6 @@ module.exports = {
 
             admin_details.roles = role;
 
-            var roleArray = [];
-
             var roleQuery = `SELECT  r.module_name, r.main_module
                                 FROM public.admin_permissions as a
                                 INNER JOIN role_permissions as r
