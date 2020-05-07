@@ -45,6 +45,21 @@ module.exports = {
       } else {
         for (var i = 0; i < tierDetails.length; i++) {
           if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
+            if ((parseInt(userData.account_tier) + 1) == 1) {
+              var userKYCDetails = await KYC.findOne({
+                where: {
+                  deleted_at: null,
+                  user_id: user_id
+                }
+              });
+
+              if (userKYCDetails != undefined) {
+                var object = {
+                  approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
+                }
+                tierDetails[i].account_details = object;
+              }
+            }
             tierDetails[i].is_active = true;
             var accountTierDetails = await TierMainRequest.findOne({
               where: {
@@ -90,6 +105,7 @@ module.exports = {
           tierDetails[tierDetails.length - 1].account_details = object
           tierDetails[tierDetails.length - 1].is_active = true;
         }
+
       }
 
       if (tierDetails) {
