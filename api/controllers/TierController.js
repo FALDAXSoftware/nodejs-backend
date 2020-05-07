@@ -72,13 +72,25 @@ module.exports = {
             }
           }
         }
-        if ((parseInt(userData.account_tier) + 1) != 4)
+        if ((parseInt(userData.account_tier) + 1) != 4) {
+          var tierDetailsValue = await TierMainRequest.findOne({
+            where: {
+              user_id: user_id,
+              tier_step: 4,
+              deleted_at: null
+            }
+          })
+          if (tierDetailsValue != undefined) {
+            var object = {
+              request_id: tierDetailsValue.id,
+              user_status: tierDetailsValue.user_status,
+              approved: tierDetailsValue.approved
+            }
+          }
+          tierDetails[tierDetails.length - 1].account_details = object
           tierDetails[tierDetails.length - 1].is_active = true;
+        }
       }
-
-
-      // console.log("tierDetails", tierDetails[tierDetails.length - 1])
-
 
       if (tierDetails) {
         return res
