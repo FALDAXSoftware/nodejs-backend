@@ -1294,7 +1294,7 @@ module.exports = {
 
         return res.json({
           "status": 200,
-          "message": sails.__("Order Success").message,
+          "message": sails.__("Trade data retrived successfully").message,
           "data": user_history_data
         });
       } else if (data.trade_type == 2) { // Simplex
@@ -1310,7 +1310,7 @@ module.exports = {
       }
       return res.json({
         "status": 200,
-        "message": sails.__("Order Success").message,
+        "message": sails.__("Trade data retrived successfully").message,
         "data": user_history_data
       });
     } catch (error) {
