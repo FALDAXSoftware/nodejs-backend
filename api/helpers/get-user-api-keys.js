@@ -28,11 +28,12 @@ module.exports = {
         user_id: user_id
       }
     })
-    console.log("get_data",get_data)
-    if( get_data ){
-        return exits.success(get_data)
-    }else{
-        return exits.error(0);
+    console.log("get_data", get_data)
+    if (get_data != undefined) {
+      return exits.success(get_data)
+    } else {
+      console.log("INSIDE ELSE")
+      return exits.success(0);
     }
   }
 };
