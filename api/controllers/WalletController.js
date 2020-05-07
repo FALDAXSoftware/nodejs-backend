@@ -614,10 +614,10 @@ module.exports = {
 
           if ((userTierSql[0].monthly_withdraw_limit == null) || userTierSql[0].daily_withdraw_limit == null) {
             return res
-              .status(201)
+              .status(500)
               .json({
-                "status": 201,
-                "message": sails.__("User not able to do transactions").message
+                "status": 500,
+                "err": sails.__("User not able to do transactions").message
               })
           }
 
