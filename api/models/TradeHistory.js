@@ -184,6 +184,14 @@ module.exports = {
   },
   beforeCreate: function (values, next) {
     values.created_at = new Date();
+    var result = '';
+    let length = 32;
+    let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    var current_date = new Date();
+    current_date = current_date.getTime();
+    values.transaction_id = ("tx_"+current_date+result).toLocaleLowerCase();
+    console.log("values",values);
     next();
   },
 
