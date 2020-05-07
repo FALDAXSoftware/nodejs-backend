@@ -72,7 +72,7 @@ module.exports = {
               is_new_email_verified: true,
               email_verify_token: null,
               hubspot_id: hubspotcontact,
-              account_verified_at:new Date()
+              account_verified_at: new Date()
             });
           await KYC
             .update({
@@ -339,7 +339,7 @@ module.exports = {
                   user: user_detail.id,
                   ip: ip
                 });
-                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
+                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account) {
                   // if (req.body.device_token) {
                   //   var today = moment().utc().format();
                   //   var yesterday = moment(user_detail.device_token_expiration).format();
@@ -374,9 +374,9 @@ module.exports = {
                   }
 
                   // If institutional account then get api key
-                  if( user_detail.is_institutional_account ){
-                    let get_api_keys = await sails.helpers.getUserApiKeys( user_detail.id );
-                    if( get_api_keys ){
+                  if (user_detail.is_institutional_account) {
+                    let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
+                    if (get_api_keys) {
                       user_detail.api_key = get_api_keys.api_key;
                     }
                   }
@@ -586,9 +586,9 @@ module.exports = {
             .helpers
             .jwtIssue(user_detail.id);
           // If institutional account then get api key
-          if( user_detail.is_institutional_account ){
-            let get_api_keys = await sails.helpers.getUserApiKeys( user_detail.id );
-            if( get_api_keys ){
+          if (user_detail.is_institutional_account) {
+            let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
+            if (get_api_keys) {
               user_detail.api_key = get_api_keys.api_key;
             }
           }
