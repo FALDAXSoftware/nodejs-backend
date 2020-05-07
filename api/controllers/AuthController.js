@@ -376,7 +376,8 @@ module.exports = {
                   // If institutional account then get api key
                   if (user_detail.is_institutional_account) {
                     let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
-                    if (get_api_keys) {
+                    console.log("get_data", get_api_keys)
+                    if (get_api_keys != 0) {
                       user_detail.api_key = get_api_keys.api_key;
                     }
                   }
