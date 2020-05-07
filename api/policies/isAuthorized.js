@@ -205,6 +205,28 @@ module.exports = async function (req, res, next) {
         id: req.user.id
       });
       if (userData != undefined && userData.isAdmin != true) {
+        // Check for Institutional account, and get API Keys
+        console.log("userData",userData);
+        if( userData.is_institutional_account ){
+          if( !req.headers["x-api-key"] || req.headers["x-api-key"] == null || req.headers["x-api-key"] == '' ){
+            return res
+                .status(400)
+                .json({
+                  "status": 400,
+                  "err": sails.__("Api key is missing").message
+                });
+          }
+          let api_key = req.headers["x-api-key"];
+          let get_api_keys = await sails.helpers.getUserApiKeys( req.user.id );
+          if( get_api_keys.api_key != api_key ){
+            return res
+              .status(400)
+              .json({
+                "status": 400,
+                "err": sails.__("Api key is invalid").message
+              });
+          }
+        }
         // console.log("INSIDE TYHIUS")
         sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (userData.is_verified == false || userData.is_new_email_verified == false) {
