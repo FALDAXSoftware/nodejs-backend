@@ -39,12 +39,54 @@ module.exports = {
         return each;
       })
       if (userData.account_tier == 4) {
-        for (var i = 0; i < tierDetails.length; i++) {
-          tierDetails[i].is_verified = true;
+        var tierDetailsValue = await TierMainRequest.findOne({
+          where: {
+            user_id: user_id,
+            tier_step: 4,
+            deleted_at: null
+          }
+        });
+        tierDetails[tierDetails.length - 1].is_verified = true;
+
+        if (tierDetailsValue != undefined) {
+          var previous_tier = tierDetailsValue.previous_tier
+          var previosuTierDetails = await TierMainRequest.findOne({
+            where: {
+              user_id: user_id,
+              tier_step: previous_tier,
+              deleted_at: null
+            }
+          });
+          if (previosuTierDetails != undefined) {
+            for (var j = 0; j < previous_tier; j++) {
+              if (j != (previous_tier - 1))
+                tierDetails[j].is_verified = true
+              else {
+                if (previosuTierDetails.approved == true)
+                  tierDetails[j].is_verified = previosuTierDetails.approved
+                else {
+                  var object = {
+                    request_id: previosuTierDetails.id,
+                    user_status: previosuTierDetails.user_status,
+                    approved: previosuTierDetails.approved
+                  }
+                  tierDetails[j].account_details = object;
+                  tierDetails[j].is_active = true
+                }
+              }
+            }
+            if (previosuTierDetails.approved == true && previous_tier != (userData.account_tier - 1))
+              tierDetails[previous_tier].is_active = true
+          } else {
+            tierDetails[previous_tier].is_active = true;
+            for (j = 0; j < previous_tier; j++) {
+              tierDetails[j].is_verified = true
+            }
+          }
         }
       } else {
         for (var i = 0; i < tierDetails.length; i++) {
-          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
+          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && ((parseInt(userData.account_tier) + 1) != 4)) {
             if ((parseInt(userData.account_tier) + 1) == 1) {
               var userKYCDetails = await KYC.findOne({
                 where: {
@@ -80,8 +122,6 @@ module.exports = {
 
             if (i != 0) {
               for (var j = 0; j < i; j++) {
-                console.log(j)
-                console.log("tierDetails[i - i]", tierDetails[i - i])
                 tierDetails[j].is_verified = true;
               }
             }
@@ -204,45 +244,36 @@ module.exports = {
               var typeValue = upgradeData[0].type;
               console.log("typeValue", typeValue)
               var object = {}
-              if (typeValue == 1) {
+              if (getData[0].tier_step == 2) {
                 object = {
-                  "1": status,
-                  "2": statusValue[2],
-                  "3": statusValue[3],
-                  "4": statusValue[4]
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2]),
+                  "3": (typeValue == 3) ? (status) : (statusValue[3]),
+                  "4": (typeValue == 4) ? (status) : (statusValue[4]),
                 }
-              } else if (typeValue == 2) {
+              } else if (getData[0].tier_step == 3) {
                 object = {
-                  "1": statusValue[1],
-                  "2": status,
-                  "3": statusValue[3],
-                  "4": statusValue[4]
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2])
                 }
-              } else if (typeValue == 3) {
+              } else if (getData[0].tier_step == 4) {
                 object = {
-                  "1": statusValue[1],
-                  "2": statusValue[2],
-                  "3": status,
-                  "4": statusValue[4]
-                }
-              } else {
-                object = {
-                  "1": statusValue[1],
-                  "2": statusValue[2],
-                  "3": statusValue[3],
-                  "4": statusValue[4],
-                  "5": (typeValue == 5) ? (true) : (statusValue[5]),
-                  "6": (typeValue == 6) ? (true) : (statusValue[6]),
-                  "7": (typeValue == 7) ? (true) : (statusValue[7]),
-                  "8": (typeValue == 8) ? (true) : (statusValue[8]),
-                  "9": (typeValue == 9) ? (true) : (statusValue[9]),
-                  "10": (typeValue == 10) ? (true) : (statusValue[10]),
-                  "11": (typeValue == 11) ? (true) : (statusValue[11]),
-                  "12": (typeValue == 12) ? (true) : (statusValue[12]),
-                  "13": (typeValue == 13) ? (true) : (statusValue[13]),
-                  "14": (typeValue == 14) ? (true) : (statusValue[14]),
-                  "15": (typeValue == 15) ? (true) : (statusValue[15]),
-                  "16": (typeValue == 16) ? (true) : (statusValue[16])
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2]),
+                  "3": (typeValue == 3) ? (status) : (statusValue[3]),
+                  "4": (typeValue == 4) ? (status) : (statusValue[4]),
+                  "5": (typeValue == 5) ? (status) : (statusValue[5]),
+                  "6": (typeValue == 6) ? (status) : (statusValue[6]),
+                  "7": (typeValue == 7) ? (status) : (statusValue[7]),
+                  "8": (typeValue == 8) ? (status) : (statusValue[8]),
+                  "9": (typeValue == 9) ? (status) : (statusValue[9]),
+                  "10": (typeValue == 10) ? (status) : (statusValue[10]),
+                  "11": (typeValue == 11) ? (status) : (statusValue[11]),
+                  "12": (typeValue == 12) ? (status) : (statusValue[12]),
+                  "13": (typeValue == 13) ? (status) : (statusValue[13]),
+                  "14": (typeValue == 14) ? (status) : (statusValue[14]),
+                  "15": (typeValue == 15) ? (status) : (statusValue[15]),
+                  "16": (typeValue == 16) ? (status) : (statusValue[16])
                 }
               }
             }
@@ -260,13 +291,6 @@ module.exports = {
               .fetch();
 
             console.log("dataUpdate", dataUpdate);
-            // }
-            // console.log("getData", getData[0].user_status)
-            // var statusValue = getData[0].user_status;
-            // var typeValue = upgradeData[0].type
-            // var value = JSON.parse(statusValue);
-            // console.log("value>>>>", value)
-            // console.log("status Value", statusValue[typeValue])
 
           } else if (status == false || status == "false") {
             console.log("INSIDE LESE IF")
@@ -298,33 +322,24 @@ module.exports = {
               var statusValue = getData[0].user_status;
               var typeValue = tierDataValue[0].type;
               var object = {}
-              if (typeValue == 1) {
+              if (getData[0].tier_step == 2) {
                 object = {
-                  "1": status,
-                  "2": statusValue[2],
-                  "3": statusValue[3],
-                  "4": statusValue[4]
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2]),
+                  "3": (typeValue == 3) ? (status) : (statusValue[3]),
+                  "4": (typeValue == 4) ? (status) : (statusValue[4]),
                 }
-              } else if (typeValue == 2) {
+              } else if (getData[0].tier_step == 3) {
                 object = {
-                  "1": statusValue[1],
-                  "2": status,
-                  "3": statusValue[3],
-                  "4": statusValue[4]
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2])
                 }
-              } else if (typeValue == 3) {
+              } else if (getData[0].tier_step == 4) {
                 object = {
-                  "1": statusValue[1],
-                  "2": statusValue[2],
-                  "3": status,
-                  "4": statusValue[4]
-                }
-              } else {
-                object = {
-                  "1": statusValue[1],
-                  "2": statusValue[2],
-                  "3": statusValue[3],
-                  "4": statusValue[4],
+                  "1": (typeValue == 1) ? (status) : (statusValue[1]),
+                  "2": (typeValue == 2) ? (status) : (statusValue[2]),
+                  "3": (typeValue == 3) ? (status) : (statusValue[3]),
+                  "4": (typeValue == 4) ? (status) : (statusValue[4]),
                   "5": (typeValue == 5) ? (status) : (statusValue[5]),
                   "6": (typeValue == 6) ? (status) : (statusValue[6]),
                   "7": (typeValue == 7) ? (status) : (statusValue[7]),
@@ -424,6 +439,7 @@ module.exports = {
             .set({
               account_tier: parseInt(userValue.account_tier) + 1
             })
+            .fetch();
 
           await sails.helpers.notification.send.email("tier_force_approved", userData)
         }
@@ -446,8 +462,6 @@ module.exports = {
             .set({
               approved: false
             })
-
-            ``
         }
       } else if (tier_step == 3) {
         var tierDataFinal = await TierMainRequest.findOne({
@@ -495,6 +509,7 @@ module.exports = {
             .set({
               account_tier: parseInt(userValue.account_tier) + 1
             })
+            .fetch();
 
           await sails.helpers.notification.send.email("tier_force_approved", userData)
         }
@@ -527,6 +542,8 @@ module.exports = {
 
         var finalStatus = tierDataFinal.user_status;
         var flag = 0;
+
+        console.log("finalStatus", finalStatus)
 
         for (var i = 0; i < 16; i++) {
           if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
@@ -566,6 +583,8 @@ module.exports = {
             .set({
               account_tier: 4
             })
+            .fetch();
+          await sails.helpers.notification.send.email("tier_force_approved", userData)
         }
 
         var flag1 = 0;
