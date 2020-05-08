@@ -371,7 +371,7 @@ module.exports = {
             console.log("userWallet", userWallet)
 
             // user wallet exitence check
-            let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
+            // let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
 
             if (userWallet) {
               // Set wallet history params
@@ -400,7 +400,7 @@ module.exports = {
                 transaction_id: req.body.hash,
                 actual_amount: (amount).toFixed(8),
                 receiver_user_balance_before: userWallet.balance,
-                warm_wallet_balance_before: (parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION)),
+                warm_wallet_balance_before: 0.0,
                 transaction_from: sails.config.local.RECEIVE_TO_DESTINATION,
                 actual_network_fees: 0.0,
                 faldax_fee: 0.0,
