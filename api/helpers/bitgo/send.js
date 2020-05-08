@@ -157,7 +157,9 @@ module.exports = {
 
     console.log("passphrase_value", passphrase_value);
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
-
+    if (inputs.coin == "BCH")
+      wallet_passphrase = "secretpassphrase1a5df8380e0e30"
+    console.log("wallet_passphrase", wallet_passphrase)
     var send_data = {
       address: inputs.address,
       // amount: parseFloat(inputs.amount),
