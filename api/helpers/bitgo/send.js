@@ -143,7 +143,8 @@ module.exports = {
 
     console.log("passphrase_value", passphrase_value);
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
-    if (inputs.coin == "BCH") {
+    console.log("coin", inputs.coin);
+    if (inputs.coin == "BCH" || inputs.coin == "tbch") {
       wallet_passphrase = "secretpassphrase1a5df8380e0e30"
     }
     console.log("wallet_passphrase", wallet_passphrase)
