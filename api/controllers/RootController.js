@@ -396,9 +396,9 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
-    console.log(key);
-    console.log(iv)
-    var value = req.body.encryptKey;
+    // console.log(key);
+    // console.log(iv)
+    // var value = req.body.encryptKey;
     // console.log(value);
     // var encryptData = await sails.helpers.getEncryptData(value);
     // console.log("encryptData", encryptData);
