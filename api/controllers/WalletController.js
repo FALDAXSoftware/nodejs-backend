@@ -233,15 +233,15 @@ module.exports = {
 
             }
         }
-        if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].iserc == false) {
-          if (balanceWalletData.rows[i].quote.USD) {
-            // var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
-            // if (get_price.length > 0)
-            //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-            // else
-            // balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-          }
-        }
+        // if (balanceWalletData.rows[i].coin_code != "SUSU" && balanceWalletData.rows[i].iserc == false) {
+        //   // if (balanceWalletData.rows[i].quote.USD) {
+        //     // var get_price = await sails.helpers.fixapi.getPrice(balanceWalletData.rows[i].coin, 'Buy');
+        //     // if (get_price.length > 0)
+        //     //   balanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+        //     // else
+        //     // balanceWalletData.rows[i].quote.USD.price = ((balanceWalletData.rows[i].quote.USD.price) > 0 ? (balanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+        //   // }
+        // }
         if (balanceWalletData.rows[i].is_active == true) {
           // if( balanceWalletData.rows[i].iserc== true ){
           //   if(eth_asset == true){
