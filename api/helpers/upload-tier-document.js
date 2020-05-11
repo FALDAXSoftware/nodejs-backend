@@ -66,7 +66,7 @@ module.exports = {
 
             console.log("tierDetails", tierDetails)
 
-            if (data.tier == 4 && data.type == 1 && tierDetails == undefined) {
+            if (data.tier == 4 && data.type == 1 && tierDetails == undefined && appId == 0) {
                 var getTierDetails = await sails.helpers.getTransactionId(userData.email);
                 var kycdata = await KYC.findOne({
                     where: {

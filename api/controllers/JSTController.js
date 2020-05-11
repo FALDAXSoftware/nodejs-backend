@@ -444,14 +444,12 @@ module.exports = {
           .helpers
           .utilities
           .getCurrencies((req_body.original_pair).replace("/", '-'));
-        console.log("crypto", crypto);
-        console.log("currency", currency);
+
         var coinValue = await Coins.findOne({
           is_active: true,
           deleted_at: null,
           coin: currency
         })
-        console.log("coinValue", coinValue);
 
         var walletCurrency = await Wallet.findOne({
           where: {
@@ -461,7 +459,6 @@ module.exports = {
           }
         });
 
-        console.log("walletCurrency", walletCurrency);
         if (walletCurrency == undefined || (walletCurrency.send_address == "" && walletCurrency.receive_address == "") || (walletCurrency.send_address == null && walletCurrency.receive_address == null)) {
           // await logger.info({
           //   "module": "JST",
@@ -612,7 +609,6 @@ module.exports = {
         };
         var get_market_snapshotfor_execution = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), quantityValue, req_body.flag, "create_order");
         var response = await sails.helpers.fixapi.buyOrder(order_object);
-        console.log("response", response);
         var update_data = {
           order_id: response.data.OrderID
         };
@@ -1136,7 +1132,6 @@ module.exports = {
         });
       }
       Symbol = Symbol.replace("/", "");
-      console.log("Symbol", Symbol);
       var req_body = {
         "Symbol": Symbol,
         "Side": Side,

@@ -96,10 +96,12 @@ module.exports = {
               });
 
               if (userKYCDetails != undefined) {
-                var object = {
-                  approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
+                if (userKYCDetails.first_name != null) {
+                  var object = {
+                    approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
+                  }
+                  tierDetails[i].account_details = object;
                 }
-                tierDetails[i].account_details = object;
               }
             }
             tierDetails[i].is_active = true;
@@ -207,10 +209,7 @@ module.exports = {
           }
         });
 
-        console.log("upgradeTier", upgradeTier)
-
         if (upgradeTier.length > 0) {
-          console.log("status", status)
           if (status == true || status == "true") {
             var upgradeData = await TierRequest
               .update({
@@ -226,8 +225,6 @@ module.exports = {
               })
               .fetch();
 
-            console.log("upgradeData", upgradeData)
-
             var getData = await TierMainRequest.find({
               where: {
                 deleted_at: null,
@@ -235,14 +232,9 @@ module.exports = {
               }
             })
 
-            console.log("getData", getData)
-
             if (getData != undefined) {
               var statusValue = getData[0].user_status;
-
-              console.log("statusValue", statusValue)
               var typeValue = upgradeData[0].type;
-              console.log("typeValue", typeValue)
               var object = {}
               if (getData[0].tier_step == 2) {
                 object = {
@@ -278,8 +270,6 @@ module.exports = {
               }
             }
 
-            console.log("Object ???????", object)
-
             var dataUpdate = await TierMainRequest
               .update({
                 deleted_at: null,
@@ -290,10 +280,7 @@ module.exports = {
               })
               .fetch();
 
-            console.log("dataUpdate", dataUpdate);
-
           } else if (status == false || status == "false") {
-            console.log("INSIDE LESE IF")
             var tierDataValue = await TierRequest
               .update({
                 deleted_at: null,
@@ -316,8 +303,6 @@ module.exports = {
             })
 
             if (tierDataValue != undefined) {
-
-              console.log("getData[0].user_status", getData[0].user_status)
 
               var statusValue = getData[0].user_status;
               var typeValue = tierDataValue[0].type;
@@ -400,8 +385,6 @@ module.exports = {
           }
         }
 
-        console.log(flag)
-
         if (flag == 4) {
           var tierDataUpdate = await TierMainRequest
             .update({
@@ -412,8 +395,6 @@ module.exports = {
             .set({
               approved: true
             })
-
-          console.log("tierDataFinal.user_id", tierDataFinal.user_id)
 
           var userValue = await Users.findOne({
             where: {
@@ -543,15 +524,11 @@ module.exports = {
         var finalStatus = tierDataFinal.user_status;
         var flag = 0;
 
-        console.log("finalStatus", finalStatus)
-
         for (var i = 0; i < 16; i++) {
           if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
             flag = parseInt(flag) + 1;
           }
         }
-
-        console.log(flag)
 
         if (flag == 16) {
           var tierDataUpdate = await TierMainRequest
@@ -563,8 +540,6 @@ module.exports = {
             .set({
               approved: true
             })
-
-          console.log("tierDataFinal.user_id", tierDataFinal.user_id)
 
           var userValue = await Users.findOne({
             where: {
@@ -661,13 +636,10 @@ module.exports = {
         }
       });
 
-      console.log("tierValue", tierValue)
-
       if (tierValue.length > 0) {
         data.request_id = tierValue[0].id;
 
         if (tierValue[0].approved == "false" || tierValue[0].approved == false) {
-          console.log("INSIDE IF")
           return res
             .status(202)
             .json({
@@ -682,7 +654,6 @@ module.exports = {
         }
 
         if (tierValue[0].approved == "true" || tierValue[0].approved == true) {
-          // console.log("INSIDE IF")
           return res
             .status(203)
             .json({
@@ -691,11 +662,8 @@ module.exports = {
             })
         }
 
-        console.log("data.request_id", data.request_id)
-
         var type = 0;
         if (data.request_id && data.request_id != "") {
-          console.log(length);
           for (var i = 0; i < length; i++) {
             type = parseInt(type) + 1;
             var tierData = await TierRequest.find({
@@ -706,8 +674,6 @@ module.exports = {
                 type: type
               }
             }).sort('id DESC');
-
-            console.log("tierData[0]", tierData[0])
 
             if (tierData[0] != undefined) {
               delete tierData[0].private_note;
@@ -812,14 +778,9 @@ module.exports = {
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
 
-      console.log(query)
-
-      // console.log("SELECT tier_request.id, tier_request.user_id ,tier_request.tier_step, tier_request.unique_key,tier_request.is_approved, users.email, users.first_name, users.last_name, tier_request.ssn, tier_request.type" + query)
-
       tradeData = await sails.sendNativeQuery(`SELECT tier_main_request.*, users.email, users.first_name, users.last_name ` + query, [])
 
       tradeData = tradeData.rows;
-      console.log(tradeData)
 
       tradeCount = await sails.sendNativeQuery("Select COUNT(tier_main_request.id)" + countQuery, [])
       tradeCount = tradeCount.rows[0].count;
@@ -906,8 +867,6 @@ module.exports = {
 
         finalData.push(getRequestData);
       }
-
-      console.log("finalData", finalData)
 
       return res
         .status(200)
@@ -1104,9 +1063,6 @@ module.exports = {
         }
       });
 
-      console.log("dataBody", dataBody);
-      console.log("tierDetails", tierDetails)
-
       if ((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && (dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true")) {
         var flag = 0;
         for (var i = 0; i < tierDetails.length; i++) {
@@ -1164,17 +1120,13 @@ module.exports = {
         }
       } else if (dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") {
         var flag = false;
-        console.log("flag", flag)
         for (var i = 0; i < tierDetails.length; i++) {
-          console.log("tierDetails[i].type", tierDetails[i].type)
           if (tierDetails[i].type == 1) {
-            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
             if (tierDetails[i].is_approved == false) {
               flag = true;
             }
           }
         }
-        console.log("flag after", flag)
         if (flag == true) {
           req
             .file('valid_id')
@@ -1211,21 +1163,16 @@ module.exports = {
             }
           }
         }
-        console.log("after flag", flag)
         if (flag == true) {
           req
             .file('residence_proof')
             .upload(async function (error1, uploadFile1) {
               try {
-                console.log(error1);
-                console.log(uploadFile1)
                 var data1 = {};
                 data1.user_id = req.user.id;
                 data1.file = uploadFile1[0]
                 data1.description = randomize('Aa0', 10);
                 data1.type = 2;
-
-                console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
 
                 return res.json(dataValue1)
@@ -1293,17 +1240,11 @@ module.exports = {
         }
       })
 
-      console.log("tierDetailsValue", tierDetailsValue)
-      console.log("tierDetails", tierDetails);
-      console.log("dataBody", dataBody)
-
       if (tierDetails.length == 0) {
         req
           .file('files')
           .upload(async function (error, uploadFile) {
             try {
-              console.log(uploadFile)
-              console.log("error", error)
               var data = {};
               if (uploadFile.length > 0) {
                 var dataValue;
@@ -1314,12 +1255,8 @@ module.exports = {
                   data.description = randomize('Aa0', 10);
                   data.type = (i == 0) ? 1 : 2;
 
-                  console.log("data", data)
-
                   dataValue = await sails.helpers.uploadTierDocument(data)
-                  console.log(dataValue)
                 }
-                console.log(dataValue)
                 return res.status(dataValue.status).json(dataValue);
               }
 
@@ -1328,7 +1265,6 @@ module.exports = {
             }
           });
       } else if (((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && (dataBody.proof_of_assets_flag == true || dataBody.proof_of_assets_flag == "true")) && tierDetails != undefined) {
-        console.log("INSIDE BOTH FLAGS")
         var flag = 0;
         for (var i = 0; i < tierDetails.length; i++) {
           // if (tierDetails[i].type != 3) {
@@ -1343,7 +1279,6 @@ module.exports = {
             .file('files')
             .upload(async function (error, uploadFile) {
               try {
-                console.log(uploadFile)
                 var data = {};
                 if (uploadFile.length > 0) {
                   for (var i = 0; i < uploadFile.length; i++) {
@@ -1352,8 +1287,6 @@ module.exports = {
                     data.file = uploadFile[i]
                     data.description = randomize('Aa0', 10);
                     data.type = (i == 0) ? 1 : 2;
-
-                    console.log("data", data)
 
                     var dataValue = await sails.helpers.uploadTierDocument(data)
                   }
@@ -1366,13 +1299,10 @@ module.exports = {
             });
         }
       } else if ((dataBody.idcp_flag == true || dataBody.idcp_flag == "true") && tierDetails != undefined) {
-        console.log("INSIDe IF")
         var flag = false;
 
         for (var i = 0; i < tierDetails.length; i++) {
-          console.log("tierDetails[i].type", tierDetails[i].type)
           if (tierDetails[i].type == 1) {
-            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
             if (tierDetails[i].is_approved == false) {
               flag = true;
             }
@@ -1410,9 +1340,7 @@ module.exports = {
         var flag = false;
 
         for (var i = 0; i < tierDetails.length; i++) {
-          console.log("tierDetails[i].type", tierDetails[i].type)
           if (tierDetails[i].type == 2) {
-            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
             if (tierDetails[i].is_approved == false) {
               flag = true;
             }
@@ -1638,8 +1566,6 @@ module.exports = {
         }
       });
 
-      console.log("getTierValue", getTierValue)
-
       var idValue = 0;
 
       var valueObject = {
@@ -1679,8 +1605,6 @@ module.exports = {
         .file('files')
         .upload(async function (error, uploadFile) {
           try {
-            console.log(uploadFile)
-            console.log("error", error)
             var data = {};
             // if (uploadFile.length > 0) {
             var dataValue;
@@ -1691,10 +1615,7 @@ module.exports = {
             data.type = dataBody.type;
             data.tier = 4;
 
-            console.log("data", data)
-
             dataValue = await sails.helpers.uploadTierDocument(data)
-            console.log(dataValue)
             return res.status(dataValue.status).json(dataValue);
 
           } catch (error) {
@@ -1715,9 +1636,7 @@ module.exports = {
   checkTierUpgrade: async function (req, res) {
     try {
       var body = req.body;
-      console.log(body);
       var user_id = req.user.id;
-      console.log("user_id", user_id);
 
       if (body.tier_requested == 4) {
         return res
@@ -1737,8 +1656,6 @@ module.exports = {
         }
       })
 
-      console.log("tierDetailsValue", tierDetailsValue)
-
       if (tierDetailsValue != undefined) {
         return res
           .status(200)
@@ -1750,8 +1667,6 @@ module.exports = {
 
       // Helper for checking tier requirement of user
       var getTierDetails = await sails.helpers.getUserTierReport(user_id, req.body);
-
-      console.log("getTierDetails", getTierDetails)
       var getTierDetailsValue = getTierDetails.summaryReport
 
       if ((getTierDetailsValue.req1_ageCheck == true && getTierDetailsValue.req1_tradeCountCheck == true && getTierDetailsValue.req1_tradeTotalFiatCheck == true) || getTierDetailsValue.req2_tradeWalletCheck == true) {
@@ -1967,7 +1882,6 @@ module.exports = {
           unlock_by_admin: true
         }
       }).sort('id DESC')
-      console.log("getTierValue", getTierValue)
       if (getTierValue.length > 0) {
         var data = {
           "tier": getTierValue[0].tier_step,

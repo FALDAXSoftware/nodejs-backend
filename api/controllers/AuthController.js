@@ -41,12 +41,9 @@ module.exports = {
           email_verify_token: req.body.email_verify_token
         });
 
-        console.log(user);
         if (user) {
           var today = moment().utc().format();
-          console.log(today)
           var yesterday = moment(user.signup_token_expiration).format();
-          console.log(yesterday)
           if (yesterday < today) {
             return res.status(400).json({
               "status": 400,
@@ -140,10 +137,7 @@ module.exports = {
 
         user_detail = user_detail[0];
 
-        console.log(user_detail)
-
         if (user_detail) {
-          console.log(user_detail)
           if (user_detail.id == sails.config.local.TRADEDESK_USER_ID && user_detail.is_tradedesk_user == true) {
             return res
               .status(401)
@@ -376,7 +370,6 @@ module.exports = {
                   // If institutional account then get api key
                   if (user_detail.is_institutional_account) {
                     let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
-                    console.log("get_data", get_api_keys)
                     if (get_api_keys != 0) {
                       user_detail.api_key = get_api_keys.api_key;
                     }
@@ -521,8 +514,6 @@ module.exports = {
           new_ip: ip,
           new_ip_verification_token: req.body.token
         });
-
-        console.log(user_detail);
 
         if (user_detail) {
 
@@ -957,7 +948,6 @@ module.exports = {
         // deleted_at: null,
         // is_active: true
       }).sort('id DESC');
-      console.log(user_details)
       sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       user_details = user_details[0];
       if (!user_details) {

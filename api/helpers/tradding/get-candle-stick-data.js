@@ -122,6 +122,7 @@ module.exports = {
         t: time,
         v: volumn
       }
+      // console.log("candleStickData", candleStickData)
       return exits.success(candleStickData);
     } catch (error) {
       console.log(error);

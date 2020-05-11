@@ -41,9 +41,9 @@ module.exports.routes = {
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
   'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
   'post /webhook-on-address': 'WebhookController.webhookOnAddress',
-  'post /webhook-on-send-address': 'WebhookController.webhookOnSendAddress',
+  // 'post /webhook-on-send-address': 'WebhookController.webhookOnSendAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
-  'post /webhook-on-send': 'WebhookController.webhookOnSend',
+  // 'post /webhook-on-send': 'WebhookController.webhookOnSend',
   'post /webhook-on-warm-send': 'WebhookController.webhookOnWarmSend',
 
   // CMS Routes/////////////////////////////////////////// Admin
@@ -392,8 +392,8 @@ module.exports.routes = {
   'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
   // Update User Wallet balance
-  // 'post /update-user-balance': 'WalletController.updateWalletBalance',
-  // 'post /add-user-balance': 'WalletController.addWalletBalance',
+  'post /update-user-balance': 'WalletController.updateWalletBalance',
+  'post /add-user-balance': 'WalletController.addWalletBalance',
 
   // Admin Send API
   'post /send-coin-admin': 'WalletController.sendCoinAdmin',
@@ -403,16 +403,16 @@ module.exports.routes = {
   'post /admin/batches/list': 'AdminController.getBatchListing',
 
   // Tier Wise API
-  'post /upload-tier-document': 'TierController.tierDocumentUpload',
+  // 'post /upload-tier-document': 'TierController.tierDocumentUpload',
   'get /get-tier-details': 'TierController.getUserTierList',
   'post /users/get-user-tier-details': 'TierController.getUserTierData',
   'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
   "post /admin/get-tier-details": "TierController.getRequestTierData",
   "get /admin/get-all-tier-details": "TierController.getAllTierDetails",
-  "get /admin/get-tier-id-value": "TierController.getTierIdValue",
+  // "get /admin/get-tier-id-value": "TierController.getTierIdValue",
   "post /admin/force-change-status": "TierController.userForceAccept",
   // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
-  'get /admin/get-tier-details-value': 'TierController.getTierList',
+  // 'get /admin/get-tier-details-value': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
   'post /admin/upgrade-user-tier': 'TierController.upgradeUserTier',
@@ -434,7 +434,7 @@ module.exports.routes = {
   'post /get-jst-price': 'UsersController.getJSTPrice',
 
   // Wallet Balance related API
-  'get /coin-info': 'WalletController.checkWalletBalance',
+  // 'get /coin-info': 'WalletController.checkWalletBalance',
 
   // Referral Admin API
   'get /admin/get-referal-list': 'UsersController.getReferralList',
