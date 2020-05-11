@@ -3801,15 +3801,37 @@ module.exports = {
     try {
       var user_id = req.user.id;
 
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      var data = {};
+      if (userData != undefined) {
+        if (userData.account_tier == 4) {
+          data.is_kyc_done = 2;
+          data.is_allowed = true;
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("You are allowed to trade").message,
+              "data": data
+            });
+        }
+      }
+
       let userKyc = await KYC.findOne({
         user_id: user_id
       });
-      var data = {};
       data.is_kyc_done = 0;
       if (userKyc) {
         if (userKyc.steps == 3) {
           data.is_kyc_done = 1;
-          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+          if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
             data.is_kyc_done = 2;
           }
         }
@@ -3820,7 +3842,7 @@ module.exports = {
       console.log(geo_fencing_data)
       data.is_allowed = geo_fencing_data.response;
       if (geo_fencing_data.response != true) {
-        res
+        return res
           .status(200)
           .json({
             "status": 200,
@@ -3828,7 +3850,7 @@ module.exports = {
             "data": data
           });
       } else {
-        res.json({
+        return res.json({
           "status": 200,
           "message": geo_fencing_data.msg,
           "data": data
