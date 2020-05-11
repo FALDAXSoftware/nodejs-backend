@@ -2615,10 +2615,7 @@ module.exports = {
                         ) b GROUP BY b.user_coin`
 
       var tradeData = await sails.sendNativeQuery(tradeSql, []);
-      console.log("tradeData", tradeData)
       var sqlData = tradeData.rows;
-      console.log("sqlData", sqlData);
-
 
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
@@ -2644,14 +2641,12 @@ module.exports = {
             wallet_details = walletValue;
           }
           if (assets_data[i].coin_code != 'SUSU') {
-            console.log("asset_id", asset_id)
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
               coin_id: asset_id
             })
             assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
           } else if (assets_data[i].coin_code == 'SUSU') {
-            console.log("wallet_details", wallet_details);
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
             susucoinData = susucoinData.data
@@ -2691,17 +2686,12 @@ module.exports = {
             }
           }
 
-          console.log(value)
-
           assets_data[i].trade_earned = value
-
-          console.log("assets_data[i].trade_earned", assets_data[i].trade_earned)
 
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
                           WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
                           ORDER BY id DESC`;
-          console.log("query_jst", query_jst)
           let jst_fees = await sails.sendNativeQuery(query_jst, []);
           var temp_jst_total = 0;
           if (jst_fees.rowCount > 0) {
@@ -4493,8 +4483,6 @@ module.exports = {
               });
           }
           if (uploadedFiles.length > 0) {
-            console.log("pdfObject.value", pdfObject.value)
-            console.log("uploadedFiles[0].fd", uploadedFiles[0].fd)
             var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
             if (uploadedFilesRes) {
               return res
@@ -4588,8 +4576,6 @@ module.exports = {
               });
           }
           if (uploadedFiles.length > 0) {
-            console.log("pdfObject.value", pdfObject.value)
-            console.log("uploadedFiles[0].fd", uploadedFiles[0].fd)
             var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
             if (uploadedFilesRes) {
               return res

@@ -324,7 +324,6 @@ module.exports = {
       var transactionValue = transactionCount.rows;
 
       let feesQuery = "SELECT symbol, sum(user_fee) as user_fee, sum(requested_fee) as requested_fee FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY sum(user_fee) DESC"
-      console.log("feesQuery", feesQuery)
       let feesTransactionCount = await sails.sendNativeQuery(feesQuery, [])
       var feesTransactionValue = feesTransactionCount.rows;
 
@@ -344,7 +343,6 @@ module.exports = {
         is_approve: null,
       });
       let q = {}
-      console.log("req.query", req.query)
       if (req.query.kyc_start_date && req.query.kyc_end_date) {
         q = {
           updated_at: {
