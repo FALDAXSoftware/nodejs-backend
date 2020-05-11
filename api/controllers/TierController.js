@@ -1519,7 +1519,7 @@ module.exports = {
                 id: getTierValue.user_id
               })
               .set({
-                account_tier: getTierValue.tier_step
+                account_tier: (userValue.account_tier == 4) ? 4 : (getTierValue.tier_step)
               })
 
             await sails.helpers.notification.send.email("tier_force_approved", userValue)
@@ -1569,7 +1569,7 @@ module.exports = {
                 id: getTierValue.user_id
               })
               .set({
-                account_tier: Update.account_tier
+                account_tier: (userValue.account_tier == 4) ? 4 : (Update.tier_step)
               })
 
             userValue.reason = bodyValue.public_note;
