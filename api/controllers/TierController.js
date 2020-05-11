@@ -48,8 +48,11 @@ module.exports = {
         });
         tierDetails[tierDetails.length - 1].is_verified = true;
 
+        console.log("tierDetailsValue", tierDetailsValue)
+
         if (tierDetailsValue != undefined) {
           var previous_tier = tierDetailsValue.previous_tier
+          console.log("previous_tier", previous_tier)
           var previosuTierDetails = await TierMainRequest.findOne({
             where: {
               user_id: user_id,
@@ -78,9 +81,85 @@ module.exports = {
             if (previosuTierDetails.approved == true && previous_tier != (userData.account_tier - 1))
               tierDetails[previous_tier].is_active = true
           } else {
-            tierDetails[previous_tier].is_active = true;
-            for (j = 0; j < previous_tier; j++) {
-              tierDetails[j].is_verified = true
+            if (previous_tier == 0) {
+              var KYCValue = await KYC.findOne({
+                where: {
+                  user_id: user_id,
+                  deleted_at: null
+                }
+              });
+
+              if (KYCValue != undefined) {
+                if (KYCValue.first_name != null) {
+                  if (KYCValue.direct_response == "ACCEPT" && KYCValue.webhook_response == "ACCEPT") {
+                    tierDetails[previous_tier].is_verified = true;
+                    previous_tier = 1;
+                    var tierDetailsValueExtend = await TierMainRequest.findOne({
+                      where: {
+                        tier_step: (previous_tier + 1),
+                        user_id: user_id,
+                        deleted_at: null
+                      }
+                    })
+                    if (tierDetailsValueExtend == undefined) {
+                      tierDetails[previous_tier + 1].is_active = true;
+                    } else {
+                      console.log("tierDetailsValueExtend", tierDetailsValueExtend)
+                      if (tierDetailsValueExtend.approved == true || tierDetailsValueExtend.approved == "true") {
+                        tierDetails[previous_tier].is_verified = true;
+                        previous_tier = previous_tier + 1
+                        console.log("previous_tier", previous_tier)
+                        var value = await TierMainRequest.findOne({
+                          where: {
+                            tier_step: (previous_tier + 1),
+                            user_id: user_id,
+                            deleted_at: null
+                          }
+                        });
+                        console.log("value", value)
+                        if (value == undefined) {
+                          tierDetails[previous_tier + 1].is_active = true;
+                        } else {
+                          if (value.approved == "true" || value.approved == true) {
+                            tierDetails[previous_tier].is_verified = true
+                          } else {
+                            tierDetails[previous_tier].is_active = true;
+                            var object = {
+                              request_id: value.id,
+                              user_status: value.user_status,
+                              approved: value.approved
+                            }
+                            tierDetails[previous_tier].account_details = object;
+                          }
+                        }
+                      } else {
+                        var object = {
+                          request_id: tierDetailsValueExtend.id,
+                          user_status: tierDetailsValueExtend.user_status,
+                          approved: tierDetailsValueExtend.approved
+                        }
+                        tierDetails[previous_tier + 1].account_details = object;
+                      }
+                    }
+                  } else {
+                    var object = {
+                      approved: (KYCValue.direct_response != "ACCEPT" && KYCValue.webhook_response != "ACCEPT") ? null : 0.0
+                    }
+                    tierDetails[previous_tier].is_active = true;
+                  }
+                } else {
+                  console.log("previous_tier", previous_tier)
+                  tierDetails[previous_tier].is_active = true
+                }
+              } else {
+                console.log("previous_tier", previous_tier)
+                tierDetails[previous_tier].is_active = true
+              }
+            } else {
+              tierDetails[previous_tier].is_active = true;
+              for (j = 0; j < previous_tier; j++) {
+                tierDetails[j].is_verified = true
+              }
             }
           }
         }
@@ -407,7 +486,7 @@ module.exports = {
           var getTier = await Tiers.findOne({
             where: {
               deleted_at: null,
-              tier_step: parseInt(userValue.account_tier) + 1
+              tier_step: (parseInt(userValue.account_tier) + 1)
             }
           });
 
@@ -418,7 +497,7 @@ module.exports = {
               id: tierDataFinal.user_id
             })
             .set({
-              account_tier: parseInt(userValue.account_tier) + 1
+              account_tier: (userValue.account_tier == 4) ? 4 : (parseInt(userValue.account_tier) + 1)
             })
             .fetch();
 
@@ -488,7 +567,7 @@ module.exports = {
               id: tierDataFinal.user_id
             })
             .set({
-              account_tier: parseInt(userValue.account_tier) + 1
+              account_tier: (userValue.account_tier == 4) ? 4 : (parseInt(userValue.account_tier) + 1)
             })
             .fetch();
 
@@ -1638,7 +1717,7 @@ module.exports = {
       var body = req.body;
       var user_id = req.user.id;
 
-      if (body.tier_requested == 4) {
+      if (body.tier_requested == 4 || body.tier_requested == 1) {
         return res
           .status(200)
           .json({
@@ -1665,24 +1744,26 @@ module.exports = {
           })
       }
 
+      console.log("req.body", req.body)
       // Helper for checking tier requirement of user
       var getTierDetails = await sails.helpers.getUserTierReport(user_id, req.body);
       var getTierDetailsValue = getTierDetails.summaryReport
+      console.log("getTierDetailsValue", getTierDetailsValue)
 
-      if ((getTierDetailsValue.req1_ageCheck == true && getTierDetailsValue.req1_tradeCountCheck == true && getTierDetailsValue.req1_tradeTotalFiatCheck == true) || getTierDetailsValue.req2_tradeWalletCheck == true) {
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("Tier upgrade applicable").message
-          })
-      } else if (getTierDetails == 1) {
+      if (getTierDetails == 1) {
         return res
           .status(500)
           .json({
             status: 500,
             message: sails.__("Tier Upgrade not applicable").message
           });
+      } else if ((getTierDetailsValue.req1_ageCheck == true && getTierDetailsValue.req1_tradeCountCheck == true && getTierDetailsValue.req1_tradeTotalFiatCheck == true) || getTierDetailsValue.req2_tradeWalletCheck == true) {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Tier upgrade applicable").message
+          })
       } else {
         var getTierData = getTierDetails.getTierData
         return res
