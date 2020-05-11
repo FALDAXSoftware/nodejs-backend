@@ -18,8 +18,6 @@ module.exports = {
                 }
             });
 
-            console.log(userLayoutData)
-
             if (!userLayoutData && userLayoutData == undefined) {
                 return res
                     .status(201)
@@ -55,7 +53,6 @@ module.exports = {
             data.user_id = user_id;
             data.created_at = new Date();
 
-            console.log(data)
             var userData = await Layout.findOne({
                 where: {
                     deleted_at: null,

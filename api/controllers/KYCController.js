@@ -173,14 +173,12 @@ module.exports = {
 
   uploadKYCDoc: async function (req, res) {
     try {
-      // console.log(req.file('image'));
-      console.log(req._fileparser.upstreams.length)
+
       if (req._fileparser.upstreams.length) {
         req
           .file('image')
           .upload(function (error, file) {
-            console.log(file[0])
-            console.log((file[0].size) > 5242880)
+
             // console.log(error);
             if (error) {
               return res
@@ -278,15 +276,12 @@ module.exports = {
                   })
                   .fetch()
 
-                console.log("user_data", user_data[0])
-
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data[0].id,
                   deleted_at: null,
                   slug: 'kyc_approved'
                 })
 
-                console.log("userNotification", userNotification)
                 if (userNotification != undefined) {
                   if (userNotification.email == true || userNotification.email == "true") {
                     if (user_data[0].email != undefined)
@@ -339,8 +334,6 @@ module.exports = {
                   }
                 })
 
-                console.log("user_data", user_data[0])
-
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data[0].id,
                   deleted_at: null,
@@ -357,41 +350,6 @@ module.exports = {
                       await sails.helpers.notification.send.text("kyc_rejected", user_data[0])
                   }
                 }
-
-                console.log("user_data[0]", user_data[0])
-                // if (user_data[0] != undefined) {
-                //   let slug = 'kyc_rejected';
-                //   let template = await EmailTemplate.findOne({
-                //     slug
-                //   });
-                //   console.log(template)
-                //   let user_language = (user_data[0].default_language ? user_data[0].default_language : 'en');
-                //   let language_content = template.all_content[user_language].content;
-                //   let language_subject = template.all_content[user_language].subject;
-                //   let emailContent = await sails
-                //     .helpers
-                //     .utilities
-                //     .formatEmail(language_content, {
-                //       recipientName: user_data[0].first_name
-                //     })
-
-                //   console.log("emailContent", emailContent)
-                //   console.log("user_data[0].email", user_data[0].email)
-                //   sails
-                //     .hooks
-                //     .email
-                //     .send("general-email", {
-                //       content: emailContent
-                //     }, {
-                //       to: user_data[0].email,
-                //       subject: language_subject
-                //     }, function (err) {
-                //       if (err) {
-                //         console.log("err in sending email, while kyc approved", err);
-                //       }
-                //     })
-                // }
-
               }
             }
           }
@@ -538,7 +496,7 @@ module.exports = {
             .dateFormat(end_date) + " 23:59:59'";
       }
       countQuery = query;
-      console.log(query)
+
       if (sortCol && sortOrder) {
         var sortVal
         if (sortCol = "account_tier") {
@@ -558,11 +516,9 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      console.log(query);
       let KYCData = await sails.sendNativeQuery("Select kyc.*, users.email, users.account_tier" + query, [])
 
       KYCData = KYCData.rows;
-      console.log("Select COUNT(kyc.id)" + countQuery)
       let KYCCount = await sails.sendNativeQuery("Select COUNT(kyc.id)" + countQuery, [])
       KYCCount = KYCCount.rows[0].count;
 
@@ -628,7 +584,6 @@ module.exports = {
 
       var flagReUpload = req.allParams();
       // var twofactor = req.body.twofactor;
-      console.log("req.body", req.allParams())
 
       var userData = await Users.findOne({
         where: {
@@ -682,8 +637,6 @@ module.exports = {
           })
         idValue = tirDetails.id
       }
-
-      console.log("idValue", idValue)
 
 
       if (flagReUpload.reupload != "true" || flagReUpload.reupload != true) {
@@ -762,7 +715,6 @@ module.exports = {
           }
         });
 
-        console.log("userData", userData)
         var valueTier = await TierRequest.create({
           request_id: idValue,
           tier_step: parseInt(userData.account_tier) + 1,
@@ -770,7 +722,6 @@ module.exports = {
           ssn: value.ssn,
           type: 3
         }).fetch();
-        console.log("valueTier", valueTier)
 
         if ((flagReUpload.valid_id_flag == "false" || flagReUpload.valid_id_flag == false) && (flagReUpload.proof_residence_flag == "false" || flagReUpload.proof_residence_flag == false)) {
           return res
@@ -803,25 +754,17 @@ module.exports = {
         }
       });
 
-      console.log("tierDetails", tierDetails)
-
       var dataBody = req.allParams();
-      console.log("dataBody", dataBody);
-      console.log("dataBody.valid_id_flag", dataBody.valid_id_flag)
-      console.log("dataBody.proof_residence_flag", dataBody.proof_residence_flag)
+
       var user_id = req.user.id
 
-      console.log("tierDetailsValue", tierDetailsValue)
-
       if (tierDetailsValue != undefined && (flagReUpload != true || flagReUpload != "true") && !dataBody.valid_id_flag && !dataBody.proof_residence_flag) {
-        console.log("INSIDE IF")
+
         req
           .file('files')
           .upload(async function (error, uploadFile) {
             try {
               var user_id = req.user.id
-              console.log("uploadFile", uploadFile)
-              console.log("uploadFile.length", uploadFile.length)
               if (uploadFile.length > 0) {
                 for (var i = 0; i < uploadFile.length; i++) {
                   var data = {};
@@ -831,10 +774,7 @@ module.exports = {
                   data.type = (i == 0) ? 1 : 2;
                   data.user_id = user_id;
 
-                  console.log("data", data)
-
                   var dataValue = await sails.helpers.uploadTierDocument(data)
-                  console.log("dataValue", dataValue)
                 }
               }
               return res.status(dataValue.status).json(dataValue);
@@ -859,7 +799,6 @@ module.exports = {
             .upload(async function (error, uploadFile) {
               try {
                 var dataValue
-                console.log("uploadFile", uploadFile)
                 if (uploadFile.length > 0) {
                   for (var i = 0; i < uploadFile.length; i++) {
                     var data = {};
@@ -870,7 +809,6 @@ module.exports = {
                     data.user_id = user_id;
 
                     dataValue = await sails.helpers.uploadTierDocument(data)
-                    console.log("dataValue", dataValue)
                   }
                 }
                 return res.status(dataValue.status).json(dataValue);
@@ -889,17 +827,13 @@ module.exports = {
         }
       } else if ((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && tierDetails != undefined) {
         var flag = false;
-        console.log("flag", flag)
         for (var i = 0; i < tierDetails.length; i++) {
-          console.log("tierDetails[i].type", tierDetails[i].type)
           if (tierDetails[i].type == 1) {
-            console.log("tierDetails[i].is_approved", tierDetails[i].is_approved)
             if (tierDetails[i].is_approved == false) {
               flag = true;
             }
           }
         }
-        console.log("flag after", flag)
         if (flag == true) {
           req
             .file('files')
@@ -913,7 +847,6 @@ module.exports = {
                 data.user_id = user_id;
 
                 var dataValue = await sails.helpers.uploadTierDocument(data)
-                console.log("dataValue", dataValue)
                 return res.status(dataValue.status).json(dataValue);
 
               } catch (error) {
@@ -937,22 +870,17 @@ module.exports = {
             }
           }
         }
-        console.log("after flag", flag)
         if (flag == true) {
           req
             .file('files')
             .upload(async function (error1, uploadFile1) {
               try {
-                console.log(error1);
-                console.log(uploadFile1)
                 var data1 = {};
                 data1.request_id = idValue;
                 data1.file = uploadFile1[0]
                 data1.description = randomize('Aa0', 10);
                 data1.type = 2;
                 data1.user_id = user_id;
-
-                console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
 
                 return res.status(dataValue.status).json(dataValue);
@@ -985,7 +913,6 @@ module.exports = {
   adminUploadUserDocument: async function (req, res) {
     try {
       var data = req.body
-      console.log("req.body", req.body)
 
       var tierDetails = await TierRequest.findOne({
         where: {
@@ -993,8 +920,6 @@ module.exports = {
           deleted_at: null
         }
       });
-
-      console.log("tierDetails", tierDetails)
 
       if (tierDetails != undefined) {
 
@@ -1028,8 +953,7 @@ module.exports = {
             .upload(async function (error, uploadFile) {
               try {
                 var data = {};
-                console.log(error)
-                console.log(uploadFile)
+
                 data.request_id = tierDetails.request_id;
                 data.file = uploadFile[0]
                 data.description = randomize('Aa0', 10);
@@ -1050,15 +974,11 @@ module.exports = {
             .file('files')
             .upload(async function (error1, uploadFile1) {
               try {
-                console.log(error1);
-                console.log(uploadFile1)
                 var data1 = {};
                 data1.request_id = tierDetails.request_id;
                 data1.file = uploadFile1[0]
                 data1.description = randomize('Aa0', 10);
                 data1.type = 2;
-
-                console.log(data1)
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
                 dataValue1.message = dataValue1.data
 
