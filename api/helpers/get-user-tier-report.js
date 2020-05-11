@@ -37,17 +37,17 @@ module.exports = {
             }
         });
 
-        if (parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1)) {
-            // console.log()
-            // Tier Upgrade not applicable
-            return exits.success(1)
-        }
+        // if (parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1)) {
+        //     // console.log()
+        //     // Tier Upgrade not applicable
+        //     return exits.success(1)
+        // }
 
         // Get Tier Requirement Set
         var getTierData = await Tiers.findOne({
             where: {
                 deleted_at: null,
-                tier_step: parseInt(userData.account_tier) + 1
+                tier_step: body.tier_requested
             }
         });
 
