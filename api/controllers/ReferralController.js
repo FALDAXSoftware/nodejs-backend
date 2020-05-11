@@ -16,7 +16,6 @@ module.exports = {
 
       if (referralData != undefined && referralData != null && referralData.length > 0) {
         for (var i = 0; i < referralData.length; i++) {
-          console.log("referralData.length", referralData.length)
           var walletUserData = await Wallet.findOne({
             deleted_at: null,
             user_id: referralData[i].user_id,
@@ -74,13 +73,11 @@ module.exports = {
             }
 
           } else {
-            console.log("INSIDE ELSE")
             flag = 1;
 
             if (coinArray.indexOf(coinData.coin_code) == -1) {
               coinArray.push(coinData.coin_code)
             }
-            console.log("coinArray", coinArray)
             await Referral
               .update({
                 "id": referralData[i].id
@@ -90,7 +87,6 @@ module.exports = {
               });
           }
         }
-        console.log("coinArray", coinArray)
         var msg = ''
         msg = "Please generate your "
         if (flag == 1) {
@@ -103,7 +99,6 @@ module.exports = {
         }
         msg += " to collect referral. "
 
-        console.log("msg", msg)
         return res.json({
           "status": 200,
           "message": msg + sails.__("Referral amount collect").message
@@ -122,7 +117,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -156,7 +151,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -185,7 +180,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }
