@@ -25,7 +25,6 @@ module.exports = {
           is_active: true
         }
       });
-      console.log(pairData.length)
       return res.json({
         'status': 200,
         'message': "All Pair data has been retrieved successfully",

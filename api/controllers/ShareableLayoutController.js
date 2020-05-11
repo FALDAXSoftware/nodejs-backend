@@ -13,17 +13,11 @@ module.exports = {
         try {
             var code = req.body.code;
 
-            console.log(code)
-
             var sqlQuey = `SELECT * FROM shareable_layout WHERE deleted_at IS NULL AND code LIKE '%${code}%'`
-            console.log(sqlQuey)
+
             codeData = await sails.sendNativeQuery(sqlQuey, [])
 
-            console.log(codeData)
-
             codeData = codeData.rows;
-
-            console.log("codeData", codeData)
 
             return res
                 .status(200)
@@ -56,8 +50,6 @@ module.exports = {
                 layout_data: data.layout_data,
                 created_at: new Date()
             }).fetch();
-
-            console.log("addData", addData)
 
             if (addData) {
                 return res
