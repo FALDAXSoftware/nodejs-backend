@@ -103,6 +103,29 @@ module.exports.http = {
             }
           }
         }
+      }else if (req.headers && req.headers["x-api-key"]) {
+        if( !req.headers["x-api-key"] || req.headers["x-api-key"] == null || req.headers["x-api-key"] == '' ){
+          return res
+              .status(400)
+              .json({
+                "status": 400,
+                "err": sails.__("Api key is missing").message
+              });
+        }
+        let api_key = req.headers["x-api-key"];
+        let get_api_keys = await sails.helpers.getApikeyUser( api_key );
+        if( !get_api_keys ){
+          return res
+            .status(400)
+            .json({
+              "status": 400,
+              "err": sails.__("Api key is invalid").message
+            });
+        }
+        var verifyData = {
+          id:get_api_keys.user_id
+        };
+        req.user = verifyData;
       }
       var generate_unique_string = Math.random().toString(36).substring(2, 16) + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + Math.random().toString(36).substring(2, 16).toUpperCase() + "-" + (new Date().valueOf());
       req.headers['Logid'] = generate_unique_string;
