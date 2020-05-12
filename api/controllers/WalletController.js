@@ -4137,13 +4137,19 @@ module.exports = {
                     "data": data
                   })
               } else {
+                console.log("limitCalculation[0].usd_price", limitCalculation[0].usd_price)
+                console.log("data.amount", data.amount)
+                console.log("limitCalculation[0].usd_price * data.amount", limitCalculation[0].usd_price * data.amount)
+                console.log("dailyTotalVolume", dailyTotalVolume);
+                console.log("(limitCalculation[0].usd_price * data.amount) + monthlyTotalVolume)", (limitCalculation[0].usd_price * data.amount) + monthlyTotalVolume)
+                var value = parseFloat(limitCalculation[0].usd_price * data.amount).toFixed(2)
                 var data = {
                   "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
                   "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - monthlyTotalVolume)),
                   "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                   "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                  "current_limit_left_daily_amount": (userTierSql[0].daily_withdraw_limit) - ((limitCalculation[0].usd_price * data.amount) + dailyTotalVolume),
-                  "current_limit_left_montly_amount": (userTierSql[0].monthly_withdraw_limit) - ((limitCalculation[0].usd_price * data.amount) + monthlyTotalVolume)
+                  "current_limit_left_daily_amount": (userTierSql[0].daily_withdraw_limit) - (value + dailyTotalVolume),
+                  "current_limit_left_montly_amount": (userTierSql[0].monthly_withdraw_limit) - (value + monthlyTotalVolume)
                 }
                 return res
                   .status(200)
