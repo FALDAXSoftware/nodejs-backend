@@ -64,6 +64,7 @@ module.exports = {
         let eligibleUpgrateAge = moment(previousTierUpgradedOn.account_verified_at).add(parseInt(requirementSetFirst.Account_Age), 'days');
         let getTradeCount = await sails.helpers.tradding.trade.getUserTradeDetails(userData, true);
         let getTotalTradeInFiat = await sails.helpers.tradding.trade.getUserTradeDetails(userData, false);
+        console.log("getTotalTradeInFiat", getTotalTradeInFiat)
         let req1_ageCheck = false;
         let req1_tradeCountCheck = false;
         let req1_tradeTotalFiatCheck = false;
@@ -103,6 +104,7 @@ module.exports = {
 
         let requirementSetSecond = (getTierData.requirements_two);
         let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance(user_id);
+        console.log("getTotalWalletInFiat", getTotalWalletInFiat)
         let req2_tradeWalletCheck = false;
         if ((getTotalWalletInFiat.length > 0 && getTotalWalletInFiat[0].total_balance_fiat) >= parseInt(requirementSetSecond.Total_Wallet_Balance)) {
             req2_tradeWalletCheck = true;
