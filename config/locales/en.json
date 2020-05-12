@@ -2868,7 +2868,7 @@
 		"context": "No Authorization header was found",
 		"message_type": "error",
 		"message_english": "No Authorization header was found.",
-		"message": "No Authorization header was found."
+		"message": "No Authorization header or api key was found."
 	},
 	"Verification Expired": {
 		"page": "Login",
@@ -3252,7 +3252,7 @@
 		"page": "On each Authernicated routes",
 		"context": "When api key is invalid",
 		"message_type": "error",
-		"message_english": "API key is invalid.",
-		"message": "API key is invalid."
+		"message_english": "Please prodvide valid API key.",
+		"message": "Please prodvide valid API key."
 	}
 }
