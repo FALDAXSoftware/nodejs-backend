@@ -45,13 +45,13 @@ module.exports = {
   },
   getSymbolInfo: function (req, res) {
     res.json({
-      description: req.query.symbol,
+      description: (req.query.symbol).replace("-", "/"),
       // "exchange-listed": "Faldax", "exchange-traded": "Faldax",
       has_intraday: true,
       has_no_volume: false,
       minmov: 1,
       minmov2: 0,
-      name: req.query.symbol,
+      name: (req.query.symbol).replace("-", "/"),
       pointvalue: 1,
       pricescale: 100,
       volume_precision: 8,
