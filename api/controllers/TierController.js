@@ -164,8 +164,9 @@ module.exports = {
           }
         }
       } else {
+        console.log("INSIDE ELSE")
         for (var i = 0; i < tierDetails.length; i++) {
-          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && ((parseInt(userData.account_tier) + 1) != 4)) {
+          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
             if ((parseInt(userData.account_tier) + 1) == 1) {
               var userKYCDetails = await KYC.findOne({
                 where: {
@@ -183,6 +184,7 @@ module.exports = {
                 }
               }
             }
+            console.log("tierDetails[i]", tierDetails[i])
             tierDetails[i].is_active = true;
             var accountTierDetails = await TierMainRequest.findOne({
               where: {
