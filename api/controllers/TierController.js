@@ -629,7 +629,17 @@ module.exports = {
               id: tierDataFinal.user_id
             }
           })
-
+          // Add API key for institutional account
+          let getUserApiKey = await sails.helpers.getUserApiKeys(tierDataFinal.user_id);
+          if( !getUserApiKey ){
+            var random_string = await sails
+              .helpers
+              .randomStringGenerator(32);
+            await APIKeys.create({
+              user_id: tierDataFinal.user_id,
+              api_key: random_string
+            });
+          }
           var userData = await Users
             .update({
               deleted_at: null,
@@ -637,7 +647,8 @@ module.exports = {
               id: tierDataFinal.user_id
             })
             .set({
-              account_tier: 4
+              account_tier: 4,
+              is_institutional_account:true
             })
             .fetch();
           await sails.helpers.notification.send.email("tier_force_approved", userData)
@@ -1523,7 +1534,28 @@ module.exports = {
               .set({
                 account_tier: (userValue.account_tier == 4) ? 4 : (getTierValue.tier_step)
               })
+            if( getTierValueUpdate[0].tier_step == 4 ){
+              // Add API key for institutional account
+              await Users
+                .update({
+                  where: {
+                    id: getTierValue.user_id
+                  }
+                }).set({
+                  is_institutional_account: true
+                })
+              let getUserApiKey = await sails.helpers.getUserApiKeys(getTierValue.user_id);
+              if( !getUserApiKey ){
+                var random_string = await sails
+                  .helpers
+                  .randomStringGenerator(32);
+                await APIKeys.create({
+                  user_id: getTierValue.user_id,
+                  api_key: random_string
+                });
+              }
 
+            }
             await sails.helpers.notification.send.email("tier_force_approved", userValue)
           }
 
