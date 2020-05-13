@@ -158,7 +158,7 @@ module.exports = {
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL
+                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
 
       console.log(query)
@@ -167,7 +167,7 @@ module.exports = {
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
-                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))
+                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
@@ -3359,6 +3359,7 @@ module.exports = {
       }
       query.deleted_at = null
       query.is_active = true
+      query.is_fiat = false
 
       var coinData = await Coins
         .find({
