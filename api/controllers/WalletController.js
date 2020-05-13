@@ -158,15 +158,18 @@ module.exports = {
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL
+                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
+
+      console.log("query", query)
 
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
-                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))
+                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
+      console.log("nonWalletQuery", nonWalletQuery)
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
       var coinData = await Coins.findOne({
@@ -3294,6 +3297,7 @@ module.exports = {
       }
       query.deleted_at = null
       query.is_active = true
+      query.is_fiat = false
 
       var coinData = await Coins
         .find({
@@ -3309,19 +3313,39 @@ module.exports = {
             .helpers
             .wallet
             .getWalletAddressBalance(coinData[i].hot_receive_wallet_address, coinData[i].coin_code);
-          coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
-          coinData[i].address = wallet_data.receiveAddress.address;
-        } else {
-          var walletData = await Wallet.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              "wallet_id": "warm_wallet"
-            }
-          });
-          coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
-          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+          console.log("wallet_data", wallet_data);
+          if (!wallet_data.error) {
+            coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+            coinData[i].address = wallet_data.receiveAddress.address;
+          }
+        } else if (coinData[i].coin_code == "SUSU") {
+          var responseValue = await new Promise(async (resolve, reject) => {
+            request({
+              url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
+              method: "GET",
+              headers: {
+
+                'x-token': 'faldax-susucoin-node',
+                'Content-Type': 'application/json'
+              },
+              json: true
+            }, function (err, httpResponse, body) {
+              console.log("body", body)
+              console.log(err)
+              if (err) {
+                reject(err);
+              }
+              if (body.error) {
+                resolve(body);
+              }
+              resolve(body);
+              // return body;
+            });
+          })
+          coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          coinData[i].coin_precision = "1e0"
         }
+
       }
       return res
         .status(200)
