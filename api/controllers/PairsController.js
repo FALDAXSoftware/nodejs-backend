@@ -95,10 +95,10 @@ module.exports = {
         sort_order,
         filter_val
       } = req.allParams();
-      let query = " from pairs";
+      let query = " from pairs WHERE deleted_at IS NULL";
       let whereAppended = false;
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
           query += " ( LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
@@ -109,7 +109,7 @@ module.exports = {
         }
       }
       if (filter_val) {
-        query += whereAppended ? " AND " : " WHERE ";
+        query += " AND ";
         whereAppended = true;
         query += "( coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "' )";
       }
