@@ -23,11 +23,11 @@ module.exports = {
       columnName: 'requirements'
     },
     daily_withdraw_limit: {
-      type: 'number',
+      type: 'string',
       columnName: 'daily_withdraw_limit'
     },
     monthly_withdraw_limit: {
-      type: 'number',
+      type: 'string',
       columnName: 'monthly_withdraw_limit'
     },
     created_at: {
