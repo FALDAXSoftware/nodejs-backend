@@ -15,7 +15,8 @@ module.exports = {
       type: 'ref',
       columnType: 'json',
       columnName: 'module',
-      defaultsTo: {}
+      defaultsTo: {},
+      // allowNull: true
     },
     api_key: {
       type: 'string',
@@ -23,7 +24,8 @@ module.exports = {
     },
     ip: {
       type: 'string',
-      columnName: 'ip'
+      columnName: 'ip',
+      allowNull: true
     },
     created_at: {
       type: 'ref',
