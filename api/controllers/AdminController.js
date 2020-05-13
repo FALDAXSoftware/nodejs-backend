@@ -2591,6 +2591,7 @@ module.exports = {
       }
       query.deleted_at = null
       query.is_active = true
+      query.is_fiat = false;
 
       var assets_data = await Coins
         .find({
@@ -4340,6 +4341,7 @@ module.exports = {
       }
       query.deleted_at = null
       query.is_active = true
+      query.is_fiat = false
 
       var assets_data = await Coins
         .find({
