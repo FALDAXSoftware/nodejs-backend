@@ -130,6 +130,7 @@ module.exports = {
                               approved: value.approved
                             }
                             tierDetails[previous_tier].account_details = object;
+                            tierDetails[previous_tier].is_active = true
                           }
                         }
                       } else {
@@ -138,7 +139,8 @@ module.exports = {
                           user_status: tierDetailsValueExtend.user_status,
                           approved: tierDetailsValueExtend.approved
                         }
-                        tierDetails[previous_tier + 1].account_details = object;
+                        tierDetails[previous_tier].account_details = object;
+                        tierDetails[previous_tier].is_active = true
                       }
                     }
                   } else {
@@ -166,7 +168,7 @@ module.exports = {
       } else {
         console.log("INSIDE ELSE")
         for (var i = 0; i < tierDetails.length; i++) {
-          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)) {
+          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && (parseInt(userData.account_tier) + 1 != 4)) {
             if ((parseInt(userData.account_tier) + 1) == 1) {
               var userKYCDetails = await KYC.findOne({
                 where: {
@@ -224,8 +226,8 @@ module.exports = {
               user_status: tierDetailsValue.user_status,
               approved: tierDetailsValue.approved
             }
+            tierDetails[tierDetails.length - 1].account_details = object
           }
-          tierDetails[tierDetails.length - 1].account_details = object
           tierDetails[tierDetails.length - 1].is_active = true;
         }
 
@@ -1782,6 +1784,7 @@ module.exports = {
       }
 
       console.log("req.body", req.body)
+
       // Helper for checking tier requirement of user
       var getTierDetails = await sails.helpers.getUserTierReport(user_id, req.body);
       var getTierDetailsValue = getTierDetails.summaryReport
@@ -1839,7 +1842,17 @@ module.exports = {
         }
       })
 
-      if (tier_step == (parseInt(userData.account_tier) + 1) || tier_step == 4) {
+      var dataValue = await TierMainRequest.findOne({
+        where: {
+          deleted_at: null,
+          tier_step: parseInt(tier_step) - 1,
+          user_id: user_id
+        }
+      })
+
+      console.log("dataValue", dataValue)
+
+      if ((tier_step == (parseInt(userData.account_tier) + 1) || dataValue.approved === true) || tier_step == 4) {
         var getTierData = await TierMainRequest.findOne({
           where: {
             deleted_at: null,
