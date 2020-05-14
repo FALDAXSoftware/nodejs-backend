@@ -221,7 +221,24 @@ module.exports = {
               tierDetails[j].is_verified = true;
             }
           }
-          tierDetails[3].is_active = true
+          var getTierDetails = await TierMainRequest.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 4,
+              user_id: user_id
+            }
+          });
+          if (getTierDetails != undefined) {
+            var object = {
+              request_id: getTierDetails.id,
+              user_status: getTierDetails.user_status,
+              approved: getTierDetails.approved
+            }
+            tierDetails[3].account_details = object;
+            tierDetails[3].is_active = true;
+          } else {
+            tierDetails[3].is_active = true;
+          }
         } else if ((parseInt(userData.account_tier) == 4)) {
           for (var j = 0; j < 4; j++) {
             tierDetails[j].is_verified = true;
