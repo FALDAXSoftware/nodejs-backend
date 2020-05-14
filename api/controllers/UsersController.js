@@ -3650,7 +3650,8 @@ module.exports = {
 
       var coins = await Coins.find({
         is_active: true,
-        deleted_at: null
+        deleted_at: null,
+        is_fiat: false
       })
         .select(["coin_code", "coin", "coin_icon"])
         .sort('id DESC');

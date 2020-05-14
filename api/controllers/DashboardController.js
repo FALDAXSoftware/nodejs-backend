@@ -390,38 +390,25 @@ module.exports = {
       let TierList = [2, 3, 4]
       var TierData = []
       for (var i = 0; i < TierList.length; i++) {
-        let approveTier = await TierRequest.count({
-          where: {
-            deleted_at: null,
-            is_approved: true,
-            tier_step: TierList[i]
-          }
-        })
+        let approveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'true'`
+        let Value = await sails.sendNativeQuery(approveTier, [])
 
         var data = {}
-        data[TierList[i]] = approveTier
+        data[TierList[i]] = Value.rows[0];
         TierData.push(data)
 
-        let disapproveTier = await TierRequest.count({
-          where: {
-            deleted_at: null,
-            is_approved: false,
-            tier_step: TierList[i]
-          }
-        })
+        let disApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'false'`
+        let disApproveValue = await sails.sendNativeQuery(disApproveTier, [])
 
-        data[TierList[i]] = disapproveTier
+        var data = {}
+        data[TierList[i]] = disApproveValue.rows[0];
         TierData.push(data)
 
-        let underApproveTier = await TierRequest.count({
-          where: {
-            deleted_at: null,
-            is_approved: null,
-            tier_step: TierList[i]
-          }
-        })
+        let unApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved IS NULL`
+        let unApproveValue = await sails.sendNativeQuery(unApproveTier, [])
 
-        data[TierList[i]] = underApproveTier
+        var data = {}
+        data[TierList[i]] = unApproveValue.rows[0];
         TierData.push(data)
       }
       return res.json({
