@@ -466,6 +466,7 @@ module.exports = {
           }
         }
 
+        console.log("flag", flag)
         if (flag == 4) {
           var tierDataUpdate = await TierMainRequest
             .update({
@@ -503,7 +504,7 @@ module.exports = {
             })
             .fetch();
 
-          await sails.helpers.notification.send.email("tier_force_approved", userData)
+          await sails.helpers.notification.send.email("tier_force_approved", userData[0])
         }
 
         var flag1 = 0;
@@ -573,7 +574,7 @@ module.exports = {
             })
             .fetch();
 
-          await sails.helpers.notification.send.email("tier_force_approved", userData)
+          await sails.helpers.notification.send.email("tier_force_approved", userData[0])
         }
 
         for (var i = 0; i < 2; i++) {
@@ -631,7 +632,7 @@ module.exports = {
           })
           // Add API key for institutional account
           let getUserApiKey = await sails.helpers.getUserApiKeys(tierDataFinal.user_id);
-          if( !getUserApiKey ){
+          if (!getUserApiKey) {
             var random_string = await sails
               .helpers
               .randomStringGenerator(32);
@@ -648,10 +649,10 @@ module.exports = {
             })
             .set({
               account_tier: 4,
-              is_institutional_account:true
+              is_institutional_account: true
             })
             .fetch();
-          await sails.helpers.notification.send.email("tier_force_approved", userData)
+          await sails.helpers.notification.send.email("tier_force_approved", userData[0])
         }
 
         var flag1 = 0;
@@ -1534,7 +1535,7 @@ module.exports = {
               .set({
                 account_tier: (userValue.account_tier == 4) ? 4 : (getTierValue.tier_step)
               })
-            if( getTierValueUpdate[0].tier_step == 4 ){
+            if (getTierValueUpdate[0].tier_step == 4) {
               // Add API key for institutional account
               await Users
                 .update({
@@ -1545,7 +1546,7 @@ module.exports = {
                   is_institutional_account: true
                 })
               let getUserApiKey = await sails.helpers.getUserApiKeys(getTierValue.user_id);
-              if( !getUserApiKey ){
+              if (!getUserApiKey) {
                 var random_string = await sails
                   .helpers
                   .randomStringGenerator(32);
@@ -1751,14 +1752,14 @@ module.exports = {
       var body = req.body;
       var user_id = req.user.id;
 
-      if (body.tier_requested == 4 || body.tier_requested == 1) {
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("Tier upgrade applicable").message
-          })
-      }
+      // if (body.tier_requested == 4 || body.tier_requested == 1) {
+      //   return res
+      //     .status(200)
+      //     .json({
+      //       "status": 200,
+      //       "message": sails.__("Tier upgrade applicable").message
+      //     })
+      // }
 
       var tierDetailsValue = await TierMainRequest.findOne({
         where: {
