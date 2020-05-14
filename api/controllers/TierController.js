@@ -38,200 +38,216 @@ module.exports = {
         }
         return each;
       })
-      if (userData.account_tier == 4) {
-        var tierDetailsValue = await TierMainRequest.findOne({
-          where: {
-            user_id: user_id,
-            tier_step: 4,
-            deleted_at: null
-          }
-        });
-        tierDetails[tierDetails.length - 1].is_verified = true;
+      // if (userData.account_tier == 4) {
+      // var tierDetailsValue = await TierMainRequest.findOne({
+      //   where: {
+      //     user_id: user_id,
+      //     tier_step: 4,
+      //     deleted_at: null
+      //   }
+      // });
+      // tierDetails[tierDetails.length - 1].is_verified = true;
 
-        console.log("tierDetailsValue", tierDetailsValue)
+      // console.log("tierDetailsValue", tierDetailsValue)
 
-        if (tierDetailsValue != undefined) {
-          var previous_tier = tierDetailsValue.previous_tier
-          console.log("previous_tier", previous_tier)
-          var previosuTierDetails = await TierMainRequest.findOne({
-            where: {
-              user_id: user_id,
-              tier_step: previous_tier,
-              deleted_at: null
-            }
-          });
-          if (previosuTierDetails != undefined) {
-            for (var j = 0; j < previous_tier; j++) {
-              if (j != (previous_tier - 1))
-                tierDetails[j].is_verified = true
-              else {
-                if (previosuTierDetails.approved == true)
-                  tierDetails[j].is_verified = previosuTierDetails.approved
-                else {
-                  var object = {
-                    request_id: previosuTierDetails.id,
-                    user_status: previosuTierDetails.user_status,
-                    approved: previosuTierDetails.approved
-                  }
-                  tierDetails[j].account_details = object;
-                  tierDetails[j].is_active = true
-                }
-              }
-            }
-            if (previosuTierDetails.approved == true && previous_tier != (userData.account_tier - 1))
-              tierDetails[previous_tier].is_active = true
-          } else {
-            if (previous_tier == 0) {
-              var KYCValue = await KYC.findOne({
-                where: {
-                  user_id: user_id,
-                  deleted_at: null
-                }
-              });
+      // if (tierDetailsValue != undefined) {
+      //   var previous_tier = tierDetailsValue.previous_tier
+      //   console.log("previous_tier", previous_tier)
+      //   var previosuTierDetails = await TierMainRequest.findOne({
+      //     where: {
+      //       user_id: user_id,
+      //       tier_step: previous_tier,
+      //       deleted_at: null
+      //     }
+      //   });
+      //   if (previosuTierDetails != undefined) {
+      //     for (var j = 0; j < previous_tier; j++) {
+      //       if (j != (previous_tier - 1))
+      //         tierDetails[j].is_verified = true
+      //       else {
+      //         if (previosuTierDetails.approved == true)
+      //           tierDetails[j].is_verified = previosuTierDetails.approved
+      //         else {
+      //           var object = {
+      //             request_id: previosuTierDetails.id,
+      //             user_status: previosuTierDetails.user_status,
+      //             approved: previosuTierDetails.approved
+      //           }
+      //           tierDetails[j].account_details = object;
+      //           tierDetails[j].is_active = true
+      //         }
+      //       }
+      //     }
+      //     if (previosuTierDetails.approved == true && previous_tier != (userData.account_tier - 1))
+      //       tierDetails[previous_tier].is_active = true
+      //   } else {
+      // var tierList = [1, 2, 3]
+      // for (var i = 0; i < tierList.length; i++) {
+      //   if (i == 0) {
+      //     // if ()
+      //     var tierValue = await KYC.findOne({
 
-              if (KYCValue != undefined) {
-                if (KYCValue.first_name != null) {
-                  if (KYCValue.direct_response == "ACCEPT" && KYCValue.webhook_response == "ACCEPT") {
-                    tierDetails[previous_tier].is_verified = true;
-                    previous_tier = 1;
-                    var tierDetailsValueExtend = await TierMainRequest.findOne({
-                      where: {
-                        tier_step: (previous_tier + 1),
-                        user_id: user_id,
-                        deleted_at: null
-                      }
-                    })
-                    if (tierDetailsValueExtend == undefined) {
-                      tierDetails[previous_tier + 1].is_active = true;
-                    } else {
-                      console.log("tierDetailsValueExtend", tierDetailsValueExtend)
-                      if (tierDetailsValueExtend.approved == true || tierDetailsValueExtend.approved == "true") {
-                        tierDetails[previous_tier].is_verified = true;
-                        previous_tier = previous_tier + 1
-                        console.log("previous_tier", previous_tier)
-                        var value = await TierMainRequest.findOne({
-                          where: {
-                            tier_step: (previous_tier + 1),
-                            user_id: user_id,
-                            deleted_at: null
-                          }
-                        });
-                        console.log("value", value)
-                        if (value == undefined) {
-                          tierDetails[previous_tier + 1].is_active = true;
-                        } else {
-                          if (value.approved == "true" || value.approved == true) {
-                            tierDetails[previous_tier].is_verified = true
-                          } else {
-                            tierDetails[previous_tier].is_active = true;
-                            var object = {
-                              request_id: value.id,
-                              user_status: value.user_status,
-                              approved: value.approved
-                            }
-                            tierDetails[previous_tier].account_details = object;
-                            tierDetails[previous_tier].is_active = true
-                          }
-                        }
-                      } else {
-                        var object = {
-                          request_id: tierDetailsValueExtend.id,
-                          user_status: tierDetailsValueExtend.user_status,
-                          approved: tierDetailsValueExtend.approved
-                        }
-                        tierDetails[previous_tier].account_details = object;
-                        tierDetails[previous_tier].is_active = true
-                      }
-                    }
-                  } else {
-                    var object = {
-                      approved: (KYCValue.direct_response != "ACCEPT" && KYCValue.webhook_response != "ACCEPT") ? null : 0.0
-                    }
-                    tierDetails[previous_tier].is_active = true;
-                  }
-                } else {
-                  console.log("previous_tier", previous_tier)
-                  tierDetails[previous_tier].is_active = true
-                }
-              } else {
-                console.log("previous_tier", previous_tier)
-                tierDetails[previous_tier].is_active = true
-              }
-            } else {
-              tierDetails[previous_tier].is_active = true;
-              for (j = 0; j < previous_tier; j++) {
-                tierDetails[j].is_verified = true
-              }
-            }
-          }
-        }
-      } else {
-        console.log("INSIDE ELSE")
-        for (var i = 0; i < tierDetails.length; i++) {
-          if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && (parseInt(userData.account_tier) + 1 != 4)) {
-            if ((parseInt(userData.account_tier) + 1) == 1) {
-              var userKYCDetails = await KYC.findOne({
-                where: {
-                  deleted_at: null,
-                  user_id: user_id
-                }
-              });
+      //     })
+      //   } else {
 
-              if (userKYCDetails != undefined) {
-                if (userKYCDetails.first_name != null) {
-                  var object = {
-                    approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
-                  }
-                  tierDetails[i].account_details = object;
-                }
-              }
-            }
-            console.log("tierDetails[i]", tierDetails[i])
-            tierDetails[i].is_active = true;
-            var accountTierDetails = await TierMainRequest.findOne({
+      //   }
+      // }
+      // if (previous_tier == 0) {
+      //   var KYCValue = await KYC.findOne({
+      //     where: {
+      //       user_id: user_id,
+      //       deleted_at: null
+      //     }
+      //   });
+
+      //   if (KYCValue != undefined) {
+      //     if (KYCValue.first_name != null) {
+      //       if (KYCValue.direct_response == "ACCEPT" && KYCValue.webhook_response == "ACCEPT") {
+      //         tierDetails[previous_tier].is_verified = true;
+      //         previous_tier = 1;
+      //         var tierDetailsValueExtend = await TierMainRequest.findOne({
+      //           where: {
+      //             tier_step: (previous_tier + 1),
+      //             user_id: user_id,
+      //             deleted_at: null
+      //           }
+      //         })
+      //         if (tierDetailsValueExtend == undefined) {
+      //           tierDetails[previous_tier + 1].is_active = true;
+      //         } else {
+      //           console.log("tierDetailsValueExtend", tierDetailsValueExtend)
+      //           if (tierDetailsValueExtend.approved == true || tierDetailsValueExtend.approved == "true") {
+      //             tierDetails[previous_tier].is_verified = true;
+      //             previous_tier = previous_tier + 1
+      //             console.log("previous_tier", previous_tier)
+      //             var value = await TierMainRequest.findOne({
+      //               where: {
+      //                 tier_step: (previous_tier + 1),
+      //                 user_id: user_id,
+      //                 deleted_at: null
+      //               }
+      //             });
+      //             console.log("value", value)
+      //             if (value == undefined) {
+      //               tierDetails[previous_tier + 1].is_active = true;
+      //             } else {
+      //               if (value.approved == "true" || value.approved == true) {
+      //                 tierDetails[previous_tier].is_verified = true
+      //               } else {
+      //                 tierDetails[previous_tier].is_active = true;
+      //                 var object = {
+      //                   request_id: value.id,
+      //                   user_status: value.user_status,
+      //                   approved: value.approved
+      //                 }
+      //                 tierDetails[previous_tier].account_details = object;
+      //                 tierDetails[previous_tier].is_active = true
+      //               }
+      //             }
+      //           } else {
+      //             var object = {
+      //               request_id: tierDetailsValueExtend.id,
+      //               user_status: tierDetailsValueExtend.user_status,
+      //               approved: tierDetailsValueExtend.approved
+      //             }
+      //             tierDetails[previous_tier].account_details = object;
+      //             tierDetails[previous_tier].is_active = true
+      //           }
+      //         }
+      //       } else {
+      //         var object = {
+      //           approved: (KYCValue.direct_response != "ACCEPT" && KYCValue.webhook_response != "ACCEPT") ? null : 0.0
+      //         }
+      //         tierDetails[previous_tier].is_active = true;
+      //       }
+      //     } else {
+      //       console.log("previous_tier", previous_tier)
+      //       tierDetails[previous_tier].is_active = true
+      //     }
+      //   } else {
+      //     console.log("previous_tier", previous_tier)
+      //     tierDetails[previous_tier].is_active = true
+      //   }
+      // } else {
+      //   tierDetails[previous_tier].is_active = true;
+      //   for (j = 0; j < previous_tier; j++) {
+      //     tierDetails[j].is_verified = true
+      //   }
+      // }
+      // }
+      // }
+      // } else {
+      console.log("INSIDE ELSE")
+      for (var i = 0; i < tierDetails.length; i++) {
+        if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && (parseInt(userData.account_tier) + 1 != 4)) {
+          if ((parseInt(userData.account_tier) + 1) == 1) {
+            var userKYCDetails = await KYC.findOne({
               where: {
-                user_id: user_id,
-                tier_step: tierDetails[i].tier_step,
-                deleted_at: null
+                deleted_at: null,
+                user_id: user_id
               }
             });
 
-            if (accountTierDetails != undefined) {
-              var object = {
-                request_id: accountTierDetails.id,
-                user_status: accountTierDetails.user_status,
-                approved: accountTierDetails.approved
-              }
-              tierDetails[i].account_details = object;
-            }
-
-            if (i != 0) {
-              for (var j = 0; j < i; j++) {
-                tierDetails[j].is_verified = true;
+            if (userKYCDetails != undefined) {
+              if (userKYCDetails.first_name != null) {
+                var object = {
+                  approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
+                }
+                tierDetails[i].account_details = object;
               }
             }
           }
-        }
-        if ((parseInt(userData.account_tier) + 1) != 4) {
-          var tierDetailsValue = await TierMainRequest.findOne({
+          // console.log("tierDetails[i]", tierDetails[i])
+          tierDetails[i].is_active = true;
+          var accountTierDetails = await TierMainRequest.findOne({
             where: {
               user_id: user_id,
-              tier_step: 4,
+              tier_step: tierDetails[i].tier_step,
               deleted_at: null
             }
-          })
-          if (tierDetailsValue != undefined) {
-            var object = {
-              request_id: tierDetailsValue.id,
-              user_status: tierDetailsValue.user_status,
-              approved: tierDetailsValue.approved
-            }
-            tierDetails[tierDetails.length - 1].account_details = object
-          }
-          tierDetails[tierDetails.length - 1].is_active = true;
-        }
+          });
 
+          if (accountTierDetails != undefined) {
+            var object = {
+              request_id: accountTierDetails.id,
+              user_status: accountTierDetails.user_status,
+              approved: accountTierDetails.approved
+            }
+            tierDetails[i].account_details = object;
+          }
+
+          if (i != 0) {
+            for (var j = 0; j < i; j++) {
+              tierDetails[j].is_verified = true;
+            }
+          }
+          tierDetails[3].is_active = true
+        } else if ((parseInt(userData.account_tier) == 4)) {
+          for (var j = 0; j < 4; j++) {
+            tierDetails[j].is_verified = true;
+          }
+        }
       }
+      // if ((parseInt(userData.account_tier) + 1) != 4) {
+      //   var tierDetailsValue = await TierMainRequest.findOne({
+      //     where: {
+      //       user_id: user_id,
+      //       tier_step: 4,
+      //       deleted_at: null
+      //     }
+      //   })
+      //   if (tierDetailsValue != undefined) {
+      //     var object = {
+      //       request_id: tierDetailsValue.id,
+      //       user_status: tierDetailsValue.user_status,
+      //       approved: tierDetailsValue.approved
+      //     }
+      //     tierDetails[tierDetails.length - 1].account_details = object
+      //   }
+      //   tierDetails[tierDetails.length - 1].is_active = true;
+      // }
+
+      // }
 
       if (tierDetails) {
         return res
