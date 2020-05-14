@@ -133,7 +133,8 @@ module.exports = {
       let allCoins = await Coins.find({
         where: {
           is_active: true,
-          deleted_at: null
+          deleted_at: null,
+          is_fiat: false
         },
         select: ['id', 'coin_name', 'coin_code', 'coin']
       });
@@ -177,11 +178,15 @@ module.exports = {
         let coinID_2 = await Coins.findOne({
           coin: req.body.coin_code2
         });
+        console.log("coinID_1", coinID_1)
+        console.log("coinID_2", coinID_2)
         let existingPair = await Pairs.find({
-          coin_code1: coinID_1.id,
-          coin_code2: coinID_2.id,
+          // coin_code1: coinID_1.id,
+          // coin_code2: coinID_2.id,
+          name: req.body.name,
           deleted_at: null
         });
+        console.log("existingPair", existingPair)
         if (existingPair.length > 0) {
           return res.status(500).json({
             "status": 500,
@@ -195,8 +200,6 @@ module.exports = {
             name: req.body.name,
             coin_code1: coinID_1.id,
             coin_code2: coinID_2.id,
-            maker_fee: req.body.maker_fee,
-            taker_fee: req.body.taker_fee,
             created_at: new Date()
           })
           .fetch();
