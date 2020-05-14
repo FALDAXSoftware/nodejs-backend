@@ -867,6 +867,8 @@ module.exports = {
           'DESC' :
           'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER By updated_at ASC"
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
@@ -942,7 +944,7 @@ module.exports = {
             tier_step: data.tier_step,
             type: typeObject[i]
           }
-        }).sort('created_at DESC');
+        }).sort('updated_at DESC');
 
         if (getRequestData.length > 1) {
           for (var j = 0; j < getRequestData.length; j++) {

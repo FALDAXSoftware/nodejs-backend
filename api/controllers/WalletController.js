@@ -566,13 +566,13 @@ module.exports = {
             monthlyFlag = true;
           }
 
-          if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+          if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
 
-            if ((((limitCalculation[0].usd_price * amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+            if ((((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
 
-              if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
+              if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
-                if ((((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
+                if ((((limitCalculation[0].usd_price * amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
                   let wallet = await Wallet.findOne({
                     deleted_at: null,
@@ -1074,39 +1074,68 @@ module.exports = {
                         message: sails.__("Wallet Not Found").message
                       });
                   }
+                }else {
+
+                    var data = {
+                      "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
+                      "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
+                      "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                      "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+                      "current_daily_limit": limitCalculation[0].usd_price * data.amount
+                    }
+                    return res
+                      .status(201)
+                      .json({
+                        "status": 201,
+                        "message": sails.__("Daily Limit Exceeded Using Amount").message,
+                        "data": data
+                      })
+                  }
                 } else {
+      
+                  var data = {
+                    "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                    "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+                  }
                   return res
-                    .status(400)
+                    .status(201)
                     .json({
-                      status: 400,
-                      message: sails.__("Monthly Limit Exceeded Using Amount").message + " " + (userTierSql[0].monthly_withdraw_limit - monthlyTotalVolume) + " USD"
+                      "status": 201,
+                      "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit,
+                      "data": data
                     })
                 }
               } else {
+                var data = {
+                  "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
+                  "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
+                  "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                  "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+                  "current_monthly_limit": limitCalculation[0].usd_price * data.amount
+                }
                 return res
-                  .status(400)
+                  .status(201)
                   .json({
-                    status: 400,
-                    message: sails.__("Daily Limit Exceeded Using Amount").message + " " + (userTierSql[0].daily_withdraw_limit - dailyTotalVolume) + " USD"
+                    "status": 201,
+                    "message": sails.__("Monthly Limit Exceeded Using Amount").message,
+                    "data": data
                   })
-
+                // var data = {
               }
             } else {
+              var data = {
+                "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+              }
+              // }
               return res
-                .status(400)
+                .status(201)
                 .json({
-                  status: 400,
-                  message: sails.__("Monthly Limit Exceeded").message
+                  "status": 201,
+                  "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit,
+                  "data": data
                 })
             }
-          } else {
-            return res
-              .status(400)
-              .json({
-                status: 400,
-                message: sails.__("Daily Limit Exceeded").message
-              })
-          }
         } else {
           return res
             .status(400)
@@ -4157,13 +4186,14 @@ module.exports = {
         monthlyFlag = true;
       }
 
-      if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+      if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
 
-        if ((((limitCalculation[0].usd_price * amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+        if ((((limitCalculation[0].usd_price * data.amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
 
-          if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
+          if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
-            if ((((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
+            if ((((limitCalculation[0].usd_price * data.amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+
               if (dailyFlag == true && monthlyFlag == true) {
                 var data = {
                   "daily_limit_left": "Unlimited",
@@ -4199,49 +4229,49 @@ module.exports = {
                   })
               }
             } else {
+
               var data = {
-                "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
+                "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
                 "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                 "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                 "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                "current_monthly_limit": limitCalculation[0].usd_price * data.amount
+                "current_daily_limit": limitCalculation[0].usd_price * data.amount
               }
               return res
                 .status(201)
                 .json({
                   "status": 201,
-                  "message": sails.__("Monthly Limit Exceeded Using Amount").message,
+                  "message": sails.__("Daily Limit Exceeded Using Amount").message,
                   "data": data
                 })
             }
           } else {
-            // }
+
             var data = {
               "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
               "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
             }
-            // }
             return res
               .status(201)
               .json({
                 "status": 201,
-                "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit,
+                "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit,
                 "data": data
               })
           }
         } else {
           var data = {
-            "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
+            "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
             "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
             "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
             "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-            "current_daily_limit": limitCalculation[0].usd_price * data.amount
+            "current_monthly_limit": limitCalculation[0].usd_price * data.amount
           }
           return res
             .status(201)
             .json({
               "status": 201,
-              "message": sails.__("Daily Limit Exceeded Using Amount").message,
+              "message": sails.__("Monthly Limit Exceeded Using Amount").message,
               "data": data
             })
           // var data = {
@@ -4251,11 +4281,12 @@ module.exports = {
           "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
           "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
         }
+        // }
         return res
           .status(201)
           .json({
             "status": 201,
-            "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit,
+            "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit,
             "data": data
           })
       }
