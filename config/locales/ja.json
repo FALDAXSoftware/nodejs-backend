@@ -2993,7 +2993,7 @@
     "context": "When check for unsupported asset pair",
     "message_type": "error",
     "message_english": "This pair does not supported in current system.",
-    "message": "\u3053\u306e\u30da\u30a2\u306f\u3001\u73fe\u5728\u306e\u30b7\u30b9\u30c6\u30e0\u3067\u306f\u30b5\u30dd\u30fc\u30c8\u3055\u308c\u307e\u305b\u3093\u3002"
+    "message": "\u3053\u306e\u30da\u30a2\u306f\u3001\u73fe\u5728\u306e\u30b7\u30b9\u30c6\u30e0\u3067\u30b5\u30dd\u30fc\u30c8\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002"
   },
   "Layout Data Success": {
     "page": "Dashboard, Trade",
@@ -3014,28 +3014,28 @@
     "context": "Add Pair",
     "message_type": "error",
     "message_english": "Both coin code for pair should be same.",
-    "message": "\u30da\u30a2\u306e\u305f\u3081\u306e\u30b3\u30a4\u30f3\u30b3\u30fc\u30c9\u306e\u4e21\u65b9\u304c\u540c\u3058\u3067\u306a\u3051\u308c\u3070\u306a\u308a\u307e\u305b\u3093\u3002"
+    "message": "\u30da\u30a2\u306e\u4e21\u65b9\u306e\u30b3\u30a4\u30f3\u30b3\u30fc\u30c9\u304c\u540c\u3058\u3067\u306a\u3051\u308c\u3070\u306a\u308a\u307e\u305b\u3093\u3002"
   },
   "tier upgrade request success": {
     "page": "Account Tier Management- CMS",
     "context": "Change User Status",
     "message_type": "error",
     "message_english": "User Tier Reuqest has been changed successfully.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u30c6\u30a3\u30a2Reuqest\u304c\u6b63\u5e38\u306b\u5909\u66f4\u3055\u308c\u307e\u3057\u305f\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u8981\u6c42\u304c\u6b63\u5e38\u306b\u5909\u66f4\u3055\u308c\u307e\u3057\u305f\u3002"
   },
   "Your Current is approved or under approval": {
     "page": "Account Tier Management- User",
     "context": "When User uploads rejected document",
     "message_type": "error",
     "message_english": "Your Current Tier is approved or under approval",
-    "message": "\u3042\u306a\u305f\u306e\u73fe\u5728\u306e\u30c6\u30a3\u30a2\u306f\u3001\u627f\u8a8d\u307e\u305f\u306f\u627f\u8a8d\u306e\u4e0b\u306b\u3055\u308c\u3066"
+    "message": "\u3042\u306a\u305f\u306e\u73fe\u5728\u306eTier\u304c\u627f\u8a8d\u3055\u308c\u308b\u304b\u3001\u4fdd\u7559\u3055\u308c\u3066\u3044\u307e\u3059"
   },
   "Admin trade history success": {
     "page": "Wallet Dashboard- CMS",
     "context": "When Admin views particular coin",
     "message_type": "success",
     "message_english": "Transation History has been retrieved successfully.",
-    "message": "\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u306e\u72ec\u7acb\u6b74\u53f2\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
+    "message": "\u53d6\u5f15\u5c65\u6b74\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "Layout data has been added successfully": {
     "page": "Custom dashboard- User",
@@ -3070,14 +3070,14 @@
     "context": "Tier individual data has been retrieved success",
     "message_type": "success",
     "message_english": "Tier individual data has been retrieved success.",
-    "message": "\u30c6\u30a3\u30a2\u500b\u3005\u306e\u30c7\u30fc\u30bf\u306f\u3001\u6210\u529f\u3092\u53d6\u5f97\u3057\u3066\u304d\u307e\u3057\u305f\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u500b\u3005\u306e\u30c7\u30fc\u30bf\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "Request User retrieve success": {
     "page": "Tier Details -CMS",
     "context": "Tier Request ID has been updated successfully.",
     "message_type": "success",
     "message_english": "Tier Request ID has been updated successfully.",
-    "message": "\u30c6\u30a3\u30a2\u30ea\u30af\u30a8\u30b9\u30c8ID\u304c\u6b63\u5e38\u306b\u66f4\u65b0\u3055\u308c\u307e\u3057\u305f\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u30ea\u30af\u30a8\u30b9\u30c8ID\u304c\u6b63\u5e38\u306b\u66f4\u65b0\u3055\u308c\u307e\u3057\u305f\u3002"
   },
   "Tier Request Under Process": {
     "page": "Tier Details Image Upload -CMS",
@@ -3091,56 +3091,56 @@
     "context": "User Tier has been force accepted successffully",
     "message_type": "success",
     "message_english": "User Tier has been force accepted successffully",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u306f\u3001\u529bsuccessffully\u53d7\u3051\u5165\u308c\u3089\u308c\u3066\u304d\u307e\u3057\u305f"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306f\u529b\u304c\u6b63\u5e38\u306b\u53d7\u3051\u5165\u308c\u3089\u308c\u3066\u304d\u307e\u3057\u305f"
   },
   "Force Reject Success": {
     "page": "Tier Details Force Reject -CMS",
     "context": "User Tier has been force Rejected successffully",
     "message_type": "success",
     "message_english": "User Tier has been force Rejected successffully",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u306f\u3001\u529bsuccessffully\u62d2\u5426\u3055\u308c\u307e\u3057\u305f"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306f\u529b\u304c\u6b63\u5e38\u306b\u62d2\u5426\u3055\u308c\u307e\u3057\u305f"
   },
   "Force Pending Success": {
     "page": "Tier Details Force Pending -CMS",
     "context": "User Tier has been added to pending successffully",
     "message_type": "success",
     "message_english": "User Tier has been added to pending successffully",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u306fsuccessffully\u4fdd\u7559\u306b\u8ffd\u52a0\u3055\u308c\u307e\u3057\u305f"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u3092\u6b63\u5e38\u306b\u4fdd\u7559\u306b\u8ffd\u52a0\u3055\u308c\u307e\u3057\u305f"
   },
   "Tier 4 Pdfs retrived successfully": {
     "page": "Tier 4 PDF lists",
     "context": "Tier 4 Pdfs retrived successfully",
     "message_type": "success",
     "message_english": "Tier 4 Pdfs retrieved successfully.",
-    "message": "\u30c6\u30a3\u30a24\u3064\u306ePDF\u306f\u6b63\u5e38\u306b\u53d6\u5f97\u3057\u307e\u3059\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a24\u3064\u306ePDF\u306f\u6b63\u5e38\u306b\u53d6\u5f97\u3057\u307e\u3057\u305f\u3002"
   },
   "Tier 4 Pdfs updated successfully": {
     "page": "Tier 4 PDF update",
     "context": "Tier 4 Pdfs updated successfully",
     "message_type": "success",
     "message_english": "Tier 4 Pdfs updated successfully.",
-    "message": "\u30c6\u30a3\u30a24\u3064\u306ePDF\u306f\u6b63\u5e38\u306b\u66f4\u65b0\u3057\u307e\u3059\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a24\u3064\u306ePDF\u306f\u6b63\u5e38\u306b\u66f4\u65b0\u3057\u307e\u3059\u3002"
   },
   "Tier Upgrade not applicable": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier",
     "message_type": "error",
     "message_english": "Tier upgrade not applicable.",
-    "message": "\u30c6\u30a3\u30a2\u306f\u9069\u7528\u3055\u308c\u307e\u305b\u3093\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3057\u307e\u3059\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306f\u9069\u7528\u3055\u308c\u307e\u305b\u3093\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3057\u307e\u3059\u3002"
   },
   "Tier upgrade applicable": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier",
     "message_type": "sucess",
     "message_english": "Tier upgrade applicable.",
-    "message": "\u30c6\u30a3\u30a2\u306f\u8a72\u5f53\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3057\u307e\u3059\u3002"
+    "message": "\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u304c\u9069\u7528\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3057\u307e\u3059\u3002"
   },
   "Need to fulfill requirements for tier": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier, and requirement not matched",
     "message_type": "error",
     "message_english": "Your current status does not match with next tier requirements.",
-    "message": "\u3042\u306a\u305f\u306e\u73fe\u5728\u306e\u72b6\u6cc1\u306f\u3001\u6b21\u306e\u5c64\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
+    "message": "\u3042\u306a\u305f\u306e\u73fe\u5728\u306e\u72b6\u6cc1\u306f\u3001\u6b21\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
   },
   "your application has been force rejected": {
     "page": "Tier Details",
@@ -3161,63 +3161,63 @@
     "context": "When getting tier details for user in admin panel",
     "message_type": "error",
     "message_english": "User requested tier cannot be unlocked as he has to upgrade lower tier",
-    "message": "\u5f7c\u306f\u4e0b\u306e\u5c64\u3092\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3059\u308b\u5fc5\u8981\u304c\u3042\u308b\u305f\u3081\u3001\u30e6\u30fc\u30b6\u304c\u8981\u6c42\u3057\u305f\u5c64\u306f\u3001\u30ed\u30c3\u30af\u3092\u89e3\u9664\u3059\u308b\u3053\u3068\u306f\u3067\u304d\u307e\u305b\u3093"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u8981\u6c42\u3055\u308c\u305f\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306f\u3001\u30e6\u30fc\u30b6\u30fc\u304c\u4f4e\u304f\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u3092\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3059\u308b\u5fc5\u8981\u304c\u3042\u308b\u305f\u3081\u3001\u30ed\u30c3\u30af\u3092\u89e3\u9664\u3059\u308b\u3053\u3068\u306f\u3067\u304d\u307e\u305b\u3093"
   },
   "User Tier can be upgrade": {
     "page": "Tier Details- CMS",
     "context": "When getting tier details for user in admin panel",
     "message_type": "Success",
     "message_english": "Admin tier can unlock users tier as he has met requirements for higher tier",
-    "message": "\u5f7c\u306f\u9ad8\u3044\u968e\u5c64\u306e\u8981\u4ef6\u3092\u6e80\u305f\u3057\u3066\u3044\u308b\u3068\u3057\u3066\u3001\u7ba1\u7406\u8005\u5c64\u306f\u3001\u30e6\u30fc\u30b6\u30fc\u5c64\u306e\u30ed\u30c3\u30af\u3092\u89e3\u9664\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u307e\u3059"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u306f\u3001\u3088\u308a\u9ad8\u3044\u968e\u5c64\u306e\u8981\u4ef6\u3092\u6e80\u305f\u3057\u3066\u3044\u308b\u3068\u3057\u3066\u3001\u7ba1\u7406\u8005\u5c64\u306f\u3001\u30e6\u30fc\u30b6\u30fc\u5c64\u306e\u30ed\u30c3\u30af\u3092\u89e3\u9664\u3059\u308b\u3053\u3068\u304c\u3067\u304d\u307e\u3059"
   },
   "User Tier can be upgrade by admin": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier, and requirement not matched",
     "message_type": "error",
     "message_english": "User current status does not match with next tier requirements.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u306e\u73fe\u5728\u306e\u30b9\u30c6\u30fc\u30bf\u30b9\u306f\u3001\u6b21\u306e\u5c64\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u306e\u73fe\u5728\u306e\u30b9\u30c6\u30fc\u30bf\u30b9\u306f\u3001\u6b21\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
   },
   "Need to fulfill requirements for tier by admin": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier, and requirement not matched",
     "message_type": "error",
     "message_english": "User current status does not match with next tier requirements.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u306e\u73fe\u5728\u306e\u30b9\u30c6\u30fc\u30bf\u30b9\u306f\u3001\u6b21\u306e\u5c64\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u306e\u73fe\u5728\u306e\u30b9\u30c6\u30fc\u30bf\u30b9\u306f\u3001\u6b21\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306e\u8981\u4ef6\u3068\u4e00\u81f4\u3057\u3066\u3044\u307e\u305b\u3093\u3002"
   },
   "User Unlock Tier Success": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier",
     "message_type": "error",
     "message_english": "User tier has been unlocked successfully.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u304c\u6b63\u5e38\u306b\u30a2\u30f3\u30ed\u30c3\u30af\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u304c\u6b63\u5e38\u306b\u30a2\u30f3\u30ed\u30c3\u30af\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "Tier has also been upgraded": {
     "page": "Tier upgrade",
     "context": "When upgrading to upper tier",
     "message_type": "error",
     "message_english": "User tier has already been unlocked.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u306f\u3001\u65e2\u306b\u30a2\u30f3\u30ed\u30c3\u30af\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306f\u3059\u3067\u306b\u30ed\u30c3\u30af\u89e3\u9664\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "Tier Value Success": {
     "page": "Tier upgrade - CMS",
     "context": "When upgrading to upper tier",
     "message_type": "error",
     "message_english": "User tier value has been retrieved successfully.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5c64\u306e\u5024\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u5024\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "User Tier Daily Limit Exceeded": {
     "page": "Wallet Send limit check",
     "context": "User Tier Limit Check",
     "message_type": "error",
     "message_english": "User daily limit exceeded for the transaction. Daily Limit for your tier is",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u5024\u5e45\u5236\u9650\u306f\u3001\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u306e\u305f\u3081\u306b\u8d85\u3048\u307e\u3057\u305f\u3002\u3042\u306a\u305f\u306e\u968e\u5c64\u306e\u305f\u3081\u306e\u5024\u5e45\u5236\u9650\u304c\u3042\u308a\u307e\u3059"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u5024\u5e45\u5236\u9650\u306f\u3001\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u306e\u305f\u3081\u306b\u8d85\u3048\u307e\u3057\u305f\u3002\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306e\u305f\u3081\u306e\u5024\u5e45\u5236\u9650\u304c\u3042\u308a\u307e\u3059"
   },
   "User Tier Monthly Limit Exceeded": {
     "page": "Wallet Send limit check",
     "context": "User Tier Limit Check",
     "message_type": "error",
     "message_english": "User Monthly limit exceeded for the transaction. Monthly Limit for your tier is",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u6bce\u6708\u306e\u4e0a\u9650\u306f\u3001\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u306e\u305f\u3081\u306b\u8d85\u3048\u307e\u3057\u305f\u3002\u3042\u306a\u305f\u306e\u968e\u5c64\u306e\u305f\u3081\u306e\u6708\u4f8b\u9650\u754c\u304c\u3042\u308a\u307e\u3059"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u6bce\u6708\u306e\u4e0a\u9650\u306f\u3001\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u306e\u305f\u3081\u306b\u8d85\u3048\u307e\u3057\u305f\u3002\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u306e\u305f\u3081\u306e\u6708\u4f8b\u9650\u754c\u304c\u3042\u308a\u307e\u3059"
   },
   "User Can do transaction": {
     "page": "Wallet Send limit check",
@@ -3231,14 +3231,14 @@
     "context": "User Tier Limit Check",
     "message_type": "error",
     "message_english": "User is not able to do any transaction. You need to upgrade your tier to do transactions.",
-    "message": "\u30e6\u30fc\u30b6\u30fc\u306f\u4efb\u610f\u306e\u53d6\u5f15\u3092\u884c\u3046\u3053\u3068\u304c\u3067\u304d\u307e\u305b\u3093\u3002\u3042\u306a\u305f\u306f\u3001\u53d6\u5f15\u3092\u884c\u3046\u305f\u3081\u306b\u3042\u306a\u305f\u306e\u5c64\u3092\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3059\u308b\u5fc5\u8981\u304c\u3042\u308a\u307e\u3059\u3002"
+    "message": "\u30e6\u30fc\u30b6\u30fc\u306f\u3001\u30c8\u30e9\u30f3\u30b6\u30af\u30b7\u30e7\u30f3\u3092\u5b8c\u4e86\u3059\u308b\u305f\u3081\u306b\u81ea\u5206\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u3092\u30a2\u30c3\u30d7\u30b0\u30ec\u30fc\u30c9\u3059\u308b\u5fc5\u8981\u304c\u3042\u308a\u307e\u3059\u3002"
   },
   "All Tier Data retrieve success": {
     "page": "Tier - CMS",
     "context": "Get all tier data",
     "message_type": "error",
     "message_english": "All tier data has been retrieved successfully.",
-    "message": "\u3059\u3079\u3066\u306e\u968e\u5c64\u306e\u30c7\u30fc\u30bf\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
+    "message": "\u3059\u3079\u3066\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u30c6\u30a3\u30a2\u30c7\u30fc\u30bf\u304c\u6b63\u5e38\u306b\u53d6\u5f97\u3055\u308c\u3066\u3044\u307e\u3059\u3002"
   },
   "Api key is missing": {
     "page": "On each Authernicated routes",
@@ -3252,6 +3252,6 @@
     "context": "When api key is invalid",
     "message_type": "error",
     "message_english": "Please prodvide valid API key.",
-    "message": "\u6709\u52b9\u306aAPI\u30ad\u30fc\u3092prodvide\u3057\u3066\u304f\u3060\u3055\u3044\u3002"
+    "message": "\u6709\u52b9\u306aAPI\u30ad\u30fc\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002"
   }
 }
