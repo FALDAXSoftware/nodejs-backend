@@ -37,11 +37,26 @@ module.exports = {
             }
         });
 
-        // if (parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1)) {
-        //     // console.log()
-        //     // Tier Upgrade not applicable
-        //     return exits.success(1)
-        // }
+        var dataValue = await TierMainRequest.findOne({
+            where: {
+                deleted_at: null,
+                tier_step: parseInt(body.tier_requested) - 1,
+                user_id: user_id
+            }
+        })
+
+        console.log("dataValue", dataValue)
+
+        if (body.tier_requested != 4 && body.tier_requested != 1) {
+            console.log("PERFCET")
+            if (dataValue.approved !== true) {
+                if ((parseInt(body.tier_requested) != (parseInt(userData.account_tier) + 1))) {
+                    console.log("ISNIDE THIS")
+                    // Tier Upgrade not applicable
+                    return exits.success(1)
+                }
+            }
+        }
 
         // Get Tier Requirement Set
         var getTierData = await Tiers.findOne({
