@@ -883,7 +883,7 @@ module.exports = {
                 data1.user_id = user_id;
                 var dataValue1 = await sails.helpers.uploadTierDocument(data1)
 
-                return res.status(dataValue.status).json(dataValue);
+                return res.status(dataValue1.status).json(dataValue1);
               } catch (error1) {
                 console.log(error1);
               }
