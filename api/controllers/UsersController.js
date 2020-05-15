@@ -760,17 +760,21 @@ module.exports = {
         }
       }
     }
-    let userKyc = await KYC.findOne({
-      user_id: id
-    });
-    usersData[0].is_kyc_done = 0;
-    if (userKyc) {
-      if (userKyc.steps == 3) {
-        usersData[0].is_kyc_done = 1;
-        if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
-          usersData[0].is_kyc_done = 2;
+    if (usersData[0].account_tier != 4) {
+      let userKyc = await KYC.findOne({
+        user_id: id
+      });
+      usersData[0].is_kyc_done = 0;
+      if (userKyc) {
+        if (userKyc.steps == 3) {
+          usersData[0].is_kyc_done = 1;
+          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+            usersData[0].is_kyc_done = 2;
+          }
         }
       }
+    } else if (usersData[0].account_tier == 4) {
+      usersData[0].is_kyc_done = 2
     }
     var dataResponse = await sails
       .helpers
@@ -784,7 +788,7 @@ module.exports = {
     });
 
     usersData[0].is_panic_enabled = panic_button_details.value
-    usersData[0].is_allowed = dataResponse.response;
+    usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
     // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
