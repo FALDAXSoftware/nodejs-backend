@@ -745,6 +745,15 @@ module.exports = {
         }
       });
 
+      if (userData.account_tier == 4) {
+        return res
+          .status(203)
+          .json({
+            "status": 203,
+            "message": sails.__("your application has been force accepted").message
+          })
+      }
+
       var finalData = [];
 
       if (data.tier_step == 2) {
@@ -903,7 +912,7 @@ module.exports = {
           'ASC');
         query += " ORDER BY " + sort_col + " " + sortVal;
       } else {
-        query += " ORDER By updated_at ASC"
+        query += " ORDER By created_at DESC"
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
@@ -1814,6 +1823,25 @@ module.exports = {
             "status": 200,
             "message": sails.__("Tier upgrade applicable").message
           })
+      } else {
+        var tierValue = await TierMainRequest.findOne({
+          where: {
+            deleted_at: null,
+            tier_step: req.body.tier_requested,
+            user_id: user_id,
+          }
+        });
+        console.log("tierValue", tierValue)
+        if (tierValue != undefined) {
+          if (tierValue.approved == null) {
+            return res
+              .status(200)
+              .json({
+                "status": 200,
+                "message": sails.__("Tier upgrade applicable").message
+              })
+          }
+        }
       }
 
       console.log("req.body", req.body)
