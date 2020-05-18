@@ -168,16 +168,16 @@ module.exports = {
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
-      var coinData = await Coins.findOne({
-        where: {
-          coin_code: 'SUSU'
-        }
-      });
-      if (coinData.deleted_at == null) {
-        var susucoinData = await sails.helpers.getUsdSusucoinValue();
-        susucoinData = JSON.parse(susucoinData);
-        susucoinData = susucoinData.data
-      }
+      // var coinData = await Coins.findOne({
+      //   where: {
+      //     coin_code: 'SUSU'
+      //   }
+      // });
+      // if (coinData.deleted_at == null) {
+      //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+      //   susucoinData = JSON.parse(susucoinData);
+      //   susucoinData = susucoinData.data
+      // }
       let deactivated_asset_lists = [];
       let activated_asset_lists = [];
       let eth_asset = false;
@@ -212,17 +212,28 @@ module.exports = {
 
         } else {
           if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
+            // balanceWalletData.rows[i].quote = {
+            //   EUR: {
+            //     price: susucoinData.EUR,
+            //   },
+            //   INR: {
+            //     price: susucoinData.INR,
+            //   },
+            //   USD: {
+            //     price: susucoinData.USD,
+            //   }
+
+            // }
             balanceWalletData.rows[i].quote = {
               EUR: {
-                price: susucoinData.EUR,
+                price: (balanceWalletData.rows[i].quote.EUR.price),
               },
               INR: {
-                price: susucoinData.INR,
+                price: (balanceWalletData.rows[i].quote.INR.price),
               },
               USD: {
-                price: susucoinData.USD,
+                price: (balanceWalletData.rows[i].quote.USD.price),
               }
-
             }
         }
 
@@ -474,7 +485,7 @@ module.exports = {
                             FROM coins
                             LEFT JOIN currency_conversion
                             ON coins.id = currency_conversion.coin_id
-                            WHERE coins.coin_code = '${coin_code}' AND coins.is_active = 'true' 
+                            WHERE coins.coin_code = '${coin_code}' AND coins.is_active = 'true'
                             AND coins.deleted_at IS NULL AND currency_conversion.deleted_at IS NULL`
           var limitCalculation = await sails.sendNativeQuery(limitSql);
           limitCalculation = limitCalculation.rows;
@@ -482,7 +493,7 @@ module.exports = {
           // Daily Limit Checking
           var getUserDailyHistory = `SELECT *
                                       FROM (
-                                        SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount	
+                                        SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                           FROM coins
                                           LEFT JOIN withdraw_request
                                           ON withdraw_request.coin_id = coins.id
@@ -507,7 +518,7 @@ module.exports = {
           // Monthly Limit Checking
           var getUserMonthlyHistory = `SELECT *
                                           FROM (
-                                            SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount	
+                                            SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                               FROM coins
                                               LEFT JOIN withdraw_request
                                               ON withdraw_request.coin_id = coins.id
@@ -2745,7 +2756,7 @@ module.exports = {
         var tradeQuery = `SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
                             user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name
                             FROM trade_history
-                            LEFT JOIN coins 
+                            LEFT JOIN coins
                             ON trade_history.currency = coins.coin
                             LEFT JOIN coins as coin1
                             ON trade_history.settle_currency = coin1.coin
@@ -4093,14 +4104,14 @@ module.exports = {
                         FROM coins
                         LEFT JOIN currency_conversion
                         ON coins.id = currency_conversion.coin_id
-                        WHERE coins.coin_code = '${data.coin}' AND coins.is_active = 'true' 
+                        WHERE coins.coin_code = '${data.coin}' AND coins.is_active = 'true'
                         AND coins.deleted_at IS NULL AND currency_conversion.deleted_at IS NULL`
       var limitCalculation = await sails.sendNativeQuery(limitSql);
       limitCalculation = limitCalculation.rows;
       // Daily Limit Checking
       var getUserDailyHistory = `SELECT *
                                   FROM (
-                                    SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount	
+                                    SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                       FROM coins
                                       LEFT JOIN withdraw_request
                                       ON withdraw_request.coin_id = coins.id
@@ -4126,7 +4137,7 @@ module.exports = {
       // Monthly Limit Checking
       var getUserMonthlyHistory = `SELECT *
                                     FROM (
-                                      SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount	
+                                      SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                         FROM coins
                                         LEFT JOIN withdraw_request
                                         ON withdraw_request.coin_id = coins.id
