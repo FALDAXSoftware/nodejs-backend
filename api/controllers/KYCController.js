@@ -728,7 +728,7 @@ module.exports = {
             .status(200)
             .json({
               "status": 200,
-              "data": "Your SSN has been uploaded successfully"
+              "data": sails.__("Your SSN number has been uploaded successfully.").message
             })
 
         }
@@ -822,7 +822,7 @@ module.exports = {
             .status(500)
             .json({
               status: 500,
-              "err": sails.__("Your Current is approved or under approval")
+              "err": sails.__("Your Current is approved or under approval").message
             })
         }
       } else if ((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && tierDetails != undefined) {
@@ -901,7 +901,7 @@ module.exports = {
           .status(200)
           .json({
             "status": 200,
-            "data": "Your SSN number has been uploaded successfully."
+            "data": sails.__("Your SSN number has been uploaded successfully.").message
           })
       }
 

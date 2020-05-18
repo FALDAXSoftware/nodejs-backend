@@ -161,25 +161,20 @@ module.exports = {
                     WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
 
-      console.log("query", query)
-
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
-      console.log("nonWalletQuery", nonWalletQuery)
       let balanceWalletData = await sails.sendNativeQuery(query, []);
-
       var coinData = await Coins.findOne({
         where: {
           coin_code: 'SUSU'
         }
-      })
+      });
       if (coinData.deleted_at == null) {
         var susucoinData = await sails.helpers.getUsdSusucoinValue();
-        // console.log("susucoinData", susucoinData)
         susucoinData = JSON.parse(susucoinData);
         susucoinData = susucoinData.data
       }
@@ -239,12 +234,9 @@ module.exports = {
       }
 
       let nonBalanceWalletData = await sails.sendNativeQuery(nonWalletQuery, []);
-
       let all_erctoken_lists = [];
       let all_assets_lists = [];
       for (var i = 0; i < (nonBalanceWalletData.rows).length; i++) {
-
-
         if (nonBalanceWalletData.rows[i].quote != undefined) {
           if (nonBalanceWalletData.rows[i].quote.EUR != undefined && nonBalanceWalletData.rows[i].quote.INR != undefined && nonBalanceWalletData.rows[i].quote.USD != undefined) {
             nonBalanceWalletData.rows[i].quote.EUR.price = (nonBalanceWalletData.rows[i].quote.EUR.price).toFixed(sails.config.local.TOTAL_PRECISION)
@@ -263,15 +255,6 @@ module.exports = {
               }
             }
           }
-
-          //   if (nonBalanceWalletData.rows[i].quote.USD) {
-          //     var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
-          //     if (get_price.length > 0) {
-          //       nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-          //     } else {
-          //       nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-          //     }
-          //   }
         }
         if (nonBalanceWalletData.rows[i].iserc == true) {
           if (eth_asset == true) {
@@ -1074,68 +1057,68 @@ module.exports = {
                         message: sails.__("Wallet Not Found").message
                       });
                   }
-                }else {
-
-                    var data = {
-                      "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
-                      "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
-                      "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
-                      "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                      "current_daily_limit": limitCalculation[0].usd_price * data.amount
-                    }
-                    return res
-                      .status(201)
-                      .json({
-                        "status": 201,
-                        "message": sails.__("Daily Limit Exceeded Using Amount").message,
-                        "data": data
-                      })
-                  }
                 } else {
-      
                   var data = {
+                    "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
+                    "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                     "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                     "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+                    "current_daily_limit": limitCalculation[0].usd_price * data.amount
                   }
                   return res
                     .status(201)
                     .json({
                       "status": 201,
-                      "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit,
+                      "message": sails.__("Daily Limit Exceeded Using Amount").message,
                       "data": data
                     })
                 }
               } else {
+
                 var data = {
-                  "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
-                  "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                   "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                   "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                  "current_monthly_limit": limitCalculation[0].usd_price * data.amount
                 }
                 return res
                   .status(201)
                   .json({
                     "status": 201,
-                    "message": sails.__("Monthly Limit Exceeded Using Amount").message,
+                    "message": sails.__("User Tier Daily Limit Exceeded").message + userTierSql[0].daily_withdraw_limit,
                     "data": data
                   })
-                // var data = {
               }
             } else {
               var data = {
+                "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
+                "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                 "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                 "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+                "current_monthly_limit": limitCalculation[0].usd_price * data.amount,
+                // "current_limit_left_montly_amount"
               }
-              // }
               return res
                 .status(201)
                 .json({
                   "status": 201,
-                  "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit,
+                  "message": sails.__("Monthly Limit Exceeded Using Amount").message,
                   "data": data
                 })
+              // var data = {
             }
+          } else {
+            var data = {
+              "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+              "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+            }
+            // }
+            return res
+              .status(201)
+              .json({
+                "status": 201,
+                "message": sails.__("User Tier Monthly Limit Exceeded").message + userTierSql[0].monthly_withdraw_limit,
+                "data": data
+              })
+          }
         } else {
           return res
             .status(400)
@@ -4211,14 +4194,22 @@ module.exports = {
                     "data": data
                   })
               } else {
+                console.log("limitCalculation[0].usd_price", limitCalculation[0].usd_price);
+                console.log("data.amount", data.amount)
                 var value = parseFloat(limitCalculation[0].usd_price * data.amount).toFixed(2)
+                console.log("value", value)
+                console.log("dailyTotalVolume", dailyTotalVolume)
+                console.log("userTierSql[0].daily_withdraw_limit", userTierSql[0].daily_withdraw_limit)
+                console.log("monthlyTotalVolume", monthlyTotalVolume)
+                console.log("userTierSql[0].monthly_withdraw_limit", userTierSql[0].monthly_withdraw_limit)
+                console.log("(value) + (monthlyTotalVolume)", parseFloat(value) + parseFloat(monthlyTotalVolume))
                 var data = {
                   "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
                   "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - monthlyTotalVolume)),
                   "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                   "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                  "current_limit_left_daily_amount": (userTierSql[0].daily_withdraw_limit) - (value + dailyTotalVolume),
-                  "current_limit_left_montly_amount": (userTierSql[0].monthly_withdraw_limit) - (value + monthlyTotalVolume)
+                  "current_limit_left_daily_amount": (userTierSql[0].daily_withdraw_limit) - ((value) + (dailyTotalVolume)),
+                  "current_limit_left_montly_amount": (userTierSql[0].monthly_withdraw_limit) - (parseFloat(value) + parseFloat(monthlyTotalVolume))
                 }
                 return res
                   .status(200)
