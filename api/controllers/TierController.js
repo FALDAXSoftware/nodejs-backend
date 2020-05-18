@@ -732,6 +732,7 @@ module.exports = {
 
   getUserTierData: async function (req, res) {
     try {
+
       var data = req.body;
 
       var user_id = req.user.id;
@@ -744,6 +745,8 @@ module.exports = {
           id: user_id
         }
       });
+
+      sails.hooks.i18n.setLocale(userData.default_language)
 
       if (userData.account_tier == 4) {
         return res

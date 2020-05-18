@@ -3254,5 +3254,12 @@
 		"message_type": "error",
 		"message_english": "Please prodvide valid API key.",
 		"message": "Please provide valid API key."
+	},
+	"Your SSN number has been uploaded successfully.": {
+		"page": "Tiers SSN upload",
+		"context": "Tiers Upload",
+		"message_type": "error",
+		"message_english": "Your SSN number has been uploaded successfully.",
+		"message": "Your SSN number has been uploaded successfully."
 	}
 }
