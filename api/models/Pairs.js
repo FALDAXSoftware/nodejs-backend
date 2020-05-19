@@ -83,6 +83,12 @@ module.exports = {
       type: 'number',
       columnName: 'crypto_maximum',
       defaultsTo: 0
+    },
+    bot_status: {
+      type: 'boolean',
+      columnName: 'bot_status',
+      defaultsTo: false,
+      allowNull: true
     }
   },
   beforeCreate: (values, next) => {
