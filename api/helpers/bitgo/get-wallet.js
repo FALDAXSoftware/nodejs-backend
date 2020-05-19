@@ -39,7 +39,17 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    var coinData = await Coins.findOne({
+      where: {
+        is_active: true,
+        deleted_at: null,
+        coin_code: inputs.coin
+      }
+    });
+    console.log("coinData", coinData)
+    var token_value = coinData.access_token_value;
+    console.log("Token Value in get walet", token_value);
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
     // console.log("${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}",`${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}`)
     request({
       url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}`,

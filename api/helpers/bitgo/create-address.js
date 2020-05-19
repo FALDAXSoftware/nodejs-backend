@@ -43,7 +43,16 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    var coinData = await Coins.findOne({
+      where: {
+        is_active: true,
+        deleted_at: null,
+        coin_code: inputs.coin
+      }
+    })
+    var token_value = coinData.access_token_value;
+    console.log("Token Value", token_value);
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
     request({

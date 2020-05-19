@@ -31,8 +31,15 @@ module.exports = {
 
     try {
       var walletAddressData;
-
-      var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+      var coinData = await Coins.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          coin_code: inputs.coin_code
+        }
+      })
+      var token_value = coinData.access_token_value
+      var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
       fetch(sails.config.local.BITGO_PROXY_URL + '/' + (inputs.coin_code).toLowerCase() + '/wallet/' + inputs.wallet_address, {
         method: "GET",
         headers: {

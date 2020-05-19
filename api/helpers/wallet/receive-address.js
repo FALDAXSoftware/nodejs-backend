@@ -36,13 +36,6 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
-
-    //Configuring bitgo API with access token
-    var bitgo = new BitGoJS.BitGo({
-      env: sails.config.local.BITGO_ENV_MODE,
-      accessToken: access_token_value
-    });
 
     //Fetching coin list
     const coinData = await Coins.find({
@@ -55,6 +48,14 @@ module.exports = {
 
     for (let index = 0; index < coinData.length; index++) {
       const coin = coinData[index];
+      var token_value = coin.access_token_value
+      var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
+
+      //Configuring bitgo API with access token
+      var bitgo = new BitGoJS.BitGo({
+        env: sails.config.local.BITGO_ENV_MODE,
+        accessToken: access_token_value
+      });
       if (coin.coin_name == inputs.user.fiat) {
 
         //For USD and EURO

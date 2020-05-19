@@ -168,16 +168,18 @@ module.exports = {
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
-      var coinData = await Coins.findOne({
-        where: {
-          coin_code: 'SUSU'
-        }
-      });
-      if (coinData.deleted_at == null) {
-        var susucoinData = await sails.helpers.getUsdSusucoinValue();
-        susucoinData = JSON.parse(susucoinData);
-        susucoinData = susucoinData.data
-      }
+      console.log("balanceWalletData", balanceWalletData.rows)
+      // var coinData = await Coins.findOne({
+      //   where: {
+      //     coin_code: 'SUSU'
+      //   }
+      // });
+      // if (coinData.deleted_at == null) {
+      //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+      //   console.log("susucoinData", susucoinData)
+      //   susucoinData = JSON.parse(susucoinData);
+      //   susucoinData = susucoinData.data
+      // }
       let deactivated_asset_lists = [];
       let activated_asset_lists = [];
       let eth_asset = false;
@@ -214,13 +216,13 @@ module.exports = {
           if (balanceWalletData.rows[i].coin_code == 'SUSU' && balanceWalletData.rows[i].deleted_at == null)
             balanceWalletData.rows[i].quote = {
               EUR: {
-                price: susucoinData.EUR,
+                price: (balanceWalletData.rows[i].quote.EUR.price),
               },
               INR: {
-                price: susucoinData.INR,
+                price: (balanceWalletData.rows[i].quote.INR.price),
               },
               USD: {
-                price: susucoinData.USD,
+                price: (balanceWalletData.rows[i].quote.USD.price),
               }
 
             }
@@ -4165,9 +4167,13 @@ module.exports = {
         dailyFlag = true;
       }
 
+
       if (userTierSql[0].monthly_withdraw_limit == "Unlimited") {
         monthlyFlag = true;
       }
+
+      console.log("dailyFlag", dailyFlag)
+      console.log("monthlyFlag", monthlyFlag)
 
       if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
 
@@ -4187,9 +4193,9 @@ module.exports = {
                   "current_limit_left_montly_amount": "Unlimited"
                 }
                 return res
-                  .status(202)
+                  .status(203)
                   .json({
-                    "status": 202,
+                    "status": 203,
                     "message": sails.__("User Can do transaction").message,
                     "data": data
                   })

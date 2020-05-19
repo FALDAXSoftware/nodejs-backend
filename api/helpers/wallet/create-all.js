@@ -21,14 +21,6 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
 
-      var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
-      var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
-      var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
-      //Configuring bitgo API with access token
-      var bitgo = new BitGoJS.BitGo({
-        env: sails.config.local.BITGO_ENV_MODE,
-        accessToken: access_token_value
-      });
 
       //Fetching coin list
       var requestedCoin = await Coins.find({
@@ -39,7 +31,15 @@ module.exports = {
 
       for (let index = 0; index < requestedCoin.length; index++) {
         const coin = requestedCoin[index];
-
+        var token_value = requestedCoin[index].access_token_value
+        var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
+        var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
+        var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
+        //Configuring bitgo API with access token
+        var bitgo = new BitGoJS.BitGo({
+          env: sails.config.local.BITGO_ENV_MODE,
+          accessToken: access_token_value
+        });
         //Generating wallet id for all coin
         bitgo
           .coin(coin.coin_code)

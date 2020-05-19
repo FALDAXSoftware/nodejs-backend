@@ -398,11 +398,11 @@ module.exports = {
     var iv = sails.config.local.iv;
     // console.log(key);
     // console.log(iv)
-    // var value = req.body.encryptKey;
-    // console.log(value);
-    // var encryptData = await sails.helpers.getEncryptData(value);
-    // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("5beb91212ff755f49c2c505c00658eb38eedc977ab5c941a9f5ac0ef167d7bcacd8baa51e5b9a18c389911bc086195cef2aad6ebc7bf5cbcd306a8759b8d2f76");
+    var value = req.body.encryptKey;
+    console.log(value);
+    var encryptData = await sails.helpers.getEncryptData(value);
+    console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData("77b4af3044d472f5e07456112f32a5ffa2c8fd27d353f112e315e4e53c7600c0a2e9d2479fcfd18446c348e060119d9d8ec78fb8fc8823a7ef67f575b6fa002fd4f298");
     console.log("decryptData", decryptData)
     return res.json(200);
   },

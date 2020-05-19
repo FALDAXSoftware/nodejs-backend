@@ -21,6 +21,9 @@ module.exports.local = {
   'EMAIL_PORT': process.env.EMAIL_PORT,
   'EMAIL_PASSWORD': process.env.EMAIL_PASSWORD,
   'BITGO_ACCESS_TOKEN': process.env.BITGO_ACCESS_TOKEN,
+  'TRON_ACCESS_TOKEN': process.env.TRON_ACCESS_TOKEN,
+  "BCH_ACCESS_TOKEN": process.env.BCH_ACCESS_TOKEN,
+  'EOS_ACCESS_TOKEN': process.env.EOS_ACCESS_TOKEN,
   'BITGO_ENV_MODE': process.env.BITGO_ENV_MODE,
   'BITGO_PASSPHRASE': process.env.BITGO_PASSPHRASE,
   "BITGO_ENTERPRISE": process.env.BITGO_ENTERPRISE,
@@ -257,6 +260,6 @@ module.exports.local = {
   DIVIDE_EIGHTEEN: 1e18,
   DIVIDE_NINE: 1e9,
   TESTNET: process.env.TESTNET,
-  TRADEDESK_USER_ID:process.env.TRADEDESK_USER_ID,
-  APP_URL:process.env.APP_URL
+  TRADEDESK_USER_ID: process.env.TRADEDESK_USER_ID,
+  APP_URL: process.env.APP_URL
 }

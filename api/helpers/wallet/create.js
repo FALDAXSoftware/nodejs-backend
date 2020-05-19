@@ -33,7 +33,14 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    var access_token_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ACCESS_TOKEN);
+    //Fetching coin list
+    var requestedCoin = await Coins.find({
+      deleted_at: null,
+      is_active: true,
+      coin_code: inputs.coin
+    })
+    var token_value = requestedCoin[0].access_token_value
+    var access_token_value = await sails.helpers.getDecryptData(sails.config.local[token_value]);
     var passphrase_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_PASSPHRASE);
     var enterprise_value = await sails.helpers.getDecryptData(sails.config.local.BITGO_ENTERPRISE);
     console.log(access_token_value, passphrase_value, enterprise_value)
@@ -44,12 +51,6 @@ module.exports = {
       enterprise: enterprise_value
     });
 
-    //Fetching coin list
-    var requestedCoin = await Coins.find({
-      deleted_at: null,
-      is_active: true,
-      coin_code: inputs.coin
-    })
 
     console.log("requestedCoin", requestedCoin)
     var typeValue = inputs.type
