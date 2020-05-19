@@ -18,6 +18,11 @@ module.exports = {
       columnName: 'coin_name',
       required: true
     },
+    access_token_value: {
+      type: 'string',
+      columnName: 'access_token_value'
+      // required: true
+    },
     min_thresold: {
       type: 'number',
       columnName: 'min_thresold',

@@ -211,7 +211,8 @@ module.exports = {
         let isToken = false;
         let transferId = req.body.transfer;
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-
+        console.log("transfer", transfer)
+        console.log("coinSpecific", transfer.coinSpecific)
         if (transfer.state == "confirmed" && (transfer.type == "receive" || transfer.type == "send")) {
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
@@ -330,6 +331,7 @@ module.exports = {
                 source = temp;
               }
             }
+            console.log("userWallet", userWallet)
             let coin = await Coins.findOne({
               id: userWallet.coin_id
             });

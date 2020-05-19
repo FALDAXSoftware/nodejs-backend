@@ -168,6 +168,7 @@ module.exports = {
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
+      console.log("balanceWalletData", balanceWalletData.rows)
       // var coinData = await Coins.findOne({
       //   where: {
       //     coin_code: 'SUSU'
@@ -175,6 +176,7 @@ module.exports = {
       // });
       // if (coinData.deleted_at == null) {
       //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+      //   console.log("susucoinData", susucoinData)
       //   susucoinData = JSON.parse(susucoinData);
       //   susucoinData = susucoinData.data
       // }
