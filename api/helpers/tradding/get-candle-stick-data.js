@@ -98,6 +98,7 @@ module.exports = {
       // console.log("volumnQuery", volumnQuery)
       // var volumnResult = await sails.sendNativeQuery(volumnQuery);
       var volumnResult = [];
+      console.log(volumnResult)
 
       let open = [];
       let close = [];
