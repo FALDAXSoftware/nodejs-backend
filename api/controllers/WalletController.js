@@ -551,6 +551,8 @@ module.exports = {
           dailyTotalVolume = (Number.isNaN(dailyTotalVolume)) ? (0.0) : (dailyTotalVolume);
           monthlyTotalVolume = (Number.isNaN(monthlyTotalVolume)) ? (0.0) : (monthlyTotalVolume)
           amount = parseFloat(amount);
+          var dailyFlag;
+          var monthlyFlag;
 
           if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
             dailyFlag = true;
@@ -4198,9 +4200,9 @@ module.exports = {
                   "current_limit_left_montly_amount": "Unlimited"
                 }
                 return res
-                  .status(202)
+                  .status(203)
                   .json({
-                    "status": 202,
+                    "status": 203,
                     "message": sails.__("User Can do transaction").message,
                     "data": data
                   })
