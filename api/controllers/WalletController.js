@@ -1076,7 +1076,7 @@ module.exports = {
                     "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                     "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                     "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                    "current_daily_limit": limitCalculation[0].usd_price * data.amount
+                    "current_daily_limit": limitCalculation[0].usd_price * amount
                   }
                   return res
                     .status(201)
@@ -1106,7 +1106,7 @@ module.exports = {
                 "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
                 "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
                 "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                "current_monthly_limit": limitCalculation[0].usd_price * data.amount,
+                "current_monthly_limit": limitCalculation[0].usd_price * amount,
                 // "current_limit_left_montly_amount"
               }
               return res
