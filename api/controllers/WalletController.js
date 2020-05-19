@@ -349,6 +349,9 @@ module.exports = {
         is_active: true
       });
 
+      var dailyFlag = false;
+      var monthlyFlag = false;
+
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -4176,9 +4179,13 @@ module.exports = {
         dailyFlag = true;
       }
 
+
       if (userTierSql[0].monthly_withdraw_limit == "Unlimited") {
         monthlyFlag = true;
       }
+
+      console.log("dailyFlag", dailyFlag)
+      console.log("monthlyFlag", monthlyFlag)
 
       if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
 
@@ -4198,9 +4205,9 @@ module.exports = {
                   "current_limit_left_montly_amount": "Unlimited"
                 }
                 return res
-                  .status(202)
+                  .status(203)
                   .json({
-                    "status": 202,
+                    "status": 203,
                     "message": sails.__("User Can do transaction").message,
                     "data": data
                   })
