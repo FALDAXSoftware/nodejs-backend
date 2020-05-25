@@ -44,15 +44,20 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     try {
+      console.log(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.getByEmail.replace(":email", inputs.email) + "?hapikey=" + sails.config.local.hubspot.apiKey)
       fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.getByEmail.replace(":email", inputs.email) + "?hapikey=" + sails.config.local.hubspot.apiKey, {
         method: "GET",
       })
         .then(resData => resData.json())
         .then(async resData => {
+          console.log(resData)
           if (resData.status == "error") {
             fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.create + "?hapikey=" + sails.config.local.hubspot.apiKey,
               {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                   "properties": [
                     {
@@ -72,6 +77,7 @@ module.exports = {
               })
               .then(createResData => createResData.json())
               .then(createResData => {
+                console.log("createResData", createResData)
                 if (createResData.vid) {
                   return exits.success(createResData.vid);
                 } else {
