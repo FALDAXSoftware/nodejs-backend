@@ -120,8 +120,15 @@ module.exports = {
   // Webhook for address confiramtion
   webhookOnAddress: async function (req, res) {
     try {
+      console.log("req.body", req.body)
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
+        var coinValue;
+        if (sails.config.local.TESTNET == 1) {
+          coinValue = "teth"
+        } else {
+          coinValue = "eth"
+        }
+        let address = await sails.helpers.bitgo.getAddress(coinValue, req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         let coinObject = await Coins.findOne({
