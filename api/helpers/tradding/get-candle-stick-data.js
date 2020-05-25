@@ -71,7 +71,7 @@ module.exports = {
       let openQuery = "SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND id IN (SELECT min(id) FROM trade_history WHERE created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + "))) ORDER BY interval LIMIT 1000";
       // console.log("openQuery", openQuery)
       var openResult = await sails.sendNativeQuery(openQuery);
-      console.log("Open------------", openResult);
+      // console.log("Open------------", openResult);
       // var openResult = [];
 
       let closeQuery = "SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND id IN (SELECT max(id) FROM trade_history WHERE created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + "))) ORDER BY interval LIMIT 1000";
@@ -95,7 +95,7 @@ module.exports = {
 
       let volumnQuery = "SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_" +
         "At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval LIMIT 1000";
-      console.log("volumnQuery", volumnQuery)
+      // console.log("volumnQuery", volumnQuery)
       var volumnResult = await sails.sendNativeQuery(volumnQuery);
       // var volumnResult = [];
 

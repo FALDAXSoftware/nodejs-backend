@@ -25,13 +25,13 @@ module.exports = {
     },
     maker_fee: {
       type: 'number',
-      columnName: 'maker_fee',
-      required: true
+      columnName: 'maker_fee'
+      // required: true
     },
     taker_fee: {
       type: 'number',
-      columnName: 'taker_fee',
-      required: true
+      columnName: 'taker_fee'
+      // required: true
     },
     is_active: {
       type: 'boolean',
@@ -74,12 +74,12 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'deleted_at'
     },
-    crypto_minimum:{
+    crypto_minimum: {
       type: 'number',
       columnName: 'crypto_minimum',
       defaultsTo: 0
     },
-    crypto_maximum:{
+    crypto_maximum: {
       type: 'number',
       columnName: 'crypto_maximum',
       defaultsTo: 0
