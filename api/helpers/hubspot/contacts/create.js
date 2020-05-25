@@ -53,6 +53,9 @@ module.exports = {
             fetch(sails.config.local.hubspot.url + sails.config.local.hubspot.endpoints.contact.create + "?hapikey=" + sails.config.local.hubspot.apiKey,
               {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                   "properties": [
                     {
