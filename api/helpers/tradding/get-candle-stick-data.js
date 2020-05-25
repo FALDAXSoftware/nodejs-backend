@@ -62,11 +62,17 @@ module.exports = {
       var from = moment
         .unix(inputs.from)
         .utc()
-        .format("YYYY-MM-DD HH:mm:ss");
+        .format("YYYY-MM-DD 00:00:00");
+        // .format("YYYY-MM-DD HH:mm:ss");
       var to = moment
         .unix(inputs.to)
         .utc()
         .format("YYYY-MM-DD 23:59:59");
+      // for the current day
+      // var start = moment.tz("America/Chicago", inputs.from).startOf('day').utc().format("YYYY-MM-DD HH:mm:ss");
+      // var end = moment.tz("America/Chicago").endOf('day').utc().format("YYYY-MM-DD HH:mm:ss");
+      // console.log("start",start)
+      // console.log("end",end)
       // console.log("Form To-----------------", from, to);
       let openQuery = "SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND id IN (SELECT min(id) FROM trade_history WHERE created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + "))) ORDER BY interval LIMIT 1000";
       // console.log("openQuery", openQuery)
