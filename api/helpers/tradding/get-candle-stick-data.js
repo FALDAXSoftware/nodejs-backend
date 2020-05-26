@@ -67,6 +67,11 @@ module.exports = {
         .unix(inputs.to)
         .utc()
         .format("YYYY-MM-DD 23:59:59");
+      // for the current day
+      // var start = moment.tz("America/Chicago", inputs.from).startOf('day').utc().format("YYYY-MM-DD HH:mm:ss");
+      // var end = moment.tz("America/Chicago").endOf('day').utc().format("YYYY-MM-DD HH:mm:ss");
+      // console.log("start",start)
+      // console.log("end",end)
       // console.log("Form To-----------------", from, to);
       let openQuery = `SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                         FROM trade_history 
