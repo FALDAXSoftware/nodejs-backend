@@ -55,7 +55,7 @@ module.exports = {
       pointvalue: 1,
       pricescale: 100,
       volume_precision: 8,
-      pricescale: 100000000,
+      pricescale: 100000,
       // session: "0930-1630",
       supported_resolutions: [
         "1",
