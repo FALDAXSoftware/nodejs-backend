@@ -399,8 +399,6 @@ module.exports = {
         }
       }
 
-      var limitAmount;
-      var limitAmountMonthly;
 
       var coin = await Coins.findOne({
         deleted_at: null,
@@ -4302,6 +4300,390 @@ module.exports = {
           "err": sails.__("Something Wrong").message,
           error_at: error.stack
         });
+    }
+  },
+
+  sendCoinTradeDesk: async function (req, res) {
+    try {
+      let {
+        amount,
+        destination_address,
+        coin_code,
+        networkFees,
+        total_fees
+      } = req.allParams();
+      var user_id = 36;
+      var today = moment().utc().format();
+
+      let coin = await Coins.findOne({
+        deleted_at: null,
+        is_active: true,
+        coin_code: coin_code
+      });
+
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+        if (sails.config.local.TESTNET == 1) {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+        } else {
+          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+        }
+
+        if (!valid) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Enter Valid Address").message
+            })
+        }
+      }
+
+      var division = coin.coin_precision;
+
+      if (coin) {
+
+        let wallet = await Wallet.findOne({
+          deleted_at: null,
+          coin_id: coin.id,
+          is_active: true,
+          user_id: user_id
+          // is_admin: true
+        });
+
+        //Checking if wallet is found or not
+        if (wallet) {
+
+          //If placed balance is greater than the amount to be send
+          if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
+
+            //If coin is of bitgo type
+            if (coin.type == 1) {
+
+              let warmWalletData = await sails
+                .helpers
+                .wallet
+                .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
+
+              if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
+                // Send to hot warm wallet and make entry in diffrent table for both warm to
+                // receive and receive to destination
+                // let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.warm_wallet_address, sendWalletData.receiveAddress.address, (amount * division).toString());
+                if (coin.coin_code == "teth" || coin.coin_code == "eth" || coin.iserc == true) {
+                  var amountValue = parseFloat(amount * division).toFixed(8);
+                } else {
+                  var sendAmount = parseFloat(parseFloat(amount)).toFixed(8)
+                  var amountValue = parseFloat(sendAmount * division).toFixed(8)
+                }
+
+                var getDestinationValue = await Wallet.findOne({
+                  where: {
+                    deleted_at: null,
+                    coin_id: coin.id,
+                    receive_address: destination_address,
+                    is_active: true
+                  }
+                });
+
+                var fiatObject = await sails.helpers.getFiatValues(coin.coin);
+
+                if ((coin.coin_code == "xrp" || coin.coin_code == 'txrp') && getDestinationValue && getDestinationValue != undefined) {
+                  var walletHistory = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: amount,
+                    transaction_type: 'send',
+                    transaction_id: '',
+                    is_executed: false,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    fiat_values: fiatObject
+                  }
+                  await WalletHistory.create({
+                    ...walletHistory
+                  });
+
+                  var user_wallet_balance = wallet.balance
+                  var receiver_wallet_balance = getDestinationValue.balance;
+
+                  var userBalanceUpdate = parseFloat(wallet.balance) - parseFloat(amount);
+                  var userPlacedBalanceUpdate = parseFloat(wallet.placed_balance) - parseFloat(amount);
+                  var receiverBalanceUpdate = parseFloat(getDestinationValue.balance) + parseFloat(amount);
+                  var receiverPlacedBalanceUpdate = parseFloat(getDestinationValue.placed_balance) + parseFloat(amount);
+
+                  await Wallet
+                    .update({
+                      id: wallet.id
+                    })
+                    .set({
+                      balance: userBalanceUpdate,
+                      placed_balance: userPlacedBalanceUpdate
+                    });
+
+                  await Wallet
+                    .update({
+                      id: getDestinationValue.id
+                    })
+                    .set({
+                      balance: receiverBalanceUpdate,
+                      placed_balance: receiverPlacedBalanceUpdate
+                    });
+
+                  var walletHistoryReceiver = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: getDestinationValue.receive_address,
+                    amount: amount,
+                    transaction_type: 'receive',
+                    transaction_id: '',
+                    is_executed: false,
+                    is_admin: false,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    fiat_values: fiatObject
+                  }
+
+                  await WalletHistory.create({
+                    ...walletHistoryReceiver
+                  });
+
+                  var addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'send',
+                    transaction_id: '',
+                    is_executed: true,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: user_wallet_balance,
+                    // warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.SEND_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+
+                  var addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'receive',
+                    transaction_id: '',
+                    is_executed: true,
+                    is_admin: false,
+                    faldax_fee: 0.0,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: parseFloat(0.0).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: receiver_wallet_balance,
+                    // warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.RECEIVE_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+                  return res.json({
+                    status: 200,
+                    message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  });
+                } else {
+                  let transaction = await sails.helpers.bitgo.send(coin.coin_code, coin.hot_receive_wallet_address, destination_address, (amountValue).toString());
+                  //Here remainning ebtry as well as address change
+                  var network_fees = (transaction.transfer.feeString);
+                  var network_feesValue = parseFloat(network_fees / (division))
+                  var totalFeeSub = 0;
+                  totalFeeSub = parseFloat(parseFloat(totalFeeSub) + parseFloat(network_feesValue)).toFixed(8)
+                  totalFeeSub = parseFloat(totalFeeSub) + parseFloat(amount);
+                  var walletHistory = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: amount,
+                    transaction_type: 'send',
+                    transaction_id: transaction.txid,
+                    is_executed: false,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: network_feesValue,
+                    estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    fiat_values: fiatObject
+                  }
+
+                  // Make changes in code for receive webhook and then send to receive address
+                  // Entry in wallet history
+                  await WalletHistory.create({
+                    ...walletHistory
+                  });
+
+                  var user_wallet_balance = wallet.balance;
+                  var updateBalance = parseFloat(wallet.balance) - parseFloat(totalFeeSub)
+                  var updatePlacedBalance = parseFloat(wallet.placed_balance) - parseFloat(totalFeeSub);
+                  // update wallet balance
+                  await Wallet
+                    .update({
+                      id: wallet.id
+                    })
+                    .set({
+                      balance: updateBalance,
+                      placed_balance: updatePlacedBalance
+                    });
+
+                  // Adding the transaction details in transaction table This is entry for sending
+                  // from warm wallet to hot send wallet
+                  var addObject = {
+                    coin_id: coin.id,
+                    source_address: wallet.receive_address,
+                    destination_address: destination_address,
+                    user_id: user_id,
+                    amount: parseFloat(amountValue / division).toFixed(8),
+                    transaction_type: 'send',
+                    transaction_id: transaction.txid,
+                    is_executed: true,
+                    is_admin: true,
+                    faldax_fee: 0.0,
+                    actual_network_fees: network_feesValue,
+                    estimated_network_fees: parseFloat(networkFees).toFixed(8),
+                    is_done: false,
+                    actual_amount: amount,
+                    sender_user_balance_before: user_wallet_balance,
+                    warm_wallet_balance_before: parseFloat(warmWalletData.balance / division).toFixed(sails.config.local.TOTAL_PRECISION),
+                    // actual_network_fees: parseFloat(((transaction.transfer.feeString)) / division).toFixed(8),
+                    transaction_from: sails.config.local.SEND_TO_DESTINATION
+                  }
+
+                  await TransactionTable.create({
+                    ...addObject
+                  });
+
+                  return res.json({
+                    status: 200,
+                    message: parseFloat(totalFeeSub).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  });
+                }
+              } else {
+                return res.status(500)
+                  .json({
+                    status: 500,
+                    "message": sails.__("Insufficient Balance in warm Wallet Withdraw Request").message
+                  })
+              }
+            } else if (coin_code == "SUSU") {
+              // Sending SUSU coin
+              var value = {
+                "user_id": parseInt(user_id),
+                "amount": parseFloat(amount),
+                "destination_address": destination_address,
+                "faldax_fee": 0.0,
+                "network_fee": networkFees,
+                "is_admin": true
+              }
+
+              var responseValue = new Promise(async (resolve, reject) => {
+                request({
+                  url: sails.config.local.SUSUCOIN_URL + "send-susu-coin-address",
+                  method: "POST",
+                  headers: {
+
+                    'x-token': 'faldax-susucoin-node',
+                    'Content-Type': 'application/json'
+                  },
+                  body: value,
+                  json: true
+                }, function (err, httpResponse, body) {
+                  if (err) {
+                    reject(err);
+                  }
+                  if (body.error) {
+                    resolve(body);
+                  }
+                  resolve(body);
+                  // return body;
+                });
+              })
+              var value = await responseValue;
+
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
+                })
+            }
+
+          } else {
+            return res
+              .status(400)
+              .json({
+                status: 400,
+                message: sails.__("Insufficent balance wallet").message
+              });
+
+          }
+        } else {
+          return res
+            .status(400)
+            .json({
+              status: 400,
+              message: sails.__("Wallet Not Found").message
+            });
+        }
+      } else {
+        return res
+          .status(400)
+          .json({
+            status: 400,
+            message: sails.__("Coin not found").message
+          });
+      }
+
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getTradeDeskWalletHistory: async function (req, res) {
+    try {
+
+    } catch (error) {
+      return res
+      .status(500)
+      .json({
+        status: 500,
+        "err": sails.__("Something Wrong").message,
+        error_at: error.stack
+      });
     }
   }
 };
