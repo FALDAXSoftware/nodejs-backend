@@ -59,7 +59,8 @@ module.exports = async function (req, res, next) {
       // "admin/get-tier-4-pdf"
       "admin/user-tier-unlock",
       "admin/get-user-tier-value",
-      "admin/get-all-tier-details"
+      "admin/get-all-tier-details",
+      "admin/wallet-send-coin-tradedesk"
     ]
 
     console.log("urlValue", urlValue)

@@ -586,5 +586,8 @@ module.exports.routes = {
   "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
 
   // Wallet Send coin Limit Checking
-  "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit"
+  "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit",
+
+  // Wallet Trade Desk Send Funds
+  "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk"
 };
