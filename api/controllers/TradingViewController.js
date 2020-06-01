@@ -43,7 +43,18 @@ module.exports = {
   getCurrentTime: function (req, res) {
     res.json(moment.utc().valueOf());
   },
-  getSymbolInfo: function (req, res) {
+  getSymbolInfo: async function (req, res) {
+    let quantityPrecision = 8;
+    let pricePrecision = 100000;
+    let pair = await Pairs.findOne({
+      name: (req.query.symbol),
+      is_active: true,
+      deleted_at: null
+    });
+    if( pair != undefined ){
+      quantityPrecision = parseInt(pair.quantity_precision);
+      pricePrecision = parseFloat(1+'e'+pair.price_precision);
+    }
     res.json({
       description: (req.query.symbol).replace("-", "/"),
       // "exchange-listed": "Faldax", "exchange-traded": "Faldax",
@@ -53,9 +64,9 @@ module.exports = {
       minmov2: 0,
       name: (req.query.symbol).replace("-", "/"),
       pointvalue: 1,
-      pricescale: 100,
-      volume_precision: 8,
-      pricescale: 100000,
+      // pricescale: 100,
+      volume_precision: quantityPrecision,
+      pricescale: pricePrecision,
       // session: "0930-1630",
       supported_resolutions: [
         "1",
