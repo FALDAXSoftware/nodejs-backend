@@ -89,7 +89,17 @@ module.exports = {
       columnName: 'bot_status',
       defaultsTo: false,
       allowNull: true
-    }
+    },
+    price_precision: {
+      type: 'number',
+      columnName: 'price_precision'
+      // required: true
+    },
+    quantity_precision: {
+      type: 'number',
+      columnName: 'quantity_precision'
+      // required: true
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
