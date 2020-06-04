@@ -84,6 +84,11 @@ module.exports = {
       columnName: 'crypto_maximum',
       defaultsTo: 0
     },
+    order_maximum: {
+      type: 'number',
+      columnName: 'order_maximum',
+      defaultsTo: 0
+    },
     bot_status: {
       type: 'boolean',
       columnName: 'bot_status',
