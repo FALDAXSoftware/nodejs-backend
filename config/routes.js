@@ -592,4 +592,5 @@ module.exports.routes = {
   "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk",
 
   'get /get-countries': 'Countries.getCountiesData',
+  'get /users/get-user-legal-status': 'UsersController.getUserLegalityStatus',
 };
