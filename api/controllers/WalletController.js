@@ -154,11 +154,12 @@ module.exports = {
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
           .helpers
-          .userTradeChecking(user_id);
+          .userLegalityCheck(user_id);
+        console.log('geo_fencing_data', geo_fencing_data);
         if (geo_fencing_data.response != true) {
           return res.json({
             "status": 500,
-            "message": geo_fencing_data.msg,
+            "err": geo_fencing_data.msg,
             error_at: geo_fencing_data
           });
         }
@@ -356,11 +357,11 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -1299,11 +1300,11 @@ module.exports = {
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
         if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
         }
@@ -1556,11 +1557,11 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -3599,11 +3600,11 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -4138,11 +4139,11 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
