@@ -154,7 +154,8 @@ module.exports = {
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
           .helpers
-          .userTradeChecking(user_id);
+          .userLegalityCheck(user_id);
+        console.log('geo_fencing_data', geo_fencing_data);
         if (geo_fencing_data.response != true) {
           return res.json({
             "status": 500,
@@ -356,7 +357,7 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
@@ -1299,7 +1300,7 @@ module.exports = {
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
         if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
@@ -1556,7 +1557,7 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
@@ -3599,7 +3600,7 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
@@ -4138,7 +4139,7 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userTradeChecking(user_id);
+        .userLegalityCheck(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
