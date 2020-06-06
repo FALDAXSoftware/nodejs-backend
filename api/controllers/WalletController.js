@@ -158,7 +158,7 @@ module.exports = {
         if (geo_fencing_data.response != true) {
           return res.json({
             "status": 500,
-            "message": geo_fencing_data.msg,
+            "err": geo_fencing_data.msg,
             error_at: geo_fencing_data
           });
         }
@@ -360,7 +360,7 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -1303,7 +1303,7 @@ module.exports = {
         if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
         }
@@ -1560,7 +1560,7 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -3603,7 +3603,7 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
@@ -4142,7 +4142,7 @@ module.exports = {
       if (geo_fencing_data.response != true) {
         return res.json({
           "status": 500,
-          "message": geo_fencing_data.msg,
+          "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
       }
