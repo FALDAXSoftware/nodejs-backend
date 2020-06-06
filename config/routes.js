@@ -589,5 +589,7 @@ module.exports.routes = {
   "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit",
 
   // Wallet Trade Desk Send Funds
-  "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk"
+  "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk",
+
+  'get /get-countries': 'Countries.getCountiesData',
 };
