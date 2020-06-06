@@ -3896,5 +3896,41 @@ module.exports = {
   //     "message": "dsdsdsd"
   //   });
   // }
-
+  /*
+  Get User Trade Status
+  */
+  getUserLegalityStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var data = {};
+      var geo_fencing_data = await sails
+        .helpers
+        .userLegalityCheck(user_id);
+      data.is_allowed = geo_fencing_data.response;
+      if (geo_fencing_data.response != true) {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": geo_fencing_data.msg,
+            "data": data
+          });
+      } else {
+        return res.json({
+          "status": 200,
+          "message": geo_fencing_data.msg,
+          "data": data
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 };
