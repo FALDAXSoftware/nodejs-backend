@@ -1311,7 +1311,8 @@ module.exports = {
       return res.json({
         "status": 200,
         "message": sails.__("Trade data retrived successfully").message,
-        "data": user_history_data
+        "data": user_history_data.data,
+        "tradeCount": user_history_data.total
       });
     } catch (error) {
       // console.log(error);
@@ -1979,7 +1980,7 @@ module.exports = {
             " AND " :
             " WHERE ";
           whereAppended = true;
-          query += " (trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id+")";
+          query += " (trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id + ")";
         }
 
         if (t_type) {
