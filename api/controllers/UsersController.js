@@ -764,6 +764,7 @@ module.exports = {
       let userKyc = await KYC.findOne({
         user_id: id
       });
+      console.log("userKyc",userKyc)
       usersData[0].is_kyc_done = 0;
       if (userKyc) {
         if (userKyc.steps == 3) {
