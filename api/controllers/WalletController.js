@@ -154,11 +154,11 @@ module.exports = {
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
           .helpers
-          .userLegalityCheck(user_id);
+          .userTradeChecking(user_id);
         console.log('geo_fencing_data', geo_fencing_data);
         if (geo_fencing_data.response != true) {
           return res.json({
-            "status": 500,
+            "status": 401,
             "err": geo_fencing_data.msg,
             error_at: geo_fencing_data
           });
@@ -357,10 +357,10 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userLegalityCheck(user_id);
+        .userTradeChecking(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
-          "status": 500,
+          "status": 401,
           "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
@@ -1299,14 +1299,14 @@ module.exports = {
         var user_id = req.user.id;
         //Checking whether user can trade in the area selected in the KYC
         var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
+          .helpers
+          .userTradeChecking(user_id);
         if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
         }
         var userData = await Users.findOne({
           is_active: true,
@@ -1557,10 +1557,10 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userLegalityCheck(user_id);
+        .userTradeChecking(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
-          "status": 500,
+          "status": 401,
           "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
@@ -3600,10 +3600,10 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userLegalityCheck(user_id);
+        .userTradeChecking(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
-          "status": 500,
+          "status": 401,
           "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
@@ -4139,10 +4139,10 @@ module.exports = {
       //Checking whether user can trade in the area selected in the KYC
       var geo_fencing_data = await sails
         .helpers
-        .userLegalityCheck(user_id);
+        .userTradeChecking(user_id);
       if (geo_fencing_data.response != true) {
         return res.json({
-          "status": 500,
+          "status": 401,
           "err": geo_fencing_data.msg,
           error_at: geo_fencing_data
         });
@@ -4744,12 +4744,12 @@ module.exports = {
 
     } catch (error) {
       return res
-      .status(500)
-      .json({
-        status: 500,
-        "err": sails.__("Something Wrong").message,
-        error_at: error.stack
-      });
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
     }
   }
 };
