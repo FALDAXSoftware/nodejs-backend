@@ -68,7 +68,7 @@ module.exports = {
         }
       } else {
         response = false;
-        msg = sails.__("You need to complete your KYC to trade in FALDAX").message;
+        msg = sails.__("You are not allowed to trade in this regoin as country is illegal").message;
       }
 
       sendInfo = {
