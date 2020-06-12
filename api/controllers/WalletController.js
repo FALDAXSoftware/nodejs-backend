@@ -189,12 +189,12 @@ module.exports = {
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
-                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
+                    LEFT JOIN currency_conversion ON coins.coin = currency_conversion.symbol
                     WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
 
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
-                              FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
+                              FROM coins LEFT JOIN currency_conversion ON coins.coin = currency_conversion.symbol
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
