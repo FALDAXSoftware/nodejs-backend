@@ -42,9 +42,11 @@ module.exports = {
       var feesValue;
       if (coin == 'susu') {
         coin = 'SUSU';
+      } else if (coin == 'tbch') {
+        coin = 'BCH'
       }
 
-      console.log((coin).toUpperCase())
+      console.log((coin))
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
@@ -56,6 +58,8 @@ module.exports = {
         }
       })
 
+      console.log("coinData", coinData)
+
       if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({
           where: {
@@ -64,8 +68,17 @@ module.exports = {
           }
         });
         feesValue = (((inputs.quantity) / (25) * data.value));
-      } else if (coin == 'bch' || coin == 'tbch') {
+      } else if (coin == 'bch' || coin == 'tbch' || coin == 'BCH') {
+        console.log("INSIDE BCH")
 
+        var currencyConversionData = await CurrencyConversion.findOne({
+          where: {
+            deleted_at: null,
+            symbol: coin
+          }
+        })
+
+        console.log("currencyConversionData", currencyConversionData)
         var data = await AdminSetting.findOne({
           where: {
             deleted_at: null,
@@ -73,7 +86,7 @@ module.exports = {
           }
         });
 
-        feesValue = ((data.value * inputs.quantity) / inputs.price)
+        feesValue = ((data.value * inputs.quantity) / currencyConversionData.quote.USD.price)
       } else if (coin == 'eth' || coin == 'teth' || coinData.iserc == true) {
 
         var data = await AdminSetting.findOne({
