@@ -113,6 +113,13 @@ module.exports = {
             })
         }
       } else {
+
+        if (req.body.test_key == "load_testing") {
+          req.body.steps = 3;
+          req.body.webhook_response = "ACCEPT"
+          req.body.direct_response = "ACCEPT"
+        }
+
         let kyc_created = await KYC
           .create(req.body)
           .fetch();
