@@ -108,7 +108,7 @@ module.exports = {
                         ORDER BY interval 
                         LIMIT 15000`
       // let highQuery = "SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM crea" +
-      "ted_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval LIMIT 1000";
+      // "ted_At)/(60*" + inputs.time_period + "))*(60*" + inputs.time_period + ")) as interval FROM trade_history WHERE settle_currency = '" + inputs.crypto + "' AND currency = '" + inputs.currency + "' AND created_at >= '" + from + "' AND created_at <= '" + to + "' GROUP BY interval ORDER BY interval LIMIT 1000";
       // console.log("highQuery", highQuery)
       var highResult = await sails.sendNativeQuery(highQuery);
       // var highResult = [];
