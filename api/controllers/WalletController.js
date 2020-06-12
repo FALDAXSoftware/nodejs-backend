@@ -145,25 +145,45 @@ module.exports = {
     try {
       var user_id;
       var filter = ''
+      // if (!req.user.Admin) {
+
+      // }
+
+      // if (userData.account_tier != 4) {
       if (req.user.isAdmin) {
         user_id = 36;
         filter = ` wallets.user_id = ${user_id} AND wallets.is_admin = true `
       } else {
         user_id = req.user.id;
+
+        var userData = await Users
+          .findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }
+          })
         filter = ` wallets.user_id = ${user_id}`
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        console.log('geo_fencing_data', geo_fencing_data);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
+
+        if (userData.account_tier != 4) {
+          //Checking whether user can trade in the area selected in the KYC
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          console.log('geo_fencing_data', geo_fencing_data);
+          if (geo_fencing_data.response != true) {
+            return res.json({
+              "status": 401,
+              "err": geo_fencing_data.msg,
+              error_at: geo_fencing_data
+            });
+          }
         }
+
       }
+      // }
+
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon, coins.deleted_at,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
@@ -354,22 +374,25 @@ module.exports = {
       var dateTimeMonthly = moment(monthlyData).local().format();
       var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
       localTimeMonthly = moment(localTimeMonthly).format()
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 401,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
-      }
       var userData = await Users.findOne({
         deleted_at: null,
         id: user_id,
         is_active: true
       });
+
+      if (userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
+      }
 
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
@@ -1221,6 +1244,7 @@ module.exports = {
         deleted_at: null,
         id: user_id
       })
+
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -1229,6 +1253,7 @@ module.exports = {
             "err": sails.__("Please Complete You profile").message
           })
       }
+
       var receiveCoin = await sails
         .helpers
         .wallet
@@ -1298,21 +1323,24 @@ module.exports = {
       } else {
         var user_id = req.user.id;
         //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
-        }
         var userData = await Users.findOne({
           is_active: true,
           deleted_at: null,
           id: req.user.id
         })
+
+        if (userData.account_tier != 4) {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res.json({
+              "status": 401,
+              "err": geo_fencing_data.msg,
+              error_at: geo_fencing_data
+            });
+          }
+        }
         if (userData.is_user_updated == false || userData.is_user_updated == "false") {
           return res
             .status(500)
@@ -1554,22 +1582,25 @@ module.exports = {
         coin_code
       } = req.allParams();
       var user_id = req.user.id;
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 401,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
-      }
       var userData = await Users.findOne({
         is_active: true,
         deleted_at: null,
         id: user_id
       })
+
+      if (userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
+      }
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -3597,17 +3628,29 @@ module.exports = {
       var {
         coin
       } = req.allParams();
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 401,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
+
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      if (userData != undefined && userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
       }
+
       var availableBalance = 0.0;
       var coinData = await Coins.findOne({
         where: {
@@ -4136,17 +4179,28 @@ module.exports = {
         .local()
         .format();
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 401,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      if (userData != undefined && userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
       }
+
       // Get User and tier information
       var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
                       FROM users
