@@ -44,6 +44,8 @@ module.exports = {
         coin = 'SUSU';
       } else if (coin == 'tbch') {
         coin = 'BCH'
+      } else if (coin == 'tltc') {
+        coin = 'LTC'
       }
 
       console.log((coin))
@@ -98,7 +100,7 @@ module.exports = {
 
         feesValue = (data.value * 21000);
 
-      } else if (coin == 'ltc' || coin == 'tltc') {
+      } else if (coin == 'ltc' || coin == 'tltc' || coin == 'LTC') {
 
         var data = await AdminSetting.findOne({
           where: {
@@ -106,6 +108,8 @@ module.exports = {
             slug: 'ltc_fees'
           }
         });
+
+        console.log("data", data)
 
         feesValue = data.value;
 
