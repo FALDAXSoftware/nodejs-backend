@@ -1419,9 +1419,9 @@ module.exports = {
         });
 
 
-        if (coinReceive != "SUSU") {
+        // if (coinReceive != "SUSU") {
           var currencyConversionData = await CurrencyConversion.findOne({
-            coin_id: coinData.id,
+            symbol: coinData.coin,
             deleted_at: null
           })
 
@@ -1435,24 +1435,24 @@ module.exports = {
             // }
           }
           // }
-        } else {
-          var value = await sails.helpers.getUsdSusucoinValue();
-          value = JSON.parse(value);
-          value = value.data
-          var currencyConversionData = {
-            quote: {
-              USD: {
-                price: value.USD
-              },
-              EUR: {
-                price: value.EUR
-              },
-              INR: {
-                price: value.INR
-              }
-            }
-          }
-        }
+        // } else {
+        //   var value = await sails.helpers.getUsdSusucoinValue();
+        //   value = JSON.parse(value);
+        //   value = value.data
+        //   var currencyConversionData = {
+        //     quote: {
+        //       USD: {
+        //         price: value.USD
+        //       },
+        //       EUR: {
+        //         price: value.EUR
+        //       },
+        //       INR: {
+        //         price: value.INR
+        //       }
+        //     }
+        //   }
+        // }
 
         var object
         var walletUserData = {};
