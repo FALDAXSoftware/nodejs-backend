@@ -2759,6 +2759,7 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
+      console.log("user", user)
       let existedUser = await Users.findOne({
         deleted_at: null,
         email: user.email
@@ -2782,7 +2783,8 @@ module.exports = {
             password: user.password,
             full_name: full_name,
             referral_code: randomize('Aa0', 10),
-            is_user_updated: true
+            is_user_updated: true,
+            account_tier: (kyc_done == true) ? (1) : (0)
           })
           .fetch();
 
