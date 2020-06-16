@@ -145,36 +145,56 @@ module.exports = {
     try {
       var user_id;
       var filter = ''
+      // if (!req.user.Admin) {
+
+      // }
+
+      // if (userData.account_tier != 4) {
       if (req.user.isAdmin) {
         user_id = 36;
         filter = ` wallets.user_id = ${user_id} AND wallets.is_admin = true `
       } else {
         user_id = req.user.id;
+
+        var userData = await Users
+          .findOne({
+            where: {
+              deleted_at: null,
+              is_active: true,
+              id: user_id
+            }
+          })
         filter = ` wallets.user_id = ${user_id}`
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userLegalityCheck(user_id);
-        console.log('geo_fencing_data', geo_fencing_data);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 500,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
+
+        if (userData.account_tier != 4) {
+          //Checking whether user can trade in the area selected in the KYC
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          console.log('geo_fencing_data', geo_fencing_data);
+          if (geo_fencing_data.response != true) {
+            return res.json({
+              "status": 401,
+              "err": geo_fencing_data.msg,
+              error_at: geo_fencing_data
+            });
+          }
         }
+
       }
+      // }
+
       let query = `SELECT
                     coins.coin_name, coins.coin_code, coins.created_at, coins.id, coins.coin_icon, coins.deleted_at,
                     coins.coin, wallets.balance, wallets.placed_balance, wallets.receive_address , currency_conversion.quote, coins.iserc,coins.is_active
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
-                    LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
+                    LEFT JOIN currency_conversion ON coins.coin = currency_conversion.symbol
                     WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
 
       let nonWalletQuery = `SELECT coins.coin_name, coins.coin_code, coins.coin_icon,coins.created_at, coins.id, coins.coin,coins.is_active,coins.iserc, currency_conversion.quote
-                              FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
+                              FROM coins LEFT JOIN currency_conversion ON coins.coin = currency_conversion.symbol
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
                               AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
@@ -354,22 +374,25 @@ module.exports = {
       var dateTimeMonthly = moment(monthlyData).local().format();
       var localTimeMonthly = moment.utc(dateTimeMonthly).toDate();
       localTimeMonthly = moment(localTimeMonthly).format()
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
-      }
       var userData = await Users.findOne({
         deleted_at: null,
         id: user_id,
         is_active: true
       });
+
+      if (userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
+      }
 
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
@@ -1221,6 +1244,7 @@ module.exports = {
         deleted_at: null,
         id: user_id
       })
+
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -1229,6 +1253,7 @@ module.exports = {
             "err": sails.__("Please Complete You profile").message
           })
       }
+
       var receiveCoin = await sails
         .helpers
         .wallet
@@ -1298,21 +1323,24 @@ module.exports = {
       } else {
         var user_id = req.user.id;
         //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
-        if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
-        }
         var userData = await Users.findOne({
           is_active: true,
           deleted_at: null,
           id: req.user.id
         })
+
+        if (userData.account_tier != 4) {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res.json({
+              "status": 401,
+              "err": geo_fencing_data.msg,
+              error_at: geo_fencing_data
+            });
+          }
+        }
         if (userData.is_user_updated == false || userData.is_user_updated == "false") {
           return res
             .status(500)
@@ -1391,9 +1419,9 @@ module.exports = {
         });
 
 
-        if (coinReceive != "SUSU") {
+        // if (coinReceive != "SUSU") {
           var currencyConversionData = await CurrencyConversion.findOne({
-            coin_id: coinData.id,
+            symbol: coinData.coin,
             deleted_at: null
           })
 
@@ -1407,24 +1435,24 @@ module.exports = {
             // }
           }
           // }
-        } else {
-          var value = await sails.helpers.getUsdSusucoinValue();
-          value = JSON.parse(value);
-          value = value.data
-          var currencyConversionData = {
-            quote: {
-              USD: {
-                price: value.USD
-              },
-              EUR: {
-                price: value.EUR
-              },
-              INR: {
-                price: value.INR
-              }
-            }
-          }
-        }
+        // } else {
+        //   var value = await sails.helpers.getUsdSusucoinValue();
+        //   value = JSON.parse(value);
+        //   value = value.data
+        //   var currencyConversionData = {
+        //     quote: {
+        //       USD: {
+        //         price: value.USD
+        //       },
+        //       EUR: {
+        //         price: value.EUR
+        //       },
+        //       INR: {
+        //         price: value.INR
+        //       }
+        //     }
+        //   }
+        // }
 
         var object
         var walletUserData = {};
@@ -1554,22 +1582,25 @@ module.exports = {
         coin_code
       } = req.allParams();
       var user_id = req.user.id;
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
-      }
       var userData = await Users.findOne({
         is_active: true,
         deleted_at: null,
         id: user_id
       })
+
+      if (userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
+      }
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -3597,17 +3628,29 @@ module.exports = {
       var {
         coin
       } = req.allParams();
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
+
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      if (userData != undefined && userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
       }
+
       var availableBalance = 0.0;
       var coinData = await Coins.findOne({
         where: {
@@ -3638,7 +3681,7 @@ module.exports = {
           if (remainningAmount > 0) {
             var division = coinData.coin_precision;
 
-            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
+            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.hot_receive_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false && coinData.coin_code != 'SUSU') {
               // remainningAmountValue = remainningAmount * division
               var reposneData = await sails
@@ -4136,17 +4179,28 @@ module.exports = {
         .local()
         .format();
 
-      //Checking whether user can trade in the area selected in the KYC
-      var geo_fencing_data = await sails
-        .helpers
-        .userLegalityCheck(user_id);
-      if (geo_fencing_data.response != true) {
-        return res.json({
-          "status": 500,
-          "err": geo_fencing_data.msg,
-          error_at: geo_fencing_data
-        });
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      if (userData != undefined && userData.account_tier != 4) {
+        //Checking whether user can trade in the area selected in the KYC
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        if (geo_fencing_data.response != true) {
+          return res.json({
+            "status": 401,
+            "err": geo_fencing_data.msg,
+            error_at: geo_fencing_data
+          });
+        }
       }
+
       // Get User and tier information
       var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
                       FROM users
@@ -4744,12 +4798,12 @@ module.exports = {
 
     } catch (error) {
       return res
-      .status(500)
-      .json({
-        status: 500,
-        "err": sails.__("Something Wrong").message,
-        error_at: error.stack
-      });
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
     }
   }
 };

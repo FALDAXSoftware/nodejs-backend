@@ -333,7 +333,7 @@ module.exports = {
                   user: user_detail.id,
                   ip: ip
                 });
-                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account) {
+                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account || req.body.test_key == "load_testing") {
                   // if (req.body.device_token) {
                   //   var today = moment().utc().format();
                   //   var yesterday = moment(user_detail.device_token_expiration).format();

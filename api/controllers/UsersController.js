@@ -764,6 +764,7 @@ module.exports = {
       let userKyc = await KYC.findOne({
         user_id: id
       });
+      console.log("userKyc", userKyc)
       usersData[0].is_kyc_done = 0;
       if (userKyc) {
         if (userKyc.steps == 3) {
@@ -780,6 +781,10 @@ module.exports = {
       .helpers
       .userTradeChecking(usersData[0].id);
 
+    var dataResponse1 = await sails
+      .helpers
+      .userLegalityCheck(usersData[0].id)
+
     var panic_button_details = await AdminSetting.findOne({
       where: {
         deleted_at: null,
@@ -789,6 +794,7 @@ module.exports = {
 
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
+    usersData[0].legal_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse1.response);
     // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
