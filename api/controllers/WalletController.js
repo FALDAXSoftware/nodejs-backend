@@ -4171,6 +4171,7 @@ module.exports = {
   getUserAvailableLimit: async function (req, res) {
     try {
       var user_id = req.user.id;
+      console.log('user_id', user_id);
       var data = req.body;
       var now = moment().local().format();
       var yesterday = moment()
@@ -4214,7 +4215,7 @@ module.exports = {
                       AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
       var userTierSql = await sails.sendNativeQuery(tierSql);
       userTierSql = userTierSql.rows;
-
+      console.log('userTierSql', userTierSql);
       if ((userTierSql[0].monthly_withdraw_limit == null) || userTierSql[0].daily_withdraw_limit == null) {
         return res
           .status(202)
@@ -4232,9 +4233,7 @@ module.exports = {
                         AND coins.deleted_at IS NULL AND currency_conversion.deleted_at IS NULL`
       var limitCalculation = await sails.sendNativeQuery(limitSql);
       limitCalculation = limitCalculation.rows;
-
-      console.log("limitCalculation", limitCalculation)
-
+      console.log('limitCalculation', limitCalculation);
       // Daily Limit Checking
       var getUserDailyHistory = `SELECT *
                                   FROM (
@@ -4260,7 +4259,7 @@ module.exports = {
 
       var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
       userDailyHistory = userDailyHistory.rows
-
+      console.log('userDailyHistory', userDailyHistory);
       // Monthly Limit Checking
       var getUserMonthlyHistory = `SELECT *
                                     FROM (
@@ -4285,7 +4284,7 @@ module.exports = {
                                     ) as m`
       var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
       userMonthlyHistory = userMonthlyHistory.rows;
-
+      console.log('userMonthlyHistory', userMonthlyHistory);
       var dailyTotalVolume = 0.0;
       var monthlyTotalVolume = 0.0;
       userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
@@ -4314,7 +4313,8 @@ module.exports = {
           if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
             if ((((limitCalculation[0].usd_price * data.amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
-
+              console.log('dailyFlag', dailyFlag);
+              console.log('monthlyFlag', monthlyFlag);
               if (dailyFlag == true && monthlyFlag == true) {
                 var data = {
                   "daily_limit_left": "Unlimited",
@@ -4362,9 +4362,9 @@ module.exports = {
               var data = {
                 "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
                 "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
-                "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
-                "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-                "current_daily_limit": limitCalculation[0].usd_price * data.amount
+                "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
+                "monthly_limit_actual": parseFloat(userTierSql[0].monthly_withdraw_limit),
+                "current_daily_limit": parseFloat(limitCalculation[0].usd_price * data.amount)
               }
               return res
                 .status(201)
@@ -4377,8 +4377,8 @@ module.exports = {
           } else {
 
             var data = {
-              "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
-              "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+              "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
+              "monthly_limit_actual": parseFloat(userTierSql[0].monthly_withdraw_limit),
             }
             return res
               .status(201)
@@ -4392,9 +4392,9 @@ module.exports = {
           var data = {
             "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - (dailyTotalVolume))),
             "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - (monthlyTotalVolume))),
-            "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
-            "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
-            "current_monthly_limit": limitCalculation[0].usd_price * data.amount
+            "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
+            "monthly_limit_actual": parseFloat(userTierSql[0].monthly_withdraw_limit),
+            "current_monthly_limit": parseFloat(limitCalculation[0].usd_price * data.amount)
           }
           return res
             .status(201)
@@ -4407,8 +4407,8 @@ module.exports = {
         }
       } else {
         var data = {
-          "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
-          "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
+          "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
+          "monthly_limit_actual": parseFloat(userTierSql[0].monthly_withdraw_limit),
         }
         // }
         return res
