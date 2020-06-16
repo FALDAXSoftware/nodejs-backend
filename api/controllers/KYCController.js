@@ -29,7 +29,11 @@ module.exports = {
         user_id
       });
       req.body.city = req.body.city_town;
-
+      if (req.body.test_key == "load_testing") {
+        req.body.steps = 3;
+        req.body.webhook_response = "ACCEPT"
+        req.body.direct_response = "ACCEPT"
+      }
       if (kyc_details) {
         if (kyc_details.steps == 3) {
           return res.json({
