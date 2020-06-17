@@ -454,7 +454,7 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
-      let query = " from coins WHERE deleted_at IS NULL ";
+      let query = " from coins WHERE deleted_at IS NULL AND is_fiat = 'false' ";
       if ((data && data != "")) {
         if (data && data != "" && data != null) {
           query = query + "AND (LOWER(coin_name) LIKE '%" + data.toLowerCase() + "%'OR LOWER(coin_code) LIKE '%" + data.toLowerCase() + "%'";

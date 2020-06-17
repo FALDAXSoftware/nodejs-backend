@@ -63,7 +63,9 @@ module.exports = {
   */
 
   fn: async function (inputs, exits) {
+    inputs.symbol = (inputs.symbol).replace("/", "");
     var md_entry_type = (inputs.side == "Buy" ? 1 : 0);
+    console.log(sails.config.local.JST_MARKET_URL + '/Market/GetQuoteSnapshot?symbol=' + inputs.symbol + '&mdEntyType=' + md_entry_type);
     request({
       url: sails.config.local.JST_MARKET_URL + '/Market/GetQuoteSnapshot?symbol=' + inputs.symbol + '&mdEntyType=' + md_entry_type,
       method: "POST",
@@ -73,6 +75,8 @@ module.exports = {
       json: true
     }, async function (err, httpResponse, body) {
       try {
+        console.log("err",err);
+        console.log("body",body);
         if (err) {
           return exits.error(err);
         }
@@ -90,6 +94,7 @@ module.exports = {
           limit_price: 0.0,
           type_of: (inputs.type_of == "create_order" ? "order" : "check")
         };
+        console.log("object_Data", object_data)
         await MarketSnapshotPrices.create(object_data);
         let ask_price = bid_size = limit_price = 0.0;
         let response_data = [{

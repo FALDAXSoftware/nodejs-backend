@@ -25,13 +25,13 @@ module.exports = {
     },
     maker_fee: {
       type: 'number',
-      columnName: 'maker_fee',
-      required: true
+      columnName: 'maker_fee'
+      // required: true
     },
     taker_fee: {
       type: 'number',
-      columnName: 'taker_fee',
-      required: true
+      columnName: 'taker_fee'
+      // required: true
     },
     is_active: {
       type: 'boolean',
@@ -73,7 +73,38 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
-    }
+    },
+    crypto_minimum: {
+      type: 'number',
+      columnName: 'crypto_minimum',
+      defaultsTo: 0
+    },
+    crypto_maximum: {
+      type: 'number',
+      columnName: 'crypto_maximum',
+      defaultsTo: 0
+    },
+    order_maximum: {
+      type: 'number',
+      columnName: 'order_maximum',
+      defaultsTo: 0
+    },
+    bot_status: {
+      type: 'boolean',
+      columnName: 'bot_status',
+      defaultsTo: false,
+      allowNull: true
+    },
+    price_precision: {
+      type: 'number',
+      columnName: 'price_precision'
+      // required: true
+    },
+    quantity_precision: {
+      type: 'number',
+      columnName: 'quantity_precision'
+      // required: true
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
