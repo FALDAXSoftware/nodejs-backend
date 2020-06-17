@@ -303,6 +303,21 @@ module.exports = {
       columnName: 'default_language',
       defaultsTo: "en"
     },
+    is_tradedesk_user: {
+      type: 'boolean',
+      columnName: 'is_tradedesk_user',
+      defaultsTo: false
+    },
+    account_verified_at: {
+      type: 'ref',
+      columnType: 'datetime',
+      columnName: 'account_verified_at'
+    },
+    is_institutional_account: {
+      type: 'boolean',
+      columnName: 'is_institutional_account',
+      defaultsTo: false
+    }
   },
   beforeCreate: (values, next) => {
     Users

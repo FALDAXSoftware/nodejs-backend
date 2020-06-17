@@ -1294,7 +1294,7 @@ module.exports = {
 
         return res.json({
           "status": 200,
-          "message": sails.__("Order Success").message,
+          "message": sails.__("Trade data retrived successfully").message,
           "data": user_history_data
         });
       } else if (data.trade_type == 2) { // Simplex
@@ -1310,8 +1310,9 @@ module.exports = {
       }
       return res.json({
         "status": 200,
-        "message": sails.__("Order Success").message,
-        "data": user_history_data
+        "message": sails.__("Trade data retrived successfully").message,
+        "data": user_history_data.data,
+        "tradeCount": user_history_data.total
       });
     } catch (error) {
       // console.log(error);
@@ -1959,14 +1960,14 @@ module.exports = {
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
       } else if (trade_type == 3) { // JST
-        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id";
+        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id ";
         let whereAppended = false;
 
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
             query += " WHERE"
             whereAppended = true;
-            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
+            query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
               query += " OR quantity=" + data + " OR fill_price=" + data
             }
@@ -1979,7 +1980,7 @@ module.exports = {
             " AND " :
             " WHERE ";
           whereAppended = true;
-          query += " trade_history.user_id=" + user_id
+          query += " (trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id + ")";
         }
 
         if (t_type) {
@@ -2012,8 +2013,8 @@ module.exports = {
         }
 
         query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-
-        tradeData = await sails.sendNativeQuery(`Select trade_history.*,users.email` + query, [])
+        console.log(`Select trade_history.*,users.email` + query)
+        tradeData = await sails.sendNativeQuery(`Select trade_history.*,users.email, requetsed.email as requested_email` + query, [])
 
         tradeData = tradeData.rows;
 

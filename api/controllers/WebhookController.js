@@ -120,8 +120,15 @@ module.exports = {
   // Webhook for address confiramtion
   webhookOnAddress: async function (req, res) {
     try {
+      console.log("req.body", req.body)
       if (req.body.address && req.body.walletId) {
-        let address = await sails.helpers.bitgo.getAddress("eth", req.body.walletId, req.body.address);
+        var coinValue;
+        if (sails.config.local.TESTNET == 1) {
+          coinValue = "teth"
+        } else {
+          coinValue = "eth"
+        }
+        let address = await sails.helpers.bitgo.getAddress(coinValue, req.body.walletId, req.body.address);
         let addressLable = address.label;
         let coin = address.coin;
         let coinObject = await Coins.findOne({
@@ -188,6 +195,7 @@ module.exports = {
       });
     }
   },
+
   // webhook on receive
   webhookOnReceive: async function (req, res) {
     try {
@@ -209,18 +217,13 @@ module.exports = {
         division = coin.coin_precision
         let isToken = false;
         let transferId = req.body.transfer;
-        console.log("transferId", transferId)
         let transfer = await sails.helpers.bitgo.getTransfer(req.body.coin, req.body.wallet, transferId)
-        console.log("transfer", transfer)
 
         if (transfer.state == "confirmed" && (transfer.type == "receive" || transfer.type == "send")) {
-          console.log("transfer.state", transfer.state)
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
             transaction_id: req.body.hash
           });
-
-          console.log("alreadyWalletHistory", alreadyWalletHistory)
 
           if (alreadyWalletHistory.length == 0) {
             // Object Of receiver
@@ -228,7 +231,6 @@ module.exports = {
             let source = null
             if (transfer.outputs) {
               dest = transfer.outputs[0];
-              console.log("dest", dest)
               // Object of sender
               source = transfer.outputs[1];
             } else if (transfer.entries) {
@@ -264,7 +266,7 @@ module.exports = {
                   is_active: true,
                   coin_id: coinDataValue.id
                 });
-                console.log("userWallet", userWallet)
+
                 if (userWallet == undefined) {
                   if (transfer.outputs && transfer.outputs != undefined && transfer.outputs.length > 0) {
                     if (transfer.outputs.length > 2) {
@@ -277,7 +279,7 @@ module.exports = {
                             is_active: true,
                             coin_id: coinDataValue.id
                           })
-                          console.log("User Wallet at " + userWallet + " at transfer.output", transfer.outputs[i]);
+
                           if (userWallet && userWallet != undefined) {
                             source = transfer.outputs[i];
                             flag = true;
@@ -297,7 +299,6 @@ module.exports = {
                                   coin_id: coinDataValue.id
                                 })
 
-                                console.log("User Wallet at " + userWallet + " at transfer.output", transfer.entries[i]);
                                 if (userWallet && userWallet != undefined) {
                                   source = transfer.entries[i];
                                   break;
@@ -319,7 +320,6 @@ module.exports = {
                             coin_id: coinDataValue.id
                           })
 
-                          console.log("User Wallet at " + userWallet + " at transfer.output", transfer.entries[i]);
                           if (userWallet && userWallet != undefined) {
                             source = transfer.entries[i];
                             break;
@@ -330,8 +330,7 @@ module.exports = {
                   }
                 }
               }
-              console.log("source", source)
-              console.log("dest", dest)
+
               if (userWallet) {
                 let temp = dest;
                 dest = source;
@@ -341,8 +340,6 @@ module.exports = {
             let coin = await Coins.findOne({
               id: userWallet.coin_id
             });
-
-            console.log(coin);
             // Check For Token
             if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
               let token = await Coins.findOne({
@@ -360,17 +357,12 @@ module.exports = {
               }
               isToken = true
             }
-            console.log("dest", dest, "source", source)
 
-            console.log("dest", dest)
             // transaction amount
             let amount = (dest.value / division);
 
-            console.log("amount", amount)
-            console.log("userWallet", userWallet)
-
             // user wallet exitence check
-            let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
+            // let warmWallet = await sails.helpers.bitgo.getWallet(req.body.coin, coin.warm_wallet_address);
 
             if (userWallet) {
               // Set wallet history params
@@ -399,7 +391,7 @@ module.exports = {
                 transaction_id: req.body.hash,
                 actual_amount: (amount).toFixed(8),
                 receiver_user_balance_before: userWallet.balance,
-                warm_wallet_balance_before: (parseFloat(warmWallet.balance / division).toFixed(sails.config.local.TOTAL_PRECISION)),
+                warm_wallet_balance_before: 0.0,
                 transaction_from: sails.config.local.RECEIVE_TO_DESTINATION,
                 actual_network_fees: 0.0,
                 faldax_fee: 0.0,
@@ -438,8 +430,6 @@ module.exports = {
                 slug: 'receive'
               })
 
-              console.log(userNotification)
-
               if (userNotification != undefined) {
                 if (userNotification.email == true || userNotification.email == "true") {
                   if (userData.email != undefined)
@@ -453,7 +443,6 @@ module.exports = {
                     userData.coinName = "-";
                   }
                   userData.amountReceived = (amount).toFixed(8);
-                  console.log(userData);
                   await sails.helpers.notification.send.email("receive", userData)
                 }
                 // if (userNotification.text == true || userNotification.text == "true") {

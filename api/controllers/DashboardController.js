@@ -323,8 +323,7 @@ module.exports = {
       let transactionCount = await sails.sendNativeQuery(query, [])
       var transactionValue = transactionCount.rows;
 
-      let feesQuery = "SELECT symbol, sum(user_fee) FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY sum(user_fee) DESC"
-      console.log("feesQuery", feesQuery)
+      let feesQuery = "SELECT symbol, sum(user_fee) as user_fee, sum(requested_fee) as requested_fee FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY sum(user_fee) DESC"
       let feesTransactionCount = await sails.sendNativeQuery(feesQuery, [])
       var feesTransactionValue = feesTransactionCount.rows;
 
@@ -344,7 +343,6 @@ module.exports = {
         is_approve: null,
       });
       let q = {}
-      console.log("req.query", req.query)
       if (req.query.kyc_start_date && req.query.kyc_end_date) {
         q = {
           updated_at: {
@@ -388,6 +386,31 @@ module.exports = {
           '<=': AccHrDate
         }
       })
+
+      let TierList = [2, 3, 4]
+      var TierData = []
+      for (var i = 0; i < TierList.length; i++) {
+        let approveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'true'`
+        let Value = await sails.sendNativeQuery(approveTier, [])
+
+        var data = {}
+        data[TierList[i]] = Value.rows[0];
+        TierData.push(data)
+
+        let disApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'false'`
+        let disApproveValue = await sails.sendNativeQuery(disApproveTier, [])
+
+        var data = {}
+        data[TierList[i]] = disApproveValue.rows[0];
+        TierData.push(data)
+
+        let unApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved IS NULL`
+        let unApproveValue = await sails.sendNativeQuery(unApproveTier, [])
+
+        var data = {}
+        data[TierList[i]] = unApproveValue.rows[0];
+        TierData.push(data)
+      }
       return res.json({
         "status": 200,
         "message": sails.__("Dashboard Data retrieved success").message,
@@ -417,7 +440,8 @@ module.exports = {
         userSignUpCountValue,
         transactionValue,
         feesTransactionValue,
-        walletFeesTransactionValue
+        walletFeesTransactionValue,
+        TierData
       });
     } catch (error) {
       // await logger.error(error.message)
