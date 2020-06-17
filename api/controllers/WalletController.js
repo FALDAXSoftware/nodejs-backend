@@ -1420,21 +1420,21 @@ module.exports = {
 
 
         // if (coinReceive != "SUSU") {
-          var currencyConversionData = await CurrencyConversion.findOne({
-            symbol: coinData.coin,
-            deleted_at: null
-          })
+        var currencyConversionData = await CurrencyConversion.findOne({
+          symbol: coinData.coin,
+          deleted_at: null
+        })
 
-          if (currencyConversionData) {
-            // if (currencyConversionData.quote.USD) {
-            //   var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
-            //   if (get_price[0] != undefined) {
-            //     currencyConversionData.quote.USD.price = get_price[0].ask_price
-            //   } else {
-            currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
-            // }
-          }
+        if (currencyConversionData) {
+          // if (currencyConversionData.quote.USD) {
+          //   var get_price = await sails.helpers.fixapi.getPrice(currencyConversionData.symbol, 'Buy');
+          //   if (get_price[0] != undefined) {
+          //     currencyConversionData.quote.USD.price = get_price[0].ask_price
+          //   } else {
+          currencyConversionData.quote.USD.price = currencyConversionData.quote.USD.price
           // }
+        }
+        // }
         // } else {
         //   var value = await sails.helpers.getUsdSusucoinValue();
         //   value = JSON.parse(value);
@@ -2829,9 +2829,7 @@ module.exports = {
           filter += " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(user1.email) LIKE '%" + data.toLowerCase() + "%')";
         }
 
-        var tradeQuery = `SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
-                            user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name
-                            FROM trade_history
+        var tradeQuery = ` FROM trade_history
                             LEFT JOIN coins
                             ON trade_history.currency = coins.coin
                             LEFT JOIN coins as coin1
@@ -2860,7 +2858,7 @@ module.exports = {
               .dateFormat(end_date) + " 23:59:59'";
         }
 
-        countQuery = tradeQuery;
+        var countQuery = tradeQuery;
 
         if (sort_col && sort_order) {
           let sortVal = (sort_order == 'descend' ?
@@ -2872,13 +2870,19 @@ module.exports = {
         }
 
         tradeQuery += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+        console.log("tradeQuery", tradeQuery)
 
-        var tradeValue = await sails.sendNativeQuery(tradeQuery, []);
+        var tradeValue = await sails.sendNativeQuery(`SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+        user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name ` + tradeQuery, []);
 
         tradeValue = tradeValue.rows
+        console.log("tradeValue", tradeValue);
 
-        tradeCount = await sails.sendNativeQuery(countQuery, [])
-        tradeCount = tradeCount.rows.length;
+        console.log(`SELECT count(trade_history.id)` + countQuery)
+
+        var tradeCount = await sails.sendNativeQuery(`SELECT count(trade_history.id)` + countQuery, [])
+        console.log("tradeCount", tradeCount)
+        tradeCount = tradeCount.rows[0].count;
 
         return res
           .status(200)
@@ -4340,10 +4344,10 @@ module.exports = {
                 var data = {
                   "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
                   "monthly_limit_left": (Number.isNaN(monthlyTotalVolume)) ? (userTierSql[0].monthly_withdraw_limit) : (parseFloat(userTierSql[0].monthly_withdraw_limit - monthlyTotalVolume)),
-                  "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
-                  "monthly_limit_actual": parseFloat(userTierSql[0].monthly_withdraw_limit),
+                  "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                  "monthly_limit_actual": userTierSql[0].monthly_withdraw_limit,
                   "current_limit_left_daily_amount": parseFloat(userTierSql[0].daily_withdraw_limit) - (parseFloat(value) + parseFloat(dailyTotalVolume)),
-                  "current_limit_left_montly_amount": parseFloat(userTierSql[0].monthly_withdraw_limit) - (parseFloat(value) + parseFloat(monthlyTotalVolume))
+                  "current_limit_left_montly_amount": (userTierSql[0].monthly_withdraw_limit) - (parseFloat(value) + parseFloat(monthlyTotalVolume))
                 }
                 return res
                   .status(200)
