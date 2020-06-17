@@ -2706,7 +2706,7 @@ module.exports = {
             })
           }
           assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION) + ((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned).toFixed(sails.config.local.TOTAL_PRECISION)) : (0.0)));
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst) + (assets_data[i].trade_earned)).toFixed(sails.config.local.TOTAL_PRECISION) + ((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned).toFixed(sails.config.local.TOTAL_PRECISION)) : (0.0)));
         }
 
 
