@@ -36,6 +36,7 @@ module.exports = {
     try {
 
       if (req.body.email_verify_token) {
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         let user = await Users.findOne({
           email_verify_token: req.body.email_verify_token
         });
@@ -132,17 +133,23 @@ module.exports = {
           password: req.body.password
         }
 
-        var user_detail = await Users.findOne({
+        var user_detail = await Users.find({
           email: query.email
-        });
+        }).sort('id DESC');
+
+        user_detail = user_detail[0];
+
+        console.log(user_detail)
 
         if (user_detail) {
+          console.log(user_detail)
           // Set language to user's default
-          if (user_detail.default_language && user_detail.default_language != "") {
-            sails.hooks.i18n.setLocale(user_detail.default_language);
-          } else {
-            sails.hooks.i18n.setLocale("en");
-          }
+          // if (user_detail.default_language && user_detail.default_language != "") {
+          //   sails.hooks.i18n.setLocale(user_detail.default_language);
+          // } else {
+          //   sails.hooks.i18n.setLocale("en");
+          // }
+          sails.hooks.i18n.setLocale(req.headers["accept-language"]);
           if (user_detail.deleted_at && user_detail.deleted_by == 2) {
             return res.status(403).json({
               "status": 403,
@@ -315,16 +322,16 @@ module.exports = {
                   ip: ip
                 });
                 if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
-                  if (req.body.device_token) {
-                    var today = moment().utc().format();
-                    var yesterday = moment(user_detail.device_token_expiration).format();
-                    if (yesterday < today) {
-                      return res.status(400).json({
-                        "status": 400,
-                        "err": sails.__("Verification Expired").message
-                      })
-                    }
-                  }
+                  // if (req.body.device_token) {
+                  //   var today = moment().utc().format();
+                  //   var yesterday = moment(user_detail.device_token_expiration).format();
+                  //   if (yesterday < today) {
+                  //     return res.status(400).json({
+                  //       "status": 400,
+                  //       "err": sails.__("Verification Expired").message
+                  //     })
+                  //   }
+                  // }
                   await LoginHistory.create({
                     user: user_detail.id,
                     ip: ip,
@@ -385,10 +392,10 @@ module.exports = {
                       if (user_detail.email != undefined)
                         await sails.helpers.notification.send.email("login_new_ip", user_detail)
                     }
-                    if (userNotification.text == true || userNotification.text == "true") {
-                      if (user_detail.phone_number && user_detail.phone_number != undefined && user_detail.phone_number != null && user_detail.phone_number != '')
-                        await sails.helpers.notification.send.text("login_new_ip", user_detail)
-                    }
+                    // if (userNotification.text == true || userNotification.text == "true") {
+                    //   if (user_detail.phone_number && user_detail.phone_number != undefined && user_detail.phone_number != null && user_detail.phone_number != '')
+                    //     await sails.helpers.notification.send.text("login_new_ip", user_detail)
+                    // }
                   }
 
                   let emailContent = await sails.helpers.utilities.formatEmail(language_content, {
@@ -496,7 +503,7 @@ module.exports = {
           new_ip_verification_token: req.body.token
         });
 
-
+        console.log(user_detail);
 
         if (user_detail) {
 
@@ -818,6 +825,7 @@ module.exports = {
         let user_details = await Users.findOne({
           reset_token
         });
+        sails.hooks.i18n.setLocale(req.headers["accept-language"]);
         if (user_details == undefined) {
           return res
             .status(400)
@@ -918,11 +926,14 @@ module.exports = {
 
   forgotPassword: async function (req, res) {
     try {
-      const user_details = await Users.findOne({
+      var user_details = await Users.find({
         email: req.body.email,
         // deleted_at: null,
         // is_active: true
-      });
+      }).sort('id DESC');
+      console.log(user_details)
+      sails.hooks.i18n.setLocale(req.headers["accept-language"]);
+      user_details = user_details[0];
       if (!user_details) {
         return res
           .status(401)

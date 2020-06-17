@@ -44,28 +44,17 @@ module.exports = {
         coin = 'SUSU';
       }
 
-      console.log(coin)
+      console.log((coin).toUpperCase())
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
           is_active: true,
-          coin_code: (coin)
+          or: [
+            { coin_code: (coin).toUpperCase() },
+            { coin: (coin).toUpperCase() }
+          ]
         }
       })
-
-      console.log(coinData)
-
-      if (coinData == undefined) {
-        coinData = await Coins.findOne({
-          where: {
-            deleted_at: null,
-            is_active: true,
-            coin: (coin).toUpperCase()
-          }
-        })
-      }
-
-      console.log(coinData)
 
       if (coin == 'btc' || coin == 'tbtc') {
         var data = await AdminSetting.findOne({

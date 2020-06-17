@@ -27,6 +27,19 @@ module.exports = {
         insertParams.linkedin_profile = req.body.linkedin_profile;
         insertParams.job_id = req.body.job_id;
         insertParams.created_at = new Date();
+        var userData = await Users.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            email: req.body.email
+          }
+        });
+
+        if (userData && userData != undefined) {
+          sails.hooks.i18n.setLocale(userData.default_language);
+        } else {
+          sails.hooks.i18n.setLocale("en");
+        }
         var i = 1;
         async.map(paramNames, async function (file, cb) {
           await req.file(file).upload(async function (err, uploadedFiles) {
@@ -44,7 +57,7 @@ module.exports = {
               }
               let timestamp = new Date().getTime().toString();
               let resumeFileExtension = uploadedFiles[0].filename.split(".")[uploadedFiles[0].filename.split(".").length - 1]
-              let resumeFileName = 'career/' +timestamp + "_" + file + "." + resumeFileExtension
+              let resumeFileName = 'career/' + timestamp + "_" + file + "." + resumeFileExtension
               let s3ResumeUpload = await UploadFiles.newUpload(uploadedFiles[0].fd, resumeFileName)
               let coverFileName = null
               insertParams[file] = resumeFileName;

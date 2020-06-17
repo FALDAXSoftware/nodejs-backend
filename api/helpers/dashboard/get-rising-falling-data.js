@@ -55,12 +55,13 @@ module.exports = {
           })
           risingFallingData.push(currencyConversionValue)
           console.log(risingFallingData)
-        } else if (coinData[i].coin_code == "SUSU") {
-          var susucoinData = await sails.helpers.getUsdSusucoinValue();
-          susucoinData = JSON.parse(susucoinData);
-          susucoinData = susucoinData.data
-          risingFallingData.push(susucoinData)
         }
+        // } else if (coinData[i].coin_code == "SUSU") {
+        //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+        //   susucoinData = JSON.parse(susucoinData);
+        //   susucoinData = susucoinData.data
+        //   risingFallingData.push(susucoinData)
+        // }
       }
       return exits.success(risingFallingData);
     } catch (err) {

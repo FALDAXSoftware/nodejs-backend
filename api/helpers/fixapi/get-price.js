@@ -25,13 +25,15 @@ module.exports = {
   },
 
   fn: async function (inputs, exits) {
-    var coin = inputs.coin + '/USD'
+    var coin = inputs.coin + 'USD'
     var which_price={};
     var query = {};
     query.coin = coin;
     if( inputs.side == "Buy" ){
+      query.type = "1";
       query.ask_price ={'>':0} ;
     }else{
+      query.type = "0";
       query.bid_price ={'>':0};
     }
 

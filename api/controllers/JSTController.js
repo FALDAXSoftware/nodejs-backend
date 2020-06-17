@@ -147,15 +147,14 @@ module.exports = {
       var currency_pair = (req_body.Symbol).split("/");
       let calculate_offer_amount = 0;
       if (req_body.original_pair == req_body.order_pair) {
-        var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Buy");
+        var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Buy");
         var asset1_usd_value = asset1_value[0].ask_price;
-        var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Buy");
+        var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Buy");
         var asset2_usd_value = asset2_value[0].ask_price;
         calculate_offer_amount = asset1_usd_value;
       } else {
-        var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Sell");
         var asset1_usd_value = asset1_value[0].bid_price;
-        var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Sell");
+        var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Sell");
         var asset2_usd_value = asset2_value[0].bid_price;
         calculate_offer_amount = asset2_usd_value;
       }
@@ -771,15 +770,15 @@ module.exports = {
           var currency_pair = (req_body.Symbol).split("/");
           let calculate_offer_amount = 0;
           if (req_body.original_pair == req_body.order_pair) {
-            var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Buy");
+            var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Buy");
             var asset1_usd_value = asset1_value[0].ask_price;
-            var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Buy");
+            var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Buy");
             var asset2_usd_value = asset2_value[0].ask_price;
             calculate_offer_amount = asset1_usd_value;
           } else {
-            var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + '/USD', "Sell");
+            var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Sell");
             var asset1_usd_value = asset1_value[0].bid_price;
-            var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + '/USD', "Sell");
+            var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Sell");
             var asset2_usd_value = asset2_value[0].bid_price;
             calculate_offer_amount = asset2_usd_value;
           }
@@ -1118,6 +1117,16 @@ module.exports = {
       var order_pair = req.query.order_pair;
       var original_pair = req.query.original_pair;
       var usd_value = req.query.usd_value;
+      if( Symbol == "XRP/ETH" || Symbol == "LTC/ETH"){
+        return res.json({
+          status: 200,
+          data: [],
+          message: sails.__("Pair does not supported").message,
+          err: sails.__("Pair does not supported").message
+        });
+      }
+      Symbol = Symbol.replace("/","");
+      console.log("Symbol",Symbol);
       var req_body = {
         "Symbol": Symbol,
         "Side": Side,

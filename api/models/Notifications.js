@@ -19,8 +19,12 @@ module.exports = {
       defaultsTo: false
     },
     title: {
-      type: 'boolean',
+      type: 'string',
       columnName: "title"
+    },
+    title_ja: {
+      type: 'string',
+      columnName: "title_ja"
     },
     created_at: {
       type: 'ref',

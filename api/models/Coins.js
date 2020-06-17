@@ -28,6 +28,11 @@ module.exports = {
       columnName: 'jst_min_coin_limit',
       defaultsTo: 0
     },
+    coin_precision: {
+      type: 'string',
+      columnName: 'coin_precision'
+      // defaultsTo: 0
+    },
     coin_code: {
       type: 'string',
       columnName: 'coin_code',

@@ -8,6 +8,7 @@ const BitGoJS = require('bitgo');
 const speakeasy = require('speakeasy');
 var aesjs = require('aes-js');
 var logger = require("./logger");
+var requestIp = require('request-ip');
 
 module.exports = {
   getPanicStatus: async function (req, res) {
@@ -94,7 +95,7 @@ module.exports = {
         let user_language = (user.default_language ? user.default_language : 'en');
         let language_content = template.all_content[user_language].content;
         let language_subject = template.all_content[user_language].subject;
-        // console.log("all_user_emails", all_user_emails.length)
+        console.log("all_user_emails", all_user_emails.length)
         if (all_user_emails.length > 0) {
           for (var i = 0; i < all_user_emails.length; i++) {
             // console.log(all_user_emails[i])
@@ -130,6 +131,12 @@ module.exports = {
         }).set({
           value: status
         });
+        var ip = requestIp.getClientIp(req);
+        await PanicHistory.create({
+          'panic_status': status,
+          'ip': ip,
+          created_at: new Date()
+        })
         return res
           .json({
             "status": 200,
@@ -147,6 +154,76 @@ module.exports = {
     } catch (error) {
       // console.log(error);
       // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getPanicHistory: async function (req, res) {
+    try {
+
+      let {
+        page,
+        limit,
+        data,
+        status,
+        start_date,
+        end_date,
+        sort_col,
+        sort_order
+      } = req.allParams();
+
+      var query = " from panic_history WHERE deleted_at IS NULL"
+
+      if (data && data != "" && data != null) {
+        query += " AND LOWER(ip) LIKE '%" + data.toLowerCase() + "%' "
+      }
+
+      if (status) {
+        query += " AND status = '" + status + "'"
+      }
+
+      if (start_date && end_date) {
+
+        query += " AND created_at >= '" + await sails
+          .helpers
+          .dateFormat(start_date) + " 00:00:00' AND created_at <= '" + await sails
+            .helpers
+            .dateFormat(end_date) + " 23:59:59'";
+      }
+
+      countQuery = query;
+
+      if (sort_col && sort_order) {
+        let sortVal = (sort_order == 'descend' ?
+          'DESC' :
+          'ASC');
+        query += " ORDER BY " + sort_col + " " + sortVal;
+      } else {
+        query += " ORDER BY created_at DESC";
+      }
+
+      query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
+      console.log(query)
+      var tradeData = await sails.sendNativeQuery("Select *" + query, [])
+
+      tradeData = tradeData.rows;
+
+      var tradeCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      tradeCount = tradeCount.rows[0].count;
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Trade list").message,
+        "data": tradeData,
+        tradeCount
+      });
+    } catch (error) {
       return res
         .status(500)
         .json({
@@ -323,9 +400,9 @@ module.exports = {
     console.log(iv)
     var value = req.body.encryptKey;
     console.log(value);
-    // var encryptData = await sails.helpers.getEncryptData(value);
-    // console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("47c69b1635c867f3a032434f2b2e");
+    var encryptData = await sails.helpers.getEncryptData(value);
+    console.log("encryptData", encryptData);
+    var decryptData = await sails.helpers.getDecryptData(encryptData);
     console.log("decryptData", decryptData)
     return res.json(200);
   },

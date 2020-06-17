@@ -1,3 +1,5 @@
+// console.log(process.env.APP_URL);
+
 module.exports.urlconf = {
   CMS_URL: process.env.CMS_URL,
   APP_URL: process.env.APP_URL,

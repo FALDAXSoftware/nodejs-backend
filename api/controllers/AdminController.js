@@ -1284,6 +1284,36 @@ module.exports = {
             "err": sails.__("2 factor already disabled").message
           });
       }
+
+      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
+
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: user.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
+
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
+      }
+
       await Admin
         .update({
           id: user.id,
@@ -2567,7 +2597,7 @@ module.exports = {
       var assets_data = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
         })
         .sort('created_at DESC');
 
@@ -2628,7 +2658,7 @@ module.exports = {
           var temp_forfeit_total = 0;
           if (forfeitFundData.rowCount > 0) {
             (forfeitFundData.rows).forEach(function (each, index) {
-              temp_forfeit_total += parseFloat(each.balance) + parseFloat(each.placed_balance)
+              temp_forfeit_total += parseFloat(each.balance);
             })
           }
           assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total.toFixed(sails.config.local.TOTAL_PRECISION))
@@ -4244,112 +4274,112 @@ module.exports = {
   /**
   // Get Admin Business Wallet Details
   **/
- getAdminBusinessWalletDetails: async function (req, res) {
-  try {
-    let {
-      search
-    } = req.allParams();
+  getAdminBusinessWalletDetails: async function (req, res) {
+    try {
+      let {
+        search
+      } = req.allParams();
 
-    // Get Asset Details
-    var query = {};
-    if (search && search != "" && search != null) {
-      query = {
-        or: [
-          {
-            coin: {
-              contains: search
+      // Get Asset Details
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [
+            {
+              coin: {
+                contains: search
+              }
+            },
+            {
+              coin_name: {
+                contains: search
+              }
             }
-          },
-          {
-            coin_name: {
-              contains: search
-            }
-          }
-        ]
+          ]
+        }
       }
-    }
-    query.deleted_at = null
-    query.is_active = true
+      query.deleted_at = null
+      query.is_active = true
 
-    var assets_data = await Coins
-      .find({
-        where: query,
-        select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active']
-      })
-      .sort('created_at DESC');
+      var assets_data = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
+        })
+        .sort('created_at DESC');
 
-    if (assets_data.length > 0) {
-      for (var i = 0; i < assets_data.length; i++) {
-        let asset_name = assets_data[i].coin;
-        let asset_id = assets_data[i].id;
-        var wallet_details = await Wallet
-          .findOne({
-            is_active: true,
-            is_admin: true,
-            coin_id: asset_id,
-            deleted_at: null,
-            user_id: 37
-          });
-        if (wallet_details == undefined && assets_data[i].iserc == true) {
-          var walletValue = await Wallet
+      if (assets_data.length > 0) {
+        for (var i = 0; i < assets_data.length; i++) {
+          let asset_name = assets_data[i].coin;
+          let asset_id = assets_data[i].id;
+          var wallet_details = await Wallet
             .findOne({
               is_active: true,
               is_admin: true,
-              coin_id: 2,
+              coin_id: asset_id,
               deleted_at: null,
               user_id: 37
             });
-          wallet_details = walletValue;
+          if (wallet_details == undefined && assets_data[i].iserc == true) {
+            var walletValue = await Wallet
+              .findOne({
+                is_active: true,
+                is_admin: true,
+                coin_id: 2,
+                deleted_at: null,
+                user_id: 37
+              });
+            wallet_details = walletValue;
+          }
+          if (assets_data[i].coin_code != 'SUSU') {
+
+            var currency_conversion = await CurrencyConversion.findOne({
+              deleted_at: null,
+              coin_id: asset_id
+            })
+            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          } else if (assets_data[i].coin_code == 'SUSU') {
+
+            var susucoinData = await sails.helpers.getUsdSusucoinValue();
+            susucoinData = JSON.parse(susucoinData);
+            susucoinData = susucoinData.data
+            assets_data[i].fiat = susucoinData.USD;
+          }
+          assets_data[i].send_address = '';
+          assets_data[i].receive_address = '';
+          var balance = 0;
+
+
+          if (wallet_details != undefined) {
+            assets_data[i].receive_address = wallet_details.receive_address;
+            balance = parseFloat(wallet_details.balance);
+          }
+          assets_data[i].balance = parseFloat(balance).toFixed(sails.config.local.TOTAL_PRECISION);
         }
-        if (assets_data[i].coin_code != 'SUSU') {
 
-          var currency_conversion = await CurrencyConversion.findOne({
-            deleted_at: null,
-            coin_id: asset_id
-          })
-          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-        } else if (assets_data[i].coin_code == 'SUSU') {
-
-          var susucoinData = await sails.helpers.getUsdSusucoinValue();
-          susucoinData = JSON.parse(susucoinData);
-          susucoinData = susucoinData.data
-          assets_data[i].fiat = susucoinData.USD;
-        }
-        assets_data[i].send_address = '';
-        assets_data[i].receive_address = '';
-        var balance = 0;
-
-
-        if (wallet_details != undefined) {
-          assets_data[i].receive_address = wallet_details.receive_address;
-          balance = parseFloat(wallet_details.balance);
-        }
-        assets_data[i].balance = parseFloat(balance).toFixed(sails.config.local.TOTAL_PRECISION);
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Wallet Details").message,
+          // "data": FeeData
+          "data": assets_data
+        });
+      } else {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
       }
 
-      return res.status(200).json({
-        "status": 200,
-        "message": sails.__("Wallet Details").message,
-        // "data": FeeData
-        "data": assets_data
-      });
-    } else {
-      return res.status(200).json({
-        "status": 200,
-        "message": sails.__("No record found").message,
-        "data": []
+
+    } catch (error) {
+      console.log(error)
+      // await logger.error(error.message)
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong").message,
+        error_at: error.stack
       });
     }
-
-
-  } catch (error) {
-    console.log(error)
-    // await logger.error(error.message)
-    return res.json({
-      "status": 500,
-      "message": sails.__("Something Wrong").message,
-      error_at: error.stack
-    });
-  }
-},
+  },
 };

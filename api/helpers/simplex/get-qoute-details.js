@@ -37,7 +37,8 @@ module.exports = {
 
       await request.post(sails.config.local.SIMPLEX_URL + 'quote', {
         headers: {
-          'Authorization': 'ApiKey ' + key,
+          // 'Authorization': 'ApiKey ' + key,
+          'x-token': 'faldax-simplex-backend',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

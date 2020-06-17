@@ -17,13 +17,37 @@ module.exports = {
       //   .sort('id DESC')
 
       var query = `SELECT user_notifications.id, user_notifications.text, user_notifications.email, user_notifications.created_at,
-        user_notifications.user_id, notifications.title
+        user_notifications.user_id, notifications.title, notifications.title_ja
         FROM public.user_notifications LEFT JOIN notifications
         ON user_notifications.slug = notifications.slug
         WHERE user_notifications.user_id=${user_id}`
 
       let notificationList = await sails.sendNativeQuery(query, []);
       notificationList = notificationList.rows;
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+      console.log(userData)
+      if (userData.default_language == "ja" && !req.headers['accept-language']) {
+        for (var i = 0; i < notificationList.length; i++) {
+          notificationList[i].title = notificationList[i].title_ja;
+          delete notificationList[i].title_ja;
+        }
+      } else if (req.headers['accept-language'] == "ja") {
+        for (var i = 0; i < notificationList.length; i++) {
+          notificationList[i].title = notificationList[i].title_ja;
+          delete notificationList[i].title_ja;
+        }
+      } else {
+        for (var i = 0; i < notificationList.length; i++) {
+          delete notificationList[i].title_ja
+        }
+      }
+      console.log(notificationList)
 
       return res
         .status(200)
@@ -40,7 +64,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -101,7 +125,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

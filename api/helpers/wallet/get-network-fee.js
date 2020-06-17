@@ -95,6 +95,7 @@ module.exports = {
                     return exits.error(body);
                 }
                 var feeValue;
+                // var division = 
                 if (inputs.coin == "eth" || inputs.coin == "teth" || coinData.iserc == true) {
                     let gasLimit = body.gasLimit;
                     let gasPrice = body.gasPrice;

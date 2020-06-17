@@ -255,5 +255,6 @@ module.exports.local = {
   DIVIDE_SIX: 1e6,
   DIVIDE_EIGHT: 1e8,
   DIVIDE_EIGHTEEN: 1e18,
-  DIVIDE_NINE: 1e9
+  DIVIDE_NINE: 1e9,
+  TESTNET: process.env.TESTNET
 }
