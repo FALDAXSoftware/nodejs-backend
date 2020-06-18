@@ -536,7 +536,7 @@ module.exports = {
           // Daily Limit Checking
           var getUserDailyHistory = `SELECT *
                                       FROM (
-                                        SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                        SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                           FROM coins
                                           LEFT JOIN withdraw_request
                                           ON withdraw_request.coin_id = coins.id
@@ -546,7 +546,7 @@ module.exports = {
                                           AND withdraw_request.created_at >= '${yesterday}' AND withdraw_request.created_at <= '${now}'
                                       ) as t
                                       CROSS JOIN (
-                                        SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                        SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
                                           FROM coins
                                           LEFT JOIN wallet_history
                                           ON wallet_history.coin_id = coins.id
@@ -561,7 +561,7 @@ module.exports = {
           // Monthly Limit Checking
           var getUserMonthlyHistory = `SELECT *
                                           FROM (
-                                            SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                            SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                               FROM coins
                                               LEFT JOIN withdraw_request
                                               ON withdraw_request.coin_id = coins.id
@@ -571,7 +571,7 @@ module.exports = {
                                               AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
                                           ) as t
                                           CROSS JOIN (
-                                            SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                            SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
                                               FROM coins
                                               LEFT JOIN wallet_history
                                               ON wallet_history.coin_id = coins.id
@@ -4237,7 +4237,7 @@ module.exports = {
       // Daily Limit Checking
       var getUserDailyHistory = `SELECT *
                                   FROM (
-                                    SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                    SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                       FROM coins
                                       LEFT JOIN withdraw_request
                                       ON withdraw_request.coin_id = coins.id
@@ -4247,7 +4247,7 @@ module.exports = {
                                       AND withdraw_request.created_at >= '${yesterday}' AND withdraw_request.created_at <= '${now}'
                                   ) as t
                                   CROSS JOIN (
-                                    SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                    SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
                                       FROM coins
                                       LEFT JOIN wallet_history
                                       ON wallet_history.coin_id = coins.id
@@ -4263,7 +4263,7 @@ module.exports = {
       // Monthly Limit Checking
       var getUserMonthlyHistory = `SELECT *
                                     FROM (
-                                      SELECT SUM((withdraw_request.amount)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                      SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
                                         FROM coins
                                         LEFT JOIN withdraw_request
                                         ON withdraw_request.coin_id = coins.id
@@ -4273,7 +4273,7 @@ module.exports = {
                                         AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
                                     ) as t
                                     CROSS JOIN (
-                                      SELECT SUM((wallet_history.amount)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                      SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
                                         FROM coins
                                         LEFT JOIN wallet_history
                                         ON wallet_history.coin_id = coins.id
@@ -4284,7 +4284,7 @@ module.exports = {
                                     ) as m`
       var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
       userMonthlyHistory = userMonthlyHistory.rows;
-      console.log('userMonthlyHistory', userMonthlyHistory);
+
       var dailyTotalVolume = 0.0;
       var monthlyTotalVolume = 0.0;
       userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
