@@ -602,7 +602,7 @@ module.exports = {
                           coin_id: coinDataValue.id
                         }
                       })
-                      if (getTransfer != undefined) {
+                      if (getTransferData != undefined) {
                         receiveArray.push(element)
                       }
                     }
@@ -709,14 +709,19 @@ module.exports = {
 
             console.log(coin);
             // Check For Token
-            if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
+            // if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {]
+            console.log("coin", coin)
+            if (coin.iserc = true) {
               let token = await Coins.findOne({
                 coin_code: req.body.coin,
-                deleted_at: null
+                deleted_at: null,
+                is_active: true
               })
+              console.log("token", token)
               if (receiveArray.length > 0) {
                 for (let index = 0; index < receiveArray.length; index++) {
                   const element = receiveArray[index];
+                  console.log("element", element)
                   let tokenUserWallet = await Wallet.findOne({
                     coin_id: token.id,
                     receive_address: element.address
@@ -744,7 +749,8 @@ module.exports = {
                 where: {
                   deleted_at: null,
                   is_active: true,
-                  receive_address: element.address
+                  receive_address: element.address,
+                  coin_id: coin.id
                 }
               })
 
