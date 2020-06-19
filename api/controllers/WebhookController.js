@@ -555,22 +555,24 @@ module.exports = {
             });
 
             console.log("coinDataValue", coinDataValue)
-            console.log("transfer.outputs.length", transfer.outputs.length)
 
-            if (transfer.outputs.length > 0) {
-              for (let index = 0; index < transfer.outputs.length; index++) {
-                const element = transfer.outputs[index];
-                var getTransferData = await Wallet.findOne({
-                  where: {
-                    deleted_at: null,
-                    receive_address: element.address,
-                    deleted_at: null,
-                    is_active: true,
-                    coin_id: coinDataValue.id
+            if (transfer.outputs) {
+              console.log("transfer.outputs.length", transfer.outputs.length)
+              if (transfer.outputs.length > 0) {
+                for (let index = 0; index < transfer.outputs.length; index++) {
+                  const element = transfer.outputs[index];
+                  var getTransferData = await Wallet.findOne({
+                    where: {
+                      deleted_at: null,
+                      receive_address: element.address,
+                      deleted_at: null,
+                      is_active: true,
+                      coin_id: coinDataValue.id
+                    }
+                  })
+                  if (getTransferData != undefined) {
+                    receiveArray.push(element)
                   }
-                })
-                if (getTransferData != undefined) {
-                  receiveArray.push(element)
                 }
               }
             }
@@ -586,20 +588,24 @@ module.exports = {
             console.log("receiveArray.length", receiveArray.length)
             if (receiveArray.length == 0) {
               console.log("INSIDE IF", transfer.entries.length)
-              if (transfer.entries.length > 0) {
-                for (let index = 0; index < transfer.entries.length; index++) {
-                  const element = transfer.entries[index];
-                  var getTransferData = await Wallet.findOne({
-                    where: {
-                      deleted_at: null,
-                      receive_address: element.address,
-                      deleted_at: null,
-                      is_active: true,
-                      coin_id: coinDataValue.id
+              if (transfer.entries) {
+                if (transfer.entries.length > 0) {
+                  for (let index = 0; index < transfer.entries.length; index++) {
+                    const element = transfer.entries[index];
+                    if (element.value > 0) {
+                      var getTransferData = await Wallet.findOne({
+                        where: {
+                          deleted_at: null,
+                          receive_address: element.address,
+                          deleted_at: null,
+                          is_active: true,
+                          coin_id: coinDataValue.id
+                        }
+                      })
+                      if (getTransfer != undefined) {
+                        receiveArray.push(element)
+                      }
                     }
-                  })
-                  if (getTransfer != undefined) {
-                    receiveArray.push(element)
                   }
                 }
               }
