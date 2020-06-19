@@ -1985,17 +1985,17 @@ module.exports = {
       // } else if (coin_code == 'eth' || coin_code == 'teth' || coin.iserc == true) {
       //   division = sails.config.local.DIVIDE_EIGHTEEN;
       // }
-      if (coin.type == 1) {
+      // if (coin.type == 1) {
 
-        let warmWalletData = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
-        let sendWalletData = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
-      }
+      //   let warmWalletData = await sails
+      //     .helpers
+      //     .wallet
+      //     .getWalletAddressBalance(coin.warm_wallet_address, coin_code);
+      //   let sendWalletData = await sails
+      //     .helpers
+      //     .wallet
+      //     .getWalletAddressBalance(coin.hot_send_wallet_address, coin_code);
+      // }
 
       //If coin is found
       if (coin) {
@@ -3798,7 +3798,7 @@ module.exports = {
             // } else if (coinData.coin_code == "txrp" || coinData.coin_code == 'xrp') {
             //   division = 1e6;
             // }
-            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.warm_wallet_address);
+            let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.hot_receive_wallet_address);
             if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false) {
               // remainningAmountValue = remainningAmount * division
               var reposneData = await sails
