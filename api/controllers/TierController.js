@@ -1967,12 +1967,42 @@ module.exports = {
             user_status: objectValue,
             previous_tier: userData.account_tier
           }).fetch();
-          return res
-            .status(200)
-            .json({
-              "status": 200,
-              "message": sails.__("User Unlock Tier Success").message
+
+          let slug = "unlock_tier_success";
+
+          let template = await EmailTemplate.findOne({
+            slug
+          });
+          let user_language = (userData.default_language ? userData.default_language : 'en');
+          let language_content = template.all_content[user_language].content;
+          let language_subject = template.all_content[user_language].subject;
+          let emailContent = await sails
+            .helpers
+            .utilities
+            .formatEmail(language_content, {
+              recipientName: userData.first_name
             })
+          if (template) {
+            sails
+              .hooks
+              .email
+              .send("general-email", {
+                content: emailContent
+              }, {
+                to: userData.email,
+                subject: language_subject
+              }, function (err) {
+                if (!err) {
+                  return res
+                    .status(200)
+                    .json({
+                      "status": 200,
+                      "message": sails.__("User Unlock Tier Success").message
+                    })
+                }
+              });
+          }
+
         } else {
           return res
             .status(200)
