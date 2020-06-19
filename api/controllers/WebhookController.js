@@ -504,6 +504,10 @@ module.exports = {
         console.log("transfer", transfer)
 
         if (transfer.state == "confirmed" && (transfer.type == "receive" || transfer.type == "send")) {
+          var data = await TransactionWebhook.create({
+            receive_json: req.body,
+            created_at: new Date()
+          })
           console.log("transfer.state", transfer.state)
           let alreadyWalletHistory = await WalletHistory.find({
             transaction_type: "receive",
