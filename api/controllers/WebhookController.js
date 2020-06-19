@@ -555,22 +555,24 @@ module.exports = {
             });
 
             console.log("coinDataValue", coinDataValue)
-            console.log("transfer.outputs.length", transfer.outputs.length)
 
-            if (transfer.outputs.length > 0) {
-              for (let index = 0; index < transfer.outputs.length; index++) {
-                const element = transfer.outputs[index];
-                var getTransferData = await Wallet.findOne({
-                  where: {
-                    deleted_at: null,
-                    receive_address: element.address,
-                    deleted_at: null,
-                    is_active: true,
-                    coin_id: coinDataValue.id
+            if (transfer.outputs) {
+              console.log("transfer.outputs.length", transfer.outputs.length)
+              if (transfer.outputs.length > 0) {
+                for (let index = 0; index < transfer.outputs.length; index++) {
+                  const element = transfer.outputs[index];
+                  var getTransferData = await Wallet.findOne({
+                    where: {
+                      deleted_at: null,
+                      receive_address: element.address,
+                      deleted_at: null,
+                      is_active: true,
+                      coin_id: coinDataValue.id
+                    }
+                  })
+                  if (getTransferData != undefined) {
+                    receiveArray.push(element)
                   }
-                })
-                if (getTransferData != undefined) {
-                  receiveArray.push(element)
                 }
               }
             }
@@ -586,20 +588,24 @@ module.exports = {
             console.log("receiveArray.length", receiveArray.length)
             if (receiveArray.length == 0) {
               console.log("INSIDE IF", transfer.entries.length)
-              if (transfer.entries.length > 0) {
-                for (let index = 0; index < transfer.entries.length; index++) {
-                  const element = transfer.entries[index];
-                  var getTransferData = await Wallet.findOne({
-                    where: {
-                      deleted_at: null,
-                      receive_address: element.address,
-                      deleted_at: null,
-                      is_active: true,
-                      coin_id: coinDataValue.id
+              if (transfer.entries) {
+                if (transfer.entries.length > 0) {
+                  for (let index = 0; index < transfer.entries.length; index++) {
+                    const element = transfer.entries[index];
+                    if (element.value > 0) {
+                      var getTransferData = await Wallet.findOne({
+                        where: {
+                          deleted_at: null,
+                          receive_address: element.address,
+                          deleted_at: null,
+                          is_active: true,
+                          coin_id: coinDataValue.id
+                        }
+                      })
+                      if (getTransferData != undefined) {
+                        receiveArray.push(element)
+                      }
                     }
-                  })
-                  if (getTransfer != undefined) {
-                    receiveArray.push(element)
                   }
                 }
               }
@@ -703,22 +709,30 @@ module.exports = {
 
             console.log(coin);
             // Check For Token
-            if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {
+            // if (coin.coin == "ETH" && req.body.coin != coin.coin_code) {]
+            console.log("coin", coin)
+            if (coin.iserc = true) {
               let token = await Coins.findOne({
                 coin_code: req.body.coin,
-                deleted_at: null
+                deleted_at: null,
+                is_active: true
               })
+              console.log("token", token)
               if (receiveArray.length > 0) {
-                let tokenUserWallet = await Wallet.findOne({
-                  coin_id: token.id,
-                  receive_address: element.address
-                })
-                userWallet = {
-                  ...tokenUserWallet,
-                  receive_address: userWallet.receiveAddress,
-                  send_address: userWallet.send_address
+                for (let index = 0; index < receiveArray.length; index++) {
+                  const element = receiveArray[index];
+                  console.log("element", element)
+                  let tokenUserWallet = await Wallet.findOne({
+                    coin_id: token.id,
+                    receive_address: element.address
+                  })
+                  userWallet = {
+                    ...tokenUserWallet,
+                    receive_address: element.receiveAddress,
+                    send_address: source
+                  }
+                  isToken = true
                 }
-                isToken = true
               }
             }
             console.log("source", source)
@@ -735,7 +749,8 @@ module.exports = {
                 where: {
                   deleted_at: null,
                   is_active: true,
-                  receive_address: element.address
+                  receive_address: element.address,
+                  coin_id: coin.id
                 }
               })
 

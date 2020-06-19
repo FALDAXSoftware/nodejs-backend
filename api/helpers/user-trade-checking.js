@@ -31,6 +31,7 @@ module.exports = {
       var response;
       var msg;
       var sendInfo;
+      console.log("userKyc", userKyc)
 
       if (userKyc) {
         if (userKyc.direct_response != "ACCEPT" && userKyc.webhook_response != "ACCEPT") {
