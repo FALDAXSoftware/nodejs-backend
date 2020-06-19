@@ -715,16 +715,19 @@ module.exports = {
                 deleted_at: null
               })
               if (receiveArray.length > 0) {
-                let tokenUserWallet = await Wallet.findOne({
-                  coin_id: token.id,
-                  receive_address: element.address
-                })
-                userWallet = {
-                  ...tokenUserWallet,
-                  receive_address: userWallet.receiveAddress,
-                  send_address: userWallet.send_address
+                for (let index = 0; index < receiveArray.length; index++) {
+                  const element = receiveArray[index];
+                  let tokenUserWallet = await Wallet.findOne({
+                    coin_id: token.id,
+                    receive_address: element.address
+                  })
+                  userWallet = {
+                    ...tokenUserWallet,
+                    receive_address: element.receiveAddress,
+                    send_address: source
+                  }
+                  isToken = true
                 }
-                isToken = true
               }
             }
             console.log("source", source)
