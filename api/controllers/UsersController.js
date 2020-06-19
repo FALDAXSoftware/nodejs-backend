@@ -792,6 +792,9 @@ module.exports = {
       }
     });
 
+    console.log("dataResponse", dataResponse);
+    console.log("dataResponse1", dataResponse1)
+
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
     usersData[0].legal_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse1.response);
