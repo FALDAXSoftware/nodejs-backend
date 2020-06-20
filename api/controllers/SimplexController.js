@@ -58,9 +58,9 @@ module.exports = {
       // var user_id = req.user.id;
       // user_id = 1712;
       data.client_ip = ip;
-      data.end_user_id = "14569251558";
+      data.end_user_id = "14569251558455646451564654654";
 
-      data.action = '/simplex/simplex-details';
+      data.action = '/simplex/withour-user-simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
       console.log("call_simplex", call_simplex)
@@ -386,23 +386,28 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          is_simplex_supported: true
+          is_simplex_supported: true,
+          is_fiat: false
         }
-      });
+      }).sort('coin ASC');
 
       var fiatValue = {};
 
-      fiatValue = [{
-        id: 1,
-        coin: "USD",
-        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
-      },
-      {
-        id: 2,
-        coin: "EUR",
-        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
-      }
-      ]
+      var fiatValue = await Coins.find({
+        select: [
+          'id',
+          'coin',
+          'coin_icon',
+          'min_limit',
+          'max_limit'
+        ],
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_simplex_supported: true,
+          is_fiat: true
+        }
+      }).sort('coin ASC');
 
       var object = {
         coinList,
@@ -433,23 +438,26 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          is_simplex_supported: true
+          is_simplex_supported: true,
+          is_fiat: false
         }
-      });
+      }).sort('coin ASC');
 
-      var fiatValue = {};
-
-      fiatValue = [{
-        id: 1,
-        coin: "USD",
-        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/usd.png"
-      },
-      {
-        id: 2,
-        coin: "EUR",
-        coin_icon: "https://s3.us-east-2.amazonaws.com/production-static-asset/coin/euro.png"
-      }
-      ]
+      var fiatValue = await Coins.find({
+        select: [
+          'id',
+          'coin',
+          'coin_icon',
+          'min_limit',
+          'max_limit'
+        ],
+        where: {
+          deleted_at: null,
+          is_active: true,
+          is_simplex_supported: true,
+          is_fiat: true
+        }
+      }).sort('coin ASC');
 
       var object = {
         coinList,

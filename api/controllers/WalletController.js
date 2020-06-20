@@ -158,7 +158,7 @@ module.exports = {
                     FROM coins
                     INNER JOIN wallets ON coins.id = wallets.coin_id
                     LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
-                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL
+                    WHERE ${filter} AND ((length(wallets.receive_address) > 0) OR( coins.iserc = true AND length(wallets.receive_address) = 0)) AND coins.deleted_at IS NULL AND wallets.deleted_at IS NULL AND coins.is_fiat = 'false'
                     ORDER BY coins.coin_name ASC`
 
       console.log(query)
@@ -167,7 +167,7 @@ module.exports = {
                               FROM coins LEFT JOIN currency_conversion ON coins.id = currency_conversion.coin_id
                               WHERE coins.is_active = true AND coins.deleted_at IS NULL
                               AND coins.id NOT IN (SELECT coin_id FROM wallets WHERE wallets.deleted_at IS NULL AND user_id =${user_id}
-                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true)))
+                              AND ((receive_address IS NOT NULL AND length(receive_address) > 0) OR (coins.iserc = true))) AND coins.is_fiat = 'false'
                               ORDER BY coins.coin_name ASC`
       let balanceWalletData = await sails.sendNativeQuery(query, []);
 
@@ -302,19 +302,19 @@ module.exports = {
                 price: 0.0
               },
               USD: {
-                price: (nonBalanceWalletData.rows[i].quote.USD != undefined) ? (nonBalanceWalletData.rows[i].quote.USD.price) : (0.0)
+                price: (nonBalanceWalletData.rows[i].quote != undefined) ? (nonBalanceWalletData.rows[i].quote.USD.price) : (0.0)
               }
             }
           }
 
-        //   if (nonBalanceWalletData.rows[i].quote.USD) {
-        //     var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
-        //     if (get_price.length > 0) {
-        //       nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
-        //     } else {
-        //       nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
-        //     }
-        //   }
+          //   if (nonBalanceWalletData.rows[i].quote.USD) {
+          //     var get_price = await sails.helpers.fixapi.getPrice(nonBalanceWalletData.rows[i].coin, 'Buy');
+          //     if (get_price.length > 0) {
+          //       nonBalanceWalletData.rows[i].quote.USD.price = get_price[0].ask_price
+          //     } else {
+          //       nonBalanceWalletData.rows[i].quote.USD.price = ((nonBalanceWalletData.rows[i].quote.USD.price) > 0 ? (nonBalanceWalletData.rows[i].quote.USD.price).toFixed(sails.config.local.TOTAL_PRECISION) : 0)
+          //     }
+          //   }
         }
         if (nonBalanceWalletData.rows[i].iserc == true) {
           if (eth_asset == true) {
@@ -466,7 +466,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -1975,7 +1975,7 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -2584,7 +2584,7 @@ module.exports = {
           filter += " (LOWER(wallet_history.source_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.destination_address) LIKE '%" + data.toLowerCase() + "%' OR LOWER(wallet_history.transaction_id) LIKE '%" + data.toLowerCase() + "%')";
         }
         var walletLogs = `SELECT wallet_history.source_address,coins.coin ,wallet_history.destination_address,
-                         wallet_history.amount,
+                         wallet_history.amount, coins.coin_precision,
                           wallet_history.transaction_id, CONCAT((wallet_history.faldax_fee),' ',coins.coin) as faldax_fee,
                           wallet_history.residual_amount,
                           wallet_history.created_at, coins.coin_code
@@ -2645,7 +2645,7 @@ module.exports = {
         }
         var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
                             (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(10,8))) as amount,
-                            transaction_table.transaction_id, transaction_table.*,
+                            transaction_table.transaction_id, transaction_table.*, coins.coin_precision,
                             transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
                             FROM public.transaction_table LEFT JOIN coins
                             ON transaction_table.coin_id = coins.id
@@ -2732,7 +2732,7 @@ module.exports = {
                               CONCAT((jst_trade_history.faldax_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as faldax_fees,
                               CONCAT((jst_trade_history.network_fees),' ', (CASE when jst_trade_history.side = 'Buy' THEN jst_trade_history.currency ELSE jst_trade_history.settle_currency END)) as network_fees,
                               CONCAT((jst_trade_history.difference_faldax_commission), ' ',(jst_trade_history.settle_currency)) as comission,
-                              users.email,jst_trade_history.exec_id, coins.coin_code
+                              users.email,jst_trade_history.exec_id, coins.coin_precision, coins.coin_code
                               FROM public.jst_trade_history LEFT JOIN coins
                               ON coins.coin = jst_trade_history.currency OR coins.coin = jst_trade_history.settle_currency
                               LEFT JOIN users ON users.id = jst_trade_history.user_id
@@ -2793,7 +2793,7 @@ module.exports = {
 
         var walletLogs = `SELECT wallets.id, users.email, users.created_at, users.deleted_at,
                             CONCAT ((wallets.balance), ' ', coins.coin) as balance,
-                            wallets.receive_address, coins.coin_code,
+                            wallets.receive_address, coins.coin_code, coins.coin_precision,
                             wallets.send_address, users.full_name, coins.coin
                             FROM public.wallets LEFT JOIN users
                             ON users.id = wallets.user_id
@@ -3119,7 +3119,10 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+
+      console.log("coinData", coinData.iserc)
+      console.log(coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false)
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -3356,11 +3359,12 @@ module.exports = {
       }
       query.deleted_at = null
       query.is_active = true
+      query.is_fiat = false
 
       var coinData = await Coins
         .find({
           where: query,
-          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address']
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address', 'coin_precision']
         })
         .sort('id ASC');
 
@@ -3375,16 +3379,34 @@ module.exports = {
           console.log("wallet_data", wallet_data);
           coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
           coinData[i].address = wallet_data.receiveAddress.address;
-        } else {
-          var walletData = await Wallet.findOne({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              "wallet_id": "warm_wallet"
-            }
-          });
-          coinData[i].balance = (walletData && walletData != undefined) ? (walletData.balance) : (0.0)
-          coinData[i].address = (walletData && walletData != undefined) ? (walletData.receive_address) : ""
+        } else if (coinData[i].coin_code == "SUSU") {
+          var responseValue = await new Promise(async (resolve, reject) => {
+            request({
+              url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
+              method: "GET",
+              headers: {
+
+                'x-token': 'faldax-susucoin-node',
+                'Content-Type': 'application/json'
+              },
+              json: true
+            }, function (err, httpResponse, body) {
+              console.log("body", body)
+              console.log(err)
+              if (err) {
+                reject(err);
+              }
+              if (body.error) {
+                resolve(body);
+              }
+              resolve(body);
+              // return body;
+            });
+          })
+          coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
+          coinData[i].coin_precision = "1e0"
         }
       }
       return res
@@ -3418,7 +3440,7 @@ module.exports = {
       })
 
       console.log("coinData", coinData);
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
         console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase(), 'testnet');
@@ -3513,7 +3535,9 @@ module.exports = {
       var coinData = await Coins.findOne({
         select: [
           'hot_receive_wallet_address',
-          'coin_code'
+          'coin_code',
+          'coin_precision',
+          'iserc'
         ],
         where: {
           is_active: true,
@@ -3543,7 +3567,8 @@ module.exports = {
         .status(200)
         .json({
           "status": 200,
-          "data": warmWalletData
+          "data": warmWalletData,
+          coinData
         })
     } catch (error) {
       // console.log(error);
@@ -4047,7 +4072,7 @@ module.exports = {
       }
       var walletLogs = `SELECT transaction_table.source_address,coins.coin, transaction_table.destination_address,
                           (CONCAT(transaction_table.amount) , ' ', coins.coin) as amount,(cast(amount as decimal(12,8))) as amount,
-                          transaction_table.transaction_id, transaction_table.*,
+                          transaction_table.transaction_id, transaction_table.*, coins.coin_precision,
                           transaction_table.transaction_type, transaction_table.created_at, coins.coin_code
                           FROM public.transaction_table LEFT JOIN coins
                           ON transaction_table.coin_id = coins.id

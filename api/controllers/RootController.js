@@ -520,7 +520,6 @@ module.exports = {
     }
   },
 
-
   checkSystemHealth: async function (req, res) {
     try {
       var system_health = await AdminSetting.findOne({
@@ -547,6 +546,60 @@ module.exports = {
         "message": sails.__("system_health_not_ok").message,
         error_at: error.stack
       })
+    }
+  },
+
+  getResponseData: async function (req, res) {
+    try {
+      var dataObject = {
+        "id": 10,
+        "created_at": "2018-12-17T00:47:15.444Z",
+        "updated_at": "2019-06-11T10:52:21.151Z",
+        "deleted_at": null,
+        "name": "ETH-BTC",
+        "coin_code1": "2",
+        "coin_code2": "1",
+        "maker_fee": 0,
+        "taker_fee": 0.14,
+        "is_active": true,
+        "symbol": "XETHXXBT",
+        "kraken_pair": "ETH-XBT",
+        "ask_price": 0.03358,
+        "bid_price": 0.03357
+      }
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "object retrive success",
+          "data": dataObject
+        })
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getDatabaseRetrieve: async function (req, res) {
+    try {
+      var getDataValue = await Pairs.find({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          name: {
+            contains: "ETH-BTC"
+          }
+        }
+      })
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": "Database retrieve success",
+          "data": getDataValue
+        })
+    } catch (error) {
+      console.log(error)
     }
   }
 };

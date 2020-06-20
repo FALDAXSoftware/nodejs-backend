@@ -82,7 +82,9 @@ module.exports.policies = {
     "getEncryptKey": true,
     "testPanicStatus": true,
     "testMetabaseIntegrate": true,
-    "checkSystemHealth": true
+    "checkSystemHealth": true,
+    "getResponseData": true,
+    "getDatabaseRetrieve": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },
