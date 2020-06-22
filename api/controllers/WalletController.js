@@ -1014,10 +1014,10 @@ module.exports = {
                                 if (userData.email != undefined)
                                   await sails.helpers.notification.send.email("withdraw", userData)
                               }
-                              if (userNotification.text == true || userNotification.text == "true") {
-                                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-                                  await sails.helpers.notification.send.text("withdraw", userData)
-                              }
+                              // if (userNotification.text == true || userNotification.text == "true") {
+                              //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+                              //     await sails.helpers.notification.send.text("withdraw", userData)
+                              // }
                             }
                             return res.json({
                               status: 200,
