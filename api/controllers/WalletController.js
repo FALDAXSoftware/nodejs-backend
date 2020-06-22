@@ -645,7 +645,7 @@ module.exports = {
 
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
-                        if (req.body.confirm_for_wait === undefined) {
+                        if (req.body.confirm_for_wait == undefined) {
                           console.log("warmWalletData", warmWalletData);
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
