@@ -643,6 +643,7 @@ module.exports = {
                           .wallet
                           .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
 
+                        console.log("req.body", req.body)
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
                         if (req.body.confirm_for_wait == undefined) {
@@ -650,10 +651,13 @@ module.exports = {
                           //Check for warm wallet minimum thresold
                           console.log("Warmwalletbalance before", warmWalletData.balance);
                           // total_fees = 1;
+                          console.log("coin.min_thresold", coin.min_thresold)
                           console.log("warmWalletData.balance >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold)
                           console.log("(warmWalletData.balance - total_fees) >= 0", (warmWalletData.balance - total_fees) >= 0)
+                          console.log("total_fees", total_fees);
+                          console.log("warmWalletData.balance - total_fees", warmWalletData.balance - total_fees)
                           console.log("(warmWalletData.balance - total_fees) >= coin.min_thresold", (warmWalletData.balance - total_fees) >= coin.min_thresold)
-                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * 1e8))
+                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * division))
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
