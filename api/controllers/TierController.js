@@ -483,6 +483,7 @@ module.exports = {
         // }
       }
 
+      console.log("tier_step", tier_step)
       if (tier_step == 2) {
         var tierDataFinal = await TierMainRequest.findOne({
           where: {
@@ -492,10 +493,14 @@ module.exports = {
           }
         })
 
+        console.log("tierDataFinal", tierDataFinal)
+
         var finalStatus = tierDataFinal.user_status;
+        console.log("finalStatus", finalStatus)
         var flag = 0;
 
         for (var i = 0; i < 4; i++) {
+          console.log("i", i)
           if (finalStatus[i + 1] == true || finalStatus[i + 1] == "true") {
             flag = parseInt(flag) + 1;
           }
