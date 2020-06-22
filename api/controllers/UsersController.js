@@ -54,7 +54,7 @@ module.exports = {
             status: 401,
             "err": sails.__("User has been deleted").message
           });
-      } else if (existedUser) {
+      } else if (existedUser && existedUser.deleted_at == null) {
         return res
           .status(401)
           .json({
@@ -1132,7 +1132,7 @@ module.exports = {
     var currencyData = await CurrencyConversion.find({
       deleted_at: null
     })
-    var data = '/USD'
+    // var data = '/USD'
 
     // let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
     // console.log("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query)
@@ -3564,14 +3564,14 @@ module.exports = {
       } = req.allParams();
 
       var get_reffered_data = await sails.sendNativeQuery(`SELECT sum(referral.amount) as amount, referral.coin_name, coins.coin_icon
-                                FROM referral LEFT JOIN users
-                                ON users.id = referral.user_id
-                                LEFT JOIN coins
-                                ON referral.coin_name = coins.coin
-                                WHERE referral.is_collected = 'true' AND user_id = ${id}
-                                AND users.deleted_at IS NULL
-                                GROUP BY referral.coin_name,coins.coin_icon, coins.id
-                                ORDER BY coins.id DESC`);
+                                                            FROM referral LEFT JOIN users
+                                                            ON users.id = referral.user_id
+                                                            LEFT JOIN coins
+                                                            ON referral.coin_name = coins.coin
+                                                            WHERE referral.is_collected = 'true' AND user_id = ${id}
+                                                            AND users.deleted_at IS NULL
+                                                            GROUP BY referral.coin_name,coins.coin_icon, coins.id
+                                                            ORDER BY coins.id DESC`);
       return res
         .status(200)
         .json({
