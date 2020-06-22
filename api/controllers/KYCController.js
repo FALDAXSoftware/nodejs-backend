@@ -603,6 +603,7 @@ module.exports = {
           id: req.user.id
         }
       })
+      console.log("userData", userData)
       var tirDetails = await TierMainRequest.findOne({
         where: {
           deleted_at: null,
@@ -610,13 +611,14 @@ module.exports = {
           user_id: req.user.id
         }
       });
-
+      console.log("tirDetails", tirDetails)
+      // console.log("tirDetails.user_status[2]", tirDetails.user_status[2])
       var valueObject
       if ((parseInt(userData.account_tier) + 1) == 2) {
         valueObject = {
-          1: false,
-          2: false,
-          3: false,
+          1: (tirDetails == undefined) ? false : (tirDetails.user_status[1]),
+          2: (tirDetails == undefined) ? false : (tirDetails.user_status[2]),
+          3: (tirDetails == undefined) ? false : (tirDetails.user_status[3]),
           4: (userData.is_twofactor == true) ? true : false
         }
       } else {
@@ -625,6 +627,8 @@ module.exports = {
           2: false
         }
       }
+
+      console.log("valueObject", valueObject)
       var idValue = 0;
       if (tirDetails == undefined) {
         var addValue = await TierMainRequest.create({
