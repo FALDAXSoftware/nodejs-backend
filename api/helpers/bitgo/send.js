@@ -120,7 +120,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-      } else if (inputs.coin == "eth") { // ETH
+      } else if (inputs.coin == "eth" || coinData.iserc == true) { // ETH
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_ETH_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
@@ -154,7 +154,7 @@ module.exports = {
     if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" || coinData.iserc == true) {
       send_data.amount = (inputs.amount).toString();
     }
-    if (inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" || coinData.iserc == true ) {
+    if (inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" || coinData.iserc == true) {
       if (inputs.feeRate && inputs.feeRate > 0) {
         send_data.feeRate = inputs.feeRate;
         // send_data.fee = inputs.feeRate;
