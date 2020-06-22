@@ -5,73 +5,71 @@ module.exports = {
   collectReferral: async function (req, res) {
     try {
       var user_id = req.user.id;
-      var referralData = await Referral.find({
-        deleted_at: null,
-        is_collected: false,
-        user_id
-      });
+      // var referralData = await Referral.find({
+      //   deleted_at: null,
+      //   is_collected: false,
+      //   user_id
+      // });
+
+      var referralQuery = `SELECT SUM(amount), coin_name
+                            FROM referral
+                            WHERE deleted_at IS NULL AND is_collected = 'false'
+                            AND user_id = ${user_id}
+                            GROUP BY coin_name;`
+
+      let referralData = await sails.sendNativeQuery(referralQuery, []);
+      referralData = referralData.rows;
+
+      console.log("referralData", referralData)
 
       var flag = 0;
       var coinArray = [];
 
       if (referralData != undefined && referralData != null && referralData.length > 0) {
         for (var i = 0; i < referralData.length; i++) {
-          var walletUserData = await Wallet.findOne({
-            deleted_at: null,
-            user_id: referralData[i].user_id,
-            coin_id: referralData[i].coin_id
-          })
-
+          console.log("referralData", referralData[i])
           var coinData = await Coins.findOne({
             where: {
               deleted_at: null,
               is_active: true,
-              id: referralData[i].coin_id
+              coin: referralData[i].coin_name
             }
           })
+
+          var walletUserData = await Wallet.findOne({
+            deleted_at: null,
+            user_id: user_id,
+            coin_id: coinData.id
+          })
+
+          console.log("walletUserData", walletUserData.balance)
+          console.log("referralData[i].amount", referralData[i].sum)
 
           if (walletUserData != undefined) {
             var walletUserData = await Wallet
               .update({
-                user_id: referralData[i].user_id,
-                coin_id: referralData[i].coin_id,
+                user_id: user_id,
+                coin_id: coinData.id,
                 deleted_at: null
               })
               .set({
-                'balance': parseFloat(walletUserData.balance + referralData[i].amount),
-                'placed_balance': parseFloat(walletUserData.balance + referralData[i].amount)
-              });
-            await Referral
-              .update({
-                "id": referralData[i].id
-              })
-              .set({
-                is_collected: true
+                'balance': parseFloat(parseFloat(walletUserData.balance) + parseFloat(referralData[i].sum)),
+                'placed_balance': parseFloat(parseFloat(walletUserData.balance) + parseFloat(referralData[i].sum))
               });
 
-            var userData = await Users.findOne({
-              deleted_at: null,
-              is_active: true,
-              id: user_id
-            })
+            let updateQuery = `UPDATE referral
+                                SET is_collected = true
+                                WHERE deleted_at IS NULL AND is_collected = 'false'
+                                AND user_id = ${user_id} AND coin_name = '${referralData[i].coin_name}'`
+            var updateSql = await sails.sendNativeQuery(updateQuery, [])
 
-            // Sending Notification to the user
-            var userNotification = await UserNotification.findOne({
-              user_id: userData.id,
-              deleted_at: null,
-              slug: 'referal'
-            })
-            if (userNotification != undefined) {
-              if (userNotification.email == true || userNotification.email == "true") {
-                if (userData.email != undefined)
-                  await sails.helpers.notification.send.email("referal", userData)
-              }
-              if (userNotification.text == true || userNotification.text == "true") {
-                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-                  await sails.helpers.notification.send.text("referal", userData)
-              }
-            }
-
+            // await Referral
+            //   .update({
+            //     "id": referralData[i].id
+            //   })
+            //   .set({
+            //     is_collected: true
+            //   });
           } else {
             flag = 1;
 
@@ -88,16 +86,40 @@ module.exports = {
           }
         }
         var msg = ''
-        msg = "Please generate your "
         if (flag == 1) {
+          msg = "Please generate your "
           for (var i = 0; i < coinArray.length; i++) {
             if (i == 0)
               msg += "" + coinArray[i]
             else
               msg += ", " + coinArray[i]
           }
+          msg += " to collect referral. "
+        } else {
+          var userData = await Users.findOne({
+            deleted_at: null,
+            is_active: true,
+            id: user_id
+          })
+
+          // Sending Notification to the user
+          var userNotification = await UserNotification.findOne({
+            user_id: userData.id,
+            deleted_at: null,
+            slug: 'referal'
+          })
+          if (userNotification != undefined) {
+            if (userNotification.email == true || userNotification.email == "true") {
+              if (userData.email != undefined)
+                await sails.helpers.notification.send.email("referal", userData)
+            }
+            if (userNotification.text == true || userNotification.text == "true") {
+              if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+                await sails.helpers.notification.send.text("referal", userData)
+            }
+          }
+
         }
-        msg += " to collect referral. "
 
         return res.json({
           "status": 200,
