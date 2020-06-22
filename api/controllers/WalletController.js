@@ -524,6 +524,8 @@ module.exports = {
             user_id: user_id,
             coin_id: coin.id
           })
+
+          console.log("userTierData", userTierData)
           if (userTierData.length == 0 || userTierData == undefined) {
             console.log("Asset Tier Limit", userTierData);
             if (userData != undefined) {
@@ -533,10 +535,14 @@ module.exports = {
                 tier_step: userData.account_tier,
                 coin_id: coin.id
               });
+              console.log("limitTierData", limitTierData)
               if (limitTierData != undefined) {
                 limitAmount = limitTierData.daily_withdraw_crypto;
-                limitAmount = (limitAmount) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
+                console.log("limitAmount", limitAmount)
+                limitAmount = (limitAmount != null) ? (limitAmount.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmount = null)
                 limitAmountMonthly = limitTierData.monthly_withdraw_crypto;
+                console.log("limitAmountMonthly", limitAmountMonthly)
+                console.log("limitAmountMonthly != null", limitAmountMonthly != null)
                 limitAmountMonthly = (limitAmountMonthly != null) ? (limitAmountMonthly.toFixed(sails.config.local.TOTAL_PRECISION)) : (limitAmountMonthly = null)
               } else {
                 limitAmount = null;
@@ -593,20 +599,20 @@ module.exports = {
           walletHistoryData = walletHistoryData.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = walletHistoryDataMonthly.toFixed(sails.config.local.TOTAL_PRECISION);
           walletHistoryDataMonthly = parseFloat(walletHistoryDataMonthly);
-          limitAmount = parseFloat(limitAmount);
+          // limitAmount = (limit) parseFloat(limitAmount);
           walletHistoryData = parseFloat(walletHistoryData);
-          limitAmountMonthly = parseFloat(limitAmountMonthly);
+          // limitAmountMonthly = parseFloat(limitAmountMonthly);
           amount = parseFloat(amount);
           // Limited amount is greater than the total sum of day
-          // console.log("limitAmount",limitAmount);
-          // console.log("limitAmountMonthly",limitAmountMonthly);
-          // console.log("walletHistoryData",walletHistoryData);
-          // console.log("walletHistoryDataMonthly",walletHistoryDataMonthly);
-          // console.log("limitAmount",limitAmount);
-          // console.log("amount",amount);
-          // console.log("limitAmount >= walletHistoryData",limitAmount >= walletHistoryData);
+          // console.log("limitAmount", limitAmount);
+          // console.log("limitAmountMonthly", limitAmountMonthly);
+          // console.log("walletHistoryData", walletHistoryData);
+          // console.log("walletHistoryDataMonthly", walletHistoryDataMonthly);
+          // console.log("limitAmount", limitAmount);
+          // console.log("amount", amount);
+          // console.log("limitAmount >= walletHistoryData", limitAmount >= walletHistoryData);
           // return res.status(500).json({status:500})
-          if (limitAmount >= walletHistoryData && (limitAmount != null && limitAmount != undefined)) {
+          if (limitAmount >= walletHistoryData || (limitAmount == null || limitAmount == undefined)) {
 
             //If total amount + amount to be send is less than limited amount
             if ((walletHistoryData + amount) <= limitAmount || (limitAmount == null || limitAmount == undefined)) {
