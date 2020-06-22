@@ -42,9 +42,6 @@ module.exports = {
             coin_id: coinData.id
           })
 
-          console.log("walletUserData", walletUserData.balance)
-          console.log("referralData[i].amount", referralData[i].sum)
-
           if (walletUserData != undefined) {
             var walletUserData = await Wallet
               .update({
@@ -56,6 +53,29 @@ module.exports = {
                 'balance': parseFloat(parseFloat(walletUserData.balance) + parseFloat(referralData[i].sum)),
                 'placed_balance': parseFloat(parseFloat(walletUserData.balance) + parseFloat(referralData[i].sum))
               });
+
+            var adminWalletData = await Wallet.findOne({
+              where: {
+                deleted_at: null,
+                user_id: 36,
+                is_admin: true,
+                coin_id: coinData.id
+              }
+            });
+
+            if (adminWalletData != undefined) {
+              var updateAdminWallet = await Wallet
+                .update({
+                  deleted_at: null,
+                  user_id: 36,
+                  is_admin: true,
+                  coin_id: coinData.id
+                })
+                .set({
+                  'balance': parseFloat(parseFloat(adminWalletData.balance) - parseFloat(referralData[i].sum)),
+                  'placed_balance': parseFloat(parseFloat(adminWalletData.balance) - parseFloat(referralData[i].sum))
+                })
+            }
 
             let updateQuery = `UPDATE referral
                                 SET is_collected = true
