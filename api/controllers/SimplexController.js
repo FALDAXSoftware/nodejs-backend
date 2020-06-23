@@ -479,7 +479,6 @@ module.exports = {
         }
       }).sort('coin ASC');
 
-
       var object = {
         coinList,
         fiat: fiatValue

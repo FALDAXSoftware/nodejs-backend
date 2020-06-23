@@ -83,7 +83,8 @@ module.exports.policies = {
     "testPanicStatus": true,
     "testMetabaseIntegrate": true,
     "checkSystemHealth": true,
-    "getTransactionID": true
+    "getResponseData": true,
+    "getDatabaseRetrieve": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },

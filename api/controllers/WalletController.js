@@ -451,7 +451,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -633,9 +633,21 @@ module.exports = {
                           .wallet
                           .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
 
+                        console.log("req.body", req.body)
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
-                        if (req.body.confirm_for_wait === undefined) {
+                        if (req.body.confirm_for_wait == undefined) {
+                          console.log("warmWalletData", warmWalletData);
+                          //Check for warm wallet minimum thresold
+                          console.log("Warmwalletbalance before", warmWalletData.balance);
+                          // total_fees = 1;
+                          console.log("coin.min_thresold", coin.min_thresold)
+                          console.log("warmWalletData.balance >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold)
+                          console.log("(warmWalletData.balance - total_fees) >= 0", (warmWalletData.balance - total_fees) >= 0)
+                          console.log("total_fees", total_fees);
+                          console.log("warmWalletData.balance - total_fees", warmWalletData.balance - total_fees)
+                          console.log("(warmWalletData.balance - total_fees) >= coin.min_thresold", (warmWalletData.balance - total_fees) >= coin.min_thresold)
+                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * division))
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
@@ -985,10 +997,10 @@ module.exports = {
                                 if (userData.email != undefined)
                                   await sails.helpers.notification.send.email("withdraw", userData)
                               }
-                              if (userNotification.text == true || userNotification.text == "true") {
-                                if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
-                                  await sails.helpers.notification.send.text("withdraw", userData)
-                              }
+                              // if (userNotification.text == true || userNotification.text == "true") {
+                              //   if (userData.phone_number != undefined && userData.phone_number != null && userData.phone_number != '')
+                              //     await sails.helpers.notification.send.text("withdraw", userData)
+                              // }
                             }
                             return res.json({
                               status: 200,
@@ -1963,7 +1975,7 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -3173,7 +3185,10 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+
+      console.log("coinData", coinData.iserc)
+      console.log(coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false)
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -3455,6 +3470,8 @@ module.exports = {
             });
           })
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
           coinData[i].coin_precision = "1e0"
         }
 
@@ -3488,7 +3505,9 @@ module.exports = {
         }
       })
 
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+      console.log("coinData", coinData);
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
+        console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
