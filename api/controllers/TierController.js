@@ -177,9 +177,11 @@ module.exports = {
       // }
       // }
       // } else {
-      console.log("INSIDE ELSE")
+      console.log("INSIDE ELSE", tierDetails)
       for (var i = 0; i < tierDetails.length; i++) {
+        console.log("tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1)", tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1))
         if (tierDetails[i].tier_step == (parseInt(userData.account_tier) + 1) && (parseInt(userData.account_tier) != 4)) {
+          console.log("INSIDE IF")
           if ((parseInt(userData.account_tier) + 1) == 1) {
             var userKYCDetails = await KYC.findOne({
               where: {
@@ -187,9 +189,10 @@ module.exports = {
                 user_id: user_id
               }
             });
+            console.log("userKYCDetails", userKYCDetails)
 
             if (userKYCDetails != undefined) {
-              if (userKYCDetails.first_name != null) {
+              if (userKYCDetails.id_type != null) {
                 var object = {
                   approved: (userKYCDetails.direct_response != "ACCEPT" && userKYCDetails.webhook_response != "ACCEPT") ? null : 0.0
                 }
