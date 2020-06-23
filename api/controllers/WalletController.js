@@ -2882,9 +2882,11 @@ module.exports = {
         }
 
         tradeQuery += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log("tradeQuery", tradeQuery)
+        console.log(`SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+        user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name `+ tradeQuery)
 
-        var tradeValue = await sails.sendNativeQuery(`SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+        var tradeValue = await sails.sendNativeQuery(`SELECT trade_history.*, coins.coin_icon, coins.coin_code, coins.coin_precision, coins.coin_name, coins.iserc
+        , users.email as email, users.first_name, users.last_name,
         user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name ` + tradeQuery, []);
 
         tradeValue = tradeValue.rows
