@@ -451,7 +451,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -1963,7 +1963,7 @@ module.exports = {
         is_active: true,
         coin_code: coin_code
       });
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp') {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -3173,7 +3173,10 @@ module.exports = {
           coin_code: data.coin
         }
       })
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+
+      console.log("coinData", coinData.iserc)
+      console.log(coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false)
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -3455,6 +3458,8 @@ module.exports = {
             });
           })
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
           coinData[i].coin_precision = "1e0"
         }
 
@@ -3488,7 +3493,9 @@ module.exports = {
         }
       })
 
-      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp') {
+      console.log("coinData", coinData);
+      if (coinData.coin_code != "SUSU" && coinData.coin_code != "txrp" && coinData.coin_code != 'xrp' && coinData.iserc == false) {
+        console.log("(coinData.coin_name).toLowerCase()", (coinData.coin_name).toLowerCase())
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(data.dest_address, (coinData.coin_name).toLowerCase(), 'testnet');
         } else {
