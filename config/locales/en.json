@@ -3261,5 +3261,19 @@
 		"message_type": "error",
 		"message_english": "Your SSN number has been uploaded successfully.",
 		"message": "Your SSN number has been uploaded successfully."
+	},
+	"sms template retrieve success": {
+		"page": "SMS Template- CMS",
+		"context": "Sms template retrieve",
+		"message_type": "success",
+		"message_english": "SMS Template has been retrieved successfully.",
+		"message": "SMS Template has been retrieved successfully."
+	},
+	"SMS template update success": {
+		"page": "Update SMS Template- CMS",
+		"context": "Update SMS Template",
+		"message_type": "success",
+		"message_english": "SMS Template has been updated successfully.",
+		"message": "SMS Template has been updated successfully."
 	}
 }
