@@ -593,4 +593,9 @@ module.exports.routes = {
 
   'get /get-countries': 'Countries.getCountiesData',
   'get /users/get-user-legal-status': 'UsersController.getUserLegalityStatus',
+
+  // SMS template
+  'get /admin/get-sms-template': "SMSTemplateController.getsmsTemplates",
+  'get /admin/smsTemplate/get-sms-template-by-id': "SMSTemplateController.getSMSTemplateByID",
+  'put /admin/smsTemplate/update-sms-template': "SMSTemplateController.updateSMSTemplate"
 };

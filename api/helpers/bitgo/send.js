@@ -120,7 +120,7 @@ module.exports = {
           passphrase_value = sails.config.local.BITGO_PASSPHRASE;
           console.log("In custody_wallet_address");
         }
-      } else if (inputs.coin == "eth") { // ETH
+      } else if (inputs.coin == "eth" || coinData.iserc == true) { // ETH
         if (coinData.warm_wallet_address == inputs.walletId) {
           passphrase_value = sails.config.local.BITGO_ETH_WARM_WALLET_PASSPHRASE;
           console.log("In warm_wallet_address");
