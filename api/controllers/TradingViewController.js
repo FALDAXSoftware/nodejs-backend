@@ -51,9 +51,9 @@ module.exports = {
       is_active: true,
       deleted_at: null
     });
-    if( pair != undefined ){
+    if (pair != undefined) {
       quantityPrecision = parseInt(pair.quantity_precision);
-      pricePrecision = parseFloat(1+'e'+pair.price_precision);
+      pricePrecision = parseFloat(1 + 'e' + pair.price_precision);
     }
     res.json({
       description: (req.query.symbol).replace("-", "/"),
@@ -107,12 +107,12 @@ module.exports = {
           resolutionInMinute = 240
           break;
         // Day
-        case "D":
-          resolutionInMinute = 1440
-          break;
-        // case "1D":
+        // case "D":
         //   resolutionInMinute = 1440
         //   break;
+        case "1D":
+          resolutionInMinute = 1440
+          break;
         // 2 Day 2 Day
         case "2D":
           resolutionInMinute = 2 * 1440
