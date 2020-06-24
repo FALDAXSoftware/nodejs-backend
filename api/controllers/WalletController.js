@@ -2850,7 +2850,7 @@ module.exports = {
                             ON trade_history.user_id = users.id
                             LEFT JOIN users as user1
                             ON trade_history.requested_user_id = user1.id
-                            WHERE trade_history.deleted_at IS NULL${filter}`
+                            WHERE trade_history.deleted_at IS NULL AND taker_fee <> 0${filter}`
 
         if (t_type && t_type != '' && t_type != null) {
           tradeQuery += " AND trade_history.side = '" + t_type + "' "
