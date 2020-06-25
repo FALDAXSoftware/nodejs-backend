@@ -409,7 +409,7 @@ module.exports = {
           is_simplex_supported: true,
           is_fiat: false
         }
-      }).sort('coin ASC');
+      }).sort('id ASC');
 
       var fiatValue = {};
 
