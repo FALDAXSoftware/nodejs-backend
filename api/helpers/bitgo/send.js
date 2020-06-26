@@ -75,68 +75,68 @@ module.exports = {
     );
     console.log("coinData", coinData);
     if (coinData && coinData != undefined) {
-      if (inputs.coin == "btc") { // BTC
-        if (coinData.warm_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
-          console.log("In warm_wallet_address");
-        } else if (coinData.hot_send_wallet_address == inputs.walletId) {
-          //   passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
-          passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
-          console.log("In hot_send_wallet_address");
-        } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          //   passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
-          passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE
-          console.log("In hot_receive_wallet_address");
-        } else if (coinData.custody_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_PASSPHRASE;
-          console.log("In custody_wallet_address");
-        }
-        // passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
-      } else if (inputs.coin == "ltc") { // LTC
-        if (coinData.warm_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
-          console.log("In warm_wallet_address");
-        } else if (coinData.hot_send_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
-          console.log("In hot_send_wallet_address");
-        } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_LTC_HOT_RECEIVE_WALLET_PASSPHRASE;
-          console.log("In hot_receive_wallet_address LTC");
-        } else if (coinData.custody_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_PASSPHRASE;
-          console.log("In custody_wallet_address");
-        }
-      } else if (inputs.coin == "xrp") { // XRP
-        if (coinData.warm_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_XRP_WARM_WALLET_PASSPHRASE;
-          console.log("In warm_wallet_address");
-        } else if (coinData.hot_send_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_XRP_HOT_SEND_WALLET_PASSPHRASE;
-          console.log("In hot_send_wallet_address");
-        } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_XRP_HOT_RECEIVE_WALLET_PASSPHRASE;
-          console.log("In hot_receive_wallet_address LTC");
-        } else if (coinData.custody_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_PASSPHRASE;
-          console.log("In custody_wallet_address");
-        }
-      } else if (inputs.coin == "eth" || coinData.iserc == true) { // ETH
-        if (coinData.warm_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_ETH_WARM_WALLET_PASSPHRASE;
-          console.log("In warm_wallet_address");
-        } else if (coinData.hot_send_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_ETH_HOT_SEND_WALLET_PASSPHRASE;
-          console.log("In hot_send_wallet_address");
-        } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_ETH_HOT_RECEIVE_WALLET_PASSPHRASE;
-          console.log("In hot_receive_wallet_address LTC");
-        } else if (coinData.custody_wallet_address == inputs.walletId) {
-          passphrase_value = sails.config.local.BITGO_PASSPHRASE;
-          console.log("In custody_wallet_address");
-        }
-      } else {
-        passphrase_value = sails.config.local.BITGO_PASSPHRASE;
-      }
+      // if (inputs.coin == "btc") { // BTC
+      //   if (coinData.warm_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_BTC_WARM_WALLET_PASSPHRASE;
+      //     console.log("In warm_wallet_address");
+      //   } else if (coinData.hot_send_wallet_address == inputs.walletId) {
+      //     //   passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+      //     passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
+      //     console.log("In hot_send_wallet_address");
+      //   } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
+      //     //   passphrase_value = sails.config.local.BITGO_BTC_HOT_RECEIVE_WALLET_PASSPHRASE;
+      //     passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE
+      //     console.log("In hot_receive_wallet_address");
+      //   } else if (coinData.custody_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+      //     console.log("In custody_wallet_address");
+      //   }
+      //   // passphrase_value = sails.config.local.BITGO_BTC_HOT_SEND_WALLET_PASSPHRASE;
+      // } else if (inputs.coin == "ltc") { // LTC
+      //   if (coinData.warm_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_LTC_WARM_WALLET_PASSPHRASE;
+      //     console.log("In warm_wallet_address");
+      //   } else if (coinData.hot_send_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_LTC_HOT_SEND_WALLET_PASSPHRASE;
+      //     console.log("In hot_send_wallet_address");
+      //   } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_LTC_HOT_RECEIVE_WALLET_PASSPHRASE;
+      //     console.log("In hot_receive_wallet_address LTC");
+      //   } else if (coinData.custody_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+      //     console.log("In custody_wallet_address");
+      //   }
+      // } else if (inputs.coin == "xrp") { // XRP
+      //   if (coinData.warm_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_XRP_WARM_WALLET_PASSPHRASE;
+      //     console.log("In warm_wallet_address");
+      //   } else if (coinData.hot_send_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_XRP_HOT_SEND_WALLET_PASSPHRASE;
+      //     console.log("In hot_send_wallet_address");
+      //   } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_XRP_HOT_RECEIVE_WALLET_PASSPHRASE;
+      //     console.log("In hot_receive_wallet_address LTC");
+      //   } else if (coinData.custody_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+      //     console.log("In custody_wallet_address");
+      //   }
+      // } else if (inputs.coin == "eth" || coinData.iserc == true) { // ETH
+      //   if (coinData.warm_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_ETH_WARM_WALLET_PASSPHRASE;
+      //     console.log("In warm_wallet_address");
+      //   } else if (coinData.hot_send_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_ETH_HOT_SEND_WALLET_PASSPHRASE;
+      //     console.log("In hot_send_wallet_address");
+      //   } else if (coinData.hot_receive_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_ETH_HOT_RECEIVE_WALLET_PASSPHRASE;
+      //     console.log("In hot_receive_wallet_address LTC");
+      //   } else if (coinData.custody_wallet_address == inputs.walletId) {
+      //     passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+      //     console.log("In custody_wallet_address");
+      //   }
+      // } else {
+      //   passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+      // }
     } else {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
@@ -179,43 +179,43 @@ module.exports = {
       sails.config.local.LoggerIncoming
     );
     console.log(send_data);
-    request({
-      url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
-      method: "POST",
-      headers: {
-        'cache-control': 'no-cache',
-        Authorization: `Bearer ${access_token_value}`,
-        'Content-Type': 'application/json'
-      },
-      body: send_data,
-      json: true
-    }, async function (err, httpResponse, body) {
-      if (err) {
-        await sails.helpers.loggerFormat(
-          "Bitgo Send",
-          sails.config.local.LoggerWebhook,
-          "Bitgo Send",
-          3,
-          body,
-          err
-        );
-        console.log("Error", err)
-        return exits.error(err);
-      }
-      console.log("Res Body", body);
-      if (body.error) {
-        await sails.helpers.loggerFormat(
-          "Bitgo Send",
-          sails.config.local.LoggerWebhook,
-          "Bitgo Send",
-          3,
-          body,
-          body.error
-        );
-        return exits.error(body);
-      }
-      return exits.success(body);
-    });
+    // request({
+    //   url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
+    //   method: "POST",
+    //   headers: {
+    //     'cache-control': 'no-cache',
+    //     Authorization: `Bearer ${access_token_value}`,
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: send_data,
+    //   json: true
+    // }, async function (err, httpResponse, body) {
+    //   if (err) {
+    //     await sails.helpers.loggerFormat(
+    //       "Bitgo Send",
+    //       sails.config.local.LoggerWebhook,
+    //       "Bitgo Send",
+    //       3,
+    //       body,
+    //       err
+    //     );
+    //     console.log("Error", err)
+    //     return exits.error(err);
+    //   }
+    //   console.log("Res Body", body);
+    //   if (body.error) {
+    //     await sails.helpers.loggerFormat(
+    //       "Bitgo Send",
+    //       sails.config.local.LoggerWebhook,
+    //       "Bitgo Send",
+    //       3,
+    //       body,
+    //       body.error
+    //     );
+    //     return exits.error(body);
+    //   }
+    //   return exits.success(body);
+    // });
   }
 
 };
