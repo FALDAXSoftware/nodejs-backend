@@ -179,43 +179,43 @@ module.exports = {
       sails.config.local.LoggerIncoming
     );
     console.log(send_data);
-    // request({
-    //   url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
-    //   method: "POST",
-    //   headers: {
-    //     'cache-control': 'no-cache',
-    //     Authorization: `Bearer ${access_token_value}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: send_data,
-    //   json: true
-    // }, async function (err, httpResponse, body) {
-    //   if (err) {
-    //     await sails.helpers.loggerFormat(
-    //       "Bitgo Send",
-    //       sails.config.local.LoggerWebhook,
-    //       "Bitgo Send",
-    //       3,
-    //       body,
-    //       err
-    //     );
-    //     console.log("Error", err)
-    //     return exits.error(err);
-    //   }
-    //   console.log("Res Body", body);
-    //   if (body.error) {
-    //     await sails.helpers.loggerFormat(
-    //       "Bitgo Send",
-    //       sails.config.local.LoggerWebhook,
-    //       "Bitgo Send",
-    //       3,
-    //       body,
-    //       body.error
-    //     );
-    //     return exits.error(body);
-    //   }
-    //   return exits.success(body);
-    // });
+    request({
+      url: `${sails.config.local.BITGO_PROXY_URL}/${inputs.coin}/wallet/${inputs.walletId}/sendcoins`,
+      method: "POST",
+      headers: {
+        'cache-control': 'no-cache',
+        Authorization: `Bearer ${access_token_value}`,
+        'Content-Type': 'application/json'
+      },
+      body: send_data,
+      json: true
+    }, async function (err, httpResponse, body) {
+      if (err) {
+        await sails.helpers.loggerFormat(
+          "Bitgo Send",
+          sails.config.local.LoggerWebhook,
+          "Bitgo Send",
+          3,
+          body,
+          err
+        );
+        console.log("Error", err)
+        return exits.error(err);
+      }
+      console.log("Res Body", body);
+      if (body.error) {
+        await sails.helpers.loggerFormat(
+          "Bitgo Send",
+          sails.config.local.LoggerWebhook,
+          "Bitgo Send",
+          3,
+          body,
+          body.error
+        );
+        return exits.error(body);
+      }
+      return exits.success(body);
+    });
   }
 
 };
