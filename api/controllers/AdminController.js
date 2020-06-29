@@ -2641,6 +2641,12 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
+          var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
+                              FROM wallet_history
+                              WHERE deleted_at IS NULL AND coin_id = ${asset_id};`
+
+          var walletData = await sails.sendNativeQuery(walletQuery, []);
+          var walletValue = walletData.rows[0];
           if (assets_data[i].coin_code != 'SUSU') {
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
@@ -2660,7 +2666,7 @@ module.exports = {
 
           if (wallet_details != undefined) {
             assets_data[i].receive_address = wallet_details.receive_address;
-            temp_wallet_total = parseFloat(wallet_details.placed_balance);
+            temp_wallet_total = parseFloat(walletValue.faldax_fee);
           }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
           // Get Forfiet Data
