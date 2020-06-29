@@ -2668,7 +2668,7 @@ module.exports = {
             assets_data[i].receive_address = wallet_details.receive_address;
             temp_wallet_total = parseFloat(walletValue.faldax_fee);
           }
-          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
             FROM public.wallets LEFT JOIN users
@@ -2711,8 +2711,8 @@ module.exports = {
               }
             })
           }
-          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst) + (assets_data[i].trade_earned)).toFixed(sails.config.local.TOTAL_PRECISION) + ((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned).toFixed(sails.config.local.TOTAL_PRECISION)) : (0.0)));
+          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst) + (assets_data[i].trade_earned)) + ((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned)) : (0.0)));
         }
 
 
