@@ -70,10 +70,13 @@ module.exports = {
           deleted_at: null
         }
       });
-
+      console.log(inputs.asset)
+      console.log("methodData", methodData);
+      console.log("============", await kraken.api('DepositMethods', { asset: inputs.asset }))
+      var value = await kraken.api('DepositMethods', { asset: inputs.asset })
       status = await kraken.api('DepositAddresses', {
         asset: inputs.asset,
-        method: methodData.deposit_method,
+        method: value.result[0].method,
         new: true
       });
       return exits.success(status);

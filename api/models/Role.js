@@ -182,7 +182,12 @@ module.exports = {
     role_id: {
       collection: 'admin',
       via: 'role_id'
-    }
+    },
+    allowed_pairs: {
+      type: "string",
+      columnName: "allowed_pairs",
+      defaultsTo:""
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();

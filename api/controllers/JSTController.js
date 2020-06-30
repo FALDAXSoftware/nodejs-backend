@@ -23,17 +23,18 @@ module.exports = {
       //   "url": req.url,
       //   "type": "Entry"
       // }, "Entered the function")
-      var getJSTPair = await JSTPair.find({
-        where: {
-          deleted_at: null
-        }
-      });
+      // var getJSTPair = await JSTPair.find({
+      //   where: {
+      //     deleted_at: null
+      //   }
+      // });
 
       var coinList = await Coins.find({
         where: {
           deleted_at: null,
           is_active: true,
-          is_jst_supported: true
+          is_fiat: false
+          // is_jst_supported: true
         }
       })
 
@@ -54,7 +55,7 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("jst pair retrieve success").message,
-          getJSTPair,
+          // getJSTPair,
           coinList,
           faldax_fee
         })
@@ -72,7 +73,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -113,7 +114,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -148,14 +149,17 @@ module.exports = {
       let calculate_offer_amount = 0;
       if (req_body.original_pair == req_body.order_pair) {
         var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Buy");
-        var asset1_usd_value = asset1_value[0].ask_price;
+        // var asset1_usd_value = asset1_value[0].ask_price;
+        var asset1_usd_value = 0.0
         var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Buy");
-        var asset2_usd_value = asset2_value[0].ask_price;
+        // var asset2_usd_value = asset2_value[0].ask_price;
+        var asset2_usd_value = 0.0;
         calculate_offer_amount = asset1_usd_value;
       } else {
         var asset1_usd_value = asset1_value[0].bid_price;
         var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Sell");
-        var asset2_usd_value = asset2_value[0].bid_price;
+        // var asset2_usd_value = asset2_value[0].bid_price;
+        var asset2_usd_value = 0.0
         calculate_offer_amount = asset2_usd_value;
       }
 
@@ -261,7 +265,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -299,7 +303,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -388,7 +392,7 @@ module.exports = {
           .json({
             "status": 500,
             "message": sails.__("panic button enabled").message,
-            error_at:sails.__("panic button enabled").message
+            error_at: sails.__("panic button enabled").message
           })
       }
 
@@ -409,7 +413,7 @@ module.exports = {
         res.json({
           "status": 500,
           "message": sails.__(geo_fencing_data.msg).message,
-          error_at:sails.__(geo_fencing_data.msg).message
+          error_at: sails.__(geo_fencing_data.msg).message
         });
       } else {
         // Check Security
@@ -428,7 +432,7 @@ module.exports = {
             .json({
               "status": check_security.status,
               "message": check_security.message,
-              error_at:check_security.message
+              error_at: check_security.message
             });
         }
 
@@ -512,7 +516,7 @@ module.exports = {
             .json({
               "status": 500,
               "message": sails.__("Minimum Order Limit not satisfied").message,
-              error_at:sails.__("Minimum Order Limit not satisfied").message
+              error_at: sails.__("Minimum Order Limit not satisfied").message
             })
         }
 
@@ -560,7 +564,7 @@ module.exports = {
             .json({
               status: 500,
               "message": sails.__("insufficent funds in wallet").message,
-              error_at:sails.__("insufficent funds in wallet").message
+              error_at: sails.__("insufficent funds in wallet").message
             });
         }
         // if (req_body.original_pair != req_body.order_pair && req_body.Side == 2 && req_body.flag == 1) {
@@ -591,22 +595,21 @@ module.exports = {
         let order_object = {
           ClOrdID: create_order.cl_order_id,
           HandlInst: "1",
-          Symbol: req_body.Symbol,
+          Symbol: (req_body.Symbol).replace("/", ""),
           Side: (req_body.Side).toString(), // 1:Buy, 2:Sell
-          OrderQty: quantityValue,
-          OrdType: req_body.OrdType,
-          Currency: crypto,
-          ExecInst: "B",
+          OrderQty: (quantityValue).toString(),
+          OrdType: (req_body.OrdType).toString(),
+          Price: (req_body.limit_price).toString(),
+          // Currency: crypto,
+          // ExecInst: "B",
           // TimeInForce: "0",
-          TimeInForce: "4",
-          SecurityType: "FOR",
-          Product: "4",
-          Price: req_body.limit_price
+          TimeInForce: "3",
+          SecurityType: "FOR"
+          // Product: "4",
           // MinQty:quantityValue+10
         };
         var get_market_snapshotfor_execution = await sails.helpers.fixapi.getSnapshotPrice(req_body.Symbol, (req_body.Side == 1 ? "Buy" : "Sell"), quantityValue, req_body.flag, "create_order");
         var response = await sails.helpers.fixapi.buyOrder(order_object);
-
         var update_data = {
           order_id: response.data.OrderID
         };
@@ -641,7 +644,7 @@ module.exports = {
             .json({
               status: 500,
               "message": sails.__("jst order not created").message,
-              error_at:sails.__("jst order not created").message
+              error_at: sails.__("jst order not created").message
             });
         } else {
           var jst_response_data = response.data; // JST Response Success Data
@@ -771,15 +774,19 @@ module.exports = {
           let calculate_offer_amount = 0;
           if (req_body.original_pair == req_body.order_pair) {
             var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Buy");
-            var asset1_usd_value = asset1_value[0].ask_price;
+            // var asset1_usd_value = asset1_value[0].ask_price;
+            var asset1_usd_value = 0.0;
             var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Buy");
-            var asset2_usd_value = asset2_value[0].ask_price;
+            // var asset2_usd_value = asset2_value[0].ask_price;
+            var asset2_usd_value = 0.0;
             calculate_offer_amount = asset1_usd_value;
           } else {
             var asset1_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[0] + 'USD', "Sell");
-            var asset1_usd_value = asset1_value[0].bid_price;
+            // var asset1_usd_value = asset1_value[0].bid_price;
+            var asset1_usd_value = 0.0;
             var asset2_value = await sails.helpers.fixapi.getLatestPrice(currency_pair[1] + 'USD', "Sell");
-            var asset2_usd_value = asset2_value[0].bid_price;
+            // var asset2_usd_value = asset2_value[0].bid_price;
+            var asset2_usd_value = 0.0;
             calculate_offer_amount = asset2_usd_value;
           }
 
@@ -1033,7 +1040,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1091,7 +1098,7 @@ module.exports = {
         .json({
           status: 500,
           "err": check_offer_status.message,
-          error_at:check_offer_status.message
+          error_at: check_offer_status.message
         });
     }
   },
@@ -1117,7 +1124,7 @@ module.exports = {
       var order_pair = req.query.order_pair;
       var original_pair = req.query.original_pair;
       var usd_value = req.query.usd_value;
-      if( Symbol == "XRP/ETH" || Symbol == "LTC/ETH"){
+      if (Symbol == "XRP/ETH" || Symbol == "LTC/ETH") {
         return res.json({
           status: 200,
           data: [],
@@ -1125,8 +1132,7 @@ module.exports = {
           err: sails.__("Pair does not supported").message
         });
       }
-      Symbol = Symbol.replace("/","");
-      console.log("Symbol",Symbol);
+      Symbol = Symbol.replace("/", "");
       var req_body = {
         "Symbol": Symbol,
         "Side": Side,
@@ -1186,7 +1192,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

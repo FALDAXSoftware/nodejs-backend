@@ -31,7 +31,6 @@ module.exports = {
       data.action = '/simplex/simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-      console.log("call_simplex", call_simplex)
       if (call_simplex.status == 200 && call_simplex.data && call_simplex.data.digital_money.amount) {
         // call_simplex.data.digital_money.amount = 0;
       } else {
@@ -63,7 +62,6 @@ module.exports = {
       data.action = '/simplex/withour-user-simplex-details';
       data.method = 'POST';
       var call_simplex = await sails.helpers.simplex.sbBackend(data);
-      console.log("call_simplex", call_simplex)
       if (call_simplex.status == 200 && call_simplex.data && call_simplex.data.digital_money.amount) {
         // call_simplex.data.digital_money.amount = 0;
       } else {
@@ -130,9 +128,9 @@ module.exports = {
         if (check_security.status != 200) {
           return res
             // .status(check_security.status)
-            .status(500)
+            .status(check_security.status)
             .json({
-              "status": 500,
+              "status": check_security.status,
               "err": check_security.message,
               error_at: check_security.message
             });
@@ -199,16 +197,38 @@ module.exports = {
         main_details.account_details = account_details;
         main_details.transaction_details = transaction_details;
 
-
-        console.log(main_details)
         // Call SImplex
         data.main_details = main_details;
         data.action = '/simplex/get-partner-data';
         data.method = 'POST';
         var call_simplex = await sails.helpers.simplex.sbBackend(data);
-        return res.json(call_simplex);
+        let { isSourceMobile } = req.allParams();
+        if (isSourceMobile == true || isSourceMobile == 'true') {
+          if (call_simplex.status != 200) {
+            return res.json(call_simplex);
+          }
+          call_simplex = call_simplex.data;
+          let queryString = sails.config.local.APP_URL + "/simplex-mobile?";
+          queryString += `version=${call_simplex.version}`
+          queryString += `&partner=${call_simplex.partner}`
+          queryString += `&payment_flow_type=${call_simplex.payment_flow_type}`
+          queryString += `&return_url_success=${call_simplex.return_url_success}`
+          queryString += `&return_url_fail=${call_simplex.return_url_fail}`
+          queryString += `&payment_id=${call_simplex.payment_id}`
+          queryString += `&quote_id=${call_simplex.quote_id}`
+          queryString += `&user_id=${call_simplex.user_id}`
+          queryString += `&destination_wallet_address=${call_simplex["destination_wallet[address]"]}`
+          queryString += `&destination_wallet_currency=${call_simplex["destination_wallet[currency]"]}`
+          queryString += `&fiat_total_amount_amount=${call_simplex["fiat_total_amount[amount]"]}`
+          queryString += `&fiat_total_amount_currency=${call_simplex["fiat_total_amount[currency]"]}`
+          queryString += `&digital_total_amount_amount=${call_simplex["digital_total_amount[amount]"]}`
+          queryString += `&digital_total_amount_currency=${call_simplex["digital_total_amount[currency]"]}`
+          queryString += `&action=${call_simplex.action}`;
+          return res.json({ status: 200, data: { url: queryString } });
+        } else {
+          return res.json(call_simplex);
+        }
       }
-
     } catch (error) {
       // console.log(error);
       // await logger.error(error.message)
@@ -389,7 +409,7 @@ module.exports = {
           is_simplex_supported: true,
           is_fiat: false
         }
-      }).sort('coin ASC');
+      }).sort('id ASC');
 
       var fiatValue = {};
 

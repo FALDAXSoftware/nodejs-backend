@@ -45,6 +45,14 @@ module.exports = {
     state: {
       collection: 'state',
       via: 'country_id'
+    },
+    sortname: {
+      type: "string",
+      columnName: 'sortname',
+    },
+    phonecode: {
+      type: "string",
+      columnName: 'phonecode',
     }
   },
   beforeCreate: function (values, next) {

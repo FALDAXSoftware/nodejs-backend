@@ -75,14 +75,28 @@ module.exports = {
 
       q['is_processed'] = true;
 
+      var totalCount = await SimplexTradeHistory
+        .count({
+          ...q
+        })
+
       userSimplexHistory = await SimplexTradeHistory
         .find({
           ...q
         })
+        .paginate({
+          page: (data.page - 1),
+          limit: data.limit
+        })
         .sort("id DESC");
 
+      var userTradeHistoryData = {
+        data: userSimplexHistory,
+        total: totalCount
+      }
+
       // Send back the result through the success exit.
-      return exits.success(userSimplexHistory);
+      return exits.success(userTradeHistoryData);
 
     } catch (error) {
       console.log("error in simplex", error);

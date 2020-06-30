@@ -41,12 +41,9 @@ module.exports = {
           email_verify_token: req.body.email_verify_token
         });
 
-        console.log(user);
         if (user) {
           var today = moment().utc().format();
-          console.log(today)
           var yesterday = moment(user.signup_token_expiration).format();
-          console.log(yesterday)
           if (yesterday < today) {
             return res.status(400).json({
               "status": 400,
@@ -71,7 +68,8 @@ module.exports = {
               is_verified: true,
               is_new_email_verified: true,
               email_verify_token: null,
-              hubspot_id: hubspotcontact
+              hubspot_id: hubspotcontact,
+              account_verified_at: new Date()
             });
           await KYC
             .update({
@@ -139,10 +137,15 @@ module.exports = {
 
         user_detail = user_detail[0];
 
-        console.log(user_detail)
-
         if (user_detail) {
-          console.log(user_detail)
+          if (user_detail.id == sails.config.local.TRADEDESK_USER_ID && user_detail.is_tradedesk_user == true) {
+            return res
+              .status(401)
+              .json({
+                status: 401,
+                err: sails.__('Unauthorized Access').message
+              });
+          }
           // Set language to user's default
           // if (user_detail.default_language && user_detail.default_language != "") {
           //   sails.hooks.i18n.setLocale(user_detail.default_language);
@@ -161,6 +164,15 @@ module.exports = {
               "status": 403,
               err: sails.__('Deleted By User').message
             });
+          }
+
+          if (user_detail.is_active == false) {
+            return res
+              .status(403)
+              .json({
+                "status": 403,
+                "err": sails.__("Contact Admin").message
+              });
           }
 
           Users
@@ -321,7 +333,7 @@ module.exports = {
                   user: user_detail.id,
                   ip: ip
                 });
-                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2) {
+                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account || req.body.test_key == "load_testing") {
                   // if (req.body.device_token) {
                   //   var today = moment().utc().format();
                   //   var yesterday = moment(user_detail.device_token_expiration).format();
@@ -352,6 +364,14 @@ module.exports = {
                       if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
                         user_detail.is_kyc_done = 2;
                       }
+                    }
+                  }
+
+                  // If institutional account then get api key
+                  if (user_detail.is_institutional_account) {
+                    let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
+                    if (get_api_keys != 0) {
+                      user_detail.api_key = get_api_keys.api_key;
                     }
                   }
                   return res.status(200).json({
@@ -436,14 +456,6 @@ module.exports = {
             });
 
           // please verify your new email address." });   } }
-          if (user_detail.is_active == false) {
-            return res
-              .status(403)
-              .json({
-                "status": 403,
-                "err": sails.__("Contact Admin").message
-              });
-          }
         } else {
           return res
             .status(401)
@@ -502,8 +514,6 @@ module.exports = {
           new_ip: ip,
           new_ip_verification_token: req.body.token
         });
-
-        console.log(user_detail);
 
         if (user_detail) {
 
@@ -567,6 +577,13 @@ module.exports = {
           var token = await sails
             .helpers
             .jwtIssue(user_detail.id);
+          // If institutional account then get api key
+          if (user_detail.is_institutional_account) {
+            let get_api_keys = await sails.helpers.getUserApiKeys(user_detail.id);
+            if (get_api_keys) {
+              user_detail.api_key = get_api_keys.api_key;
+            }
+          }
           return res.json({
             status: 200,
             user: user_detail,
@@ -931,7 +948,6 @@ module.exports = {
         // deleted_at: null,
         // is_active: true
       }).sort('id DESC');
-      console.log(user_details)
       sails.hooks.i18n.setLocale(req.headers["accept-language"]);
       user_details = user_details[0];
       if (!user_details) {
