@@ -633,9 +633,21 @@ module.exports = {
                           .wallet
                           .getWalletAddressBalance(coin.hot_receive_wallet_address, coin_code);
 
+                        console.log("req.body", req.body)
                         // If after all condition user has accepted to wait for 2 days then request need
                         // to be added in the withdraw request table
-                        if (req.body.confirm_for_wait === undefined) {
+                        if (req.body.confirm_for_wait == undefined) {
+                          console.log("warmWalletData", warmWalletData);
+                          //Check for warm wallet minimum thresold
+                          console.log("Warmwalletbalance before", warmWalletData.balance);
+                          // total_fees = 1;
+                          console.log("coin.min_thresold", coin.min_thresold)
+                          console.log("warmWalletData.balance >= coin.min_thresold", warmWalletData.balance >= coin.min_thresold)
+                          console.log("(warmWalletData.balance - total_fees) >= 0", (warmWalletData.balance - total_fees) >= 0)
+                          console.log("total_fees", total_fees);
+                          console.log("warmWalletData.balance - total_fees", warmWalletData.balance - total_fees)
+                          console.log("(warmWalletData.balance - total_fees) >= coin.min_thresold", (warmWalletData.balance - total_fees) >= coin.min_thresold)
+                          console.log("(warmWalletData.balance) > (total_fees * 1e8)", (warmWalletData.balance) > (total_fees * division))
                           if (warmWalletData.balance >= coin.min_thresold && (warmWalletData.balance - total_fees) >= 0 && (warmWalletData.balance - total_fees) >= coin.min_thresold && (warmWalletData.balance) > (total_fees * division)) {
                             // Send to hot warm wallet and make entry in diffrent table for both warm to
                             // receive and receive to destination
@@ -2838,7 +2850,7 @@ module.exports = {
                             ON trade_history.user_id = users.id
                             LEFT JOIN users as user1
                             ON trade_history.requested_user_id = user1.id
-                            WHERE trade_history.deleted_at IS NULL${filter}`
+                            WHERE trade_history.deleted_at IS NULL AND taker_fee <> 0${filter}`
 
         if (t_type && t_type != '' && t_type != null) {
           tradeQuery += " AND trade_history.side = '" + t_type + "' "
@@ -2870,9 +2882,11 @@ module.exports = {
         }
 
         tradeQuery += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-        console.log("tradeQuery", tradeQuery)
+        console.log(`SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+        user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name `+ tradeQuery)
 
-        var tradeValue = await sails.sendNativeQuery(`SELECT trade_history.*, coins.*, users.email as email, users.first_name, users.last_name,
+        var tradeValue = await sails.sendNativeQuery(`SELECT trade_history.*, coins.coin_icon, coins.coin_code, coins.coin_precision, coins.coin_name, coins.iserc
+        , users.email as email, users.first_name, users.last_name,
         user1.email as requested_email, user1.first_name as RequestedFirstName , user1.last_name ` + tradeQuery, []);
 
         tradeValue = tradeValue.rows
@@ -3455,6 +3469,8 @@ module.exports = {
             });
           })
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
           coinData[i].coin_precision = "1e0"
         }
 

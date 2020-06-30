@@ -2641,6 +2641,12 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
+          var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
+                              FROM wallet_history
+                              WHERE deleted_at IS NULL AND coin_id = ${asset_id};`
+
+          var walletData = await sails.sendNativeQuery(walletQuery, []);
+          var walletValue = walletData.rows[0];
           if (assets_data[i].coin_code != 'SUSU') {
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
@@ -2660,9 +2666,9 @@ module.exports = {
 
           if (wallet_details != undefined) {
             assets_data[i].receive_address = wallet_details.receive_address;
-            temp_wallet_total = parseFloat(wallet_details.placed_balance);
+            temp_wallet_total = parseFloat(walletValue.faldax_fee);
           }
-          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
             FROM public.wallets LEFT JOIN users
@@ -2676,7 +2682,7 @@ module.exports = {
               temp_forfeit_total += parseFloat(each.balance);
             })
           }
-          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
           // var dataValue = (sqlData.user_coin).has(asset_name)
 
           // var flag = false;
@@ -2705,8 +2711,8 @@ module.exports = {
               }
             })
           }
-          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst) + (assets_data[i].trade_earned)).toFixed(sails.config.local.TOTAL_PRECISION) + ((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned).toFixed(sails.config.local.TOTAL_PRECISION)) : (0.0)));
+          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)) + parseFloat((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned)) : (0.0)));
         }
 
 
