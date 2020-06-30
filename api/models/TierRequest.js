@@ -12,9 +12,33 @@ module.exports = {
       type: 'number',
       columnName: 'tier_step'
     },
-    user_id: {
-      columnName: "user_id",
-      model: "users"
+    unique_key: {
+      type: "string",
+      columnName: "unique_key"
+    },
+    type: {
+      type: "string",
+      columnName: "type"
+    },
+    public_note: {
+      type: "string",
+      columnName: "public_note"
+    },
+    private_note: {
+      type: "string",
+      columnName: "private_note"
+    },
+    updated_by: {
+      type: "string",
+      columnName: "updated_by"
+    },
+    ssn: {
+      type: "string",
+      columnName: "ssn"
+    },
+    request_id: {
+      type: "number",
+      columnName: "request_id"
     },
     is_approved: {
       type: 'boolean',

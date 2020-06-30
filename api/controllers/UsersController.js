@@ -54,7 +54,7 @@ module.exports = {
             status: 401,
             "err": sails.__("User has been deleted").message
           });
-      } else if (existedUser) {
+      } else if (existedUser && existedUser.deleted_at == null) {
         return res
           .status(401)
           .json({
@@ -96,7 +96,8 @@ module.exports = {
           email_verify_token: (req.body.device_type == 1 || req.body.device_type == 2) ?
             email_verify_code : email_verify_token,
           signup_token_expiration: moment().utc().add(process.env.TOKEN_DURATION, 'minutes'),
-          default_language: (req.body.default_language ? req.body.default_language : "en")
+          default_language: (req.body.default_language ? req.body.default_language : "en"),
+          account_tier: 0
         }).fetch();
         var now = moment.now();
 
@@ -759,21 +760,30 @@ module.exports = {
         }
       }
     }
-    let userKyc = await KYC.findOne({
-      user_id: id
-    });
-    usersData[0].is_kyc_done = 0;
-    if (userKyc) {
-      if (userKyc.steps == 3) {
-        usersData[0].is_kyc_done = 1;
-        if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
-          usersData[0].is_kyc_done = 2;
+    if (usersData[0].account_tier != 4) {
+      let userKyc = await KYC.findOne({
+        user_id: id
+      });
+      console.log("userKyc", userKyc)
+      usersData[0].is_kyc_done = 0;
+      if (userKyc) {
+        if (userKyc.steps == 3) {
+          usersData[0].is_kyc_done = 1;
+          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+            usersData[0].is_kyc_done = 2;
+          }
         }
       }
+    } else if (usersData[0].account_tier == 4) {
+      usersData[0].is_kyc_done = 2
     }
     var dataResponse = await sails
       .helpers
       .userTradeChecking(usersData[0].id);
+
+    var dataResponse1 = await sails
+      .helpers
+      .userLegalityCheck(usersData[0].id)
 
     var panic_button_details = await AdminSetting.findOne({
       where: {
@@ -782,8 +792,12 @@ module.exports = {
       }
     });
 
+    console.log("dataResponse", dataResponse);
+    console.log("dataResponse1", dataResponse1)
+
     usersData[0].is_panic_enabled = panic_button_details.value
-    usersData[0].is_allowed = dataResponse.response;
+    usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
+    usersData[0].legal_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse1.response);
     // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
@@ -887,7 +901,7 @@ module.exports = {
                       user.state :
                       user_details["state"], user.city_town ?
                       user.city_town :
-                      user_details["city_town"], user.postal_code, user.dob,user.phone_number);
+                      user_details["city_town"], user.postal_code, user.dob, user.phone_number);
                 }
                 var updatedUsers = await Users
                   .update({
@@ -928,7 +942,7 @@ module.exports = {
                     user.state :
                     user_details["state"], user.city_town ?
                     user.city_town :
-                    user_details["city_town"], user.postal_code, user.dob,user.phone_number);
+                    user_details["city_town"], user.postal_code, user.dob, user.phone_number);
               }
 
               if (req.body.country_code) {
@@ -1118,7 +1132,7 @@ module.exports = {
     var currencyData = await CurrencyConversion.find({
       deleted_at: null
     })
-    var data = '/USD'
+    // var data = '/USD'
 
     // let query = " from price_history WHERE (coin LIKE '%" + data + "' AND (ask_price > 0)) GROUP BY coin , id ORDER BY coin, created_at DESC limit 100";
     // console.log("Select DISTINCT ON (coin) coin, id, ask_price, created_at " + query)
@@ -2748,6 +2762,7 @@ module.exports = {
         kyc_done,
         ...user
       } = req.allParams();
+      console.log("user", user)
       let existedUser = await Users.findOne({
         deleted_at: null,
         email: user.email
@@ -2771,7 +2786,8 @@ module.exports = {
             password: user.password,
             full_name: full_name,
             referral_code: randomize('Aa0', 10),
-            is_user_updated: true
+            is_user_updated: true,
+            account_tier: (kyc_done == true) ? (1) : (0)
           })
           .fetch();
 
@@ -3548,14 +3564,14 @@ module.exports = {
       } = req.allParams();
 
       var get_reffered_data = await sails.sendNativeQuery(`SELECT sum(referral.amount) as amount, referral.coin_name, coins.coin_icon
-                                FROM referral LEFT JOIN users
-                                ON users.id = referral.user_id
-                                LEFT JOIN coins
-                                ON referral.coin_name = coins.coin
-                                WHERE referral.is_collected = 'true' AND user_id = ${id}
-                                AND users.deleted_at IS NULL
-                                GROUP BY referral.coin_name,coins.coin_icon, coins.id
-                                ORDER BY coins.id DESC`);
+                                                            FROM referral LEFT JOIN users
+                                                            ON users.id = referral.user_id
+                                                            LEFT JOIN coins
+                                                            ON referral.coin_name = coins.coin
+                                                            WHERE referral.is_collected = 'true' AND user_id = ${id}
+                                                            AND users.deleted_at IS NULL
+                                                            GROUP BY referral.coin_name,coins.coin_icon, coins.id
+                                                            ORDER BY coins.id DESC`);
       return res
         .status(200)
         .json({
@@ -3649,7 +3665,8 @@ module.exports = {
 
       var coins = await Coins.find({
         is_active: true,
-        deleted_at: null
+        deleted_at: null,
+        is_fiat: false
       })
         .select(["coin_code", "coin", "coin_icon"])
         .sort('id DESC');
@@ -3755,6 +3772,7 @@ module.exports = {
         deleted_at: null,
         is_active: true
       });
+      console.log("userData", userData)
 
       if (userData != undefined) {
         var emailData = await Users.update({
@@ -3799,15 +3817,37 @@ module.exports = {
     try {
       var user_id = req.user.id;
 
+      var userData = await Users.findOne({
+        where: {
+          deleted_at: null,
+          is_active: true,
+          id: user_id
+        }
+      });
+
+      var data = {};
+      if (userData != undefined) {
+        if (userData.account_tier == 4) {
+          data.is_kyc_done = 2;
+          data.is_allowed = true;
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("You are allowed to trade").message,
+              "data": data
+            });
+        }
+      }
+
       let userKyc = await KYC.findOne({
         user_id: user_id
       });
-      var data = {};
       data.is_kyc_done = 0;
       if (userKyc) {
         if (userKyc.steps == 3) {
           data.is_kyc_done = 1;
-          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+          if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
             data.is_kyc_done = 2;
           }
         }
@@ -3818,7 +3858,7 @@ module.exports = {
       console.log(geo_fencing_data)
       data.is_allowed = geo_fencing_data.response;
       if (geo_fencing_data.response != true) {
-        res
+        return res
           .status(200)
           .json({
             "status": 200,
@@ -3826,7 +3866,7 @@ module.exports = {
             "data": data
           });
       } else {
-        res.json({
+        return res.json({
           "status": 200,
           "message": geo_fencing_data.msg,
           "data": data
@@ -3867,5 +3907,41 @@ module.exports = {
   //     "message": "dsdsdsd"
   //   });
   // }
-
+  /*
+  Get User Trade Status
+  */
+  getUserLegalityStatus: async function (req, res) {
+    try {
+      var user_id = req.user.id;
+      var data = {};
+      var geo_fencing_data = await sails
+        .helpers
+        .userLegalityCheck(user_id);
+      data.is_allowed = geo_fencing_data.response;
+      if (geo_fencing_data.response != true) {
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": geo_fencing_data.msg,
+            "data": data
+          });
+      } else {
+        return res.json({
+          "status": 200,
+          "message": geo_fencing_data.msg,
+          "data": data
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
 };

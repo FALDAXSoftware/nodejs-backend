@@ -23,11 +23,11 @@ module.exports = {
       columnName: 'requirements'
     },
     daily_withdraw_limit: {
-      type: 'number',
+      type: 'string',
       columnName: 'daily_withdraw_limit'
     },
     monthly_withdraw_limit: {
-      type: 'number',
+      type: 'string',
       columnName: 'monthly_withdraw_limit'
     },
     created_at: {
@@ -44,6 +44,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'deleted_at'
+    },
+    requirements_two: {
+      type: 'ref',
+      columnType: 'json',
+      columnName: 'requirements_two'
     }
   },
   beforeCreate: (values, next) => {

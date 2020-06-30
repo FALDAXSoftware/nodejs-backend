@@ -148,6 +148,29 @@ module.exports = async function (req, res, next) {
             err: sails.__('Invalid Authorization token').message
           });
       }
+    } else if (req.headers && req.headers["x-api-key"]) {
+      // Check for Institutional account, and get API Keys
+      if (!req.headers["x-api-key"] || req.headers["x-api-key"] == null || req.headers["x-api-key"] == '') {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Api key is missing").message
+          });
+      }
+      let api_key = req.headers["x-api-key"];
+      let get_api_keys = await sails.helpers.getApikeyUser(api_key);
+      if (!get_api_keys) {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Api key is invalid").message
+          });
+      }
+      var verifyData = {
+        id: get_api_keys.user_id
+      };
     } else if (req.param('token')) {
       token = req.param('token');
       // We delete the token from param to not mess with blueprints
@@ -194,13 +217,14 @@ module.exports = async function (req, res, next) {
           err: sails.__('No Authorization header was found').message
         });
     }
+    if (token) {
+      var verifyData = await sails
+        .helpers
+        .jwtVerify(token);
+    }
 
-    var verifyData = await sails
-      .helpers
-      .jwtVerify(token);
     if (verifyData) {
       req.user = verifyData;
-      // console.log(req.user.id)
       var userData = await Users.findOne({
         id: req.user.id
       });

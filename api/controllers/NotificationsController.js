@@ -31,7 +31,7 @@ module.exports = {
           id: user_id
         }
       });
-      console.log(userData)
+
       if (userData.default_language == "ja" && !req.headers['accept-language']) {
         for (var i = 0; i < notificationList.length; i++) {
           notificationList[i].title = notificationList[i].title_ja;
@@ -47,7 +47,6 @@ module.exports = {
           delete notificationList[i].title_ja
         }
       }
-      console.log(notificationList)
 
       return res
         .status(200)

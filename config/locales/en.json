@@ -2779,7 +2779,7 @@
 		"message": "Referral Percentage has been retrieved successfully."
 	},
 	"Trade data retrived successfully": {
-		"page": "CMS - Trade data lists",
+		"page": "CMS - Trade data lists, Front - Trade history",
 		"context": "Trade data retrived successfully",
 		"message_type": "success",
 		"message_english": "Trade data retrieved successfully.",
@@ -2868,7 +2868,7 @@
 		"context": "No Authorization header was found",
 		"message_type": "error",
 		"message_english": "No Authorization header was found.",
-		"message": "No Authorization header was found."
+		"message": "No Authorization header or api key was found."
 	},
 	"Verification Expired": {
 		"page": "Login",
@@ -2982,18 +2982,298 @@
 		"message_english": "Maximum File size allowed is 5 MB",
 		"message": "Maximum file size allowed is 5 MB"
 	},
-  "Please Complete You profile": {
-    "page": "Wallet- Send Coin, Address Creation",
-    "context": "Please complete you profile details to do wallet actions",
-    "message_type": "error",
-    "message_english": "Please complete you profile details to do wallet actions",
-    "message": "Please complete you profile details to do wallet actions"
-  },
-  "Pair does not supported": {
-    "page": "Conversion",
-    "context": "When check for unsupported asset pair",
-    "message_type": "error",
-    "message_english": "This pair does not supported in current system.",
-    "message": "This pair does not supported in current system."
-  }
+	"Please Complete You profile": {
+		"page": "Wallet- Send Coin, Address Creation",
+		"context": "Please complete you profile details to do wallet actions",
+		"message_type": "error",
+		"message_english": "Please complete you profile details to do wallet actions",
+		"message": "Please complete you profile details to do wallet actions"
+	},
+	"Pair does not supported": {
+		"page": "Conversion",
+		"context": "When check for unsupported asset pair",
+		"message_type": "error",
+		"message_english": "This pair does not supported in current system.",
+		"message": "This pair is not supported by the current system."
+	},
+	"Layout Data Success": {
+		"page": "Dashboard, Trade",
+		"context": "For getting user dashboard layout",
+		"message_type": "error",
+		"message_english": "User Dashboard and Trade layout has been fetched successfully.",
+		"message": "User Dashboard and Trade layout has been fetched successfully."
+	},
+	"Layout updated success": {
+		"page": "Dashboard, Trade",
+		"context": "For updating user dashboard layout",
+		"message_type": "error",
+		"message_english": "User Dashboard and Trade layout has been updated successfully.",
+		"message": "User Dashboard and Trade layout has been updated successfully."
+	},
+	"Both coins could not be same": {
+		"page": "Pairs- CMS",
+		"context": "Add Pair",
+		"message_type": "error",
+		"message_english": "Both coin code for pair should be same.",
+		"message": "Both coin codes for a pair should be the same."
+	},
+	"tier upgrade request success": {
+		"page": "Account Tier Management- CMS",
+		"context": "Change User Status",
+		"message_type": "error",
+		"message_english": "User Tier Reuqest has been changed successfully.",
+		"message": "User Account Tier request has been changed successfully."
+	},
+	"Your Current is approved or under approval": {
+		"page": "Account Tier Management- User",
+		"context": "When User uploads rejected document",
+		"message_type": "error",
+		"message_english": "Your Current Tier is approved or under approval",
+		"message": "Your Current Tier is approved or is pending"
+	},
+	"Admin trade history success": {
+		"page": "Wallet Dashboard- CMS",
+		"context": "When Admin views particular coin",
+		"message_type": "success",
+		"message_english": "Transation History has been retrieved successfully.",
+		"message": "Transaction History has been retrieved successfully."
+	},
+	"Layout data has been added successfully": {
+		"page": "Custom dashboard- User",
+		"context": "When user add data for shareable code",
+		"message_type": "success",
+		"message_english": "Layout Data for shareable code has been added successfully.",
+		"message": "Layout Data for shareable code has been added successfully."
+	},
+	"Code Data has retrieved success": {
+		"page": "Custom dashboard- User",
+		"context": "When user gets data for shareable code",
+		"message_type": "success",
+		"message_english": "Layout Data for shareable code has been retrieved successfully.",
+		"message": "Layout Data for shareable code has been retrieved successfully."
+	},
+	"Static Tier Pdfs retrived successfully": {
+		"page": "Tier PDF lists",
+		"context": "Static Tier Pdfs retrived successfully",
+		"message_type": "success",
+		"message_english": "Static Tier Pdfs retrieved successfully.",
+		"message": "Static Tier Pdfs retrieved successfully."
+	},
+	"Static Tier Pdfs updated successfully": {
+		"page": "Tier PDF update",
+		"context": "Static Tier Pdfs updated successfully",
+		"message_type": "success",
+		"message_english": "Static Tier Pdfs updated successfully.",
+		"message": "Static Tier Pdfs updated successfully."
+	},
+	"tier details users retrieve success": {
+		"page": "Tier Details -Front",
+		"context": "Tier individual data has been retrieved success",
+		"message_type": "success",
+		"message_english": "Tier individual data has been retrieved success.",
+		"message": "Account Tier individual data has been retrieved successfully."
+	},
+	"Request User retrieve success": {
+		"page": "Tier Details -CMS",
+		"context": "Tier Request ID has been updated successfully.",
+		"message_type": "success",
+		"message_english": "Tier Request ID has been updated successfully.",
+		"message": "Account Tier Request ID has been updated successfully."
+	},
+	"Tier Request Under Process": {
+		"page": "Tier Details Image Upload -CMS",
+		"context": "Particular tier is under process or has been approved",
+		"message_type": "success",
+		"message_english": "Particular tier is under process or has been approved",
+		"message": "Particular tier is under process or has been approved"
+	},
+	"Force Accept Success": {
+		"page": "Tier Details Force Accept -CMS",
+		"context": "User Tier has been force accepted successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been force accepted successffully",
+		"message": "User Account Tier has been force accepted successfully"
+	},
+	"Force Reject Success": {
+		"page": "Tier Details Force Reject -CMS",
+		"context": "User Tier has been force Rejected successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been force Rejected successffully",
+		"message": "User Account Tier has been force Rejected successfully"
+	},
+	"Force Pending Success": {
+		"page": "Tier Details Force Pending -CMS",
+		"context": "User Tier has been added to pending successffully",
+		"message_type": "success",
+		"message_english": "User Tier has been added to pending successffully",
+		"message": "User Account Tier has been added to pending successfully"
+	},
+	"Tier 4 Pdfs retrived successfully": {
+		"page": "Tier 4 PDF lists",
+		"context": "Tier 4 Pdfs retrived successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs retrieved successfully.",
+		"message": "Account Tier 4 Pdfs retrieved successfully."
+	},
+	"Tier 4 Pdfs updated successfully": {
+		"page": "Tier 4 PDF update",
+		"context": "Tier 4 Pdfs updated successfully",
+		"message_type": "success",
+		"message_english": "Tier 4 Pdfs updated successfully.",
+		"message": "Account Tier 4 Pdfs updated successfully."
+	},
+	"Tier Upgrade not applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "Tier upgrade not applicable.",
+		"message": "Account Tier upgrade not applicable."
+	},
+	"Tier upgrade applicable": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "sucess",
+		"message_english": "Tier upgrade applicable.",
+		"message": "Account Tier upgrade applicable."
+	},
+	"Need to fulfill requirements for tier": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier, and requirement not matched",
+		"message_type": "error",
+		"message_english": "Your current status does not match with next tier requirements.",
+		"message": "Your current status does not match with the next Account Tier requirements."
+	},
+	"your application has been force rejected": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been rejected.",
+		"message": "Your application has been rejected."
+	},
+	"your application has been force accepted": {
+		"page": "Tier Details",
+		"context": "When getting tier details for user at particulat tier",
+		"message_type": "error",
+		"message_english": "Your application has been accepted by admin",
+		"message": "Your application has been accepted by an admin"
+	},
+	"User cannot upgrade tier": {
+		"page": "Tier Details- CMS",
+		"context": "When getting tier details for user in admin panel",
+		"message_type": "error",
+		"message_english": "User requested tier cannot be unlocked as he has to upgrade lower tier",
+		"message": "User requested Account Tier cannot be unlocked as user has to upgrade a lower Account Tier"
+	},
+	"User Tier can be upgrade": {
+		"page": "Tier Details- CMS",
+		"context": "When getting tier details for user in admin panel",
+		"message_type": "Success",
+		"message_english": "Admin tier can unlock users tier as he has met requirements for higher tier",
+		"message": "Admin tier can unlock users tier as user has met requirements for higher tier"
+	},
+	"User Tier can be upgrade by admin": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier, and requirement not matched",
+		"message_type": "error",
+		"message_english": "User current status does not match with next tier requirements.",
+		"message": "User current status does not match with next Account Tier requirements."
+	},
+	"Need to fulfill requirements for tier by admin": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier, and requirement not matched",
+		"message_type": "error",
+		"message_english": "User current status does not match with next tier requirements.",
+		"message": "User current status does not match with next Account Tier requirements."
+	},
+	"User Unlock Tier Success": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "User tier has been unlocked successfully.",
+		"message": "User Account Tier has been unlocked successfully."
+	},
+	"Tier has also been upgraded": {
+		"page": "Tier upgrade",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "User tier has already been unlocked.",
+		"message": "User Account Tier has already been unlocked."
+	},
+	"Tier Value Success": {
+		"page": "Tier upgrade - CMS",
+		"context": "When upgrading to upper tier",
+		"message_type": "error",
+		"message_english": "User tier value has been retrieved successfully.",
+		"message": "User Account Tier value has been retrieved successfully."
+	},
+	"User Tier Daily Limit Exceeded": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User daily limit exceeded for the transaction. Daily Limit for your tier is",
+		"message": "User daily limit exceeded for the transaction. Daily Limit for your Account Tier is"
+	},
+	"User Tier Monthly Limit Exceeded": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User Monthly limit exceeded for the transaction. Monthly Limit for your tier is",
+		"message": "User Monthly limit exceeded for the transaction. Monthly Limit for your Account Tier is"
+	},
+	"User Can do transaction": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User can do the transaction",
+		"message": "User can do the transaction"
+	},
+	"User not able to do transactions": {
+		"page": "Wallet Send limit check",
+		"context": "User Tier Limit Check",
+		"message_type": "error",
+		"message_english": "User is not able to do any transaction. You need to upgrade your tier to do transactions.",
+		"message": "The user needs to upgrade their Account Tier to complete a transaction."
+	},
+	"All Tier Data retrieve success": {
+		"page": "Tier - CMS",
+		"context": "Get all tier data",
+		"message_type": "error",
+		"message_english": "All tier data has been retrieved successfully.",
+		"message": "All Account Tier data has been retrieved successfully."
+	},
+	"Api key is missing": {
+		"page": "On each Authernicated routes",
+		"context": "When api key is not sent",
+		"message_type": "error",
+		"message_english": "Missing API key.",
+		"message": "Missing API key."
+	},
+	"Api key is invalid": {
+		"page": "On each Authernicated routes",
+		"context": "When api key is invalid",
+		"message_type": "error",
+		"message_english": "Please prodvide valid API key.",
+		"message": "Please provide valid API key."
+	},
+	"Your SSN number has been uploaded successfully.": {
+		"page": "Tiers SSN upload",
+		"context": "Tiers Upload",
+		"message_type": "error",
+		"message_english": "Your SSN number has been uploaded successfully.",
+		"message": "Your SSN number has been uploaded successfully."
+	},
+	"sms template retrieve success": {
+		"page": "SMS Template- CMS",
+		"context": "Sms template retrieve",
+		"message_type": "success",
+		"message_english": "SMS Template has been retrieved successfully.",
+		"message": "SMS Template has been retrieved successfully."
+	},
+	"SMS template update success": {
+		"page": "Update SMS Template- CMS",
+		"context": "Update SMS Template",
+		"message_type": "success",
+		"message_english": "SMS Template has been updated successfully.",
+		"message": "SMS Template has been updated successfully."
+	}
 }

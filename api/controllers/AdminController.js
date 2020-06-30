@@ -113,8 +113,6 @@ module.exports = {
 
             admin_details.roles = role;
 
-            var roleArray = [];
-
             var roleQuery = `SELECT  r.module_name, r.main_module
                                 FROM public.admin_permissions as a
                                 INNER JOIN role_permissions as r
@@ -2602,6 +2600,24 @@ module.exports = {
         })
         .sort('created_at DESC');
 
+      var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
+                        FROM (
+                          (
+                          SELECT user_coin, sum(user_fee) as user_fee
+                          FROM trade_history
+                          GROUP BY user_coin
+                          )
+                            UNION
+                        (
+                          SELECT requested_coin, sum(requested_fee) as requested_fee
+                          FROM trade_history
+                          GROUP BY requested_coin
+                        )
+                        ) b GROUP BY b.user_coin`
+
+      var tradeData = await sails.sendNativeQuery(tradeSql, []);
+      var sqlData = tradeData.rows;
+
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
@@ -2625,15 +2641,19 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
+          var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
+                              FROM wallet_history
+                              WHERE deleted_at IS NULL AND coin_id = ${asset_id};`
+
+          var walletData = await sails.sendNativeQuery(walletQuery, []);
+          var walletValue = walletData.rows[0];
           if (assets_data[i].coin_code != 'SUSU') {
-            console.log("asset_id", asset_id)
             var currency_conversion = await CurrencyConversion.findOne({
               deleted_at: null,
               coin_id: asset_id
             })
             assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
           } else if (assets_data[i].coin_code == 'SUSU') {
-            console.log("wallet_details", wallet_details);
             var susucoinData = await sails.helpers.getUsdSusucoinValue();
             susucoinData = JSON.parse(susucoinData);
             susucoinData = susucoinData.data
@@ -2646,9 +2666,9 @@ module.exports = {
 
           if (wallet_details != undefined) {
             assets_data[i].receive_address = wallet_details.receive_address;
-            temp_wallet_total = parseFloat(wallet_details.placed_balance);
+            temp_wallet_total = parseFloat(walletValue.faldax_fee);
           }
-          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
             FROM public.wallets LEFT JOIN users
@@ -2662,7 +2682,18 @@ module.exports = {
               temp_forfeit_total += parseFloat(each.balance);
             })
           }
-          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total.toFixed(sails.config.local.TOTAL_PRECISION))
+          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
+          // var dataValue = (sqlData.user_coin).has(asset_name)
+
+          // var flag = false;
+          var value = 0;
+          for (var k = 0; k < sqlData.length; k++) {
+            if (asset_name == sqlData[k].user_coin) {
+              value = sqlData[k].sum
+            }
+          }
+
+          assets_data[i].trade_earned = value
 
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
@@ -2680,9 +2711,10 @@ module.exports = {
               }
             })
           }
-          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total.toFixed(sails.config.local.TOTAL_PRECISION))
-          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)).toFixed(sails.config.local.TOTAL_PRECISION));
+          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)) + parseFloat((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned)) : (0.0)));
         }
+
 
         return res.status(200).json({
           "status": 200,
@@ -3906,7 +3938,8 @@ module.exports = {
       var roleValue = await Role.findOne({
         select: [
           'name',
-          'created_at'
+          'created_at',
+          'allowed_pairs'
         ],
         where: {
           deleted_at: null,
@@ -3968,9 +4001,9 @@ module.exports = {
   **/
   updateRolePermission: async function (req, res) {
     try {
-
       var data = req.body.permissions;
       var role_id = req.body.role_id;
+      var allowed_pairs = req.body.allowed_pairs;
 
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
@@ -4016,6 +4049,17 @@ module.exports = {
             }
           }
         }
+      }
+
+      /* Update Allowed pairs in Role for TradeDesk */
+      if (allowed_pairs != "" && allowed_pairs != null) {
+        await Role
+          .update({
+            id: role_id
+          })
+          .set({
+            allowed_pairs: allowed_pairs
+          })
       }
 
       if (data.length > 0) {
@@ -4073,6 +4117,7 @@ module.exports = {
         "data": all_data
       });
   },
+
   getStaticLinks: async function (req, res) {
     try {
       var static_pages = await AdminSetting.find({
@@ -4166,6 +4211,7 @@ module.exports = {
         });
     }
   },
+
   /**
   Update Asset Fees and Limit for transfer From Recieve to Warm wallet
   **/
@@ -4384,4 +4430,195 @@ module.exports = {
       });
     }
   },
+
+  getTierStaticLink: async function (req, res) {
+    try {
+      var static_pages = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          or: [{
+            type: 'static_form_tier_3'
+          },
+          {
+            type: 'static_form_tier_4'
+          }]
+        }
+      })
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Static Tier Pdfs retrived successfully").message,
+          "data": static_pages
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  uploadTierStaticPdf: async function (req, res) {
+    try {
+      const pdfObject = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: req.body.slug
+        }
+      })
+      if (!pdfObject) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__('Invalid data provided').message
+          });
+      }
+      req
+        .file('pdf_file')
+        .upload(async function (error, uploadedFiles) {
+          if (error) {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "message": sails.__("Something Wrong").message,
+                error_at: error.stack
+              });
+          }
+          if (uploadedFiles.length > 0) {
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
+            if (uploadedFilesRes) {
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": sails.__("Static Tier Pdfs updated successfully").message
+                })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong").message,
+                  error_at: sails.__("Something Wrong").message
+                });
+            }
+          } else {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": sails.__('Invalid data provided').message
+              });
+          }
+        })
+    } catch (error) {
+      // console.log(error);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getTier4StaticLink: async function (req, res) {
+    try {
+      var static_pages = await AdminSetting.find({
+        where: {
+          deleted_at: null,
+          type: 'static_form_tier_4'
+        }
+      })
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Tier 4 Pdfs retrived successfully").message,
+          "data": static_pages
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  uploadTier4StaticPdf: async function (req, res) {
+    try {
+      const pdfObject = await AdminSetting.findOne({
+        where: {
+          deleted_at: null,
+          slug: req.body.slug
+        }
+      })
+      if (!pdfObject) {
+        return res
+          .status(401)
+          .json({
+            "status": 401,
+            "err": sails.__('Invalid data provided').message
+          });
+      }
+      req
+        .file('pdf_file')
+        .upload(async function (error, uploadedFiles) {
+          if (error) {
+            return res
+              .status(500)
+              .json({
+                "status": 500,
+                "message": sails.__("Something Wrong").message,
+                error_at: error.stack
+              });
+          }
+          if (uploadedFiles.length > 0) {
+            var uploadedFilesRes = await UploadFiles.newUpload(uploadedFiles[0].fd, pdfObject.value);
+            if (uploadedFilesRes) {
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": sails.__("Tier 4 Pdfs updated successfully").message
+                })
+            } else {
+              return res
+                .status(500)
+                .json({
+                  "status": 500,
+                  "message": sails.__("Something Wrong").message,
+                  error_at: sails.__("Something Wrong").message
+                });
+            }
+          } else {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": sails.__('Invalid data provided').message
+              });
+          }
+        })
+    } catch (error) {
+      // console.log(error);
+      return res
+        .status(500)
+        .json({
+          "status": 500,
+          "message": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  }
 };

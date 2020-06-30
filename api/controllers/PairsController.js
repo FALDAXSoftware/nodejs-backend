@@ -25,7 +25,6 @@ module.exports = {
           is_active: true
         }
       });
-      console.log(pairData.length)
       return res.json({
         'status': 200,
         'message': "All Pair data has been retrieved successfully",
@@ -96,10 +95,10 @@ module.exports = {
         sort_order,
         filter_val
       } = req.allParams();
-      let query = " from pairs";
+      let query = " from pairs WHERE deleted_at IS NULL";
       let whereAppended = false;
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
           query += " ( LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
@@ -110,7 +109,7 @@ module.exports = {
         }
       }
       if (filter_val) {
-        query += whereAppended ? " AND " : " WHERE ";
+        query += " AND ";
         whereAppended = true;
         query += "( coin_code1 ='" + filter_val + "' OR coin_code2 = '" + filter_val + "' )";
       }
@@ -134,7 +133,8 @@ module.exports = {
       let allCoins = await Coins.find({
         where: {
           is_active: true,
-          deleted_at: null
+          deleted_at: null,
+          is_fiat: false
         },
         select: ['id', 'coin_name', 'coin_code', 'coin']
       });
@@ -163,17 +163,30 @@ module.exports = {
   createPair: async function (req, res) {
     try {
       if (req.body.name && req.body.coin_code1 && req.body.coin_code2) {
+        if (req.body.coin_code1 == req.body.coin_code2) {
+          return res
+            .status(500)
+            .json({
+              "status": 500,
+              "err": sails.__("Both coins could not be same").message,
+              error_at: sails.__("Both coins could not be same").message
+            })
+        }
         let coinID_1 = await Coins.findOne({
           coin: req.body.coin_code1
         });
         let coinID_2 = await Coins.findOne({
           coin: req.body.coin_code2
         });
+        console.log("coinID_1", coinID_1)
+        console.log("coinID_2", coinID_2)
         let existingPair = await Pairs.find({
-          coin_code1: coinID_1.id,
-          coin_code2: coinID_2.id,
+          // coin_code1: coinID_1.id,
+          // coin_code2: coinID_2.id,
+          name: req.body.name,
           deleted_at: null
         });
+        console.log("existingPair", existingPair)
         if (existingPair.length > 0) {
           return res.status(500).json({
             "status": 500,
@@ -187,8 +200,6 @@ module.exports = {
             name: req.body.name,
             coin_code1: coinID_1.id,
             coin_code2: coinID_2.id,
-            maker_fee: req.body.maker_fee,
-            taker_fee: req.body.taker_fee,
             created_at: new Date()
           })
           .fetch();
