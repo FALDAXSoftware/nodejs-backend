@@ -138,7 +138,7 @@ module.exports = {
           s3.deleteObject(profileData, function (err, response) {
             if (err) {
               console.log(err)
-            } else {}
+            } else { }
           })
         }
         if (kyc_details.back_doc != null) {
@@ -150,7 +150,7 @@ module.exports = {
           s3.deleteObject(profileData, function (err, response) {
             if (err) {
               console.log(err)
-            } else {}
+            } else { }
           })
         }
 

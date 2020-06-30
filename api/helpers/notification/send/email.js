@@ -41,6 +41,10 @@ module.exports = {
     var object = {};
     object.recipientName = user.first_name;
 
+    if (user.reason && user.reason != undefined && user.reason != null) {
+      object.reason = user.reason
+    }
+
     if (user.limitType && user.limitType != undefined && user.limitType != null)
       object.limit = user.limitType
 
@@ -75,6 +79,8 @@ module.exports = {
         object
       });
 
+    console.log("emailContent", emailContent)
+    console.log("user.email", user.email)
     sails
       .hooks
       .email
@@ -84,7 +90,7 @@ module.exports = {
         to: user.email,
         subject: language_subject
       }, function (err) {
-        console.log("err",err);
+        console.log("err", err);
         if (!err) {
           exits.success(template.name)
         } else {

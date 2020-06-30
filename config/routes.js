@@ -27,6 +27,7 @@ module.exports.routes = {
   'post /toggle-panic-status': 'RootController.panicBtn',
   'get /get-panic-status': 'RootController.getPanicStatus',
   'get /test-bitgo': 'RootController.bitgoTest',
+  'get /get-transaction-id': "RootController.getTransactionID",
   // 'get /testemail': 'RootController.testemail',
   'get /update-thresold-notification': 'ThresoldController.addThresoldValue',
   'get /admin-wallet-fees-details': 'AdminController.getAdminWalletDetails',
@@ -40,9 +41,9 @@ module.exports.routes = {
   'get /set-address-webhook': 'WebhookController.setAddressWebhook',
   'get /set-receive-webhook': 'WebhookController.setReceiveWebhook',
   'post /webhook-on-address': 'WebhookController.webhookOnAddress',
-  'post /webhook-on-send-address': 'WebhookController.webhookOnSendAddress',
+  // 'post /webhook-on-send-address': 'WebhookController.webhookOnSendAddress',
   'post /webhook-on-receive': 'WebhookController.webhookOnReceive',
-  'post /webhook-on-send': 'WebhookController.webhookOnSend',
+  // 'post /webhook-on-send': 'WebhookController.webhookOnSend',
   'post /webhook-on-warm-send': 'WebhookController.webhookOnWarmSend',
 
   // CMS Routes/////////////////////////////////////////// Admin
@@ -328,7 +329,7 @@ module.exports.routes = {
   'get /call-helper': 'RootController.callKrakenAPI',
 
   //Kraken API
-  'get /get-order-book-data/:pair/:pair_value': 'KrakenController.getOrderBookData',
+  'get /get-order-book-data': 'KrakenController.getOrderBookData',
   'post /add-order': 'KrakenController.addOrder',
   'get /deposit-address/:symbol': 'KrakenController.depositAddress',
   'get /recent-deposit-status/:symbol': 'KrakenController.getDepositStatus',
@@ -391,8 +392,8 @@ module.exports.routes = {
   'post /update-notification-list': 'NotificationsController.updateOrAddUserNotification',
 
   // Update User Wallet balance
-  // 'post /update-user-balance': 'WalletController.updateWalletBalance',
-  // 'post /add-user-balance': 'WalletController.addWalletBalance',
+  'post /update-user-balance': 'WalletController.updateWalletBalance',
+  'post /add-user-balance': 'WalletController.addWalletBalance',
 
   // Admin Send API
   'post /send-coin-admin': 'WalletController.sendCoinAdmin',
@@ -402,14 +403,25 @@ module.exports.routes = {
   'post /admin/batches/list': 'AdminController.getBatchListing',
 
   // Tier Wise API
-  'post /upload-tier-document': 'TierController.tierDocumentUpload',
+  // 'post /upload-tier-document': 'TierController.tierDocumentUpload',
   'get /get-tier-details': 'TierController.getUserTierList',
-  'get /admin/get-tier-details': 'TierController.getTierList',
+  'post /users/get-user-tier-details': 'TierController.getUserTierData',
+  'post /users/upload-tier3-documents': 'TierController.uploadTier3Document',
+  "post /admin/get-tier-details": "TierController.getRequestTierData",
+  "get /admin/get-all-tier-details": "TierController.getAllTierDetails",
+  // "get /admin/get-tier-id-value": "TierController.getTierIdValue",
+  "post /admin/force-change-status": "TierController.userForceAccept",
+  // 'post /users/upload-reject-document': 'TierController.uploadRejectedDocument',
+  // 'get /admin/get-tier-details-value': 'TierController.getTierList',
   'post /admin/update-tier-list': 'TierController.updateTierList',
   'get /admin/get-tier-data': 'TierController.getTierData',
-  'get /upgrade-user-tier': 'TierController.upgradeUserTier',
+  'post /admin/upgrade-user-tier': 'TierController.upgradeUserTier',
   'get /admin/user-tier-request': 'TierController.getUserTierRequest',
   'get /admin/update-tier-request': 'TierController.updateUserTierRequest',
+  'post /admin/upload-user-documents': "KYCController.adminUploadUserDocument",
+  "get /admin/user-tier-unlock-check": "TierController.getUserAdminTierUnlock",
+  "get /admin/user-tier-unlock": "TierController.adminUnlockTier",
+  "get /admin/get-user-tier-value": "TierController.getUserTierValue",
 
   'put /admin/batches/update': 'AdminController.updateBatch',
   'get /admin/get-batch-value': 'AdminController.GetBatchValue',
@@ -422,7 +434,7 @@ module.exports.routes = {
   'post /get-jst-price': 'UsersController.getJSTPrice',
 
   // Wallet Balance related API
-  'get /coin-info': 'WalletController.checkWalletBalance',
+  // 'get /coin-info': 'WalletController.checkWalletBalance',
 
   // Referral Admin API
   'get /admin/get-referal-list': 'UsersController.getReferralList',
@@ -552,7 +564,38 @@ module.exports.routes = {
   // Get All Pair Value
   'get /users/get-all-pair': "PairsController.getAllPairData",
 
-  // Test API
-  "get /get-response-value": "RootController.getResponseData",
-  "get /get-database-value": "RootController.getDatabaseRetrieve"
+  // Layout API
+  'get /users/get-users-layout': "LayoutController.getUserLayout",
+  'post /users/update-users-layout': "LayoutController.updateUserLayout",
+
+  // Upload UserDocuments
+  'post /users/upload-user-documents': "KYCController.userDocumentUpload",
+
+  // Custom Dashboard Shareable Layout
+  'post /users/add-sharebale-code': "ShareableLayoutController.addCodeLayoutData",
+  "post /users/get-shareable-code": "ShareableLayoutController.getCodeLayout",
+
+  // Tier Static PDF
+  "get /admin/get-tier-pdf": "AdminController.getTierStaticLink",
+  "post /admin/upload-tier-pdf": "AdminController.uploadTierStaticPdf",
+  "get /admin/get-tier-4-pdf": "AdminController.getTier4StaticLink",
+  "post /admin/upload-tier-4-pdf": "AdminController.uploadTier4StaticPdf",
+
+  "post /users/upload-tier4-document": "TierController.uploadTier4UserDocument",
+
+  "post /users/check-tier-upgrate": "TierController.checkTierUpgrade",
+
+  // Wallet Send coin Limit Checking
+  "post /users/check-transaction-limit": "WalletController.getUserAvailableLimit",
+
+  // Wallet Trade Desk Send Funds
+  "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk",
+
+  'get /get-countries': 'Countries.getCountiesData',
+  'get /users/get-user-legal-status': 'UsersController.getUserLegalityStatus',
+
+  // SMS template
+  'get /admin/get-sms-template': "SMSTemplateController.getsmsTemplates",
+  'get /admin/smsTemplate/get-sms-template-by-id': "SMSTemplateController.getSMSTemplateByID",
+  'put /admin/smsTemplate/update-sms-template': "SMSTemplateController.updateSMSTemplate"
 };

@@ -86,15 +86,25 @@ module.exports = {
         data,
         country_id,
         sortCol,
-        sortOrder
+        sortOrder,
+        legality
       } = req.allParams();
       let query = " from states";
       let whereAppended = false;
-      if ((data && data != "")) {
+      if ((data && data != "") || (legality && legality != "")) {
         whereAppended = true
         query += " WHERE"
+        let isDataAppended = false;
         if (data && data != "" && data != null) {
           query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
+          isDataAppended = true;
+        }
+
+        if (legality && legality != "" && legality != null) {
+          if (isDataAppended) {
+            query += " AND"
+          }
+          query = query + " legality= " + legality
         }
       }
 
@@ -1482,5 +1492,39 @@ module.exports = {
 
   //   return res.json({status:200})
   // }
-
+  // Get Country Data
+  getCountiesData: async function (req, res) {
+    try {
+      let countryData = await Countries
+        .find({
+          where:
+          {
+            is_active:true
+          },
+          sort: 'name asc'
+        });
+      if (countryData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country list success").message,
+          "data": countryData
+        });
+      }else{
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at:error.stack
+        });
+    }
+  },
 };
