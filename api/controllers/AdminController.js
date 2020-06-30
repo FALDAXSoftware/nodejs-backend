@@ -1598,7 +1598,7 @@ module.exports = {
           expire_time: null
         }]
       };
-      let get_data = await IPWhitelist.hiteListData("", params, limit, page);
+      let get_data = await IPWhitelist.getWhiteListData("", params, limit, page);
 
       if (get_data.data != undefined && get_data.data.length > 0) {
         return res.status(200).json({
