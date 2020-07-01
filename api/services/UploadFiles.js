@@ -1,5 +1,5 @@
-var gm = require('gm').subClass({ imageMagick: true }); //Server
-// var gm = require('gm'); //Local
+// var gm = require('gm').subClass({ imageMagick: true }); //Server
+var gm = require('gm'); //Local
 var AWS = require('aws-sdk');
 var s3 = new AWS.S3();
 AWS
