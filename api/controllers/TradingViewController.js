@@ -109,9 +109,9 @@ module.exports = {
           resolutionInMinute = 240
           break;
         // Day
-        // case "D":
-        //   resolutionInMinute = 1440
-        //   break;
+        case "D":
+          resolutionInMinute = 1440
+          break;
         case "1D":
           resolutionInMinute = 1440
           break;
