@@ -52,11 +52,11 @@ module.exports = {
               .toString();
             filename += '.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
-            req.body.front_doc = 'kyc/' + filename;
-            // resolve('kyc/' + filename);
+            // req.body.front_doc = 'kyc/' + filename;
+            resolve('kyc/' + filename);
           });
         }
-        // req.body.front_doc = await frontDocPromis;
+        req.body.front_doc = await frontDocPromis;
         // console.log('frontDocPromis', await frontDocPromis);
         if (req.body.back_doc) {
           const backDocPromis = new Promise(async (resolve, reject) => {
@@ -69,10 +69,10 @@ module.exports = {
               .toString();
             filename += '.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename));
-            req.body.back_doc = 'kyc/' + filename;
-            // resolve('kyc/' + filename);
+            // req.body.back_doc = 'kyc/' + filename;
+            resolve('kyc/' + filename);
           });
-          // req.body.back_doc = await backDocPromis;
+          req.body.back_doc = await backDocPromis;
         }
         // await Promise.all([frontDocPromis, backDocPromis]);
         req.body.created_at = new Date();
