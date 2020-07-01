@@ -23,6 +23,10 @@ spec:
       - name: config-value
         configMap:
           name: {{ .Release.Name }}
+      volumes:
+      - name: {{ .Release.Name }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -33,6 +37,8 @@ spec:
           volumeMounts:
           - name: config-value
             mountPath: {{ .Values.configuration.pod_directory }}
+          - name: {{ .Release.Name }}
+            mountPath: "{{ .Values.persistentvolumeclaims.mountPath }}"
           ports:
             - name: http
               containerPort: {{ .Values.nodeport }}
