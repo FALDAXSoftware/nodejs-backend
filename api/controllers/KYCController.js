@@ -41,8 +41,8 @@ module.exports = {
             'message': sails.__('KYC Updated').message
           })
         }
-        if (req.body.front_doc) {
-          const frontDocPromis = new Promise(async (resolve, reject) => {
+        const frontDocPromis = new Promise( async (resolve, reject) => {
+          if (req.body.front_doc) {
             let extension = req
               .body
               .front_doc
@@ -50,16 +50,18 @@ module.exports = {
             let filename = new Date()
               .getTime()
               .toString();
-            filename += '.' + extension[extension.length - 1];
+            filename += '_front.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
             req.body.front_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
-          });
-        }
+          }else{
+            resolve();
+          }
+        });
         // req.body.front_doc = await frontDocPromis;
         // console.log('frontDocPromis', await frontDocPromis);
-        if (req.body.back_doc) {
-          const backDocPromis = new Promise(async (resolve, reject) => {
+        const backDocPromis = new Promise(async (resolve, reject) => {
+          if (req.body.back_doc) {
             let extension = req
               .body
               .back_doc
@@ -67,14 +69,17 @@ module.exports = {
             let filename = new Date()
               .getTime()
               .toString();
-            filename += '.' + extension[extension.length - 1];
+            filename += '_back.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename));
             req.body.back_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
-          });
-          // req.body.back_doc = await backDocPromis;
-        }
-        // await Promise.all([frontDocPromis, backDocPromis]);
+          }else{
+            resolve();
+          }
+        });
+        // req.body.back_doc = await backDocPromis;
+        await Promise.all([frontDocPromis, backDocPromis]);
+        // console.log("body", req.body);
         req.body.created_at = new Date();
         if (req.body.steps == 3) {
           req.body['status'] = false;
@@ -86,7 +91,7 @@ module.exports = {
           })
           .set(req.body)
           .fetch();
-        console.log('updated_kyc', updated_kyc);
+          console.log('updated_kyc', updated_kyc);
         // var user_value = await Users.findOne({
         //   where: {
         //     deleted_at: null,
