@@ -54,6 +54,8 @@ module.exports = {
             resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
             req.body.front_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
+          }else{
+            resolve();
           }
         });
         // req.body.front_doc = await frontDocPromis;
@@ -71,6 +73,8 @@ module.exports = {
             resolve(await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename));
             req.body.back_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
+          }else{
+            resolve();
           }
         });
         // req.body.back_doc = await backDocPromis;
