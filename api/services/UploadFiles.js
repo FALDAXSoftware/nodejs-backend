@@ -34,6 +34,8 @@ function UploadFiles() {
               ContentType: mime.lookup(uploadFileName)
             };
             s3.putObject(profile, function (err, rese) {
+              console.log('err', err);
+              console.log('rese', rese);
               if (err) {
                 reject(err);
               } else {
