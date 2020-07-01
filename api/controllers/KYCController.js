@@ -35,38 +35,48 @@ module.exports = {
         req.body.direct_response = "ACCEPT"
       }
       if (kyc_details) {
-        if (kyc_details.steps == 3) {
-          return res.json({
-            'status': 200,
-            'message': sails.__('KYC Updated').message
-          })
-        }
-
-        if (req.body.front_doc) {
-          let extension = req
-            .body
-            .front_doc
-            .split('.');
-          let filename = new Date()
-            .getTime()
-            .toString();
-          filename += '.' + extension[extension.length - 1];
-          await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
-          req.body.front_doc = 'kyc/' + filename;
-        }
-
-        if (req.body.back_doc) {
-          let extension = req
-            .body
-            .back_doc
-            .split('.');
-          let filename = new Date()
-            .getTime()
-            .toString();
-          filename += '.' + extension[extension.length - 1];
-          await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
-          req.body.back_doc = 'kyc/' + filename;
-        }
+        // if (kyc_details.steps == 3) {
+        //   return res.json({
+        //     'status': 200,
+        //     'message': sails.__('KYC Updated').message
+        //   })
+        // }
+        const frontDocPromis = new Promise( async (resolve, reject) => {
+          if (req.body.front_doc) {
+            let extension = req
+              .body
+              .front_doc
+              .split('.');
+            let filename = new Date()
+              .getTime()
+              .toString();
+            filename += '.' + extension[extension.length - 1];
+            await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
+            // req.body.front_doc = 'kyc/' + filename;
+            resolve('kyc/' + filename);
+          }
+        });
+        req.body.front_doc = await frontDocPromis;
+        // console.log('frontDocPromis', await frontDocPromis);
+        const backDocPromis = new Promise(async (resolve, reject) => {
+          if (req.body.back_doc) {
+            let extension = req
+              .body
+              .back_doc
+              .split('.');
+            let filename = new Date()
+              .getTime()
+              .toString();
+            filename += '.' + extension[extension.length - 1];
+            await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
+            // req.body.back_doc = 'kyc/' + filename;
+            resolve('kyc/' + filename);
+          }
+        });
+        req.body.back_doc = await backDocPromis;
+        // console.log('backDocPromis', backDocPromis);
+        await Promise.all([frontDocPromis, backDocPromis]);
+        // console.log('req.body', req.body);
 
         req.body.created_at = new Date();
         if (req.body.steps == 3) {
