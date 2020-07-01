@@ -23,7 +23,6 @@ spec:
       - name: config-value
         configMap:
           name: {{ .Release.Name }}
-      volumes:
       - name: {{ .Release.Name }}
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}
