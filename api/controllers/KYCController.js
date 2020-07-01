@@ -51,7 +51,7 @@ module.exports = {
             .getTime()
             .toString();
           filename += '_front.' + extension[extension.length - 1];
-          resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+          await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename);
           req.body.front_doc = 'kyc/' + filename;
           // resolve('kyc/' + filename);
         }
