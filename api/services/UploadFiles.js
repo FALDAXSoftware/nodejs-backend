@@ -9,6 +9,7 @@ var s3 = new AWS.S3({ signatureVersion: 'v4' });
 var mime = require('mime');
 var S3BucketName = "production-static-asset";
 var fs = require('fs');
+var logger = require('../controllers/logger')
 
 function UploadFiles() {
   return { upload: _upload, deleteFile: _deleteFile, newUpload: _newUpload };
@@ -21,7 +22,11 @@ function UploadFiles() {
       //   .noProfile()
       //   .stream(function (err, stdout, stderr) {
       console.log("filePath", filePath)
-      fs.readFile(filePath, function (err, data) {
+      fs.readFile(filePath, async function (err, data) {
+        if( err ){
+          console.log("Error to get file", err);
+          await logger.error(err, 'Error to get file')
+        }
         console.log(err, data)
         var profile = {
           Bucket: S3BucketName,

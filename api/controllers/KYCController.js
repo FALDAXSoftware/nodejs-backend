@@ -41,7 +41,7 @@ module.exports = {
             'message': sails.__('KYC Updated').message
           })
         }
-        const frontDocPromis = new Promise( async (resolve, reject) => {
+        // const frontDocPromis = new Promise( async (resolve, reject) => {
           if (req.body.front_doc) {
             let extension = req
               .body
@@ -51,16 +51,18 @@ module.exports = {
               .getTime()
               .toString();
             filename += '_front.' + extension[extension.length - 1];
-            resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+            // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+            await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
             req.body.front_doc = 'kyc/' + filename;
-            // resolve('kyc/' + filename);
-          }else{
-            resolve();
+            // resolve('kyc/' + filename);1
           }
-        });
+        //   }else{
+        //     resolve();
+        //   }
+        // });
         // req.body.front_doc = await frontDocPromis;
         // console.log('frontDocPromis', await frontDocPromis);
-        const backDocPromis = new Promise(async (resolve, reject) => {
+        // const backDocPromis = new Promise(async (resolve, reject) => {
           if (req.body.back_doc) {
             let extension = req
               .body
@@ -70,15 +72,16 @@ module.exports = {
               .getTime()
               .toString();
             filename += '_back.' + extension[extension.length - 1];
-            resolve(await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename));
+            await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
             req.body.back_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
-          }else{
-            resolve();
           }
-        });
+          // else{
+          //   resolve();
+          // }
+        // });
         // req.body.back_doc = await backDocPromis;
-        await Promise.all([frontDocPromis, backDocPromis]);
+        // await Promise.all([frontDocPromis, backDocPromis]);
         // console.log("body", req.body);
         req.body.created_at = new Date();
         if (req.body.steps == 3) {
