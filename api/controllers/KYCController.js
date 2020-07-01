@@ -94,7 +94,7 @@ module.exports = {
           })
           .set(req.body)
           .fetch();
-          console.log('updated_kyc', updated_kyc);
+        console.log('updated_kyc', updated_kyc);
         // var user_value = await Users.findOne({
         //   where: {
         //     deleted_at: null,
