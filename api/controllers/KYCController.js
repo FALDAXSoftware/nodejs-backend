@@ -64,7 +64,6 @@ module.exports = {
             .getTime()
             .toString();
           filename += '.' + extension[extension.length - 1];
-          console.log("filename", filename)
           await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
           req.body.back_doc = 'kyc/' + filename;
         }
