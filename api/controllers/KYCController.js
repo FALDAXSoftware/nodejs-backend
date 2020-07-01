@@ -35,12 +35,12 @@ module.exports = {
         req.body.direct_response = "ACCEPT"
       }
       if (kyc_details) {
-        if (kyc_details.steps == 3) {
-          return res.json({
-            'status': 200,
-            'message': sails.__('KYC Updated').message
-          })
-        }
+        // if (kyc_details.steps == 3) {
+        //   return res.json({
+        //     'status': 200,
+        //     'message': sails.__('KYC Updated').message
+        //   })
+        // }
         const frontDocPromis = new Promise( async (resolve, reject) => {
           if (req.body.front_doc) {
             let extension = req
@@ -50,7 +50,7 @@ module.exports = {
             let filename = new Date()
               .getTime()
               .toString();
-            filename += '.' + extension[extension.length - 1];
+            filename += '_front.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
             req.body.front_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
@@ -69,7 +69,7 @@ module.exports = {
             let filename = new Date()
               .getTime()
               .toString();
-            filename += '.' + extension[extension.length - 1];
+            filename += '_back.' + extension[extension.length - 1];
             resolve(await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename));
             req.body.back_doc = 'kyc/' + filename;
             // resolve('kyc/' + filename);
@@ -79,6 +79,7 @@ module.exports = {
         });
         // req.body.back_doc = await backDocPromis;
         await Promise.all([frontDocPromis, backDocPromis]);
+        // console.log("body", req.body);
         req.body.created_at = new Date();
         if (req.body.steps == 3) {
           req.body['status'] = false;
