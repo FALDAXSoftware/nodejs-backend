@@ -8,6 +8,7 @@ AWS
 var s3 = new AWS.S3({ signatureVersion: 'v4' });
 var mime = require('mime');
 var S3BucketName = "production-static-asset";
+var fs = require('fs');
 
 function UploadFiles() {
   return { upload: _upload, deleteFile: _deleteFile, newUpload: _newUpload };
@@ -16,32 +17,30 @@ function UploadFiles() {
 
     return new Promise((resolve, reject) => {
 
-      gm(filePath)
-        .noProfile()
-        .stream(function (err, stdout, stderr) {
-          var buf = new Buffer('');
+      // gm(filePath)
+      //   .noProfile()
+      //   .stream(function (err, stdout, stderr) {
+      console.log("filePath", filePath)
+      fs.readFile(filePath, function (err, data) {
+        console.log(err, data)
+        var profile = {
+          Bucket: S3BucketName,
+          Key: uploadFileName,
+          ACL: 'public-read',
+          Body: data
+        };
 
-          stdout.on('data', function (data) {
-            buf = Buffer.concat([buf, data]);
-          });
-
-          stdout.on('end', function (data) {
-            var profile = {
-              Bucket: S3BucketName,
-              Key: uploadFileName,
-              ACL: 'public-read',
-              Body: buf,
-              ContentType: mime.lookup(uploadFileName)
-            };
-            s3.putObject(profile, function (err, rese) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(rese)
-              }
-            });
-          });
+        console.log("profile", profile)
+        s3.putObject(profile, function (err, rese) {
+          console.log(err, rese)
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rese)
+          }
         });
+        // });
+      });
     })
   }
 
@@ -79,11 +78,12 @@ function UploadFiles() {
               Bucket: S3BucketName,
               Key: uploadFileName,
               ACL: 'public-read',
-              // Body: buf,
-              Body: fileStream,
+              Body: buf,
               ContentType: mime.lookup(uploadFileName)
             };
+            console.log("profile", profile)
             s3.putObject(profile, function (err, rese) {
+              console.log(err, rese)
               if (err) {
                 reject(err);
               } else {
