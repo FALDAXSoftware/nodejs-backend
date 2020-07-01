@@ -28,6 +28,8 @@ configuration:
       'sdf
       ')
 
+persistentvolumeclaims:
+  mountPath: /usr/share/nginx/html/faldax-nodejs/.tmp/uploads
 
 ingress:
   enabled: true
