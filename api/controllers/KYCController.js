@@ -35,12 +35,12 @@ module.exports = {
         req.body.direct_response = "ACCEPT"
       }
       if (kyc_details) {
-        // if (kyc_details.steps == 3) {
-        //   return res.json({
-        //     'status': 200,
-        //     'message': sails.__('KYC Updated').message
-        //   })
-        // }
+        if (kyc_details.steps == 3) {
+          return res.json({
+            'status': 200,
+            'message': sails.__('KYC Updated').message
+          })
+        }
         const frontDocPromis = new Promise( async (resolve, reject) => {
           if (req.body.front_doc) {
             let extension = req
