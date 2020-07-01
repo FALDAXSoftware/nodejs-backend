@@ -67,7 +67,7 @@ module.exports = {
       // pricescale: 100,
       volume_precision: quantityPrecision,
       pricescale: pricePrecision,
-      // session: "0930-1630",
+      session: ":1234567",
       supported_resolutions: [
         "1",
         "15",
@@ -109,9 +109,9 @@ module.exports = {
           resolutionInMinute = 240
           break;
         // Day
-        // case "D":
-        //   resolutionInMinute = 1440
-        //   break;
+        case "D":
+          resolutionInMinute = 1440
+          break;
         case "1D":
           resolutionInMinute = 1440
           break;
