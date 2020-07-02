@@ -45,7 +45,8 @@ module.exports = {
           stateData = await State.findOne({
             where: {
               deleted_at: null,
-              name: userData.state
+              name: userData.state,
+              country_id: countryData.id
             }
           });
 
