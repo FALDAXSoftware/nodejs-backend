@@ -3274,5 +3274,12 @@
 		"message_type": "success",
 		"message_english": "SMS Template has been updated successfully.",
 		"message": "SMS Template has been updated successfully."
+	},
+	"City list success": {
+		"page": "CMS - Get City lists",
+		"context": "Cities list has been retrieved successfully",
+		"message_type": "success",
+		"message_english": "Cities list has been retrieved successfully.",
+		"message": "Cities list has been retrieved successfully."
 	}
 }

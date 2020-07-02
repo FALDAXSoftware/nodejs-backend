@@ -861,6 +861,8 @@ module.exports = {
             "err": sails.__('Invalid email').message
           });
       }
+
+      console.log("req.body",req.body)
       var user = req.body;
       user['email'] = user_details['email'];
       delete user.profile;
