@@ -592,6 +592,9 @@ module.exports.routes = {
   "post /admin/wallet-send-coin-tradedesk": "WalletController.sendCoinTradeDesk",
 
   'get /get-countries': 'Countries.getCountiesData',
+  'get /get-states': 'Countries.getStatesData',
+  'get /get-city': 'Countries.getCityData',
+  'get /get-countries-by-id': 'Countries.getCountiesDataValue',
   'get /users/get-user-legal-status': 'UsersController.getUserLegalityStatus',
 
   // SMS template
