@@ -73,7 +73,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -157,7 +157,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -193,7 +193,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -228,7 +228,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -257,7 +257,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -286,7 +286,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1499,7 +1499,8 @@ module.exports = {
         .find({
           where:
           {
-            is_active:true
+            is_active: true,
+            deleted_at: null
           },
           sort: 'name asc'
         });
@@ -1509,7 +1510,7 @@ module.exports = {
           "message": sails.__("Country list success").message,
           "data": countryData
         });
-      }else{
+      } else {
         return res.json({
           "status": 500,
           "message": sails.__("No record found").message,
@@ -1523,8 +1524,125 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
+
+  getStatesData: async function (req, res) {
+    try {
+      let {
+        country_id
+      } = req.allParams();
+      let statesData = await State
+        .find({
+          where:
+          {
+            country_id: country_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("State list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getCityData: async function (req, res) {
+    try {
+      let {
+        state_id
+      } = req.allParams();
+      let statesData = await Cities
+        .find({
+          where:
+          {
+            state_id: state_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("City list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getCountiesDataValue: async function (req, res) {
+    try {
+      let {
+        country_id
+      } = req.allParams();
+      let statesData = await Countries
+        .find({
+          where:
+          {
+            id: country_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  }
 };

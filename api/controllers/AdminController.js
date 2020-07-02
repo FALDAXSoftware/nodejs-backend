@@ -1283,49 +1283,23 @@ module.exports = {
           });
       }
 
-      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue").message
-            });
-        }
+      if (user.is_twofactor && user.twofactor_secret) {
 
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: user.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
+        await Admin
+          .update({
+            id: user.id,
+            deleted_at: null
+          })
+          .set({
+            email: user.email,
+            is_twofactor: false,
+            twofactor_secret: null
           });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp").message
-            });
-        }
-      }
-
-      await Admin
-        .update({
-          id: user.id,
-          deleted_at: null
-        })
-        .set({
-          email: user.email,
-          is_twofactor: false,
-          twofactor_secret: null
+        return res.json({
+          status: 200,
+          message: sails.__("2 factor disabled").message
         });
-      return res.json({
-        status: 200,
-        message: sails.__("2 factor disabled").message
-      });
+      }
     } catch (error) {
       // await logger.error(error.message)
       return res
