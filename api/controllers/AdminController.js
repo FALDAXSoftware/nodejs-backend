@@ -1283,34 +1283,34 @@ module.exports = {
           });
       }
 
-      // if (user.is_twofactor && user.twofactor_secret ) {
-        // if (!req.body.otp) {
-        //   return res
-        //     .status(202)
-        //     .json({
-        //       "status": 202,
-        //       "message": sails.__("Please enter OTP to continue").message
-        //     });
-        // }
+      if (user.is_twofactor && user.twofactor_secret) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
 
-        // let verified = speakeasy
-        //   .totp
-        //   .verify({
-        //     secret: user.twofactor_secret,
-        //     encoding: 'base32',
-        //     token: req.body.otp,
-        //     window: 2
-        //   });
+        let verified = speakeasy
+          .totp
+          .verify({
+            secret: user.twofactor_secret,
+            encoding: 'base32',
+            token: req.body.otp,
+            window: 2
+          });
 
-        // if (!verified) {
-        //   return res
-        //     .status(402)
-        //     .json({
-        //       "status": 402,
-        //       "message": sails.__("invalid otp").message
-        //     });
-        // }
-      // }
+        if (!verified) {
+          return res
+            .status(402)
+            .json({
+              "status": 402,
+              "message": sails.__("invalid otp").message
+            });
+        }
+      }
 
       await Admin
         .update({
