@@ -1573,7 +1573,7 @@ module.exports = {
       let {
         state_id
       } = req.allParams();
-      let statesData = await Cities
+      var statesData = await Cities
         .find({
           where:
           {
@@ -1582,6 +1582,15 @@ module.exports = {
           },
           sort: 'name asc'
         });
+      if (statesData.length == 0) {
+        statesData = await State.findOne({
+          where: {
+            deleted_at: null,
+            id: state_id
+          },
+          sort: 'name ASC'
+        })
+      }
       if (statesData) {
         return res.json({
           "status": 200,
