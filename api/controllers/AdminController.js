@@ -2621,18 +2621,13 @@ module.exports = {
 
           var walletData = await sails.sendNativeQuery(walletQuery, []);
           var walletValue = walletData.rows[0];
-          if (assets_data[i].coin_code != 'SUSU') {
-            var currency_conversion = await CurrencyConversion.findOne({
-              deleted_at: null,
-              coin_id: asset_id
-            })
-            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-          } else if (assets_data[i].coin_code == 'SUSU') {
-            var susucoinData = await sails.helpers.getUsdSusucoinValue();
-            susucoinData = JSON.parse(susucoinData);
-            susucoinData = susucoinData.data
-            assets_data[i].fiat = susucoinData.USD;
-          }
+          // if (assets_data[i].coin_code != 'SUSU') {
+          var currency_conversion = await CurrencyConversion.findOne({
+            deleted_at: null,
+            coin_id: asset_id
+          })
+          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var temp_wallet_total = 0;
@@ -2640,7 +2635,11 @@ module.exports = {
 
           if (wallet_details != undefined) {
             assets_data[i].receive_address = wallet_details.receive_address;
-            temp_wallet_total = parseFloat(walletValue.faldax_fee);
+            var temp_wallet_value = 0.0
+            for (var i = 0; i < walletValue.length; i++) {
+              temp_wallet_value = walletValue[i].faldax_fee
+            }
+            temp_wallet_total = parseFloat(temp_wallet_value);
           }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
@@ -2686,7 +2685,8 @@ module.exports = {
             })
           }
           assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
-          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + (assets_data[i].total_earned_from_jst)) + parseFloat((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned)) : (0.0)));
+          assets_data[i].total = parseFloat(parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit)) + parseFloat((assets_data[i].trade_earned != undefined) ? ((assets_data[i].trade_earned)) : (0.0)));
+          assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
         }
 
 
