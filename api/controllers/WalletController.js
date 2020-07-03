@@ -3441,8 +3441,17 @@ module.exports = {
             .getWalletAddressBalance(coinData[i].hot_receive_wallet_address, coinData[i].coin_code);
           console.log("wallet_data", wallet_data);
           if (!wallet_data.error) {
+            var coinConversionData = await CurrencyConversion.findOne({
+              where: {
+                deleted_at: null,
+                coin_id: coinData[i].id
+              }
+            })
+            console.log(coinConversionData)
             coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
             coinData[i].address = wallet_data.receiveAddress.address;
+            coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0);
+            coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
           }
         } else if (coinData[i].coin_code == "SUSU") {
           var responseValue = await new Promise(async (resolve, reject) => {
@@ -3468,7 +3477,16 @@ module.exports = {
               // return body;
             });
           })
+          var coinConversionData = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: coinData[i].id
+            }
+          })
+          console.log(coinConversionData)
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0)
+          coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
           // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
           // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
           coinData[i].coin_precision = "1e0"
