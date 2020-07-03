@@ -1495,28 +1495,39 @@ module.exports = {
   // Get Country Data
   getCountiesData: async function (req, res) {
     try {
-      let countryData = await Countries
-        .find({
-          where:
-          {
-            is_active: true,
-            deleted_at: null
-          },
-          sort: 'name asc'
+      sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+        db.get('countries-list', async function (err, cachedData) {
+          if (err) { return proceed(err); }
+          var cachedProducts;
+          try {
+            cachedProducts = JSON.parse(cachedData);
+            cachedProducts.is_cached = true;
+          } catch (e) { return proceed(e); }
+          if (cachedProducts) {
+            return proceed(undefined, cachedProducts);
+          }
+          let countryData = await Countries
+            .find({
+              where:
+              {
+                is_active: true,
+                deleted_at: null
+              },
+              sort: 'name asc'
+            });
+          db.setex('countries-list', 86400, JSON.stringify(countryData))
+          return proceed(undefined, countryData);
         });
-      if (countryData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Country list success").message,
-          "data": countryData
-        });
-      } else {
-        return res.json({
-          "status": 500,
-          "message": sails.__("No record found").message,
-          "data": []
-        });
-      }
+      }).exec(function (err, products) {
+        if (err) { return res.serverError(err); }
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Country list success").message,
+            "data": products
+          });
+      });
     } catch (error) {
       // await logger.error(error.message)
       return res
@@ -1534,28 +1545,41 @@ module.exports = {
       let {
         country_id
       } = req.allParams();
-      let statesData = await State
-        .find({
-          where:
-          {
-            country_id: country_id,
-            deleted_at: null
-          },
-          sort: 'name asc'
+
+      sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+        db.get(`state-list-${country_id}`, async function (err, cachedData) {
+          if (err) { return proceed(err); }
+          var cachedProducts;
+          try {
+            cachedProducts = JSON.parse(cachedData);
+            // console.log("cachedProducts", cachedProducts)
+          } catch (e) { return proceed(e); }
+          if (cachedProducts) {
+            return proceed(undefined, cachedProducts);
+          }
+          let statesData = await State
+            .find({
+              where:
+              {
+                country_id: country_id,
+                deleted_at: null
+              },
+              sort: 'name asc'
+            });
+          db.setex(`state-list-${country_id}`, 86400, JSON.stringify(statesData))
+          return proceed(undefined, statesData);
         });
-      if (statesData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("State list success").message,
-          "data": statesData
-        });
-      } else {
-        return res.json({
-          "status": 500,
-          "message": sails.__("No record found").message,
-          "data": []
-        });
-      }
+      }).exec(function (err, products) {
+        if (err) { return res.serverError(err); }
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("State list success").message,
+            "data": products
+          });
+      });
+
     } catch (error) {
       // await logger.error(error.message)
       return res
@@ -1573,37 +1597,49 @@ module.exports = {
       let {
         state_id
       } = req.allParams();
-      var statesData = await Cities
-        .find({
-          where:
-          {
-            state_id: state_id,
-            deleted_at: null
-          },
-          sort: 'name asc'
+
+      sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+        db.get(`city-list-${state_id}`, async function (err, cachedData) {
+          if (err) { return proceed(err); }
+          var cachedProducts;
+          try {
+            cachedProducts = JSON.parse(cachedData);
+            // console.log("cachedProducts", cachedProducts)
+          } catch (e) { return proceed(e); }
+          if (cachedProducts) {
+            return proceed(undefined, cachedProducts);
+          }
+          var statesData = await Cities
+            .find({
+              where:
+              {
+                state_id: state_id,
+                deleted_at: null
+              },
+              sort: 'name asc'
+            });
+          if (statesData.length == 0) {
+            statesData = await State.findOne({
+              where: {
+                deleted_at: null,
+                id: state_id
+              },
+              sort: 'name ASC'
+            })
+          }
+          db.setex(`city-list-${state_id}`, 86400, JSON.stringify(statesData))
+          return proceed(undefined, statesData);
         });
-      if (statesData.length == 0) {
-        statesData = await State.findOne({
-          where: {
-            deleted_at: null,
-            id: state_id
-          },
-          sort: 'name ASC'
-        })
-      }
-      if (statesData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("City list success").message,
-          "data": statesData
-        });
-      } else {
-        return res.json({
-          "status": 500,
-          "message": sails.__("No record found").message,
-          "data": []
-        });
-      }
+      }).exec(function (err, products) {
+        if (err) { return res.serverError(err); }
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("City list success").message,
+            "data": products
+          });
+      });
     } catch (error) {
       // await logger.error(error.message)
       return res

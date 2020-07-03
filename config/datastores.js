@@ -60,4 +60,8 @@ module.exports.datastores = {
     connectionLimit: 10,
     waitForConnections: true
   },
+  cache: {
+    adapter: 'sails-redis',
+    url: 'redis://localhost:6379',
+  },
 };

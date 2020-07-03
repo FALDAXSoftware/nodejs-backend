@@ -262,6 +262,10 @@ module.exports = {
 
   getContactInfo: async function (req, res) {
     let adminSettingDetails = await AdminSetting.find({
+      select: [
+        'slug',
+        'value'
+      ],
       where: {
         deleted_at: null,
         or: [{
@@ -520,7 +524,11 @@ module.exports = {
         where: {
           deleted_at: null,
           slug: 'panic_status'
-        }
+        },
+        select: [
+          'slug',
+          'value'
+        ]
       })
 
       return res
