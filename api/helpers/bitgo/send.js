@@ -156,6 +156,10 @@ module.exports = {
       passphrase_value = sails.config.local.BITGO_PASSPHRASE;
     }
 
+    if (passphrase_value == undefined) {
+      passphrase_value = sails.config.local.BITGO_PASSPHRASE;
+    }
+
     console.log("passphrase_value", passphrase_value);
     var wallet_passphrase = await sails.helpers.getDecryptData(passphrase_value);
     console.log("coin", inputs.coin);
