@@ -737,7 +737,6 @@ module.exports = {
       id: id
     });
     if (usersData.length > 0) {
-
       if (usersData[0].country) {
         let AllCountries = csc.getAllCountries();
         usersData[0]["countryJsonId"] = null;
@@ -791,9 +790,6 @@ module.exports = {
         slug: 'panic_status'
       }
     });
-
-    console.log("dataResponse", dataResponse);
-    console.log("dataResponse1", dataResponse1)
 
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
@@ -1199,7 +1195,14 @@ module.exports = {
     } = req.allParams();
     let history = await LoginHistory
       .find({
-        user: req.user.id
+        select: [
+          'created_at',
+          'ip',
+          'device_type'
+        ],
+        where: {
+          user: req.user.id
+        }
       })
       .sort('created_at DESC')
       .paginate(page - 1, parseInt(limit));
@@ -2269,7 +2272,7 @@ module.exports = {
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       console.log("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-      "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
 
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])

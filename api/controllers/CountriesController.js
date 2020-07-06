@@ -243,9 +243,17 @@ module.exports = {
         .fetch();
 
       if (countriesData && typeof countriesData === 'object' && countriesData.length > 0) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Country Updated").message
+        sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+          db.setex('countries-list', 86400, JSON.stringify(countriesData))
+          return proceed(undefined, countriesData);
+        }).exec(function (err, products) {
+          if (err) { return res.serverError(err); }
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("Country Updated").message
+            });
         });
       } else {
         throw "Country(id) not found."
@@ -272,9 +280,18 @@ module.exports = {
         .fetch();
 
       if (stateData && typeof stateData === 'object' && stateData.length > 0) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("State Updated").message
+
+        sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+          db.setex(`state-list-${stateData.country_id}`, 86400, JSON.stringify(stateData))
+          return proceed(undefined, stateData);
+        }).exec(function (err, products) {
+          if (err) { return res.serverError(err); }
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("State Updated").message
+            });
         });
       } else {
         throw "State(id) not found."
@@ -1501,7 +1518,7 @@ module.exports = {
           var cachedProducts;
           try {
             cachedProducts = JSON.parse(cachedData);
-            cachedProducts.is_cached = true;
+            // cachedProducts.is_cached = true;
           } catch (e) { return proceed(e); }
           if (cachedProducts) {
             return proceed(undefined, cachedProducts);
@@ -1657,28 +1674,42 @@ module.exports = {
       let {
         country_id
       } = req.allParams();
-      let statesData = await Countries
-        .find({
-          where:
-          {
-            id: country_id,
-            deleted_at: null
-          },
-          sort: 'name asc'
+
+      sails.getDatastore('cache').leaseConnection(function during(db, proceed) {
+        db.get(`country-list-${country_id}`, async function (err, cachedData) {
+          if (err) { return proceed(err); }
+          var cachedProducts;
+          try {
+            cachedProducts = JSON.parse(cachedData);
+            // console.log("cachedProducts", cachedProducts)
+          } catch (e) { return proceed(e); }
+          if (cachedProducts) {
+            return proceed(undefined, cachedProducts);
+          }
+          let statesData = await Countries
+            .find({
+              where:
+              {
+                id: country_id,
+                deleted_at: null
+              },
+              sort: 'name asc'
+            });
+          db.setex(`country-list-${country_id}`, 86400, JSON.stringify(statesData))
+          return proceed(undefined, statesData);
         });
-      if (statesData) {
-        return res.json({
-          "status": 200,
-          "message": sails.__("Country list success").message,
-          "data": statesData
-        });
-      } else {
-        return res.json({
-          "status": 500,
-          "message": sails.__("No record found").message,
-          "data": []
-        });
-      }
+      }).exec(function (err, products) {
+        if (err) { return res.serverError(err); }
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("Country list success").message,
+            "data": products
+          });
+      });
+
     } catch (error) {
       // await logger.error(error.message)
       return res
