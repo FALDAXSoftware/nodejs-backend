@@ -42,19 +42,19 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({
+      var existedUser = await Users.find({
         email,
         // deleted_at: null,
         // is_active: true
       });
-      if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
+      if (existedUser && existedUser[0].deleted_at != null && existedUser[0].deleted_by == 2) {
         return res
           .status(401)
           .json({
             status: 401,
             "err": sails.__("User has been deleted").message
           });
-      } else if (existedUser && existedUser.deleted_at == null) {
+      } else if (existedUser && existedUser[0].deleted_at == null) {
         return res
           .status(401)
           .json({
@@ -2269,7 +2269,7 @@ module.exports = {
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
 
       console.log("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
-      "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
 
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
