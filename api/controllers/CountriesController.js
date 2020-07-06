@@ -1582,7 +1582,7 @@ module.exports = {
           },
           sort: 'name asc'
         });
-      if (statesData.length == 0) {
+      if (statesData == undefined) {
         statesData = await State.findOne({
           where: {
             deleted_at: null,
