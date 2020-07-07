@@ -133,7 +133,7 @@ module.exports = {
         .json({
           "status": 500,
           "err": error,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -149,11 +149,11 @@ module.exports = {
         sort_order,
         user_id
       } = req.allParams();
-      let query = " from buy_book";
+      let query = " from buy_book WHERE deleted_at IS NULL ";
       let whereAppended = false;
 
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
           query += " (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
@@ -165,11 +165,11 @@ module.exports = {
       }
 
       if (user_id) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+        // if (whereAppended) {
+        query += " AND "
+        // } else {
+        //   query += " WHERE "
+        // }
         whereAppended = true;
         query += " user_id=" + user_id;
       }
@@ -184,7 +184,8 @@ module.exports = {
       }
 
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      let buyBookData = await sails.sendNativeQuery("Select *" + query, [])
+      console.log("Select created_at, symbol, quantity, limit_price, stop_price, fill_price, order_status" + query)
+      let buyBookData = await sails.sendNativeQuery("Select created_at, symbol, quantity, limit_price, stop_price, fill_price, order_status" + query, [])
 
       buyBookData = buyBookData.rows;
 
@@ -206,7 +207,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

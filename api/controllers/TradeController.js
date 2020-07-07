@@ -2052,63 +2052,58 @@ module.exports = {
         search
       } = req.allParams();
 
-      var pendingOrderDetails = await PendingBook.find({
-        where: {
-          deleted_at: null,
-          user_id
-        },
-        sort: 'id DESC'
-      });
+      var pendingSql = `SELECT pending_orders.* FROM (
+                              SELECT id,is_stop_limit, CAST(user_id AS int) as user_id,order_type, fill_price, limit_price, stop_price, quantity, symbol, side, created_at, placed_by FROM pending_book WHERE deleted_at IS NULL AND user_id='${user_id}'
+                              UNION ALL
+                              SELECT id, is_stop_limit, user_id,order_type, fill_price, limit_price, stop_price, quantity, symbol, side, created_at, placed_by FROM buy_book WHERE deleted_at IS NULL AND user_id=${user_id} AND is_partially_fulfilled='true'
+                              UNION ALL
+                              SELECT id, is_stop_limit ,user_id,order_type, fill_price, limit_price, stop_price, quantity, symbol, side, created_at, placed_by FROM sell_book WHERE deleted_at IS NULL AND user_id=${user_id} AND is_partially_fulfilled='true'
+                            ) as pending_orders ORDER BY created_at DESC LIMIT ${limit} OFFSET ((${limit})*${page - 1})`
+      // console.log("pendingSql", pendingSql)
+      tradePendingDetails = await sails.sendNativeQuery(pendingSql);
+      tradePendingDetails = tradePendingDetails.rows;
 
-      var buyBookDetails = await BuyBook.find({
-        where: {
-          deleted_at: null,
-          user_id,
-          is_partially_fulfilled: true
-        },
-        sort: 'id DESC'
-      });
-
-      // Select c.coin_code, c.coin, w.balance, w.send_address, w.receive_address,
-      //   (sum(th.user_fee) + sum(th.requested_fee)) as Fee
-      // from pending_book
-      // LEFT JOIN buy_book buy
-      // ON buy.user_id = pending_book.user_id
-      // LEFT JOIN sell_book sell
-      // ON sell.user_id = pending_book.user_id
-      // WHERE pending_book.deleted_at IS NULL AND buy.is_partially_fulfilled = TRUE
-      // GROUP BY c.coin, c.coin_code, w.send_address, w.receive_address, w.balance
-
-      var pendingDetailsBuy = pendingOrderDetails.concat(buyBookDetails);
-
-      var sellBookDetails = await SellBook.find({
+      var getPendingDetails = await PendingOrdersExecution.find({
         select: [
-          'id',
-          'fix_quantity',
-          'quantity',
-          'fill_price',
-          'side',
-          'order_type',
-          'symbol',
-          'created_at',
-          'deleted_at',
-          'limit_price'
+          "id", "user_id", "order_type", "limit_price", "quantity", "symbol", "side", "placed_by", "is_cancel", "is_under_execution"
         ],
         where: {
           deleted_at: null,
-          user_id,
-          is_partially_fulfilled: true
-        },
-        sort: 'id DESC'
-      }).paginate(parseInt(page) - 1, parseInt(limit));
+          is_executed: false,
+          user_id: user_id
+        }
+      }).sort("id DESC").paginate(parseInt(page) - 1, parseInt(limit));
 
-      let pendingDataCount = await SellBook.count({
+      var pendingCountSql = `SELECT pending_orders.* FROM (
+                              SELECT id,is_stop_limit, CAST(user_id AS int) as user_id,order_type, fill_price, limit_price, stop_price, quantity,symbol, side, created_at, placed_by FROM pending_book WHERE deleted_at IS NULL AND user_id='${user_id}'
+                              UNION ALL
+                              SELECT id, is_stop_limit, user_id,order_type, fill_price, limit_price, stop_price, quantity,symbol, side, created_at, placed_by FROM buy_book WHERE deleted_at IS NULL AND user_id=${user_id} AND is_partially_fulfilled='true'
+                              UNION ALL
+                              SELECT id, is_stop_limit ,user_id,order_type, fill_price, limit_price, stop_price, quantity,symbol, side, created_at, placed_by FROM sell_book WHERE deleted_at IS NULL AND user_id=${user_id} AND is_partially_fulfilled='true'
+                            ) as pending_orders ORDER BY created_at DESC`
+      // console.log("pendingSql", pendingSql)
+      tradeCountPendingDetails = await sails.sendNativeQuery(pendingCountSql);
+      // console.log("tradeCountPendingDetails", tradeCountPendingDetails)
+      tradeCountPendingDetails = tradeCountPendingDetails.rowCount;
+
+
+      var getCountPendingDetails = await PendingOrdersExecution.count({
         deleted_at: null,
-        user_id,
-        is_partially_fulfilled: true
+        is_executed: false,
+        user_id: user_id
       });
 
-      tradePendingDetails = pendingDetailsBuy.concat(sellBookDetails);
+      var pendingDataCount = tradeCountPendingDetails + getCountPendingDetails
+
+      for (var i = 0; i < getPendingDetails.length; i++) {
+        getPendingDetails[i].flag = true;
+      }
+
+      if (tradePendingDetails != undefined) {
+        tradePendingDetails = tradePendingDetails.concat(getPendingDetails);
+      } else {
+        tradePendingDetails = getPendingDetails;
+      }
 
       if (tradePendingDetails) {
         return res.json({
@@ -2148,14 +2143,18 @@ module.exports = {
         sort_col,
         sort_order
       } = req.allParams();
-      let query = " from activity_table WHERE is_cancel=true AND user_id='" + user_id + "' ";
+      let query = `from activity_table
+                    LEFT JOIN pending_orders_execution
+                    ON pending_orders_execution.symbol = activity_table.symbol
+                    WHERE activity_table.is_cancel = 'true' AND activity_table.user_id='${user_id}'
+                    AND pending_orders_execution.is_cancel = 'true' ANd pending_orders_execution.user_id = '${user_id}'`
       let whereAppended = false;
       if ((data && data != "")) {
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query += "AND (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%')";
+          query += "AND (LOWER(activity_table.symbol) LIKE '%" + data.toLowerCase() + "%')";
           if (!isNaN(data)) {
-            query += " OR (limit_price=" + data + " OR fill_price=" + data + " OR quantity=" + data + ")";
+            query += " OR (activity_table.limit_price=" + data + " OR activity_table.quantity=" + data + ")";
           }
         }
       }
@@ -2165,16 +2164,20 @@ module.exports = {
         let sortVal = (sort_order == 'descend' ?
           'DESC' :
           'ASC');
-        query += " ORDER BY " + sort_col + " " + sortVal;
+        query += " ORDER BY activity." + sort_col + " " + sortVal;
       } else {
-        query += " ORDER BY id DESC";
+        query += " ORDER BY activity_table.id DESC";
       }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
-      let cancelDetails = await sails.sendNativeQuery("Select *" + query, [])
+      console.log("Select " + query)
+      let cancelDetails = await sails.sendNativeQuery(`SELECT activity_table.symbol, activity_table.created_at, activity_table.quantity, 
+      activity_table.quantity, activity_table.limit_price, pending_orders_execution.symbol,
+      pending_orders_execution.created_at, pending_orders_execution.quantity,
+      pending_orders_execution.limit_price ${query}`, [])
 
       cancelDetails = cancelDetails.rows;
 
-      let cancelledOrderCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
+      let cancelledOrderCount = await sails.sendNativeQuery("Select COUNT(activity_table.id)" + countQuery, [])
       cancelledOrderCount = cancelledOrderCount.rows[0].count;
 
       if (cancelDetails) {
@@ -2186,6 +2189,7 @@ module.exports = {
         });
       }
     } catch (error) {
+      console.log(error)
       // await logger.error(error.message)
       return res
         .status(500)
