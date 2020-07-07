@@ -39,7 +39,7 @@ module.exports = {
     limit_price: {
       type: 'number',
       columnName: 'limit_price',
-      defaultsTo:0
+      defaultsTo: 0
     },
     quantity: {
       type: 'number',
@@ -61,6 +61,11 @@ module.exports = {
     is_executed: {
       type: 'boolean',
       columnName: 'is_executed',
+      defaultsTo: false
+    },
+    is_under_execution: {
+      type: 'boolean',
+      columnName: 'is_under_execution',
       defaultsTo: false
     },
     symbol: {
