@@ -1573,6 +1573,8 @@ module.exports = {
       let {
         state_id
       } = req.allParams();
+
+      console.log("state_id", state_id)
       var statesData = await Cities
         .find({
           where:
@@ -1582,14 +1584,16 @@ module.exports = {
           },
           sort: 'name asc'
         });
-      if (statesData == undefined) {
-        statesData = await State.findOne({
+
+      console.log("statesData", statesData)
+      if (statesData == undefined || statesData.length == 0) {
+        statesData = await State.find({
           where: {
             deleted_at: null,
             id: state_id
-          },
-          sort: 'name ASC'
+          }
         })
+        statesData.state_id = state_id;
       }
       if (statesData) {
         return res.json({
