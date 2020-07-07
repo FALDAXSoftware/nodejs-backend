@@ -42,19 +42,19 @@ module.exports = {
         .email
         .toLowerCase();
 
-      var existedUser = await Users.findOne({
+      var existedUser = await Users.find({
         email,
         // deleted_at: null,
         // is_active: true
       });
-      if (existedUser && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
+      if (existedUser && existedUser.length > 0 && existedUser.deleted_at != null && existedUser.deleted_by == 2) {
         return res
           .status(401)
           .json({
             status: 401,
             "err": sails.__("User has been deleted").message
           });
-      } else if (existedUser && existedUser.deleted_at == null) {
+      } else if (existedUser && existedUser.length > 0 && existedUser.deleted_at == null) {
         return res
           .status(401)
           .json({
