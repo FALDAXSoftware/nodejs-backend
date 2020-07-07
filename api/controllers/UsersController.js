@@ -47,14 +47,14 @@ module.exports = {
         // deleted_at: null,
         // is_active: true
       });
-      if (existedUser && existedUser[0].deleted_at != null && existedUser[0].deleted_by == 2) {
+      if (existedUser && existedUser.length > 0 && existedUser[0].deleted_at != null && existedUser[0].deleted_by == 2) {
         return res
           .status(401)
           .json({
             status: 401,
             "err": sails.__("User has been deleted").message
           });
-      } else if (existedUser && existedUser[0].deleted_at == null) {
+      } else if (existedUser && existedUser.length > 0 && existedUser[0].deleted_at == null) {
         return res
           .status(401)
           .json({
@@ -221,7 +221,13 @@ module.exports = {
               }, {
                 to: user_detail.email,
                 subject: language_subject
-              }, function (err) {
+              }, async function (err, response) {
+                await logger.info({
+                  "module": "Singup Create",
+                  "user_id": "user_" + user_detail.id,
+                  "url": "/users/create",
+                  "type": "Success"
+                }, JSON.stringify(response));
                 if (!err) {
                   return res.json({
                     "status": 200,
