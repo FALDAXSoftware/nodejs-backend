@@ -221,7 +221,14 @@ module.exports = {
               }, {
                 to: user_detail.email,
                 subject: language_subject
-              }, function (err) {
+              }, async function (err, response) {
+                console.log("response", response)
+                await logger.info({
+                  "module": "User Create",
+                  "user_id": "user_" + user_detail.id,
+                  "url": "Signup Function",
+                  "type": "Success"
+                }, JSON.stringify(response));
                 if (!err) {
                   return res.json({
                     "status": 200,
