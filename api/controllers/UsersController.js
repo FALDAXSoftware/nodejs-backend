@@ -1597,7 +1597,7 @@ module.exports = {
 
     var walletCount = await sails.sendNativeQuery(walletQuery, []);
     walletCount = walletCount.rows;
-
+    console.log("walletCount", walletCount)
     if (walletCount.length > 0) {
       for (var i = 0; i < walletCount.length; i++) {
         walletArray.push(walletCount[i]);
@@ -1610,12 +1610,14 @@ module.exports = {
             }
           }
         }
+
+        console.log("walletCount[i].", walletCount[i])
         // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
         // walletCount[i].fiat = (get_jst_price && get_jst_price.length > 0) ? (get_jst_price[0].ask_price) : (0.0)
         var currencyConversionData = await CurrencyConversion.findOne({
           where: {
             deleted_at: null,
-            coin_id: walletCount[i].coin_id
+            symbol: walletCount[i].coin_name
           }
         })
         console.log(currencyConversionData);
