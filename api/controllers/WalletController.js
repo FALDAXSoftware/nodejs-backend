@@ -1729,6 +1729,15 @@ module.exports = {
         id: user_id
       });
 
+      if (userData.account_tier == 0) {
+        return res
+        .status(500)
+        .json({
+          "status": 500,
+          "err": sails.__("User Wallet create unsuccess").message
+        })  
+      }
+
       userData.flag = false;
       var walletDataCreate = await sails
         .helpers
