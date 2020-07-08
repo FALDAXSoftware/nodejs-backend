@@ -1934,25 +1934,24 @@ module.exports = {
             // walletCount[i].fiat = get_jst_price[0].ask_price;
             usd_price = usd_price + ((walletCount[i].totalAmount) * fiatVal);
           }
-
-          if (total > 0) {
-            res
-              .status(201)
-              .json({
-                "status": 201,
-                "message": sails.__("please remove your funds").message,
-                data: walletArray,
-                usd_price,
-                user
-              })
-          } else {
-            res
-              .status(200)
-              .json({
-                "status": 200,
-                "message": sails.__("no funds left").message
-              })
-          }
+        }
+        if (total > 0) {
+          res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("please remove your funds").message,
+              data: walletArray,
+              usd_price,
+              user
+            })
+        } else {
+          res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("no funds left").message
+            })
         }
       } else if (referCount.length > 0) {
         for (var i = 0; i < referCount.length; i++) {
