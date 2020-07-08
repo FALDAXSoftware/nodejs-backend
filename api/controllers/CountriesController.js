@@ -49,10 +49,14 @@ module.exports = {
       countryData = countryData.rows;
 
       for (let i = 0; i < countryData.length; i++) {
-        let stateCount = await State.count({
-          country_id: countryData[i].id
-        });
-        countryData[i].stateCount = stateCount;
+        if (countryData[i].id == 231) {
+          let stateCount = await State.count({
+            country_id: countryData[i].id
+          });
+          countryData[i].stateCount = stateCount;
+        } else {
+          countryData[i].stateCount = 0.0;
+        }
       }
 
       let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])

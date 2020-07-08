@@ -715,7 +715,7 @@ module.exports = {
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
       } else {
-        usersData[0].UUID = '4-1-' + usersData[0].account_tier + '-' + usersData[0].id;
+        usersData[0].UUID = '4-1-1' + '-' + usersData[0].id;
       }
       if (usersData) {
         return res.json({
