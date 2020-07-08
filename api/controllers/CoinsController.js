@@ -608,6 +608,14 @@ module.exports = {
             err: sails.__("Invalid coin").message
           });
       }
+      if (coin_details.bitgo_min_limit > req.body.min_limit) {
+        return res
+          .status(400)
+          .json({
+            "status": 400,
+            "err": sails.__("Coin Minumum Limit is less than bitgo").message
+          });
+      }
       if (req.body.coin_name) {
         let existingCoin = await Coins.find({
           deleted_at: null,

@@ -3289,5 +3289,12 @@
 		"message_type": "success",
 		"message_english": "User Wallet cannot be created as user need to upgrade tier.",
 		"message": "User Wallet cannot be created as user need to upgrade tier."
+	},
+	"Coin Minumum Limit is less than bitgo": {
+		"page": "CMS - Edit Asset",
+		"context": "Coin Minumum Limit is less than bitgo",
+		"message_type": "success",
+		"message_english": "Coin Minumum Limit is less than bitgo",
+		"message": "Coin Minumum Limit is less than bitgo"
 	}
 }
