@@ -13,6 +13,10 @@ module.exports = {
       columnName: 'coin_icon',
       allowNull: true
     },
+    bitgo_min_limit: {
+      type: 'number',
+      columnName: 'bitgo_min_limit'
+    },
     coin_name: {
       type: 'string',
       columnName: 'coin_name',
