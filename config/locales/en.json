@@ -3282,5 +3282,12 @@
 		"message_type": "success",
 		"message_english": "Cities list has been retrieved successfully.",
 		"message": "Cities list has been retrieved successfully."
+	},
+	"User Wallet create unsuccess": {
+		"page": "CMS - User Wallet Create",
+		"context": "User Wallet cannot be created as user need to upgrade tier.",
+		"message_type": "success",
+		"message_english": "User Wallet cannot be created as user need to upgrade tier.",
+		"message": "User Wallet cannot be created as user need to upgrade tier."
 	}
 }
