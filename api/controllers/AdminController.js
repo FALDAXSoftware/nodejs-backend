@@ -1283,49 +1283,23 @@ module.exports = {
           });
       }
 
-      if (user.is_twofactor && user.twofactor_secret && (!req.body.confirm_for_wait)) {
-        if (!req.body.otp) {
-          return res
-            .status(202)
-            .json({
-              "status": 202,
-              "message": sails.__("Please enter OTP to continue").message
-            });
-        }
+      if (user.is_twofactor && user.twofactor_secret) {
 
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: user.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
+        await Admin
+          .update({
+            id: user.id,
+            deleted_at: null
+          })
+          .set({
+            email: user.email,
+            is_twofactor: false,
+            twofactor_secret: null
           });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp").message
-            });
-        }
-      }
-
-      await Admin
-        .update({
-          id: user.id,
-          deleted_at: null
-        })
-        .set({
-          email: user.email,
-          is_twofactor: false,
-          twofactor_secret: null
+        return res.json({
+          status: 200,
+          message: sails.__("2 factor disabled").message
         });
-      return res.json({
-        status: 200,
-        message: sails.__("2 factor disabled").message
-      });
+      }
     } catch (error) {
       // await logger.error(error.message)
       return res
@@ -2565,42 +2539,42 @@ module.exports = {
   /**
   // Get Admin Wallet Details
   **/
- getAdminWalletDetails: async function (req, res) {
-  try {
-    let {
-      search
-    } = req.allParams();
+  getAdminWalletDetails: async function (req, res) {
+    try {
+      let {
+        search
+      } = req.allParams();
 
-    // Get Asset Details
-    var query = {};
-    if (search && search != "" && search != null) {
-      query = {
-        or: [
-          {
-            coin: {
-              contains: search
+      // Get Asset Details
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [
+            {
+              coin: {
+                contains: search
+              }
+            },
+            {
+              coin_name: {
+                contains: search
+              }
             }
-          },
-          {
-            coin_name: {
-              contains: search
-            }
-          }
-        ]
+          ]
+        }
       }
-    }
-    query.deleted_at = null
-    query.is_active = true
-    query.is_fiat = false;
+      query.deleted_at = null
+      query.is_active = true
+      query.is_fiat = false;
 
-    var assets_data = await Coins
-      .find({
-        where: query,
-        select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
-      })
-      .sort('created_at DESC');
+      var assets_data = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'min_limit', 'iserc', 'is_active', 'coin_precision']
+        })
+        .sort('created_at DESC');
 
-    var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
+      var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
                       FROM (
                         (
                         SELECT user_coin, sum(user_fee) as user_fee
@@ -2615,141 +2589,141 @@ module.exports = {
                       )
                       ) b GROUP BY b.user_coin`
 
-    var tradeData = await sails.sendNativeQuery(tradeSql, []);
-    var sqlData = tradeData.rows;
+      var tradeData = await sails.sendNativeQuery(tradeSql, []);
+      var sqlData = tradeData.rows;
 
-    if (assets_data.length > 0) {
-      for (var i = 0; i < assets_data.length; i++) {
-        let asset_name = assets_data[i].coin;
-        let asset_id = assets_data[i].id;
-        var wallet_details = await Wallet
-          .findOne({
-            is_active: true,
-            is_admin: true,
-            coin_id: asset_id,
-            deleted_at: null,
-            user_id: 36
-          });
-        if (wallet_details == undefined && assets_data[i].iserc == true) {
-          var walletValue = await Wallet
+      if (assets_data.length > 0) {
+        for (var i = 0; i < assets_data.length; i++) {
+          let asset_name = assets_data[i].coin;
+          let asset_id = assets_data[i].id;
+          var wallet_details = await Wallet
             .findOne({
               is_active: true,
               is_admin: true,
-              coin_id: 2,
+              coin_id: asset_id,
               deleted_at: null,
               user_id: 36
             });
-          wallet_details = walletValue;
-        }
-        var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
+          if (wallet_details == undefined && assets_data[i].iserc == true) {
+            var walletValue = await Wallet
+              .findOne({
+                is_active: true,
+                is_admin: true,
+                coin_id: 2,
+                deleted_at: null,
+                user_id: 36
+              });
+            wallet_details = walletValue;
+          }
+          var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
                             FROM wallet_history
                             WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
 
-        var walletData = await sails.sendNativeQuery(walletQuery, []);
-        var walletValueData = walletData.rows[0];
-        // if (assets_data[i].coin_code != 'SUSU') {
-        var currency_conversion = await CurrencyConversion.findOne({
-          deleted_at: null,
-          coin_id: asset_id
-        })
-        assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-        // }
-        assets_data[i].send_address = '';
-        assets_data[i].receive_address = '';
-        var temp_wallet_total = 0;
-
-
-        if (wallet_details != undefined) {
-          assets_data[i].receive_address = wallet_details.receive_address;
-          var temp_wallet_value = 0.0
-          // for (var i = 0; i < walletValue.length; i++) {
-          temp_wallet_value = walletValueData.faldax_fee
+          var walletData = await sails.sendNativeQuery(walletQuery, []);
+          var walletValueData = walletData.rows[0];
+          // if (assets_data[i].coin_code != 'SUSU') {
+          var currency_conversion = await CurrencyConversion.findOne({
+            deleted_at: null,
+            coin_id: asset_id
+          })
+          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
           // }
-          temp_wallet_total = parseFloat(temp_wallet_value);
-        }
-        assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
-        // Get Forfiet Data
-        var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
+          assets_data[i].send_address = '';
+          assets_data[i].receive_address = '';
+          var temp_wallet_total = 0;
+
+
+          if (wallet_details != undefined) {
+            assets_data[i].receive_address = wallet_details.receive_address;
+            var temp_wallet_value = 0.0
+            // for (var i = 0; i < walletValue.length; i++) {
+            temp_wallet_value = walletValueData.faldax_fee
+            // }
+            temp_wallet_total = parseFloat(temp_wallet_value);
+          }
+          assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
+          // Get Forfiet Data
+          var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
           FROM public.wallets LEFT JOIN users
           ON users.id = wallets.user_id
           WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
-        let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
+          let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
 
-        var temp_forfeit_total = 0;
-        if (forfeitFundData.rowCount > 0) {
-          (forfeitFundData.rows).forEach(function (each, index) {
-            temp_forfeit_total += parseFloat(each.balance);
-          })
-        }
-        assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
-        // var dataValue = (sqlData.user_coin).has(asset_name)
-
-        // var flag = false;
-        var value = 0;
-        for (var k = 0; k < sqlData.length; k++) {
-          if (asset_name == sqlData[k].user_coin) {
-            value = sqlData[k].sum
+          var temp_forfeit_total = 0;
+          if (forfeitFundData.rowCount > 0) {
+            (forfeitFundData.rows).forEach(function (each, index) {
+              temp_forfeit_total += parseFloat(each.balance);
+            })
           }
-        }
+          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
+          // var dataValue = (sqlData.user_coin).has(asset_name)
 
-        assets_data[i].trade_earned = value
+          // var flag = false;
+          var value = 0;
+          for (var k = 0; k < sqlData.length; k++) {
+            if (asset_name == sqlData[k].user_coin) {
+              value = sqlData[k].sum
+            }
+          }
 
-        //Get JST conversion total faldax earns
-        var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
+          assets_data[i].trade_earned = value
+
+          //Get JST conversion total faldax earns
+          var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
                         WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
                         ORDER BY id DESC`;
-        let jst_fees = await sails.sendNativeQuery(query_jst, []);
-        var temp_jst_total = 0;
-        if (jst_fees.rowCount > 0) {
-          (jst_fees.rows).forEach(function (each, index) {
-            if (each.currency == asset_name && each.side == 'Buy') {
-              temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
-            }
-            if (each.settle_currency == asset_name && each.side == 'Sell') {
-              temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
-            }
-          })
+          let jst_fees = await sails.sendNativeQuery(query_jst, []);
+          var temp_jst_total = 0;
+          if (jst_fees.rowCount > 0) {
+            (jst_fees.rows).forEach(function (each, index) {
+              if (each.currency == asset_name && each.side == 'Buy') {
+                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
+              }
+              if (each.settle_currency == asset_name && each.side == 'Sell') {
+                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
+              }
+            })
+          }
+          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
+          assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
+          assets_data[i].total_earned_from_wallets = isNaN(assets_data[i].total_earned_from_wallets) ? (0.0) : (assets_data[i].total_earned_from_wallets)
+          assets_data[i].trade_earned = isNaN(assets_data[i].trade_earned) ? (0.0) : (assets_data[i].trade_earned)
+          // console.log("-----------------------------------------------------------")
+          // console.log("(assets_data[i].total_earned_from_wallets)", (assets_data[i].total_earned_from_wallets))
+          // console.log("(assets_data[i].total_earned_from_forfeit)", (assets_data[i].total_earned_from_forfeit))
+          // console.log("assets_data[i].trade_earned", assets_data[i].trade_earned)
+          // console.log("parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit))", parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit)))
+          assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
+          // console.log("assets_data[i].total", assets_data[i].total)
+          assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
         }
-        assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
-        assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
-        assets_data[i].total_earned_from_wallets = isNaN(assets_data[i].total_earned_from_wallets) ? (0.0) : (assets_data[i].total_earned_from_wallets)
-        assets_data[i].trade_earned = isNaN(assets_data[i].trade_earned) ? (0.0) : (assets_data[i].trade_earned)
-        // console.log("-----------------------------------------------------------")
-        // console.log("(assets_data[i].total_earned_from_wallets)", (assets_data[i].total_earned_from_wallets))
-        // console.log("(assets_data[i].total_earned_from_forfeit)", (assets_data[i].total_earned_from_forfeit))
-        // console.log("assets_data[i].trade_earned", assets_data[i].trade_earned)
-        // console.log("parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit))", parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit)))
-        assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
-        // console.log("assets_data[i].total", assets_data[i].total)
-        assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
+
+
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("Wallet Details").message,
+          // "data": FeeData
+          "data": assets_data
+        });
+      } else {
+        return res.status(200).json({
+          "status": 200,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
       }
 
 
-      return res.status(200).json({
-        "status": 200,
-        "message": sails.__("Wallet Details").message,
-        // "data": FeeData
-        "data": assets_data
-      });
-    } else {
-      return res.status(200).json({
-        "status": 200,
-        "message": sails.__("No record found").message,
-        "data": []
+    } catch (error) {
+      console.log(error)
+      // await logger.error(error.message)
+      return res.json({
+        "status": 500,
+        "message": sails.__("Something Wrong").message,
+        error_at: error.stack
       });
     }
-
-
-  } catch (error) {
-    console.log(error)
-    // await logger.error(error.message)
-    return res.json({
-      "status": 500,
-      "message": sails.__("Something Wrong").message,
-      error_at: error.stack
-    });
-  }
-},
+  },
   /**
   Create Batch
   **/

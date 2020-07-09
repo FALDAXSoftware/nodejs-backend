@@ -318,6 +318,27 @@ module.exports = {
         }
       })
 
+      let open2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'open'
+        }
+      })
+
+      let approved2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'closed'
+        }
+      })
+
+      let disapproved2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'rejected'
+        }
+      })
+
       let query = "SELECT symbol, count(quantity) FROM trade_history GROUP BY symbol ORDER BY count(quantity) DESC"
 
       let transactionCount = await sails.sendNativeQuery(query, [])
@@ -369,9 +390,19 @@ module.exports = {
       })
       let kyc_pending = await KYC.count({
         //deleted_at: null,
-        direct_response: 'REVIEW',
+        where: {
+          deleted_at: null,
+          or: [
+            {
+              direct_response: 'MANUAL_REVIEW'
+            },
+            {
+              direct_response: null
+            }
+          ],
+          ...q
+        }
         //is_approve: true,
-        ...q
       })
 
       total_kyc = kyc_approved + kyc_disapproved + kyc_pending
@@ -441,7 +472,10 @@ module.exports = {
         transactionValue,
         feesTransactionValue,
         walletFeesTransactionValue,
-        TierData
+        TierData,
+        open2Farequest,
+        approved2Farequest,
+        disapproved2Farequest
       });
     } catch (error) {
       // await logger.error(error.message)

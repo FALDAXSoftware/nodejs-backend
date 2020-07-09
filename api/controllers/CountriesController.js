@@ -49,10 +49,14 @@ module.exports = {
       countryData = countryData.rows;
 
       for (let i = 0; i < countryData.length; i++) {
-        let stateCount = await State.count({
-          country_id: countryData[i].id
-        });
-        countryData[i].stateCount = stateCount;
+        if (countryData[i].id == 231) {
+          let stateCount = await State.count({
+            country_id: countryData[i].id
+          });
+          countryData[i].stateCount = stateCount;
+        } else {
+          countryData[i].stateCount = 0.0;
+        }
       }
 
       let CountriesCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
@@ -73,7 +77,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -157,7 +161,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -193,7 +197,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -228,7 +232,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -257,7 +261,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -286,7 +290,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
@@ -1499,7 +1503,8 @@ module.exports = {
         .find({
           where:
           {
-            is_active:true
+            is_active: true,
+            deleted_at: null
           },
           sort: 'name asc'
         });
@@ -1509,7 +1514,7 @@ module.exports = {
           "message": sails.__("Country list success").message,
           "data": countryData
         });
-      }else{
+      } else {
         return res.json({
           "status": 500,
           "message": sails.__("No record found").message,
@@ -1523,8 +1528,138 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   },
+
+  getStatesData: async function (req, res) {
+    try {
+      let {
+        country_id
+      } = req.allParams();
+      let statesData = await State
+        .find({
+          where:
+          {
+            country_id: country_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("State list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getCityData: async function (req, res) {
+    try {
+      let {
+        state_id
+      } = req.allParams();
+
+      console.log("state_id", state_id)
+      var statesData = await Cities
+        .find({
+          where:
+          {
+            state_id: state_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+
+      console.log("statesData", statesData)
+      if (statesData == undefined || statesData.length == 0) {
+        statesData = await State.find({
+          where: {
+            deleted_at: null,
+            id: state_id
+          }
+        })
+        statesData.state_id = state_id;
+      }
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("City list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getCountiesDataValue: async function (req, res) {
+    try {
+      let {
+        country_id
+      } = req.allParams();
+      let statesData = await Countries
+        .find({
+          where:
+          {
+            id: country_id,
+            deleted_at: null
+          },
+          sort: 'name asc'
+        });
+      if (statesData) {
+        return res.json({
+          "status": 200,
+          "message": sails.__("Country list success").message,
+          "data": statesData
+        });
+      } else {
+        return res.json({
+          "status": 500,
+          "message": sails.__("No record found").message,
+          "data": []
+        });
+      }
+    } catch (error) {
+      // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  }
 };
