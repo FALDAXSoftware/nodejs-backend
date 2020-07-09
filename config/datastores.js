@@ -60,4 +60,12 @@ module.exports.datastores = {
     connectionLimit: 10,
     waitForConnections: true
   },
+  read: {
+    adapter: 'sails-postgresql',
+    url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
+    ssl: false,
+    pool: true,
+    connectionLimit: 10,
+    waitForConnections: true
+  }
 };
