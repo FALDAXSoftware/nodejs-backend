@@ -723,7 +723,7 @@ module.exports = {
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
       } else {
-        usersData[0].UUID = '4-1-' + usersData[0].account_tier + '-' + usersData[0].id;
+        usersData[0].UUID = '4-1-1' + '-' + usersData[0].id;
       }
       if (usersData) {
         return res.json({
@@ -875,6 +875,8 @@ module.exports = {
             "err": sails.__('Invalid email').message
           });
       }
+
+      console.log("req.body", req.body)
       var user = req.body;
       user['email'] = user_details['email'];
       delete user.profile;
@@ -1603,7 +1605,7 @@ module.exports = {
 
     var walletCount = await sails.sendNativeQuery(walletQuery, []);
     walletCount = walletCount.rows;
-
+    console.log("walletCount", walletCount)
     if (walletCount.length > 0) {
       for (var i = 0; i < walletCount.length; i++) {
         walletArray.push(walletCount[i]);
@@ -1616,12 +1618,14 @@ module.exports = {
             }
           }
         }
+
+        console.log("walletCount[i].", walletCount[i])
         // var get_jst_price = await sails.helpers.fixapi.getLatestPrice(walletCount[i].coin_name + '/USD', "Buy");
         // walletCount[i].fiat = (get_jst_price && get_jst_price.length > 0) ? (get_jst_price[0].ask_price) : (0.0)
         var currencyConversionData = await CurrencyConversion.findOne({
           where: {
             deleted_at: null,
-            coin_id: walletCount[i].coin_id
+            symbol: walletCount[i].coin_name
           }
         })
         console.log(currencyConversionData);
@@ -1938,25 +1942,24 @@ module.exports = {
             // walletCount[i].fiat = get_jst_price[0].ask_price;
             usd_price = usd_price + ((walletCount[i].totalAmount) * fiatVal);
           }
-
-          if (total > 0) {
-            res
-              .status(201)
-              .json({
-                "status": 201,
-                "message": sails.__("please remove your funds").message,
-                data: walletArray,
-                usd_price,
-                user
-              })
-          } else {
-            res
-              .status(200)
-              .json({
-                "status": 200,
-                "message": sails.__("no funds left").message
-              })
-          }
+        }
+        if (total > 0) {
+          res
+            .status(201)
+            .json({
+              "status": 201,
+              "message": sails.__("please remove your funds").message,
+              data: walletArray,
+              usd_price,
+              user
+            })
+        } else {
+          res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": sails.__("no funds left").message
+            })
         }
       } else if (referCount.length > 0) {
         for (var i = 0; i < referCount.length; i++) {
@@ -2057,7 +2060,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id, wallets.address_label from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = true and users.deleted_at IS NULL"
@@ -2065,7 +2068,7 @@ module.exports = {
         query += " AND "
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.address_label) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2098,6 +2101,9 @@ module.exports = {
       }
 
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      console.log("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
+        "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
 
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT on(users.id)users.id, users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID, reffral.no_o" +
         "f_referrals, login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
@@ -2144,7 +2150,7 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id, wallets.address_label from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id = users.id LEFT JOIN (SELECT referred_id, COUNT(users.id) as no_of_referrals FROM use" +
         "rs GROUP BY referred_id) as reffral ON users.id = reffral.referred_id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.is_active = false AND users.deleted_at IS NULL"
@@ -2152,7 +2158,7 @@ module.exports = {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.address_label) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2228,14 +2234,14 @@ module.exports = {
         end_date
       } = req.allParams();
       let whereAppended = false;
-      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id from wallets ORDER BY receive_address DESC) wallets`;
+      let new_query = ` FROM (select DISTINCT ON(receive_address)receive_address,wallets.user_id, wallets.address_label from wallets ORDER BY receive_address DESC) wallets`;
       let query = new_query + " RIGHT JOIN users ON wallets.user_id=users.id LEFT JOIN (SELECT DISTINCT ON(user_id)user_id,ip, is_logged_in, created_at FROM login_history GROUP BY user_id, id ORDER BY user_id, created_at DESC ) login_history ON users.id = login_history.user_id";
       query += " WHERE users.deleted_at IS NOT NULL"
       if ((data && data != "")) {
         query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
-          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' ";
+          query = query + " (LOWER(users.first_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.last_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.customer_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.full_name) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.state) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.postal_code) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.country) LIKE '%" + data.toLowerCase() + "%' OR (wallets.receive_address) LIKE '%" + data + "%' OR (wallets.address_label) LIKE '%" + data + "%' ";
         }
         query += ")"
       }
@@ -2276,6 +2282,10 @@ module.exports = {
 
       // query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       new_sort += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+
+      console.log("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
+        "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort)
+
       let usersData = await sails.sendNativeQuery("SELECT * FROM (Select DISTINCT ON(users.id)users.id,users.*,wallets.receive_address, CONCAT(users.account_class, '-', users.id) AS UUID" +
         "f_referrals,login_history.ip,login_history.is_logged_in, login_history.created_at as last_login_datetime" + query + ") users " + new_sort, [])
 
