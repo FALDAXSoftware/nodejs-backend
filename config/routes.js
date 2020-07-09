@@ -600,5 +600,8 @@ module.exports.routes = {
   // SMS template
   'get /admin/get-sms-template': "SMSTemplateController.getsmsTemplates",
   'get /admin/smsTemplate/get-sms-template-by-id': "SMSTemplateController.getSMSTemplateByID",
-  'put /admin/smsTemplate/update-sms-template': "SMSTemplateController.updateSMSTemplate"
+  'put /admin/smsTemplate/update-sms-template': "SMSTemplateController.updateSMSTemplate",
+
+  // Test Candle Data
+  'get /add-candle-data': "RootController.updateCandleData"
 };

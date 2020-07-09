@@ -89,75 +89,91 @@ module.exports = {
     try {
       // console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
-      let { crypto, currency } = await sails
-        .helpers
-        .utilities
-        .getCurrencies(symbol);
+      // let { crypto, currency } = await sails
+      //   .helpers
+      //   .utilities
+      //   .getCurrencies(symbol);
 
-      console.log("req.allParams()", req.allParams())
+      // console.log("req.allParams()", req.allParams())
 
-      let resolutionInMinute = 0;
-      // Covert Resolution In Day
-      switch (resolution) {
-        case "1":
-          resolutionInMinute = 1;
-          break;
-        case "15":
-          resolutionInMinute = 15
-          break;
-        case "240":
-          resolutionInMinute = 240
-          break;
-        // Day
-        case "D":
-          resolutionInMinute = 1440
-          break;
-        case "1D":
-          resolutionInMinute = 1440
-          break;
-        // 2 Day 2 Day
-        case "2D":
-          resolutionInMinute = 2 * 1440
-          break;
-        // 3 Day
-        case "3D":
-          resolutionInMinute = 3 * 1440
-          break;
-        // Week
-        case "W":
-          resolutionInMinute = 7 * 1440
-          break;
-        // 3 Week
-        case "3W":
-          resolutionInMinute = 3 * 7 * 1440
-          break;
-        // Month
-        case "M":
-          resolutionInMinute = 30 * 1440
-          break;
-        // 6 Month
-        case "6M":
-          resolutionInMinute = 6 * 30 * 1440
-          break;
-        // Minutes -> Day
-        default:
-          resolutionInMinute = parseInt(resolution);
-          break;
+      // let resolutionInMinute = 0;
+      // // Covert Resolution In Day
+      // switch (resolution) {
+      //   case "1":
+      //     resolutionInMinute = 1;
+      //     break;
+      //   case "15":
+      //     resolutionInMinute = 15
+      //     break;
+      //   case "240":
+      //     resolutionInMinute = 240
+      //     break;
+      //   // Day
+      //   case "D":
+      //     resolutionInMinute = 1440
+      //     break;
+      //   case "1D":
+      //     resolutionInMinute = 1440
+      //     break;
+      //   // 2 Day 2 Day
+      //   case "2D":
+      //     resolutionInMinute = 2 * 1440
+      //     break;
+      //   // 3 Day
+      //   case "3D":
+      //     resolutionInMinute = 3 * 1440
+      //     break;
+      //   // Week
+      //   case "W":
+      //     resolutionInMinute = 7 * 1440
+      //     break;
+      //   // 3 Week
+      //   case "3W":
+      //     resolutionInMinute = 3 * 7 * 1440
+      //     break;
+      //   // Month
+      //   case "M":
+      //     resolutionInMinute = 30 * 1440
+      //     break;
+      //   // 6 Month
+      //   case "6M":
+      //     resolutionInMinute = 6 * 30 * 1440
+      //     break;
+      //   // Minutes -> Day
+      //   default:
+      //     resolutionInMinute = parseInt(resolution);
+      //     break;
+      // }
+      // console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
+      // let candleStickData = await sails
+      //   .helpers
+      //   .tradding
+      //   .getCandleStickData(crypto, currency, resolutionInMinute, from, to)
+      //   .tolerate("serverError", () => {
+      //     throw new Error("serverError");
+      //   });
+      var candleStickData;
+      if (symbol == 'ETH-BTC') {
+        candleStickData = await pairETHBTC.findOne({
+          where: {
+            deleted_at: null,
+            resolution: resolution
+          }
+        })
       }
-      console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
-      let candleStickData = await sails
-        .helpers
-        .tradding
-        .getCandleStickData(crypto, currency, resolutionInMinute, from, to)
-        .tolerate("serverError", () => {
-          throw new Error("serverError");
-        });
-      if (candleStickData.o.length > 0) {
+      var dataValue = {};
+      if (candleStickData.open.length > 0) {
+        dataValue.o = candleStickData.open;
+        dataValue.c = candleStickData.close;
+        dataValue.h = candleStickData.high;
+        dataValue.l = candleStickData.low;
+        dataValue.t = candleStickData.timestamps;
+        dataValue.v = candleStickData.volume;
         return res
           .status(200)
           .json({
             s: "ok",
-            ...candleStickData
+            ...dataValue
           });
       } else {
         return res
