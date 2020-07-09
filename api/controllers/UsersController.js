@@ -213,6 +213,13 @@ module.exports = {
                 email_verify_code : email_verify_token
             })
           if (template) {
+            // console.log("response", response)
+            await logger.info({
+              "module": "User Create",
+              "user_id": "user_" + user_detail.id,
+              "url": "Signup Function",
+              "type": "Success"
+            }, new Date());
             sails
               .hooks
               .email
@@ -222,12 +229,13 @@ module.exports = {
                 to: user_detail.email,
                 subject: language_subject
               }, async function (err, response) {
+                console.log("response", response)
                 await logger.info({
-                  "module": "Singup Create",
+                  "module": "User Create",
                   "user_id": "user_" + user_detail.id,
-                  "url": "/users/create",
+                  "url": "Signup Function",
                   "type": "Success"
-                }, JSON.stringify(response));
+                }, JSON.stringify(response), new Date());
                 if (!err) {
                   return res.json({
                     "status": 200,
