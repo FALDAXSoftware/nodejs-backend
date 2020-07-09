@@ -60,7 +60,7 @@ module.exports = {
 
 
       // Read Replica
-      await sails.getDatastore('read').leaseConnection(async function during(db, proceed) {
+      await sails.leaseConnection(async function during(db, proceed) {
         console.log("inputs", inputs)
         var from = moment
           .unix(inputs.from)
@@ -71,7 +71,15 @@ module.exports = {
           .utc()
           .format("YYYY-MM-DD 23:59:59");
         // await Promise.all([
-        var openResult = await sails.getDatastore('read').sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        // console.log(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        // FROM trade_history 
+        // WHERE id IN (SELECT min(id) FROM trade_history 
+        //       WHERE created_at >= '${from}' AND created_at <= '${to}'
+        //       AND settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
+        //       GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
+        // ORDER BY interval 
+        // LIMIT 15000`)
+        var openResult = await sails.sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history 
                               WHERE id IN (SELECT min(id) FROM trade_history 
                                     WHERE created_at >= '${from}' AND created_at <= '${to}'
@@ -80,7 +88,7 @@ module.exports = {
                               ORDER BY interval 
                               LIMIT 15000`);
 
-        var closeResult = await sails.getDatastore('read').sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var closeResult = await sails.sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history 
                               WHERE id IN (SELECT max(id) FROM trade_history 
                                     WHERE created_at >= '${from}' AND created_at <= '${to}'
@@ -88,19 +96,19 @@ module.exports = {
                                     GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
                               ORDER BY interval 
                               LIMIT 15000`);
-        var highResult = await sails.getDatastore('read').sendNativeQuery(`SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var highResult = await sails.sendNativeQuery(`SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
                               AND created_at >= '${from}' AND created_at <= '${to}' 
                               GROUP BY interval 
                               ORDER BY interval 
                               LIMIT 15000`);
-        var lowResult = await sails.getDatastore('read').sendNativeQuery(`SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var lowResult = await sails.sendNativeQuery(`SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}'
                               AND created_at >= '${from}' AND created_at <= '${to}' 
                               GROUP BY interval 
                               ORDER BY interval 
                               LIMIT 15000`);
-        var volumnResult = await sails.getDatastore('read').sendNativeQuery(`SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var volumnResult = await sails.sendNativeQuery(`SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                             FROM trade_history 
                             WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
                             AND created_at >= '${from}' AND created_at <= '${to}' 
