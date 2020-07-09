@@ -93,11 +93,11 @@ module.exports = {
         sortOrder,
         legality
       } = req.allParams();
-      let query = " from states";
+      let query = " from states WHERE deleted_at IS NULL";
       let whereAppended = false;
       if ((data && data != "") || (legality && legality != "")) {
         whereAppended = true
-        query += " WHERE"
+        query += " AND"
         let isDataAppended = false;
         if (data && data != "" && data != null) {
           query = query + " LOWER(name) LIKE '%" + data.toLowerCase() + "%'";
@@ -105,19 +105,12 @@ module.exports = {
         }
 
         if (legality && legality != "" && legality != null) {
-          if (isDataAppended) {
-            query += " AND"
-          }
-          query = query + " legality= " + legality
+          query = query + " AND legality= " + legality
         }
       }
 
       if (country_id) {
-        if (whereAppended == true) {
-          query += " AND country_id =" + country_id;
-        } else {
-          query += " WHERE country_id =" + country_id;
-        }
+        query += " AND country_id =" + country_id;
       }
 
       countQuery = query;
