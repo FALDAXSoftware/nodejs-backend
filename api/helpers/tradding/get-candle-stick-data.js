@@ -113,55 +113,13 @@ module.exports = {
           lowResult = values[3];
           volumnResult = values[4];
         })
-        // // console.log("db", db)
-        // // console.log("sasils", sails.getDatastore('read'))
 
-        // // let openQuery = `SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-        // //                   FROM trade_history 
-        // //                   WHERE id IN (SELECT min(id) FROM trade_history 
-        // //                         WHERE created_at >= '${from}' AND created_at <= '${to}'
-        // //                         AND settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
-        // //                         GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
-        // //                   ORDER BY interval 
-        // //                   LIMIT 15000`
-        // // // console.log("openQuery", openQuery)
-        // // var openResult = await sails.getDatastore('read').sendNativeQuery(openQuery);
-        // // console.log("openResult", openResult)
+        console.log("openResult", openResult)
+        console.log("closeResult", closeResult)
+        console.log("highResult", highResult)
+        console.log("lowResult", lowResult)
+        console.log("volumnResult", volumnResult)
 
-        // // let closeQuery = `SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-        // //                     FROM trade_history 
-        // //                     WHERE id IN (SELECT max(id) FROM trade_history 
-        // //                           WHERE created_at >= '${from}' AND created_at <= '${to}'
-        // //                           AND settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}'
-        // //                           GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
-        // //                     ORDER BY interval 
-        // //                     LIMIT 15000`
-        // // var closeResult = await sails.getDatastore('read').sendNativeQuery(closeQuery);
-
-        // let highQuery = `SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-        //                     FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
-        //                     AND created_at >= '${from}' AND created_at <= '${to}' 
-        //                     GROUP BY interval 
-        //                     ORDER BY interval 
-        //                     LIMIT 15000`
-        // var highResult = await sails.getDatastore('read').sendNativeQuery(highQuery);
-
-        // let lowQuery = `SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-        //                   FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}'
-        //                   AND created_at >= '${from}' AND created_at <= '${to}' 
-        //                   GROUP BY interval 
-        //                   ORDER BY interval 
-        //                   LIMIT 15000`
-        // var lowResult = await sails.getDatastore('read').sendNativeQuery(lowQuery);
-
-        // let volumnQuery = `SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-        //                     FROM trade_history 
-        //                     WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
-        //                     AND created_at >= '${from}' AND created_at <= '${to}' 
-        //                     GROUP BY interval 
-        //                     ORDER BY interval 
-        //                     LIMIT 15000`
-        // var volumnResult = await sails.getDatastore('read').sendNativeQuery(volumnQuery);
         let open = [];
         let close = [];
         let high = [];
@@ -190,7 +148,7 @@ module.exports = {
           v: volumn
         }
 
-        // console.log("candleStickData", candleStickData)
+        console.log("candleStickData", candleStickData)
 
         return proceed(undefined, candleStickData);
       }).exec(function (err, products) {
