@@ -153,6 +153,8 @@ module.exports = {
 
         return proceed(undefined, candleStickData);
       }).exec(function (err, products) {
+        console.log("err", err);
+        console.log("products", products)
         return exits.success(products);
       });
 
