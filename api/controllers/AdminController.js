@@ -2575,19 +2575,19 @@ module.exports = {
         .sort('created_at DESC');
 
       var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
-                        FROM (
-                          (
-                          SELECT user_coin, sum(user_fee) as user_fee
-                          FROM trade_history
-                          GROUP BY user_coin
-                          )
-                            UNION
+                      FROM (
                         (
-                          SELECT requested_coin, sum(requested_fee) as requested_fee
-                          FROM trade_history
-                          GROUP BY requested_coin
+                        SELECT user_coin, sum(user_fee) as user_fee
+                        FROM trade_history
+                        GROUP BY user_coin
                         )
-                        ) b GROUP BY b.user_coin`
+                          UNION
+                      (
+                        SELECT requested_coin, sum(requested_fee) as requested_fee
+                        FROM trade_history
+                        GROUP BY requested_coin
+                      )
+                      ) b GROUP BY b.user_coin`
 
       var tradeData = await sails.sendNativeQuery(tradeSql, []);
       var sqlData = tradeData.rows;
@@ -2616,8 +2616,8 @@ module.exports = {
             wallet_details = walletValue;
           }
           var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
-                              FROM wallet_history
-                              WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
+                            FROM wallet_history
+                            WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
 
           var walletData = await sails.sendNativeQuery(walletQuery, []);
           var walletValueData = walletData.rows[0];
@@ -2644,9 +2644,9 @@ module.exports = {
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
-            FROM public.wallets LEFT JOIN users
-            ON users.id = wallets.user_id
-            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
+          FROM public.wallets LEFT JOIN users
+          ON users.id = wallets.user_id
+          WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
           let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
 
           var temp_forfeit_total = 0;
@@ -2670,8 +2670,8 @@ module.exports = {
 
           //Get JST conversion total faldax earns
           var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
-                          WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
-                          ORDER BY id DESC`;
+                        WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
+                        ORDER BY id DESC`;
           let jst_fees = await sails.sendNativeQuery(query_jst, []);
           var temp_jst_total = 0;
           if (jst_fees.rowCount > 0) {
