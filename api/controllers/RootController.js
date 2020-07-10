@@ -660,11 +660,11 @@ module.exports = {
         break;
       case "15":
         resolutionInMinute = 15;
-        from = moment().subtract(resolution, 'days').utc().format("YYYY-MM-DD 00:00:00");
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
         break;
       case "240":
         resolutionInMinute = 240;
-        from = moment().subtract(resolution, 'days').utc().format("YYYY-MM-DD 00:00:00");
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
         break;
       // Day
       case "D":
@@ -711,15 +711,20 @@ module.exports = {
         throw new Error("serverError");
       });
 
-    // console.log("candleStickData", candleStickData)
-    var dataValue = await pairETHBTC.create({
-      open: candleStickData.o,
-      close: candleStickData.c,
-      high: candleStickData.h,
-      low: candleStickData.l,
-      timestamps: candleStickData.t,
-      volume: candleStickData.v,
-      resolution: resolution
-    });
+    console.log("candleStickData", candleStickData.o.length)
+    for (var i = 0; i < candleStickData.o.length; i++) {
+      console.log("i", i)
+      // console.log("open", candleStickData.o[i]);
+      // console.log("close", candleStickData.c[i]);
+      var dataValue = await ETHBTC240min.create({
+        open: candleStickData.o[i],
+        close: candleStickData.c[i],
+        high: candleStickData.h[i],
+        low: candleStickData.l[i],
+        timestamps: candleStickData.t[i],
+        volume: candleStickData.v[i],
+        created_at: new Date()
+      });
+    }
   }
 };
