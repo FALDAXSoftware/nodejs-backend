@@ -60,26 +60,27 @@ module.exports = {
 
 
       // Read Replica
-      // await sails.leaseConnection(async function during(db, proceed) {
-      console.log("inputs", inputs)
-      var from = moment
-        .unix(inputs.from)
-        .utc()
-        .format("YYYY-MM-DD 00:00:00");
-      var to = moment
-        .unix(inputs.to)
-        .utc()
-        .format("YYYY-MM-DD 23:59:59");
-      // await Promise.all([
-      // console.log(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
-      // FROM trade_history 
-      // WHERE id IN (SELECT min(id) FROM trade_history 
-      //       WHERE created_at >= '${from}' AND created_at <= '${to}'
-      //       AND settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
-      //       GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
-      // ORDER BY interval 
-      // LIMIT 15000`)
-      var openResult = await sails.sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+      await sails.getDatastore('read').leaseConnection(async function during(db, proceed) {
+        // console.log("inputs", inputs)
+        var from = moment
+          .unix(inputs.from)
+          .utc()
+          .format("YYYY-MM-DD 00:00:00");
+        var to = moment
+          .unix(inputs.to)
+          .utc()
+          .format("YYYY-MM-DD 23:59:59");
+        // await Promise.all([
+        // console.log(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        // FROM trade_history 
+        // WHERE id IN (SELECT min(id) FROM trade_history 
+        //       WHERE created_at >= '${from}' AND created_at <= '${to}'
+        //       AND settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
+        //       GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
+        // ORDER BY interval 
+        // LIMIT 15000`)
+        // console.log("sails.getDatastore('read')", sails.getDatastore('read'))
+        var openResult = await sails.getDatastore('read').sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history 
                               WHERE id IN (SELECT min(id) FROM trade_history 
                                     WHERE created_at >= '${from}' AND created_at <= '${to}'
@@ -88,7 +89,7 @@ module.exports = {
                               ORDER BY interval 
                               LIMIT 15000`);
 
-      var closeResult = await sails.sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var closeResult = await sails.getDatastore('read').sendNativeQuery(`SELECT id, fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history 
                               WHERE id IN (SELECT max(id) FROM trade_history 
                                     WHERE created_at >= '${from}' AND created_at <= '${to}'
@@ -96,76 +97,76 @@ module.exports = {
                                     GROUP BY TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period}))) 
                               ORDER BY interval 
                               LIMIT 15000`);
-      var highResult = await sails.sendNativeQuery(`SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var highResult = await sails.getDatastore('read').sendNativeQuery(`SELECT max(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
                               AND created_at >= '${from}' AND created_at <= '${to}' 
                               GROUP BY interval 
                               ORDER BY interval 
                               LIMIT 15000`);
-      var lowResult = await sails.sendNativeQuery(`SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var lowResult = await sails.getDatastore('read').sendNativeQuery(`SELECT min(fill_price) as fill_price, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                               FROM trade_history WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}'
                               AND created_at >= '${from}' AND created_at <= '${to}' 
                               GROUP BY interval 
                               ORDER BY interval 
                               LIMIT 15000`);
-      var volumnResult = await sails.sendNativeQuery(`SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
+        var volumnResult = await sails.getDatastore('read').sendNativeQuery(`SELECT sum(quantity) as quantity, TO_TIMESTAMP(floor(extract(EPOCH FROM created_at)/(60*${inputs.time_period}))*(60*${inputs.time_period})) as interval 
                             FROM trade_history 
                             WHERE settle_currency = '${inputs.crypto}' AND currency = '${inputs.currency}' 
                             AND created_at >= '${from}' AND created_at <= '${to}' 
                             GROUP BY interval 
                             ORDER BY interval 
                             LIMIT 15000`);
-      // ]).then(values => {
-      //   openResult = values[0];
-      // closeResult = values[1];
-      // highResult = values[2];
-      // lowResult = values[3];
-      // volumnResult = values[4];
-      // })
+        // ]).then(values => {
+        //   openResult = values[0];
+        // closeResult = values[1];
+        // highResult = values[2];
+        // lowResult = values[3];
+        // volumnResult = values[4];
+        // })
 
-      console.log("openResult", openResult)
-      console.log("closeResult", closeResult)
-      console.log("highResult", highResult)
-      console.log("lowResult", lowResult)
-      console.log("volumnResult", volumnResult)
+        // console.log("openResult", openResult)
+        // console.log("closeResult", closeResult)
+        // console.log("highResult", highResult)
+        // console.log("lowResult", lowResult)
+        // console.log("volumnResult", volumnResult)
 
-      let open = [];
-      let close = [];
-      let high = [];
-      let low = [];
-      let time = [];
-      let volumn = [];
-      for (let index = 0; index < openResult.rows.length; index++) {
-        if (openResult.rows[index] !== undefined)
-          open.push(openResult.rows[index].fill_price);
-        time.push(moment.utc(openResult.rows[index].interval).unix());
-        if (closeResult.rows[index] !== undefined)
-          close.push(closeResult.rows[index].fill_price);
-        if (highResult.rows[index] !== undefined)
-          high.push(highResult.rows[index].fill_price);
-        if (lowResult.rows[index] !== undefined)
-          low.push(lowResult.rows[index].fill_price);
-        volumn.push(volumnResult.rows[index].quantity)
-      }
+        let open = [];
+        let close = [];
+        let high = [];
+        let low = [];
+        let time = [];
+        let volumn = [];
+        for (let index = 0; index < openResult.rows.length; index++) {
+          if (openResult.rows[index] !== undefined)
+            open.push(openResult.rows[index].fill_price);
+          time.push(moment.utc(openResult.rows[index].interval).unix());
+          if (closeResult.rows[index] !== undefined)
+            close.push(closeResult.rows[index].fill_price);
+          if (highResult.rows[index] !== undefined)
+            high.push(highResult.rows[index].fill_price);
+          if (lowResult.rows[index] !== undefined)
+            low.push(lowResult.rows[index].fill_price);
+          volumn.push(volumnResult.rows[index].quantity)
+        }
 
-      candleStickData = {
-        o: open,
-        h: high,
-        l: low,
-        c: close,
-        t: time,
-        v: volumn
-      }
+        candleStickData = {
+          o: open,
+          h: high,
+          l: low,
+          c: close,
+          t: time,
+          v: volumn
+        }
 
-      console.log("candleStickData", candleStickData)
+        console.log("candleStickData", candleStickData)
 
-      return exits.success(candleStickData);
-      // return proceed(undefined, candleStickData);
-      // }).exec(function (err, products) {
-      //   console.log("err", err);
-      //   console.log("products", products)
-      //   return exits.success(products);
-      // });
+        // return exits.success(candleStickData);
+        return proceed(undefined, candleStickData);
+      }).exec(function (err, products) {
+        console.log("err", err);
+        console.log("products", products)
+        return exits.success(products);
+      });
 
     } catch (error) {
       console.log(error);
