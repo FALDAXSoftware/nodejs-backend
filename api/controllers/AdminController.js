@@ -1284,6 +1284,14 @@ module.exports = {
       }
 
       if (user.is_twofactor && user.twofactor_secret) {
+        if (!req.body.otp) {
+          return res
+            .status(202)
+            .json({
+              "status": 202,
+              "message": sails.__("Please enter OTP to continue").message
+            });
+        }
 
         await Admin
           .update({
@@ -2616,18 +2624,17 @@ module.exports = {
             wallet_details = walletValue;
           }
           var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
-                            FROM wallet_history
-                            WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
+                              FROM wallet_history
+                              WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
 
           var walletData = await sails.sendNativeQuery(walletQuery, []);
-          var walletValueData = walletData.rows[0];
-          // if (assets_data[i].coin_code != 'SUSU') {
+          var walletValue = walletData.rows[0];
+
           var currency_conversion = await CurrencyConversion.findOne({
             deleted_at: null,
             coin_id: asset_id
           })
           assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-          // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var temp_wallet_total = 0;
@@ -2656,9 +2663,7 @@ module.exports = {
             })
           }
           assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
-          // var dataValue = (sqlData.user_coin).has(asset_name)
 
-          // var flag = false;
           var value = 0;
           for (var k = 0; k < sqlData.length; k++) {
             if (asset_name == sqlData[k].user_coin) {
@@ -2667,34 +2672,10 @@ module.exports = {
           }
 
           assets_data[i].trade_earned = value
-
-          //Get JST conversion total faldax earns
-          var query_jst = `SELECT faldax_fees, network_fees, side, currency, settle_currency FROM jst_trade_history
-                        WHERE currency = '${asset_name}' OR settle_currency = '${asset_name}'
-                        ORDER BY id DESC`;
-          let jst_fees = await sails.sendNativeQuery(query_jst, []);
-          var temp_jst_total = 0;
-          if (jst_fees.rowCount > 0) {
-            (jst_fees.rows).forEach(function (each, index) {
-              if (each.currency == asset_name && each.side == 'Buy') {
-                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
-              }
-              if (each.settle_currency == asset_name && each.side == 'Sell') {
-                temp_jst_total += parseFloat(each.faldax_fees) + parseFloat(each.network_fees)
-              }
-            })
-          }
-          assets_data[i].total_earned_from_jst = parseFloat(temp_jst_total)
           assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
           assets_data[i].total_earned_from_wallets = isNaN(assets_data[i].total_earned_from_wallets) ? (0.0) : (assets_data[i].total_earned_from_wallets)
           assets_data[i].trade_earned = isNaN(assets_data[i].trade_earned) ? (0.0) : (assets_data[i].trade_earned)
-          // console.log("-----------------------------------------------------------")
-          // console.log("(assets_data[i].total_earned_from_wallets)", (assets_data[i].total_earned_from_wallets))
-          // console.log("(assets_data[i].total_earned_from_forfeit)", (assets_data[i].total_earned_from_forfeit))
-          // console.log("assets_data[i].trade_earned", assets_data[i].trade_earned)
-          // console.log("parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit))", parseFloat((assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit)))
-          assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + (assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
-          // console.log("assets_data[i].total", assets_data[i].total)
+          assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + parseFloat(assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
           assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
         }
 
