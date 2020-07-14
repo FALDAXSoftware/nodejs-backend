@@ -84,7 +84,8 @@ module.exports.policies = {
     "testMetabaseIntegrate": true,
     "checkSystemHealth": true,
     "getResponseData": true,
-    "getDatabaseRetrieve": true
+    "getDatabaseRetrieve": true,
+    "updateCandleData": true
     // "setAddressWebhook": true,
     // "webhookOnAddress": true
   },

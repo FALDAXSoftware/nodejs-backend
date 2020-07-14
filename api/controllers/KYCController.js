@@ -363,7 +363,7 @@ module.exports = {
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data[0].id,
                   deleted_at: null,
-                  slug: 'kyc_rejected'
+                  slug: 'kyc_approved'
                 })
 
                 if (userNotification != undefined) {
