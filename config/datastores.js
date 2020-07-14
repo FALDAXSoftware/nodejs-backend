@@ -51,9 +51,9 @@ module.exports.datastores = {
     url: "postgresql://" + (process.env.DB_USERNAME) + ":" + (process.env.DB_PASSWORD) + "@" + (process.env.DB_HOST) + "/" + (process.env.DB_DATABASE),
     ssl: false,
     pool: true,
-    poolSize: 50,
+    poolSize: 25,
     waitForConnections: true,
-    max: 50,
+    max: 30,
     min: 20
   },
   read: {
@@ -61,9 +61,9 @@ module.exports.datastores = {
     url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
     ssl: false,
     pool: true,
-    poolSize: 50,
+    poolSize: 25,
     waitForConnections: true,
-    max: 50,
+    max: 30,
     min: 20
   }
 };

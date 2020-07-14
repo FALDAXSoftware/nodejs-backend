@@ -94,7 +94,7 @@ module.exports = {
         .utilities
         .getCurrencies(symbol);
 
-      console.log("req.allParams()", req.allParams())
+      // console.log("req.allParams()", req.allParams())
 
       let resolutionInMinute = 0;
       // Covert Resolution In Day
@@ -144,7 +144,7 @@ module.exports = {
           resolutionInMinute = parseInt(resolution);
           break;
       }
-      console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
+      var dataValue = {};
       let candleStickData = await sails
         .helpers
         .tradding
@@ -152,7 +152,13 @@ module.exports = {
         .tolerate("serverError", () => {
           throw new Error("serverError");
         });
-      if (candleStickData.o.length > 0) {
+      if (candleStickData.open.length > 0) {
+        // dataValue.o = candleStickData.open;
+        // dataValue.c = candleStickData.close;
+        // dataValue.h = candleStickData.high;
+        // dataValue.l = candleStickData.low;
+        // dataValue.t = candleStickData.timestamps;
+        // dataValue.v = candleStickData.volume;
         return res
           .status(200)
           .json({

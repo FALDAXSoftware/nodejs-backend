@@ -9,6 +9,7 @@ const speakeasy = require('speakeasy');
 var aesjs = require('aes-js');
 var logger = require("./logger");
 var requestIp = require('request-ip');
+var moment = require('moment');
 
 module.exports = {
   getPanicStatus: async function (req, res) {
@@ -634,6 +635,96 @@ module.exports = {
         })
     } catch (error) {
       console.log(error)
+    }
+  },
+
+  updateCandleData: async function (req, res) {
+    var {
+      symbol,
+      resolution
+    } = req.allParams();
+
+    let { crypto, currency } = await sails
+      .helpers
+      .utilities
+      .getCurrencies(symbol);
+
+    var from;
+
+    let resolutionInMinute = 0;
+    // Covert Resolution In Day
+    switch (resolution) {
+      case "1":
+        resolutionInMinute = 1;
+        from = moment().subtract(resolution, 'days').utc().format("YYYY-MM-DD 00:00:00");
+        break;
+      case "15":
+        resolutionInMinute = 15;
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
+        break;
+      case "240":
+        resolutionInMinute = 240;
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
+        break;
+      // Day
+      case "D":
+        resolutionInMinute = 1440
+        break;
+      case "1D":
+        resolutionInMinute = 1440
+        break;
+      // 2 Day 2 Day
+      case "2D":
+        resolutionInMinute = 2 * 1440
+        break;
+      // 3 Day
+      case "3D":
+        resolutionInMinute = 3 * 1440
+        break;
+      // Week
+      case "W":
+        resolutionInMinute = 7 * 1440
+        break;
+      // 3 Week
+      case "3W":
+        resolutionInMinute = 3 * 7 * 1440
+        break;
+      // Month
+      case "M":
+        resolutionInMinute = 30 * 1440
+        break;
+      // 6 Month
+      case "6M":
+        resolutionInMinute = 6 * 30 * 1440
+        break;
+      // Minutes -> Day
+      default:
+        resolutionInMinute = parseInt(resolution);
+        break;
+    }
+
+    let candleStickData = await sails
+      .helpers
+      .tradding
+      .getCandleStickData(crypto, currency, resolutionInMinute, from)
+      .tolerate("serverError", () => {
+        throw new Error("serverError");
+      });
+
+    console.log("candleStickData", candleStickData.o.length)
+    for (var i = 0; i < candleStickData.o.length; i++) {
+      console.log("i", i)
+      // console.log("open", candleStickData.o[i]);
+      // console.log("close", candleStickData.c[i]);
+      var dataValue = await ETHBTC240min.create({
+        open: candleStickData.o[i],
+        close: candleStickData.c[i],
+        high: candleStickData.h[i],
+        low: candleStickData.l[i],
+        timestamps: candleStickData.t[i],
+        volume: candleStickData.v[i],
+        created_at: new Date()
+      });
     }
   }
 };
