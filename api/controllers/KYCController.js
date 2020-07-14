@@ -143,25 +143,25 @@ module.exports = {
           .create(req.body)
           .fetch();
 
-        var user_value = await Users.findOne({
-          where: {
-            deleted_at: null,
-            is_active: true,
-            id: user_id
-          }
-        });
+        // var user_value = await Users.findOne({
+        //   where: {
+        //     deleted_at: null,
+        //     is_active: true,
+        //     id: user_id
+        //   }
+        // });
 
-        if (user_value != undefined) {
-          var user_update = await Users.
-            update({
-              deleted_at: null,
-              is_active: true,
-              id: user_id
-            })
-            .set({
-              phone_number: req.body.phone_number
-            })
-        }
+        // if (user_value != undefined) {
+        //   var user_update = await Users.
+        //     update({
+        //       deleted_at: null,
+        //       is_active: true,
+        //       id: user_id
+        //     })
+        //     .set({
+        //       phone_number: req.body.phone_number
+        //     })
+        // }
         if (kyc_created) {
           return res.json({
             'status': 200,
