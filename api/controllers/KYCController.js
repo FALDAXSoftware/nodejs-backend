@@ -42,20 +42,20 @@ module.exports = {
           })
         }
         // const frontDocPromis = new Promise( async (resolve, reject) => {
-          if (req.body.front_doc) {
-            let extension = req
-              .body
-              .front_doc
-              .split('.');
-            let filename = new Date()
-              .getTime()
-              .toString();
-            filename += '_front.' + extension[extension.length - 1];
-            // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
-            await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
-            req.body.front_doc = 'kyc/' + filename;
-            // resolve('kyc/' + filename);1
-          }
+        if (req.body.front_doc) {
+          let extension = req
+            .body
+            .front_doc
+            .split('.');
+          let filename = new Date()
+            .getTime()
+            .toString();
+          filename += '_front.' + extension[extension.length - 1];
+          // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+          await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename)
+          req.body.front_doc = 'kyc/' + filename;
+          // resolve('kyc/' + filename);1
+        }
         //   }else{
         //     resolve();
         //   }
@@ -63,22 +63,22 @@ module.exports = {
         // req.body.front_doc = await frontDocPromis;
         // console.log('frontDocPromis', await frontDocPromis);
         // const backDocPromis = new Promise(async (resolve, reject) => {
-          if (req.body.back_doc) {
-            let extension = req
-              .body
-              .back_doc
-              .split('.');
-            let filename = new Date()
-              .getTime()
-              .toString();
-            filename += '_back.' + extension[extension.length - 1];
-            await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
-            req.body.back_doc = 'kyc/' + filename;
-            // resolve('kyc/' + filename);
-          }
-          // else{
-          //   resolve();
-          // }
+        if (req.body.back_doc) {
+          let extension = req
+            .body
+            .back_doc
+            .split('.');
+          let filename = new Date()
+            .getTime()
+            .toString();
+          filename += '_back.' + extension[extension.length - 1];
+          await UploadFiles.upload(req.body.back_doc, 'kyc/' + filename)
+          req.body.back_doc = 'kyc/' + filename;
+          // resolve('kyc/' + filename);
+        }
+        // else{
+        //   resolve();
+        // }
         // });
         // req.body.back_doc = await backDocPromis;
         // await Promise.all([frontDocPromis, backDocPromis]);
@@ -363,7 +363,7 @@ module.exports = {
                 var userNotification = await UserNotification.findOne({
                   user_id: user_data[0].id,
                   deleted_at: null,
-                  slug: 'kyc_rejected'
+                  slug: 'kyc_approved'
                 })
 
                 if (userNotification != undefined) {
