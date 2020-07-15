@@ -7,24 +7,24 @@
 const moment = require('moment');
 const Influx = require('influx');
 
-const influx = new Influx.InfluxDB({
-  host: 'localhost',
-  // port: 8086,
-  database: 'abcgh',
-  schema: [
-    {
-      measurement: 'abcgh',
-      // time: Influx.FieldType.STRING,
-      fields: {
-        price: Influx.FieldType.FLOAT,
-        amount: Influx.FieldType.FLOAT
-      },
-      tags: [
-        'pair'
-      ]
-    }
-  ]
-})
+// const influx = new Influx.InfluxDB({
+//   host: 'localhost',
+//   // port: 8086,
+//   database: 'abcgh',
+//   schema: [
+//     {
+//       measurement: 'abcgh',
+//       // time: Influx.FieldType.STRING,
+//       fields: {
+//         price: Influx.FieldType.FLOAT,
+//         amount: Influx.FieldType.FLOAT
+//       },
+//       tags: [
+//         'pair'
+//       ]
+//     }
+//   ]
+// })
 
 module.exports = {
   getConfig: function (req, res) {
