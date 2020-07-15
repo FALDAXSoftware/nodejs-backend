@@ -5,26 +5,28 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
-const Influx = require('influx');
 
-// const influx = new Influx.InfluxDB({
-//   host: 'localhost',
-//   // port: 8086,
-//   database: 'abcgh',
-//   schema: [
-//     {
-//       measurement: 'abcgh',
-//       // time: Influx.FieldType.STRING,
-//       fields: {
-//         price: Influx.FieldType.FLOAT,
-//         amount: Influx.FieldType.FLOAT
-//       },
-//       tags: [
-//         'pair'
-//       ]
-//     }
-//   ]
-// })
+// Influx setup
+const Influx = require('influx');
+const influx = new Influx.InfluxDB({
+  host: process.env.INFLUX_HOST,
+  port: process.env.INFLUX_PORT,
+  database: process.env.INFLUX_DATABASE,
+  username: process.env.INFLUX_USERNAME,
+  password: process.env.INFLUX_PASSWORD,
+  schema: [
+    {
+      measurement: 'trade_history_xrp_btc',
+      fields: {
+        price: Influx.FieldType.FLOAT,
+        amount: Influx.FieldType.FLOAT
+      },
+      tags: [
+        'pair'
+      ]
+    }
+  ]
+})
 
 module.exports = {
   getConfig: function (req, res) {
@@ -110,76 +112,97 @@ module.exports = {
     try {
       // console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
-      console.log("symbol", symbol)
-      // if (symbol == "XRP-BTC") {
-      //   // var value = (limit == undefined) ? (1440) : (limit);
-      //   var limit = 1440;
-      //   pair = "xrpbtc"
-      //   from = moment.unix(from)
-      //     .utc()
-      //     .format("YYYY-MM-DD 00:00:00");
-      //   to = moment.unix(to)
-      //     .utc()
-      //     .format("YYYY-MM-DD 23:59:59");
-      //   console.log("from", from);
-      //   console.log("to", to)
-      //   var period
-      //   if (resolution == 1) {
-      //     period = "1m"
-      //   } else if (resolution == 15) {
-      //     period = '15m'
-      //   } else if (resolution == 240) {
-      //     period = "4h";
-      //   }
-      //   console.log(`
-      //   SELECT first(price) AS open, last(price) AS close, 
-      //   max(price) AS high, min(price) AS low, sum(amount) AS volume 
-      //   FROM abcgh WHERE pair='${pair}' AND 
-      //   time > '${from}'  AND time < '${to}' 
-      //   GROUP BY time(${period})
-      //   LIMIT ${limit}
-      //   `)
-      //   var dataValue = await influx.query(`
-      //                 SELECT first(price) AS open, last(price) AS close, 
-      //                 max(price) AS high, min(price) AS low, sum(amount) AS volume 
-      //                 FROM abcgh WHERE pair='${pair}' AND 
-      //                 time > '${from}'  AND time < '${to}' 
-      //                 GROUP BY time(${period})
-      //                 LIMIT ${limit}
-      //                 `)
-      //   console.log("dataValue", dataValue);
-      //   console.log("data", (dataValue.groupRows[0].rows).length);
-      //   var candleStickData = {};
-      //   var o = [];
-      //   var c = [];
-      //   var l = [];
-      //   var h = [];
-      //   var v = [];
-      //   var t = [];
-      //   for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
-      //     t.push(moment(dataValue.groupRows[0].rows[i].time).valueOf());
-      //     o.push(dataValue.groupRows[0].rows[i].open);
-      //     c.push(dataValue.groupRows[0].rows[i].close);
-      //     l.push(dataValue.groupRows[0].rows[i].low);
-      //     h.push(dataValue.groupRows[0].rows[i].high);
-      //     v.push(dataValue.groupRows[0].rows[i].volume);
-      //   }
-      //   candleStickData = {
-      //     o: o,
-      //     h: h,
-      //     l: l,
-      //     c: c,
-      //     t: t,
-      //     v: v
-      //   }
 
-      //   return res
-      //     .status(200)
-      //     .json({
-      //       s: "ok",
-      //       ...candleStickData
-      //     });
-      // }
+      let pair = await Pairs.findOne({
+        select: [
+          "influx_table_name",
+          "influx_pair_name"
+        ],
+        where: {
+          name: symbol,
+          is_active: true,
+          deleted_at: null
+        }
+      });
+      console.log("pair", pair)
+      console.log("symbol", symbol)
+      console.log(from, to)
+      if (pair.influx_table_name != null) {
+        // var value = (limit == undefined) ? (1440) : (limit);
+        var limit = 1440;
+        // pair = "xrpbtc"
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        console.log("from", from);
+        console.log("to", to)
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        }
+        console.log(`
+        SELECT first(price) AS open, last(price) AS close, 
+        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+        FROM ${pair.influx_table_name} WHERE pair='${pair.influx_pair_name}' AND time > ${from}  AND time < ${to}
+        GROUP BY time(${period})
+        LIMIT ${limit}
+        `)
+        var dataValue = await influx.query(`
+                      SELECT first(price) AS open, last(price) AS close, 
+                      max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                      FROM ${pair.influx_table_name} WHERE pair='${pair.influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                      GROUP BY time(${period})
+                      LIMIT ${limit}
+                      `)
+        console.log("dataValue", dataValue);
+        // console.log("data", (dataValue.groupRows[0].rows).length);
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            // console.log(dataValue.groupRows[0].rows[i].time)
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              t.push(parseFloat(moment(dataValue.groupRows[0].rows[i].time).format("X")));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      }
 
       let { crypto, currency } = await sails
         .helpers
@@ -263,7 +286,7 @@ module.exports = {
           .json({ s: "no_data" });
       }
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
 
       return res
         .status(200)
