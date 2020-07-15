@@ -397,11 +397,23 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
-    // var userData = await Users.findOne({
+    // var userData = await Users.find({
     //   where: {
-    //     id: 1545
+    //     deleted_at: null,
+    //     account_verified_at: null
     //   }
     // });
+
+    // for (let index = 0; index < userData.length; index++) {
+    //   const element = userData[index];
+    //   var data = await Users
+    //     .update({
+    //       id: element.id
+    //     })
+    //     .set({
+    //       account_verified_at: element.created_at
+    //     })
+    // }
 
     // var object = {
     //   amountReceived: 1,
@@ -412,7 +424,7 @@ module.exports = {
     // userData.coinName = 'tbtc';
 
     // await sails.helpers.notification.send.text("withdraw", userData)
-    console.log(key);
+    // console.log(key);
     console.log(iv)
     var value = req.body.encryptKey;
     console.log(value);
