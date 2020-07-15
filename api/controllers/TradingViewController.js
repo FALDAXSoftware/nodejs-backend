@@ -5,6 +5,27 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
+const Influx = require('influx');
+
+const influx = new Influx.InfluxDB({
+  host: 'localhost',
+  // port: 8086,
+  database: 'abcgh',
+  schema: [
+    {
+      measurement: 'abcgh',
+      // time: Influx.FieldType.STRING,
+      fields: {
+        price: Influx.FieldType.FLOAT,
+        amount: Influx.FieldType.FLOAT
+      },
+      tags: [
+        'pair'
+      ]
+    }
+  ]
+})
+
 module.exports = {
   getConfig: function (req, res) {
     return res.json({
@@ -89,6 +110,77 @@ module.exports = {
     try {
       // console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
+      console.log("symbol", symbol)
+      // if (symbol == "XRP-BTC") {
+      //   // var value = (limit == undefined) ? (1440) : (limit);
+      //   var limit = 1440;
+      //   pair = "xrpbtc"
+      //   from = moment.unix(from)
+      //     .utc()
+      //     .format("YYYY-MM-DD 00:00:00");
+      //   to = moment.unix(to)
+      //     .utc()
+      //     .format("YYYY-MM-DD 23:59:59");
+      //   console.log("from", from);
+      //   console.log("to", to)
+      //   var period
+      //   if (resolution == 1) {
+      //     period = "1m"
+      //   } else if (resolution == 15) {
+      //     period = '15m'
+      //   } else if (resolution == 240) {
+      //     period = "4h";
+      //   }
+      //   console.log(`
+      //   SELECT first(price) AS open, last(price) AS close, 
+      //   max(price) AS high, min(price) AS low, sum(amount) AS volume 
+      //   FROM abcgh WHERE pair='${pair}' AND 
+      //   time > '${from}'  AND time < '${to}' 
+      //   GROUP BY time(${period})
+      //   LIMIT ${limit}
+      //   `)
+      //   var dataValue = await influx.query(`
+      //                 SELECT first(price) AS open, last(price) AS close, 
+      //                 max(price) AS high, min(price) AS low, sum(amount) AS volume 
+      //                 FROM abcgh WHERE pair='${pair}' AND 
+      //                 time > '${from}'  AND time < '${to}' 
+      //                 GROUP BY time(${period})
+      //                 LIMIT ${limit}
+      //                 `)
+      //   console.log("dataValue", dataValue);
+      //   console.log("data", (dataValue.groupRows[0].rows).length);
+      //   var candleStickData = {};
+      //   var o = [];
+      //   var c = [];
+      //   var l = [];
+      //   var h = [];
+      //   var v = [];
+      //   var t = [];
+      //   for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+      //     t.push(moment(dataValue.groupRows[0].rows[i].time).valueOf());
+      //     o.push(dataValue.groupRows[0].rows[i].open);
+      //     c.push(dataValue.groupRows[0].rows[i].close);
+      //     l.push(dataValue.groupRows[0].rows[i].low);
+      //     h.push(dataValue.groupRows[0].rows[i].high);
+      //     v.push(dataValue.groupRows[0].rows[i].volume);
+      //   }
+      //   candleStickData = {
+      //     o: o,
+      //     h: h,
+      //     l: l,
+      //     c: c,
+      //     t: t,
+      //     v: v
+      //   }
+
+      //   return res
+      //     .status(200)
+      //     .json({
+      //       s: "ok",
+      //       ...candleStickData
+      //     });
+      // }
+
       let { crypto, currency } = await sails
         .helpers
         .utilities
@@ -145,14 +237,14 @@ module.exports = {
           break;
       }
       var dataValue = {};
-      let candleStickData = await sails
+      var candleStickData = await sails
         .helpers
         .tradding
         .getCandleStickData(crypto, currency, resolutionInMinute, from, to)
         .tolerate("serverError", () => {
           throw new Error("serverError");
         });
-      if (candleStickData.open.length > 0) {
+      if (candleStickData.o.length > 0) {
         // dataValue.o = candleStickData.open;
         // dataValue.c = candleStickData.close;
         // dataValue.h = candleStickData.high;
