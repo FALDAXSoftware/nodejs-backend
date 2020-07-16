@@ -146,6 +146,22 @@ module.exports = {
           period = '15m'
         } else if (resolution == 240) {
           period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
         }
         console.log(`
         SELECT first(price) AS open, last(price) AS close, 
