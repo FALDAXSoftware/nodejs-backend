@@ -3296,5 +3296,12 @@
 		"message_type": "success",
 		"message_english": "Coin Minumum Limit is less than bitgo",
 		"message": "Coin Minumum Limit is less than bitgo"
+	},
+	"No fee Value Found": {
+		"page": "CMS - Edit Fee",
+		"context": "No Fee Value for this has been found.",
+		"message_type": "success",
+		"message_english": "No Fee Value for this has been found.",
+		"message": "No Fee Value for this has been found."
 	}
 }

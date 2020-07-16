@@ -1,16 +1,16 @@
 /**
- * FeesController
- *
- * @description :: Server-side actions for handling fees.
- * @help        :: See https://sailsjs.com/docs/concepts/actions
- */
+* FeesController
+*
+* @description :: Server-side actions for handling fees.
+* @help :: See https://sailsjs.com/docs/concepts/actions
+*/
 
 module.exports = {
   getAllFees: async function (req, res) {
     let query = " from fees ";
     countQuery = query;
     query += "ORDER BY id DESC";
-    let allTradingFees = await sails.sendNativeQuery("Select *" + query, []);
+    let allTradingFees = await sails.sendNativeQuery("Select id, trade_volume, maker_fee, taker_fee" + query, []);
 
     allTradingFees = allTradingFees.rows;
 
@@ -29,7 +29,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:sails.__("Something Wrong").message
+          error_at: sails.__("Something Wrong").message
         });
     }
   },
@@ -60,7 +60,7 @@ module.exports = {
           .json({
             status: 500,
             "err": sails.__("Something Wrong").message,
-            error_at:sails.__("Something Wrong").message
+            error_at: sails.__("Something Wrong").message
           });
       }
     } else {
@@ -69,6 +69,50 @@ module.exports = {
         .json({
           status: 400,
           "err": sails.__("No record found").message
+        });
+    }
+  },
+
+  editTradeFees: async function (req, res) {
+    try {
+      var data = req.body;
+
+      var getFeeValue = await Fees.findOne({
+        where: {
+          deleted_at: null,
+          id: data.id
+        }
+      })
+
+      if (getFeeValue) {
+        var editFeeValue = await Fees
+          .update({
+            deleted_at: null,
+            id: data.id
+          })
+          .set({
+            maker_fee: data.maker_fee,
+            taker_fee: data.taker_fee
+          });
+        return res.json({
+          "status": 200,
+          "message": sails.__("Fees updated success").message
+        });
+      } else {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "err": sails.__("No fee Value Found").message
+          });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: sails.__("Something Wrong").message
         });
     }
   }
