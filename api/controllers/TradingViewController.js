@@ -113,32 +113,14 @@ module.exports = {
       // console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
 
-      let pair = await Pairs.findOne({
-        select: [
-          "influx_table_name",
-          "influx_pair_name"
-        ],
-        where: {
-          name: symbol,
-          is_active: true,
-          deleted_at: null
-        }
-      });
-      console.log("pair", pair)
-      console.log("symbol", symbol)
-      console.log(from, to)
-      if (pair.influx_table_name != null) {
-        // var value = (limit == undefined) ? (1440) : (limit);
+      if (symbol == "XRP-BTC") {
         var limit = 1440;
-        // pair = "xrpbtc"
         from = moment.unix(from)
           .utc()
           .format();
         to = moment.unix(to)
           .utc()
           .format();
-        console.log("from", from);
-        console.log("to", to)
         var period
         if (resolution == 1) {
           period = "1m"
@@ -163,22 +145,16 @@ module.exports = {
         } else if (resolution == '6M') {
           period = '24w'
         }
-        console.log(`
-        SELECT first(price) AS open, last(price) AS close, 
-        max(price) AS high, min(price) AS low, sum(amount) AS volume 
-        FROM ${pair.influx_table_name} WHERE pair='${pair.influx_pair_name}' AND time > ${from}  AND time < ${to}
-        GROUP BY time(${period})
-        LIMIT ${limit}
-        `)
+        var influx_table_name = 'trade_history_xrp_btc';
+        var influx_pair_name = 'xrpbtc';
         var dataValue = await influx.query(`
                       SELECT first(price) AS open, last(price) AS close, 
                       max(price) AS high, min(price) AS low, sum(amount) AS volume 
-                      FROM ${pair.influx_table_name} WHERE pair='${pair.influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                      FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
                       GROUP BY time(${period})
                       LIMIT ${limit}
                       `)
         console.log("dataValue", dataValue);
-        // console.log("data", (dataValue.groupRows[0].rows).length);
         var candleStickData = {};
         var o = [];
         var c = [];
