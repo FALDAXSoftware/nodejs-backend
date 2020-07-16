@@ -114,7 +114,7 @@ module.exports = {
       let { symbol, resolution, from, to } = req.allParams();
 
       if (symbol == "XRP-BTC") {
-        var limit = 1440;
+        // var limit = 1440;
         from = moment.unix(from)
           .utc()
           .format();
@@ -152,7 +152,6 @@ module.exports = {
                           max(price) AS high, min(price) AS low, sum(amount) AS volume 
                           FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
                           GROUP BY time(${period})
-                          LIMIT ${limit}
                       `)
         var candleStickData = {};
         var o = [];
