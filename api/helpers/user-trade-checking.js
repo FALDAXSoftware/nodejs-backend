@@ -44,6 +44,8 @@ module.exports = {
             }
           });
 
+          console.log("countryData", countryData)
+          console.log("countryData[0].legality == 4", countryData[0].legality == 4)
           if (countryData != undefined && countryData.length > 0) {
 
             if (countryData[0].legality == 1) {
@@ -54,7 +56,7 @@ module.exports = {
                 where: {
                   deleted_at: null,
                   name: userKyc.state,
-                  country_id: countryData.id
+                  country_id: countryData[0].id
                 }
               });
 
