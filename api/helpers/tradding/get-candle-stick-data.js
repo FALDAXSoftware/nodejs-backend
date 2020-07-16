@@ -158,7 +158,7 @@ module.exports = {
         v: volumn
       }
 
-      // console.log("candleStickData", candleStickData)
+      console.log("candleStickData", candleStickData)
 
       return exits.success(candleStickData);
       //   return proceed(undefined, candleStickData);
