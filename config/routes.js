@@ -163,6 +163,7 @@ module.exports.routes = {
   'get /get-all-fee': 'FeesController.getAllFees',
   'get /admin/get-all-fee': 'FeesController.getAllFees',
   'put /admin/edit-fee': 'FeesController.editFees',
+  'put /admin/edit-trade-fee': 'FeesController.editTradeFees',
 
   // Contact Routes
   'post /edit-contact-details': 'RootController.updateContactInfo',
