@@ -113,86 +113,86 @@ module.exports = {
       console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
 
-      // if (symbol == "XRP-BTC") {
-      //   var limit = 1440;
-      //   from = moment.unix(from)
-      //     .utc()
-      //     .format();
-      //   to = moment.unix(to)
-      //     .utc()
-      //     .format();
-      //   var period
-      //   if (resolution == 1) {
-      //     period = "1m"
-      //   } else if (resolution == 15) {
-      //     period = '15m'
-      //   } else if (resolution == 240) {
-      //     period = "4h";
-      //   } else if (resolution == 'D') {
-      //     period = '1d'
-      //   } else if (resolution == '1D') {
-      //     period = '1d'
-      //   } else if (resolution == '2D') {
-      //     period = '2d'
-      //   } else if (resolution == '3D') {
-      //     period = '3d'
-      //   } else if (resolution == 'W') {
-      //     period = '1w';
-      //   } else if (resolution == '3W') {
-      //     period = '3w'
-      //   } else if (resolution == 'M') {
-      //     period = '4w'
-      //   } else if (resolution == '6M') {
-      //     period = '24w'
-      //   }
-      //   var influx_table_name = 'trade_history_xrp_btc';
-      //   var influx_pair_name = 'xrpbtc';
-      //   var dataValue = await influx.query(`
-      //                     SELECT first(price) AS open, last(price) AS close, 
-      //                     max(price) AS high, min(price) AS low, sum(amount) AS volume 
-      //                     FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
-      //                     GROUP BY time(${period})
-      //                     LIMIT ${limit}
-      //                 `)
-      //   var candleStickData = {};
-      //   var o = [];
-      //   var c = [];
-      //   var l = [];
-      //   var h = [];
-      //   var v = [];
-      //   var t = [];
-      //   if (dataValue.groupRows.length > 0) {
-      //     for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
-      //       if (dataValue.groupRows[0].rows[i].open != null) {
-      //         t.push(parseFloat(moment(dataValue.groupRows[0].rows[i].time).format("X")));
-      //         o.push(dataValue.groupRows[0].rows[i].open);
-      //         c.push(dataValue.groupRows[0].rows[i].close);
-      //         l.push(dataValue.groupRows[0].rows[i].low);
-      //         h.push(dataValue.groupRows[0].rows[i].high);
-      //         v.push(dataValue.groupRows[0].rows[i].volume);
-      //       }
-      //     }
-      //     candleStickData = {
-      //       o: o,
-      //       h: h,
-      //       l: l,
-      //       c: c,
-      //       t: t,
-      //       v: v
-      //     }
+      if (symbol == "XRP-BTC") {
+        var limit = 1440;
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_xrp_btc';
+        var influx_pair_name = 'xrpbtc';
+        var dataValue = await influx.query(`
+                          SELECT first(price) AS open, last(price) AS close, 
+                          max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                          FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                          GROUP BY time(${period})
+                          LIMIT ${limit}
+                      `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              t.push(parseFloat(moment(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
 
-      //     return res
-      //       .status(200)
-      //       .json({
-      //         s: "ok",
-      //         ...candleStickData
-      //       });
-      //   } else {
-      //     return res
-      //       .status(200)
-      //       .json({ s: "no_data" });
-      //   }
-      // }
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      }
 
       let { crypto, currency } = await sails
         .helpers
@@ -259,12 +259,6 @@ module.exports = {
         });
       console.log("candleStickData.o.length", candleStickData.o.length)
       if (candleStickData.o.length > 0) {
-        // dataValue.o = candleStickData.open;
-        // dataValue.c = candleStickData.close;
-        // dataValue.h = candleStickData.high;
-        // dataValue.l = candleStickData.low;
-        // dataValue.t = candleStickData.timestamps;
-        // dataValue.v = candleStickData.volume;
         return res
           .status(200)
           .json({
