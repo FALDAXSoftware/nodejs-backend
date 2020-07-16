@@ -110,7 +110,7 @@ module.exports = {
   },
   getHistoryData: async function (req, res) {
     try {
-      // console.log("req.allParams()", req.allParams())
+      console.log("req.allParams()", req.allParams())
       let { symbol, resolution, from, to } = req.allParams();
 
       if (symbol == "XRP-BTC") {
@@ -148,13 +148,12 @@ module.exports = {
         var influx_table_name = 'trade_history_xrp_btc';
         var influx_pair_name = 'xrpbtc';
         var dataValue = await influx.query(`
-                      SELECT first(price) AS open, last(price) AS close, 
-                      max(price) AS high, min(price) AS low, sum(amount) AS volume 
-                      FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
-                      GROUP BY time(${period})
-                      LIMIT ${limit}
+                          SELECT first(price) AS open, last(price) AS close, 
+                          max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                          FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                          GROUP BY time(${period})
+                          LIMIT ${limit}
                       `)
-        console.log("dataValue", dataValue);
         var candleStickData = {};
         var o = [];
         var c = [];
@@ -164,7 +163,6 @@ module.exports = {
         var t = [];
         if (dataValue.groupRows.length > 0) {
           for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
-            // console.log(dataValue.groupRows[0].rows[i].time)
             if (dataValue.groupRows[0].rows[i].open != null) {
               t.push(parseFloat(moment(dataValue.groupRows[0].rows[i].time).format("X")));
               o.push(dataValue.groupRows[0].rows[i].open);
@@ -259,6 +257,7 @@ module.exports = {
         .tolerate("serverError", () => {
           throw new Error("serverError");
         });
+      console.log("candleStickData.o.length", candleStickData.o.length)
       if (candleStickData.o.length > 0) {
         // dataValue.o = candleStickData.open;
         // dataValue.c = candleStickData.close;
