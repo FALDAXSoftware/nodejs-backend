@@ -163,7 +163,8 @@ module.exports = {
         if (dataValue.groupRows.length > 0) {
           for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
             if (dataValue.groupRows[0].rows[i].open != null) {
-              t.push(parseFloat(moment(dataValue.groupRows[0].rows[i].time).unix()));
+              console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
               o.push(dataValue.groupRows[0].rows[i].open);
               c.push(dataValue.groupRows[0].rows[i].close);
               l.push(dataValue.groupRows[0].rows[i].low);
@@ -256,7 +257,7 @@ module.exports = {
         .tolerate("serverError", () => {
           throw new Error("serverError");
         });
-      console.log("candleStickData.o.length", candleStickData.o.length)
+      // console.log("candleStickData.o.length", candleStickData.o.length)
       if (candleStickData.o.length > 0) {
         return res
           .status(200)

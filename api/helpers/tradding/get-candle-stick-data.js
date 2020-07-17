@@ -137,6 +137,8 @@ module.exports = {
       let time = [];
       let volumn = [];
       for (let index = 0; index < openResult.rows.length; index++) {
+        console.log("openResult.rows[index].interval", openResult.rows[index].interval);
+        console.log("moment.utc(openResult.rows[index].interval).unix()", moment.utc(openResult.rows[index].interval).unix())
         if (openResult.rows[index] !== undefined)
           open.push(openResult.rows[index].fill_price);
         time.push(moment.utc(openResult.rows[index].interval).unix());
@@ -158,7 +160,7 @@ module.exports = {
         v: volumn
       }
 
-      console.log("candleStickData", candleStickData)
+      // console.log("candleStickData", candleStickData)
 
       return exits.success(candleStickData);
       //   return proceed(undefined, candleStickData);
