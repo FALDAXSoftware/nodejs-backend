@@ -192,6 +192,84 @@ module.exports = {
             .status(200)
             .json({ s: "no_data" });
         }
+      } else if (symbol == "ETH-BTC") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_eth_btc';
+        var influx_pair_name = 'ethbtc';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
       }
 
       let { crypto, currency } = await sails
@@ -280,6 +358,5 @@ module.exports = {
           "errmsg": sails.__("Something Wrong").message
         });
     }
-  }
-
+  },
 };
