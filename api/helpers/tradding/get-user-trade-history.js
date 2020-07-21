@@ -118,7 +118,10 @@ module.exports = {
             'order_type',
             'limit_price',
             'stop_price',
-            'id'
+            'id',
+            'user_id',
+            'requested_user_id',
+            'is_stop_limit'
           ],
           where: {
             ...q
