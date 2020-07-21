@@ -82,6 +82,11 @@ module.exports = {
       columnName: 'is_partially_filled',
       defaultsTo: false
     },
+    is_stop_limit: {
+      type: 'boolean',
+      columnName: 'is_stop_limit',
+      defaultsTo: false
+    },
     fix_quantity: {
       type: 'number',
       columnName: 'fix_quantity'
@@ -173,12 +178,12 @@ module.exports = {
       columnType: 'json',
       columnName: 'fiat_values',
       defaultsTo: {
-        asset1_usd:0.0,
-        asset1_eur:0.0,
-        asset1_inr:0.0,
-        asset2_usd:0.0,
-        asset2_eur:0.0,
-        asset2_inr:0.0
+        asset1_usd: 0.0,
+        asset1_eur: 0.0,
+        asset1_inr: 0.0,
+        asset2_usd: 0.0,
+        asset2_eur: 0.0,
+        asset2_inr: 0.0
       }
     }
   },
@@ -190,8 +195,8 @@ module.exports = {
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     var current_date = new Date();
     current_date = current_date.getTime();
-    values.transaction_id = ("tx_"+current_date+result).toLocaleLowerCase();
-    console.log("values",values);
+    values.transaction_id = ("tx_" + current_date + result).toLocaleLowerCase();
+    console.log("values", values);
     next();
   },
 
