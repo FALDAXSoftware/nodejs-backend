@@ -31,7 +31,7 @@ module.exports = {
 
       console.log("data", data)
 
-      data.user_id = 1657;
+      // data.user_id = 1657;
 
       var q = [];
 
