@@ -105,29 +105,40 @@ module.exports = {
           ...q
         })
 
-      // console.log("totalCount", totalCount)
+      console.log("totalCount", totalCount)
 
       userTradeHistory = await TradeHistory
         .find({
-          ...q
-        })
-        .paginate({
-          page: (data.page - 1),
-          limit: data.limit
+          select: [
+            'quantity',
+            'fill_price',
+            'side',
+            'symbol',
+            'created_at',
+            'order_type',
+            'limit_price',
+            'stop_price',
+            'id'
+          ],
+          where: {
+            ...q
+          },
+          limit: data.limit,
+          skip: ((data.page - 1) * data.limit)
         })
         .sort("id DESC");
 
+      console.log("userTradeHistoryData", userTradeHistory.length)
       var userTradeHistoryData = {
         data: userTradeHistory,
         total: totalCount
       }
 
-      // console.log("userTradeHistoryData", userTradeHistoryData)
 
       // Send back the result through the success exit.
       return exits.success(userTradeHistoryData);
     } catch (err) {
-      console.log(error)
+      console.log(err)
     }
 
   }
