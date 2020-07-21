@@ -31,6 +31,8 @@ module.exports = {
 
       console.log("data", data)
 
+      data.user_id = 1657;
+
       var q = [];
 
       var currency,
@@ -99,6 +101,8 @@ module.exports = {
       // if (data.page && data.limit) {
 
       // }
+
+      console.log("q", q)
 
       var totalCount = await TradeHistory
         .count({
