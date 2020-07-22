@@ -1268,10 +1268,49 @@ module.exports = {
                 status: "open"
               };
               var add = await UserForgotTwofactors.create(data);
-              return res.json({
-                "status": 200,
-                "message": sails.__("Your request for twofactors is sent").message
+
+              let slug = "admin_notify_two_factor";
+              let template = await EmailTemplate.findOne({
+                slug
               });
+              let language_content = template.all_content["en"].content;
+              let language_subject = template.all_content["en"].subject;
+              let emailContent = await sails
+                .helpers
+                .utilities
+                .formatEmail(language_content, {
+                  recipientName: user.email,
+                })
+              var email = '';
+              if (sails.config.local.TESTNET == 1) {
+                email = 'notreplyfaldax@gmail.com';
+              } else {
+                email = 'bford@faldax.com';
+              }
+              if (template) {
+                sails
+                  .hooks
+                  .email
+                  .send("general-email", {
+                    content: emailContent
+                  }, {
+                    to: email,
+                    subject: language_subject
+                  }, async function (err, response) {
+                    if (!err) {
+                      return res.json({
+                        "status": 200,
+                        "message": sails.__("Your request for twofactors is sent").message
+                      });
+                    }
+                  });
+              }
+
+
+              // return res.json({
+              //   "status": 200,
+              //   "message": sails.__("Your request for twofactors is sent").message
+              // });
             } else {
               return res
                 .status(500)
