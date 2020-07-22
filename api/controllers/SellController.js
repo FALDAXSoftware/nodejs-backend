@@ -128,12 +128,12 @@ module.exports = {
       // console.log('>>>', error)
       // await logger.error(error.message)
       return res
-          .status(500)
-          .json({
-            status: 500,
-            "message": sails.__("error").message,
-            error_at:error.stack
-          });
+        .status(500)
+        .json({
+          status: 500,
+          "message": sails.__("error").message,
+          error_at: error.stack
+        });
     }
   },
 
@@ -162,11 +162,11 @@ module.exports = {
         sort_order,
         user_id
       } = req.allParams();
-      let query = " from sell_book";
+      let query = " from sell_book WHERE deleted_at IS NULL";
       let whereAppended = false;
 
       if ((data && data != "")) {
-        query += " WHERE"
+        query += " AND"
         whereAppended = true;
         if (data && data != "" && data != null) {
           query += " (LOWER(symbol) LIKE '%" + data.toLowerCase() + "%'";
@@ -178,11 +178,11 @@ module.exports = {
       }
 
       if (user_id) {
-        if (whereAppended) {
-          query += " AND "
-        } else {
-          query += " WHERE "
-        }
+        // if (whereAppended) {
+        query += " AND "
+        // } else {
+        //   query += " WHERE "
+        // }
         whereAppended = true;
         query += " user_id=" + user_id;
       }
@@ -197,9 +197,12 @@ module.exports = {
       }
 
       query = query + " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1))
-      let sellBookData = await sails.sendNativeQuery("Select *" + query, [])
+      console.log("Select created_at, symbol, quantity, limit_price, stop_price,fill_price, order_status" + query)
+      let sellBookData = await sails.sendNativeQuery("Select created_at, symbol, quantity, limit_price, stop_price,fill_price, order_status" + query, [])
 
       sellBookData = sellBookData.rows;
+
+      console.log("Select COUNT(id)" + countQuery)
 
       let sellBookCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       sellBookCount = sellBookCount.rows[0].count;
@@ -220,7 +223,7 @@ module.exports = {
         .json({
           status: 500,
           "err": sails.__("Something Wrong").message,
-          error_at:error.stack
+          error_at: error.stack
         });
     }
   }

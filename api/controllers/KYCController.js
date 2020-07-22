@@ -504,9 +504,15 @@ module.exports = {
       }
 
       if (status && status != "") {
-        query += " AND"
-        query += " kyc.direct_response = '" + status + "'";
-        whereAppended = true;
+        if (status == "MANUAL_REVIEW") {
+          query += " AND"
+          query += " (kyc.direct_response = '" + status + "' OR kyc.direct_response IS NULL) ";
+          whereAppended = true;
+        } else {
+          query += " AND"
+          query += " kyc.direct_response = '" + status + "'";
+          whereAppended = true;
+        }
       }
 
       if (start_date && end_date) {
