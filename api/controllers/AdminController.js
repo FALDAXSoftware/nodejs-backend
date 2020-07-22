@@ -1293,39 +1293,21 @@ module.exports = {
             });
         }
 
-        let verified = speakeasy
-          .totp
-          .verify({
-            secret: user.twofactor_secret,
-            encoding: 'base32',
-            token: req.body.otp,
-            window: 2
+        await Admin
+          .update({
+            id: user.id,
+            deleted_at: null
+          })
+          .set({
+            email: user.email,
+            is_twofactor: false,
+            twofactor_secret: null
           });
-
-        if (!verified) {
-          return res
-            .status(402)
-            .json({
-              "status": 402,
-              "message": sails.__("invalid otp").message
-            });
-        }
-      }
-
-      await Admin
-        .update({
-          id: user.id,
-          deleted_at: null
-        })
-        .set({
-          email: user.email,
-          is_twofactor: false,
-          twofactor_secret: null
+        return res.json({
+          status: 200,
+          message: sails.__("2 factor disabled").message
         });
-      return res.json({
-        status: 200,
-        message: sails.__("2 factor disabled").message
-      });
+      }
     } catch (error) {
       // await logger.error(error.message)
       return res
@@ -2601,19 +2583,19 @@ module.exports = {
         .sort('created_at DESC');
 
       var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
-                        FROM (
-                          (
-                          SELECT user_coin, sum(user_fee) as user_fee
-                          FROM trade_history
-                          GROUP BY user_coin
-                          )
-                            UNION
+                      FROM (
                         (
-                          SELECT requested_coin, sum(requested_fee) as requested_fee
-                          FROM trade_history
-                          GROUP BY requested_coin
+                        SELECT user_coin, sum(user_fee) as user_fee
+                        FROM trade_history
+                        GROUP BY user_coin
                         )
-                        ) b GROUP BY b.user_coin`
+                          UNION
+                      (
+                        SELECT requested_coin, sum(requested_fee) as requested_fee
+                        FROM trade_history
+                        GROUP BY requested_coin
+                      )
+                      ) b GROUP BY b.user_coin`
 
       var tradeData = await sails.sendNativeQuery(tradeSql, []);
       var sqlData = tradeData.rows;
@@ -2653,7 +2635,6 @@ module.exports = {
             coin_id: asset_id
           })
           assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var temp_wallet_total = 0;
@@ -2661,14 +2642,18 @@ module.exports = {
 
           if (wallet_details != undefined) {
             assets_data[i].receive_address = wallet_details.receive_address;
-            temp_wallet_total = parseFloat(walletValue.faldax_fee);
+            var temp_wallet_value = 0.0
+            // for (var i = 0; i < walletValue.length; i++) {
+            temp_wallet_value = walletValueData.faldax_fee
+            // }
+            temp_wallet_total = parseFloat(temp_wallet_value);
           }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
           var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
-            FROM public.wallets LEFT JOIN users
-            ON users.id = wallets.user_id
-            WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
+          FROM public.wallets LEFT JOIN users
+          ON users.id = wallets.user_id
+          WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
           let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
 
           var temp_forfeit_total = 0;

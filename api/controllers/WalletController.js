@@ -451,7 +451,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc != true) {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -1728,6 +1728,15 @@ module.exports = {
         is_active: true,
         id: user_id
       });
+
+      if (userData.account_tier == 0) {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("User Wallet create unsuccess").message
+          })
+      }
 
       userData.flag = false;
       var walletDataCreate = await sails
