@@ -68,8 +68,9 @@ module.exports = {
       object.secondAmount = user.secondAmount
     }
 
-    if (user.coinName && user.coinName != undefined && user.coinName != null)
+    if (user.coinName && user.coinName != undefined && user.coinName != null) {
       object.coin = user.coinName
+    }
 
     //Sending Email to users for notification
     let emailContent = await sails
