@@ -235,7 +235,7 @@ module.exports = {
                   "user_id": "user_" + user_detail.id,
                   "url": "Signup Function",
                   "type": "Success"
-                }, JSON.stringify(response), new Date());
+                }, JSON.stringify(response));
                 if (!err) {
                   return res.json({
                     "status": 200,
