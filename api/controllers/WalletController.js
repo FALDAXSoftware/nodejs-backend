@@ -1731,11 +1731,11 @@ module.exports = {
 
       if (userData.account_tier == 0) {
         return res
-        .status(500)
-        .json({
-          "status": 500,
-          "err": sails.__("User Wallet create unsuccess").message
-        })  
+          .status(500)
+          .json({
+            "status": 500,
+            "err": sails.__("User Wallet create unsuccess").message
+          })
       }
 
       userData.flag = false;
@@ -3409,47 +3409,83 @@ module.exports = {
   /**
   Get HotReceiveWallet Information
   **/
- getHotReceiveWalletInfo: async function (req, res) {
-  try {
-    let {
-      search
-    } = req.allParams();
-    var query = {};
-    if (search && search != "" && search != null) {
-      query = {
-        or: [{
-          coin: {
-            contains: search
+  getHotReceiveWalletInfo: async function (req, res) {
+    try {
+      let {
+        search
+      } = req.allParams();
+      var query = {};
+      if (search && search != "" && search != null) {
+        query = {
+          or: [{
+            coin: {
+              contains: search
+            }
+          },
+          {
+            coin_name: {
+              contains: search
+            }
           }
-        },
-        {
-          coin_name: {
-            contains: search
-          }
+          ]
         }
-        ]
       }
-    }
-    query.deleted_at = null
-    query.is_active = true
-    query.is_fiat = false
+      query.deleted_at = null
+      query.is_active = true
+      query.is_fiat = false
 
-    var coinData = await Coins
-      .find({
-        where: query,
-        select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address', 'coin_precision']
-      })
-      .sort('id ASC');
+      var coinData = await Coins
+        .find({
+          where: query,
+          select: ['id', 'coin_icon', 'coin_name', 'coin_code', 'coin', 'hot_receive_wallet_address', 'coin_precision']
+        })
+        .sort('id ASC');
 
-    for (var i = 0; i < coinData.length; i++) {
-      if (coinData[i].coin_code != 'SUSU') {
+      for (var i = 0; i < coinData.length; i++) {
+        if (coinData[i].coin_code != 'SUSU') {
 
-        var wallet_data = await sails
-          .helpers
-          .wallet
-          .getWalletAddressBalance(coinData[i].hot_receive_wallet_address, coinData[i].coin_code);
-        console.log("wallet_data", wallet_data);
-        if (!wallet_data.error) {
+          var wallet_data = await sails
+            .helpers
+            .wallet
+            .getWalletAddressBalance(coinData[i].hot_receive_wallet_address, coinData[i].coin_code);
+          console.log("wallet_data", wallet_data);
+          if (!wallet_data.error) {
+            var coinConversionData = await CurrencyConversion.findOne({
+              where: {
+                deleted_at: null,
+                coin_id: coinData[i].id
+              }
+            })
+            console.log(coinConversionData)
+            coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
+            coinData[i].address = wallet_data.receiveAddress.address;
+            coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0);
+            coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
+          }
+        } else if (coinData[i].coin_code == "SUSU") {
+          var responseValue = await new Promise(async (resolve, reject) => {
+            request({
+              url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
+              method: "GET",
+              headers: {
+
+                'x-token': 'faldax-susucoin-node',
+                'Content-Type': 'application/json'
+              },
+              json: true
+            }, function (err, httpResponse, body) {
+              console.log("body", body)
+              console.log(err)
+              if (err) {
+                reject(err);
+              }
+              if (body.error) {
+                resolve(body);
+              }
+              resolve(body);
+              // return body;
+            });
+          })
           var coinConversionData = await CurrencyConversion.findOne({
             where: {
               deleted_at: null,
@@ -3457,68 +3493,32 @@ module.exports = {
             }
           })
           console.log(coinConversionData)
-          coinData[i].balance = (wallet_data.balance) ? (wallet_data.balance) : (wallet_data.balanceString);
-          coinData[i].address = wallet_data.receiveAddress.address;
-          coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0);
+          coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0)
           coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
+          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
+          coinData[i].coin_precision = "1e0"
         }
-      } else if (coinData[i].coin_code == "SUSU") {
-        var responseValue = await new Promise(async (resolve, reject) => {
-          request({
-            url: sails.config.local.SUSUCOIN_URL + "get-account-balance",
-            method: "GET",
-            headers: {
 
-              'x-token': 'faldax-susucoin-node',
-              'Content-Type': 'application/json'
-            },
-            json: true
-          }, function (err, httpResponse, body) {
-            console.log("body", body)
-            console.log(err)
-            if (err) {
-              reject(err);
-            }
-            if (body.error) {
-              resolve(body);
-            }
-            resolve(body);
-            // return body;
-          });
-        })
-        var coinConversionData = await CurrencyConversion.findOne({
-          where: {
-            deleted_at: null,
-            coin_id: coinData[i].id
-          }
-        })
-        console.log(coinConversionData)
-        coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
-        coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0)
-        coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
-        // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
-        // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
-        coinData[i].coin_precision = "1e0"
       }
-
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          data: coinData,
+          message: sails.__("Warm wallet retrieve").message
+        })
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
     }
-    return res
-      .status(200)
-      .json({
-        status: 200,
-        data: coinData,
-        message: sails.__("Warm wallet retrieve").message
-      })
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
-        status: 500,
-        "err": sails.__("Something Wrong").message,
-        error_at: error.stack
-      });
-  }
-},
+  },
   // Get Admin Network Fees
   getAdminNetworkFeeData: async function (req, res) {
     try {
