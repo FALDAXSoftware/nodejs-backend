@@ -2644,7 +2644,7 @@ module.exports = {
             assets_data[i].receive_address = wallet_details.receive_address;
             var temp_wallet_value = 0.0
             // for (var i = 0; i < walletValue.length; i++) {
-            temp_wallet_value = walletValueData.faldax_fee
+            temp_wallet_value = walletValue.faldax_fee
             // }
             temp_wallet_total = parseFloat(temp_wallet_value);
           }

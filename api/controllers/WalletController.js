@@ -3496,7 +3496,7 @@ module.exports = {
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
           coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0)
           coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
-          // coinData[i].address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH";
+          coinData[i].address = coinData[i].hot_receive_wallet_address;
           // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
           coinData[i].coin_precision = "1e0"
         }
