@@ -451,7 +451,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false && coin.coin_code != "txlm") {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
