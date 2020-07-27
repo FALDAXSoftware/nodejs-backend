@@ -2829,6 +2829,10 @@ module.exports = {
       } else if (wallet_type == 5) {
 
         if (coin && coin != '' && coin != null) {
+          console.log(coin)
+          if (coin == "susu") {
+            coin = "SUSU"
+          }
           var getCoinDetails = await Coins.findOne({
             where: {
               deleted_at: null,
@@ -2836,6 +2840,8 @@ module.exports = {
               coin_code: coin
             }
           });
+
+          console.log("getCoinDetails", getCoinDetails)
 
           if (coin == "susu") {
             filter += ` AND (trade_history.settle_currency = '${(getCoinDetails.coin).toUpperCase()}' OR trade_history.currency = '${(getCoinDetails.coin).toUpperCase()}')`
