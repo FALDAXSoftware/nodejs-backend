@@ -3469,7 +3469,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let query = " from users";
-      query += " WHERE deleted_at IS NULL and is_active=true and referred_id NOTNULL"
+      query += " WHERE deleted_at IS NULL and is_active=true and referred_id IS NOT NULL"
       if ((data && data != "")) {
         query += " AND "
         whereAppended = true;
@@ -3491,6 +3491,7 @@ module.exports = {
       // }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       console.log(query);
+      console.log("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query)
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
@@ -3530,32 +3531,47 @@ module.exports = {
           }
         });
         if (userData != undefined) {
-          var emailArray = [];
-          var userDataValue = await Users
-            .count('id')
-            .where({
-              deleted_at: null,
-              is_active: true,
-              referred_id: userIds[i]
-            });
+          var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users 
+                                                                    WHERE referred_id = ${userIds[i]} AND is_active = true 
+                                                                    AND deleted_at IS NULL;`);
 
-          var dataValue = await Users.find({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              referred_id: userIds[i]
-            }
-          });
+          userData.emailValue = (getReferredEmailList.rows);
 
-          console.log(dataValue);
+          var getReferredEmailCount = await sails.sendNativeQuery(`SELECT count(id) FROM users 
+                                                                    WHERE referred_id = ${userIds[i]} AND is_active = true 
+                                                                    AND deleted_at IS NULL;`);
 
-          for (var j = 0; j < dataValue.length; j++) {
-            emailArray.push(dataValue[j].email);
-          }
-          console.log(emailArray);
-          userData.emailValue = emailArray;
-          userData.no_of_referral = userDataValue
+          userData.no_of_referral = (getReferredEmailCount.rows[0]);
           usersData.push(userData)
+          // var emailArray = [];
+          // var userDataValue = await Users
+          //   .count('id')
+          //   .where({
+          //     deleted_at: null,
+          //     is_active: true,
+          //     referred_id: userIds[i]
+          //   });
+
+          // var dataValue = await Users.find({
+          //   select: [
+          //     'email'
+          //   ],
+          //   where: {
+          //     deleted_at: null,
+          //     is_active: true,
+          //     referred_id: userIds[i]
+          //   }
+          // });
+
+          // console.log(dataValue);
+
+          // for (var j = 0; j < dataValue.length; j++) {
+          //   emailArray.push(dataValue[j].email);
+          // }
+          // console.log(emailArray);
+          // userData.emailValue = emailArray;
+          // userData.no_of_referral = userDataValue
+          // usersData.push(userData)
         }
       }
 
@@ -3641,16 +3657,16 @@ module.exports = {
       }
 
       var get_reffered_data = (`SELECT (cast(referral.amount as decimal(12,8)))as amount , referral.coin_name, coins.coin_icon,
-                                    users.email, referral.txid, referral.updated_at
+                                    users.email, referral.txid, referral.updated_at, referral.referral_percentage
                                     FROM referral LEFT JOIN users
                                     ON (users.id=referral.referred_user_id)
                                     LEFT JOIN coins
                                     ON referral.coin_name = coins.coin
                                     WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter}
                                     AND users.deleted_at IS NULL${value}
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
+                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at, referral.referral_percentage
                                     ORDER BY coins.id , referral.updated_at DESC`);
-      console.log(get_reffered_data)
+      // console.log(get_reffered_data)
       countQuery = get_reffered_data
 
       get_reffered_data += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
@@ -3658,12 +3674,25 @@ module.exports = {
       var data = await sails.sendNativeQuery(get_reffered_data, []);
       var count = await sails.sendNativeQuery(countQuery, []);
       count = count.rows.length
+      var data = data.rows;
+      // for (var i = 0; i < data.length; i++) {
+      //   var getSideData = await TradeHistory.findOne({
+      //     select: [
+      //       'side'
+      //     ],
+      //     where: {
+      //       id: data[i].txid,
+      //       deleted_at: null
+      //     }
+      //   });
+      //   data[i].side = (getSideData != undefined) ? (getSideData.side) : ("")
+      // }
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("refer data retrieve").message,
-          "data": data.rows,
+          "data": data,
           count
         });
 
