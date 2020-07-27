@@ -162,6 +162,7 @@ module.exports = {
 
   createPair: async function (req, res) {
     try {
+      console.log("req.body", req.body)
       if (req.body.name && req.body.coin_code1 && req.body.coin_code2) {
         if (req.body.coin_code1 == req.body.coin_code2) {
           return res
@@ -200,7 +201,10 @@ module.exports = {
             name: req.body.name,
             coin_code1: coinID_1.id,
             coin_code2: coinID_2.id,
-            created_at: new Date()
+            created_at: new Date(),
+            order_maximum: req.body.order_maximum,
+            price_precision: req.body.price_precision,
+            quantity_precision: req.body.quantity_precision
           })
           .fetch();
         if (pair_details) {
