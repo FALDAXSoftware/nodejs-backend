@@ -65,6 +65,11 @@ module.exports = {
       type: 'string',
       columnName: 'address'
     },
+    is_stop_limit: {
+      type: 'boolean',
+      columnName: 'is_stop_limit',
+      defaultsTo: false
+    },
     order_type: {
       type: 'string',
       columnName: 'order_type'

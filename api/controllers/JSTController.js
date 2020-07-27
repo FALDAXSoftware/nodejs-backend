@@ -23,11 +23,11 @@ module.exports = {
       //   "url": req.url,
       //   "type": "Entry"
       // }, "Entered the function")
-      // var getJSTPair = await JSTPair.find({
-      //   where: {
-      //     deleted_at: null
-      //   }
-      // });
+      var getJSTPair = await JSTPair.find({
+        where: {
+          deleted_at: null
+        }
+      });
 
       var coinList = await Coins.find({
         where: {
@@ -55,7 +55,7 @@ module.exports = {
         .json({
           "status": 200,
           "message": sails.__("jst pair retrieve success").message,
-          // getJSTPair,
+          getJSTPair,
           coinList,
           faldax_fee
         })

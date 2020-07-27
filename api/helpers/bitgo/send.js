@@ -174,7 +174,7 @@ module.exports = {
     };
 
     send_data.amount = parseInt(inputs.amount);
-    if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" || coinData.iserc == true) {
+    if (inputs.coin == "txrp" || inputs.coin == "xrp" || inputs.coin == "teth" || inputs.coin == "eth" || coinData.iserc == true || inputs.coin == "txlm") {
       send_data.amount = (inputs.amount).toString();
     }
     if (inputs.coin != "txrp" && inputs.coin != "xrp" && inputs.coin != "teth" && inputs.coin != "eth" || coinData.iserc == true) {
