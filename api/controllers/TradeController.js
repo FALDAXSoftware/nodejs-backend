@@ -1959,14 +1959,14 @@ module.exports = {
 
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
-      } else if (trade_type == 3) { // JST
-        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id ";
-        let whereAppended = false;
+      } else if (trade_type == 3) { // TRADE
+        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id WHERE (trade_history.user_id != 2105 OR trade_history.requested_user_id != 2105) ";
+        let whereAppended = true;
 
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
-            query += " WHERE"
-            whereAppended = true;
+            query += " AND"
+            // whereAppended = true;
             query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
               query += " OR quantity=" + data + " OR fill_price=" + data
@@ -1976,26 +1976,20 @@ module.exports = {
         }
 
         if (user_id) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
-          whereAppended = true;
+          query += " AND ";
+          // whereAppended = true;
           query += " (trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id + ")";
         }
 
         if (t_type) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
+          query += " AND ";
 
-          whereAppended = true;
+          // whereAppended = true;
           query += "  trade_history.side='" + t_type + "'";
         }
 
         if (start_date && end_date) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
+          query += " AND ";
 
           query += " trade_history.created_at >= '" + await sails
             .helpers
