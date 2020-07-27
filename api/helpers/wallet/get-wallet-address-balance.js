@@ -49,7 +49,7 @@ module.exports = {
               coin_code: inputs.coin_code
             }
           })
-          if (inputs.coin_code == "txrp" || inputs.coin_code == "xrp" || inputs.coin_code == 'teth' || inputs.coin_code == 'eth' || coinData.iserc == true) {
+          if (inputs.coin_code == "txrp" || inputs.coin_code == "xrp" || inputs.coin_code == 'teth' || inputs.coin_code == 'eth' || coinData.iserc == true || inputs.coin_code == 'txlm') {
             console.log("INSIDE IF>>>>>>")
             walletAddressData.balance = resData.balanceString;
           }

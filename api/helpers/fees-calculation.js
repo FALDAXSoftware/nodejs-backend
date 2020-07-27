@@ -39,6 +39,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     try {
       var coin = inputs.coin;
+      console.log("coin", coin)
       var feesValue;
       if (coin == 'susu') {
         coin = 'SUSU';
@@ -46,6 +47,8 @@ module.exports = {
         coin = 'BCH'
       } else if (coin == 'tltc') {
         coin = 'LTC'
+      } else if (coin == "txlm") {
+        coin = 'XLM'
       }
 
       console.log((coin))
@@ -125,6 +128,8 @@ module.exports = {
         feesValue = data.value
       } else if (coin == 'SUSU') {
         feesValue = 0.01
+      } else if (coin == 'XLM') {
+        feesValue = 0.00001
       }
       return exits.success(feesValue);
     } catch (err) {

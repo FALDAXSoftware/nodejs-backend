@@ -744,10 +744,31 @@ module.exports = {
             }
 
             console.log("source", source)
+            console.log("req.body.coin", req.body.coin)
             // Inputs
             let coinDataValue = await Coins.findOne({
-              coin_code: req.body.coin
+              coin_code: req.body.coin,
+              deleted_at: null
             });
+
+            var memoId = 0;
+            if (transfer.coinSpecific) {
+              console.log(Object.keys(transfer.coinSpecific).length)
+              if (Object.keys(transfer.coinSpecific).length > 0) {
+                console.log("INSIDE IF")
+                const objectArray = Object.entries(transfer.coinSpecific);
+                console.log
+                objectArray.forEach(([key, value]) => {
+                  console.log("key", key); // 'one'
+                  if (key == "memo") {
+                    console.log("value.value", value.value)
+                    memoId = value.value
+                  }
+                  console.log("value", value); // 1
+                });
+              }
+            }
+            console.log("memoId", memoId)
 
             console.log("coinDataValue", coinDataValue)
 
@@ -756,15 +777,17 @@ module.exports = {
               if (transfer.outputs.length > 0) {
                 for (let index = 0; index < transfer.outputs.length; index++) {
                   const element = transfer.outputs[index];
+                  console.log((memoId > 0) ? (element.address + "?memoId=" + memoId) : (element.address))
                   var getTransferData = await Wallet.findOne({
                     where: {
                       deleted_at: null,
-                      receive_address: element.address,
+                      receive_address: (memoId > 0) ? (element.address + "?memoId=" + memoId) : (element.address),
                       deleted_at: null,
                       is_active: true,
                       coin_id: coinDataValue.id
                     }
                   })
+                  console.log("getTransferData", getTransferData)
                   if (getTransferData != undefined) {
                     receiveArray.push(element)
                   }
@@ -787,16 +810,18 @@ module.exports = {
                 if (transfer.entries.length > 0) {
                   for (let index = 0; index < transfer.entries.length; index++) {
                     const element = transfer.entries[index];
+                    console.log(element.address + "?memoId=" + memoId)
                     if (element.value > 0) {
                       var getTransferData = await Wallet.findOne({
                         where: {
                           deleted_at: null,
-                          receive_address: element.address,
+                          receive_address: (memoId > 0) ? (element.address + "?memoId=" + memoId) : (element.address),
                           deleted_at: null,
                           is_active: true,
                           coin_id: coinDataValue.id
                         }
                       })
+                      console.log("getTransferData", getTransferData)
                       if (getTransferData != undefined) {
                         receiveArray.push(element)
                       }
@@ -944,7 +969,7 @@ module.exports = {
                 where: {
                   deleted_at: null,
                   is_active: true,
-                  receive_address: element.address,
+                  receive_address: (memoId > 0) ? (element.address + "?memoId=" + memoId) : (element.address),
                   coin_id: coin.id
                 }
               })
@@ -956,7 +981,7 @@ module.exports = {
                 let walletHistory = {
                   coin_id: getUserData.coin_id,
                   source_address: source,
-                  destination_address: element.address,
+                  destination_address: (memoId > 0) ? (element.address + "?memoId=" + memoId) : (element.address),
                   user_id: getUserData.user_id,
                   amount: (amount).toFixed(8),
                   transaction_type: 'receive',
