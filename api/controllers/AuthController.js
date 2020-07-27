@@ -1285,7 +1285,7 @@ module.exports = {
               if (sails.config.local.TESTNET == 1) {
                 email = 'notreplyfaldax@gmail.com';
               } else {
-                email = 'admin@faldax.com';
+                email = 'bford@faldax.com';
               }
               if (template) {
                 sails
@@ -1305,6 +1305,12 @@ module.exports = {
                     }
                   });
               }
+
+
+              // return res.json({
+              //   "status": 200,
+              //   "message": sails.__("Your request for twofactors is sent").message
+              // });
             } else {
               return res
                 .status(500)
