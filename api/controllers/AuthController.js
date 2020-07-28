@@ -18,6 +18,7 @@ var speakeasy = require('speakeasy');
 const moment = require('moment');
 var requestIp = require('request-ip');
 var logger = require('./logger');
+// var geoip = require('geoip-lite');
 
 
 module.exports = {
@@ -293,6 +294,9 @@ module.exports = {
                   .helpers
                   .jwtIssue(user_detail.id);
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+                // var ip = "207.97.227.239";
+                // var geo = geoip.lookup(ip);
+                console.log("ip", ip)
 
                 var check_any_whitelistip = {
                   user_id: user_detail.id,
@@ -1283,9 +1287,9 @@ module.exports = {
                 })
               var email = '';
               if (sails.config.local.TESTNET == 1) {
-                email = 'notreplyfaldax@gmail.com';
+                email = ['notreplyfaldax@gmail.com']
               } else {
-                email = 'bford@faldax.com';
+                email = ['bford@faldax.com', 'alowrey@faldax.com', 'jlowrey@faldax.com', 'jzysek@faldax.com'];
               }
               if (template) {
                 sails

@@ -425,13 +425,28 @@ module.exports = {
 
     // await sails.helpers.notification.send.text("withdraw", userData)
     // console.log(key);
-    console.log(iv)
-    var value = req.body.encryptKey;
+    const iplocate = require("node-iplocate");
+    var ip = "207.97.227.239";
+    // var geo = await ipLocation("172.217.167.78");
+    var value;
+    await iplocate("88.152.184.185").then(function (results) {
+      value = results
+      console.log("IP Address: " + results.ip);
+      console.log("Country: " + results.country + " (" + results.country_code + ")");
+      console.log("Continent: " + results.continent);
+      console.log("Organisation: " + results.org + " (" + results.asn + ")");
+
+      console.log(JSON.stringify(results, null, 2));
+    });
+
     console.log(value);
-    var encryptData = await sails.helpers.getEncryptData(value);
-    console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("77b4af30438470f2ea7e50462f60a5fdf09eae26d155a017b215e4ef3d7d5090aded884490ce84d246961ce565149a9e8ecfdfb5ae8d28a4bc61a078ecad5278d4a0c3");
-    console.log("decryptData", decryptData)
+    // console.log(iv)
+    // var value = req.body.encryptKey;
+    // console.log(value);
+    // var encryptData = await sails.helpers.getEncryptData(value);
+    // console.log("encryptData", encryptData);
+    // var decryptData = await sails.helpers.getDecryptData("77b4af30438470f2ea7e50462f60a5fdf09eae26d155a017b215e4ef3d7d5090aded884490ce84d246961ce565149a9e8ecfdfb5ae8d28a4bc61a078ecad5278d4a0c3");
+    // console.log("decryptData", decryptData)
     return res.json(200);
   },
 
