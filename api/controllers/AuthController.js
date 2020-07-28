@@ -1283,9 +1283,9 @@ module.exports = {
                 })
               var email = '';
               if (sails.config.local.TESTNET == 1) {
-                email = ['notreplyfaldax@gmail.com', 'alowrey@faldax.com', 'jlowrey@faldax.com', 'jzysek@faldax.com'];
+                email = ['notreplyfaldax@gmail.com'];
               } else {
-                email = ['bford@faldax.com'];
+                email = ['bford@faldax.com', 'alowrey@faldax.com', 'jlowrey@faldax.com', 'jzysek@faldax.com'];
               }
               if (template) {
                 sails
