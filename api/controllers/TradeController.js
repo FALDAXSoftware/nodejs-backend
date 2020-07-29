@@ -1959,14 +1959,14 @@ module.exports = {
 
         tradeCount = await sails.sendNativeQuery("Select COUNT(simplex_trade_history.id)" + countQuery, [])
         tradeCount = tradeCount.rows[0].count;
-      } else if (trade_type == 3) { // JST
-        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id ";
-        let whereAppended = false;
+      } else if (trade_type == 3) { // TRADE
+        let query = " FROM trade_history LEFT JOIN users ON trade_history.user_id = users.id LEFT JOIN users as requetsed ON trade_history.requested_user_id = requetsed.id WHERE (trade_history.user_id != 2105 OR trade_history.requested_user_id != 2105) ";
+        let whereAppended = true;
 
         if ((data && data != "")) {
           if (data && data != "" && data != null) {
-            query += " WHERE"
-            whereAppended = true;
+            query += " AND"
+            // whereAppended = true;
             query += " (LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.transaction_id) LIKE '%" + data.toLowerCase() + "%' OR LOWER(trade_history.symbol) LIKE '%" + data.toLowerCase() + "%'";
             if (!isNaN(data)) {
               query += " OR quantity=" + data + " OR fill_price=" + data
@@ -1976,26 +1976,20 @@ module.exports = {
         }
 
         if (user_id) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
-          whereAppended = true;
+          query += " AND ";
+          // whereAppended = true;
           query += " (trade_history.user_id=" + user_id + " OR trade_history.requested_user_id=" + user_id + ")";
         }
 
         if (t_type) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
+          query += " AND ";
 
-          whereAppended = true;
+          // whereAppended = true;
           query += "  trade_history.side='" + t_type + "'";
         }
 
         if (start_date && end_date) {
-          query += whereAppended ?
-            " AND " :
-            " WHERE ";
+          query += " AND ";
 
           query += " trade_history.created_at >= '" + await sails
             .helpers
@@ -2191,6 +2185,540 @@ module.exports = {
     } catch (error) {
       console.log(error)
       // await logger.error(error.message)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getTradeAllOrders: async function (req, res) {
+    try {
+      let {
+        user_id,
+        page,
+        limit,
+        data,
+        sort_col,
+        sort_order,
+        pending_type,
+        start_date,
+        end_date,
+        order_side
+      } = req.allParams();
+
+      if (pending_type == 1) {
+        let buyQuery = `Select buy_book.created_at, buy_book.symbol, buy_book.quantity, 
+                          buy_book.limit_price, buy_book.stop_price, buy_book.fill_price, 
+                          users.email, buy_book.side, buy_book.is_stop_limit, buy_book.user_id,
+                          buy_book.order_type, buy_book.currency, buy_book.settle_currency, buy_book.placed_by, buy_book.id
+                          from buy_book
+                          LEFT JOIN users
+                          ON users.id = buy_book.user_id
+                          WHERE buy_book.deleted_at IS NULL AND buy_book.user_id != ${process.env.TRADEDESK_USER_ID} `;
+        if ((data && data != "")) {
+          buyQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            buyQuery += " (LOWER(buy_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              buyQuery += " OR buy_book.limit_price=" + data + " OR buy_book.quantity=" + data;
+            }
+            buyQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          buyQuery += " AND "
+          // } else {
+          //   buyQuery += " WHERE "
+          // }
+          whereAppended = true;
+          buyQuery += " buy_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          buyQuery += " AND ";
+
+          buyQuery += " buy_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND buy_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          buyQuery += " ORDER BY buy_book." + sort_col + " " + sortVal;
+        } else {
+          buyQuery += " ORDER BY buy_book.id DESC";
+        }
+
+        let stopQuery = `SELECT pending_book.created_at,pending_book.symbol , pending_book.quantity, 
+                            pending_book.limit_price, pending_book.stop_price,   pending_book.fill_price, 
+                            users.email, pending_book.side, pending_book.is_stop_limit, CAST(pending_book.user_id AS int) as user_id,
+                            pending_book.order_type, pending_book.currency, pending_book.settle_currency, pending_book.placed_by, pending_book.id
+                            FROM pending_book 
+                            LEFT JOIN users
+                            ON users.id = CAST(pending_book.user_id AS int)
+                            WHERE pending_book.deleted_at IS NULL `
+        if ((data && data != "")) {
+          stopQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            stopQuery += " (LOWER(pending_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              stopQuery += " OR pending_book.limit_price=" + data + " OR pending_book.quantity=" + data;
+            }
+            stopQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          stopQuery += " AND "
+          // } else {
+          //   stopQuery += " WHERE "
+          // }
+          whereAppended = true;
+          stopQuery += " pending_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          stopQuery += " AND ";
+
+          stopQuery += " pending_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND pending_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          stopQuery += " ORDER BY pending_book." + sort_col + " " + sortVal;
+        } else {
+          stopQuery += " ORDER BY pending_book.id DESC";
+        }
+
+        console.log(`SELECT pending_orders.* FROM (
+                  (${stopQuery})
+                  UNION ALL
+                    (${buyQuery}) 
+              ) as pending_orders ORDER BY created_at DESC`)
+        let query = `SELECT pending_orders.* FROM (
+                      (${stopQuery})
+                      UNION ALL
+                          (${buyQuery}) 
+                    ) as pending_orders ORDER BY created_at DESC LIMIT ${limit} OFFSET ((${limit})*${page - 1})`
+
+        let buyBookData = await sails.sendNativeQuery(query, [])
+        console.log("buyBookData", buyBookData)
+        // var count = buyBookData.rowCount;
+        buyBookData = buyBookData.rows;
+        // console.log("buyBookData.rowCount", buyBookData.rowCount)
+
+        let countQuery = `SELECT pending_orders.* FROM (
+                          (${stopQuery})
+                        UNION ALL
+                            (${buyQuery}) 
+                      ) as pending_orders ORDER BY created_at DESC`
+
+        let buyBookCountData = await sails.sendNativeQuery(countQuery, [])
+        let buyBookCount = buyBookCountData.rowCount;
+        return res.json({
+          "status": 200,
+          "message": sails.__("Buy Order list").message,
+          "data": buyBookData,
+          buyBookCount
+        });
+      } else if (pending_type == 2) {
+        let sellQuery = `Select sell_book.created_at, sell_book.symbol, sell_book.quantity, 
+                          sell_book.limit_price, sell_book.stop_price, sell_book.fill_price,  
+                          users.email, sell_book.side, sell_book.is_stop_limit, sell_book.user_id,
+                          sell_book.order_type, sell_book.currency, sell_book.settle_currency, sell_book.placed_by, sell_book.id
+                          from sell_book
+                          LEFT JOIN users
+                          ON users.id = sell_book.user_id
+                          WHERE sell_book.deleted_at IS NULL AND sell_book.user_id != ${process.env.TRADEDESK_USER_ID} `;
+
+        if ((data && data != "")) {
+          sellQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            sellQuery += " (LOWER(sell_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              sellQuery += " OR sell_book.limit_price=" + data + " OR sell_book.quantity=" + data;
+            }
+            sellQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          sellQuery += " AND "
+          // } else {
+          //   sellQuery += " WHERE "
+          // }
+          whereAppended = true;
+          sellQuery += " sell_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          sellQuery += " AND ";
+
+          sellQuery += " sell_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND sell_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          sellQuery += " ORDER BY sell_book." + sort_col + " " + sortVal;
+        } else {
+          sellQuery += " ORDER BY sell_book.id DESC";
+        }
+
+        let stopQuery = `SELECT pending_book.created_at,pending_book.symbol , pending_book.quantity, 
+                          pending_book.limit_price, pending_book.stop_price,   pending_book.fill_price, 
+                          users.email, pending_book.side, pending_book.is_stop_limit, CAST(pending_book.user_id AS int) as user_id,
+                          pending_book.order_type, pending_book.currency, pending_book.settle_currency, pending_book.placed_by, pending_book.id
+                          FROM pending_book 
+                          LEFT JOIN users
+                          ON users.id = CAST(pending_book.user_id AS int)
+                          WHERE pending_book.deleted_at IS NULL `
+        if ((data && data != "")) {
+          stopQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            stopQuery += " (LOWER(pending_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              stopQuery += " OR pending_book.limit_price=" + data + " OR pending_book.quantity=" + data;
+            }
+            stopQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          stopQuery += " AND "
+          // } else {
+          //   stopQuery += " WHERE "
+          // }
+          whereAppended = true;
+          stopQuery += " pending_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          stopQuery += " AND ";
+
+          stopQuery += " pending_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND pending_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          stopQuery += " ORDER BY pending_book." + sort_col + " " + sortVal;
+        } else {
+          stopQuery += " ORDER BY pending_book.id DESC";
+        }
+
+        console.log(`SELECT pending_orders.* FROM (
+                        (${stopQuery})
+                        UNION ALL
+                        (${sellQuery})
+                    ) as pending_orders ORDER BY created_at DESC`)
+        let query = `SELECT pending_orders.* FROM (
+                       (${stopQuery})
+                    UNION ALL
+                        (${sellQuery})
+                    ) as pending_orders ORDER BY created_at DESC LIMIT ${limit} OFFSET ((${limit})*${page - 1})`
+
+        let buyBookData = await sails.sendNativeQuery(query, [])
+        console.log("buyBookData", buyBookData)
+        // var count = buyBookData.rowCount;
+        buyBookData = buyBookData.rows;
+        // console.log("buyBookData.rowCount", buyBookData.rowCount)
+
+        let countQuery = `SELECT pending_orders.* FROM (
+                              (${stopQuery})
+                          UNION ALL
+                              (${sellQuery})
+                          ) as pending_orders ORDER BY created_at DESC`
+
+        let buyBookCountData = await sails.sendNativeQuery(countQuery, [])
+        let buyBookCount = buyBookCountData.rowCount;
+        return res.json({
+          "status": 200,
+          "message": sails.__("Sell Order list").message,
+          "data": buyBookData,
+          buyBookCount
+        });
+      } else if (pending_type == 3) {
+
+        let buyQuery = `Select buy_book.created_at, buy_book.symbol, buy_book.quantity, 
+                          buy_book.limit_price, buy_book.stop_price, buy_book.fill_price, 
+                          users.email, buy_book.side, buy_book.is_stop_limit, buy_book.user_id,
+                          buy_book.order_type, buy_book.currency, buy_book.settle_currency, buy_book.placed_by, buy_book.id
+                          from buy_book
+                          LEFT JOIN users
+                          ON users.id = buy_book.user_id
+                          WHERE buy_book.deleted_at IS NULL AND buy_book.user_id != ${process.env.TRADEDESK_USER_ID} `;
+        if ((data && data != "")) {
+          buyQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            buyQuery += " (LOWER(buy_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              buyQuery += " OR buy_book.limit_price=" + data + " OR buy_book.quantity=" + data;
+            }
+            buyQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          buyQuery += " AND "
+          // } else {
+          //   buyQuery += " WHERE "
+          // }
+          whereAppended = true;
+          buyQuery += " buy_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          buyQuery += " AND ";
+
+          buyQuery += " buy_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND buy_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          buyQuery += " ORDER BY buy_book." + sort_col + " " + sortVal;
+        } else {
+          buyQuery += " ORDER BY buy_book.id DESC";
+        }
+
+        let sellQuery = `Select sell_book.created_at, sell_book.symbol, sell_book.quantity, 
+                          sell_book.limit_price, sell_book.stop_price, sell_book.fill_price,  
+                          users.email, sell_book.side, sell_book.is_stop_limit, sell_book.user_id,
+                          sell_book.order_type, sell_book.currency, sell_book.settle_currency, sell_book.placed_by, sell_book.id
+                          from sell_book
+                          LEFT JOIN users
+                          ON users.id = sell_book.user_id
+                          WHERE sell_book.deleted_at IS NULL AND sell_book.user_id != ${process.env.TRADEDESK_USER_ID} `;
+
+        if ((data && data != "")) {
+          sellQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            sellQuery += " (LOWER(sell_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              sellQuery += " OR sell_book.limit_price=" + data + " OR sell_book.quantity=" + data;
+            }
+            sellQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          sellQuery += " AND "
+          // } else {
+          //   sellQuery += " WHERE "
+          // }
+          whereAppended = true;
+          sellQuery += " sell_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          sellQuery += " AND ";
+
+          sellQuery += " sell_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND sell_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          sellQuery += " ORDER BY sell_book." + sort_col + " " + sortVal;
+        } else {
+          sellQuery += " ORDER BY sell_book.id DESC";
+        }
+
+        let stopQuery = `SELECT pending_book.created_at,pending_book.symbol , pending_book.quantity, 
+                          pending_book.limit_price, pending_book.stop_price,   pending_book.fill_price, 
+                          users.email, pending_book.side, pending_book.is_stop_limit, CAST(pending_book.user_id AS int) as user_id,
+                          pending_book.order_type, pending_book.currency, pending_book.settle_currency, pending_book.placed_by, pending_book.id
+                          FROM pending_book 
+                          LEFT JOIN users
+                          ON users.id = CAST(pending_book.user_id AS int)
+                          WHERE pending_book.deleted_at IS NULL `
+        if ((data && data != "")) {
+          stopQuery += " AND"
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            stopQuery += " (LOWER(pending_book.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%' ";
+            if (!isNaN(data)) {
+              stopQuery += " OR pending_book.limit_price=" + data + " OR pending_book.quantity=" + data;
+            }
+            stopQuery += ")"
+          }
+        }
+
+        if (user_id) {
+          // if (whereAppended) {
+          stopQuery += " AND "
+          // } else {
+          //   stopQuery += " WHERE "
+          // }
+          whereAppended = true;
+          stopQuery += " pending_book.user_id=" + user_id;
+        }
+
+        if (start_date && end_date) {
+          stopQuery += " AND ";
+
+          stopQuery += " pending_book.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND pending_book.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
+        }
+
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          stopQuery += " ORDER BY pending_book." + sort_col + " " + sortVal;
+        } else {
+          stopQuery += " ORDER BY pending_book.id DESC";
+        }
+
+        console.log(`SELECT pending_orders.* FROM (
+                        (${stopQuery})
+                        UNION ALL
+                        (${sellQuery})
+                      UNION ALL
+                          (${buyQuery}) 
+                    ) as pending_orders ORDER BY created_at DESC`)
+        let query = `SELECT pending_orders.* FROM (
+                       (${stopQuery})
+                    UNION ALL
+                        (${sellQuery})
+                      UNION ALL
+                          (${buyQuery}) 
+                    ) as pending_orders ORDER BY created_at DESC LIMIT ${limit} OFFSET ((${limit})*${page - 1})`
+
+        let buyBookData = await sails.sendNativeQuery(query, [])
+        console.log("buyBookData", buyBookData)
+        // var count = buyBookData.rowCount;
+        buyBookData = buyBookData.rows;
+        // console.log("buyBookData.rowCount", buyBookData.rowCount)
+
+        let countQuery = `SELECT pending_orders.* FROM (
+                              (${stopQuery})
+                          UNION ALL
+                              (${sellQuery})
+                            UNION ALL
+                                (${buyQuery}) 
+                          ) as pending_orders ORDER BY created_at DESC LIMIT ${limit} OFFSET ((${limit})*${page - 1})`
+
+        let buyBookCountData = await sails.sendNativeQuery(countQuery, [])
+        let buyBookCount = buyBookCountData.rowCount;
+        return res.json({
+          "status": 200,
+          "message": sails.__("Sell Order list").message,
+          "data": buyBookData,
+          buyBookCount
+        });
+      } else if (pending_type == 4) {
+        let query = `from activity_table
+                      LEFT JOIN users
+                      ON users.id = CAST(activity_table.user_id as int) 
+                      WHERE activity_table.is_cancel = 'true' `
+        let whereAppended = false;
+        if ((data && data != "")) {
+          whereAppended = true;
+          if (data && data != "" && data != null) {
+            query += "AND (LOWER(activity_table.symbol) LIKE '%" + data.toLowerCase() + "%')";
+            if (!isNaN(data)) {
+              query += " OR (activity_table.limit_price=" + data + " OR activity_table.quantity=" + data + ")";
+            }
+          }
+        }
+
+        countQuery = query;
+        if (sort_col && sort_order) {
+          let sortVal = (sort_order == 'descend' ?
+            'DESC' :
+            'ASC');
+          query += " ORDER BY activity." + sort_col + " " + sortVal;
+        } else {
+          query += " ORDER BY activity_table.id DESC";
+        }
+        query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
+        console.log(`SELECT activity_table.symbol, activity_table.created_at, activity_table.quantity, 
+                                                activity_table.quantity, activity_table.limit_price ${query}`)
+        let cancelDetails = await sails.sendNativeQuery(`SELECT activity_table.symbol, activity_table.created_at, activity_table.quantity, 
+                                                activity_table.quantity, activity_table.limit_price, users.email ${query}`, [])
+
+        cancelDetails = cancelDetails.rows;
+        console.log("cancelDetails", cancelDetails)
+
+        console.log("Select COUNT(activity_table.id) " + countQuery)
+        let cancelledOrderCount = await sails.sendNativeQuery("Select COUNT(activity_table.id) " + countQuery, [])
+        cancelledOrderCount = cancelledOrderCount.rows[0].count;
+        console.log("cancelledOrderCount", cancelledOrderCount)
+
+        if (cancelDetails) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Cancel Orders List").message,
+            "data": cancelDetails,
+            cancelledOrderCount
+          });
+        }
+
+        if (cancelDetails) {
+          return res.json({
+            "status": 200,
+            "message": sails.__("Cancel Orders List").message,
+            "data": cancelDetails,
+            cancelledOrderCount
+          });
+        }
+      }
+
+    } catch (error) {
+      console.log(error)
       return res
         .status(500)
         .json({
