@@ -2829,6 +2829,10 @@ module.exports = {
       } else if (wallet_type == 5) {
 
         if (coin && coin != '' && coin != null) {
+          console.log(coin)
+          if (coin == "susu") {
+            coin = "SUSU"
+          }
           var getCoinDetails = await Coins.findOne({
             where: {
               deleted_at: null,
@@ -2836,6 +2840,8 @@ module.exports = {
               coin_code: coin
             }
           });
+
+          console.log("getCoinDetails", getCoinDetails)
 
           if (coin == "susu") {
             filter += ` AND (trade_history.settle_currency = '${(getCoinDetails.coin).toUpperCase()}' OR trade_history.currency = '${(getCoinDetails.coin).toUpperCase()}')`
@@ -3494,11 +3500,12 @@ module.exports = {
           })
           console.log(coinConversionData)
           coinData[i].balance = (responseValue && responseValue != undefined) ? (responseValue.data) : (0.0)
+          coinData[i].coin_precision = "1e0"
           coinData[i].fiat = (coinConversionData != undefined) ? (coinConversionData.quote.USD.price) : (0.0)
           coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
           coinData[i].address = coinData[i].hot_receive_wallet_address;
+          // coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
           // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
-          coinData[i].coin_precision = "1e0"
         }
       }
       return res
