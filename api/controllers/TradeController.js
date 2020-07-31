@@ -2668,11 +2668,25 @@ module.exports = {
         if ((data && data != "")) {
           whereAppended = true;
           if (data && data != "" && data != null) {
-            query += "AND (LOWER(activity_table.symbol) LIKE '%" + data.toLowerCase() + "%')";
+            query += "AND (LOWER(activity_table.symbol) LIKE '%" + data.toLowerCase() + "%' OR LOWER(users.email) LIKE '%" + data.toLowerCase() + "%')";
             if (!isNaN(data)) {
               query += " OR (activity_table.limit_price=" + data + " OR activity_table.quantity=" + data + ")";
             }
           }
+        }
+
+        if (user_id) {
+          query += " AND activity_table.user_id LIKE '" + user_id + "'"
+        }
+
+        if (start_date && end_date) {
+          query += " AND ";
+
+          query += " activity_table.created_at >= '" + await sails
+            .helpers
+            .dateFormat(start_date) + " 00:00:00' AND activity_table.created_at <= '" + await sails
+              .helpers
+              .dateFormat(end_date) + " 23:59:59'";
         }
 
         countQuery = query;
@@ -2680,7 +2694,7 @@ module.exports = {
           let sortVal = (sort_order == 'descend' ?
             'DESC' :
             'ASC');
-          query += " ORDER BY activity." + sort_col + " " + sortVal;
+          query += " ORDER BY activity_table." + sort_col + " " + sortVal;
         } else {
           query += " ORDER BY activity_table.id DESC";
         }
