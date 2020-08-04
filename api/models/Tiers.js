@@ -22,6 +22,15 @@ module.exports = {
       columnType: 'json',
       columnName: 'requirements'
     },
+    is_active: {
+      type: 'boolean',
+      columnName: 'is_active',
+      defaultsTo: true
+    },
+    max_trade_amount: {
+      type: 'string',
+      columnName: 'max_trade_amount'
+    },
     daily_withdraw_limit: {
       type: 'string',
       columnName: 'daily_withdraw_limit'

@@ -17,7 +17,10 @@ module.exports = {
       var user_id = req.user.id;
       var tierDetails = await Tiers.find({
         where: {
-          deleted_at: null
+          deleted_at: null,
+          tier_step: {
+            "!=": 0
+          }
         }
       }).sort('tier_step ASC');
 
@@ -201,7 +204,7 @@ module.exports = {
             }
           }
           // console.log("tierDetails[i]", tierDetails[i])
-          tierDetails[i].is_active = true;
+          tierDetails[i].is_tier_active = true;
           var accountTierDetails = await TierMainRequest.findOne({
             where: {
               user_id: user_id,
@@ -238,9 +241,9 @@ module.exports = {
               approved: getTierDetails.approved
             }
             tierDetails[3].account_details = object;
-            tierDetails[3].is_active = true;
+            tierDetails[3].is_tier_active = true;
           } else {
-            tierDetails[3].is_active = true;
+            tierDetails[3].is_tier_active = true;
           }
         } else if ((parseInt(userData.account_tier) == 4)) {
           for (var j = 0; j < 4; j++) {
