@@ -801,6 +801,7 @@ module.exports = {
       // console.log("getTierData.length > 0", getTierData.length > 0)
       if (getTierData != undefined) {
         usersData[0].is_tier_enabled = true
+        usersData[0].is_kyc_done = 0;
       } else {
         let userKyc = await KYC.findOne({
           user_id: id
