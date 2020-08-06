@@ -3303,5 +3303,12 @@
 		"message_type": "success",
 		"message_english": "No Fee Value for this has been found.",
 		"message": "No Fee Value for this has been found."
+	},
+	"User Wallet Create Unsuccess": {
+		"page": "CMS- User Wallet Create",
+		"context": "User Wallet Cannot be created as country or state is illegal",
+		"message_type": "error",
+		"message_english": "User Wallet Cannot be created as country or state is illegal",
+		"message": "User Wallet Cannot be created as country or state is illegal"
 	}
 }

@@ -317,6 +317,10 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_institutional_account',
       defaultsTo: false
+    },
+    goverement_issued_number: {
+      type: "string",
+      columnName: "goverement_issued_number"
     }
   },
   beforeCreate: (values, next) => {
