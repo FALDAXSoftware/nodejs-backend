@@ -723,7 +723,7 @@ module.exports = {
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
       } else {
-        usersData[0].UUID = '4-1-1' + '-' + usersData[0].id;
+        usersData[0].UUID = '4-1-0' + '-' + usersData[0].id;
       }
       if (usersData) {
         return res.json({
@@ -752,6 +752,15 @@ module.exports = {
     });
     if (usersData.length > 0) {
 
+      if (usersData[0].goverement_issued_number) {
+        var dataValueSSN = await sails.helpers.getDecryptData(usersData[0].goverement_issued_number)
+        usersData[0].ssn_number = dataValueSSN;
+      } else {
+        usersData[0].ssn_number = usersData[0].goverement_issued_number
+      }
+
+      delete usersData[0].goverement_issued_number;
+
       if (usersData[0].country) {
         let AllCountries = csc.getAllCountries();
         usersData[0]["countryJsonId"] = null;
@@ -775,19 +784,42 @@ module.exports = {
       }
     }
     if (usersData[0].account_tier != 4) {
-      let userKyc = await KYC.findOne({
-        user_id: id
-      });
-      console.log("userKyc", userKyc)
-      usersData[0].is_kyc_done = 0;
-      if (userKyc) {
-        if (userKyc.steps == 3) {
-          usersData[0].is_kyc_done = 1;
-          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
-            usersData[0].is_kyc_done = 2;
+
+      console.log("usersData[0].account_tier", usersData[0].account_tier)
+      if (usersData[0].account_tier == 0) {
+        var getTierData = await Tiers.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            tier_step: 0
+          }
+        })
+      }
+
+      console.log("getTierData", getTierData)
+
+      // console.log("getTierData.length > 0", getTierData.length > 0)
+      if (getTierData != undefined) {
+        usersData[0].is_tier_enabled = true
+        usersData[0].is_kyc_done = 0;
+      } else {
+        let userKyc = await KYC.findOne({
+          user_id: id
+        });
+        console.log("userKyc", userKyc)
+        usersData[0].is_kyc_done = 0;
+        if (userKyc) {
+          if (userKyc.steps == 3) {
+            usersData[0].is_kyc_done = 1;
+            if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+              usersData[0].is_kyc_done = 2;
+            }
           }
         }
       }
+      // {
+      // }
+
     } else if (usersData[0].account_tier == 4) {
       usersData[0].is_kyc_done = 2
     }
@@ -963,6 +995,11 @@ module.exports = {
 
               if (req.body.country_code) {
                 user['country_code'] = req.body.country_code;
+              }
+
+              if (req.body.ssn_number) {
+                var dataValueSSN = await sails.helpers.getEncryptData(req.body.ssn_number)
+                user["goverement_issued_number"] = dataValueSSN;
               }
 
               user['is_user_updated'] = true;
@@ -3892,24 +3929,50 @@ module.exports = {
             });
         }
       }
+      if (userData.account_tier == 0) {
+        data.is_kyc_done = 2;
+        var getTierData = await Tiers.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            tier_step: 0
+          }
+        });
+      }
+      if (getTierData != undefined) {
+        var dataResponse1 = await sails
+          .helpers
+          .userLegalityCheck(userData.id);
 
-      let userKyc = await KYC.findOne({
-        user_id: user_id
-      });
-      data.is_kyc_done = 0;
-      if (userKyc) {
-        if (userKyc.steps == 3) {
-          data.is_kyc_done = 1;
-          if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
-            data.is_kyc_done = 2;
+        data.is_allowed = (dataResponse1.response)
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("You are allowed to trade").message,
+            "data": data
+          });
+      } else {
+        let userKyc = await KYC.findOne({
+          user_id: user_id
+        });
+        data.is_kyc_done = 0;
+        if (userKyc) {
+          if (userKyc.steps == 3) {
+            data.is_kyc_done = 1;
+            if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
+              data.is_kyc_done = 2;
+            }
           }
         }
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        console.log(geo_fencing_data)
+        data.is_allowed = geo_fencing_data.response;
       }
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      console.log(geo_fencing_data)
-      data.is_allowed = geo_fencing_data.response;
+
       if (geo_fencing_data.response != true) {
         return res
           .status(200)
