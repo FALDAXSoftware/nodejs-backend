@@ -771,6 +771,18 @@ module.exports = {
           type: 3
         }).fetch();
 
+        var encryptSSN = await sails.helpers.getEncryptData(value.ssn)
+
+        var userDataUpdateValue = await Users
+          .update({
+            id: req.user.id,
+            deleted_at: null,
+            is_active: true
+          })
+          .set({
+            goverement_issued_number: encryptSSN
+          })
+
         if ((flagReUpload.valid_id_flag == "false" || flagReUpload.valid_id_flag == false) && (flagReUpload.proof_residence_flag == "false" || flagReUpload.proof_residence_flag == false)) {
           return res
             .status(200)
