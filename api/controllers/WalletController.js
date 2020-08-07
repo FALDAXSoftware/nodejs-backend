@@ -3893,8 +3893,7 @@ module.exports = {
               .status(401)
               .json({
                 "status": 401,
-                "err": dataResponse1.msg,
-                error_at: dataResponse1
+                "err": "Currently You tier is inactive"
               });
           }
 
