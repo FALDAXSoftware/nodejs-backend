@@ -1462,8 +1462,7 @@ module.exports = {
                 .status(401)
                 .json({
                   "status": 401,
-                  "err": dataResponse1.msg,
-                  error_at: dataResponse1
+                  "err": "Currently Tier is inactive"
                 });
             }
             var dataResponse1 = await sails
@@ -1756,8 +1755,7 @@ module.exports = {
               .status(401)
               .json({
                 "status": 401,
-                "err": dataResponse1.msg,
-                error_at: dataResponse1
+                "err": "Currently Tier is inactive"
               });
           }
 
@@ -4483,8 +4481,7 @@ module.exports = {
               .status(401)
               .json({
                 "status": 401,
-                "err": dataResponse1.msg,
-                error_at: dataResponse1
+                "err": "Currently Tier is inactive"
               });
           }
 
