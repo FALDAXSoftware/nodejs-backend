@@ -547,7 +547,7 @@ module.exports = {
             .format();
 
           // Get User and tier information
-          var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
+          var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit, tiers.is_active
                           FROM users
                           LEFT JOIN tiers
                           ON (users.account_tier) = tiers.tier_step
@@ -599,44 +599,69 @@ module.exports = {
           var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
           userDailyHistory = userDailyHistory.rows
 
-          // Monthly Limit Checking
-          var getUserMonthlyHistory = `SELECT *
-                                          FROM (
-                                            SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
-                                              FROM coins
-                                              LEFT JOIN withdraw_request
-                                              ON withdraw_request.coin_id = coins.id
-                                              WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
-                                              AND withdraw_request.deleted_at IS NULL AND withdraw_request.transaction_type = 'send'
-                                              AND withdraw_request.user_id = ${user_id}
-                                              AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
-                                          ) as t
-                                          CROSS JOIN (
-                                            SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
-                                              FROM coins
-                                              LEFT JOIN wallet_history
-                                              ON wallet_history.coin_id = coins.id
-                                              WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
-                                              AND wallet_history.deleted_at IS NULL AND wallet_history.transaction_type = 'send'
-                                              AND wallet_history.user_id = ${user_id}
-                                              AND wallet_history.created_at >= '${previousMonth}' AND wallet_history.created_at <= '${now}'
-                                          ) as m`
-          var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
-          userMonthlyHistory = userMonthlyHistory.rows;
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+
+          } else {
+            // Monthly Limit Checking
+            var getUserMonthlyHistory = `SELECT *
+                                            FROM (
+                                              SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                                FROM coins
+                                                LEFT JOIN withdraw_request
+                                                ON withdraw_request.coin_id = coins.id
+                                                WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                                AND withdraw_request.deleted_at IS NULL AND withdraw_request.transaction_type = 'send'
+                                                AND withdraw_request.user_id = ${user_id}
+                                                AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
+                                            ) as t
+                                            CROSS JOIN (
+                                              SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                                FROM coins
+                                                LEFT JOIN wallet_history
+                                                ON wallet_history.coin_id = coins.id
+                                                WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                                AND wallet_history.deleted_at IS NULL AND wallet_history.transaction_type = 'send'
+                                                AND wallet_history.user_id = ${user_id}
+                                                AND wallet_history.created_at >= '${previousMonth}' AND wallet_history.created_at <= '${now}'
+                                            ) as m`
+            var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
+            userMonthlyHistory = userMonthlyHistory.rows;
+          }
+
 
           var dailyTotalVolume = 0.0;
           var monthlyTotalVolume = 0.0;
           userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
           userDailyHistory[0].history_amount = (userDailyHistory[0].history_amount == null) ? (0.0) : (userDailyHistory[0].history_amount);
-          userMonthlyHistory[0].history_amount = (userMonthlyHistory[0].history_amount == null) ? (0.0) : (userMonthlyHistory[0].history_amount);
-          userMonthlyHistory[0].request_amount = (userMonthlyHistory[0].request_amount == null) ? (0.0) : (userMonthlyHistory[0].request_amount)
+          var monthlyHistoryAmount = 0.0;
+          var monthlyWithdrawAmount = 0.0
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyHistoryAmount = 0.0
+          } else {
+            monthlyHistoryAmount = (userMonthlyHistory[0].history_amount == null) ? (0.0) : (userMonthlyHistory[0].history_amount)
+          }
+
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyWithdrawAmount = 0.0
+          } else {
+            monthlyWithdrawAmount = (userMonthlyHistory[0].request_amount == null) ? (0.0) : (userMonthlyHistory[0].request_amount)
+          }
           dailyTotalVolume = parseFloat(userDailyHistory[0].history_amount) + parseFloat(userDailyHistory[0].request_amount);
-          monthlyTotalVolume = parseFloat(userMonthlyHistory[0].history_amount) + parseFloat(userMonthlyHistory[0].request_amount);
+          monthlyTotalVolume = parseFloat(monthlyHistoryAmount) + parseFloat(monthlyWithdrawAmount);
           dailyTotalVolume = (Number.isNaN(dailyTotalVolume)) ? (0.0) : (dailyTotalVolume);
           monthlyTotalVolume = (Number.isNaN(monthlyTotalVolume)) ? (0.0) : (monthlyTotalVolume)
           amount = parseFloat(amount);
           var dailyFlag;
           var monthlyFlag;
+
+          console.log("userTierSql[0].is_active", userTierSql[0].is_active)
+          console.log("userData.account_tier == 0", userData.account_tier == 0)
+
+          console.log("userData.account_tier", userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))
+
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyFlag = true;
+          }
 
           if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
             dailyFlag = true;
@@ -646,9 +671,9 @@ module.exports = {
             monthlyFlag = true;
           }
 
-          if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
+          if (monthlyFlag == true || monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))) {
 
-            if ((((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
+            if (monthlyFlag == true || (((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))) {
 
               if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
