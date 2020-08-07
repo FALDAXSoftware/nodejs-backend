@@ -41,13 +41,22 @@ module.exports = {
         }
       })
     } else {
-      let query = `SELECT
-                    SUM((CASE
-                      WHEN side='Buy' THEN ((quantity)*Cast(fiat_values->>'asset_1_usd' as double precision))
-                      WHEN side='Sell' THEN ((quantity*fill_price)*Cast(fiat_values->>'asset_2_usd' as double precision))
-                    END)) as total_amount
-                    FROM trade_history
-                    WHERE (user_id=${user_id} OR requested_user_id = ${user_id}) AND deleted_at IS null`;
+      let query = `SELECT (a1.sum+a2.sum) as total, a1.sum as user_sum, a2.sum as requested_sum , a1.user_coin ,a2.requested_coin
+                      FROM(SELECT user_coin, 
+                          SUM((CASE
+                              WHEN side='Buy' THEN ((quantity)*Cast(fiat_values->>'asset_1_usd' as double precision))
+                              WHEN side='Sell' THEN ((quantity*fill_price)*Cast(fiat_values->>'asset_2_usd' as double precision))
+                          END)) as sum
+                          FROM trade_history
+                      WHERE user_id = ${user_id}  GROUP BY user_coin) a1
+                      FULL JOIN (SELECT requested_coin, 
+                          SUM((CASE
+                              WHEN side='Buy' THEN ((quantity*fill_price)*Cast(fiat_values->>'asset_1_usd' as double precision))
+                              WHEN side='Sell' THEN ((quantity)*Cast(fiat_values->>'asset_2_usd' as double precision))
+                          END)) as sum
+                          FROM trade_history
+                          WHERE requested_user_id = ${user_id}  GROUP BY requested_coin) as a2
+                          ON a1.user_coin = a2.requested_coin`;
       let tradeData = await sails.sendNativeQuery(query, [])
       tradeData = tradeData.rows;
       tradeDetails = tradeData;
