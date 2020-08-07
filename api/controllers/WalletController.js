@@ -1457,7 +1457,7 @@ module.exports = {
                 tier_step: 0
               }
             })
-            if (getTierData[0].is_active == false) {
+            if (getTierData.is_active == false) {
               return res
                 .status(401)
                 .json({
@@ -1751,7 +1751,7 @@ module.exports = {
               tier_step: 0
             }
           })
-          if (getTierData[0].is_active == false) {
+          if (getTierData.is_active == false) {
             return res
               .status(401)
               .json({
@@ -3890,7 +3890,7 @@ module.exports = {
               tier_step: 0
             }
           })
-          if (getTierData[0].is_active == false) {
+          if (getTierData.is_active == false) {
             return res
               .status(401)
               .json({
@@ -4478,7 +4478,7 @@ module.exports = {
               tier_step: 0
             }
           })
-          if (getTierData[0].is_active == false) {
+          if (getTierData.is_active == false) {
             return res
               .status(401)
               .json({
