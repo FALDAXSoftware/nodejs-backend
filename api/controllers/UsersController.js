@@ -803,6 +803,7 @@ module.exports = {
         usersData[0].is_tier_enabled = true
         usersData[0].is_kyc_done = 0;
       } else {
+        usersData[0].is_tier_enabled = false
         let userKyc = await KYC.findOne({
           user_id: id
         });
@@ -1013,6 +1014,14 @@ module.exports = {
                 .fetch();
 
               sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
+
+              // let slug = "profile_updated"
+              // let template = await EmailTemplate.findOne({
+              //   slug
+              // });
+              // let user_language = (updatedUsers[0].default_language ? updatedUsers[0].default_language : 'en');
+              // let language_content = template.all_content[user_language].content;
+              // let language_subject = template.all_content[user_language].subject;
 
               return res.json({
                 "status": 200,
