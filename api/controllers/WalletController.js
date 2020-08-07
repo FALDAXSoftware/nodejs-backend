@@ -1451,6 +1451,21 @@ module.exports = {
         if (userData.account_tier != 4) {
 
           if (userData.account_tier == 0) {
+            var getTierData = await Tiers.findOne({
+              where: {
+                deleted_at: null,
+                tier_step: 0
+              }
+            })
+            if (getTierData[0].is_active == false) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": dataResponse1.msg,
+                  error_at: dataResponse1
+                });
+            }
             var dataResponse1 = await sails
               .helpers
               .userLegalityCheck(user_id)
@@ -1729,6 +1744,23 @@ module.exports = {
       if (userData.account_tier != 4) {
 
         if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData[0].is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+
           var dataResponse1 = await sails
             .helpers
             .userLegalityCheck(user_id)
@@ -3851,6 +3883,23 @@ module.exports = {
       if (userData != undefined && userData.account_tier != 4) {
 
         if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData[0].is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+
           var dataResponse1 = await sails
             .helpers
             .userLegalityCheck(user_id)
@@ -4422,6 +4471,23 @@ module.exports = {
       if (userData != undefined && userData.account_tier != 4) {
 
         if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData[0].is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+
           var dataResponse1 = await sails
             .helpers
             .userLegalityCheck(user_id)
