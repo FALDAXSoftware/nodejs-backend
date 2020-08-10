@@ -4583,6 +4583,7 @@ module.exports = {
         console.log("dailyTotalVolume", dailyTotalVolume)
 
         var dailyFlag = false;
+        console.log("userTierSql[0].daily_withdraw_limit",userTierSql[0].daily_withdraw_limit)
         if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
           dailyFlag = true;
         }
@@ -4591,20 +4592,17 @@ module.exports = {
 
           if ((((limitCalculation[0].usd_price * data.amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
             console.log('dailyFlag', dailyFlag);
-            console.log('monthlyFlag', monthlyFlag);
-            if (dailyFlag == true && monthlyFlag == true) {
+            // console.log('monthlyFlag', monthlyFlag);
+            if (dailyFlag == true) {
               var data = {
                 "daily_limit_left": "Unlimited",
-                "monthly_limit_left": "Unlimited",
                 "daily_limit_actual": "Unlimited",
-                "monthly_limit_actual": "Unlimited",
                 "current_limit_left_daily_amount": "Unlimited",
-                "current_limit_left_montly_amount": "Unlimited"
               }
               return res
-                .status(207)
+                .status(206)
                 .json({
-                  "status": 207,
+                  "status": 206,
                   "message": sails.__("User Can do transaction").message,
                   "data": data
                 })
