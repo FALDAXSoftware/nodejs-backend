@@ -109,12 +109,16 @@ module.exports = {
         //     summaryReport_Req1.tradeCountRemaining = getTradeCount
         // }
 
-        if ((getTotalTradeInFiat.length > 0 && getTotalTradeInFiat[0].total_amount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions)) {
+        console.log("getTotalTradeInFiat[0]", getTotalTradeInFiat)
+
+        var tradeAmount = (getTotalTradeInFiat.length == 0) ? (0.0) : (getTotalTradeInFiat[0].total_amount)
+
+        if ((getTotalTradeInFiat.length > 0 && tradeAmount) >= parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions)) {
             req1_tradeTotalFiatCheck = true;
         }
-        let tradeTotalFiatRemaining = parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) - (getTotalTradeInFiat[0].total_amount);
+        let tradeTotalFiatRemaining = parseInt(requirementSetFirst.Minimum_Total_Value_of_All_Transactions) - (tradeAmount);
         // if (tradeTotalFiatRemaining > 0) {
-        summaryReport_Req1.tradeTotalFiatRemaining = getTotalTradeInFiat[0].total_amount;
+        summaryReport_Req1.tradeTotalFiatRemaining = tradeAmount;
         // } else {
         //     summaryReport_Req1.tradeTotalFiatRemaining = getTotalTradeInFiat[0].total_amount;
         // }
@@ -123,13 +127,14 @@ module.exports = {
         let getTotalWalletInFiat = await sails.helpers.wallet.getTradeUserWalletBalance(user_id);
         console.log("getTotalWalletInFiat", getTotalWalletInFiat)
         let req2_tradeWalletCheck = false;
-        if ((getTotalWalletInFiat.length > 0 && getTotalWalletInFiat[0].total_balance_fiat) >= parseInt(requirementSetSecond.Total_Wallet_Balance)) {
+        var walletFiatAmount = (getTotalWalletInFiat.length == 0) ? (0.0) : (getTotalWalletInFiat[0].total_balance_fiat)
+        if ((getTotalWalletInFiat.length > 0 && walletFiatAmount) >= parseInt(requirementSetSecond.Total_Wallet_Balance)) {
             req2_tradeWalletCheck = true;
         }
 
-        let userWalletFiatRemaining = parseInt(requirementSetSecond.Total_Wallet_Balance) - (getTotalWalletInFiat[0].total_balance_fiat);
+        let userWalletFiatRemaining = parseInt(requirementSetSecond.Total_Wallet_Balance) - (walletFiatAmount);
         // if (userWalletFiatRemaining > 0) {
-        summaryReport_Req2.userWalletFiatRemaining = getTotalWalletInFiat[0].total_balance_fiat;
+        summaryReport_Req2.userWalletFiatRemaining = walletFiatAmount;
         // } else {
         //     summaryReport_Req2.userWalletFiatRemaining = getTotalWalletInFiat[0].total_balance_fiat
         // }
