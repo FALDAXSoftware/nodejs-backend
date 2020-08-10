@@ -32,7 +32,7 @@ module.exports = {
       columnName: 'max_trade_amount'
     },
     max_allowed_days: {
-      type: 'number',
+      type: 'string',
       columnName: 'max_allowed_days'
     },
     daily_withdraw_limit: {
