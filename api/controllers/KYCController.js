@@ -151,8 +151,41 @@ module.exports = {
             }
           });
 
-          if (userDetailsValue != undefined) {
+          console.log("userDetailsValue", userDetailsValue);
+
+          console.log("userDetailsValue.country_code", userDetailsValue.country_code)
+          console.log("userDetailsValue.country_code != ", userDetailsValue.country_code != "")
+          console.log("userDetailsValue.country_code != null", userDetailsValue.country_code != null)
+          var str = userDetailsValue.country_code;
+          console.log("str.length", str.length)
+
+          if (userDetailsValue != undefined && str.length > 0) {
+            console.log("INSIDE IF")
             req.body.country_code = userDetailsValue.country_code;
+          } else {
+            console.log("INSIDE ELSE", userDetailsValue.country)
+            var countryCodeData = await Countries.findOne({
+              where: {
+                name: userDetailsValue.country
+              }
+            })
+
+            console.log("countryCodeData", countryCodeData);
+
+            console.log("countryCodeData.sortname", countryCodeData.sortname)
+
+            if (countryCodeData != undefined) {
+              req.body.country_code = countryCodeData.sortname
+              var userDetailsUpdate = await Users
+                .update({
+                  id: user_id,
+                  is_active: true,
+                  deleted_at: null
+                })
+                .set({
+                  country_code: countryCodeData.sortname
+                })
+            }
           }
         }
         req.body.status = false;
