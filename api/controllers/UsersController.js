@@ -798,15 +798,19 @@ module.exports = {
 
       console.log("getTierData", getTierData)
 
+      var userKyc = await KYC.findOne({
+        user_id: id
+      });
+
       // console.log("getTierData.length > 0", getTierData.length > 0)
-      if (getTierData != undefined) {
+      if (getTierData != undefined && usersData[0].account_tier == 0) {
         usersData[0].is_tier_enabled = true
-        usersData[0].is_kyc_done = 0;
+        usersData[0].is_kyc_done = (userKyc != undefined) ? (1) : (0);
       } else {
         usersData[0].is_tier_enabled = false
-        let userKyc = await KYC.findOne({
-          user_id: id
-        });
+        // let userKyc = await KYC.findOne({
+        //   user_id: id
+        // });
         console.log("userKyc", userKyc)
         usersData[0].is_kyc_done = 0;
         if (userKyc) {
