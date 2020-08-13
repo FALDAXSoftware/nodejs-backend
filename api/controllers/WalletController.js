@@ -596,6 +596,7 @@ module.exports = {
                                           AND wallet_history.user_id = ${user_id}
                                           AND wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}'
                                       ) as m`
+          console.log("getUserDailyHistory", getUserDailyHistory)
           var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
           userDailyHistory = userDailyHistory.rows
 
@@ -4565,6 +4566,8 @@ module.exports = {
                                       AND wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}'
                                   ) as m`
 
+      console.log("getUserDailyHistory",getUserDailyHistory)
+
       var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
       userDailyHistory = userDailyHistory.rows
       console.log('userDailyHistory', userDailyHistory);
@@ -4583,7 +4586,7 @@ module.exports = {
         console.log("dailyTotalVolume", dailyTotalVolume)
 
         var dailyFlag = false;
-        console.log("userTierSql[0].daily_withdraw_limit",userTierSql[0].daily_withdraw_limit)
+        console.log("userTierSql[0].daily_withdraw_limit", userTierSql[0].daily_withdraw_limit)
         if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
           dailyFlag = true;
         }
