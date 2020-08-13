@@ -603,5 +603,12 @@ module.exports.routes = {
   'get /admin/smsTemplate/get-sms-template-by-id': "SMSTemplateController.getSMSTemplateByID",
   'put /admin/smsTemplate/update-sms-template': "SMSTemplateController.updateSMSTemplate",
 
-  'get /admin/get-all-orders': 'TradeController.getTradeAllOrders'
+  'get /admin/get-all-orders': 'TradeController.getTradeAllOrders',
+
+  'get /admin/dashoboard-liune-1-count': 'DashboardController.getLine1Count',
+  'get /admin/dashoboard-liune-2-count': 'DashboardController.getLine2Count',
+  'get /admin/dashoboard-liune-3-count': 'DashboardController.getLine3Count',
+  'get /admin/dashoboard-liune-4-count': 'DashboardController.getLine4Count',
+  'get /admin/dashoboard-liune-5-count': 'DashboardController.getLine5Count',
+  'get /admin/dashoboard-liune-6-count': 'DashboardController.getLine6Count',
 };
