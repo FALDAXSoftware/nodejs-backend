@@ -111,29 +111,35 @@ module.exports = {
 
       console.log("totalCount", totalCount)
 
-      userTradeHistory = await TradeHistory
-        .find({
-          select: [
-            'quantity',
-            'fill_price',
-            'side',
-            'symbol',
-            'created_at',
-            'order_type',
-            'limit_price',
-            'stop_price',
-            'id',
-            'user_id',
-            'requested_user_id',
-            'is_stop_limit'
-          ],
-          where: {
-            ...q
-          },
-          limit: data.limit,
-          skip: ((data.page - 1) * data.limit)
-        })
-        .sort("id DESC");
+      if (totalCount > 0) {
+
+        userTradeHistory = await TradeHistory
+          .find({
+            select: [
+              'quantity',
+              'fill_price',
+              'side',
+              'symbol',
+              'created_at',
+              'order_type',
+              'limit_price',
+              'stop_price',
+              'id',
+              'user_id',
+              'requested_user_id',
+              'is_stop_limit'
+            ],
+            where: {
+              ...q
+            },
+            limit: data.limit,
+            skip: ((data.page - 1) * data.limit)
+          })
+          .sort("id DESC");
+      } else {
+        userTradeHistory = [];
+      }
+
 
       console.log("userTradeHistoryData", userTradeHistory.length)
       var userTradeHistoryData = {
