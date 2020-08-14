@@ -1831,7 +1831,7 @@ module.exports = {
               }
             }
           }
-          if (walletCount[i].coin_name != "SUSU") {
+          // if (walletCount[i].coin_name != "SUSU") {
             var currencyConversionData = await CurrencyConversion.findOne({
               where: {
                 deleted_at: null,
@@ -1846,13 +1846,7 @@ module.exports = {
             console.log("fiatValue", fiatValue)
             usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
             console.log("usd_price", usd_price);
-          } else {
-            var susucoinData = await sails.helpers.getUsdSusucoinValue();
-            susucoinData = JSON.parse(susucoinData);
-            susucoinData = susucoinData.data
-            walletCount[i].fiat = susucoinData.USD;
-            usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
-          }
+          // } 
         }
 
         if (total > 0) {
