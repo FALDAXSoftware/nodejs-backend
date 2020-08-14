@@ -26,12 +26,10 @@ module.exports = {
     maker_fee: {
       type: 'number',
       columnName: 'maker_fee'
-      // required: true
     },
     taker_fee: {
       type: 'number',
       columnName: 'taker_fee'
-      // required: true
     },
     is_active: {
       type: 'boolean',
@@ -41,23 +39,19 @@ module.exports = {
     },
     symbol: {
       type: 'string',
-      columnName: 'symbol',
-      // required: true
+      columnName: 'symbol'
     },
     kraken_pair: {
       type: 'string',
-      columnName: 'kraken_pair',
-      // required: true
+      columnName: 'kraken_pair'
     },
     ask_price: {
       type: 'number',
-      columnName: 'ask_price',
-      // required: true
+      columnName: 'ask_price'
     },
     bid_price: {
       type: 'number',
-      columnName: 'bid_price',
-      // required: true
+      columnName: 'bid_price'
     },
     created_at: {
       type: 'ref',
@@ -98,12 +92,10 @@ module.exports = {
     price_precision: {
       type: 'number',
       columnName: 'price_precision'
-      // required: true
     },
     quantity_precision: {
       type: 'number',
       columnName: 'quantity_precision'
-      // required: true
     },
     influx_table_name: {
       type: 'string',
@@ -112,7 +104,15 @@ module.exports = {
     influx_pair_name: {
       type: 'string',
       columnName: 'influx_pair_name'
-    }
+    },
+    buy_min_total: {
+      type: 'number',
+      columnName: 'buy_min_total'
+    },
+    sell_min_total: {
+      type: 'number',
+      columnName: 'sell_min_total'
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
