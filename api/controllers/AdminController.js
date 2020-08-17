@@ -2594,14 +2594,12 @@ module.exports = {
                             (
                             SELECT user_coin, sum(user_fee) as user_fee
                             FROM trade_history
-                            WHERE requested_user_id != 2105 AND user_id != 2105
                             GROUP BY user_coin
                             )
                               UNION
                           (
                             SELECT requested_coin, sum(requested_fee) as requested_fee
                             FROM trade_history
-                            WHERE requested_user_id != 2105 AND user_id != 2105
                             GROUP BY requested_coin
                           )
                           ) b GROUP BY b.user_coin`,
@@ -2637,19 +2635,23 @@ module.exports = {
       });
 
       console.log("sqlData", sqlData);
-      console.log("walletDataValue", walletDataValue);
-      console.log("currency_conversion", currency_conversion)
-      console.log("temp_forfeit_total", temp_forfeit_total)
+      // console.log("walletDataValue", walletDataValue);
+      // console.log("currency_conversion", currency_conversion)
+      // console.log("temp_forfeit_total", temp_forfeit_total)
 
       var tradeObject = {}
       var data = await sqlData.map(person => {
-        tradeObject[person.coin] = person
+        tradeObject[person.user_coin] = person
       });
+
+      console.log("tradeObject", tradeObject)
 
       var quantityObject = {}
       var data = await walletDataValue.map(person => {
         quantityObject[person.id] = person
       });
+
+      // console.log("quantityObject", quantityObject)
 
       var priceObject = {}
       var data = await currency_conversion.map(person => {
@@ -2669,7 +2671,9 @@ module.exports = {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
           let asset_id = assets_data[i].id;
-          var walletValue = quantityObject[asset_id]
+          var walletValue = quantityObject[asset_id];
+
+          // console.log("walletValue", walletValue)
 
           if (walletValue == undefined) {
             walletValue = {
@@ -2679,7 +2683,7 @@ module.exports = {
             }
           }
 
-          console.log("walletValue", walletValue)
+          // console.log("walletValue", walletValue)
           var wallet_details = await Wallet
             .findOne({
               is_active: true,
@@ -2710,14 +2714,16 @@ module.exports = {
             assets_data[i].receive_address = wallet_details.receive_address;
             var temp_wallet_value = 0.0
             // for (var i = 0; i < walletValue.length; i++) {
-            temp_wallet_value = walletValue.faldax_fee
+            temp_wallet_value = walletValue.sum
             // }
             temp_wallet_total = parseFloat(temp_wallet_value);
           }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
-
           assets_data[i].total_earned_from_forfeit = (forfietObject[asset_id] && forfietObject[asset_id] != undefined) ? (parseFloat(forfietObject[asset_id].balance)) : (0.0)
+          // assets_data[i].trade_earned = (tradeObject[asset_name])
+
+          console.log("tradeObject[asset_name]", tradeObject[asset_name])
 
           assets_data[i].trade_earned = (tradeObject[asset_name] && tradeObject[asset_name] != undefined) ? (parseFloat(tradeObject[asset_name].sum)) : (0.0)
           assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
@@ -4391,20 +4397,14 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
-          if (assets_data[i].coin_code != 'SUSU') {
+          // if (assets_data[i].coin_code != 'SUSU') {
 
-            var currency_conversion = await CurrencyConversion.findOne({
-              deleted_at: null,
-              coin_id: asset_id
-            })
-            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-          } else if (assets_data[i].coin_code == 'SUSU') {
-
-            var susucoinData = await sails.helpers.getUsdSusucoinValue();
-            susucoinData = JSON.parse(susucoinData);
-            susucoinData = susucoinData.data
-            assets_data[i].fiat = susucoinData.USD;
-          }
+          var currency_conversion = await CurrencyConversion.findOne({
+            deleted_at: null,
+            coin_id: asset_id
+          })
+          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var balance = 0;
