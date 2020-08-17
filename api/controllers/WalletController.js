@@ -167,18 +167,40 @@ module.exports = {
         filter = ` wallets.user_id = ${user_id}`
 
         if (userData.account_tier != 4) {
-          //Checking whether user can trade in the area selected in the KYC
-          var geo_fencing_data = await sails
-            .helpers
-            .userTradeChecking(user_id);
-          console.log('geo_fencing_data', geo_fencing_data);
-          if (geo_fencing_data.response != true) {
-            return res.json({
-              "status": 401,
-              "err": geo_fencing_data.msg,
-              error_at: geo_fencing_data
-            });
+
+          // Profile Legality Check
+
+          if (userData.account_tier == 0) {
+            var dataResponse1 = await sails
+              .helpers
+              .userLegalityCheck(userData.id)
+
+            if (dataResponse1.response != true) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": dataResponse1.msg,
+                  error_at: dataResponse1
+                });
+            }
+          } else {
+            //Checking whether user can trade in the area selected in the KYC
+            var geo_fencing_data = await sails
+              .helpers
+              .userTradeChecking(user_id);
+            console.log('geo_fencing_data', geo_fencing_data);
+            if (geo_fencing_data.response != true) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": geo_fencing_data.msg,
+                  error_at: geo_fencing_data
+                });
+            }
           }
+
         }
 
       }
@@ -380,20 +402,6 @@ module.exports = {
         is_active: true
       });
 
-      if (userData.account_tier != 4) {
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
-        }
-      }
-
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -401,6 +409,38 @@ module.exports = {
             "status": 500,
             "err": sails.__("Please Complete You profile").message
           })
+      }
+
+      if (userData != undefined && userData.account_tier != 4) {
+
+        if (userData.account_tier == 0) {
+          var dataResponse1 = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+
+          if (dataResponse1.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+        } else {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": geo_fencing_data.msg,
+                error_at: geo_fencing_data
+              });
+          }
+        }
       }
 
       if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
@@ -506,7 +546,7 @@ module.exports = {
             .format();
 
           // Get User and tier information
-          var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
+          var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit, tiers.is_active
                           FROM users
                           LEFT JOIN tiers
                           ON (users.account_tier) = tiers.tier_step
@@ -558,44 +598,64 @@ module.exports = {
           var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
           userDailyHistory = userDailyHistory.rows
 
-          // Monthly Limit Checking
-          var getUserMonthlyHistory = `SELECT *
-                                          FROM (
-                                            SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
-                                              FROM coins
-                                              LEFT JOIN withdraw_request
-                                              ON withdraw_request.coin_id = coins.id
-                                              WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
-                                              AND withdraw_request.deleted_at IS NULL AND withdraw_request.transaction_type = 'send'
-                                              AND withdraw_request.user_id = ${user_id}
-                                              AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
-                                          ) as t
-                                          CROSS JOIN (
-                                            SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
-                                              FROM coins
-                                              LEFT JOIN wallet_history
-                                              ON wallet_history.coin_id = coins.id
-                                              WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
-                                              AND wallet_history.deleted_at IS NULL AND wallet_history.transaction_type = 'send'
-                                              AND wallet_history.user_id = ${user_id}
-                                              AND wallet_history.created_at >= '${previousMonth}' AND wallet_history.created_at <= '${now}'
-                                          ) as m`
-          var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
-          userMonthlyHistory = userMonthlyHistory.rows;
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+
+          } else {
+            // Monthly Limit Checking
+            var getUserMonthlyHistory = `SELECT *
+                                            FROM (
+                                              SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
+                                                FROM coins
+                                                LEFT JOIN withdraw_request
+                                                ON withdraw_request.coin_id = coins.id
+                                                WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                                AND withdraw_request.deleted_at IS NULL AND withdraw_request.transaction_type = 'send'
+                                                AND withdraw_request.user_id = ${user_id}
+                                                AND withdraw_request.created_at >= '${previousMonth}' AND withdraw_request.created_at <= '${now}'
+                                            ) as t
+                                            CROSS JOIN (
+                                              SELECT SUM((wallet_history.amount + wallet_history.actual_network_fees)*Cast(wallet_history.fiat_values->>'asset_1_usd' as double precision)) as history_amount
+                                                FROM coins
+                                                LEFT JOIN wallet_history
+                                                ON wallet_history.coin_id = coins.id
+                                                WHERE coins.is_active = 'true' AND coins.deleted_at IS NULL
+                                                AND wallet_history.deleted_at IS NULL AND wallet_history.transaction_type = 'send'
+                                                AND wallet_history.user_id = ${user_id}
+                                                AND wallet_history.created_at >= '${previousMonth}' AND wallet_history.created_at <= '${now}'
+                                            ) as m`
+            var userMonthlyHistory = await sails.sendNativeQuery(getUserMonthlyHistory);
+            userMonthlyHistory = userMonthlyHistory.rows;
+          }
 
           var dailyTotalVolume = 0.0;
           var monthlyTotalVolume = 0.0;
           userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
           userDailyHistory[0].history_amount = (userDailyHistory[0].history_amount == null) ? (0.0) : (userDailyHistory[0].history_amount);
-          userMonthlyHistory[0].history_amount = (userMonthlyHistory[0].history_amount == null) ? (0.0) : (userMonthlyHistory[0].history_amount);
-          userMonthlyHistory[0].request_amount = (userMonthlyHistory[0].request_amount == null) ? (0.0) : (userMonthlyHistory[0].request_amount)
+          var monthlyHistoryAmount = 0.0;
+          var monthlyWithdrawAmount = 0.0
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyHistoryAmount = 0.0
+          } else {
+            monthlyHistoryAmount = (userMonthlyHistory[0].history_amount == null) ? (0.0) : (userMonthlyHistory[0].history_amount)
+          }
+
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyWithdrawAmount = 0.0
+          } else {
+            monthlyWithdrawAmount = (userMonthlyHistory[0].request_amount == null) ? (0.0) : (userMonthlyHistory[0].request_amount)
+          }
+
           dailyTotalVolume = parseFloat(userDailyHistory[0].history_amount) + parseFloat(userDailyHistory[0].request_amount);
-          monthlyTotalVolume = parseFloat(userMonthlyHistory[0].history_amount) + parseFloat(userMonthlyHistory[0].request_amount);
+          monthlyTotalVolume = parseFloat(monthlyHistoryAmount) + parseFloat(monthlyWithdrawAmount);
           dailyTotalVolume = (Number.isNaN(dailyTotalVolume)) ? (0.0) : (dailyTotalVolume);
           monthlyTotalVolume = (Number.isNaN(monthlyTotalVolume)) ? (0.0) : (monthlyTotalVolume)
           amount = parseFloat(amount);
           var dailyFlag;
           var monthlyFlag;
+
+          if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+            monthlyFlag = true;
+          }
 
           if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
             dailyFlag = true;
@@ -605,9 +665,9 @@ module.exports = {
             monthlyFlag = true;
           }
 
-          if (monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || monthlyFlag == true) {
+          if (monthlyFlag == true || monthlyTotalVolume <= userTierSql[0].monthly_withdraw_limit || (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))) {
 
-            if ((((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || monthlyFlag == true) {
+            if (monthlyFlag == true || (((limitCalculation[0].usd_price * amount) + monthlyTotalVolume) <= userTierSql[0].monthly_withdraw_limit) || (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))) {
 
               if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
 
@@ -1266,6 +1326,38 @@ module.exports = {
           })
       }
 
+      if (userData != undefined && userData.account_tier != 4) {
+
+        if (userData.account_tier == 0) {
+          var dataResponse1 = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+
+          if (dataResponse1.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+        } else {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": geo_fencing_data.msg,
+                error_at: geo_fencing_data
+              });
+          }
+        }
+      }
+
       var receiveCoin = await sails
         .helpers
         .wallet
@@ -1341,18 +1433,6 @@ module.exports = {
           id: req.user.id
         })
 
-        if (userData.account_tier != 4) {
-          var geo_fencing_data = await sails
-            .helpers
-            .userTradeChecking(user_id);
-          if (geo_fencing_data.response != true) {
-            return res.json({
-              "status": 401,
-              "err": geo_fencing_data.msg,
-              error_at: geo_fencing_data
-            });
-          }
-        }
         if (userData.is_user_updated == false || userData.is_user_updated == "false") {
           return res
             .status(500)
@@ -1360,6 +1440,52 @@ module.exports = {
               "status": 500,
               "err": sails.__("Please Complete You profile").message
             })
+        }
+
+        if (userData.account_tier != 4) {
+
+          if (userData.account_tier == 0) {
+            var getTierData = await Tiers.findOne({
+              where: {
+                deleted_at: null,
+                tier_step: 0
+              }
+            })
+            if (getTierData.is_active == false) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": "Currently Tier is inactive"
+                });
+            }
+            var dataResponse1 = await sails
+              .helpers
+              .userLegalityCheck(user_id)
+
+            if (dataResponse1.response != true) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": dataResponse1.msg,
+                  error_at: dataResponse1
+                });
+            }
+          } else {
+            var geo_fencing_data = await sails
+              .helpers
+              .userTradeChecking(user_id);
+            if (geo_fencing_data.response != true) {
+              return res
+                .status(401)
+                .json({
+                  "status": 401,
+                  "err": geo_fencing_data.msg,
+                  error_at: geo_fencing_data
+                });
+            }
+          }
         }
       }
       let coinData = await Coins.findOne({
@@ -1600,19 +1726,6 @@ module.exports = {
         id: user_id
       })
 
-      if (userData.account_tier != 4) {
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
-        }
-      }
       if (userData.is_user_updated == false || userData.is_user_updated == "false") {
         return res
           .status(500)
@@ -1621,6 +1734,55 @@ module.exports = {
             "err": sails.__("Please Complete You profile").message
           })
       }
+
+      if (userData.account_tier != 4) {
+
+        if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData.is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": "Currently Tier is inactive"
+              });
+          }
+
+          var dataResponse1 = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+
+          if (dataResponse1.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+        } else {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": geo_fencing_data.msg,
+                error_at: geo_fencing_data
+              });
+          }
+        }
+      }
+
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
@@ -1729,12 +1891,34 @@ module.exports = {
         id: user_id
       });
 
-      if (userData.account_tier == 0) {
+      if (userData.account_tier == 0 && userData.is_user_updated == true) {
+
+        var dataResponse1 = await sails
+          .helpers
+          .userLegalityCheck(user_id)
+
+        if (dataResponse1.response != true) {
+          return res
+            .status(401)
+            .json({
+              "status": 401,
+              "err": sails.__("User Wallet Create Unsuccess").message,
+              error_at: dataResponse1
+            });
+        }
+
+        // return res
+        //   .status(500)
+        //   .json({
+        //     "status": 500,
+        //     "err": sails.__("User Wallet create unsuccess").message
+        //   })
+      } else if (Boolean(userData.is_user_updated) == false) {
         return res
           .status(500)
           .json({
             "status": 500,
-            "err": sails.__("User Wallet create unsuccess").message
+            "err": sails.__("Please Complete You profile").message
           })
       }
 
@@ -3692,16 +3876,50 @@ module.exports = {
       });
 
       if (userData != undefined && userData.account_tier != 4) {
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
+
+        if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData.is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": "Currently You tier is inactive"
+              });
+          }
+
+          var dataResponse1 = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+
+          if (dataResponse1.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+        } else {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": geo_fencing_data.msg,
+                error_at: geo_fencing_data
+              });
+          }
         }
       }
 
@@ -4243,30 +4461,63 @@ module.exports = {
       });
 
       if (userData != undefined && userData.account_tier != 4) {
-        //Checking whether user can trade in the area selected in the KYC
-        var geo_fencing_data = await sails
-          .helpers
-          .userTradeChecking(user_id);
-        if (geo_fencing_data.response != true) {
-          return res.json({
-            "status": 401,
-            "err": geo_fencing_data.msg,
-            error_at: geo_fencing_data
-          });
+        if (userData.account_tier == 0) {
+
+          var getTierData = await Tiers.findOne({
+            where: {
+              deleted_at: null,
+              tier_step: 0
+            }
+          })
+          if (getTierData.is_active == false) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": "Currently Tier is inactive"
+              });
+          }
+
+          var dataResponse1 = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+
+          if (dataResponse1.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": dataResponse1.msg,
+                error_at: dataResponse1
+              });
+          }
+        } else {
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          if (geo_fencing_data.response != true) {
+            return res
+              .status(401)
+              .json({
+                "status": 401,
+                "err": geo_fencing_data.msg,
+                error_at: geo_fencing_data
+              });
+          }
         }
       }
 
       // Get User and tier information
-      var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit
-                      FROM users
-                      LEFT JOIN tiers
-                      ON (users.account_tier) = tiers.tier_step
-                      WHERE users.deleted_at IS NULL AND users.is_active = 'true'
-                      AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
+      var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit, tiers.is_active
+                        FROM users
+                        LEFT JOIN tiers
+                        ON (users.account_tier) = tiers.tier_step
+                        WHERE users.deleted_at IS NULL AND users.is_active = 'true'
+                        AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
       var userTierSql = await sails.sendNativeQuery(tierSql);
       userTierSql = userTierSql.rows;
       console.log('userTierSql', userTierSql);
-      if ((userTierSql[0].monthly_withdraw_limit == null) || userTierSql[0].daily_withdraw_limit == null) {
+      if ((userData.account_tier != 0) && (Boolean(userTierSql[0].is_active) == true) && (userTierSql[0].monthly_withdraw_limit == null) || userTierSql[0].daily_withdraw_limit == null) {
         return res
           .status(202)
           .json({
@@ -4310,6 +4561,89 @@ module.exports = {
       var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
       userDailyHistory = userDailyHistory.rows
       console.log('userDailyHistory', userDailyHistory);
+
+      if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
+        var dailyTotalVolume = 0.0;
+        userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
+        userDailyHistory[0].history_amount = (userDailyHistory[0].history_amount == null) ? (0.0) : (userDailyHistory[0].history_amount);
+        dailyTotalVolume = parseFloat(userDailyHistory[0].history_amount) + parseFloat(userDailyHistory[0].request_amount);
+        dailyTotalVolume = (Number.isNaN(dailyTotalVolume)) ? (0.0) : (dailyTotalVolume);
+
+        console.log("dailyTotalVolume", dailyTotalVolume)
+
+        var dailyFlag = false;
+        console.log("userTierSql[0].daily_withdraw_limit", userTierSql[0].daily_withdraw_limit)
+        if (userTierSql[0].daily_withdraw_limit == "Unlimited") {
+          dailyFlag = true;
+        }
+
+        if ((dailyTotalVolume <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+
+          if ((((limitCalculation[0].usd_price * data.amount) + dailyTotalVolume) <= userTierSql[0].daily_withdraw_limit) || dailyFlag == true) {
+            console.log('dailyFlag', dailyFlag);
+            // console.log('monthlyFlag', monthlyFlag);
+            if (dailyFlag == true) {
+              var data = {
+                "daily_limit_left": "Unlimited",
+                "daily_limit_actual": "Unlimited",
+                "current_limit_left_daily_amount": "Unlimited",
+              }
+              return res
+                .status(206)
+                .json({
+                  "status": 206,
+                  "message": sails.__("User Can do transaction").message,
+                  "data": data
+                })
+            } else {
+              console.log("limitCalculation[0].usd_price", limitCalculation[0].usd_price);
+              console.log("data.amount", data.amount)
+              var value = parseFloat(limitCalculation[0].usd_price * data.amount).toFixed(2)
+              console.log("value", value)
+              console.log("dailyTotalVolume", dailyTotalVolume)
+              console.log("userTierSql[0].daily_withdraw_limit", userTierSql[0].daily_withdraw_limit)
+              var data = {
+                "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
+                "daily_limit_actual": userTierSql[0].daily_withdraw_limit,
+                "current_limit_left_daily_amount": parseFloat(userTierSql[0].daily_withdraw_limit) - (parseFloat(value) + parseFloat(dailyTotalVolume)),
+              }
+              return res
+                .status(206)
+                .json({
+                  "status": 206,
+                  "message": sails.__("User Can do transaction").message,
+                  "data": data
+                })
+            }
+          } else {
+
+            var data = {
+              "daily_limit_left": (Number.isNaN(dailyTotalVolume)) ? (userTierSql[0].daily_withdraw_limit) : (parseFloat(userTierSql[0].daily_withdraw_limit - dailyTotalVolume)),
+              "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit),
+              "current_daily_limit": parseFloat(limitCalculation[0].usd_price * data.amount)
+            }
+            return res
+              .status(207)
+              .json({
+                "status": 207,
+                "message": sails.__("Daily Limit Exceeded Using Amount").message,
+                "data": data
+              })
+          }
+        } else {
+
+          var data = {
+            "daily_limit_actual": parseFloat(userTierSql[0].daily_withdraw_limit)
+          }
+          return res
+            .status(207)
+            .json({
+              "status": 207,
+              "message": sails.__("User Tier Daily Limit Exceeded").message + " " + userTierSql[0].daily_withdraw_limit,
+              "data": data
+            })
+        }
+      }
       // Monthly Limit Checking
       var getUserMonthlyHistory = `SELECT *
                                     FROM (

@@ -87,6 +87,19 @@ module.exports = {
         if (req.body.steps == 3) {
           req.body['status'] = false;
         }
+
+
+        if (req.body.ssn && req.body.ssn != "") {
+          var dataValueSSN = await sails.helpers.getEncryptData(req.body.ssn)
+          var userDataUpdate = await Users
+            .update({
+              id: user_id
+            })
+            .set({
+              "goverement_issued_number": dataValueSSN
+            })
+        }
+
         var updated_kyc;
 
         updated_kyc = await KYC
