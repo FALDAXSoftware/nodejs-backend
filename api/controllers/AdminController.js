@@ -4374,6 +4374,16 @@ module.exports = {
         })
         .sort('created_at DESC');
 
+
+      var currency_conversion = await CurrencyConversion.find({
+        deleted_at: null
+      })
+
+      var priceObject = {}
+      var data = await currency_conversion.map(person => {
+        priceObject[person.id] = person
+      });
+
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
@@ -4398,12 +4408,7 @@ module.exports = {
             wallet_details = walletValue;
           }
           // if (assets_data[i].coin_code != 'SUSU') {
-
-          var currency_conversion = await CurrencyConversion.findOne({
-            deleted_at: null,
-            coin_id: asset_id
-          })
-          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          assets_data[i].fiat = (priceObject[asset_id] && priceObject[asset_id] != undefined) ? (priceObject[asset_id].quote.USD.price) : (0.0)
           // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';

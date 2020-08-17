@@ -803,10 +803,13 @@ module.exports = {
       });
 
       // console.log("getTierData.length > 0", getTierData.length > 0)
+      console.log("getTierData != undefined && usersData[0].account_tier == 0", getTierData != undefined && usersData[0].account_tier == 0)
       if (getTierData != undefined && usersData[0].account_tier == 0) {
+        console.log("INSIDE IF")
         usersData[0].is_tier_enabled = true
-        usersData[0].is_kyc_done = (userKyc != undefined) ? (1) : (0);
+        usersData[0].is_kyc_done = (userKyc != undefined && userKyc.steps == 3) ? (1) : (0);
       } else {
+        console.log("INSIDE ELSE")
         usersData[0].is_tier_enabled = false
         // let userKyc = await KYC.findOne({
         //   user_id: id
@@ -1832,20 +1835,20 @@ module.exports = {
             }
           }
           // if (walletCount[i].coin_name != "SUSU") {
-            var currencyConversionData = await CurrencyConversion.findOne({
-              where: {
-                deleted_at: null,
-                coin_id: walletCount[i].coin_id
-              }
-            })
-            console.log(currencyConversionData);
-            var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
-            walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
-            console.log(walletCount[i]);
-            var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
-            console.log("fiatValue", fiatValue)
-            usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
-            console.log("usd_price", usd_price);
+          var currencyConversionData = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: walletCount[i].coin_id
+            }
+          })
+          console.log(currencyConversionData);
+          var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+          walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+          console.log(walletCount[i]);
+          var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
+          console.log("fiatValue", fiatValue)
+          usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
+          console.log("usd_price", usd_price);
           // } 
         }
 
