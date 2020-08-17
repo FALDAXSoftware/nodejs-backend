@@ -4343,20 +4343,20 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
-          if (assets_data[i].coin_code != 'SUSU') {
+          // if (assets_data[i].coin_code != 'SUSU') {
 
-            var currency_conversion = await CurrencyConversion.findOne({
-              deleted_at: null,
-              coin_id: asset_id
-            })
-            assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-          } else if (assets_data[i].coin_code == 'SUSU') {
+          var currency_conversion = await CurrencyConversion.findOne({
+            deleted_at: null,
+            coin_id: asset_id
+          })
+          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          // } else if (assets_data[i].coin_code == 'SUSU') {
 
-            var susucoinData = await sails.helpers.getUsdSusucoinValue();
-            susucoinData = JSON.parse(susucoinData);
-            susucoinData = susucoinData.data
-            assets_data[i].fiat = susucoinData.USD;
-          }
+          //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+          //   susucoinData = JSON.parse(susucoinData);
+          //   susucoinData = susucoinData.data
+          //   assets_data[i].fiat = susucoinData.USD;
+          // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var balance = 0;
