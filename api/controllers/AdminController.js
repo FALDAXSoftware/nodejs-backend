@@ -2634,7 +2634,7 @@ module.exports = {
         temp_forfeit_total = values[3].rows;
       });
 
-      console.log("sqlData", sqlData);
+      // console.log("sqlData", sqlData);
       // console.log("walletDataValue", walletDataValue);
       // console.log("currency_conversion", currency_conversion)
       // console.log("temp_forfeit_total", temp_forfeit_total)
@@ -2643,8 +2643,6 @@ module.exports = {
       var data = await sqlData.map(person => {
         tradeObject[person.user_coin] = person
       });
-
-      console.log("tradeObject", tradeObject)
 
       var quantityObject = {}
       var data = await walletDataValue.map(person => {
@@ -2655,10 +2653,8 @@ module.exports = {
 
       var priceObject = {}
       var data = await currency_conversion.map(person => {
-        priceObject[person.id] = person
+        priceObject[person.coin_id] = person
       });
-
-      console.log("priceObject", priceObject)
 
       var forfietObject = {};
 
@@ -2723,13 +2719,15 @@ module.exports = {
           assets_data[i].total_earned_from_forfeit = (forfietObject[asset_id] && forfietObject[asset_id] != undefined) ? (parseFloat(forfietObject[asset_id].balance)) : (0.0)
           // assets_data[i].trade_earned = (tradeObject[asset_name])
 
-          console.log("tradeObject[asset_name]", tradeObject[asset_name])
+          // console.log("tradeObject[asset_name]", tradeObject[asset_name])
+          // console.log("assets_data[i].fiat", assets_data[i].fiat)
 
           assets_data[i].trade_earned = (tradeObject[asset_name] && tradeObject[asset_name] != undefined) ? (parseFloat(tradeObject[asset_name].sum)) : (0.0)
           assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
           assets_data[i].total_earned_from_wallets = isNaN(assets_data[i].total_earned_from_wallets) ? (0.0) : (assets_data[i].total_earned_from_wallets)
           assets_data[i].trade_earned = isNaN(assets_data[i].trade_earned) ? (0.0) : (assets_data[i].trade_earned)
           assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + parseFloat(assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
+          console.log("assets_data[i].total", assets_data[i].total)
           assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
         }
 
