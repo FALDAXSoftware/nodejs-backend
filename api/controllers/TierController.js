@@ -1125,13 +1125,7 @@ module.exports = {
             deleted_at: null,
             id: data.id
           })
-          .set({
-            minimum_activity_thresold: data.minimum_activity_thresold,
-            daily_withdraw_limit: data.daily_withdraw_limit,
-            monthly_withdraw_limit: data.monthly_withdraw_limit,
-            requirements: data.requirements,
-            requirements_two: data.requirements_two
-          });
+          .set(req.body);
       }
 
       var tierUpdateData = await Tiers.find({

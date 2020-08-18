@@ -18,6 +18,11 @@ module.exports = {
       columnName: 'is_collected',
       defaultsTo: false
     },
+    referral_percentage: {
+      type: 'number',
+      columnName: 'referral_percentage',
+      defaultsTo: 0
+    },
     referred_user_id: {
       model: 'users',
       columnName: 'referred_user_id'

@@ -10,7 +10,7 @@ module.exports = {
     let query = " from fees ";
     countQuery = query;
     query += "ORDER BY id DESC";
-    let allTradingFees = await sails.sendNativeQuery("Select *" + query, []);
+    let allTradingFees = await sails.sendNativeQuery("Select id, trade_volume, maker_fee, taker_fee" + query, []);
 
     allTradingFees = allTradingFees.rows;
 

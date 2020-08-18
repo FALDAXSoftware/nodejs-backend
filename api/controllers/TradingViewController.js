@@ -35,8 +35,7 @@ module.exports = {
         "3D",
         "W",
         "3W",
-        "M",
-        "6M"
+        "M"
       ]
     });
   },
@@ -77,8 +76,7 @@ module.exports = {
         "3D",
         "W",
         "3W",
-        "M",
-        "6M"
+        "M"
       ],
       ticker: req.query.symbol,
       timezone: "Etc/UTC",
