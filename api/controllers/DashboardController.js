@@ -487,5 +487,375 @@ module.exports = {
           error_at: error.stack
         });
     }
+  },
+
+  getLine1Count: async function (req, res) {
+    try {
+      let legalCountries = await Countries.count({
+        legality: 1
+      });
+      let illegalCountries = await Countries.count({
+        legality: 2
+      });
+
+      let q = {}
+      if (req.query.kyc_start_date && req.query.kyc_end_date) {
+        q = {
+          updated_at: {
+            ">=": req.query.kyc_start_date,
+            "<=": req.query.kyc_end_date
+          }
+        }
+      }
+
+      let kyc_approved = await KYC.count({
+        deleted_at: null,
+        ...q,
+        direct_response: 'ACCEPT',
+      })
+
+      let kyc_disapproved = await KYC.count({
+        direct_response: 'DENY',
+        deleted_at: null,
+        ...q
+      })
+      let kyc_pending = await KYC.count({
+        where: {
+          deleted_at: null,
+          or: [
+            {
+              direct_response: 'MANUAL_REVIEW'
+            },
+            {
+              direct_response: null
+            }
+          ],
+          ...q
+        }
+      })
+
+      total_kyc = kyc_approved + kyc_disapproved + kyc_pending
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Dashboard Data retrieved success").message,
+        legalCountries,
+        illegalCountries,
+        kyc_approved,
+        kyc_disapproved,
+        total_kyc,
+        kyc_pending
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getLine2Count: async function (req, res) {
+    try {
+
+      let feesQuery = "SELECT symbol, sum(user_fee) as user_fee, sum(requested_fee) as requested_fee FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY sum(user_fee) DESC"
+      let feesTransactionCount = await sails.sendNativeQuery(feesQuery, [])
+      var feesTransactionValue = feesTransactionCount.rows;
+      console.log("feesTransactionValue", feesTransactionValue)
+
+      let walletFeesQuery = `SELECT coins.coin_code, sum(wallet_history.faldax_fee) as faldax_fee, sum(wallet_history.residual_amount) as residual_amount
+                              FROM wallet_history LEFT JOIN coins
+                              ON wallet_history.coin_id = coins.id
+                              WHERE wallet_history.created_at >= '${moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss')}'  AND wallet_history.deleted_at IS NULL
+                              AND coins.is_active = 'true' AND coins.deleted_at IS NULL
+                              GROUP BY coins.coin_code
+                              ORDER BY sum(faldax_fee) DESC`
+
+      let walletFeesTransactionCount = await sails.sendNativeQuery(walletFeesQuery, [])
+      var walletFeesTransactionValue = walletFeesTransactionCount.rows;
+
+      console.log("walletFeesTransactionValue", walletFeesTransactionValue)
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Dashboard Data retrieved success").message,
+        feesTransactionValue,
+        walletFeesTransactionValue,
+      });
+    } catch (error) {
+      console.log(error)
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getLine3Count: async function (req, res) {
+    try {
+
+      console.log("INSIDE FUNVTIOM")
+
+      let query = "SELECT symbol, count(quantity) FROM trade_history WHERE created_at >= '" + moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss') + "' GROUP BY symbol ORDER BY count(quantity) DESC"
+
+      console.log("query", query)
+
+      let transactionCount = await sails.sendNativeQuery(query, [])
+      var transactionValue = transactionCount.rows;
+
+      console.log("transactionValue", transactionValue)
+
+      return res
+        .status(200)
+        .json({
+          "status": 200,
+          "message": sails.__("Dashboard Data retrieved success").message,
+          transactionValue
+        });
+
+    } catch (error) {
+      console.log("error", error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getLine4Count: async function (req, res) {
+    try {
+      let activeUsers = await Users.count({
+        is_active: true,
+        deleted_at: null
+      });
+      let inactiveUsers = await Users.count({
+        is_active: false,
+        deleted_at: null
+      });
+      let deletedUsers = await Users.count({
+        deleted_at: {
+          '!=': null
+        }
+      });
+
+      let activeCoins = await Coins.count({
+        deleted_at: null,
+        is_active: true
+      });
+      let InactiveCoins = await Coins.count({
+        deleted_at: null,
+        is_active: false
+      });
+
+      let activeEmployeeCount = await Admin.count({
+        is_active: true,
+        deleted_at: null
+      });
+      let inactiveEmployeeCount = await Admin.count({
+        is_active: false,
+        deleted_at: null
+      });
+      let jobsCount = await Jobs.count({
+        is_active: true,
+        deleted_at: null
+      });
+      let inactiveJobCount = await Jobs.count({
+        is_active: false,
+        deleted_at: null
+      });
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Dashboard Data retrieved success").message,
+        activeCoins,
+        InactiveCoins,
+        activeUsers,
+        inactiveUsers,
+        deletedUsers,
+        jobsCount,
+        inactiveJobCount,
+        activeEmployeeCount,
+        inactiveEmployeeCount
+      });
+
+    } catch (error) {
+      console.log("error", error);
+
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getLine5Count: async function (req, res) {
+    try {
+
+      let withdrawReqCountValue = await WithdrawRequest.count({
+        deleted_at: null,
+        is_approve: null,
+      });
+
+      let withdrawReqCount = await WithdrawRequest.count({
+        deleted_at: null,
+        created_at: {
+          '>=': moment()
+            .subtract(7, 'days')
+            .format()
+        }
+      });
+
+      let userSignUpCountValue = await Users.count({
+        deleted_at: null,
+        is_active: true,
+        created_at: {
+          '>=': moment().subtract(1, 'days').format()
+        }
+      })
+
+      let q = {}
+      if (req.query.kyc_start_date && req.query.kyc_end_date) {
+        q = {
+          updated_at: {
+            ">=": req.query.kyc_start_date,
+            "<=": req.query.kyc_end_date
+          }
+        }
+      }
+
+      let kyc_approved = await KYC.count({
+        deleted_at: null,
+        ...q,
+        direct_response: 'ACCEPT',
+      })
+
+      let kyc_disapproved = await KYC.count({
+        direct_response: 'DENY',
+        deleted_at: null,
+        ...q
+      })
+      let kyc_pending = await KYC.count({
+        where: {
+          deleted_at: null,
+          or: [
+            {
+              direct_response: 'MANUAL_REVIEW'
+            },
+            {
+              direct_response: null
+            }
+          ],
+          ...q
+        }
+      })
+
+      total_kyc = kyc_approved + kyc_disapproved + kyc_pending
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Dashboard Data retrieved success").message,
+        // AccountCreated24Hr,
+        withdrawReqCount,
+        withdrawReqCountValue,
+        userSignUpCountValue,
+        kyc_approved,
+        kyc_disapproved,
+        kyc_pending,
+        total_kyc
+      });
+
+    } catch (error) {
+      console.log("error", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  getLine6Count: async function (req, res) {
+    try {
+      let TierList = [2, 3, 4]
+      var TierData = []
+      for (var i = 0; i < TierList.length; i++) {
+        let approveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'true'`
+        let Value = await sails.sendNativeQuery(approveTier, [])
+
+        var data = {}
+        data[TierList[i]] = Value.rows[0];
+        TierData.push(data)
+
+        let disApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved = 'false'`
+        let disApproveValue = await sails.sendNativeQuery(disApproveTier, [])
+
+        var data = {}
+        data[TierList[i]] = disApproveValue.rows[0];
+        TierData.push(data)
+
+        let unApproveTier = `SELECT count(id) FROM tier_main_request WHERE deleted_at IS NULL AND tier_step = ${TierList[i]} AND approved IS NULL`
+        let unApproveValue = await sails.sendNativeQuery(unApproveTier, [])
+
+        var data = {}
+        data[TierList[i]] = unApproveValue.rows[0];
+        TierData.push(data)
+      }
+
+      let open2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'open'
+        }
+      })
+
+      let approved2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'closed'
+        }
+      })
+
+      let disapproved2Farequest = await UserForgotTwofactors.count({
+        where: {
+          deleted_at: null,
+          status: 'rejected'
+        }
+      })
+
+      return res.json({
+        "status": 200,
+        "message": sails.__("Dashboard Data retrieved success").message,
+        TierData,
+        open2Farequest,
+        approved2Farequest,
+        disapproved2Farequest
+      });
+
+    } catch (error) {
+      console.log("error", error);
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
   }
 };

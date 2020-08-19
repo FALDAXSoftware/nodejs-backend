@@ -723,7 +723,7 @@ module.exports = {
       if (walletData.length > 0) {
         usersData[0].UUID = walletData[0].address_label;
       } else {
-        usersData[0].UUID = '4-1-1' + '-' + usersData[0].id;
+        usersData[0].UUID = '4-1-0' + '-' + usersData[0].id;
       }
       if (usersData) {
         return res.json({
@@ -752,6 +752,15 @@ module.exports = {
     });
     if (usersData.length > 0) {
 
+      if (usersData[0].goverement_issued_number) {
+        var dataValueSSN = await sails.helpers.getDecryptData(usersData[0].goverement_issued_number)
+        usersData[0].ssn_number = dataValueSSN;
+      } else {
+        usersData[0].ssn_number = usersData[0].goverement_issued_number
+      }
+
+      delete usersData[0].goverement_issued_number;
+
       if (usersData[0].country) {
         let AllCountries = csc.getAllCountries();
         usersData[0]["countryJsonId"] = null;
@@ -775,19 +784,57 @@ module.exports = {
       }
     }
     if (usersData[0].account_tier != 4) {
-      let userKyc = await KYC.findOne({
+
+      console.log("usersData[0].account_tier", usersData[0].account_tier)
+      if (usersData[0].account_tier == 0) {
+        var getTierData = await Tiers.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            tier_step: 0
+          }
+        })
+      }
+
+      console.log("getTierData", getTierData)
+
+      var userKyc = await KYC.findOne({
         user_id: id
       });
-      console.log("userKyc", userKyc)
-      usersData[0].is_kyc_done = 0;
-      if (userKyc) {
-        if (userKyc.steps == 3) {
-          usersData[0].is_kyc_done = 1;
-          if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
-            usersData[0].is_kyc_done = 2;
+
+      console.log("userKyc",userKyc)
+
+      // console.log("getTierData.length > 0", getTierData.length > 0)
+      console.log("getTierData != undefined && usersData[0].account_tier == 0", getTierData != undefined && usersData[0].account_tier == 0)
+      if (getTierData != undefined && usersData[0].account_tier == 0) {
+        console.log("INSIDE IF")
+        usersData[0].is_tier_enabled = true
+        usersData[0].is_kyc_done = (userKyc != undefined && userKyc.steps == 3) ? (1) : (0);
+      } else {
+        console.log("INSIDE ELSE")
+        usersData[0].is_tier_enabled = false
+        // let userKyc = await KYC.findOne({
+        //   user_id: id
+        // });
+        if (usersData[0].account_tier > 1) {
+          usersData[0].is_kyc_done = 2; 
+        } else {
+          console.log("userKyc", userKyc)
+          usersData[0].is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              usersData[0].is_kyc_done = 1;
+              if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+                usersData[0].is_kyc_done = 2;
+              }
+            }
           }
+          
         }
       }
+      // {
+      // }
+
     } else if (usersData[0].account_tier == 4) {
       usersData[0].is_kyc_done = 2
     }
@@ -812,6 +859,7 @@ module.exports = {
     usersData[0].is_panic_enabled = panic_button_details.value
     usersData[0].is_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse.response);
     usersData[0].legal_allowed = (usersData[0].account_tier == 4) ? true : (dataResponse1.response);
+    console.log("usersData", usersData)
     // sails.hooks.i18n.setLocale(usersData[0].default_language);
     if (usersData) {
       return res.json({
@@ -965,7 +1013,16 @@ module.exports = {
                 user['country_code'] = req.body.country_code;
               }
 
+              console.log("req.body.ssn_number", req.body.ssn_number)
+              if (req.body.ssn_number) {
+                var dataValueSSN = await sails.helpers.getEncryptData(req.body.ssn_number);
+                console.log("dataValueSSN", dataValueSSN)
+                user["goverement_issued_number"] = dataValueSSN;
+              }
+
               user['is_user_updated'] = true;
+
+              console.log("user", user)
 
               var updatedUsers = await Users
                 .update({
@@ -1781,28 +1838,28 @@ module.exports = {
               }
             }
           }
-          if (walletCount[i].coin_name != "SUSU") {
-            var currencyConversionData = await CurrencyConversion.findOne({
-              where: {
-                deleted_at: null,
-                coin_id: walletCount[i].coin_id
-              }
-            })
-            console.log(currencyConversionData);
-            var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
-            walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
-            console.log(walletCount[i]);
-            var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
-            console.log("fiatValue", fiatValue)
-            usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
-            console.log("usd_price", usd_price);
-          } else {
-            var susucoinData = await sails.helpers.getUsdSusucoinValue();
-            susucoinData = JSON.parse(susucoinData);
-            susucoinData = susucoinData.data
-            walletCount[i].fiat = susucoinData.USD;
-            usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
-          }
+          // if (walletCount[i].coin_name != "SUSU") {
+          var currencyConversionData = await CurrencyConversion.findOne({
+            where: {
+              deleted_at: null,
+              coin_id: walletCount[i].coin_id
+            }
+          })
+          console.log(currencyConversionData);
+          var fiatVal = ((currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price)) ? (currencyConversionData.quote.USD.price) : (0.0)
+          walletCount[i].fiat = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0);
+          console.log(walletCount[i]);
+          var fiatValue = (currencyConversionData && currencyConversionData.quote && currencyConversionData.quote.USD.price) ? (fiatVal) : (0)
+          console.log("fiatValue", fiatValue)
+          usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
+          console.log("usd_price", usd_price);
+          // } else {
+          //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
+          //   susucoinData = JSON.parse(susucoinData);
+          //   susucoinData = susucoinData.data
+          //   walletCount[i].fiat = susucoinData.USD;
+          //   usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
+          // }
         }
 
         if (total > 0) {
@@ -3469,7 +3526,7 @@ module.exports = {
       } = req.allParams();
       let whereAppended = false;
       let query = " from users";
-      query += " WHERE deleted_at IS NULL and is_active=true and referred_id NOTNULL"
+      query += " WHERE deleted_at IS NULL and is_active=true and referred_id NOT NULL"
       if ((data && data != "")) {
         query += " AND "
         whereAppended = true;
@@ -3530,31 +3587,51 @@ module.exports = {
           }
         });
         if (userData != undefined) {
-          var emailArray = [];
-          var userDataValue = await Users
-            .count('id')
-            .where({
-              deleted_at: null,
-              is_active: true,
-              referred_id: userIds[i]
-            });
+          // var emailArray = [];
+          // // var userDataValue = await Users
+          // //   .count('id')
+          // //   .where({
+          // //     deleted_at: null,
+          // //     is_active: true,
+          // //     referred_id: userIds[i]
+          // //   });
 
-          var dataValue = await Users.find({
-            where: {
-              deleted_at: null,
-              is_active: true,
-              referred_id: userIds[i]
-            }
-          });
+          // var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users 
+          //                               WHERE referred_id = ${userIds[i]} AND is_active = true 
+          //                               AND deleted_at IS NULL;`);
 
-          console.log(dataValue);
+          // userData.emailValue = (getReferredEmailList.rows);
 
-          for (var j = 0; j < dataValue.length; j++) {
-            emailArray.push(dataValue[j].email);
-          }
-          console.log(emailArray);
-          userData.emailValue = emailArray;
-          userData.no_of_referral = userDataValue
+
+          // // var dataValue = await Users.find({
+          // //   where: {
+          // //     deleted_at: null,
+          // //     is_active: true,
+          // //     referred_id: userIds[i]
+          // //   }
+          // // });
+
+          // console.log(dataValue);
+
+          // for (var j = 0; j < dataValue.length; j++) {
+          //   emailArray.push(dataValue[j].email);
+          // }
+          // console.log(emailArray);
+          // userData.emailValue = emailArray;
+          // userData.no_of_referral = userDataValue
+          // usersData.push(userData)
+
+          var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users 
+          WHERE referred_id = ${userIds[i]} AND is_active = true 
+          AND deleted_at IS NULL;`);
+
+          userData.emailValue = (getReferredEmailList.rows);
+
+          var getReferredEmailCount = await sails.sendNativeQuery(`SELECT count(id) FROM users 
+          WHERE referred_id = ${userIds[i]} AND is_active = true 
+          AND deleted_at IS NULL;`);
+
+          userData.no_of_referral = (getReferredEmailCount.rows[0]);
           usersData.push(userData)
         }
       }
@@ -3641,15 +3718,15 @@ module.exports = {
       }
 
       var get_reffered_data = (`SELECT (cast(referral.amount as decimal(12,8)))as amount , referral.coin_name, coins.coin_icon,
-                                    users.email, referral.txid, referral.updated_at
-                                    FROM referral LEFT JOIN users
-                                    ON (users.id=referral.referred_user_id)
-                                    LEFT JOIN coins
-                                    ON referral.coin_name = coins.coin
-                                    WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter}
-                                    AND users.deleted_at IS NULL${value}
-                                    GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at
-                                    ORDER BY coins.id , referral.updated_at DESC`);
+                                  users.email, referral.txid, referral.updated_at, referral.referral_percentage
+                                  FROM referral LEFT JOIN users
+                                  ON (users.id=referral.referred_user_id)
+                                  LEFT JOIN coins
+                                  ON referral.coin_name = coins.coin
+                                  WHERE referral.is_collected = 'true' AND referral.amount > 0 AND referral.user_id = ${user_id}${filter}
+                                  AND users.deleted_at IS NULL${value}
+                                  GROUP BY  users.id,referral.coin_name,coins.coin_icon,coins.id,referral.amount,referral.txid,referral.updated_at, referral.referral_percentage
+                                  ORDER BY coins.id , referral.updated_at DESC`);
       console.log(get_reffered_data)
       countQuery = get_reffered_data
 
@@ -3864,23 +3941,54 @@ module.exports = {
         }
       }
 
-      let userKyc = await KYC.findOne({
-        user_id: user_id
-      });
-      data.is_kyc_done = 0;
-      if (userKyc) {
-        if (userKyc.steps == 3) {
-          data.is_kyc_done = 1;
-          if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
-            data.is_kyc_done = 2;
+      if (userData.account_tier == 0) {
+        data.is_kyc_done = 2;
+        var getTierData = await Tiers.findOne({
+          where: {
+            deleted_at: null,
+            is_active: true,
+            tier_step: 0
+          }
+        });
+      }
+      if (getTierData != undefined) {
+        var dataResponse1 = await sails
+          .helpers
+          .userLegalityCheck(userData.id);
+
+        data.is_allowed = (dataResponse1.response)
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": sails.__("You are allowed to trade").message,
+            "data": data
+          });
+      } else {
+
+        if (userData.account_tier > 1) {
+          data.is_kyc_done = 2;
+        } else {
+          let userKyc = await KYC.findOne({
+            user_id: user_id
+          });
+          data.is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              data.is_kyc_done = 1;
+              if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
+                data.is_kyc_done = 2;
+              }
+            }
           }
         }
+        var geo_fencing_data = await sails
+          .helpers
+          .userTradeChecking(user_id);
+        console.log(geo_fencing_data)
+        data.is_allowed = geo_fencing_data.response;
       }
-      var geo_fencing_data = await sails
-        .helpers
-        .userTradeChecking(user_id);
-      console.log(geo_fencing_data)
-      data.is_allowed = geo_fencing_data.response;
       if (geo_fencing_data.response != true) {
         return res
           .status(200)
