@@ -802,6 +802,8 @@ module.exports = {
         user_id: id
       });
 
+      console.log("userKyc",userKyc)
+
       // console.log("getTierData.length > 0", getTierData.length > 0)
       console.log("getTierData != undefined && usersData[0].account_tier == 0", getTierData != undefined && usersData[0].account_tier == 0)
       if (getTierData != undefined && usersData[0].account_tier == 0) {
@@ -814,15 +816,20 @@ module.exports = {
         // let userKyc = await KYC.findOne({
         //   user_id: id
         // });
-        console.log("userKyc", userKyc)
-        usersData[0].is_kyc_done = 0;
-        if (userKyc) {
-          if (userKyc.steps == 3) {
-            usersData[0].is_kyc_done = 1;
-            if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
-              usersData[0].is_kyc_done = 2;
+        if (usersData[0].account_tier > 1) {
+          usersData[0].is_kyc_done = 2; 
+        } else {
+          console.log("userKyc", userKyc)
+          usersData[0].is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              usersData[0].is_kyc_done = 1;
+              if (userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT") {
+                usersData[0].is_kyc_done = 2;
+              }
             }
           }
+          
         }
       }
       // {
@@ -3960,15 +3967,19 @@ module.exports = {
           });
       } else {
 
-        let userKyc = await KYC.findOne({
-          user_id: user_id
-        });
-        data.is_kyc_done = 0;
-        if (userKyc) {
-          if (userKyc.steps == 3) {
-            data.is_kyc_done = 1;
-            if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
-              data.is_kyc_done = 2;
+        if (userData.account_tier > 1) {
+          data.is_kyc_done = 2;
+        } else {
+          let userKyc = await KYC.findOne({
+            user_id: user_id
+          });
+          data.is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              data.is_kyc_done = 1;
+              if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
+                data.is_kyc_done = 2;
+              }
             }
           }
         }
