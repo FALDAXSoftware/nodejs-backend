@@ -87,6 +87,19 @@ module.exports = {
         if (req.body.steps == 3) {
           req.body['status'] = false;
         }
+
+
+        if (req.body.ssn && req.body.ssn != "") {
+          var dataValueSSN = await sails.helpers.getEncryptData(req.body.ssn)
+          var userDataUpdate = await Users
+            .update({
+              id: user_id
+            })
+            .set({
+              "goverement_issued_number": dataValueSSN
+            })
+        }
+
         var updated_kyc;
 
         updated_kyc = await KYC
@@ -151,13 +164,7 @@ module.exports = {
             }
           });
 
-          console.log("userDetailsValue", userDetailsValue);
-
-          console.log("userDetailsValue.country_code", userDetailsValue.country_code)
-          console.log("userDetailsValue.country_code != ", userDetailsValue.country_code != "")
-          console.log("userDetailsValue.country_code != null", userDetailsValue.country_code != null)
           var str = userDetailsValue.country_code;
-          console.log("str.length", str.length)
 
           if (userDetailsValue != undefined && str.length > 0) {
             console.log("INSIDE IF")
@@ -169,10 +176,6 @@ module.exports = {
                 name: userDetailsValue.country
               }
             })
-
-            console.log("countryCodeData", countryCodeData);
-
-            console.log("countryCodeData.sortname", countryCodeData.sortname)
 
             if (countryCodeData != undefined) {
               req.body.country_code = countryCodeData.sortname
@@ -809,6 +812,19 @@ module.exports = {
           ssn: value.ssn,
           type: 3
         }).fetch();
+
+        var encryptSSN = await sails.helpers.getEncryptData(value.ssn)
+
+        var userDataUpdateValue = await Users
+          .update({
+            id: req.user.id,
+            deleted_at: null,
+            is_active: true
+          })
+          .set({
+            goverement_issued_number: encryptSSN
+          })
+
 
         if ((flagReUpload.valid_id_flag == "false" || flagReUpload.valid_id_flag == false) && (flagReUpload.proof_residence_flag == "false" || flagReUpload.proof_residence_flag == false)) {
           return res

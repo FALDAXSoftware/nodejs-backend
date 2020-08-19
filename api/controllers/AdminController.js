@@ -2582,28 +2582,104 @@ module.exports = {
         })
         .sort('created_at DESC');
 
-      var tradeSql = ` SELECT b.user_coin, SUM(b.user_fee)
-                      FROM (
-                        (
-                        SELECT user_coin, sum(user_fee) as user_fee
-                        FROM trade_history
-                        GROUP BY user_coin
-                        )
-                          UNION
-                      (
-                        SELECT requested_coin, sum(requested_fee) as requested_fee
-                        FROM trade_history
-                        GROUP BY requested_coin
-                      )
-                      ) b GROUP BY b.user_coin`
+      var sqlData;
+      var walletDataValue;
+      var currency_conversion;
+      var temp_forfeit_total;
 
-      var tradeData = await sails.sendNativeQuery(tradeSql, []);
-      var sqlData = tradeData.rows;
+      await Promise.all([
+        await sails.sendNativeQuery(
+          ` SELECT b.user_coin, SUM(b.user_fee)
+                        FROM (
+                          (
+                          SELECT user_coin, sum(user_fee) as user_fee
+                          FROM trade_history
+                          GROUP BY user_coin
+                          )
+                            UNION
+                        (
+                          SELECT requested_coin, sum(requested_fee) as requested_fee
+                          FROM trade_history
+                          GROUP BY requested_coin
+                        )
+                        ) b GROUP BY b.user_coin`,
+          []
+        ),
+
+        sails.sendNativeQuery(`SELECT sum(wallet_history.faldax_fee), coins.coin, coins.id
+                              FROM wallet_history
+                              LEFT JOIN coins
+                              ON coins.id = wallet_history.coin_id
+                              WHERE wallet_history.deleted_at IS NULL AND wallet_history.is_admin = false
+                              GROUP BY coins.coin, coins.id`, []),
+
+        await CurrencyConversion.find({
+          deleted_at: null
+        }),
+
+        await sails.sendNativeQuery(`SELECT SUM((wallets.balance)) as balance, SUM((wallets.placed_balance)) as placed_balance, coins.id, coins.coin
+                                    FROM public.wallets 
+                                    LEFT JOIN users
+                                    ON users.id = wallets.user_id
+                                    LEFT JOIN coins
+                                    ON wallets.coin_id = coins.id
+                                    WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL 
+                                    AND wallets.placed_balance IS NOT NULL
+                                    GROUP BY (coins.coin, coins.id)`)
+
+      ]).then(values => {
+        sqlData = values[0].rows;
+        walletDataValue = values[1].rows;
+        currency_conversion = values[2];
+        temp_forfeit_total = values[3].rows;
+      });
+
+      // console.log("sqlData", sqlData);
+      // console.log("walletDataValue", walletDataValue);
+      // console.log("currency_conversion", currency_conversion)
+      // console.log("temp_forfeit_total", temp_forfeit_total)
+
+      var tradeObject = {}
+      var data = await sqlData.map(person => {
+        tradeObject[person.user_coin] = person
+      });
+
+      var quantityObject = {}
+      var data = await walletDataValue.map(person => {
+        quantityObject[person.id] = person
+      });
+
+      // console.log("quantityObject", quantityObject)
+
+      var priceObject = {}
+      var data = await currency_conversion.map(person => {
+        priceObject[person.coin_id] = person
+      });
+
+      var forfietObject = {};
+
+      var data = await temp_forfeit_total.map(person => {
+        forfietObject[person.id] = person
+      });
+
 
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
           let asset_id = assets_data[i].id;
+          var walletValue = quantityObject[asset_id];
+
+          // console.log("walletValue", walletValue)
+
+          if (walletValue == undefined) {
+            walletValue = {
+              sum: 0,
+              coin: asset_name,
+              id: asset_id
+            }
+          }
+
+          // console.log("walletValue", walletValue)
           var wallet_details = await Wallet
             .findOne({
               is_active: true,
@@ -2623,18 +2699,8 @@ module.exports = {
               });
             wallet_details = walletValue;
           }
-          var walletQuery = `SELECT sum(faldax_fee) as faldax_fee
-                              FROM wallet_history
-                              WHERE deleted_at IS NULL AND coin_id = ${asset_id} AND is_admin = false;`
 
-          var walletData = await sails.sendNativeQuery(walletQuery, []);
-          var walletValue = walletData.rows[0];
-
-          var currency_conversion = await CurrencyConversion.findOne({
-            deleted_at: null,
-            coin_id: asset_id
-          })
-          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
+          assets_data[i].fiat = (priceObject[asset_id] && priceObject[asset_id] != undefined) ? (priceObject[asset_id].quote.USD.price) : (0.0)
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
           var temp_wallet_total = 0;
@@ -2644,38 +2710,24 @@ module.exports = {
             assets_data[i].receive_address = wallet_details.receive_address;
             var temp_wallet_value = 0.0
             // for (var i = 0; i < walletValue.length; i++) {
-            temp_wallet_value = walletValue.faldax_fee
+            temp_wallet_value = walletValue.sum
             // }
             temp_wallet_total = parseFloat(temp_wallet_value);
           }
           assets_data[i].total_earned_from_wallets = parseFloat(temp_wallet_total)
           // Get Forfiet Data
-          var coinQuery = `SELECT CONCAT ((wallets.balance)) as balance, CONCAT ((wallets.placed_balance)) as placed_balance
-          FROM public.wallets LEFT JOIN users
-          ON users.id = wallets.user_id
-          WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL AND wallets.placed_balance IS NOT NULL AND wallets.coin_id='${asset_id}'`
-          let forfeitFundData = await sails.sendNativeQuery(coinQuery, []);
+          assets_data[i].total_earned_from_forfeit = (forfietObject[asset_id] && forfietObject[asset_id] != undefined) ? (parseFloat(forfietObject[asset_id].balance)) : (0.0)
+          // assets_data[i].trade_earned = (tradeObject[asset_name])
 
-          var temp_forfeit_total = 0;
-          if (forfeitFundData.rowCount > 0) {
-            (forfeitFundData.rows).forEach(function (each, index) {
-              temp_forfeit_total += parseFloat(each.balance);
-            })
-          }
-          assets_data[i].total_earned_from_forfeit = parseFloat(temp_forfeit_total)
+          // console.log("tradeObject[asset_name]", tradeObject[asset_name])
+          // console.log("assets_data[i].fiat", assets_data[i].fiat)
 
-          var value = 0;
-          for (var k = 0; k < sqlData.length; k++) {
-            if (asset_name == sqlData[k].user_coin) {
-              value = sqlData[k].sum
-            }
-          }
-
-          assets_data[i].trade_earned = value
+          assets_data[i].trade_earned = (tradeObject[asset_name] && tradeObject[asset_name] != undefined) ? (parseFloat(tradeObject[asset_name].sum)) : (0.0)
           assets_data[i].total_earned_from_forfeit = isNaN(assets_data[i].total_earned_from_forfeit) ? (0.0) : (assets_data[i].total_earned_from_forfeit)
           assets_data[i].total_earned_from_wallets = isNaN(assets_data[i].total_earned_from_wallets) ? (0.0) : (assets_data[i].total_earned_from_wallets)
           assets_data[i].trade_earned = isNaN(assets_data[i].trade_earned) ? (0.0) : (assets_data[i].trade_earned)
           assets_data[i].total = parseFloat(assets_data[i].total_earned_from_wallets) + parseFloat(assets_data[i].total_earned_from_forfeit) + parseFloat(assets_data[i].trade_earned);
+          console.log("assets_data[i].total", assets_data[i].total)
           assets_data[i].total_fiat = parseFloat(assets_data[i].total) * parseFloat(assets_data[i].fiat);
         }
 
@@ -4320,6 +4372,16 @@ module.exports = {
         })
         .sort('created_at DESC');
 
+
+      var currency_conversion = await CurrencyConversion.find({
+        deleted_at: null
+      })
+
+      var priceObject = {}
+      var data = await currency_conversion.map(person => {
+        priceObject[person.coin_id] = person
+      });
+
       if (assets_data.length > 0) {
         for (var i = 0; i < assets_data.length; i++) {
           let asset_name = assets_data[i].coin;
@@ -4344,18 +4406,7 @@ module.exports = {
             wallet_details = walletValue;
           }
           // if (assets_data[i].coin_code != 'SUSU') {
-
-          var currency_conversion = await CurrencyConversion.findOne({
-            deleted_at: null,
-            coin_id: asset_id
-          })
-          assets_data[i].fiat = (currency_conversion && currency_conversion != undefined) ? (currency_conversion.quote.USD.price) : (0.0)
-          // } else if (assets_data[i].coin_code == 'SUSU') {
-
-          //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
-          //   susucoinData = JSON.parse(susucoinData);
-          //   susucoinData = susucoinData.data
-          //   assets_data[i].fiat = susucoinData.USD;
+          assets_data[i].fiat = (priceObject[asset_id] && priceObject[asset_id] != undefined) ? (priceObject[asset_id].quote.USD.price) : (0.0)
           // }
           assets_data[i].send_address = '';
           assets_data[i].receive_address = '';
