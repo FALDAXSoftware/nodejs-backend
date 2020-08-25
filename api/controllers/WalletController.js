@@ -443,7 +443,6 @@ module.exports = {
         }
       }
 
-
       if (userData.is_twofactor && userData.twofactor_secret && (!req.body.confirm_for_wait)) {
         if (!req.body.otp) {
           return res
@@ -629,7 +628,6 @@ module.exports = {
             userMonthlyHistory = userMonthlyHistory.rows;
           }
 
-
           var dailyTotalVolume = 0.0;
           var monthlyTotalVolume = 0.0;
           userDailyHistory[0].request_amount = (userDailyHistory[0].request_amount == null) ? (0.0) : (userDailyHistory[0].request_amount);
@@ -654,11 +652,6 @@ module.exports = {
           amount = parseFloat(amount);
           var dailyFlag;
           var monthlyFlag;
-
-          console.log("userTierSql[0].is_active", userTierSql[0].is_active)
-          console.log("userData.account_tier == 0", userData.account_tier == 0)
-
-          console.log("userData.account_tier", userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true))
 
           if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
             monthlyFlag = true;
@@ -4467,7 +4460,6 @@ module.exports = {
       });
 
       if (userData != undefined && userData.account_tier != 4) {
-
         if (userData.account_tier == 0) {
 
           var getTierData = await Tiers.findOne({
@@ -4566,7 +4558,7 @@ module.exports = {
                                       AND wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}'
                                   ) as m`
 
-      console.log("getUserDailyHistory",getUserDailyHistory)
+      console.log("getUserDailyHistory", getUserDailyHistory)
 
       var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
       userDailyHistory = userDailyHistory.rows
