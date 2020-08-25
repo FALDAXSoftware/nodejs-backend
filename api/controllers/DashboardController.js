@@ -727,13 +727,55 @@ module.exports = {
         }
       })
 
+      let q = {}
+      if (req.query.kyc_start_date && req.query.kyc_end_date) {
+        q = {
+          updated_at: {
+            ">=": req.query.kyc_start_date,
+            "<=": req.query.kyc_end_date
+          }
+        }
+      }
+
+      let kyc_approved = await KYC.count({
+        deleted_at: null,
+        ...q,
+        direct_response: 'ACCEPT',
+      })
+
+      let kyc_disapproved = await KYC.count({
+        direct_response: 'DENY',
+        deleted_at: null,
+        ...q
+      })
+      let kyc_pending = await KYC.count({
+        where: {
+          deleted_at: null,
+          or: [
+            {
+              direct_response: 'MANUAL_REVIEW'
+            },
+            {
+              direct_response: null
+            }
+          ],
+          ...q
+        }
+      })
+
+      total_kyc = kyc_approved + kyc_disapproved + kyc_pending
+
       return res.json({
         "status": 200,
         "message": sails.__("Dashboard Data retrieved success").message,
         // AccountCreated24Hr,
         withdrawReqCount,
         withdrawReqCountValue,
-        userSignUpCountValue
+        userSignUpCountValue,
+        kyc_approved,
+        kyc_disapproved,
+        kyc_pending,
+        total_kyc
       });
 
     } catch (error) {

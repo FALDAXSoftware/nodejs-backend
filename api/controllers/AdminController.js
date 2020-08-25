@@ -4379,7 +4379,7 @@ module.exports = {
 
       var priceObject = {}
       var data = await currency_conversion.map(person => {
-        priceObject[person.id] = person
+        priceObject[person.coin_id] = person
       });
 
       if (assets_data.length > 0) {

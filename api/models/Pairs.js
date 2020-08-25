@@ -113,6 +113,14 @@ module.exports = {
       type: 'number',
       columnName: 'sell_min_total'
     },
+    buy_min_total: {
+      type: 'number',
+      columnName: 'buy_min_total'
+    },
+    sell_min_total: {
+      type: 'number',
+      columnName: 'sell_min_total'
+    },
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
