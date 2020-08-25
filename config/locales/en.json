@@ -3287,28 +3287,28 @@
 		"page": "CMS - User Wallet Create",
 		"context": "User Wallet cannot be created as user need to upgrade tier.",
 		"message_type": "success",
-		"message_english": "User Wallet cannot be created as user needs to upgrade their current Tier.",
-		"message": "User Wallet cannot be created as user needs to upgrade their current Tier."
+		"message_english": "User wallet cannot be created, user requires a higher account tier.",
+		"message": "User wallet cannot be created, user requires a higher account tier."
 	},
 	"Coin Minumum Limit is less than bitgo": {
 		"page": "CMS - Edit Asset",
 		"context": "Coin Minumum Limit is less than bitgo",
 		"message_type": "success",
-		"message_english": "Coin Minimum Limit is less than that allowed by Bitgo",
-		"message": "Coin Minimum Limit is less than that allowed by Bitgo"
+		"message_english": "Minimum Limit must be the same or higher than Bitgo’s minimum limit.",
+		"message": "Minimum Limit must be the same or higher than Bitgo’s minimum limit."
 	},
 	"No fee Value Found": {
 		"page": "CMS - Edit Fee",
 		"context": "No Fee Value for this has been found.",
 		"message_type": "success",
-		"message_english": "Unable to find any fee value for this request.",
-		"message": "Unable to find any fee value for this request."
+		"message_english": "No Fee Value found.",
+		"message": "No Fee Value found."
 	},
 	"User Wallet Create Unsuccess": {
 		"page": "CMS- User Wallet Create",
 		"context": "User Wallet Cannot be created as country or state is illegal",
 		"message_type": "error",
-		"message_english": "User Wallet cannot be created because Country or State is illegal",
-		"message": "User Wallet cannot be created because Country or State is illegal"
+		"message_english": "User wallet cannot be created, user’s country or state is illegal.",
+		"message": "User wallet cannot be created, user’s country or state is illegal."
 	}
 }
