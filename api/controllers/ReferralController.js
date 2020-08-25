@@ -114,7 +114,11 @@ module.exports = {
             else
               msg += ", " + coinArray[i]
           }
-          msg += " to collect referral. "
+          msg += " to collect referral. So the referral could be collected"
+          return res.json({
+            "status": 400,
+            "message": msg
+          });
         } else {
           var userData = await Users.findOne({
             deleted_at: null,
