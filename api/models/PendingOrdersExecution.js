@@ -76,6 +76,10 @@ module.exports = {
       type: 'boolean',
       columnName: 'is_cancel',
       defaultsTo: false
+    },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
     }
   },
   beforeCreate: (values, next) => {
