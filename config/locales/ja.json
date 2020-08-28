@@ -3259,21 +3259,21 @@
         "context": "Tiers Upload",
         "message_type": "error",
         "message_english": "Your SSN number has been uploaded successfully.",
-        "message": "あなたのSSN番号が正常にアップロードされています。"
+        "message": "あなたのSSN番号が正常にアップロード。"
     },
     "sms template retrieve success": {
         "page": "SMS Template- CMS",
         "context": "Sms template retrieve",
         "message_type": "success",
         "message_english": "SMS Template has been retrieved successfully.",
-        "message": "SMSテンプレートが正常に取得されています。"
+        "message": "SMSテンプレートが正常に取得しました。"
     },
     "SMS template update success": {
         "page": "Update SMS Template- CMS",
         "context": "Update SMS Template",
         "message_type": "success",
         "message_english": "SMS Template has been updated successfully.",
-        "message": "SMSテンプレートが正常に更新されました。"
+        "message": "SMSテンプレートが正常に更新します。"
     },
     "City list success": {
         "page": "CMS - Get City lists",
@@ -3287,27 +3287,27 @@
         "context": "User Wallet cannot be created as user need to upgrade tier.",
         "message_type": "success",
         "message_english": "User Wallet cannot be created as user needs to upgrade their current Tier.",
-        "message": "ユーザーの財布は、彼らの現在のTierをアップグレードするユーザーのニーズとして作成することはできません。"
+        "message": "ユーザーの財布には、ユーザーは、より高いアカウントティアを必要とし、作成することはできません。"
     },
     "Coin Minumum Limit is less than bitgo": {
         "page": "CMS - Edit Asset",
         "context": "Coin Minumum Limit is less than bitgo",
         "message_type": "success",
         "message_english": "Coin Minimum Limit is less than that allowed by Bitgo",
-        "message": "コイン最小制限はBitgoで許可されているよりも少ないです"
+        "message": "最小制限は、同じまたはBitgoの最小リミットよりも高くなければなりません。"
     },
     "No fee Value Found": {
         "page": "CMS - Edit Fee",
         "context": "No Fee Value for this has been found.",
         "message_type": "success",
         "message_english": "Unable to find any fee value for this request.",
-        "message": "この要求のいずれかの料金値を見つけることができません。"
+        "message": "手数料の値が見つかりました。"
     },
     "User Wallet Create Unsuccess": {
         "page": "CMS- User Wallet Create",
         "context": "User Wallet Cannot be created as country or state is illegal",
         "message_type": "error",
         "message_english": "User Wallet cannot be created because Country or State is illegal",
-        "message": "国または国が違法であるため、ユーザーWalletを作成することはできません"
+        "message": "ユーザーの財布は、ユーザーの国または状態が違法である、作成することはできません。"
     }
 }
