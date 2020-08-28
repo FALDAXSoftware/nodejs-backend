@@ -3997,6 +3997,31 @@ module.exports = {
             tier_step: 0
           }
         });
+
+        if (getTierData != undefined) {
+          var geo_fencing_data = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+          data.is_allowed = geo_fencing_data.response;
+        } else {
+          let userKyc = await KYC.findOne({
+            user_id: user_id
+          });
+          data.is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              data.is_kyc_done = 1;
+              if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
+                data.is_kyc_done = 2;
+              }
+            }
+          }
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          console.log(geo_fencing_data)
+          data.is_allowed = geo_fencing_data.response;
+        }
       } else {
 
         if (userData.account_tier > 1) {
