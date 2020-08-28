@@ -124,6 +124,10 @@ module.exports = {
       columnName: 'placed_by',
       allowNull: true
     },
+    reason: {
+      type: 'string',
+      columnName: 'reason'
+    }
   },
   beforeCreate: (values, next) => {
     values.created_at = new Date();
