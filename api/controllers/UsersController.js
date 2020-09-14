@@ -714,6 +714,19 @@ module.exports = {
       let usersData = await sails.sendNativeQuery("Select * " + query, [])
 
       usersData = usersData.rows;
+      console.log("usersData", usersData)
+
+      console.log("usersData.length", usersData.length)
+
+      if (usersData.length == 0) {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "message": "User is currently inactive or has been deactivated",
+            error_at: "err"
+          });
+      }
 
       var walletData = await Wallet.find({
         where: {
