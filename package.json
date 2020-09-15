@@ -30,6 +30,7 @@
     "grunt": "^1.0.4",
     "html2plaintext": "^2.1.2",
     "image-to-base64": "^2.0.1",
+    "influx": "^5.5.2",
     "install": "^0.13.0",
     "iota.lib.js": "^0.5.1",
     "ip": "^1.1.5",
