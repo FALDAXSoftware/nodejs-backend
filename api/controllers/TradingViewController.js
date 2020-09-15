@@ -5,6 +5,29 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
+
+// Influx setup
+const Influx = require('influx');
+const influx = new Influx.InfluxDB({
+  host: process.env.INFLUX_HOST,
+  port: process.env.INFLUX_PORT,
+  database: process.env.INFLUX_DATABASE,
+  username: process.env.INFLUX_USERNAME,
+  password: process.env.INFLUX_PASSWORD,
+  schema: [
+    {
+      measurement: 'trade_history_xrp_btc',
+      fields: {
+        price: Influx.FieldType.FLOAT,
+        amount: Influx.FieldType.FLOAT
+      },
+      tags: [
+        'pair'
+      ]
+    }
+  ]
+})
+
 module.exports = {
   getConfig: function (req, res) {
     return res.json({
@@ -92,7 +115,1024 @@ module.exports = {
         .utilities
         .getCurrencies(symbol);
 
-      console.log("req.allParams()", req.allParams())
+      // console.log("req.allParams()", req.allParams())
+
+      if (symbol == "XRP-BTC") {
+        // var limit = 1440;
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_xrp_btc';
+        var influx_pair_name = 'xrpbtc';
+        var dataValue = await influx.query(`
+                          SELECT first(price) AS open, last(price) AS close, 
+                          max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                          FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                          GROUP BY time(${period})
+                      `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "ETH-BTC") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_eth_btc';
+        var influx_pair_name = 'ethbtc';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "LTC-BTC") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_ltc_btc';
+        var influx_pair_name = 'ltcbtc';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "SUSU-BTC") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_susu_btc';
+        var influx_pair_name = 'susubtc';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "BCH-BTC") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_bch_btc';
+        var influx_pair_name = 'bchbtc';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "BCH-ETH") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_bch_eth';
+        var influx_pair_name = 'bcheth';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "LTC-ETH") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_ltc_eth';
+        var influx_pair_name = 'ltceth';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "XRP-ETH") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_xrp_eth';
+        var influx_pair_name = 'xrpeth';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "BTC-PAX") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_btc_pax';
+        var influx_pair_name = 'btcpax';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "ETH-PAX") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_eth_pax';
+        var influx_pair_name = 'ethpax';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "LTC-PAX") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_ltc_pax';
+        var influx_pair_name = 'ltcpax';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "XRP-PAX") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_xrp_pax';
+        var influx_pair_name = 'xrppax';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      } else if (symbol == "BCH-PAX") {
+        from = moment.unix(from)
+          .utc()
+          .format();
+        to = moment.unix(to)
+          .utc()
+          .format();
+        var period
+        if (resolution == 1) {
+          period = "1m"
+        } else if (resolution == 15) {
+          period = '15m'
+        } else if (resolution == 240) {
+          period = "4h";
+        } else if (resolution == 'D') {
+          period = '1d'
+        } else if (resolution == '1D') {
+          period = '1d'
+        } else if (resolution == '2D') {
+          period = '2d'
+        } else if (resolution == '3D') {
+          period = '3d'
+        } else if (resolution == 'W') {
+          period = '1w';
+        } else if (resolution == '3W') {
+          period = '3w'
+        } else if (resolution == 'M') {
+          period = '4w'
+        } else if (resolution == '6M') {
+          period = '24w'
+        }
+        var influx_table_name = 'trade_history_bch_pax';
+        var influx_pair_name = 'bchpax';
+        var dataValue = await influx.query(`
+                        SELECT first(price) AS open, last(price) AS close, 
+                        max(price) AS high, min(price) AS low, sum(amount) AS volume 
+                        FROM ${influx_table_name} WHERE pair='${influx_pair_name}' AND time > '${from}'  AND time < '${to}'
+                        GROUP BY time(${period})
+                    `)
+        var candleStickData = {};
+        var o = [];
+        var c = [];
+        var l = [];
+        var h = [];
+        var v = [];
+        var t = [];
+        if (dataValue.groupRows.length > 0) {
+          for (var i = 0; i < (dataValue.groupRows[0].rows).length; i++) {
+            if (dataValue.groupRows[0].rows[i].open != null) {
+              // console.log("moment.utc(dataValue.groupRows[0].rows[i].time", moment.utc(dataValue.groupRows[0].rows[i].time).unix())
+              t.push(parseFloat(moment.utc(dataValue.groupRows[0].rows[i].time).unix()));
+              o.push(dataValue.groupRows[0].rows[i].open);
+              c.push(dataValue.groupRows[0].rows[i].close);
+              l.push(dataValue.groupRows[0].rows[i].low);
+              h.push(dataValue.groupRows[0].rows[i].high);
+              v.push(dataValue.groupRows[0].rows[i].volume);
+            }
+          }
+          candleStickData = {
+            o: o,
+            h: h,
+            l: l,
+            c: c,
+            t: t,
+            v: v
+          }
+
+          return res
+            .status(200)
+            .json({
+              s: "ok",
+              ...candleStickData
+            });
+        } else {
+          return res
+            .status(200)
+            .json({ s: "no_data" });
+        }
+      }
 
       let resolutionInMinute = 0;
       // Covert Resolution In Day
@@ -143,7 +1183,7 @@ module.exports = {
           break;
       }
       console.log("crypto, currency, resolutionInMinute, from, to", crypto, currency, resolutionInMinute, from, to)
-      let candleStickData = await sails
+      var candleStickData = await sails
         .helpers
         .tradding
         .getCandleStickData(crypto, currency, resolutionInMinute, from, to)
