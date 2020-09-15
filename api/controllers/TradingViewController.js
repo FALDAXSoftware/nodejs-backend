@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const moment = require('moment');
+var logger = require("./logger");
 
 // Influx setup
 const Influx = require('influx');
@@ -118,6 +119,10 @@ module.exports = {
       // console.log("req.allParams()", req.allParams())
 
       if (symbol == "XRP-BTC") {
+        var object = {
+          symbol: symbol
+        }
+        await logger.info(object, "From Influx Data");
         // var limit = 1440;
         from = moment.unix(from)
           .utc()
@@ -197,6 +202,10 @@ module.exports = {
             .json({ s: "no_data" });
         }
       } else if (symbol == "ETH-BTC") {
+        var object = {
+          symbol: symbol
+        }
+        await logger.info(object, "From Influx Data");
         from = moment.unix(from)
           .utc()
           .format();
