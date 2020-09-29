@@ -88,7 +88,6 @@ module.exports = {
           req.body['status'] = false;
         }
 
-
         if (req.body.ssn && req.body.ssn != "") {
           var dataValueSSN = await sails.helpers.getEncryptData(req.body.ssn)
           var userDataUpdate = await Users
@@ -197,25 +196,25 @@ module.exports = {
           .create(req.body)
           .fetch();
 
-        var user_value = await Users.findOne({
-          where: {
-            deleted_at: null,
-            is_active: true,
-            id: user_id
-          }
-        });
+        // var user_value = await Users.findOne({
+        //   where: {
+        //     deleted_at: null,
+        //     is_active: true,
+        //     id: user_id
+        //   }
+        // });
 
-        if (user_value != undefined) {
-          var user_update = await Users.
-            update({
-              deleted_at: null,
-              is_active: true,
-              id: user_id
-            })
-            .set({
-              phone_number: req.body.phone_number
-            })
-        }
+        // if (user_value != undefined) {
+        //   var user_update = await Users.
+        //     update({
+        //       deleted_at: null,
+        //       is_active: true,
+        //       id: user_id
+        //     })
+        //     .set({
+        //       phone_number: req.body.phone_number
+        //     })
+        // }
         if (kyc_created) {
           return res.json({
             'status': 200,
@@ -825,7 +824,6 @@ module.exports = {
             goverement_issued_number: encryptSSN
           })
 
-
         if ((flagReUpload.valid_id_flag == "false" || flagReUpload.valid_id_flag == false) && (flagReUpload.proof_residence_flag == "false" || flagReUpload.proof_residence_flag == false)) {
           return res
             .status(200)
@@ -1102,6 +1100,151 @@ module.exports = {
       }
 
     } catch (error) {
+      return res
+        .status(500)
+        .json({
+          status: 500,
+          "err": sails.__("Something Wrong").message,
+          error_at: error.stack
+        });
+    }
+  },
+
+  updateUserKycManual: async function (req, res) {
+    try {
+
+      var data = req.body
+
+      var getKycDetail = await KYC.findOne({
+        where: {
+          deleted_at: null,
+          id: data.id
+        }
+      });
+
+      console.log("getKycDetail", getKycDetail)
+
+      if (getKycDetail != undefined) {
+
+        if (data.is_approved == true) {
+
+          let updated = await KYC
+            .update({
+              deleted_at: null,
+              id: data.id
+            })
+            .set({
+              kyc_doc_details: '',
+              direct_response: "ACCEPT",
+              webhook_response: "ACCEPT"
+            })
+            .fetch();
+
+          var user_data_kyc = await KYC.findOne({
+            deleted_at: null,
+            id: data.id
+          });
+
+          var user_data = await Users
+            .update({
+              id: user_data_kyc.user_id,
+              deleted_at: null,
+              is_active: true
+            })
+            .set({
+              account_tier: 1
+            })
+            .fetch()
+
+          var userNotification = await UserNotification.findOne({
+            user_id: user_data[0].id,
+            deleted_at: null,
+            slug: 'kyc_approved'
+          })
+
+          if (userNotification != undefined) {
+            if (userNotification.email == true || userNotification.email == "true") {
+              if (user_data[0].email != undefined)
+                await sails.helpers.notification.send.email("kyc_approved", user_data[0])
+            }
+            if (userNotification.text == true || userNotification.text == "true") {
+              if (user_data[0].phone_number != undefined && user_data[0].phone_number != null && user_data[0].phone_number != '')
+                await sails.helpers.notification.send.text("kyc_approved", user_data[0])
+            }
+          }
+
+          return res
+            .status(200)
+            .json({
+              "status": 200,
+              "message": "KYC has been approved suucessfully."
+            })
+
+        } else if (data.is_approved == false) {
+          let updated = await KYC
+            .update({
+              deleted_at: null,
+              id: data.id
+            })
+            .set({
+              kyc_doc_details: '',
+              direct_response: "DENY",
+              webhook_response: "DENY"
+            })
+            .fetch();
+
+          var user_data_kyc = await KYC.findOne({
+            deleted_at: null,
+            id: data.id
+          });
+
+          var user_data = await Users
+            .update({
+              id: user_data_kyc.user_id,
+              deleted_at: null,
+              is_active: true
+            })
+            .set({
+              account_tier: 1
+            })
+            .fetch()
+
+          var userNotification = await UserNotification.findOne({
+            user_id: user_data[0].id,
+            deleted_at: null,
+            slug: 'kyc_approved'
+          })
+
+          if (userNotification != undefined) {
+            if (userNotification.email == true || userNotification.email == "true") {
+              if (user_data[0].email != undefined)
+                await sails.helpers.notification.send.email("kyc_rejected", user_data[0])
+            }
+            if (userNotification.text == true || userNotification.text == "true") {
+              if (user_data[0].phone_number != undefined && user_data[0].phone_number != null && user_data[0].phone_number != '')
+                await sails.helpers.notification.send.text("kyc_rejected", user_data[0])
+            }
+          }
+        }
+
+        return res
+          .status(200)
+          .json({
+            "status": 200,
+            "message": "KYC has been rejected suucessfully."
+          })
+
+      } else {
+        return res
+          .status(500)
+          .json({
+            "status": 500,
+            "message": sails.__("No KYC has been found").message
+          })
+      }
+
+    } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({

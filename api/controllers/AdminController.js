@@ -2590,42 +2590,42 @@ module.exports = {
       await Promise.all([
         await sails.sendNativeQuery(
           ` SELECT b.user_coin, SUM(b.user_fee)
-                        FROM (
+                          FROM (
+                            (
+                            SELECT user_coin, sum(user_fee) as user_fee
+                            FROM trade_history
+                            GROUP BY user_coin
+                            )
+                              UNION
                           (
-                          SELECT user_coin, sum(user_fee) as user_fee
-                          FROM trade_history
-                          GROUP BY user_coin
+                            SELECT requested_coin, sum(requested_fee) as requested_fee
+                            FROM trade_history
+                            GROUP BY requested_coin
                           )
-                            UNION
-                        (
-                          SELECT requested_coin, sum(requested_fee) as requested_fee
-                          FROM trade_history
-                          GROUP BY requested_coin
-                        )
-                        ) b GROUP BY b.user_coin`,
+                          ) b GROUP BY b.user_coin`,
           []
         ),
 
         sails.sendNativeQuery(`SELECT sum(wallet_history.faldax_fee), coins.coin, coins.id
-                              FROM wallet_history
-                              LEFT JOIN coins
-                              ON coins.id = wallet_history.coin_id
-                              WHERE wallet_history.deleted_at IS NULL AND wallet_history.is_admin = false
-                              GROUP BY coins.coin, coins.id`, []),
+                                FROM wallet_history
+                                LEFT JOIN coins
+                                ON coins.id = wallet_history.coin_id
+                                WHERE wallet_history.deleted_at IS NULL AND wallet_history.is_admin = false
+                                GROUP BY coins.coin, coins.id`, []),
 
         await CurrencyConversion.find({
           deleted_at: null
         }),
 
         await sails.sendNativeQuery(`SELECT SUM((wallets.balance)) as balance, SUM((wallets.placed_balance)) as placed_balance, coins.id, coins.coin
-                                    FROM public.wallets 
-                                    LEFT JOIN users
-                                    ON users.id = wallets.user_id
-                                    LEFT JOIN coins
-                                    ON wallets.coin_id = coins.id
-                                    WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL 
-                                    AND wallets.placed_balance IS NOT NULL
-                                    GROUP BY (coins.coin, coins.id)`)
+                                      FROM public.wallets 
+                                      LEFT JOIN users
+                                      ON users.id = wallets.user_id
+                                      LEFT JOIN coins
+                                      ON wallets.coin_id = coins.id
+                                      WHERE users.deleted_at IS NOT NULL AND wallets.balance IS NOT NULL 
+                                      AND wallets.placed_balance IS NOT NULL
+                                      GROUP BY (coins.coin, coins.id)`)
 
       ]).then(values => {
         sqlData = values[0].rows;

@@ -115,7 +115,7 @@ module.exports = {
         }
         var wallet = await sails.helpers.bitgo.getWallet(walletCoinCode, coin.hot_receive_wallet_address);
 
-
+        console.log("wallet", wallet)
         if (!walletData) {
           if (wallet) {
             // Here chain =0 means testnet Generating wallet address Create bitgo wallet
@@ -123,7 +123,7 @@ module.exports = {
 
             //Address generation for receiving coin
             let address = await sails.helpers.bitgo.createAddress(walletCoinCode, coin.hot_receive_wallet_address, address_label);
-
+            console.log("address", address)
             let obj = {
               wallet_id: "wallet",
               coin_id: parseInt(coin.id),

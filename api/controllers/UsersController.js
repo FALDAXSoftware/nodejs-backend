@@ -714,6 +714,19 @@ module.exports = {
       let usersData = await sails.sendNativeQuery("Select * " + query, [])
 
       usersData = usersData.rows;
+      console.log("usersData", usersData)
+
+      console.log("usersData.length", usersData.length)
+
+      if (usersData.length == 0) {
+        return res
+          .status(500)
+          .json({
+            status: 500,
+            "message": "User is currently inactive or has been deactivated",
+            error_at: "err"
+          });
+      }
 
       var walletData = await Wallet.find({
         where: {
@@ -802,7 +815,7 @@ module.exports = {
         user_id: id
       });
 
-      console.log("userKyc",userKyc)
+      console.log("userKyc", userKyc)
 
       // console.log("getTierData.length > 0", getTierData.length > 0)
       console.log("getTierData != undefined && usersData[0].account_tier == 0", getTierData != undefined && usersData[0].account_tier == 0)
@@ -817,7 +830,7 @@ module.exports = {
         //   user_id: id
         // });
         if (usersData[0].account_tier > 1) {
-          usersData[0].is_kyc_done = 2; 
+          usersData[0].is_kyc_done = 2;
         } else {
           console.log("userKyc", userKyc)
           usersData[0].is_kyc_done = 0;
@@ -829,7 +842,7 @@ module.exports = {
               }
             }
           }
-          
+
         }
       }
       // {
@@ -1033,6 +1046,14 @@ module.exports = {
                 .fetch();
 
               sails.hooks.i18n.setLocale(updatedUsers[0].default_language);
+
+              // let slug = "profile_updated"
+              // let template = await EmailTemplate.findOne({
+              //   slug
+              // });
+              // let user_language = (updatedUsers[0].default_language ? updatedUsers[0].default_language : 'en');
+              // let language_content = template.all_content[user_language].content;
+              // let language_subject = template.all_content[user_language].subject;
 
               return res.json({
                 "status": 200,
@@ -1853,13 +1874,7 @@ module.exports = {
           console.log("fiatValue", fiatValue)
           usd_price = usd_price + ((walletCount[i].totalAmount) * fiatValue);
           console.log("usd_price", usd_price);
-          // } else {
-          //   var susucoinData = await sails.helpers.getUsdSusucoinValue();
-          //   susucoinData = JSON.parse(susucoinData);
-          //   susucoinData = susucoinData.data
-          //   walletCount[i].fiat = susucoinData.USD;
-          //   usd_price = usd_price + ((walletCount[i].totalAmount) * susucoinData.USD);
-          // }
+          // } 
         }
 
         if (total > 0) {
@@ -3548,6 +3563,7 @@ module.exports = {
       // }
       query += " limit " + limit + " offset " + (parseInt(limit) * (parseInt(page) - 1));
       console.log(query);
+      console.log("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query)
       let user_details = await sails.sendNativeQuery("Select first_name,last_name,full_name,email,deleted_at,is_active,referred_id,state,postal_code,country " + query, [])
       // let userCount = await sails.sendNativeQuery("Select COUNT(id)" + countQuery, [])
       // userCount = userCount.rows[0].count;
@@ -3596,8 +3612,8 @@ module.exports = {
           // //     referred_id: userIds[i]
           // //   });
 
-          // var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users 
-          //                               WHERE referred_id = ${userIds[i]} AND is_active = true 
+          // var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users
+          //                               WHERE referred_id = ${userIds[i]} AND is_active = true
           //                               AND deleted_at IS NULL;`);
 
           // userData.emailValue = (getReferredEmailList.rows);
@@ -3621,18 +3637,47 @@ module.exports = {
           // userData.no_of_referral = userDataValue
           // usersData.push(userData)
 
-          var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users 
-          WHERE referred_id = ${userIds[i]} AND is_active = true 
+          var getReferredEmailList = await sails.sendNativeQuery(`SELECT email FROM users
+          WHERE referred_id = ${userIds[i]} AND is_active = true
           AND deleted_at IS NULL;`);
 
           userData.emailValue = (getReferredEmailList.rows);
 
           var getReferredEmailCount = await sails.sendNativeQuery(`SELECT count(id) FROM users 
-          WHERE referred_id = ${userIds[i]} AND is_active = true 
+          WHERE referred_id = ${userIds[i]} AND is_active = true
           AND deleted_at IS NULL;`);
 
           userData.no_of_referral = (getReferredEmailCount.rows[0]);
           usersData.push(userData)
+          // var emailArray = [];
+          // var userDataValue = await Users
+          //   .count('id')
+          //   .where({
+          //     deleted_at: null,
+          //     is_active: true,
+          //     referred_id: userIds[i]
+          //   });
+
+          // var dataValue = await Users.find({
+          //   select: [
+          //     'email'
+          //   ],
+          //   where: {
+          //     deleted_at: null,
+          //     is_active: true,
+          //     referred_id: userIds[i]
+          //   }
+          // });
+
+          // console.log(dataValue);
+
+          // for (var j = 0; j < dataValue.length; j++) {
+          //   emailArray.push(dataValue[j].email);
+          // }
+          // console.log(emailArray);
+          // userData.emailValue = emailArray;
+          // userData.no_of_referral = userDataValue
+          // usersData.push(userData)
         }
       }
 
@@ -3735,12 +3780,25 @@ module.exports = {
       var data = await sails.sendNativeQuery(get_reffered_data, []);
       var count = await sails.sendNativeQuery(countQuery, []);
       count = count.rows.length
+      var data = data.rows;
+      // for (var i = 0; i < data.length; i++) {
+      //   var getSideData = await TradeHistory.findOne({
+      //     select: [
+      //       'side'
+      //     ],
+      //     where: {
+      //       id: data[i].txid,
+      //       deleted_at: null
+      //     }
+      //   });
+      //   data[i].side = (getSideData != undefined) ? (getSideData.side) : ("")
+      // }
       return res
         .status(200)
         .json({
           "status": 200,
           "message": sails.__("refer data retrieve").message,
-          "data": data.rows,
+          "data": data,
           count
         });
 
@@ -3926,8 +3984,11 @@ module.exports = {
         }
       });
 
+      console.log("userData", userData)
+
       var data = {};
       if (userData != undefined) {
+        console.log("userData.account_tier", userData.account_tier)
         if (userData.account_tier == 4) {
           data.is_kyc_done = 2;
           data.is_allowed = true;
@@ -3940,7 +4001,6 @@ module.exports = {
             });
         }
       }
-
       if (userData.account_tier == 0) {
         data.is_kyc_done = 2;
         var getTierData = await Tiers.findOne({
@@ -3950,21 +4010,31 @@ module.exports = {
             tier_step: 0
           }
         });
-      }
-      if (getTierData != undefined) {
-        var dataResponse1 = await sails
-          .helpers
-          .userLegalityCheck(userData.id);
 
-        data.is_allowed = (dataResponse1.response)
-
-        return res
-          .status(200)
-          .json({
-            "status": 200,
-            "message": sails.__("You are allowed to trade").message,
-            "data": data
+        if (getTierData != undefined) {
+          var geo_fencing_data = await sails
+            .helpers
+            .userLegalityCheck(user_id)
+          data.is_allowed = geo_fencing_data.response;
+        } else {
+          let userKyc = await KYC.findOne({
+            user_id: user_id
           });
+          data.is_kyc_done = 0;
+          if (userKyc) {
+            if (userKyc.steps == 3) {
+              data.is_kyc_done = 1;
+              if ((userKyc.direct_response == "ACCEPT" && userKyc.webhook_response == "ACCEPT")) {
+                data.is_kyc_done = 2;
+              }
+            }
+          }
+          var geo_fencing_data = await sails
+            .helpers
+            .userTradeChecking(user_id);
+          console.log(geo_fencing_data)
+          data.is_allowed = geo_fencing_data.response;
+        }
       } else {
 
         if (userData.account_tier > 1) {

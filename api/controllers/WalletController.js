@@ -402,7 +402,7 @@ module.exports = {
         is_active: true
       });
 
-      if (userData.is_user_updated == false || userData.is_user_updated == "false") {
+      if (userData != undefined && (userData.is_user_updated == false || userData.is_user_updated == "false")) {
         return res
           .status(500)
           .json({
@@ -491,7 +491,7 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false) {
+      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false && coin.coin_code != "txlm") {
         if (sails.config.local.TESTNET == 1) {
           var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
         } else {
@@ -595,6 +595,7 @@ module.exports = {
                                           AND wallet_history.user_id = ${user_id}
                                           AND wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}'
                                       ) as m`
+          console.log("getUserDailyHistory", getUserDailyHistory)
           var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
           userDailyHistory = userDailyHistory.rows
 
@@ -644,7 +645,6 @@ module.exports = {
           } else {
             monthlyWithdrawAmount = (userMonthlyHistory[0].request_amount == null) ? (0.0) : (userMonthlyHistory[0].request_amount)
           }
-
           dailyTotalVolume = parseFloat(userDailyHistory[0].history_amount) + parseFloat(userDailyHistory[0].request_amount);
           monthlyTotalVolume = parseFloat(monthlyHistoryAmount) + parseFloat(monthlyWithdrawAmount);
           dailyTotalVolume = (Number.isNaN(dailyTotalVolume)) ? (0.0) : (dailyTotalVolume);
@@ -1734,7 +1734,6 @@ module.exports = {
             "err": sails.__("Please Complete You profile").message
           })
       }
-
       if (userData.account_tier != 4) {
 
         if (userData.account_tier == 0) {
@@ -1782,7 +1781,6 @@ module.exports = {
           }
         }
       }
-
       var coinData = await Coins.findOne({
         where: {
           deleted_at: null,
@@ -3691,7 +3689,6 @@ module.exports = {
           // coinData[i].total_value = (((coinData[i].balance) / coinData[i].coin_precision) * coinData[i].fiat)
           // coinData[i].hot_receive_wallet_address = "SNbhGFbmk4JW6zpY3nUTjkHBaXmKppyUJH"
         }
-
       }
       return res
         .status(200)
@@ -4447,6 +4444,8 @@ module.exports = {
         .local()
         .format();
 
+      console.log("yesterday", yesterday)
+
       var previousMonth = moment()
         .startOf('month')
         .local()
@@ -4509,11 +4508,11 @@ module.exports = {
 
       // Get User and tier information
       var tierSql = `SELECT users.account_tier, tiers.monthly_withdraw_limit, tiers.daily_withdraw_limit, tiers.is_active
-                        FROM users
-                        LEFT JOIN tiers
-                        ON (users.account_tier) = tiers.tier_step
-                        WHERE users.deleted_at IS NULL AND users.is_active = 'true'
-                        AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
+                      FROM users
+                      LEFT JOIN tiers
+                      ON (users.account_tier) = tiers.tier_step
+                      WHERE users.deleted_at IS NULL AND users.is_active = 'true'
+                      AND users.id = ${user_id} AND tiers.deleted_at IS NULL;`
       var userTierSql = await sails.sendNativeQuery(tierSql);
       userTierSql = userTierSql.rows;
       console.log('userTierSql', userTierSql);
@@ -4536,6 +4535,7 @@ module.exports = {
       limitCalculation = limitCalculation.rows;
       console.log('limitCalculation', limitCalculation);
       // Daily Limit Checking
+
       var getUserDailyHistory = `SELECT *
                                   FROM (
                                     SELECT SUM((withdraw_request.amount + withdraw_request.network_fee)*Cast(withdraw_request.fiat_values->>'asset_1_usd' as double precision)) as requested_amount
@@ -4558,9 +4558,15 @@ module.exports = {
                                       AND wallet_history.created_at >= '${yesterday}' AND wallet_history.created_at <= '${now}'
                                   ) as m`
 
+      console.log("getUserDailyHistory", getUserDailyHistory)
+
       var userDailyHistory = await sails.sendNativeQuery(getUserDailyHistory)
       userDailyHistory = userDailyHistory.rows
       console.log('userDailyHistory', userDailyHistory);
+
+      console.log("userData.account_tier", userData.account_tier)
+
+      console.log("userTierSql[0]", userTierSql[0])
 
       if (userData.account_tier == 0 && (Boolean(userTierSql[0].is_active) == true)) {
         var dailyTotalVolume = 0.0;
