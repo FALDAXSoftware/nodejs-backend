@@ -1402,9 +1402,31 @@ module.exports = {
                   data.description = randomize('Aa0', 10);
                   data.type = (i == 0) ? 1 : 2;
 
-                  dataValue = await sails.helpers.uploadTierDocument(data)
+                  let extension = uploadFile[i]
+                    .filename
+                    .split('.');
+                  let filename = new Date()
+                    .getTime()
+                    .toString();
+                  filename += 'tier3.' + extension[extension.length - 1];
+                  // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+                  await UploadFiles.upload(uploadFile[i].fd, 'tier3/' + filename)
+                  // req.body.front_doc = 'tier2/' + filename;
+
+                  var dataValue = await TierRequest.create({
+                    unique_key: randomize('Aa0', 10),
+                    request_id: idValue,
+                    tier_step: 3,
+                    created_at: new Date(),
+                    type: (i == 0) ? 1 : 2,
+                    document: 'tier3/' + filename
+                  }).fetch();
                 }
-                return res.status(dataValue.status).json(dataValue);
+                return res.status(200).json({
+                    "status": 200,
+                    "data": "Your file has been uploaded successfully."
+                });
+
               }
 
             } catch (error) {
