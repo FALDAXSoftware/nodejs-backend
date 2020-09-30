@@ -909,6 +909,7 @@ module.exports = {
             }
           });
       } else if (((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && (dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true")) && tierDetails != undefined) {
+        console.log("INSIDE SECOND ELSE IF")
         var flag = 0;
         for (var i = 0; i < tierDetails.length; i++) {
           if (tierDetails[i].type != 3) {
@@ -933,10 +934,31 @@ module.exports = {
                     data.type = (i == 0) ? 1 : 2;
                     data.user_id = user_id;
 
-                    dataValue = await sails.helpers.uploadTierDocument(data)
+                    let extension = uploadFile[i]
+                      .filename
+                      .split('.');
+                    let filename = new Date()
+                      .getTime()
+                      .toString();
+                    filename += 'tier2.' + extension[extension.length - 1];
+                    // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+                    await UploadFiles.upload(uploadFile[i].fd, 'tier2/' + filename)
+                    // req.body.front_doc = 'tier2/' + filename;
+
+                    var dataValue = await TierRequest.create({
+                      unique_key: randomize('Aa0', 10),
+                      request_id: idValue,
+                      tier_step: 2,
+                      created_at: new Date(),
+                      type: (i == 0) ? 1 : 2,
+                      document: 'tier2/' + filename
+                    }).fetch();
                   }
                 }
-                return res.status(dataValue.status).json(dataValue);
+                return res.status(200).json({
+                  "status": 200,
+                  "data": "Your file has been uploaded successfully."
+                });
 
               } catch (error) {
                 console.log(error);
@@ -951,6 +973,7 @@ module.exports = {
             })
         }
       } else if ((dataBody.valid_id_flag == true || dataBody.valid_id_flag == "true") && tierDetails != undefined) {
+        console.log("INSIDE THIRD ELSE IF")
         var flag = false;
         for (var i = 0; i < tierDetails.length; i++) {
           if (tierDetails[i].type == 1) {
@@ -971,8 +994,33 @@ module.exports = {
                 data.type = 1;
                 data.user_id = user_id;
 
-                var dataValue = await sails.helpers.uploadTierDocument(data)
-                return res.status(dataValue.status).json(dataValue);
+                let extension = uploadFile[0]
+                  .filename
+                  .split('.');
+                let filename = new Date()
+                  .getTime()
+                  .toString();
+                filename += 'tier2.' + extension[extension.length - 1];
+                // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+                await UploadFiles.upload(uploadFile[0].fd, 'tier2/' + filename)
+                // req.body.front_doc = 'tier2/' + filename;
+
+                var dataValue = await TierRequest.create({
+                  unique_key: randomize('Aa0', 10),
+                  request_id: idValue,
+                  tier_step: 2,
+                  created_at: new Date(),
+                  type: 1,
+                  document: 'tier2/' + filename
+                }).fetch();
+
+                // var dataValue = await sails.helpers.uploadTierDocument(data)
+                // return res.status(dataValue.status).json(dataValue);
+
+                return res.status(200).json({
+                  "status": 200,
+                  "data": "Your file has been uploaded successfully."
+                });
 
               } catch (error) {
                 console.log(error);
@@ -987,6 +1035,7 @@ module.exports = {
             })
         }
       } else if ((dataBody.proof_residence_flag == true || dataBody.proof_residence_flag == "true") && tierDetails != undefined) {
+        console.log("INSIDE FOURTH ELSE IF")
         var flag = false;
         for (var i = 0; i < tierDetails.length; i++) {
           if (tierDetails[i].type == 2) {
@@ -1006,9 +1055,30 @@ module.exports = {
                 data1.description = randomize('Aa0', 10);
                 data1.type = 2;
                 data1.user_id = user_id;
-                var dataValue1 = await sails.helpers.uploadTierDocument(data1)
+                let extension = uploadFile1[0]
+                  .filename
+                  .split('.');
+                let filename = new Date()
+                  .getTime()
+                  .toString();
+                filename += 'tier2.' + extension[extension.length - 1];
+                // resolve(await UploadFiles.upload(req.body.front_doc, 'kyc/' + filename));
+                await UploadFiles.upload(uploadFile1[0].fd, 'tier2/' + filename)
+                // req.body.front_doc = 'tier2/' + filename;
 
-                return res.status(dataValue1.status).json(dataValue1);
+                var dataValue = await TierRequest.create({
+                  unique_key: randomize('Aa0', 10),
+                  request_id: idValue,
+                  tier_step: 2,
+                  created_at: new Date(),
+                  type: 2,
+                  document: 'tier2/' + filename
+                }).fetch();
+
+                return res.status(200).json({
+                  "status": 200,
+                  "data": "Your file has been uploaded successfully."
+                });
               } catch (error1) {
                 console.log(error1);
               }
