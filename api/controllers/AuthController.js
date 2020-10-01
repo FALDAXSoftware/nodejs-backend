@@ -123,6 +123,8 @@ module.exports = {
   login: async function (req, res) {
     try {
 
+      console.log("req.body", req.body)
+
       if (req.body.email && req.body.password) {
         let query = {
           email: req
