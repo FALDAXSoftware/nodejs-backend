@@ -53,8 +53,8 @@ module.exports.datastores = {
     pool: true,
     poolSize: 25,
     waitForConnections: true,
-    max: 30,
-    min: 20
+    max: 5,
+    min: 8
   },
   read: {
     adapter: 'sails-postgresql',
@@ -63,7 +63,7 @@ module.exports.datastores = {
     pool: true,
     poolSize: 25,
     waitForConnections: true,
-    max: 30,
-    min: 20
+    max: 5,
+    min: 8
   }
 };
