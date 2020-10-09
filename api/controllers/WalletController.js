@@ -685,8 +685,9 @@ module.exports = {
                     //If placed balance is greater than the amount to be send
                     if (parseFloat((wallet.placed_balance).toFixed(sails.config.local.TOTAL_PRECISION)) >= (parseFloat(total_fees)).toFixed(sails.config.local.TOTAL_PRECISION)) {
 
+
                       //If coin is of bitgo type
-                      if (coin.type == 1) {
+                      if (coin.type == 1 && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
 
                         let warmWalletData = await sails
                           .helpers
@@ -1167,14 +1168,14 @@ module.exports = {
                             "status": 200,
                             "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
-                      } else if (coin_code == "XRP") {
+                      } else if (coin_code == "XRP" || coin_code == "txrp") {
                         var value = {
                           "amount": parseFloat(amount),
                           "to_address": destination_address,
                         }
                         var responseValue = new Promise(async (resolve, reject) => {
                           request({
-                            url: sails.config.local.coinArray.RIPPLE.url,
+                            url: sails.config.local.coinArray[coin.coin].url,
                             method: "POST",
                             headers: {
 
@@ -1190,6 +1191,7 @@ module.exports = {
                             if (body.error) {
                               resolve(body);
                             }
+                            console.log("body", body)
                             resolve(body);
                             // return body;
                           });
@@ -1202,7 +1204,7 @@ module.exports = {
                           .status(200)
                           .json({
                             "status": 200,
-                            "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
+                            "message": parseFloat(parseFloat(amount) + parseFloat(value.data.fees) + parseFloat(faldaxFees)) + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       }
                     } else {

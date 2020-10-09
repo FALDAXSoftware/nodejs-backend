@@ -219,7 +219,7 @@ module.exports.local = {
       'url': 'http://dev-tether-currency.faldax.com/',
       'type': 7
     },
-    'RIPPLE':{
+    'XRP': {
       'coin_name': 'Ripple',
       'url': 'http://localhost:3012/api/v1/ripple-transaction'
     }
