@@ -1299,7 +1299,7 @@ module.exports = {
               is_active: true
             })
             .set({
-              account_tier: 1
+              account_tier: 0
             })
             .fetch()
 
