@@ -1167,6 +1167,43 @@ module.exports = {
                             "status": 200,
                             "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
+                      } else if (coin_code == "XRP") {
+                        var value = {
+                          "amount": parseFloat(amount),
+                          "to_address": destination_address,
+                        }
+                        var responseValue = new Promise(async (resolve, reject) => {
+                          request({
+                            url: sails.config.local.coinArray.RIPPLE.url,
+                            method: "POST",
+                            headers: {
+
+                              'x-token': 'faldax-ripple-node',
+                              'Content-Type': 'application/json'
+                            },
+                            body: value,
+                            json: true
+                          }, function (err, httpResponse, body) {
+                            if (err) {
+                              reject(err);
+                            }
+                            if (body.error) {
+                              resolve(body);
+                            }
+                            resolve(body);
+                            // return body;
+                          });
+                        })
+
+                        // var value = Promise.resolve(responseValue)
+                        var value = await responseValue;
+
+                        return res
+                          .status(200)
+                          .json({
+                            "status": 200,
+                            "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
+                          })
                       }
                     } else {
                       return res

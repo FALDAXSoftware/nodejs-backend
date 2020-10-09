@@ -218,6 +218,10 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-tether-currency.faldax.com/',
       'type': 7
+    },
+    'RIPPLE':{
+      'coin_name': 'Ripple',
+      'url': 'http://localhost:3012/api/v1/ripple-transaction'
     }
   },
   hubspot: {
