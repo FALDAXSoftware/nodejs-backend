@@ -99,7 +99,7 @@ module.exports = {
       }
     }
     let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
-    if (coin.type == 1) {
+    if (coin.type == 1 && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
       //For all the coins accept USD EURO and ETH
       if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
         // For all type 1 (bitgo) coins
@@ -194,6 +194,58 @@ module.exports = {
         }
         console.log("walletData", walletData);
         body.data = walletData;
+        console.log(body)
+        return exits.success(body);
+        // return body;
+      });
+    } else if (inputs.coin == "XRP" && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0) {
+      var value = {
+        "user_id": parseInt(inputs.user.id),
+        "label": address_label
+      }
+      await request({
+        url: sails.config.local.coinArray[coin.coin].url + "ripple-get-new-address",
+        method: "POST",
+        headers: {
+          // 'cache-control': 'no-cache',
+          // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+          'x-token': 'faldax-ripple-node',
+          'Content-Type': 'application/json'
+        },
+        body: value,
+        json: true
+      }, async function (err, httpResponse, body) {
+        console.log("body", body);
+        if (err) {
+          return exits.error(err);
+        }
+        if (body.error) {
+          return exits.error(body);
+        }
+        if (body.status == 201) {
+          if (inputs.user.flag == true) {
+            var walletData = await Wallet
+              .update({
+                "receive_address": body.data,
+                deleted_at: null
+              })
+              .set({
+                "is_admin": true
+              })
+              .fetch();
+          } else {
+            var walletData = await Wallet.findOne({
+              where: {
+                deleted_at: null,
+                "receive_address": body.data
+              }
+            })
+          }
+          console.log("walletData", walletData);
+          body.data = walletData;
+        } else {
+
+        }
         console.log(body)
         return exits.success(body);
         // return body;

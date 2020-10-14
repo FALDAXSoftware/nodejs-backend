@@ -1196,7 +1196,7 @@ module.exports = {
                         // var res = str.split(" ");
                         var responseValue = new Promise(async (resolve, reject) => {
                           request({
-                            url: sails.config.local.coinArray[coin.coin].url,
+                            url: sails.config.local.coinArray[coin.coin].url + "ripple-transaction",
                             method: "POST",
                             headers: {
 
@@ -1891,9 +1891,9 @@ module.exports = {
         })
       } else if (walletDataCreate) {
         return res.json({
-          status: (coin_code != "SUSU") ? (200) : (walletDataCreate.status),
-          message: (coin_code != "SUSU") ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
-          data: (coin_code != "SUSU") ? (walletDataCreate) : (walletDataCreate.data)
+          status: (coin_code != "SUSU" && coin_code != "XRP") ? (200) : (walletDataCreate.status),
+          message: (coin_code != "SUSU" && coin_code != "XRP") ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
+          data: (coin_code != "SUSU" && coin_code != "XRP") ? (walletDataCreate) : (walletDataCreate.data)
         })
       } else {
         return res.json({
@@ -3472,7 +3472,34 @@ module.exports = {
       if (data.coin != "SUSU") {
         var reposneData = {};
         if (data.coin == 'xrp' || data.coin == 'txrp') {
-          reposneData.fee = 45;
+          var responseValue = new Promise(async (resolve, reject) => {
+            request({
+              url: sails.config.local.coinArray[coinData.coin].url + "ripple-fees",
+              method: "GET",
+              headers: {
+
+                'x-token': 'faldax-ripple-node',
+                'Content-Type': 'application/json'
+              },
+              // body: value,
+              // json: true
+            }, function (err, httpResponse, body) {
+              if (err) {
+                reject(err);
+              }
+              if (body.error) {
+                resolve(body);
+              }
+              console.log("body", body)
+              resolve(body);
+              // return body;
+            });
+          })
+          var value = await responseValue;
+          value = JSON.parse(value);
+          console.log("value", value.fees)
+          value.fee = value.fees;
+          reposneData = value;
         } else {
           reposneData = await sails
             .helpers
