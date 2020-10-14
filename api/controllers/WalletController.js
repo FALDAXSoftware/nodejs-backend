@@ -1169,10 +1169,31 @@ module.exports = {
                             "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       } else if (coin_code == "XRP" || coin_code == "txrp") {
-                        var value = {
-                          "amount": parseFloat(amount),
-                          "to_address": destination_address,
+                        var str = destination_address;
+                        var strData = str.split("?")
+                        console.log("strData", strData)
+                        if (strData.length > 1) {
+                          var strDataValue = strData[1].split("=")
+                          var destinationTag = strDataValue[1];
+                          var value = {
+                            "user_id": parseInt(user_id),
+                            "amount": Number(parseFloat(amount).toFixed(8)),
+                            "destination_address": strData[0],
+                            "faldax_fee": faldaxFees,
+                            "network_fee": networkFees,
+                            "destinationTag": destinationTag
+                          }
+                        } else {
+                          var value = {
+                            "user_id": parseInt(user_id),
+                            "amount": Number(parseFloat(amount).toFixed(8)),
+                            "destination_address": strData[0],
+                            "faldax_fee": faldaxFees,
+                            "network_fee": networkFees
+                          }
                         }
+                        console.log("value", value)
+                        // var res = str.split(" ");
                         var responseValue = new Promise(async (resolve, reject) => {
                           request({
                             url: sails.config.local.coinArray[coin.coin].url,
@@ -1200,11 +1221,13 @@ module.exports = {
                         // var value = Promise.resolve(responseValue)
                         var value = await responseValue;
 
+                        console.log("value", value)
+
                         return res
                           .status(200)
                           .json({
                             "status": 200,
-                            "message": parseFloat(parseFloat(amount) + parseFloat(value.data.fees) + parseFloat(faldaxFees)) + " " + coin.coin_code + " " + sails.__("Token send success").message
+                            "message": parseFloat(value.userBalanceUpdateValue) + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       }
                     } else {
