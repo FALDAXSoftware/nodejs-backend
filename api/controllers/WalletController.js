@@ -1229,6 +1229,46 @@ module.exports = {
                             "status": 200,
                             "message": parseFloat(value.userBalanceUpdateValue) + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
+                      } else if (coin_code == "LTC" || coin_code == "tltc") {
+
+                        var value = {
+                          "user_id": parseInt(user_id),
+                          "amount": parseFloat(amount),
+                          "destination_address": destination_address,
+                          "faldax_fee": faldaxFees,
+                          "network_fee": networkFees
+                        }
+                        var responseValue = new Promise(async (resolve, reject) => {
+                          request({
+                            url: sails.config.local.coinArray[coin.coin].url + "send-litecoin-coin-address",
+                            method: "POST",
+                            headers: {
+                              'x-token': 'faldax-litecoin-node',
+                              'Content-Type': 'application/json'
+                            },
+                            body: value,
+                            json: true
+                          }, function (err, httpResponse, body) {
+                            if (err) {
+                              reject(err);
+                            }
+                            if (body.error) {
+                              resolve(body);
+                            }
+                            resolve(body);
+                            // return body;
+                          });
+                        })
+
+                        // var value = Promise.resolve(responseValue)
+                        var value = await responseValue;
+
+                        return res
+                          .status(200)
+                          .json({
+                            "status": 200,
+                            "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
+                          })
                       }
                     } else {
                       return res
@@ -2620,6 +2660,47 @@ module.exports = {
                 .json({
                   "status": 200,
                   "message": parseFloat(value.userBalanceUpdateValue) + " " + coin.coin_code + " " + sails.__("Token send success").message
+                })
+            } else if (coin_code == "LTC" || coin_code == "tltc") {
+              // Sending SUSU coin
+              var value = {
+                "user_id": parseInt(user_id),
+                "amount": parseFloat(amount),
+                "destination_address": destination_address,
+                "faldax_fee": 0.0,
+                "network_fee": networkFees,
+                "is_admin": true
+              }
+
+              var responseValue = new Promise(async (resolve, reject) => {
+                request({
+                  url: sails.config.local.coinArray[coin.coin].url + "send-litecoin-coin-address",
+                  method: "POST",
+                  headers: {
+
+                    'x-token': 'faldax-litecoin-node',
+                    'Content-Type': 'application/json'
+                  },
+                  body: value,
+                  json: true
+                }, function (err, httpResponse, body) {
+                  if (err) {
+                    reject(err);
+                  }
+                  if (body.error) {
+                    resolve(body);
+                  }
+                  resolve(body);
+                  // return body;
+                });
+              })
+              var value = await responseValue;
+
+              return res
+                .status(200)
+                .json({
+                  "status": 200,
+                  "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                 })
             }
 
