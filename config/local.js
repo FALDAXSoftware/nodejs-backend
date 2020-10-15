@@ -222,7 +222,7 @@ module.exports.local = {
     'XRP': {
       'coin_name': 'Ripple',
       // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
-      'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': 'http://localhost:3013/api/v1/'
     }
   },
   hubspot: {
