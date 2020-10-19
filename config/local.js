@@ -222,12 +222,30 @@ module.exports.local = {
     'XRP': {
       'coin_name': 'Ripple',
       // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
-      'url': 'http://localhost:3013/api/v1/'
+      'url': 'http://localhost:3013/api/v1/',
+      'type': 8
     },
     'LTC': {
       'coin_name': 'Litecoin',
       // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
-      'url': 'http://localhost:3013/api/v1/'
+      // 'url': 'http://458fe6ff2d30.ngrok.io/api/v1/'
+      'url': 'http://70ddfb77d54b.ngrok.io/api/v1/',
+      'type': 9,
+      'name': 'litecoin'
+    },
+    'BTC': {
+      'coin_name': 'Bitcoin',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': 'http://localhost:3013/api/v1/',
+      'type': 9,
+      'name': 'bitcoin',
+    },
+    'BCH': {
+      'coin_name': 'Bitcoin Cash',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': 'http://localhost:3013/api/v1/',
+      'type': 9,
+      'name': 'bitcoincash'
     }
   },
   hubspot: {

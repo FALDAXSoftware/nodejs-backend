@@ -99,6 +99,7 @@ module.exports = {
       }
     }
     let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
+    console.log("sails.config.local.coinArray[coin.coin].type", sails.config.local.coinArray[coin.coin].type)
     if (coin.type == 1 && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
       //For all the coins accept USD EURO and ETH
       if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
@@ -198,7 +199,7 @@ module.exports = {
         return exits.success(body);
         // return body;
       });
-    } else if (inputs.coin == "XRP" && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0) {
+    } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 8) {
       var value = {
         "user_id": parseInt(inputs.user.id),
         "label": address_label
@@ -250,20 +251,21 @@ module.exports = {
         return exits.success(body);
         // return body;
       });
-    } else if (inputs.coin == "LTC" && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0) {
-      console.log("INSIDE ELSE IF>>>>>>")
+    } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 9) {
+      console.log("INSIDE ELSE IF " + sails.config.local.coinArray[coin.coin].name + ">>>>>>")
       var value = {
         "user_id": parseInt(inputs.user.id),
         "label": address_label
       }
       // console.log(sails.config.local.SUSUCOIN_URL + "get-litecoin-coin-address")
+      console.log(sails.config.local.coinArray[coin.coin].url + "create-" + sails.config.local.coinArray[coin.coin].name + "-coin-address")
       await request({
-        url: sails.config.local.coinArray[coin.coin].url + "create-litecoin-coin-address",
+        url: sails.config.local.coinArray[coin.coin].url + "create-" + sails.config.local.coinArray[coin.coin].name + "-coin-address",
         method: "POST",
         headers: {
           // 'cache-control': 'no-cache',
           // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
-          'x-token': 'faldax-litecoin-node',
+          'x-token': `faldax-${sails.config.local.coinArray[coin.coin].name}-node`,
           'Content-Type': 'application/json'
         },
         body: value,
