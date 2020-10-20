@@ -1972,9 +1972,9 @@ module.exports = {
         })
       } else if (walletDataCreate) {
         return res.json({
-          status: (coin_code != "SUSU" && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0) ? (200) : (walletDataCreate.status),
-          message: (coin_code != "SUSU" && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 9) ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
-          data: (coin_code != "SUSU" && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 9) ? (walletDataCreate) : (walletDataCreate.data)
+          status: (coin_code != "SUSU" && sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0) ? (200) : (walletDataCreate.status),
+          message: (coin_code != "SUSU" && sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0) ? (sails.__("Address Create Success").message) : (walletDataCreate.message),
+          data: (coin_code != "SUSU" && sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0) ? (walletDataCreate) : (walletDataCreate.data)
         })
       } else {
         return res.json({
@@ -3662,7 +3662,7 @@ module.exports = {
         where: {
           deleted_at: null,
           is_active: true,
-          coin: data.coin
+          coin_code: data.coin
         }
       });
       console.log("coinData", coinData)
@@ -4408,8 +4408,10 @@ module.exports = {
 
           var faldax_fee_value = faldax_fee.value;
           var walletBalance = walletUserData.placed_balance;
+          console.log("walletBalance", walletBalance)
           var remainningAmount = parseFloat(walletBalance) - parseFloat(walletBalance * (faldax_fee_value / 100));
-          if (remainningAmount > 0) {
+          console.log("remainningAmount", remainningAmount)
+          if (remainningAmount >= 0) {
             var division = coinData.coin_precision;
             if (coinData.type == 1 && Object.keys(sails.config.local.coinArray[coinData.coin]).length == 0) {
               let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.hot_receive_wallet_address);
