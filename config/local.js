@@ -247,6 +247,13 @@ module.exports.local = {
       'url': 'http://localhost:3010/api/v1/',
       'type': 9,
       'name': 'bitcoin-cash'
+    },
+    'ETH': {
+      'coin_name': 'Ethereum',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': 'http://0f9a13269776.ngrok.io/api/v1/',
+      'type': 10,
+      'name': 'ethereum'
     }
   },
   hubspot: {

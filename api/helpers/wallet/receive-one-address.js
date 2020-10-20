@@ -302,6 +302,57 @@ module.exports = {
         return exits.success(body);
         // return body;
       });
+    } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10) {
+      console.log("INSIDE ELSE IF " + sails.config.local.coinArray[coin.coin].name + ">>>>>>")
+      var value = {
+        "user_id": parseInt(inputs.user.id),
+        "label": address_label
+      }
+      // console.log(sails.config.local.SUSUCOIN_URL + "get-litecoin-coin-address")
+      console.log(sails.config.local.coinArray[coin.coin].url + "create-" + sails.config.local.coinArray[coin.coin].name + "-coin-address")
+      await request({
+        url: sails.config.local.coinArray[coin.coin].url + "create-" + sails.config.local.coinArray[coin.coin].name + "-coin-address",
+        method: "POST",
+        headers: {
+          // 'cache-control': 'no-cache',
+          // Authorization: `Bearer ${sails.config.local.BITGO_ACCESS_TOKEN}`,
+          'x-token': `faldax-${sails.config.local.coinArray[coin.coin].name}-node`,
+          'Content-Type': 'application/json'
+        },
+        body: value,
+        json: true
+      }, async function (err, httpResponse, body) {
+        console.log("body", body);
+        if (err) {
+          return exits.error(err);
+        }
+        if (body.error) {
+          return exits.error(body);
+        }
+        if (inputs.user.flag == true) {
+          var walletData = await Wallet
+            .update({
+              "receive_address": body.data.receive_address,
+              deleted_at: null
+            })
+            .set({
+              "is_admin": true
+            })
+            .fetch();
+        } else {
+          var walletData = await Wallet.findOne({
+            where: {
+              deleted_at: null,
+              "receive_address": body.data.receive_address
+            }
+          })
+        }
+        console.log("walletData", walletData);
+        body.data = walletData;
+        console.log(body)
+        return exits.success(body);
+        // return body;
+      });
     }
   }
 
