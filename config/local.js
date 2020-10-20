@@ -237,16 +237,16 @@ module.exports.local = {
     'BTC': {
       'coin_name': 'Bitcoin',
       // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
-      'url': 'http://localhost:3013/api/v1/',
+      'url': 'http://localhost:3010/api/v1/',
       'type': 9,
       'name': 'bitcoin',
     },
     'BCH': {
       'coin_name': 'Bitcoin Cash',
       // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
-      'url': 'http://localhost:3013/api/v1/',
+      'url': 'http://localhost:3010/api/v1/',
       'type': 9,
-      'name': 'bitcoincash'
+      'name': 'bitcoin-cash'
     }
   },
   hubspot: {
