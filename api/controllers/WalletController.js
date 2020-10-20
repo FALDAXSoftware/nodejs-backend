@@ -491,22 +491,22 @@ module.exports = {
         coin_code: coin_code
       });
 
-      if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false && coin.coin_code != "txlm") {
-        if (sails.config.local.TESTNET == 1) {
-          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
-        } else {
-          var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
-        }
+      // if (coin.coin_code != "SUSU" && coin.coin_code != "txrp" && coin.coin_code != 'xrp' && coin.iserc == false && coin.coin_code != "txlm") {
+      //   if (sails.config.local.TESTNET == 1) {
+      //     var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase(), 'testnet');
+      //   } else {
+      //     var valid = WAValidator.validate(destination_address, (coin.coin_name).toLowerCase());
+      //   }
 
-        if (!valid) {
-          return res
-            .status(500)
-            .json({
-              "status": 500,
-              "err": sails.__("Enter Valid Address").message
-            })
-        }
-      }
+      //   if (!valid) {
+      //     return res
+      //       .status(500)
+      //       .json({
+      //         "status": 500,
+      //         "err": sails.__("Enter Valid Address").message
+      //       })
+      //   }
+      // }
 
       var division = coin.coin_precision;
 
@@ -1230,7 +1230,7 @@ module.exports = {
                             "message": parseFloat(value.userBalanceUpdateValue) + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
                       } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 9) {
-
+                        console.log("INSIDE BTC")
                         var value = {
                           "user_id": parseInt(user_id),
                           "amount": parseFloat(amount),
@@ -1238,6 +1238,9 @@ module.exports = {
                           "faldax_fee": faldaxFees,
                           "network_fee": networkFees
                         }
+
+                        console.log("value",value)
+
                         var responseValue = new Promise(async (resolve, reject) => {
                           request({
                             url: sails.config.local.coinArray[coin.coin].url + "send-" + sails.config.local.coinArray[coin.coin].name + "-coin-address",
@@ -1249,6 +1252,7 @@ module.exports = {
                             body: value,
                             json: true
                           }, function (err, httpResponse, body) {
+                              console.log("body",body)
                             if (err) {
                               reject(err);
                             }
@@ -1262,6 +1266,16 @@ module.exports = {
 
                         // var value = Promise.resolve(responseValue)
                         var value = await responseValue;
+
+                        console.log("value", value)
+                        if (value.status == 500) {
+                          return res
+                          .status(500)
+                          .json({
+                            "status": 500,
+                            "message": value.message
+                          })
+                        }
 
                         return res
                           .status(200)
