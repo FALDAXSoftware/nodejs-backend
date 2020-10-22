@@ -687,7 +687,7 @@ module.exports = {
 
 
                       //If coin is of bitgo type
-                      if (coin.type == 1 && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
+                      if (coin.type == 1 && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0 && coin.iserc == false) {
 
                         let warmWalletData = await sails
                           .helpers
@@ -1415,24 +1415,32 @@ module.exports = {
                             "status": 200,
                             "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                           })
-                      } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10) {
+                      } else if ( coin.iserc == true || (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10)) {
                         console.log("INSIDE ETH")
                         var value = {
                           "user_id": parseInt(user_id),
                           "amount": parseFloat(amount),
                           "destination_address": destination_address,
                           "faldax_fee": faldaxFees,
-                          "network_fee": networkFees
+                          "network_fee": networkFees,
+                          "coin": coin.coin
                         }
 
                         console.log("value", value)
 
+                        var url =''
+                        if (coin.iserc == true) {
+                          url = sails.config.local.coinArray['ETH'].url
+                        } else {
+                          url = sails.config.local.coinArray[coin.coin].url
+                        }
+
                         var responseValue = new Promise(async (resolve, reject) => {
                           request({
-                            url: sails.config.local.coinArray[coin.coin].url + "send-" + sails.config.local.coinArray[coin.coin].name + "-coin-address",
+                            url: `${url}send-user-ethereum`,
                             method: "POST",
                             headers: {
-                              'x-token': `faldax-${sails.config.local.coinArray[coin.coin].name}-node`,
+                              'x-token': `faldax-ethereum-node`,
                               'Content-Type': 'application/json'
                             },
                             body: value,
@@ -1454,11 +1462,11 @@ module.exports = {
                         var value = await responseValue;
 
                         console.log("value", value)
-                        if (value.status == 500) {
+                        if (value.status != 200) {
                           return res
-                            .status(500)
+                            .status(value.status)
                             .json({
-                              "status": 500,
+                              "status": value.status,
                               "message": value.message
                             })
                         }
@@ -4108,20 +4116,35 @@ module.exports = {
           console.log("value", value.data.fee)
           value.fee = (value.data.fee * division);
           reposneData = value;
-        } else if (sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0 && sails.config.local.coinArray[coinData.coin].type == 10) {
+        } else if (coinData.iserc == true || (sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0 && sails.config.local.coinArray[coinData.coin].type == 10)) {
           console.log("INSIDE ETH fees")
           var value = {
             "destination_address": data.address,
             "amount": data.amount
           }
-          console.log(sails.config.local.coinArray[coinData.coin].name)
-          console.log(sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees")
+
+          var url = '';
+          if (coinData.iserc == true) {
+            url = sails.config.local.coinArray['ETH'].url;
+          } else {
+            url = sails.config.local.coinArray[coinData.coin].url
+          }
+
+          var name = '';
+          if (coinData.iserc == true) {
+            name = sails.config.local.coinArray['ETH'].name;
+          } else {
+          name = sails.config.local.coinArray[coinData.coin].name
+          }
+
+          // console.log(sails.config.local.coinArray[coinData.coin].name)
+          // console.log(sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees")
           var responseValue = new Promise(async (resolve, reject) => {
             request({
-              url: sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees",
+              url: url + "get-" + name + "-fees",
               method: "POST",
               headers: {
-                'x-token': `faldax-${sails.config.local.coinArray[coinData.coin].name}-node`,
+                'x-token': `faldax-${name}-node`,
                 'Content-Type': 'application/json'
               },
               body: value,
@@ -4962,9 +4985,11 @@ module.exports = {
           console.log("walletBalance", walletBalance)
           var remainningAmount = parseFloat(walletBalance) - parseFloat(walletBalance * (faldax_fee_value / 100));
           console.log("remainningAmount", remainningAmount)
-          if (remainningAmount >= 0) {
+          if (remainningAmount > 0) {
             var division = coinData.coin_precision;
-            if (coinData.type == 1 && Object.keys(sails.config.local.coinArray[coinData.coin]).length == 0) {
+            console
+            console.log(coinData.type == 1 && sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length == 0 && coinData.iserc == false)
+            if (coinData.type == 1 && sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length == 0 && coinData.iserc == false) {
               let warmWallet = await sails.helpers.bitgo.getWallet(coinData.coin_code, coinData.hot_receive_wallet_address);
               if (coinData.coin_code != "teth" && coinData.coin_code != "eth" && coinData.coin_code != "txrp" && coinData.coin_code != "xrp" && coinData.iserc == false && coinData.coin_code != 'SUSU') {
                 // remainningAmountValue = remainningAmount * division
@@ -5052,20 +5077,34 @@ module.exports = {
               value.fee = (value.data.fee);
               // reposneData = value;
               availableBalance = remainningAmount - (value.fee / division);
-            } else if (sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0 && sails.config.local.coinArray[coinData.coin].type == 10) {
+            } else if (coinData.iserc == true || (sails.config.local.coinArray[coinData.coin] != undefined && Object.keys(sails.config.local.coinArray[coinData.coin]).length > 0 && sails.config.local.coinArray[coinData.coin].type == 10)) {
               console.log("INSIDE ETH fees")
               var value = {
                 "destination_address": process.env.ETH_ADDRESS,
                 "amount": remainningAmount
               }
-              console.log(sails.config.local.coinArray[coinData.coin].name)
-              console.log(sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees")
+              // console.log(sails.config.local.coinArray[coinData.coin].name)
+              // console.log(sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees")
+              var url = '';
+              if(coinData.iserc == true){
+                url = sails.config.local.coinArray['ETH'].url
+              } else {
+                url = sails.config.local.coinArray[coinData.coin].url
+              }
+
+              var name = '';
+              if(coinData.iserc == true){
+                name = sails.config.local.coinArray['ETH'].name
+              } else {
+                name = sails.config.local.coinArray[coinData.coin].name
+              }
+
               var responseValue = new Promise(async (resolve, reject) => {
                 request({
-                  url: sails.config.local.coinArray[coinData.coin].url + "get-" + sails.config.local.coinArray[coinData.coin].name + "-fees",
+                  url: url + "get-" + name + "-fees",
                   method: "POST",
                   headers: {
-                    'x-token': `faldax-${sails.config.local.coinArray[coinData.coin].name}-node`,
+                    'x-token': `faldax-${name}-node`,
                     'Content-Type': 'application/json'
                   },
                   body: value,
