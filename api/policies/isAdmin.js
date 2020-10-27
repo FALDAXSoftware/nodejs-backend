@@ -67,7 +67,8 @@ module.exports = async function (req, res, next) {
       "admin/dashoboard-liune-3-count",
       "admin/dashoboard-liune-4-count",
       "admin/dashoboard-liune-5-count",
-      "admin/dashoboard-liune-6-count"
+      "admin/dashoboard-liune-6-count",
+      "admin/update-user-kyc-manual"
     ]
 
     console.log("urlValue", urlValue)

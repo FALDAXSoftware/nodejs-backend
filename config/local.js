@@ -218,6 +218,43 @@ module.exports.local = {
       'rpcpassword': 'secret',
       'url': 'http://dev-tether-currency.faldax.com/',
       'type': 7
+    },
+    'XRP': {
+      'coin_name': 'Ripple',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': process.env.XRP_URL,
+      'type': 8,
+      'name': 'ripple'
+    },
+    'LTC': {
+      'coin_name': 'Litecoin',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      // 'url': 'http://458fe6ff2d30.ngrok.io/api/v1/'
+      // 'url': 'http://70ddfb77d54b.ngrok.io/api/v1/',
+      'url': process.env.LTC_URL,
+      'type': 9,
+      'name': 'litecoin'
+    },
+    'BTC': {
+      'coin_name': 'Bitcoin',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': process.env.BTC_URL,
+      'type': 9,
+      'name': 'bitcoin',
+    },
+    'BCH': {
+      'coin_name': 'Bitcoin Cash',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': process.env.BCH_URL,
+      'type': 9,
+      'name': 'bitcoin-cash'
+    },
+    'ETH': {
+      'coin_name': 'Ethereum',
+      // 'url': 'http://f93d4d8ca870.ngrok.io/api/v1/'
+      'url': process.env.ETH_URL,
+      'type': 10,
+      'name': 'ethereum'
     }
   },
   hubspot: {
