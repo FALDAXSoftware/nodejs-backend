@@ -113,6 +113,14 @@ module.exports = {
       type: 'number',
       columnName: 'sell_min_total'
     },
+    influx_table_name: {
+      type: 'string',
+      columnName: 'influx_table_name'
+    },
+    influx_pair_name: {
+      type: 'string',
+      columnName: 'influx_pair_name'
+    },
     buy_min_total: {
       type: 'number',
       columnName: 'buy_min_total'
