@@ -49,16 +49,7 @@ module.exports.datastores = {
      ***************************************************************************/
     adapter: 'sails-postgresql',
     url: "postgresql://" + (process.env.DB_USERNAME) + ":" + (process.env.DB_PASSWORD) + "@" + (process.env.DB_HOST) + "/" + (process.env.DB_DATABASE),
-    ssl: false,
-    pool: true,
-    poolSize: 25,
-    waitForConnections: true,
-    max: 30,
-    min: 20
-  },
-  read: {
-    adapter: 'sails-postgresql',
-    url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
+    // url: "postgresql://postgres:ymbmmMt9bNSoP6tQ@pre-prod-faldax.cuhktbe1gpfj.us-east-2.rds.amazonaws.com/faldax",
     ssl: false,
     pool: true,
     poolSize: 25,
@@ -66,4 +57,15 @@ module.exports.datastores = {
     max: 30,
     min: 20
   }
+  // ,
+  // read: {
+  //   adapter: 'sails-postgresql',
+  //   url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
+  //   ssl: false,
+  //   pool: true,
+  //   poolSize: 25,
+  //   waitForConnections: true,
+  //   max: 30,
+  //   min: 20
+  // }
 };
