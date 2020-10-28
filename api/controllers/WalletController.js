@@ -1233,7 +1233,7 @@ module.exports = {
                             coin_id: wallet.coin_id,
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
-                            user_id: getDestinationValue.receive_address,
+                            user_id: user_id,
                             amount: amount,
                             transaction_type: 'receive',
                             transaction_id: '',
@@ -1533,7 +1533,7 @@ module.exports = {
                             coin_id: wallet.coin_id,
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
-                            user_id: getDestinationValue.receive_address,
+                            user_id: user_id,
                             amount: amount,
                             transaction_type: 'receive',
                             transaction_id: '',
@@ -3102,7 +3102,7 @@ module.exports = {
                   coin_id: wallet.coin_id,
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
-                  user_id: getDestinationValue.receive_address,
+                  user_id: user_id,
                   amount: amount,
                   transaction_type: 'receive',
                   transaction_id: '',
@@ -3277,7 +3277,7 @@ module.exports = {
                   "status": 200,
                   "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                 })
-            } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10) {
+            } else if ( coin.iserc == true || (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10)) {
               console.log("INSIDE ETH")
 
               var getDestinationValue = await Wallet.findOne({
@@ -3343,7 +3343,7 @@ module.exports = {
                   coin_id: wallet.coin_id,
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
-                  user_id: getDestinationValue.receive_address,
+                  user_id: user_id,
                   amount: amount,
                   transaction_type: 'receive',
                   transaction_id: '',
@@ -6822,7 +6822,7 @@ module.exports = {
                   coin_id: wallet.coin_id,
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
-                  user_id: getDestinationValue.receive_address,
+                  user_id: user_id,
                   amount: amount,
                   transaction_type: 'receive',
                   transaction_id: '',
@@ -7110,7 +7110,7 @@ module.exports = {
                   coin_id: wallet.coin_id,
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
-                  user_id: getDestinationValue.receive_address,
+                  user_id: user_id,
                   amount: amount,
                   transaction_type: 'receive',
                   transaction_id: '',
