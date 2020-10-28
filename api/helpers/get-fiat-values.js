@@ -27,10 +27,11 @@ module.exports = {
                         WHERE deleted_at IS NULL AND (symbol LIKE '%${coin}%')`
         var fiatValue = await sails.sendNativeQuery(fiatSql);
         fiatValue = fiatValue.rows
+        console.log("fiatValue", fiatValue)
         var object = {
-            "asset_1_usd": fiatValue[0].asset_1_usd,
-            "asset_1_eur": fiatValue[0].asset_1_eur,
-            "asset_1_inr": fiatValue[0].asset_1_inr
+            "asset_1_usd": (fiatValue.length > 0) ? (fiatValue[0].asset_1_usd) : (0.0),
+            "asset_1_eur": (fiatValue.length > 0) ? (fiatValue[0].asset_1_eur) : (0.0),
+            "asset_1_inr": (fiatValue.length > 0) ? (fiatValue[0].asset_1_inr) : (0.0)
         }
         return exits.success(object)
     }
