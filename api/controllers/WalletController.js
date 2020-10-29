@@ -1192,8 +1192,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: false,
                             is_admin: true,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1239,8 +1239,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: false,
                             is_admin: false,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1261,8 +1261,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: true,
                             is_admin: true,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1284,8 +1284,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: true,
                             is_admin: false,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1337,7 +1337,7 @@ module.exports = {
                               transaction_id: '',
                               is_executed: false,
                               faldax_fee: faldaxFees,
-                              actual_network_fees: 0.0,
+                              actual_network_fees: networkFees,
                               estimated_network_fees: 0.0,
                               is_done: false,
                               actual_amount: amount,
@@ -1492,8 +1492,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: false,
                             is_admin: true,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1539,8 +1539,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: false,
                             is_admin: false,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1561,8 +1561,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: true,
                             is_admin: true,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -1584,8 +1584,8 @@ module.exports = {
                             transaction_id: '',
                             is_executed: true,
                             is_admin: false,
-                            faldax_fee: 0.0,
-                            actual_network_fees: 0.0,
+                            faldax_fee: faldaxFees,
+                            actual_network_fees: networkFees,
                             estimated_network_fees: parseFloat(0.0).toFixed(8),
                             is_done: false,
                             actual_amount: amount,
@@ -3514,7 +3514,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
@@ -6898,7 +6898,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount:  parseFloat(total_fees ).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -6921,7 +6921,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount:  parseFloat(total_fees ).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -6993,7 +6993,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
@@ -7186,7 +7186,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount:  parseFloat(total_fees ).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -7209,7 +7209,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount:  parseFloat(total_fees ).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -7281,7 +7281,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
