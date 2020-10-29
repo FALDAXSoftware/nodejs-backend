@@ -1256,7 +1256,7 @@ module.exports = {
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: parseFloat(amountValue / division).toFixed(8),
+                            amount: parseFloat(total_fees).toFixed(8),
                             transaction_type: 'send',
                             transaction_id: '',
                             is_executed: true,
@@ -1279,7 +1279,7 @@ module.exports = {
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: parseFloat(amountValue / division).toFixed(8),
+                            amount: parseFloat(total_fees).toFixed(8),
                             transaction_type: 'receive',
                             transaction_id: '',
                             is_executed: true,
@@ -1351,7 +1351,7 @@ module.exports = {
 
                           return res.json({
                             status: 200,
-                            message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                            message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                           });
                         }
 
@@ -1556,7 +1556,7 @@ module.exports = {
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: parseFloat(amountValue / division).toFixed(8),
+                            amount: parseFloat(total_fees).toFixed(8),
                             transaction_type: 'send',
                             transaction_id: '',
                             is_executed: true,
@@ -1579,7 +1579,7 @@ module.exports = {
                             source_address: wallet.receive_address,
                             destination_address: destination_address,
                             user_id: user_id,
-                            amount: parseFloat(amountValue / division).toFixed(8),
+                            amount: parseFloat(total_fees).toFixed(8),
                             transaction_type: 'receive',
                             transaction_id: '',
                             is_executed: true,
@@ -1651,7 +1651,7 @@ module.exports = {
 
                           return res.json({
                             status: 200,
-                            message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                            message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                           });
                         }
 
@@ -2735,7 +2735,7 @@ module.exports = {
         }
       }
       var division = coin.coin_precision;
-     
+
       //If coin is found
       if (coin) {
 
@@ -3125,7 +3125,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -3148,7 +3148,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -3220,7 +3220,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message: parseFloat(total_fees).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
@@ -3330,7 +3330,7 @@ module.exports = {
                   "status": 200,
                   "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                 })
-            } else if ( coin.iserc == true || (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10)) {
+            } else if (coin.iserc == true || (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 10)) {
               console.log("INSIDE ETH")
 
               var getDestinationValue = await Wallet.findOne({
@@ -3419,7 +3419,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -3442,7 +3442,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount: parseFloat(total_fees).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -3514,7 +3514,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
@@ -6811,7 +6811,7 @@ module.exports = {
                   "message": value.data + " " + coin.coin_code + " " + sails.__("Token send success").message
                 })
             } else if (sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length > 0 && sails.config.local.coinArray[coin.coin].type == 8) {
-              
+
               var getDestinationValue = await Wallet.findOne({
                 where: {
                   deleted_at: null,
@@ -6898,7 +6898,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount:  parseFloat(total_fees ).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -6921,7 +6921,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount:  parseFloat(total_fees ).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -6993,7 +6993,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
@@ -7186,7 +7186,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount:  parseFloat(total_fees ).toFixed(8),
                   transaction_type: 'send',
                   transaction_id: '',
                   is_executed: true,
@@ -7209,7 +7209,7 @@ module.exports = {
                   source_address: wallet.receive_address,
                   destination_address: destination_address,
                   user_id: user_id,
-                  amount: parseFloat(amountValue / division).toFixed(8),
+                  amount:  parseFloat(total_fees ).toFixed(8),
                   transaction_type: 'receive',
                   transaction_id: '',
                   is_executed: true,
@@ -7281,7 +7281,7 @@ module.exports = {
 
                 return res.json({
                   status: 200,
-                  message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
+                  message:  parseFloat(total_fees ).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
                 });
               }
 
