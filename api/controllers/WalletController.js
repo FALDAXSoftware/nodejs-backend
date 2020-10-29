@@ -1334,7 +1334,7 @@ module.exports = {
                               is_admin: true,
                               amount: (totalAdminFees),
                               transaction_type: 'send',
-                              transaction_id: transaction.txid,
+                              transaction_id: '',
                               is_executed: false,
                               faldax_fee: faldaxFees,
                               actual_network_fees: 0.0,
@@ -1634,7 +1634,7 @@ module.exports = {
                               is_admin: true,
                               amount: (totalAdminFees),
                               transaction_type: 'send',
-                              transaction_id: transaction.txid,
+                              transaction_id: '',
                               is_executed: false,
                               faldax_fee: faldaxFees,
                               actual_network_fees: 0.0,
@@ -3165,6 +3165,59 @@ module.exports = {
                 await TransactionTable.create({
                   ...addObject
                 });
+
+                var adminWalletDetails = await Wallet.findOne({
+                  where: {
+                    deleted_at: null,
+                    coin_id: coin.id,
+                    is_active: true,
+                    user_id: 36,
+                    is_admin: true
+                  }
+                });
+
+                if (adminWalletDetails != undefined) {
+                  var totalAdminFees = 0;
+
+                  var updatedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
+                  var updatedPlacedBalance = parseFloat(adminWalletDetails.balance) + parseFloat(faldaxFees);
+                  totalAdminFees = parseFloat(totalAdminFees) + parseFloat(faldaxFees)
+                  var updatedData = await Wallet
+                    .update({
+                      deleted_at: null,
+                      coin_id: coin.id,
+                      is_active: true,
+                      user_id: 36,
+                      is_admin: true
+                    })
+                    .set({
+                      balance: updatedBalance,
+                      placed_balance: updatedPlacedBalance
+                    })
+                    .fetch();
+                  let walletHistoryValue = {
+                    coin_id: wallet.coin_id,
+                    source_address: wallet.receive_address,
+                    destination_address: adminWalletDetails.receive_address,
+                    user_id: 36,
+                    is_admin: true,
+                    amount: (totalAdminFees),
+                    transaction_type: 'send',
+                    transaction_id: '',
+                    is_executed: false,
+                    faldax_fee: faldaxFees,
+                    actual_network_fees: 0.0,
+                    estimated_network_fees: 0.0,
+                    is_done: false,
+                    actual_amount: amount,
+                    fiat_values: fiatObject
+                  }
+
+                  await WalletHistory.create({
+                    ...walletHistoryValue
+                  });
+                }
+
                 return res.json({
                   status: 200,
                   message: parseFloat(amountValue / division).toFixed(8) + " " + (coin.coin_code).toUpperCase() + " " + sails.__("Token send success").message
@@ -3444,7 +3497,7 @@ module.exports = {
                     is_admin: true,
                     amount: (totalAdminFees),
                     transaction_type: 'send',
-                    transaction_id: transaction.txid,
+                    transaction_id: '',
                     is_executed: false,
                     faldax_fee: faldaxFees,
                     actual_network_fees: 0.0,
@@ -6923,7 +6976,7 @@ module.exports = {
                     is_admin: true,
                     amount: (totalAdminFees),
                     transaction_type: 'send',
-                    transaction_id: transaction.txid,
+                    transaction_id: '',
                     is_executed: false,
                     faldax_fee: faldaxFees,
                     actual_network_fees: 0.0,
@@ -7211,7 +7264,7 @@ module.exports = {
                     is_admin: true,
                     amount: (totalAdminFees),
                     transaction_type: 'send',
-                    transaction_id: transaction.txid,
+                    transaction_id: '',
                     is_executed: false,
                     faldax_fee: faldaxFees,
                     actual_network_fees: 0.0,
