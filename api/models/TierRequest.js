@@ -36,6 +36,10 @@ module.exports = {
       type: "string",
       columnName: "ssn"
     },
+    document: {
+      type: "string",
+      columnName: "document"
+    },
     request_id: {
       type: "number",
       columnName: "request_id"

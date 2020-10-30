@@ -26,6 +26,7 @@ module.exports = {
   fn: async function (inputs, exits) {
     //Email Notification
 
+    console.log("inputs", inputs)
     // Temporary Email template is here, change to actual email template
     let slug = inputs.slug;
     let user = inputs.user;
@@ -34,6 +35,8 @@ module.exports = {
     let template = await EmailTemplate.findOne({
       slug: slug
     });
+
+    console.log("template", template)
     let user_language = (user.default_language ? user.default_language : 'en');
     let language_content = template.all_content[user_language].content;
     let language_subject = template.all_content[user_language].subject;
@@ -41,6 +44,7 @@ module.exports = {
     var object = {};
     object.recipientName = user.first_name;
 
+    console.log("object", object)
     if (user.reason && user.reason != undefined && user.reason != null) {
       object.reason = user.reason
     }
@@ -72,6 +76,8 @@ module.exports = {
       object.coin = user.coinName
     }
 
+    console.log("language_content", language_content);
+    console.log("object", object)
     //Sending Email to users for notification
     let emailContent = await sails
       .helpers

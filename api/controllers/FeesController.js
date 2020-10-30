@@ -1,9 +1,9 @@
 /**
- * FeesController
- *
- * @description :: Server-side actions for handling fees.
- * @help        :: See https://sailsjs.com/docs/concepts/actions
- */
+* FeesController
+*
+* @description :: Server-side actions for handling fees.
+* @help :: See https://sailsjs.com/docs/concepts/actions
+*/
 
 module.exports = {
   getAllFees: async function (req, res) {

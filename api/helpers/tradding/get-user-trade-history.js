@@ -31,6 +31,8 @@ module.exports = {
 
       console.log("data", data)
 
+      // data.user_id = 1657;
+
       var q = [];
 
       var currency,
@@ -100,12 +102,14 @@ module.exports = {
 
       // }
 
+      console.log("q", q)
+
       var totalCount = await TradeHistory
         .count({
           ...q
         })
 
-      // console.log("totalCount", totalCount)
+      console.log("totalCount", totalCount)
 
       if (totalCount > 0) {
 
@@ -136,17 +140,17 @@ module.exports = {
         userTradeHistory = [];
       }
 
+      console.log("userTradeHistoryData", userTradeHistory.length)
       var userTradeHistoryData = {
         data: userTradeHistory,
         total: totalCount
       }
 
-      // console.log("userTradeHistoryData", userTradeHistoryData)
 
       // Send back the result through the success exit.
       return exits.success(userTradeHistoryData);
     } catch (err) {
-      console.log(error)
+      console.log(err)
     }
 
   }

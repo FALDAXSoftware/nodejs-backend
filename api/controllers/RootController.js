@@ -9,6 +9,7 @@ const speakeasy = require('speakeasy');
 var aesjs = require('aes-js');
 var logger = require("./logger");
 var requestIp = require('request-ip');
+var moment = require('moment');
 
 module.exports = {
   getPanicStatus: async function (req, res) {
@@ -396,11 +397,23 @@ module.exports = {
   getEncryptKey: async function (req, res) {
     var key = sails.config.local.key;
     var iv = sails.config.local.iv;
-    // var userData = await Users.findOne({
+    // var userData = await Users.find({
     //   where: {
-    //     id: 1545
+    //     deleted_at: null,
+    //     account_verified_at: null
     //   }
     // });
+
+    // for (let index = 0; index < userData.length; index++) {
+    //   const element = userData[index];
+    //   var data = await Users
+    //     .update({
+    //       id: element.id
+    //     })
+    //     .set({
+    //       account_verified_at: element.created_at
+    //     })
+    // }
 
     // var object = {
     //   amountReceived: 1,
@@ -411,14 +424,29 @@ module.exports = {
     // userData.coinName = 'tbtc';
 
     // await sails.helpers.notification.send.text("withdraw", userData)
-    console.log(key);
-    console.log(iv)
-    var value = req.body.encryptKey;
+    // console.log(key);
+    const iplocate = require("node-iplocate");
+    var ip = "207.97.227.239";
+    // var geo = await ipLocation("172.217.167.78");
+    var value;
+    await iplocate("88.152.184.185").then(function (results) {
+      value = results
+      console.log("IP Address: " + results.ip);
+      console.log("Country: " + results.country + " (" + results.country_code + ")");
+      console.log("Continent: " + results.continent);
+      console.log("Organisation: " + results.org + " (" + results.asn + ")");
+
+      console.log(JSON.stringify(results, null, 2));
+    });
+
     console.log(value);
-    var encryptData = await sails.helpers.getEncryptData(value);
-    console.log("encryptData", encryptData);
-    var decryptData = await sails.helpers.getDecryptData("5beb91212ff755f49c2c505c00658eb38eedc977ab5c941a9f5ac0ef167d7bcacd8baa51e5b9a18c389911bc086195cef2aad6ebc7bf5cbcd306a8759b8d2f76");
-    console.log("decryptData", decryptData)
+    // console.log(iv)
+    // var value = req.body.encryptKey;
+    // console.log(value);
+    // var encryptData = await sails.helpers.getEncryptData(value);
+    // console.log("encryptData", encryptData);
+    // var decryptData = await sails.helpers.getDecryptData("77b4af30438470f2ea7e50462f60a5fdf09eae26d155a017b215e4ef3d7d5090aded884490ce84d246961ce565149a9e8ecfdfb5ae8d28a4bc61a078ecad5278d4a0c3");
+    // console.log("decryptData", decryptData)
     return res.json(200);
   },
 
@@ -634,6 +662,96 @@ module.exports = {
         })
     } catch (error) {
       console.log(error)
+    }
+  },
+
+  updateCandleData: async function (req, res) {
+    var {
+      symbol,
+      resolution
+    } = req.allParams();
+
+    let { crypto, currency } = await sails
+      .helpers
+      .utilities
+      .getCurrencies(symbol);
+
+    var from;
+
+    let resolutionInMinute = 0;
+    // Covert Resolution In Day
+    switch (resolution) {
+      case "1":
+        resolutionInMinute = 1;
+        from = moment().subtract(resolution, 'days').utc().format("YYYY-MM-DD 00:00:00");
+        break;
+      case "15":
+        resolutionInMinute = 15;
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
+        break;
+      case "240":
+        resolutionInMinute = 240;
+        from = moment("2020-06-06 09:12:21.056").format("YYYY-MM-DD 00:00:00");
+        break;
+      // Day
+      case "D":
+        resolutionInMinute = 1440
+        break;
+      case "1D":
+        resolutionInMinute = 1440
+        break;
+      // 2 Day 2 Day
+      case "2D":
+        resolutionInMinute = 2 * 1440
+        break;
+      // 3 Day
+      case "3D":
+        resolutionInMinute = 3 * 1440
+        break;
+      // Week
+      case "W":
+        resolutionInMinute = 7 * 1440
+        break;
+      // 3 Week
+      case "3W":
+        resolutionInMinute = 3 * 7 * 1440
+        break;
+      // Month
+      case "M":
+        resolutionInMinute = 30 * 1440
+        break;
+      // 6 Month
+      case "6M":
+        resolutionInMinute = 6 * 30 * 1440
+        break;
+      // Minutes -> Day
+      default:
+        resolutionInMinute = parseInt(resolution);
+        break;
+    }
+
+    let candleStickData = await sails
+      .helpers
+      .tradding
+      .getCandleStickData(crypto, currency, resolutionInMinute, from)
+      .tolerate("serverError", () => {
+        throw new Error("serverError");
+      });
+
+    console.log("candleStickData", candleStickData.o.length)
+    for (var i = 0; i < candleStickData.o.length; i++) {
+      console.log("i", i)
+      // console.log("open", candleStickData.o[i]);
+      // console.log("close", candleStickData.c[i]);
+      var dataValue = await ETHBTC240min.create({
+        open: candleStickData.o[i],
+        close: candleStickData.c[i],
+        high: candleStickData.h[i],
+        low: candleStickData.l[i],
+        timestamps: candleStickData.t[i],
+        volume: candleStickData.v[i],
+        created_at: new Date()
+      });
     }
   }
 };

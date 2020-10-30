@@ -612,4 +612,5 @@ module.exports.routes = {
   'get /admin/dashoboard-liune-5-count': 'DashboardController.getLine5Count',
   'get /admin/dashoboard-liune-6-count': 'DashboardController.getLine6Count',
 
+  'post /admin/update-user-kyc-manual': 'KYCController.updateUserKycManual'
 };

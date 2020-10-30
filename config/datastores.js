@@ -56,14 +56,25 @@ module.exports.datastores = {
     max: 8,
     min: 5
   },
-  read: {
-    adapter: 'sails-postgresql',
-    url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
-    ssl: false,
-    pool: true,
-    poolSize: 5,
-    waitForConnections: true,
-    max: 8,
-    min: 5
-  }
+  // read: {
+  //   adapter: 'sails-postgresql',
+  //   url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
+  //   ssl: false,
+  //   pool: true,
+  //   poolSize: 5,
+  //   waitForConnections: true,
+  //   max: 8,
+  //   min: 5
+  // }
+  // ,
+  // read: {
+  //   adapter: 'sails-postgresql',
+  //   url: "postgresql://" + (process.env.READ_DB_USERNAME) + ":" + (process.env.READ_DB_PASSWORD) + "@" + (process.env.READ_DB_HOST) + "/" + (process.env.READ_DB_DATABASE),
+  //   ssl: false,
+  //   pool: true,
+  //   poolSize: 25,
+  //   waitForConnections: true,
+  //   max: 30,
+  //   min: 20
+  // }
 };

@@ -19,21 +19,21 @@ module.exports.cron = {
       }
     }
   },
-  KycUpdate: {
-    schedule: '0 */2 * * * *',
-    onTick: async function () {
+  // KycUpdate: {
+  //   schedule: '0 */2 * * * *',
+  //   onTick: async function () {
 
-      if (sails.config.local.CRON_STATUS == "true") {
-        console.log('>>>>>>>>>>IF', sails.config.local.CRON_STATUS)
-        var kycCron = await sails
-          .helpers
-          .kycCron();
+  //     if (sails.config.local.CRON_STATUS == "true") {
+  //       console.log('>>>>>>>>>>IF', sails.config.local.CRON_STATUS)
+  //       var kycCron = await sails
+  //         .helpers
+  //         .kycCron();
 
-      } else {
-        //  console.log('>>>>>>>>>>ELSE', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
-      }
-    }
-  },
+  //     } else {
+  //       //  console.log('>>>>>>>>>>ELSE', process.env.CRONSTATUS, sails.config.local.CRON_STATUS)
+  //     }
+  //   }
+  // },
   stopLimitExecution: {
     schedule: '0 * * * * *',
     onTick: async function () {

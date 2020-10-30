@@ -3310,5 +3310,12 @@
 		"message_type": "error",
 		"message_english": "User wallet cannot be created, user’s country or state is illegal.",
 		"message": "User wallet cannot be created, user’s country or state is illegal."
+	},
+	"No KYC has been found": {
+		"page": "CMS- KYC approval",
+		"context": "KYC manual approval from CMS",
+		"message_type": "error",
+		"message_english": "No KYC details has been found.",
+		"message": "No KYC details has been found."
 	}
 }

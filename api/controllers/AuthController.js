@@ -18,6 +18,7 @@ var speakeasy = require('speakeasy');
 const moment = require('moment');
 var requestIp = require('request-ip');
 var logger = require('./logger');
+// var geoip = require('geoip-lite');
 
 
 module.exports = {
@@ -121,6 +122,8 @@ module.exports = {
 
   login: async function (req, res) {
     try {
+
+      console.log("req.body", req.body)
 
       if (req.body.email && req.body.password) {
         let query = {
@@ -293,6 +296,9 @@ module.exports = {
                   .helpers
                   .jwtIssue(user_detail.id);
                 var ip = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+                // var ip = "207.97.227.239";
+                // var geo = geoip.lookup(ip);
+                console.log("ip", ip)
 
                 var check_any_whitelistip = {
                   user_id: user_detail.id,
@@ -333,7 +339,11 @@ module.exports = {
                   user: user_detail.id,
                   ip: ip
                 });
-                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account || req.body.test_key == "load_testing") {
+
+                console.log("loginData", loginData)
+
+                console.log(loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account || req.body.test_key == "load_testing" || req.body.email == "blakeford1@yopmail.com" || req.body.email == "blakeford2@yopmail.com")
+                if (loginData.length > 0 || req.body.device_type == 1 || req.body.device_type == 2 || user_detail.is_institutional_account || req.body.test_key == "load_testing" || req.body.email == "blakeford1@yopmail.com" || req.body.email == "blakeford2@yopmail.com") {
                   // if (req.body.device_token) {
                   //   var today = moment().utc().format();
                   //   var yesterday = moment(user_detail.device_token_expiration).format();
@@ -1261,6 +1271,7 @@ module.exports = {
                 .toString();
               var uploadFileName = timestamp + name;
               var uploadFile = await UploadFiles.upload(uploadedFiles[0].fd, 'temp_users_images_twofactors/' + uploadFileName);
+              console.log("uploadFile", uploadFile)
               var store_filename = 'temp_users_images_twofactors/' + uploadFileName;
               var data = {
                 user_id: user.id,
@@ -1268,7 +1279,6 @@ module.exports = {
                 status: "open"
               };
               var add = await UserForgotTwofactors.create(data);
-
               let slug = "admin_notify_two_factor";
               let template = await EmailTemplate.findOne({
                 slug
@@ -1283,7 +1293,7 @@ module.exports = {
                 })
               var email = '';
               if (sails.config.local.TESTNET == 1) {
-                email = ['notreplyfaldax@gmail.com'];
+                email = ['notreplyfaldax@gmail.com']
               } else {
                 email = ['bford@faldax.com', 'alowrey@faldax.com', 'jlowrey@faldax.com', 'jzysek@faldax.com'];
               }

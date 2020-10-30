@@ -87,6 +87,11 @@ module.exports = {
       columnName: 'is_partially_filled',
       defaultsTo: false
     },
+    is_stop_limit: {
+      type: 'boolean',
+      columnName: 'is_stop_limit',
+      defaultsTo: false
+    },
     fix_quantity: {
       type: 'number',
       columnName: 'fix_quantity'
