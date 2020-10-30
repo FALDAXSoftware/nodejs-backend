@@ -114,7 +114,7 @@ module.exports = {
       } else if (coin.coin_name !== 'USD' && coin.coin_name !== 'EUR') {
 
         //For all the coins accept USD EURO and ETH
-        if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
+        if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
           // For all type 1 (bitgo) coins
 
           let walletCoinCode = coin.coin_code;
