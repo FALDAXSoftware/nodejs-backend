@@ -2501,6 +2501,7 @@ module.exports = {
           error_at: sails.__("Address already Create Success").message
         })
       } else if (walletDataCreate) {
+
         //Sending email to user for wallet Address Creation
         let slug = "user_wallet_address_creation"
         let template = await EmailTemplate.findOne({

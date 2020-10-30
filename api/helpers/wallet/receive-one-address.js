@@ -335,6 +335,9 @@ module.exports = {
           if (body.error) {
             return exits.error(body);
           }
+          if (body.status == 500) {
+            return exits.success(2);
+          }
           if (inputs.user.flag == true) {
             var walletData = await Wallet
               .update({
