@@ -3317,5 +3317,12 @@
 		"message_type": "error",
 		"message_english": "No KYC details has been found.",
 		"message": "No KYC details has been found."
+	},
+	"Unable to create address": {
+		"page": "CMS- KYC approval",
+		"context": "KYC manual approval from CMS",
+		"message_type": "error",
+		"message_english": "Address Cannot be created",
+		"message": "Address Cannot be created"
 	}
 }
