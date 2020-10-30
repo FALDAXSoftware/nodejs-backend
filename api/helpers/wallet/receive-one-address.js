@@ -105,7 +105,7 @@ module.exports = {
         }
       }
       let address_label = await sails.helpers.bitgo.generateUniqueUserAddress((inputs.user.id).toString(), (inputs.user.flag == true ? true : false));
-      console.log("sails.config.local.coinArray[coin.coin].type", sails.config.local.coinArray[coin.coin].type)
+      // console.log("sails.config.local.coinArray[coin.coin].type", sails.config.local.coinArray[coin.coin].type)
       if (coin.type == 1 && sails.config.local.coinArray[coin.coin] != undefined && Object.keys(sails.config.local.coinArray[coin.coin]).length == 0) {
         //For all the coins accept USD EURO and ETH
         if (coin.type == sails.config.local.COIN_TYPE_BITGO && coin.hot_receive_wallet_address) {
