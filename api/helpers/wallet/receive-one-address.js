@@ -356,7 +356,7 @@ module.exports = {
               }
             })
           }
-          console.log("walletData", walletData);
+          // console.log("walletData", walletData);
           body.data = walletData;
           console.log(body)
           return exits.success(body);

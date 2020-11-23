@@ -2347,14 +2347,14 @@ module.exports = {
             "message": sails.__("Coin Inactive").message
           })
       }
-      if ((coin_code == "eth" || coin_code == 'eth') || coinData.iserc == true) {
-        return res
-          .status(500)
-          .json({
-            "status": 500,
-            "err": sails.__("Unable to create address").message
-          })
-      }
+      // if ((coin_code == "eth" || coin_code == 'eth') || coinData.iserc == true) {
+      //   return res
+      //     .status(500)
+      //     .json({
+      //       "status": 500,
+      //       "err": sails.__("Unable to create address").message
+      //     })
+      // }
       var userData = [];
       userData = await Users.findOne({
         deleted_at: null,
